@@ -1,0 +1,354 @@
+# Правила написания кода для проекта Resta
+
+## Общие принципы
+
+### SOLID принципы
+- **Single Responsibility**: Каждый компонент, функция, модуль должен отвечать за одну задачу
+- **Open/Closed**: Открыт для расширения, закрыт для модификации
+- **Liskov Substitution**: Подтипы должны быть заменяемы базовыми типами
+- **Interface Segregation**: Много специфичных интерфейсов лучше одного общего
+- **Dependency Inversion**: Зависимости должны быть на абстракциях, а не на конкретных реализациях
+
+### DRY (Don't Repeat Yourself)
+- Избегайте дублирования кода
+- Выносите повторяющуюся логику в переиспользуемые функции/хуки
+- Используйте константы из `constants/` вместо магических значений
+
+### KISS (Keep It Simple, Stupid)
+- Пишите простой, понятный код
+- Избегайте преждевременной оптимизации
+- Приоритет читаемости над "умным" кодом
+
+### YAGNI (You Aren't Gonna Need It)
+- Не добавляйте функциональность "на будущее"
+- Реализуйте только то, что требуется сейчас
+
+## Структура проекта
+
+```
+src/
+├── components/     # React компоненты
+│   ├── ui/         # Переиспользуемые UI компоненты
+│   └── ...         # Функциональные компоненты
+├── constants/       # Константы (маршруты, роли, анимации)
+├── hooks/          # Кастомные React хуки
+├── types/           # TypeScript типы и интерфейсы
+├── utils/           # Утилитарные функции
+└── pages/           # Страницы (если используются)
+```
+
+## TypeScript правила
+
+### Типизация
+- **Всегда** используйте типы, избегайте `any`
+- Используйте `type` для примитивных типов и объединений
+- Используйте `interface` для объектов и компонентов
+- Экспортируйте типы из `types/index.ts`
+- Используйте `readonly` для неизменяемых массивов/объектов
+
+```typescript
+// ✅ Правильно
+type UserRole = 'chef' | 'waiter' | 'bartender'
+interface User {
+  readonly id: string
+  name: string
+}
+
+// ❌ Неправильно
+const role: any = 'chef'
+const user = { id: '1', name: 'John' }
+```
+
+### Именование типов
+- Интерфейсы: `PascalCase` (например, `UserProfile`)
+- Типы: `PascalCase` (например, `UserRole`)
+- Props интерфейсы: `ComponentNameProps` (например, `ButtonProps`)
+
+## React правила
+
+### Компоненты
+- Используйте функциональные компоненты
+- Именуйте компоненты в `PascalCase`
+- Один компонент = один файл
+- Файл компонента должен иметь то же имя, что и компонент
+
+```typescript
+// ✅ Правильно: Button.tsx
+export function Button({ children, onClick }: ButtonProps) {
+  return <button onClick={onClick}>{children}</button>
+}
+
+// ❌ Неправильно: button.tsx или buttonComponent.tsx
+```
+
+### Props
+- Всегда типизируйте props через интерфейс
+- Используйте деструктуризацию для props
+- Неиспользуемые props помечайте через `void props` или удаляйте
+
+```typescript
+// ✅ Правильно
+interface ButtonProps {
+  children: React.ReactNode
+  onClick: () => void
+  variant?: 'primary' | 'secondary'
+}
+
+export function Button({ children, onClick, variant = 'primary' }: ButtonProps) {
+  // ...
+}
+```
+
+### Хуки
+- Используйте кастомные хуки для переиспользуемой логики
+- Именуйте хуки с префиксом `use` (например, `useRole`, `useNavigation`)
+- Храните хуки в `hooks/`
+- Один хук = одна ответственность
+
+```typescript
+// ✅ Правильно: hooks/useRole.ts
+export function useRole() {
+  const [role, setRole] = useState<UserRole | null>(null)
+  // ...
+  return { role, setRole }
+}
+```
+
+### State Management
+- Используйте `useState` для локального состояния
+- Используйте `useCallback` для мемоизации функций, передаваемых в дочерние компоненты
+- Используйте `useMemo` только при необходимости оптимизации
+- Избегайте избыточной мемоизации
+
+### Условный рендеринг
+- Используйте ранний возврат для условий
+- Избегайте вложенных тернарных операторов (максимум 2 уровня)
+
+```typescript
+// ✅ Правильно
+if (!user) return null
+if (isLoading) return <Loader />
+return <UserProfile user={user} />
+
+// ❌ Неправильно
+return isLoading ? <Loader /> : user ? <UserProfile user={user} /> : null
+```
+
+## Именование
+
+### Переменные и функции
+- `camelCase` для переменных и функций
+- Имена должны быть описательными
+- Избегайте сокращений (кроме общепринятых: `id`, `url`, `api`)
+
+```typescript
+// ✅ Правильно
+const userName = 'John'
+const handleSubmit = () => {}
+const isUserLoggedIn = true
+
+// ❌ Неправильно
+const un = 'John'
+const hS = () => {}
+const isULI = true
+```
+
+### Константы
+- `UPPER_SNAKE_CASE` для констант
+- Храните в `constants/` директории
+- Группируйте по функциональности
+
+```typescript
+// ✅ Правильно: constants/routes.ts
+export const ROUTES = {
+  HOME: 'home',
+  PROFILE: 'profile',
+} as const
+```
+
+### Компоненты
+- `PascalCase` для компонентов
+- Имена должны быть существительными
+
+## Функции
+
+### Чистые функции
+- Предпочитайте чистые функции (без побочных эффектов)
+- Функция должна делать одно дело
+- Максимальная длина функции: 50 строк
+
+```typescript
+// ✅ Правильно
+function calculateTotal(items: Item[]): number {
+  return items.reduce((sum, item) => sum + item.price, 0)
+}
+
+// ❌ Неправильно
+function processOrder(items: Item[]) {
+  let total = 0
+  items.forEach(item => {
+    total += item.price
+    console.log(item.name) // Побочный эффект
+  })
+  return total
+}
+```
+
+### Параметры
+- Максимум 3 параметра, иначе используйте объект
+- Используйте деструктуризацию для объектов
+
+```typescript
+// ✅ Правильно
+function createUser({ name, email, role }: CreateUserParams) {
+  // ...
+}
+
+// ❌ Неправильно
+function createUser(name: string, email: string, role: UserRole, age: number, city: string) {
+  // ...
+}
+```
+
+## Комментарии
+
+### Когда комментировать
+- Объясняйте "почему", а не "что"
+- Комментируйте сложную бизнес-логику
+- Документируйте публичные API
+
+### Когда НЕ комментировать
+- Очевидный код
+- Дублирование того, что уже видно в коде
+
+```typescript
+// ✅ Правильно
+// Используем setTimeout для обхода бага в Safari с focus
+setTimeout(() => inputRef.current?.focus(), 0)
+
+// ❌ Неправильно
+// Устанавливаем значение в state
+setValue(newValue)
+```
+
+## Обработка ошибок
+
+- Всегда обрабатывайте ошибки
+- Используйте try-catch для асинхронных операций
+- Предоставляйте понятные сообщения об ошибках
+
+```typescript
+// ✅ Правильно
+try {
+  const data = await fetchUserData()
+  return data
+} catch (error) {
+  console.error('Ошибка загрузки пользователя:', error)
+  throw new Error('Не удалось загрузить данные пользователя')
+}
+```
+
+## Импорты
+
+### Порядок импортов
+1. React и библиотеки
+2. Внутренние компоненты
+3. Утилиты и хуки
+4. Типы
+5. Константы
+6. Стили
+
+```typescript
+// ✅ Правильно
+import { useState, useCallback } from 'react'
+import { motion } from 'motion/react'
+import { Button } from './ui/button'
+import { useRole } from '../hooks/useRole'
+import type { UserRole } from '../types'
+import { ROUTES } from '../constants/routes'
+```
+
+### Абсолютные vs относительные пути
+- Используйте относительные пути (`../`, `./`)
+- Группируйте импорты по типу
+
+## Стилизация
+
+### Tailwind CSS
+- Используйте Tailwind классы вместо инлайн-стилей
+- Группируйте классы логически
+- Используйте `cn()` для условных классов
+
+```typescript
+// ✅ Правильно
+<div className={cn(
+  'flex items-center gap-4',
+  isActive && 'bg-primary',
+  className
+)}>
+
+// ❌ Неправильно
+<div style={{ display: 'flex', alignItems: 'center' }}>
+```
+
+## Производительность
+
+### Оптимизация
+- Используйте `React.memo` только при необходимости
+- Избегайте создания объектов/функций в render
+- Используйте `useCallback` для функций, передаваемых в дочерние компоненты
+- Используйте `useMemo` для тяжелых вычислений
+
+```typescript
+// ✅ Правильно
+const handleClick = useCallback(() => {
+  // ...
+}, [dependencies])
+
+// ❌ Неправильно
+const handleClick = () => {
+  // Создается новая функция при каждом render
+}
+```
+
+## Тестирование
+
+- Пишите тесты для критичной бизнес-логики
+- Тестируйте поведение, а не реализацию
+- Используйте описательные имена тестов
+
+## Git и коммиты
+
+### Commit messages
+- Используйте понятные сообщения
+- Формат: `тип: описание` (например, `feat: добавить выбор роли`)
+
+Типы:
+- `feat`: новая функциональность
+- `fix`: исправление бага
+- `refactor`: рефакторинг
+- `style`: форматирование
+- `docs`: документация
+- `test`: тесты
+- `chore`: рутинные задачи
+
+## Запрещено
+
+- ❌ Использовать `any` без крайней необходимости
+- ❌ Создавать компоненты больше 300 строк
+- ❌ Использовать `var` (только `const`/`let`)
+- ❌ Оставлять `console.log` в production коде
+- ❌ Коммитить закомментированный код
+- ❌ Использовать магические числа/строки
+- ❌ Создавать глубокую вложенность (максимум 3 уровня)
+
+## Рекомендуется
+
+- ✅ Использовать TypeScript strict mode
+- ✅ Проверять код линтером перед коммитом
+- ✅ Форматировать код через Prettier
+- ✅ Документировать публичные API
+- ✅ Писать самодокументируемый код
+- ✅ Регулярно рефакторить код
+- ✅ Следовать принципам accessibility (a11y)
+
