@@ -41,4 +41,3 @@ export interface EmployeeSubRole {
   icon: React.ComponentType<{ className?: string }>
   color: string
 }
-

@@ -3,6 +3,7 @@ interface SettingsScreenProps {
 }
 
 export function SettingsScreen(_props: SettingsScreenProps) {
+  void _props
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6">

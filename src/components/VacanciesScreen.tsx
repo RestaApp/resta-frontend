@@ -5,7 +5,6 @@ import { AppHeader } from './AppHeader'
 import { VacancyCard } from './VacancyCard'
 import { VacancyDetailsScreen } from './VacancyDetailsScreen'
 import { Button } from './ui/button'
-import { Badge } from './ui/badge'
 import { cardAnimation, ANIMATION_DELAY_STEP } from '../constants/animations'
 import type { Screen } from '../types'
 
@@ -152,14 +151,14 @@ export function VacanciesScreen({ onNavigate, onBack }: VacanciesScreenProps) {
   ]
 
   const filteredVacancies = vacancies.filter(vacancy => {
-      if (category !== 'all' && vacancy.category !== category) return false
-      if (type !== 'all') {
-        if (type === 'permanent' && vacancy.type !== 'Постоянная') return false
-        if (type === 'one-time' && vacancy.type !== 'Одноразовая') return false
-      }
-      if (urgentOnly && !vacancy.urgent) return false
-      return true
-    })
+    if (category !== 'all' && vacancy.category !== category) return false
+    if (type !== 'all') {
+      if (type === 'permanent' && vacancy.type !== 'Постоянная') return false
+      if (type === 'one-time' && vacancy.type !== 'Одноразовая') return false
+    }
+    if (urgentOnly && !vacancy.urgent) return false
+    return true
+  })
 
   const handleApply = (id: string) => {
     const vacancy = vacancies.find(v => v.id === id)

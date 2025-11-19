@@ -33,4 +33,3 @@ export function isSupplierRole(role: UserRole | null): boolean {
 export function canViewShifts(role: UserRole | null): boolean {
   return isEmployeeRole(role) || isVenueRole(role)
 }
-

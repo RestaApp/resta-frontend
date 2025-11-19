@@ -1,4 +1,12 @@
-import { MapPin, Clock, DollarSign, FileText, MessageCircle, Bookmark, AlertCircle } from 'lucide-react'
+import {
+  MapPin,
+  Clock,
+  DollarSign,
+  FileText,
+  MessageCircle,
+  Bookmark,
+  AlertCircle,
+} from 'lucide-react'
 import { AppHeader } from './AppHeader'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
@@ -122,7 +130,8 @@ export function VacancyDetailsScreen({
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
               <span>
-                Минимум 2 года опыта работы в должности {getCategoryLabel(vacancy.category).toLowerCase()}
+                Минимум 2 года опыта работы в должности{' '}
+                {getCategoryLabel(vacancy.category).toLowerCase()}
               </span>
             </li>
             <li className="flex items-start gap-2">
@@ -208,4 +217,3 @@ export function VacancyDetailsScreen({
     </div>
   )
 }
-

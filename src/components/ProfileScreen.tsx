@@ -66,6 +66,7 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
         : ['ИП', 'Оптовые поставки'],
   }
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleChangeRole = useCallback(() => {
     if (isEmployee) {
       // Для сотрудников показываем экран выбора подроли
@@ -75,6 +76,7 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
       // Для заведений и поставщиков показываем диалог подтверждения
       setShowChangeRoleDialog(true)
     }
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
   }, [isEmployee])
 
   const handleConfirmChangeRole = useCallback(() => {
@@ -122,12 +124,12 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
     },
     ...(canViewShifts(role)
       ? [
-          {
-            icon: Briefcase,
-            label: 'Мои смены',
-            action: () => onNavigate(ROUTES.SHIFTS),
-          },
-        ]
+        {
+          icon: Briefcase,
+          label: 'Мои смены',
+          action: () => onNavigate(ROUTES.SHIFTS),
+        },
+      ]
       : []),
     {
       icon: Settings,

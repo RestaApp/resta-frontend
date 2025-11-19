@@ -85,7 +85,7 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => { })} />
+      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => {})} />
 
       <div className="px-4 py-4 space-y-4">
         {/* Filter Bar */}
@@ -97,11 +97,7 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
           <div className="text-[12px] text-muted-foreground ml-auto">
             {mockShifts.length}{' '}
-            {mockShifts.length === 1
-              ? 'смена'
-              : mockShifts.length < 5
-                ? 'смены'
-                : 'смен'}
+            {mockShifts.length === 1 ? 'смена' : mockShifts.length < 5 ? 'смены' : 'смен'}
           </div>
         </div>
 

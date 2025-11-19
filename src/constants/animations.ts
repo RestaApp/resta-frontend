@@ -29,4 +29,3 @@ export const cardAnimation = {
   initial: { scale: 0.9, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
 } as const
-

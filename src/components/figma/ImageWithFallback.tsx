@@ -31,4 +31,3 @@ export function ImageWithFallback({ src, alt, className }: ImageWithFallbackProp
 
   return <img src={src} alt={alt} className={className} onError={() => setImgError(true)} />
 }
-

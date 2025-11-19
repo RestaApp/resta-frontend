@@ -5,6 +5,7 @@ interface VenueHomeProps {
 }
 
 export function VenueHome(_props: VenueHomeProps) {
+  void _props
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6">

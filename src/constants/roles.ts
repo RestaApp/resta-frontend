@@ -84,4 +84,3 @@ export const EMPLOYEE_ROLES: readonly EmployeeRole[] = [
   'barista',
   'admin',
 ] as const
-

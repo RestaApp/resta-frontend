@@ -33,7 +33,10 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-[20px] font-semibold tracking-tight">{shift.restaurant}</h3>
             {shift.urgent && (
-              <Badge variant="destructive" className="gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-semibold">
+              <Badge
+                variant="destructive"
+                className="gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-semibold"
+              >
                 <AlertCircle className="w-3 h-3" />
                 СРОЧНО
               </Badge>
@@ -60,7 +63,9 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
       <div className="space-y-3 mb-5">
         <div className="flex items-center gap-3 text-[15px] text-muted-foreground">
           <Clock className="w-[18px] h-[18px]" />
-          <span className="font-medium">{shift.date} • {shift.time}</span>
+          <span className="font-medium">
+            {shift.date} • {shift.time}
+          </span>
         </div>
         <div className="flex items-center gap-3 text-[15px] text-muted-foreground">
           <MapPin className="w-[18px] h-[18px]" />
@@ -87,4 +92,3 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
     </Card>
   )
 }
-

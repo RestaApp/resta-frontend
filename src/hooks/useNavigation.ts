@@ -42,4 +42,3 @@ export function useNavigation({ setCurrentScreen, setActiveTab }: UseNavigationP
 
   return { navigate, back }
 }
-

@@ -29,4 +29,3 @@ export const VALID_SCREENS: readonly Screen[] = [
   ROUTES.NOTIFICATIONS,
   ROUTES.APPLICATIONS,
 ] as const
-
