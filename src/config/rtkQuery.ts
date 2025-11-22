@@ -249,7 +249,8 @@ const handleAuthError = async (): Promise<boolean> => {
   if (refreshToken) {
     try {
       // Используем прямой fetch для обновления токена, чтобы избежать циклических зависимостей
-      const response = await fetch(`${rtkQueryConfig.baseUrl}/v1/auth/refresh`, {
+      const refreshUrl = `${rtkQueryConfig.baseUrl}/v1/auth/refresh`
+      const response = await fetch(refreshUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
