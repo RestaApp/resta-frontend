@@ -127,10 +127,17 @@ export function initTelegramWebApp() {
     webApp.ready()
     webApp.expand()
 
+    // Логируем initData при инициализации
+    console.log('Telegram Web App инициализирован')
+    console.log('initData:', webApp.initData)
+    console.log('initDataUnsafe:', webApp.initDataUnsafe)
+
     // Устанавливаем цвет фона приложения через themeParams
     if (webApp.themeParams.bg_color) {
       document.documentElement.style.setProperty('--background', webApp.themeParams.bg_color)
     }
+  } else {
+    console.log('Telegram Web App не найден')
   }
 }
 
@@ -153,4 +160,29 @@ export function hideTelegramBackButton() {
   if (webApp) {
     webApp.BackButton.hide()
   }
+}
+
+/**
+ * Получает initData из Telegram Web App
+ * initData - это строка, содержащая данные для авторизации
+ */
+export function getTelegramInitData(): string | null {
+  const webApp = getTelegramWebApp()
+  if (!webApp || !webApp.initData) {
+    console.log('initData не найден:', { webApp: !!webApp, hasInitData: !!webApp?.initData })
+    return null
+  }
+  console.log('initData получен:', webApp.initData)
+  return webApp.initData
+}
+
+/**
+ * Получает данные пользователя из Telegram (безопасный способ)
+ */
+export function getTelegramUser() {
+  const webApp = getTelegramWebApp()
+  if (!webApp || !webApp.initDataUnsafe?.user) {
+    return null
+  }
+  return webApp.initDataUnsafe.user
 }

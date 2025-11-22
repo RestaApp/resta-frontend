@@ -15,11 +15,14 @@ import { BottomNav } from './components/BottomNav'
 import { Toaster } from './components/ui/sonner'
 import { useRole } from './hooks/useRole'
 import { useNavigation } from './hooks/useNavigation'
+import { useAuth } from './hooks/useAuth'
 import { isEmployeeRole } from './utils/roles'
 import type { Tab, Screen } from './types'
 import { ROUTES } from './constants/routes'
 
 export default function App() {
+  // Автоматическая авторизация через Telegram
+  useAuth()
   const { selectedRole, handleRoleSelect, handleRoleReset } = useRole()
   const [activeTab, setActiveTab] = useState<Tab>('home')
   const [currentScreen, setCurrentScreen] = useState<Screen>(ROUTES.HOME)
