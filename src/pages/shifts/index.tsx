@@ -1,11 +1,15 @@
+/**
+ * Страница смен
+ */
+
 import { useState } from 'react'
 import { Filter } from 'lucide-react'
 import { motion } from 'motion/react'
-import { AppHeader } from './AppHeader'
-import { ShiftCard, type Shift } from './ShiftCard'
-import { Button } from './ui/button'
-import { cardAnimation, ANIMATION_DELAY_STEP } from '../constants/animations'
-import type { Screen } from '../types'
+import { AppHeader } from '../home/components/AppHeader'
+import { ShiftCard, type Shift } from './components/ShiftCard'
+import { Button } from '../../components/ui/button'
+import { cardAnimation, ANIMATION_DELAY_STEP } from '../../constants/animations'
+import type { Screen } from '../../types'
 
 interface ShiftsScreenProps {
   onBack: () => void
@@ -13,7 +17,7 @@ interface ShiftsScreenProps {
 }
 
 export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
-  void onBack // Неиспользуемый пропс, но требуется интерфейсом
+  void onBack
   const [savedShifts, setSavedShifts] = useState<string[]>([])
 
   const mockShifts: Shift[] = [
@@ -68,7 +72,6 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   const handleApply = (id: string) => {
     const shift = mockShifts.find(s => s.id === id)
-    // TODO: Реализовать отправку отклика на смену
     void shift
   }
 
@@ -84,10 +87,9 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => { })} />
+      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => {})} />
 
       <div className="px-4 py-4 space-y-4">
-        {/* Filter Bar */}
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="gap-2">
             <Filter className="w-4 h-4" />
@@ -100,7 +102,6 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
           </div>
         </div>
 
-        {/* Shifts List */}
         <div className="space-y-3">
           {mockShifts.map((shift, index) => (
             <motion.div
@@ -114,7 +115,6 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
                 onApply={handleApply}
                 onSave={handleSave}
                 onClick={id => {
-                  // TODO: Реализовать открытие детального экрана смены
                   void id
                 }}
               />
@@ -125,3 +125,5 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
     </div>
   )
 }
+
+

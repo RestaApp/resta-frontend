@@ -4,6 +4,7 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import { api } from './api'
+import userReducer from './userSlice'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api
@@ -12,6 +13,7 @@ import '../services/api'
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
+    user: userReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

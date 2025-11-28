@@ -1,4 +1,8 @@
-import type { Screen } from '../types'
+/**
+ * Главная страница для поставщика
+ */
+
+import type { Screen } from '../../../types'
 
 interface SupplierHomeProps {
   onNavigate: (destination: Screen) => void
@@ -15,3 +19,5 @@ export function SupplierHome(_props: SupplierHomeProps) {
     </div>
   )
 }
+
+

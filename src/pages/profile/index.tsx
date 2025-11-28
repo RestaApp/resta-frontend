@@ -11,12 +11,12 @@ import {
   Plus,
   UserCircle,
 } from 'lucide-react'
-import { AppHeader } from './AppHeader'
-import { Card } from './ui/card'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import { Avatar, AvatarFallback } from './ui/avatar'
-import { Separator } from './ui/separator'
+import { AppHeader } from '../home/components/AppHeader'
+import { Card } from '../../components/ui/card'
+import { Button } from '../../components/ui/button'
+import { Badge } from '../../components/ui/badge'
+import { Avatar, AvatarFallback } from '../../components/ui/avatar'
+import { Separator } from '../../components/ui/separator'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,14 +26,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './ui/alert-dialog'
-import { BottomNav } from './BottomNav'
-import { EmployeeSubRoleSelector } from './EmployeeSubRoleSelector'
-import { getStoredRole, setStoredRole, removeStoredRole } from '../utils/storage'
-import { ROLE_LABELS } from '../constants/roles'
-import { isEmployeeRole, isVenueRole, isSupplierRole, canViewShifts } from '../utils/roles'
-import { ROUTES } from '../constants/routes'
-import type { Tab, Screen, EmployeeRole } from '../types'
+} from '../../components/ui/alert-dialog'
+import { BottomNav } from '../../components/BottomNav'
+import { EmployeeSubRoleSelector } from '../role-selector/components/EmployeeSubRoleSelector'
+import { useAppSelector, useAppDispatch } from '../../store/hooks'
+import { setSelectedRole } from '../../store/userSlice'
+import { ROLE_LABELS } from '../../constants/roles'
+import { isEmployeeRole, isVenueRole, isSupplierRole, canViewShifts } from '../../utils/roles'
+import { ROUTES } from '../../constants/routes'
+import type { Tab, Screen, EmployeeRole } from '../../types'
 
 interface ProfileScreenProps {
   onNavigate: (destination: Screen) => void
@@ -43,10 +44,11 @@ interface ProfileScreenProps {
 }
 
 export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: ProfileScreenProps) {
+  const dispatch = useAppDispatch()
   const [showChangeRoleDialog, setShowChangeRoleDialog] = useState(false)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
   const [selectedSubRole, setSelectedSubRole] = useState<EmployeeRole | null>(null)
-  const role = getStoredRole()
+  const role = useAppSelector(state => state.user.selectedRole)
 
   const isEmployee = isEmployeeRole(role)
   const isRestaurant = isVenueRole(role)
@@ -80,12 +82,12 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
   }, [isEmployee])
 
   const handleConfirmChangeRole = useCallback(() => {
-    removeStoredRole()
+    dispatch(setSelectedRole(null))
     setShowChangeRoleDialog(false)
     if (onBack) {
       onBack()
     }
-  }, [onBack])
+  }, [onBack, dispatch])
 
   const handleSubRoleSelect = useCallback((subRole: EmployeeRole) => {
     setSelectedSubRole(subRole)
@@ -93,13 +95,13 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
 
   const handleSubRoleContinue = useCallback(() => {
     if (selectedSubRole) {
-      setStoredRole(selectedSubRole)
+      dispatch(setSelectedRole(selectedSubRole))
       setShowEmployeeSubRoles(false)
       setSelectedSubRole(null)
       // Перезагружаем страницу для применения изменений
       window.location.reload()
     }
-  }, [selectedSubRole])
+  }, [selectedSubRole, dispatch])
 
   const handleToast = useCallback((message: string) => {
     // TODO: Реализовать toast уведомления

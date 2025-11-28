@@ -1,7 +1,11 @@
+/**
+ * Компонент заголовка приложения
+ */
+
 import { Bell } from 'lucide-react'
-import logo from '../assets/icons/logo.svg'
-import { ROUTES } from '../constants/routes'
-import type { Screen } from '../types'
+import logo from '../../../assets/icons/logo.svg'
+import { ROUTES } from '../../../constants/routes'
+import type { Screen } from '../../../types'
 
 interface AppHeaderProps {
   onNavigate: (destination: Screen) => void
@@ -36,3 +40,5 @@ export function AppHeader({ onNavigate, subtitle, title }: AppHeaderProps) {
     </div>
   )
 }
+
+

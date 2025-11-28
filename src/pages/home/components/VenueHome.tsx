@@ -1,4 +1,8 @@
-import type { Screen } from '../types'
+/**
+ * Главная страница для заведения
+ */
+
+import type { Screen } from '../../../types'
 
 interface VenueHomeProps {
   onNavigate: (destination: Screen) => void
@@ -15,3 +19,5 @@ export function VenueHome(_props: VenueHomeProps) {
     </div>
   )
 }
+
+

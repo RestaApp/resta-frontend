@@ -1,6 +1,10 @@
+/**
+ * Компонент карточки новости
+ */
+
 import { Clock } from 'lucide-react'
-import { ImageWithFallback } from './figma/ImageWithFallback'
-import { cn } from '../utils/cn'
+import { ImageWithFallback } from '../../../components/figma/ImageWithFallback'
+import { cn } from '../../../utils/cn'
 
 interface NewsCardProps {
   title: string
@@ -41,3 +45,5 @@ export function NewsCard({ title, description, date, imageUrl, onClick }: NewsCa
     </button>
   )
 }
+
+

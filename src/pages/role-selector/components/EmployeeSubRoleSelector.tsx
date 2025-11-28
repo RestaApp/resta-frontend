@@ -1,17 +1,22 @@
-import { useEffect } from 'react'
+/**
+ * Компонент выбора подроли сотрудника
+ */
+
+import { useEffect, useMemo } from 'react'
 import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import { cn } from '../utils/cn'
-import { setupTelegramBackButton } from '../utils/telegram'
-import { EMPLOYEE_SUBROLES } from '../constants/roles'
+import { Button } from '../../../components/ui/button'
+import { Badge } from '../../../components/ui/badge'
+import { cn } from '../../../utils/cn'
+import { setupTelegramBackButton } from '../../../utils/telegram'
+import { EMPLOYEE_SUBROLES } from '../../../constants/roles'
 import {
   roleCardAnimation,
   checkIconAnimation,
   ANIMATION_DELAY_STEP,
-} from '../constants/animations'
-import type { EmployeeRole, UserRole } from '../types'
+} from '../../../constants/animations'
+import type { EmployeeRole, UserRole, EmployeeSubRoleApi } from '../../../types'
+import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
 
 interface EmployeeSubRoleSelectorProps {
   currentRole: UserRole | null
@@ -19,6 +24,7 @@ interface EmployeeSubRoleSelectorProps {
   selectedSubRole: EmployeeRole | null
   onContinue: () => void
   onBack: () => void
+  employeeSubRoles?: EmployeeSubRoleApi[]
 }
 
 export function EmployeeSubRoleSelector({
@@ -27,6 +33,7 @@ export function EmployeeSubRoleSelector({
   selectedSubRole,
   onContinue,
   onBack,
+  employeeSubRoles,
 }: EmployeeSubRoleSelectorProps) {
   useEffect(() => {
     const cleanup = setupTelegramBackButton(() => {
@@ -34,6 +41,15 @@ export function EmployeeSubRoleSelector({
     })
     return cleanup
   }, [onBack])
+
+  // Преобразуем данные из API в формат компонентов
+  const subRoles = useMemo(() => {
+    if (employeeSubRoles) {
+      return mapEmployeeSubRolesFromApi(employeeSubRoles)
+    }
+    // Fallback на хардкод, если API недоступен
+    return EMPLOYEE_SUBROLES
+  }, [employeeSubRoles])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col">
@@ -46,7 +62,7 @@ export function EmployeeSubRoleSelector({
 
       <div className="flex-1 px-4 pb-32 overflow-y-auto">
         <div className="space-y-3 max-w-md mx-auto">
-          {EMPLOYEE_SUBROLES.map((subRole, index) => {
+          {subRoles.map((subRole, index) => {
             const Icon = subRole.icon
             const isSelected = selectedSubRole === subRole.id
             const isCurrent = currentRole === subRole.id
@@ -132,3 +148,5 @@ export function EmployeeSubRoleSelector({
     </div>
   )
 }
+
+

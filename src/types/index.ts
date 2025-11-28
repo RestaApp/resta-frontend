@@ -49,3 +49,22 @@ export interface EmployeeSubRole {
   icon: React.ComponentType<{ className?: string }>
   color: string
 }
+
+/**
+ * Типы для данных из API (без React компонентов)
+ */
+export interface RoleOptionApi {
+  id: UserRole
+  title: string
+  description: string
+  icon_name?: string
+  color: string
+}
+
+export interface EmployeeSubRoleApi {
+  id: EmployeeRole
+  title: string
+  description: string
+  icon_name?: string
+  color: string
+}

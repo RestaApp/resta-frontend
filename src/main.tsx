@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.tsx'
 import { initTelegramWebApp } from './utils/telegram'
 import { store } from './store'
+import { AuthProvider } from './contexts/AuthContext'
 
 // Отключение темной темы
 document.documentElement.classList.remove('dark')
@@ -16,7 +17,9 @@ initTelegramWebApp()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Provider>
   </StrictMode>
 )

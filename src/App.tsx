@@ -1,27 +1,24 @@
 import { useState } from 'react'
-import { RoleSelector } from './components/RoleSelector'
-import { WorkerHome } from './components/WorkerHome'
-import { VenueHome } from './components/VenueHome'
-import { SupplierHome } from './components/SupplierHome'
-import { ShiftsScreen } from './components/ShiftsScreen'
-import { VacanciesScreen } from './components/VacanciesScreen'
-import { ApplicationsScreen } from './components/ApplicationsScreen'
-import { ProfileScreen } from './components/ProfileScreen'
-import { NotificationsScreen } from './components/NotificationsScreen'
-import { CreateShiftScreen } from './components/CreateShiftScreen'
-import { SettingsScreen } from './components/SettingsScreen'
-import { SuppliersScreen } from './components/SuppliersScreen'
+import { RoleSelector } from './pages/role-selector'
+import { Home } from './pages/home'
+import { ShiftsScreen } from './pages/shifts'
+import { VacanciesScreen } from './pages/vacancies'
+import { ApplicationsScreen } from './pages/applications'
+import { ProfileScreen } from './pages/profile'
+import { NotificationsScreen } from './pages/notifications'
+import { CreateShiftScreen } from './pages/create-shift'
+import { SettingsScreen } from './pages/settings'
+import { SuppliersScreen } from './pages/suppliers'
 import { BottomNav } from './components/BottomNav'
 import { Toaster } from './components/ui/sonner'
 import { useRole } from './hooks/useRole'
 import { useNavigation } from './hooks/useNavigation'
-import { useAuth } from './hooks/useAuth'
-import { isEmployeeRole } from './utils/roles'
+import { useAuth } from './contexts/AuthContext'
 import type { Tab, Screen } from './types'
 import { ROUTES } from './constants/routes'
 
 export default function App() {
-  // Автоматическая авторизация через Telegram
+  // Используем глобальное состояние авторизации (авторизация происходит в AuthProvider)
   useAuth()
   const { selectedRole, handleRoleSelect, handleRoleReset } = useRole()
   const [activeTab, setActiveTab] = useState<Tab>('home')
@@ -65,14 +62,7 @@ export default function App() {
   const renderScreen = () => {
     switch (currentScreen) {
       case ROUTES.HOME:
-        if (isEmployeeRole(selectedRole)) {
-          return <WorkerHome onNavigate={navigate} role={selectedRole} />
-        } else if (selectedRole === 'venue') {
-          return <VenueHome onNavigate={navigate} />
-        } else if (selectedRole === 'supplier') {
-          return <SupplierHome onNavigate={navigate} />
-        }
-        break
+        return <Home role={selectedRole} onNavigate={navigate} />
 
       case ROUTES.SHIFTS:
         return <ShiftsScreen onBack={back} onNavigate={navigate} />
@@ -109,13 +99,7 @@ export default function App() {
         return <CreateShiftScreen onBack={back} onSubmit={handleCreateShift} />
 
       default:
-        if (isEmployeeRole(selectedRole)) {
-          return <WorkerHome onNavigate={navigate} role={selectedRole} />
-        } else if (selectedRole === 'venue') {
-          return <VenueHome onNavigate={navigate} />
-        } else {
-          return <SupplierHome onNavigate={navigate} />
-        }
+        return <Home role={selectedRole} onNavigate={navigate} />
     }
   }
 

@@ -272,10 +272,13 @@ const handleAuthError = async (): Promise<boolean> => {
   authService.logout()
   errorCache.clear()
 
-  // Сообщаем приложению о необходимости переавторизации
+  // Очищаем данные пользователя из Redux
+  // Используем событие, чтобы компоненты могли очистить Redux
   if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
     try {
       window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+      // Также отправляем событие для очистки Redux
+      window.dispatchEvent(new CustomEvent('auth:logout'))
     } catch {
       // Игнорируем ошибки при отправке события
     }

@@ -81,8 +81,9 @@ export function setTokens(accessToken: string, refreshToken: string): void {
 export function logout(): void {
   removeToken()
   removeRefreshToken()
-  // Очищаем данные пользователя
-  localStorage.removeItem(STORAGE_KEYS.USER_DATA)
+  // Очищаем данные пользователя из Redux
+  // Примечание: dispatch должен вызываться из компонента или хука
+  // Здесь только очищаем токены, Redux очищается через clearUserData action
 }
 
 /**

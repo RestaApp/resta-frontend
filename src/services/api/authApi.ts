@@ -1,5 +1,7 @@
 /**
  * API для авторизации через Telegram
+ * Содержит только определения endpoints (RTK Query)
+ * Бизнес-логика вынесена в хуки
  */
 
 import { api } from '../../store/api'
@@ -57,6 +59,15 @@ export interface RefreshTokenResponse {
   refreshToken: string
 }
 
+export interface UpdateRoleRequest {
+  role: string
+}
+
+export interface UpdateRoleResponse {
+  success: boolean
+  data: UserData
+}
+
 export const authApi = api.injectEndpoints({
   endpoints: builder => ({
     // Авторизация через Telegram
@@ -66,20 +77,7 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
-      async onQueryStarted(_arg, { queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled
-          // Сохраняем токен при успешной авторизации
-          // API возвращает только один токен в meta.token
-          if (data.success && data.meta.token) {
-            authService.setToken(data.meta.token)
-            // Сохраняем данные пользователя в localStorage для быстрого доступа
-            localStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(data.data))
-          }
-        } catch {
-          // Ошибка обрабатывается автоматически
-        }
-      },
+      invalidatesTags: ['User'],
     }),
 
     // Обновление JWT токена
@@ -95,54 +93,23 @@ export const authApi = api.injectEndpoints({
           body: { refreshToken } as RefreshTokenRequest,
         }
       },
-      async onQueryStarted(_arg, { queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled
-          // Обновляем токены при успешном обновлении
-          authService.setTokens(data.accessToken, data.refreshToken)
-        } catch {
-          // При ошибке обновления токена - выходим
-          authService.logout()
-        }
-      },
+    }),
+
+    // Обновление роли пользователя
+    updateRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
+      query: body => ({
+        url: '/api/v1/auth/sign_in',
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['User'],
     }),
   }),
 })
 
-// Экспорт хуков для использования в компонентах
-export const { useAuthTelegramMutation, useRefreshTokenMutation } = authApi
-
-/**
- * Утилиты для работы с данными пользователя
- */
-import { STORAGE_KEYS } from '../../constants/storage'
-
-const USER_DATA_STORAGE_KEY = STORAGE_KEYS.USER_DATA
-
-/**
- * Получает данные пользователя из localStorage
- */
-export function getUserData(): UserData | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-  const stored = localStorage.getItem(USER_DATA_STORAGE_KEY)
-  if (!stored) {
-    return null
-  }
-  try {
-    return JSON.parse(stored) as UserData
-  } catch {
-    return null
-  }
-}
-
-/**
- * Очищает данные пользователя из localStorage
- */
-export function clearUserData(): void {
-  if (typeof window === 'undefined') {
-    return
-  }
-  localStorage.removeItem(USER_DATA_STORAGE_KEY)
-}
+// Экспорт базовых хуков RTK Query (используются в кастомных хуках)
+export const {
+  useAuthTelegramMutation,
+  useRefreshTokenMutation,
+  useUpdateRoleMutation,
+} = authApi

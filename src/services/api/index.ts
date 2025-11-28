@@ -6,7 +6,11 @@
 // Импортируем все API endpoints для их регистрации
 import './authApi'
 import './shiftsApi'
+import './rolesApi'
+import './usersApi'
 
-// Экспортируем типы и хуки для удобного использования
-export * from './authApi'
-export * from './shiftsApi'
+// Экспортируем только типы (хуки экспортируются из hooks/)
+export type * from './authApi'
+export type * from './shiftsApi'
+export type * from './rolesApi'
+export type * from './usersApi'

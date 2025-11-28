@@ -1,27 +1,31 @@
 /**
  * Хук для работы с ролями пользователя
+ * Использует Redux для хранения состояния
  */
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import type { UserRole } from '../types'
-import { getStoredRole, setStoredRole, removeStoredRole } from '../utils/storage'
+import { useAppSelector, useAppDispatch } from '../store/hooks'
+import { setSelectedRole } from '../store/userSlice'
 
 export function useRole() {
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(() => getStoredRole())
+  const dispatch = useAppDispatch()
+  const selectedRole = useAppSelector(state => state.user.selectedRole)
 
-  const handleRoleSelect = useCallback((role: UserRole) => {
-    setStoredRole(role)
-    setSelectedRole(role)
-  }, [])
+  const handleRoleSelect = useCallback(
+    (role: UserRole) => {
+      dispatch(setSelectedRole(role))
+    },
+    [dispatch]
+  )
 
   const handleRoleReset = useCallback(() => {
-    removeStoredRole()
-    setSelectedRole(null)
-  }, [])
+    dispatch(setSelectedRole(null))
+  }, [dispatch])
 
   return {
     selectedRole,
-    setSelectedRole,
+    setSelectedRole: (role: UserRole | null) => dispatch(setSelectedRole(role)),
     handleRoleSelect,
     handleRoleReset,
   }

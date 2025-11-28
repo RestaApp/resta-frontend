@@ -1,6 +1,6 @@
-import { AppHeader } from './AppHeader'
-import { Button } from './ui/button'
-import type { Screen } from '../types'
+import { AppHeader } from '../home/components/AppHeader'
+import { Button } from '../../components/ui/button'
+import type { Screen } from '../../types'
 
 interface CreateShiftScreenProps {
   onBack: () => void

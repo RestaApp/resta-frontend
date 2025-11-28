@@ -1,64 +1,103 @@
 /**
- * Хук для автоматической авторизации через Telegram
+ * Хук для работы с авторизацией
+ * Инкапсулирует логику авторизации и работы с токенами
  */
 
-import { useEffect, useRef } from 'react'
-import { useAuthTelegramMutation } from '../services/api/authApi'
-import { getTelegramInitData, isTelegramWebApp } from '../utils/telegram'
+import { useCallback } from 'react'
+import { useAppDispatch } from '../store/hooks'
+import {
+  useAuthTelegramMutation,
+  useRefreshTokenMutation,
+  useUpdateRoleMutation,
+  type TelegramAuthRequest,
+  type UpdateRoleRequest,
+} from '../services/api/authApi'
 import { authService } from '../services/auth'
-import { logger } from '../utils/logger'
+import { updateUserDataInStore, invalidateUserCache, dispatchAuthEvent } from '../utils/userData'
 
 /**
- * Хук для автоматической авторизации при загрузке приложения
- * Авторизует пользователя через Telegram initData, если он еще не авторизован
+ * Хук для работы с авторизацией (мутации и действия)
  */
-export function useAuth() {
-  const [authTelegram, { isLoading, isError, error }] = useAuthTelegramMutation()
-  const hasAttemptedAuth = useRef(false)
+export function useAuthActions() {
+  const dispatch = useAppDispatch()
+  const [authTelegramMutation, { isLoading: isAuthLoading }] = useAuthTelegramMutation()
+  const [refreshTokenMutation, { isLoading: isRefreshLoading }] = useRefreshTokenMutation()
+  const [updateRoleMutation, { isLoading: isUpdateRoleLoading }] = useUpdateRoleMutation()
 
-  useEffect(() => {
-    // Предотвращаем повторные попытки авторизации
-    if (hasAttemptedAuth.current || isLoading) {
-      return
+  /**
+   * Авторизация через Telegram
+   */
+  const authTelegram = useCallback(
+    async (request: TelegramAuthRequest) => {
+      try {
+        const result = await authTelegramMutation(request).unwrap()
+
+        // Сохраняем токен при успешной авторизации
+        if (result.success && result.meta.token) {
+          authService.setToken(result.meta.token)
+
+          // Сохраняем данные пользователя в Redux
+          updateUserDataInStore(dispatch, result.data)
+
+          // Инвалидируем кэш ролей
+          invalidateUserCache(dispatch)
+
+          // Отправляем событие об успешной авторизации
+          dispatchAuthEvent()
+        }
+
+        return result
+      } catch (error) {
+        throw error
+      }
+    },
+    [authTelegramMutation, dispatch]
+  )
+
+  /**
+   * Обновление JWT токена
+   */
+  const refreshToken = useCallback(async () => {
+    try {
+      const result = await refreshTokenMutation().unwrap()
+
+      // Обновляем токены при успешном обновлении
+      authService.setTokens(result.accessToken, result.refreshToken)
+
+      return result
+    } catch (error) {
+      // При ошибке обновления токена - выходим
+      authService.logout()
+      throw error
     }
+  }, [refreshTokenMutation])
 
-    // Авторизуем только если пользователь еще не авторизован
-    if (authService.isAuthenticated()) {
-      return
-    }
+  /**
+   * Обновление роли пользователя
+   */
+  const updateRole = useCallback(
+    async (request: UpdateRoleRequest) => {
+      try {
+        const result = await updateRoleMutation(request).unwrap()
 
-    // В режиме разработки авторизуем даже без Telegram Web App
-    // В production авторизуем только в Telegram Web App
-    if (!import.meta.env.DEV && !isTelegramWebApp()) {
-      return
-    }
+        // Обновляем данные пользователя в Redux после успешного обновления роли
+        if (result.success && result.data) {
+          updateUserDataInStore(dispatch, result.data)
+        }
 
-    const initData = getTelegramInitData()
-    if (!initData) {
-      logger.warn('initData не найден')
-      return
-    }
-
-    // Помечаем, что попытка авторизации была сделана
-    hasAttemptedAuth.current = true
-
-    logger.log('Используем initData для авторизации:', initData)
-
-    // Выполняем авторизацию
-    authTelegram({ initData })
-      .then(result => {
-        logger.log('Авторизация успешна:', result)
-      })
-      .catch(err => {
-        logger.error('Ошибка авторизации через Telegram:', err)
-        // Сбрасываем флаг при ошибке, чтобы можно было повторить попытку
-        hasAttemptedAuth.current = false
-      })
-  }, [authTelegram, isLoading])
+        return result
+      } catch (error) {
+        throw error
+      }
+    },
+    [updateRoleMutation, dispatch]
+  )
 
   return {
-    isLoading,
-    isError,
-    error,
+    authTelegram,
+    refreshToken,
+    updateRole,
+    isLoading: isAuthLoading || isRefreshLoading || isUpdateRoleLoading,
   }
 }
+

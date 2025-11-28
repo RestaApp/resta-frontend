@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Filter, Zap, X } from 'lucide-react'
 import { motion } from 'motion/react'
-import { AppHeader } from './AppHeader'
-import { VacancyCard } from './VacancyCard'
-import { VacancyDetailsScreen } from './VacancyDetailsScreen'
-import { Button } from './ui/button'
-import { cardAnimation, ANIMATION_DELAY_STEP } from '../constants/animations'
-import type { Screen } from '../types'
+import { AppHeader } from '../home/components/AppHeader'
+import { VacancyCard } from './components/VacancyCard'
+import { VacancyDetailsScreen } from './components/VacancyDetailsScreen'
+import { Button } from '../../components/ui/button'
+import { cardAnimation, ANIMATION_DELAY_STEP } from '../../constants/animations'
+import type { Screen } from '../../types'
 
 interface VacanciesScreenProps {
   onBack: () => void

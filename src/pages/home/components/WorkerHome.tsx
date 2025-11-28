@@ -1,10 +1,14 @@
+/**
+ * Главная страница для сотрудников
+ */
+
 import { Search, Briefcase, FileText, Users } from 'lucide-react'
 import { motion } from 'motion/react'
 import { AppHeader } from './AppHeader'
 import { NewsCard } from './NewsCard'
-import { cn } from '../utils/cn'
-import { cardAnimation, ANIMATION_DELAY_STEP } from '../constants/animations'
-import type { EmployeeRole, Screen } from '../types'
+import { cn } from '../../../utils/cn'
+import { cardAnimation, ANIMATION_DELAY_STEP } from '../../../constants/animations'
+import type { EmployeeRole, Screen } from '../../../types'
 
 interface WorkerHomeProps {
   onNavigate: (destination: Screen) => void
@@ -149,3 +153,4 @@ export function WorkerHome({ onNavigate }: WorkerHomeProps) {
     </div>
   )
 }
+

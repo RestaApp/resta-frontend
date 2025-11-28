@@ -2,8 +2,8 @@
  * Константы и конфигурации ролей
  */
 
-import { ChefHat, UtensilsCrossed, Wine, Coffee, UserCog, User, Store, Package } from 'lucide-react'
-import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
+import { ChefHat, UtensilsCrossed, Wine, Coffee, UserCog } from 'lucide-react'
+import type { EmployeeSubRole, UserRole, EmployeeRole } from '../types'
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   chef: 'Повар',
@@ -15,30 +15,6 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   supplier: 'Поставщик',
   unverified: 'Непроверенный',
 } as const
-
-export const MAIN_ROLES: ReadonlyArray<RoleOption> = [
-  {
-    id: 'chef',
-    title: 'Сотрудник',
-    description: 'Повар, официант, бармен, бариста, администратор',
-    icon: User,
-    color: 'from-blue-500 to-cyan-500',
-  },
-  {
-    id: 'venue',
-    title: 'Заведение',
-    description: 'Ищу персонал и поставщиков',
-    icon: Store,
-    color: 'from-orange-500 to-red-500',
-  },
-  {
-    id: 'supplier',
-    title: 'Поставщик',
-    description: 'Предлагаю товары и услуги',
-    icon: Package,
-    color: 'from-indigo-500 to-blue-600',
-  },
-] as const
 
 export const EMPLOYEE_SUBROLES: ReadonlyArray<EmployeeSubRole> = [
   {
