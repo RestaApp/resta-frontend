@@ -13,6 +13,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   admin: 'Администратор',
   venue: 'Заведение',
   supplier: 'Поставщик',
+  unverified: 'Непроверенный',
 } as const
 
 export const MAIN_ROLES: ReadonlyArray<RoleOption> = [
