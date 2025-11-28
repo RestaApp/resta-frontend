@@ -6,6 +6,10 @@ import App from './App.tsx'
 import { initTelegramWebApp } from './utils/telegram'
 import { store } from './store'
 
+// Отключение темной темы
+document.documentElement.classList.remove('dark')
+localStorage.removeItem('theme')
+
 // Инициализация Telegram Web App
 initTelegramWebApp()
 

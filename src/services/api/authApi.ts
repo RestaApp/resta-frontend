@@ -9,17 +9,42 @@ export interface TelegramAuthRequest {
   initData: string
 }
 
+export interface UserData {
+  id: number
+  active: boolean
+  available_for_work: boolean
+  average_rating: number
+  bio: string | null
+  created_at: string
+  email: string | null
+  experience_years: number | null
+  full_name: string
+  language: string
+  last_name: string
+  location: string | null
+  name: string
+  phone: string | null
+  photo_url: string | null
+  profile_complete: boolean
+  profile_photo_url: string | null
+  role: string
+  service_categories: unknown[]
+  service_categories_list: string | null
+  specialization: string | null
+  telegram_id: number
+  total_reviews: number
+  updated_at: string
+  username: string
+  website: string | null
+  work_experience_summary: string | null
+  work_preferences: Record<string, unknown>
+}
+
 export interface AuthResponse {
-  accessToken: string
-  refreshToken: string
-  user: {
-    id: number
-    firstName: string
-    lastName?: string
-    username?: string
-    languageCode?: string
-    isPremium?: boolean
-    photoUrl?: string
+  success: boolean
+  data: UserData
+  meta: {
+    token: string
   }
 }
 
@@ -37,15 +62,20 @@ export const authApi = api.injectEndpoints({
     // Авторизация через Telegram
     authTelegram: builder.mutation<AuthResponse, TelegramAuthRequest>({
       query: body => ({
-        url: '/v1/auth/telegram',
+        url: '/api/v1/auth/sign_in',
         method: 'POST',
         body,
       }),
       async onQueryStarted(_arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          // Сохраняем токены при успешной авторизации
-          authService.setTokens(data.accessToken, data.refreshToken)
+          // Сохраняем токен при успешной авторизации
+          // API возвращает только один токен в meta.token
+          if (data.success && data.meta.token) {
+            authService.setToken(data.meta.token)
+            // Сохраняем данные пользователя в localStorage для быстрого доступа
+            localStorage.setItem('user_data', JSON.stringify(data.data))
+          }
         } catch {
           // Ошибка обрабатывается автоматически
         }
@@ -60,7 +90,7 @@ export const authApi = api.injectEndpoints({
           throw new Error('Refresh token не найден')
         }
         return {
-          url: '/v1/auth/refresh',
+          url: '/api/v1/auth/refresh',
           method: 'POST',
           body: { refreshToken } as RefreshTokenRequest,
         }
@@ -81,3 +111,36 @@ export const authApi = api.injectEndpoints({
 
 // Экспорт хуков для использования в компонентах
 export const { useAuthTelegramMutation, useRefreshTokenMutation } = authApi
+
+/**
+ * Утилиты для работы с данными пользователя
+ */
+const USER_DATA_STORAGE_KEY = 'user_data'
+
+/**
+ * Получает данные пользователя из localStorage
+ */
+export function getUserData(): UserData | null {
+  if (typeof window === 'undefined') {
+    return null
+  }
+  const stored = localStorage.getItem(USER_DATA_STORAGE_KEY)
+  if (!stored) {
+    return null
+  }
+  try {
+    return JSON.parse(stored) as UserData
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Очищает данные пользователя из localStorage
+ */
+export function clearUserData(): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+  localStorage.removeItem(USER_DATA_STORAGE_KEY)
+}

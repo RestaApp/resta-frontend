@@ -7,3 +7,6 @@ import { createApi } from '../config/rtkQuery'
 
 // Создаем и экспортируем API
 export const api = createApi()
+
+
+

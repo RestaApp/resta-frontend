@@ -2,7 +2,7 @@
  * Хук для автоматической авторизации через Telegram
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAuthTelegramMutation } from '../services/api/authApi'
 import { getTelegramInitData, isTelegramWebApp } from '../utils/telegram'
 import { authService } from '../services/auth'
@@ -13,21 +13,33 @@ import { authService } from '../services/auth'
  */
 export function useAuth() {
   const [authTelegram, { isLoading, isError, error }] = useAuthTelegramMutation()
+  const hasAttemptedAuth = useRef(false)
 
   useEffect(() => {
-    // Авторизуем только если:
-    // 1. Пользователь в Telegram Web App
-    // 2. Пользователь еще не авторизован
-    // 3. Есть initData
-    if (!isTelegramWebApp() || authService.isAuthenticated()) {
+    // Предотвращаем повторные попытки авторизации
+    if (hasAttemptedAuth.current || isLoading) {
+      return
+    }
+
+    // Авторизуем только если пользователь еще не авторизован
+    if (authService.isAuthenticated()) {
+      return
+    }
+
+    // В режиме разработки авторизуем даже без Telegram Web App
+    // В production авторизуем только в Telegram Web App
+    if (!import.meta.env.DEV && !isTelegramWebApp()) {
       return
     }
 
     const initData = getTelegramInitData()
     if (!initData) {
-      console.warn('initData не найден в Telegram Web App')
+      console.warn('initData не найден')
       return
     }
+
+    // Помечаем, что попытка авторизации была сделана
+    hasAttemptedAuth.current = true
 
     console.log('Используем initData для авторизации:', initData)
 
@@ -38,8 +50,10 @@ export function useAuth() {
       })
       .catch(err => {
         console.error('Ошибка авторизации через Telegram:', err)
+        // Сбрасываем флаг при ошибке, чтобы можно было повторить попытку
+        hasAttemptedAuth.current = false
       })
-  }, [authTelegram])
+  }, [authTelegram, isLoading])
 
   return {
     isLoading,

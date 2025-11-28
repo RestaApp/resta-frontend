@@ -74,11 +74,13 @@ export function setTokens(accessToken: string, refreshToken: string): void {
 }
 
 /**
- * Выполняет выход (очищает все токены)
+ * Выполняет выход (очищает все токены и данные пользователя)
  */
 export function logout(): void {
   removeToken()
   removeRefreshToken()
+  // Очищаем данные пользователя
+  localStorage.removeItem('user_data')
 }
 
 /**

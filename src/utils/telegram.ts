@@ -1,5 +1,7 @@
 // Telegram Web Apps API utilities
 
+// import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '../config/telegram'
+
 declare global {
   interface Window {
     Telegram?: {
@@ -165,15 +167,25 @@ export function hideTelegramBackButton() {
 /**
  * Получает initData из Telegram Web App
  * initData - это строка, содержащая данные для авторизации
+ * В режиме разработки использует моковые данные, если Telegram Web App недоступен
  */
 export function getTelegramInitData(): string | null {
   const webApp = getTelegramWebApp()
-  if (!webApp || !webApp.initData) {
-    console.log('initData не найден:', { webApp: !!webApp, hasInitData: !!webApp?.initData })
-    return null
+
+  // Если Telegram Web App доступен и есть initData - используем его
+  if (webApp?.initData) {
+    console.log('initData получен из Telegram Web App:', webApp.initData)
+    return webApp.initData
   }
-  console.log('initData получен:', webApp.initData)
-  return webApp.initData
+
+  // В режиме разработки используем моковые данные
+  // if (USE_MOCK_INIT_DATA) {
+  //   console.log('Используем моковые initData для разработки')
+  //   return MOCK_INIT_DATA
+  // }
+
+  console.log('initData не найден:', { webApp: !!webApp, hasInitData: !!webApp?.initData })
+  return null
 }
 
 /**

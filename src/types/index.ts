@@ -2,7 +2,7 @@
  * Централизованные типы приложения
  */
 
-export type UserRole = 'chef' | 'waiter' | 'bartender' | 'barista' | 'admin' | 'venue' | 'supplier'
+export type UserRole = 'chef' | 'waiter' | 'bartender' | 'barista' | 'admin' | 'venue' | 'supplier' | 'unverified'
 
 export type EmployeeRole = 'chef' | 'waiter' | 'bartender' | 'barista' | 'admin'
 

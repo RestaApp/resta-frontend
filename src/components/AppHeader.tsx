@@ -1,5 +1,4 @@
 import { Bell } from 'lucide-react'
-import { ThemeToggle } from './ThemeToggle'
 import logo from '../assets/icons/logo.svg'
 import { ROUTES } from '../constants/routes'
 import type { Screen } from '../types'
@@ -21,7 +20,6 @@ export function AppHeader({ onNavigate, subtitle, title }: AppHeaderProps) {
             <div className="flex items-center justify-between mb-1">
               <img src={logo} alt="Resta" className="h-8" />
               <div className="flex items-center gap-2">
-                <ThemeToggle />
                 <button
                   onClick={() => onNavigate(ROUTES.NOTIFICATIONS)}
                   className="relative p-2 rounded-full hover:bg-muted/50 transition-colors"

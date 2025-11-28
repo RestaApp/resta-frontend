@@ -35,7 +35,7 @@ function RoleCard({ role, isSelected, index, onSelect }: RoleCardProps) {
   }, [role.id, onSelect])
 
   const cardClasses = cn(
-    'relative p-6 rounded-3xl text-left transition-all duration-300 w-full',
+    'relative p-5 rounded-3xl text-left transition-all duration-300 w-full',
     isSelected
       ? 'bg-primary/10 border-2 border-primary shadow-lg scale-[1.02]'
       : 'bg-card/60 border-2 border-transparent backdrop-blur-xl hover:scale-[1.02] hover:shadow-md'
