@@ -29,7 +29,7 @@ import {
 } from './ui/alert-dialog'
 import { BottomNav } from './BottomNav'
 import { EmployeeSubRoleSelector } from './EmployeeSubRoleSelector'
-import { getStoredRole, setStoredRole } from '../utils/storage'
+import { getStoredRole, setStoredRole, removeStoredRole } from '../utils/storage'
 import { ROLE_LABELS } from '../constants/roles'
 import { isEmployeeRole, isVenueRole, isSupplierRole, canViewShifts } from '../utils/roles'
 import { ROUTES } from '../constants/routes'
@@ -80,7 +80,7 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
   }, [isEmployee])
 
   const handleConfirmChangeRole = useCallback(() => {
-    localStorage.removeItem('user_role')
+    removeStoredRole()
     setShowChangeRoleDialog(false)
     if (onBack) {
       onBack()
@@ -102,8 +102,8 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
   }, [selectedSubRole])
 
   const handleToast = useCallback((message: string) => {
-    console.log(message)
-    // Можно добавить toast позже
+    // TODO: Реализовать toast уведомления
+    void message
   }, [])
 
   const menuItems = [
@@ -124,12 +124,12 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
     },
     ...(canViewShifts(role)
       ? [
-          {
-            icon: Briefcase,
-            label: 'Мои смены',
-            action: () => onNavigate(ROUTES.SHIFTS),
-          },
-        ]
+        {
+          icon: Briefcase,
+          label: 'Мои смены',
+          action: () => onNavigate(ROUTES.SHIFTS),
+        },
+      ]
       : []),
     {
       icon: Settings,

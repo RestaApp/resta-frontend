@@ -74,7 +74,7 @@ export const authApi = api.injectEndpoints({
           if (data.success && data.meta.token) {
             authService.setToken(data.meta.token)
             // Сохраняем данные пользователя в localStorage для быстрого доступа
-            localStorage.setItem('user_data', JSON.stringify(data.data))
+            localStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(data.data))
           }
         } catch {
           // Ошибка обрабатывается автоматически
@@ -115,7 +115,9 @@ export const { useAuthTelegramMutation, useRefreshTokenMutation } = authApi
 /**
  * Утилиты для работы с данными пользователя
  */
-const USER_DATA_STORAGE_KEY = 'user_data'
+import { STORAGE_KEYS } from '../../constants/storage'
+
+const USER_DATA_STORAGE_KEY = STORAGE_KEYS.USER_DATA
 
 /**
  * Получает данные пользователя из localStorage

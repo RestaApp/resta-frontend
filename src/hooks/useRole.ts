@@ -4,7 +4,7 @@
 
 import { useState, useCallback } from 'react'
 import type { UserRole } from '../types'
-import { getStoredRole, setStoredRole } from '../utils/storage'
+import { getStoredRole, setStoredRole, removeStoredRole } from '../utils/storage'
 
 export function useRole() {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(() => getStoredRole())
@@ -15,7 +15,7 @@ export function useRole() {
   }, [])
 
   const handleRoleReset = useCallback(() => {
-    localStorage.removeItem('user_role')
+    removeStoredRole()
     setSelectedRole(null)
   }, [])
 

@@ -1,6 +1,7 @@
 // Telegram Web Apps API utilities
 
-// import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '../config/telegram'
+import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '../config/telegram'
+import { logger } from './logger'
 
 declare global {
   interface Window {
@@ -130,16 +131,16 @@ export function initTelegramWebApp() {
     webApp.expand()
 
     // Логируем initData при инициализации
-    console.log('Telegram Web App инициализирован')
-    console.log('initData:', webApp.initData)
-    console.log('initDataUnsafe:', webApp.initDataUnsafe)
+    logger.log('Telegram Web App инициализирован')
+    logger.log('initData:', webApp.initData)
+    logger.log('initDataUnsafe:', webApp.initDataUnsafe)
 
     // Устанавливаем цвет фона приложения через themeParams
     if (webApp.themeParams.bg_color) {
       document.documentElement.style.setProperty('--background', webApp.themeParams.bg_color)
     }
   } else {
-    console.log('Telegram Web App не найден')
+    logger.log('Telegram Web App не найден')
   }
 }
 
@@ -174,17 +175,17 @@ export function getTelegramInitData(): string | null {
 
   // Если Telegram Web App доступен и есть initData - используем его
   if (webApp?.initData) {
-    console.log('initData получен из Telegram Web App:', webApp.initData)
+    logger.log('initData получен из Telegram Web App:', webApp.initData)
     return webApp.initData
   }
 
   // В режиме разработки используем моковые данные
-  // if (USE_MOCK_INIT_DATA) {
-  //   console.log('Используем моковые initData для разработки')
-  //   return MOCK_INIT_DATA
-  // }
+  if (USE_MOCK_INIT_DATA) {
+    logger.log('Используем моковые initData для разработки')
+    return MOCK_INIT_DATA
+  }
 
-  console.log('initData не найден:', { webApp: !!webApp, hasInitData: !!webApp?.initData })
+  logger.log('initData не найден:', { webApp: !!webApp, hasInitData: !!webApp?.initData })
   return null
 }
 

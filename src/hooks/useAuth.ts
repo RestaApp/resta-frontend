@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react'
 import { useAuthTelegramMutation } from '../services/api/authApi'
 import { getTelegramInitData, isTelegramWebApp } from '../utils/telegram'
 import { authService } from '../services/auth'
+import { logger } from '../utils/logger'
 
 /**
  * Хук для автоматической авторизации при загрузке приложения
@@ -34,22 +35,22 @@ export function useAuth() {
 
     const initData = getTelegramInitData()
     if (!initData) {
-      console.warn('initData не найден')
+      logger.warn('initData не найден')
       return
     }
 
     // Помечаем, что попытка авторизации была сделана
     hasAttemptedAuth.current = true
 
-    console.log('Используем initData для авторизации:', initData)
+    logger.log('Используем initData для авторизации:', initData)
 
     // Выполняем авторизацию
     authTelegram({ initData })
       .then(result => {
-        console.log('Авторизация успешна:', result)
+        logger.log('Авторизация успешна:', result)
       })
       .catch(err => {
-        console.error('Ошибка авторизации через Telegram:', err)
+        logger.error('Ошибка авторизации через Telegram:', err)
         // Сбрасываем флаг при ошибке, чтобы можно было повторить попытку
         hasAttemptedAuth.current = false
       })

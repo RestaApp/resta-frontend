@@ -5,6 +5,9 @@
 import { useCallback } from 'react'
 import type { Screen, Tab } from '../types'
 import { VALID_SCREENS } from '../constants/routes'
+import { SCREEN_TO_TAB_MAP } from '../constants/navigation'
+import { ROUTES } from '../constants/routes'
+import { logger } from '../utils/logger'
 
 interface UseNavigationProps {
   setCurrentScreen: (screen: Screen) => void
@@ -18,25 +21,20 @@ export function useNavigation({ setCurrentScreen, setActiveTab }: UseNavigationP
         const screen = destination as Screen
         setCurrentScreen(screen)
 
-        // Синхронизация таба с экраном
-        if (destination === 'settings') {
-          setActiveTab('profile')
-        } else if (destination === 'shifts') {
-          setActiveTab('shifts')
-        } else if (destination === 'vacancies') {
-          setActiveTab('vacancies')
-        } else if (destination === 'notifications') {
-          setActiveTab('notifications')
+        // Синхронизация таба с экраном через маппинг
+        const tab = SCREEN_TO_TAB_MAP[screen]
+        if (tab) {
+          setActiveTab(tab)
         }
       } else {
-        console.log('Раздел в разработке:', destination)
+        logger.log('Раздел в разработке:', destination)
       }
     },
     [setCurrentScreen, setActiveTab]
   )
 
   const back = useCallback(() => {
-    setCurrentScreen('home')
+    setCurrentScreen(ROUTES.HOME)
     setActiveTab('home')
   }, [setCurrentScreen, setActiveTab])
 

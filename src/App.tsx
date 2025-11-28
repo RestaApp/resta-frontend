@@ -47,7 +47,7 @@ export default function App() {
   }
 
   const handleCreateShift = () => {
-    console.log('Смена опубликована успешно.')
+    // TODO: Добавить toast уведомление об успешной публикации
     back()
   }
 

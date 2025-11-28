@@ -68,16 +68,15 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   const handleApply = (id: string) => {
     const shift = mockShifts.find(s => s.id === id)
-    console.log(`Отклик отправлен в ${shift?.restaurant}!`)
+    // TODO: Реализовать отправку отклика на смену
+    void shift
   }
 
   const handleSave = (id: string) => {
     setSavedShifts(prev => {
       if (prev.includes(id)) {
-        console.log('Удалено из сохраненных')
         return prev.filter(s => s !== id)
       } else {
-        console.log('Добавлено в избранное')
         return [...prev, id]
       }
     })
@@ -85,7 +84,7 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => {})} />
+      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => { })} />
 
       <div className="px-4 py-4 space-y-4">
         {/* Filter Bar */}
@@ -115,7 +114,8 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
                 onApply={handleApply}
                 onSave={handleSave}
                 onClick={id => {
-                  console.log('Открыть смену:', id)
+                  // TODO: Реализовать открытие детального экрана смены
+                  void id
                 }}
               />
             </motion.div>

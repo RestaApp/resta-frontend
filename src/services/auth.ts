@@ -2,8 +2,10 @@
  * Сервис для работы с аутентификацией
  */
 
-const TOKEN_STORAGE_KEY = 'auth_token'
-const REFRESH_TOKEN_STORAGE_KEY = 'refresh_token'
+import { STORAGE_KEYS } from '../constants/storage'
+
+const TOKEN_STORAGE_KEY = STORAGE_KEYS.AUTH_TOKEN
+const REFRESH_TOKEN_STORAGE_KEY = STORAGE_KEYS.REFRESH_TOKEN
 
 /**
  * Получает токен авторизации
@@ -80,7 +82,7 @@ export function logout(): void {
   removeToken()
   removeRefreshToken()
   // Очищаем данные пользователя
-  localStorage.removeItem('user_data')
+  localStorage.removeItem(STORAGE_KEYS.USER_DATA)
 }
 
 /**

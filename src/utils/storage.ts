@@ -1,6 +1,7 @@
 import type { UserRole } from '../types'
+import { STORAGE_KEYS } from '../constants/storage'
 
-const ROLE_STORAGE_KEY = 'user_role'
+const ROLE_STORAGE_KEY = STORAGE_KEYS.USER_ROLE
 
 const VALID_ROLES: readonly UserRole[] = [
   'chef',
@@ -22,4 +23,8 @@ export function getStoredRole(): UserRole | null {
 
 export function setStoredRole(role: UserRole): void {
   localStorage.setItem(ROLE_STORAGE_KEY, role)
+}
+
+export function removeStoredRole(): void {
+  localStorage.removeItem(ROLE_STORAGE_KEY)
 }

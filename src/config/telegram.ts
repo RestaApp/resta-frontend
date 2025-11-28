@@ -13,6 +13,3 @@ export const MOCK_INIT_DATA =
  * Использовать моковые данные в режиме разработки
  */
 export const USE_MOCK_INIT_DATA = import.meta.env.DEV
-
-
-

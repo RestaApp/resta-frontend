@@ -45,11 +45,11 @@ export function VacancyDetailsScreen({
   }
 
   const handleApply = () => {
-    console.log(`Отклик отправлен в ${vacancy.venueName}!`)
+    // TODO: Реализовать отправку отклика на вакансию
   }
 
   const handleContact = () => {
-    console.log('Открытие чата Telegram...')
+    // TODO: Реализовать открытие чата Telegram
   }
 
   const getCategoryLabel = (category: string) => {

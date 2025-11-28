@@ -137,7 +137,8 @@ export function WorkerHome({ onNavigate }: WorkerHomeProps) {
                   date={news.date}
                   imageUrl={news.imageUrl}
                   onClick={() => {
-                    console.log('Открыть новость:', news.id)
+                    // TODO: Реализовать открытие детального экрана новости
+                    void news.id
                   }}
                 />
               </motion.div>

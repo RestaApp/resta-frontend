@@ -162,16 +162,15 @@ export function VacanciesScreen({ onNavigate, onBack }: VacanciesScreenProps) {
 
   const handleApply = (id: string) => {
     const vacancy = vacancies.find(v => v.id === id)
-    console.log(`Отклик отправлен в ${vacancy?.venueName}!`)
+    // TODO: Реализовать отправку отклика на вакансию
+    void vacancy
   }
 
   const handleSave = (id: string) => {
     setSavedVacancies(prev => {
       if (prev.includes(id)) {
-        console.log('Удалено из сохраненных')
         return prev.filter(v => v !== id)
       } else {
-        console.log('Добавлено в избранное')
         return [...prev, id]
       }
     })
