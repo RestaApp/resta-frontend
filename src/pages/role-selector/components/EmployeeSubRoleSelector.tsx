@@ -2,29 +2,32 @@
  * Компонент выбора подроли сотрудника
  */
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Badge } from '../../../components/ui/badge'
 import { cn } from '../../../utils/cn'
 import { setupTelegramBackButton } from '../../../utils/telegram'
-import { EMPLOYEE_SUBROLES } from '../../../constants/roles'
 import {
   roleCardAnimation,
   checkIconAnimation,
   ANIMATION_DELAY_STEP,
 } from '../../../constants/animations'
-import type { EmployeeRole, UserRole, EmployeeSubRoleApi } from '../../../types'
+import type { EmployeeRole, UserRole } from '../../../types'
+import type { PositionApiItem } from '../../../services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
+import { logger } from '../../../utils/logger'
 
 interface EmployeeSubRoleSelectorProps {
   currentRole: UserRole | null
-  onSelectSubRole: (role: EmployeeRole) => void
+  onSelectSubRole: (role: EmployeeRole, positionValue: string) => void
   selectedSubRole: EmployeeRole | null
   onContinue: () => void
   onBack: () => void
-  employeeSubRoles?: EmployeeSubRoleApi[]
+  employeeSubRoles?: PositionApiItem[]
+  isLoading?: boolean
+  isFetching?: boolean
 }
 
 export function EmployeeSubRoleSelector({
@@ -34,6 +37,8 @@ export function EmployeeSubRoleSelector({
   onContinue,
   onBack,
   employeeSubRoles,
+  isLoading = false,
+  isFetching = false,
 }: EmployeeSubRoleSelectorProps) {
   useEffect(() => {
     const cleanup = setupTelegramBackButton(() => {
@@ -42,14 +47,48 @@ export function EmployeeSubRoleSelector({
     return cleanup
   }, [onBack])
 
+  const handleContinue = useCallback(() => {
+    const isDisabled = !selectedSubRole || selectedSubRole === currentRole
+    logger.log('[EmployeeSubRoleSelector] Кнопка "Продолжить" нажата', {
+      selectedSubRole,
+      currentRole,
+      isDisabled,
+      reason: !selectedSubRole ? 'подроль не выбрана' : selectedSubRole === currentRole ? 'подроль совпадает с текущей' : 'ok',
+    })
+
+    if (isDisabled) {
+      logger.warn('[EmployeeSubRoleSelector] Кнопка заблокирована, запрос не будет отправлен')
+      return
+    }
+
+    onContinue()
+  }, [onContinue, selectedSubRole, currentRole])
+
   // Преобразуем данные из API в формат компонентов
   const subRoles = useMemo(() => {
-    if (employeeSubRoles) {
+    if (employeeSubRoles && employeeSubRoles.length > 0) {
       return mapEmployeeSubRolesFromApi(employeeSubRoles)
     }
-    // Fallback на хардкод, если API недоступен
-    return EMPLOYEE_SUBROLES
+    return []
   }, [employeeSubRoles])
+
+  // Показываем загрузку, если данные загружаются
+  if (isLoading || isFetching) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
+        <p className="text-muted-foreground">Загрузка позиций...</p>
+      </div>
+    )
+  }
+
+  // Показываем сообщение, если данные не загрузились
+  if (!isLoading && !isFetching && subRoles.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
+        <p className="text-muted-foreground">Не удалось загрузить позиции</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col">
@@ -66,14 +105,16 @@ export function EmployeeSubRoleSelector({
             const Icon = subRole.icon
             const isSelected = selectedSubRole === subRole.id
             const isCurrent = currentRole === subRole.id
+            // Используем originalValue для уникальности ключей (важно для manager/support, которые маппятся на admin)
+            const uniqueKey = subRole.originalValue || subRole.id
 
             return (
               <motion.button
-                key={subRole.id}
+                key={uniqueKey}
                 initial={roleCardAnimation.initial}
                 animate={roleCardAnimation.animate}
                 transition={{ delay: ANIMATION_DELAY_STEP * index }}
-                onClick={() => onSelectSubRole(subRole.id)}
+                onClick={() => onSelectSubRole(subRole.id, subRole.originalValue || subRole.id)}
                 className={cn(
                   'relative p-6 rounded-3xl text-left transition-all duration-300 w-full',
                   isSelected
@@ -125,7 +166,7 @@ export function EmployeeSubRoleSelector({
       <div className="fixed bottom-0 left-0 right-0 max-w-[390px] mx-auto">
         <div className="p-4 bg-gradient-to-t from-background via-background to-transparent backdrop-blur-xl">
           <Button
-            onClick={onContinue}
+            onClick={handleContinue}
             disabled={!selectedSubRole || selectedSubRole === currentRole}
             className="w-full h-14 rounded-2xl text-base shadow-lg disabled:opacity-40"
             size="lg"

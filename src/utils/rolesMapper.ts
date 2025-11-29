@@ -11,8 +11,9 @@ import {
   Store,
   Package,
 } from 'lucide-react'
-import type { RoleOption, EmployeeSubRole, UserRole } from '../types'
+import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
 import type { RoleApiItem } from '../services/api/rolesApi'
+import type { PositionApiItem } from '../services/api/usersApi'
 
 /**
  * Маппинг value из API на UserRole
@@ -21,6 +22,37 @@ const VALUE_TO_ROLE_MAP: Record<string, UserRole> = {
   employee: 'chef', // employee -> chef (для сотрудников)
   restaurant: 'venue', // restaurant -> venue (для заведения)
   supplier: 'supplier', // supplier -> supplier (для поставщика)
+}
+
+/**
+ * Маппинг value из API позиций на EmployeeRole
+ */
+const POSITION_VALUE_TO_ROLE_MAP: Record<string, EmployeeRole> = {
+  chef: 'chef',
+  waiter: 'waiter',
+  bartender: 'bartender',
+  barista: 'barista',
+  manager: 'admin', // manager -> admin
+  support: 'admin', // support -> admin
+}
+
+/**
+ * Маппинг английских названий позиций на русские
+ */
+const POSITION_LABEL_RU_MAP: Record<string, string> = {
+  Chef: 'Повар',
+  Waiter: 'Официант',
+  Bartender: 'Бармен',
+  Barista: 'Бариста',
+  Manager: 'Менеджер',
+  Support: 'Поддержка',
+  // Также поддерживаем lowercase варианты
+  chef: 'Повар',
+  waiter: 'Официант',
+  bartender: 'Бармен',
+  barista: 'Бариста',
+  manager: 'Менеджер',
+  support: 'Поддержка',
 }
 
 /**
@@ -55,7 +87,7 @@ const ROLE_COLOR_MAP: Record<UserRole, string> = {
  * Маппинг ролей на описания
  */
 const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
-  chef: 'Повар, официант, бармен, бариста, администратор',
+  chef: 'Готовлю блюда и управляю кухней',
   waiter: 'Обслуживаю гостей в зале',
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
@@ -63,6 +95,14 @@ const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
   venue: 'Ищу персонал и поставщиков',
   supplier: 'Предлагаю товары и услуги',
   unverified: 'Роль не подтверждена',
+}
+
+/**
+ * Маппинг value позиций на описания (для manager и support)
+ */
+const POSITION_DESCRIPTION_MAP: Record<string, string> = {
+  manager: 'Управляю заведением и персоналом',
+  support: 'Оказываю техническую поддержку',
 }
 
 /**
@@ -103,14 +143,46 @@ export function mapRoleOptionsFromApi(rolesApi: RoleApiItem[]): RoleOption[] {
 }
 
 /**
- * Преобразует массив подролей сотрудников из API в формат компонентов
- * Используется хардкод, так как API не возвращает подроли
+ * Преобразует одну позицию из API в формат компонента
+ */
+export function mapPositionFromApi(positionApi: PositionApiItem): EmployeeSubRole | null {
+  const roleId = POSITION_VALUE_TO_ROLE_MAP[positionApi.value]
+  
+  if (!roleId) {
+    return null
+  }
+
+  const icon = ROLE_ICON_MAP[roleId]
+  const color = ROLE_COLOR_MAP[roleId]
+  
+  // Используем описание из POSITION_DESCRIPTION_MAP для manager/support, иначе из ROLE_DESCRIPTION_MAP
+  const description = POSITION_DESCRIPTION_MAP[positionApi.value] || ROLE_DESCRIPTION_MAP[roleId]
+  
+  // Используем русское название из маппинга, если доступно, иначе используем label из API
+  const title = POSITION_LABEL_RU_MAP[positionApi.label] || POSITION_LABEL_RU_MAP[positionApi.value] || positionApi.label
+
+  if (!icon || !color) {
+    return null
+  }
+
+  return {
+    id: roleId,
+    title,
+    description,
+    icon,
+    color,
+    originalValue: positionApi.value, // Сохраняем оригинальное value для уникальности ключей
+  }
+}
+
+/**
+ * Преобразует массив позиций из API в формат компонентов
  */
 export function mapEmployeeSubRolesFromApi(
-  _subRolesApi: unknown[]
+  positionsApi: PositionApiItem[]
 ): EmployeeSubRole[] {
-  // API не возвращает подроли, используем хардкод
-  // Эта функция оставлена для совместимости
-  return []
+  return positionsApi
+    .map(mapPositionFromApi)
+    .filter((role): role is EmployeeSubRole => role !== null)
 }
 

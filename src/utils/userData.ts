@@ -6,6 +6,7 @@
 import type { AppDispatch } from '../store'
 import { setUserData } from '../store/userSlice'
 import type { UserData } from '../services/api/authApi'
+import { logger } from './logger'
 
 /**
  * Обновляет данные пользователя в Redux store
@@ -13,7 +14,13 @@ import type { UserData } from '../services/api/authApi'
  * @param userData - Данные пользователя для сохранения
  */
 export function updateUserDataInStore(dispatch: AppDispatch, userData: UserData | null): void {
+  logger.log('[updateUserDataInStore] Сохранение userData в Redux:', {
+    id: userData?.id,
+    role: userData?.role,
+    full_name: userData?.full_name,
+  })
   dispatch(setUserData(userData))
+  logger.log('[updateUserDataInStore] userData сохранен в Redux (redux-persist автоматически сохранит в sessionStorage)')
 }
 
 /**

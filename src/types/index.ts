@@ -48,6 +48,7 @@ export interface EmployeeSubRole {
   description: string
   icon: React.ComponentType<{ className?: string }>
   color: string
+  originalValue?: string // Оригинальное value из API для уникальности ключей
 }
 
 /**

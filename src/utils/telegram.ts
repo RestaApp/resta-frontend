@@ -1,5 +1,6 @@
 // Telegram Web Apps API utilities
 
+import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '../config/telegram'
 import { logger } from './logger'
 
 declare global {
@@ -178,6 +179,11 @@ export function getTelegramInitData(): string | null {
     return webApp.initData
   }
 
+  // В режиме разработки используем моковые данные
+  if (USE_MOCK_INIT_DATA) {
+    logger.log('Используем моковые initData для разработки')
+    return MOCK_INIT_DATA
+  }
 
   logger.log('initData не найден:', { webApp: !!webApp, hasInitData: !!webApp?.initData })
   return null

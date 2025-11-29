@@ -24,6 +24,10 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps) {
     isFetching,
     error,
     roles,
+    currentUserRole,
+    employeeSubRoles,
+    isLoadingPositions,
+    isFetchingPositions,
     handleRoleSelect,
     handleContinue,
     handleSubRoleSelect,
@@ -35,12 +39,14 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   if (showEmployeeSubRoles) {
     return (
       <EmployeeSubRoleSelector
-        currentRole={selectedRole}
+        currentRole={currentUserRole}
         onSelectSubRole={handleSubRoleSelect}
         selectedSubRole={selectedSubRole}
         onContinue={handleSubRoleContinue}
         onBack={handleBack}
-        employeeSubRoles={undefined}
+        employeeSubRoles={employeeSubRoles}
+        isLoading={isLoadingPositions}
+        isFetching={isFetchingPositions}
       />
     )
   }

@@ -61,6 +61,7 @@ export interface RefreshTokenResponse {
 
 export interface UpdateRoleRequest {
   role: string
+  position?: string
 }
 
 export interface UpdateRoleResponse {
@@ -77,7 +78,8 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['User'],
+      // Не инвалидируем теги 'User' при sign_in, чтобы избежать лишнего refetch
+      // (userData обновляется вручную в хуке authTelegram)
     }),
 
     // Обновление JWT токена

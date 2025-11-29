@@ -9,5 +9,6 @@ export * from './useRoles'
 export * from './useShifts'
 export * from './useUser'
 export * from './useUsers'
+export * from './useUserPositions'
 
 

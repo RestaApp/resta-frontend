@@ -14,6 +14,7 @@ import {
 
 import { API_BASE_URL } from './api'
 import { authService } from '../services/auth'
+import { logger } from '../utils/logger'
 
 /**
  * Типы для конфигурации
@@ -225,8 +226,20 @@ const retryDelay = (attemptIndex: number): number => {
 const prepareHeaders = (headers: Headers): Headers => {
   // Добавляем токен авторизации
   const token = authService.getToken()
+  
+  // Логируем только в development режиме
+  if (import.meta.env.DEV && token) {
+    logger.log('[prepareHeaders] Добавление токена в заголовки:', {
+      hasToken: !!token,
+      tokenLength: token?.length || 0,
+    })
+  }
+  
   if (token) {
     headers.set('authorization', `Bearer ${token}`)
+  } else if (import.meta.env.DEV) {
+    // Логируем отсутствие токена только в development (кроме sign_in запросов)
+    logger.warn('[prepareHeaders] ⚠️ Токен не найден для запроса')
   }
 
   // Добавляем заголовки для отслеживания
