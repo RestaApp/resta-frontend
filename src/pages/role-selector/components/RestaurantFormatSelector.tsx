@@ -20,7 +20,6 @@ import {
 import { Button } from '../../../components/ui/button'
 import { setupTelegramBackButton } from '../../../utils/telegram'
 import { cn } from '../../../utils/cn'
-import { logger } from '../../../utils/logger'
 import {
     roleCardAnimation,
     checkIconAnimation,
@@ -93,14 +92,8 @@ export function RestaurantFormatSelector({
 
     const handleContinue = useCallback(() => {
         const isDisabled = !selectedFormat
-        logger.log('[RestaurantFormatSelector] Кнопка "Продолжить" нажата', {
-            selectedFormat,
-            isDisabled,
-            reason: !selectedFormat ? 'формат не выбран' : 'ok',
-        })
 
         if (isDisabled) {
-            logger.warn('[RestaurantFormatSelector] Кнопка заблокирована, запрос не будет отправлен')
             return
         }
 

@@ -3,10 +3,8 @@
  * Инкапсулирует логику работы с форматами ресторанов
  */
 
-import { useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useGetRestaurantFormatsQuery } from '../services/api/rolesApi'
-import { logger } from '../utils/logger'
 import type { RoleApiItem } from '../services/api/rolesApi'
 
 interface UseRestaurantFormatsOptions {
@@ -31,18 +29,6 @@ export function useRestaurantFormats(options: UseRestaurantFormatsOptions = {}) 
   })
 
   const restaurantFormats = data?.data ?? []
-
-  useEffect(() => {
-    if (data) {
-      logger.log('[useRestaurantFormats] Данные получены:', {
-        raw: restaurantFormats,
-        count: restaurantFormats.length,
-      })
-    }
-    if (error) {
-      logger.error('[useRestaurantFormats] Ошибка загрузки форматов ресторанов:', error)
-    }
-  }, [data, error, restaurantFormats])
 
   return {
     restaurantFormats: restaurantFormats as RoleApiItem[],

@@ -4,7 +4,6 @@
 
 import type { UserRole, EmployeeRole } from '../types'
 import { EMPLOYEE_ROLES } from '../constants/roles'
-import { logger } from './logger'
 
 /**
  * Маппинг роли из API (строка) в UserRole
@@ -44,7 +43,6 @@ export function mapRoleFromApi(roleString: string | null | undefined): UserRole 
   }
 
   // Если роль не распознана, возвращаем null
-  logger.warn('Неизвестная роль из API:', roleString)
   return null
 }
 

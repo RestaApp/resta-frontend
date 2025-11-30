@@ -2,7 +2,7 @@
  * Хук для логики страницы выбора роли
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useAppSelector } from '../../../store/hooks'
 import { useRoles } from '../../../hooks/useRoles'
@@ -12,7 +12,6 @@ import { useSupplierTypes } from '../../../hooks/useSupplierTypes'
 import { useRestaurantFormats } from '../../../hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../../../utils/rolesMapper'
 import { mapRoleFromApi } from '../../../utils/roles'
-import { logger } from '../../../utils/logger'
 import type { PositionApiItem, UpdateUserRequest } from '../../../services/api/usersApi'
 import type { UserRole, EmployeeRole } from '../../../types'
 
@@ -45,45 +44,10 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   }, [userData?.role])
   
   // Запрашиваем роли только если пользователь авторизован И у него еще нет роли (или роль unverified)
-  const shouldFetchRoles = isAuthenticated && !hasAssignedRole
   const { roles, isLoading, isFetching, error } = useRoles({ skip: hasAssignedRole })
-  
-  // Проверяем, что функции определены и отслеживаем изменения userData
-  useEffect(() => {
-    logger.log('[useRoleSelector] Инициализация:', {
-      isAuthenticated,
-      hasAssignedRole,
-      shouldFetchRoles,
-      hasUpdateUser: !!updateUser,
-      userData: userData ? { id: userData.id, role: userData.role } : null,
-      userDataFull: userData,
-    })
-  }, [isAuthenticated, hasAssignedRole, shouldFetchRoles, updateUser, userData])
-  
-  // Отслеживаем изменения userData для отладки
-  useEffect(() => {
-    if (userData) {
-      logger.log('[useRoleSelector] userData обновлен:', {
-        id: userData.id,
-        role: userData.role,
-        full_name: userData.full_name,
-      })
-    } else {
-      logger.warn('[useRoleSelector] userData пустой или null')
-    }
-  }, [userData])
   
   // Загружаем позиции только если выбрана роль employee (chef) И у пользователя еще нет роли
   const shouldLoadPositions = (selectedRole === 'chef' || showEmployeeSubRoles) && !hasAssignedRole
-  
-  useEffect(() => {
-    logger.log('[useRoleSelector] Условие загрузки позиций:', {
-      selectedRole,
-      showEmployeeSubRoles,
-      hasAssignedRole,
-      shouldLoadPositions,
-    })
-  }, [selectedRole, showEmployeeSubRoles, hasAssignedRole, shouldLoadPositions])
   
   const {
     positionsApi: employeeSubRoles,
@@ -94,15 +58,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   // Загружаем типы поставщиков только если выбрана роль supplier И у пользователя еще нет роли
   const shouldLoadSupplierTypes = (selectedRole === 'supplier' || showSupplierTypes) && !hasAssignedRole
 
-  useEffect(() => {
-    logger.log('[useRoleSelector] Условие загрузки типов поставщиков:', {
-      selectedRole,
-      showSupplierTypes,
-      hasAssignedRole,
-      shouldLoadSupplierTypes,
-    })
-  }, [selectedRole, showSupplierTypes, hasAssignedRole, shouldLoadSupplierTypes])
-
   const {
     supplierTypes,
     isLoading: isLoadingSupplierTypes,
@@ -111,15 +66,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
 
   // Загружаем форматы ресторанов только если выбрана роль venue И у пользователя еще нет роли
   const shouldLoadRestaurantFormats = (selectedRole === 'venue' || showRestaurantFormats) && !hasAssignedRole
-
-  useEffect(() => {
-    logger.log('[useRoleSelector] Условие загрузки форматов ресторанов:', {
-      selectedRole,
-      showRestaurantFormats,
-      hasAssignedRole,
-      shouldLoadRestaurantFormats,
-    })
-  }, [selectedRole, showRestaurantFormats, hasAssignedRole, shouldLoadRestaurantFormats])
 
   const {
     restaurantFormats,
@@ -145,7 +91,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
 
   const handleRoleSelect = useCallback(
     async (roleId: UserRole) => {
-      logger.log('[useRoleSelector] handleRoleSelect вызван с ролью:', roleId)
       setSelectedRole(roleId)
       // Если выбрали сотрудника, показываем экран подролей
       if (roleId === 'chef') {
@@ -167,28 +112,24 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
 
       // Для остальных ролей отправляем на сервер через PATCH /api/v1/users/:id
       if (!isAuthenticated) {
-        logger.log('[useRoleSelector] Пользователь не авторизован, пропускаем запрос')
         onSelectRole(roleId)
         return
       }
 
       // Получаем userId
       let userId = userData?.id
-      logger.log('[useRoleSelector] userId из userData:', userId)
       
       if (!userId) {
         try {
           const { store } = await import('../../../store')
           const state = store.getState()
           userId = state.user.userData?.id
-          logger.log('[useRoleSelector] userId из store:', userId)
         } catch (error) {
-          logger.error('[useRoleSelector] Ошибка при получении userId из store:', error)
+          // Ошибка при получении userId из store
         }
       }
 
       if (!userId) {
-        logger.warn('[useRoleSelector] userId не найден, пропускаем запрос')
         onSelectRole(roleId)
         return
       }
@@ -202,20 +143,9 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
           },
         }
         
-        logger.log('[useRoleSelector] ✅ Отправка запроса на обновление роли:', { 
-          userId,
-          updateData,
-          endpoint: `PATCH /api/v1/users/${userId}`
-        })
-        const result = await updateUser(userId, updateData)
-        logger.log('[useRoleSelector] ✅ Роль успешно обновлена! Результат:', result)
+        await updateUser(userId, updateData)
         onSelectRole(roleId)
       } catch (error) {
-        logger.error('[useRoleSelector] ❌ ОШИБКА при обновлении роли:', error)
-        logger.error('[useRoleSelector] Детали ошибки:', {
-          message: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined
-        })
         // В случае ошибки все равно выбираем роль локально
         onSelectRole(roleId)
       }
@@ -224,10 +154,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   )
 
   const handleContinue = useCallback(async () => {
-    logger.log('[useRoleSelector] handleContinue вызван с ролью:', selectedRole)
-    
     if (!selectedRole) {
-      logger.warn('[useRoleSelector] Роль не выбрана')
       return
     }
 
@@ -247,28 +174,24 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     }
 
     if (!isAuthenticated) {
-      logger.log('[useRoleSelector] Пользователь не авторизован, пропускаем запрос')
       onSelectRole(selectedRole)
       return
     }
 
     // Получаем userId
     let userId = userData?.id
-    logger.log('[useRoleSelector] userId из userData:', userId)
     
     if (!userId) {
       try {
         const { store } = await import('../../../store')
         const state = store.getState()
         userId = state.user.userData?.id
-        logger.log('[useRoleSelector] userId из store:', userId)
       } catch (error) {
-        logger.error('[useRoleSelector] Ошибка при получении userId из store:', error)
+        // Ошибка при получении userId из store
       }
     }
 
     if (!userId) {
-      logger.warn('[useRoleSelector] userId не найден, пропускаем запрос')
       onSelectRole(selectedRole)
       return
     }
@@ -282,69 +205,42 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
         },
       }
       
-      logger.log('[useRoleSelector] ✅ Отправка запроса на обновление роли:', { 
-        userId,
-        updateData,
-        endpoint: `PATCH /api/v1/users/${userId}`
-      })
-      const result = await updateUser(userId, updateData)
-      logger.log('[useRoleSelector] ✅ Роль успешно обновлена! Результат:', result)
+      await updateUser(userId, updateData)
       onSelectRole(selectedRole)
     } catch (error) {
-      logger.error('[useRoleSelector] ❌ ОШИБКА при обновлении роли:', error)
-      logger.error('[useRoleSelector] Детали ошибки:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
       // В случае ошибки все равно выбираем роль локально
       onSelectRole(selectedRole)
     }
   }, [selectedRole, onSelectRole, updateUser, isAuthenticated, userData])
 
   const handleSubRoleSelect = useCallback((subRole: EmployeeRole, positionValue: string) => {
-    logger.log('[useRoleSelector] handleSubRoleSelect вызван с подролью:', { subRole, positionValue })
     setSelectedSubRole(subRole)
     setSelectedPositionValue(positionValue)
   }, [])
 
   const handleSubRoleContinue = useCallback(async () => {
-    logger.log('[useRoleSelector] ===== handleSubRoleContinue НАЧАЛО =====')
-    logger.log('[useRoleSelector] Параметры:', { 
-      selectedSubRole, 
-      selectedPositionValue,
-      isAuthenticated,
-      userData: userData ? { id: userData.id, role: userData.role } : null
-    })
-    
     if (!selectedSubRole) {
-      logger.warn('[useRoleSelector] ❌ Подроль не выбрана, выход')
       return
     }
 
     if (!isAuthenticated) {
-      logger.log('[useRoleSelector] ⚠️ Пользователь не авторизован, пропускаем запрос')
       onSelectRole(selectedSubRole)
       return
     }
 
     let userId = userData?.id
-    logger.log('[useRoleSelector] userId из userData:', userId, 'userData:', userData)
     
     if (!userId) {
       try {
-        logger.log('[useRoleSelector] Пытаемся получить userId из store...')
         const { store } = await import('../../../store')
         const state = store.getState()
         userId = state.user.userData?.id
-        logger.log('[useRoleSelector] userId из store:', userId, 'state.user:', state.user)
       } catch (error) {
-        logger.error('[useRoleSelector] Ошибка при получении userId из store:', error)
+        // Ошибка при получении userId из store
       }
     }
 
     if (!userId) {
-      logger.error('[useRoleSelector] ❌ userId не найден! userData:', userData)
-      logger.error('[useRoleSelector] ❌ Пропускаем запрос')
       onSelectRole(selectedSubRole)
       return
     }
@@ -363,81 +259,49 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
               },
         }
       
-      logger.log('[useRoleSelector] ✅ Отправка запроса на обновление роли и позиции:', { 
-        userId, 
-        updateData,
-        endpoint: `PATCH /api/v1/users/${userId}`,
-        hasUpdateUser: !!updateUser
-      })
-      
       if (!updateUser) {
-        logger.error('[useRoleSelector] ❌ updateUser функция не определена!')
         throw new Error('updateUser функция не определена')
       }
       
-      const result = await updateUser(userId, updateData)
-      logger.log('[useRoleSelector] ✅ Роль и позиция успешно обновлены! Результат:', result)
+      await updateUser(userId, updateData)
       onSelectRole(selectedSubRole)
     } catch (error) {
-      logger.error('[useRoleSelector] ❌ ОШИБКА при обновлении роли:', error)
-      logger.error('[useRoleSelector] Детали ошибки:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
       // В случае ошибки все равно выбираем роль локально
       onSelectRole(selectedSubRole)
     }
-    
-    logger.log('[useRoleSelector] ===== handleSubRoleContinue КОНЕЦ =====')
   }, [selectedSubRole, selectedPositionValue, onSelectRole, updateUser, isAuthenticated, userData])
 
   const handleSupplierTypeSelect = useCallback((typeValue: string) => {
-    logger.log('[useRoleSelector] handleSupplierTypeSelect вызван с типом:', typeValue)
     setSelectedSupplierType(typeValue)
   }, [])
 
   const handleRestaurantFormatSelect = useCallback((formatValue: string) => {
-    logger.log('[useRoleSelector] handleRestaurantFormatSelect вызван с форматом:', formatValue)
     setSelectedRestaurantFormat(formatValue)
   }, [])
 
   const handleSupplierTypeContinue = useCallback(async () => {
-    logger.log('[useRoleSelector] ===== handleSupplierTypeContinue НАЧАЛО =====')
-    logger.log('[useRoleSelector] Параметры:', { 
-      selectedSupplierType, 
-      isAuthenticated,
-      userData: userData ? { id: userData.id, role: userData.role } : null
-    })
-    
     if (!selectedSupplierType) {
-      logger.warn('[useRoleSelector] ❌ Тип поставщика не выбран, выход')
       return
     }
 
     if (!isAuthenticated) {
-      logger.log('[useRoleSelector] ⚠️ Пользователь не авторизован, пропускаем запрос')
       onSelectRole('supplier')
       return
     }
 
     let userId = userData?.id
-    logger.log('[useRoleSelector] userId из userData:', userId, 'userData:', userData)
     
     if (!userId) {
       try {
-        logger.log('[useRoleSelector] Пытаемся получить userId из store...')
         const { store } = await import('../../../store')
         const state = store.getState()
         userId = state.user.userData?.id
-        logger.log('[useRoleSelector] userId из store:', userId, 'state.user:', state.user)
       } catch (error) {
-        logger.error('[useRoleSelector] Ошибка при получении userId из store:', error)
+        // Ошибка при получении userId из store
       }
     }
 
     if (!userId) {
-      logger.error('[useRoleSelector] ❌ userId не найден! userData:', userData)
-      logger.error('[useRoleSelector] ❌ Пропускаем запрос')
       onSelectRole('supplier')
       return
     }
@@ -456,71 +320,41 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
               },
         }
       
-      logger.log('[useRoleSelector] ✅ Отправка запроса на обновление роли и типа поставщика:', { 
-        userId, 
-        updateData,
-        endpoint: `PATCH /api/v1/users/${userId}`,
-        hasUpdateUser: !!updateUser
-      })
-      
       if (!updateUser) {
-        logger.error('[useRoleSelector] ❌ updateUser функция не определена!')
         throw new Error('updateUser функция не определена')
       }
       
-      const result = await updateUser(userId, updateData)
-      logger.log('[useRoleSelector] ✅ Роль и тип поставщика успешно обновлены! Результат:', result)
+      await updateUser(userId, updateData)
       onSelectRole('supplier')
     } catch (error) {
-      logger.error('[useRoleSelector] ❌ ОШИБКА при обновлении роли:', error)
-      logger.error('[useRoleSelector] Детали ошибки:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
       // В случае ошибки все равно выбираем роль локально
       onSelectRole('supplier')
     }
-    
-    logger.log('[useRoleSelector] ===== handleSupplierTypeContinue КОНЕЦ =====')
   }, [selectedSupplierType, onSelectRole, updateUser, isAuthenticated, userData])
 
   const handleRestaurantFormatContinue = useCallback(async () => {
-    logger.log('[useRoleSelector] ===== handleRestaurantFormatContinue НАЧАЛО =====')
-    logger.log('[useRoleSelector] Параметры:', { 
-      selectedRestaurantFormat, 
-      isAuthenticated,
-      userData: userData ? { id: userData.id, role: userData.role } : null
-    })
-    
     if (!selectedRestaurantFormat) {
-      logger.warn('[useRoleSelector] ❌ Формат ресторана не выбран, выход')
       return
     }
 
     if (!isAuthenticated) {
-      logger.log('[useRoleSelector] ⚠️ Пользователь не авторизован, пропускаем запрос')
       onSelectRole('venue')
       return
     }
 
     let userId = userData?.id
-    logger.log('[useRoleSelector] userId из userData:', userId, 'userData:', userData)
     
     if (!userId) {
       try {
-        logger.log('[useRoleSelector] Пытаемся получить userId из store...')
         const { store } = await import('../../../store')
         const state = store.getState()
         userId = state.user.userData?.id
-        logger.log('[useRoleSelector] userId из store:', userId, 'state.user:', state.user)
       } catch (error) {
-        logger.error('[useRoleSelector] Ошибка при получении userId из store:', error)
+        // Ошибка при получении userId из store
       }
     }
 
     if (!userId) {
-      logger.error('[useRoleSelector] ❌ userId не найден! userData:', userData)
-      logger.error('[useRoleSelector] ❌ Пропускаем запрос')
       onSelectRole('venue')
       return
     }
@@ -539,32 +373,16 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
               },
         }
       
-      logger.log('[useRoleSelector] ✅ Отправка запроса на обновление роли и формата ресторана:', { 
-        userId, 
-        updateData,
-        endpoint: `PATCH /api/v1/users/${userId}`,
-        hasUpdateUser: !!updateUser
-      })
-      
       if (!updateUser) {
-        logger.error('[useRoleSelector] ❌ updateUser функция не определена!')
         throw new Error('updateUser функция не определена')
       }
       
-      const result = await updateUser(userId, updateData)
-      logger.log('[useRoleSelector] ✅ Роль и формат ресторана успешно обновлены! Результат:', result)
+      await updateUser(userId, updateData)
       onSelectRole('venue')
     } catch (error) {
-      logger.error('[useRoleSelector] ❌ ОШИБКА при обновлении роли:', error)
-      logger.error('[useRoleSelector] Детали ошибки:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
       // В случае ошибки все равно выбираем роль локально
       onSelectRole('venue')
     }
-    
-    logger.log('[useRoleSelector] ===== handleRestaurantFormatContinue КОНЕЦ =====')
   }, [selectedRestaurantFormat, onSelectRole, updateUser, isAuthenticated, userData])
 
   const handleBack = useCallback(() => {

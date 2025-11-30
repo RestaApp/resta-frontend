@@ -17,7 +17,6 @@ import {
 import type { EmployeeRole, UserRole } from '../../../types'
 import type { PositionApiItem } from '../../../services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
-import { logger } from '../../../utils/logger'
 
 interface EmployeeSubRoleSelectorProps {
   currentRole: UserRole | null
@@ -49,15 +48,8 @@ export function EmployeeSubRoleSelector({
 
   const handleContinue = useCallback(() => {
     const isDisabled = !selectedSubRole || selectedSubRole === currentRole
-    logger.log('[EmployeeSubRoleSelector] Кнопка "Продолжить" нажата', {
-      selectedSubRole,
-      currentRole,
-      isDisabled,
-      reason: !selectedSubRole ? 'подроль не выбрана' : selectedSubRole === currentRole ? 'подроль совпадает с текущей' : 'ok',
-    })
 
     if (isDisabled) {
-      logger.warn('[EmployeeSubRoleSelector] Кнопка заблокирована, запрос не будет отправлен')
       return
     }
 

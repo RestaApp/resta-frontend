@@ -3,10 +3,8 @@
  * Инкапсулирует логику работы с типами поставщиков
  */
 
-import { useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useGetSupplierTypesQuery } from '../services/api/rolesApi'
-import { logger } from '../utils/logger'
 import type { RoleApiItem } from '../services/api/rolesApi'
 
 interface UseSupplierTypesOptions {
@@ -31,18 +29,6 @@ export function useSupplierTypes(options: UseSupplierTypesOptions = {}) {
   })
 
   const supplierTypes = data?.data ?? []
-
-  useEffect(() => {
-    if (data) {
-      logger.log('[useSupplierTypes] Данные получены:', {
-        raw: supplierTypes,
-        count: supplierTypes.length,
-      })
-    }
-    if (error) {
-      logger.error('[useSupplierTypes] Ошибка загрузки типов поставщиков:', error)
-    }
-  }, [data, error, supplierTypes])
 
   return {
     supplierTypes: supplierTypes as RoleApiItem[],

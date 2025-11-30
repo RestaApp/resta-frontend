@@ -8,7 +8,6 @@ import { Check, Package, Wrench, Briefcase, Truck } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { setupTelegramBackButton } from '../../../utils/telegram'
 import { cn } from '../../../utils/cn'
-import { logger } from '../../../utils/logger'
 import {
     roleCardAnimation,
     checkIconAnimation,
@@ -69,14 +68,8 @@ export function SupplierTypeSelector({
 
     const handleContinue = useCallback(() => {
         const isDisabled = !selectedType
-        logger.log('[SupplierTypeSelector] Кнопка "Продолжить" нажата', {
-            selectedType,
-            isDisabled,
-            reason: !selectedType ? 'тип не выбран' : 'ok',
-        })
 
         if (isDisabled) {
-            logger.warn('[SupplierTypeSelector] Кнопка заблокирована, запрос не будет отправлен')
             return
         }
 

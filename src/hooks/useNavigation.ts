@@ -7,7 +7,6 @@ import type { Screen, Tab } from '../types'
 import { VALID_SCREENS } from '../constants/routes'
 import { SCREEN_TO_TAB_MAP } from '../constants/navigation'
 import { ROUTES } from '../constants/routes'
-import { logger } from '../utils/logger'
 
 interface UseNavigationProps {
   setCurrentScreen: (screen: Screen) => void
@@ -26,8 +25,6 @@ export function useNavigation({ setCurrentScreen, setActiveTab }: UseNavigationP
         if (tab) {
           setActiveTab(tab)
         }
-      } else {
-        logger.log('Раздел в разработке:', destination)
       }
     },
     [setCurrentScreen, setActiveTab]

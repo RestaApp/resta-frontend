@@ -14,7 +14,6 @@ import {
 import { useUpdateUser } from '../../../hooks/useUsers'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { useUserPositions } from '../../../hooks/useUserPositions'
-import { logger } from '../../../utils/logger'
 import { getEmployeePositionLabel } from '../../../constants/labels'
 import type { UpdateUserRequest } from '../../../services/api/usersApi'
 import { useAppSelector } from '../../../store/hooks'
@@ -50,7 +49,6 @@ export function EditProfileDialog({ open, onOpenChange, onSuccess }: EditProfile
 
     const handleSubmit = useCallback(async () => {
         if (!userId) {
-            logger.error('[EditProfileDialog] userId не найден')
             return
         }
 
@@ -76,24 +74,21 @@ export function EditProfileDialog({ open, onOpenChange, onSuccess }: EditProfile
 
             // Проверяем, есть ли что обновлять
             if (Object.keys(updateData.user).length === 0) {
-                logger.log('[EditProfileDialog] Нет изменений для сохранения')
                 onOpenChange(false)
                 return
             }
 
-            logger.log('[EditProfileDialog] Отправка данных:', updateData)
             await updateUser(userId, updateData)
 
             // Обновляем данные профиля
             await refetch()
 
-            logger.log('[EditProfileDialog] Профиль успешно обновлен')
             onOpenChange(false)
             if (onSuccess) {
                 onSuccess()
             }
         } catch (error) {
-            logger.error('[EditProfileDialog] Ошибка при обновлении профиля:', error)
+            // Ошибка при обновлении профиля
         } finally {
             setIsSubmitting(false)
         }

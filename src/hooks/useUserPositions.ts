@@ -3,11 +3,9 @@
  * Инкапсулирует логику работы с позициями пользователей
  */
 
-import { useEffect } from 'react'
 import { useGetUserPositionsQuery } from '../services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '../utils/rolesMapper'
 import type { PositionApiItem } from '../services/api/usersApi'
-import { logger } from '../utils/logger'
 import { useAuth } from '../contexts/AuthContext'
 
 interface UseUserPositionsOptions {
@@ -33,19 +31,6 @@ export function useUserPositions(options: UseUserPositionsOptions = {}) {
 
   const positions = data?.data ?? []
   const mappedPositions = mapEmployeeSubRolesFromApi(positions as PositionApiItem[])
-
-  useEffect(() => {
-    if (data) {
-      logger.log('[useUserPositions] Данные получены:', {
-        raw: positions,
-        mapped: mappedPositions,
-        count: mappedPositions.length,
-      })
-    }
-    if (error) {
-      logger.error('[useUserPositions] Ошибка загрузки позиций:', error)
-    }
-  }, [data, error, positions, mappedPositions])
 
   return {
     positions: mappedPositions,

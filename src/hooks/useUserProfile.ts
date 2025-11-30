@@ -2,10 +2,8 @@
  * Хук для получения данных профиля пользователя из API
  */
 
-import { useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useGetUserQuery } from '../services/api/usersApi'
-import { logger } from '../utils/logger'
 import { useAppSelector } from '../store/hooks'
 
 interface UseUserProfileOptions {
@@ -33,20 +31,6 @@ export function useUserProfile(options: UseUserProfileOptions = {}) {
   })
 
   const userProfile = data?.data ?? null
-
-  useEffect(() => {
-    if (data) {
-      logger.log('[useUserProfile] Данные профиля получены:', {
-        id: userProfile?.id,
-        name: userProfile?.name,
-        role: userProfile?.role,
-        position: userProfile?.position,
-      })
-    }
-    if (error) {
-      logger.error('[useUserProfile] Ошибка загрузки профиля:', error)
-    }
-  }, [data, error, userProfile])
 
   return {
     userProfile,

@@ -15,6 +15,7 @@ import {
 } from 'redux-persist'
 import { api } from './api'
 import userReducer from './userSlice'
+import telegramReducer from './telegramSlice'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api
@@ -73,6 +74,7 @@ export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
     user: persistedUserReducer,
+    telegram: telegramReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
