@@ -11,6 +11,14 @@ export interface TelegramAuthRequest {
   initData: string
 }
 
+export interface EmployeeProfile {
+  experience_years: number
+  open_to_work: boolean
+  position: string
+  skills: string[]
+  specializations: string[]
+}
+
 export interface UserData {
   id: number
   active: boolean
@@ -19,7 +27,8 @@ export interface UserData {
   bio: string | null
   created_at: string
   email: string | null
-  experience_years: number | null
+  employee_profile: EmployeeProfile | null
+  experience_years: number
   full_name: string
   language: string
   last_name: string
@@ -27,6 +36,7 @@ export interface UserData {
   name: string
   phone: string | null
   photo_url: string | null
+  position: string
   profile_complete: boolean
   profile_photo_url: string | null
   role: string

@@ -7,13 +7,26 @@
 import { api } from '../../store/api'
 import type { UserData } from './authApi'
 
+export type { UserData } from './authApi'
+
 /**
  * Запрос на обновление пользователя
+ * Формат: { user: { role: "employee", position: "bartender" } }
+ * Или: { user: { name: "Имя", last_name: "Фамилия" } }
  */
 export interface UpdateUserRequest {
-  role?: string
-  position?: string
-  [key: string]: unknown
+  user: {
+    role?: string
+    name?: string
+    last_name?: string
+    position?: string
+    supplier_profile_attributes?: {
+      supplier_type?: string
+    }
+    restaurant_profile_attributes?: {
+      restaurant_format?: string
+    }
+  }
 }
 
 /**
@@ -40,8 +53,26 @@ export interface UserPositionsResponse {
   data: PositionApiItem[]
 }
 
+/**
+ * Ответ при получении данных пользователя
+ */
+export interface GetUserResponse {
+  success: boolean
+  data: UserData
+}
+
 export const usersApi = api.injectEndpoints({
   endpoints: builder => ({
+    // Получение данных пользователя
+    getUser: builder.query<GetUserResponse, number>({
+      query: id => ({
+        url: `/api/v1/users/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['User'],
+      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+    }),
+
     // Обновление данных пользователя
     updateUser: builder.mutation<UpdateUserResponse, { id: number; data: UpdateUserRequest }>({
       query: ({ id, data }) => ({
@@ -65,5 +96,5 @@ export const usersApi = api.injectEndpoints({
 })
 
 // Экспорт базовых хуков RTK Query (используются в кастомных хуках)
-export const { useUpdateUserMutation, useGetUserPositionsQuery } = usersApi
+export const { useGetUserQuery, useUpdateUserMutation, useGetUserPositionsQuery } = usersApi
 

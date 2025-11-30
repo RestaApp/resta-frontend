@@ -7,6 +7,8 @@ import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { RoleCard } from './components/RoleCard'
 import { EmployeeSubRoleSelector } from './components/EmployeeSubRoleSelector'
+import { SupplierTypeSelector } from './components/SupplierTypeSelector'
+import { RestaurantFormatSelector } from './components/RestaurantFormatSelector'
 import { useRoleSelector } from './hooks/useRoleSelector'
 import type { UserRole } from '../../types'
 
@@ -18,7 +20,11 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const {
     selectedRole,
     showEmployeeSubRoles,
+    showSupplierTypes,
+    showRestaurantFormats,
     selectedSubRole,
+    selectedSupplierType,
+    selectedRestaurantFormat,
     mainRoles,
     isLoading,
     isFetching,
@@ -28,10 +34,20 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps) {
     employeeSubRoles,
     isLoadingPositions,
     isFetchingPositions,
+    supplierTypes,
+    isLoadingSupplierTypes,
+    isFetchingSupplierTypes,
+    restaurantFormats,
+    isLoadingRestaurantFormats,
+    isFetchingRestaurantFormats,
     handleRoleSelect,
     handleContinue,
     handleSubRoleSelect,
     handleSubRoleContinue,
+    handleSupplierTypeSelect,
+    handleSupplierTypeContinue,
+    handleRestaurantFormatSelect,
+    handleRestaurantFormatContinue,
     handleBack,
   } = useRoleSelector({ onSelectRole })
 
@@ -47,6 +63,36 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps) {
         employeeSubRoles={employeeSubRoles}
         isLoading={isLoadingPositions}
         isFetching={isFetchingPositions}
+      />
+    )
+  }
+
+  // Показываем экран выбора типа поставщика
+  if (showSupplierTypes) {
+    return (
+      <SupplierTypeSelector
+        onSelectType={handleSupplierTypeSelect}
+        selectedType={selectedSupplierType}
+        onContinue={handleSupplierTypeContinue}
+        onBack={handleBack}
+        supplierTypes={supplierTypes}
+        isLoading={isLoadingSupplierTypes}
+        isFetching={isFetchingSupplierTypes}
+      />
+    )
+  }
+
+  // Показываем экран выбора формата ресторана
+  if (showRestaurantFormats) {
+    return (
+      <RestaurantFormatSelector
+        onSelectFormat={handleRestaurantFormatSelect}
+        selectedFormat={selectedRestaurantFormat}
+        onContinue={handleRestaurantFormatContinue}
+        onBack={handleBack}
+        restaurantFormats={restaurantFormats}
+        isLoading={isLoadingRestaurantFormats}
+        isFetching={isFetchingRestaurantFormats}
       />
     )
   }

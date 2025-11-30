@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { EditProfileDialog } from './components/EditProfileDialog'
 import {
   Edit,
   Star,
@@ -7,7 +8,6 @@ import {
   Settings,
   Bell,
   HelpCircle,
-  LogOut,
   Plus,
   UserCircle,
 } from 'lucide-react'
@@ -15,7 +15,7 @@ import { AppHeader } from '../home/components/AppHeader'
 import { Card } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Badge } from '../../components/ui/badge'
-import { Avatar, AvatarFallback } from '../../components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar'
 import { Separator } from '../../components/ui/separator'
 import {
   AlertDialog,
@@ -31,6 +31,7 @@ import { BottomNav } from '../../components/BottomNav'
 import { EmployeeSubRoleSelector } from '../role-selector/components/EmployeeSubRoleSelector'
 import { useAppSelector, useAppDispatch } from '../../store/hooks'
 import { setSelectedRole } from '../../store/userSlice'
+import { useUserProfile } from '../../hooks/useUserProfile'
 import { ROLE_LABELS } from '../../constants/roles'
 import { isEmployeeRole, isVenueRole, isSupplierRole, canViewShifts } from '../../utils/roles'
 import { ROUTES } from '../../constants/routes'
@@ -46,23 +47,27 @@ interface ProfileScreenProps {
 export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: ProfileScreenProps) {
   const dispatch = useAppDispatch()
   const [showChangeRoleDialog, setShowChangeRoleDialog] = useState(false)
+  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
   const [selectedSubRole, setSelectedSubRole] = useState<EmployeeRole | null>(null)
   const role = useAppSelector(state => state.user.selectedRole)
+  const { userProfile } = useUserProfile()
 
   const isEmployee = isEmployeeRole(role)
   const isRestaurant = isVenueRole(role)
   const isSupplier = isSupplierRole(role)
 
+  // Используем данные из API или значения по умолчанию
   const profile = {
-    name: isRestaurant ? 'Ресторан "Васильки"' : isSupplier ? 'ООО "Поставщик+"' : 'Алексей Петров',
-    role: role ? ROLE_LABELS[role] : 'Не указано',
-    rating: 4.8,
-    reviewCount: 24,
-    shiftsCompleted: isRestaurant ? 124 : 47,
-    experience: isRestaurant ? '3 года' : '5 лет',
+    name: userProfile?.full_name || userProfile?.name || (isRestaurant ? 'Ресторан' : isSupplier ? 'Поставщик' : 'Пользователь'),
+    role: role ? ROLE_LABELS[role] : userProfile?.role || 'Не указано',
+    position: userProfile?.position || userProfile?.employee_profile?.position || null,
+    rating: userProfile?.average_rating || 0,
+    reviewCount: userProfile?.total_reviews || 0,
+    shiftsCompleted: isRestaurant ? 124 : 47, // TODO: получить из API
+    experience: userProfile?.experience_years ? `${userProfile.experience_years} ${userProfile.experience_years === 1 ? 'год' : userProfile.experience_years < 5 ? 'года' : 'лет'}` : 'Не указано',
     certificates: isEmployee
-      ? ['Безопасность пищи', 'Профессиональный повар', 'Управление кухней']
+      ? ['Безопасность пищи', 'Профессиональный повар', 'Управление кухней'] // TODO: получить из API
       : isRestaurant
         ? ['Лицензия на общепит', 'Сертификат качества']
         : ['ИП', 'Оптовые поставки'],
@@ -176,28 +181,39 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
         <Card className="p-6">
           <div className="flex items-start gap-4 mb-4">
             <Avatar className="w-20 h-20">
+              <AvatarImage
+                src={userProfile?.photo_url || userProfile?.profile_photo_url || null}
+                alt={profile.name}
+              />
               <AvatarFallback className="bg-primary text-primary-foreground text-[24px]">
                 {getInitials(profile.name)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <h1 className="text-[20px] font-medium mb-1">{profile.name}</h1>
-              <Badge variant="secondary" className="mb-2">
-                {profile.role}
-              </Badge>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <Badge variant="secondary">{profile.role}</Badge>
+                {profile.position && (
+                  <Badge variant="outline" className="text-xs">
+                    {profile.position}
+                  </Badge>
+                )}
+              </div>
               <div className="flex items-center gap-2 text-[14px]">
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 fill-primary text-primary" />
-                  <span className="font-medium">{profile.rating}</span>
+                  <span className="font-medium">{profile.rating > 0 ? profile.rating.toFixed(1) : '—'}</span>
                 </div>
-                <span className="text-muted-foreground">• {profile.reviewCount} отзывов</span>
+                <span className="text-muted-foreground">
+                  • {profile.reviewCount} {profile.reviewCount === 1 ? 'отзыв' : profile.reviewCount < 5 ? 'отзыва' : 'отзывов'}
+                </span>
               </div>
             </div>
           </div>
           <Button
             variant="outline"
             className="w-full gap-2 flex items-center justify-center"
-            onClick={() => handleToast('Скоро будет доступно')}
+            onClick={() => setShowEditProfileDialog(true)}
           >
             <Edit className="w-4 h-4" />
             Редактировать профиль
@@ -299,15 +315,6 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
           </Card>
         )}
 
-        {/* Logout */}
-        <Button
-          variant="ghost"
-          className="w-full gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={() => handleToast('Скоро будет доступно')}
-        >
-          <LogOut className="w-4 h-4" />
-          Выйти
-        </Button>
       </div>
 
       {/* Change Role Dialog */}
@@ -337,6 +344,15 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
       {role && activeTab && onTabChange && (
         <BottomNav activeTab={activeTab} onTabChange={onTabChange} role={role} />
       )}
+
+      {/* Edit Profile Dialog */}
+      <EditProfileDialog
+        open={showEditProfileDialog}
+        onOpenChange={setShowEditProfileDialog}
+        onSuccess={() => {
+          // Можно добавить toast уведомление об успешном обновлении
+        }}
+      />
     </div>
   )
 }

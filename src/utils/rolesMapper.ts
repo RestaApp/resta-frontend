@@ -14,6 +14,11 @@ import {
 import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
 import type { RoleApiItem } from '../services/api/rolesApi'
 import type { PositionApiItem } from '../services/api/usersApi'
+import {
+  getEmployeePositionLabel,
+  getEmployeePositionDescription,
+  getUserRoleLabel,
+} from '../constants/labels'
 
 /**
  * Маппинг value из API на UserRole
@@ -36,24 +41,6 @@ const POSITION_VALUE_TO_ROLE_MAP: Record<string, EmployeeRole> = {
   support: 'admin', // support -> admin
 }
 
-/**
- * Маппинг английских названий позиций на русские
- */
-const POSITION_LABEL_RU_MAP: Record<string, string> = {
-  Chef: 'Повар',
-  Waiter: 'Официант',
-  Bartender: 'Бармен',
-  Barista: 'Бариста',
-  Manager: 'Менеджер',
-  Support: 'Поддержка',
-  // Также поддерживаем lowercase варианты
-  chef: 'Повар',
-  waiter: 'Официант',
-  bartender: 'Бармен',
-  barista: 'Бариста',
-  manager: 'Менеджер',
-  support: 'Поддержка',
-}
 
 /**
  * Маппинг ролей на иконки
@@ -97,22 +84,7 @@ const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
   unverified: 'Роль не подтверждена',
 }
 
-/**
- * Маппинг value позиций на описания (для manager и support)
- */
-const POSITION_DESCRIPTION_MAP: Record<string, string> = {
-  manager: 'Управляю заведением и персоналом',
-  support: 'Оказываю техническую поддержку',
-}
 
-/**
- * Маппинг value из API на русские названия
- */
-const VALUE_LABEL_MAP: Record<string, string> = {
-  employee: 'Сотрудник',
-  restaurant: 'Заведение',
-  supplier: 'Поставщик',
-}
 
 /**
  * Преобразует данные роли из API в формат компонента
@@ -126,7 +98,7 @@ export function mapRoleOptionFromApi(roleApi: RoleApiItem): RoleOption | null {
 
   return {
     id: roleId,
-    title: VALUE_LABEL_MAP[roleApi.value] || roleApi.label,
+    title: getUserRoleLabel(roleApi.value) || roleApi.label,
     description: ROLE_DESCRIPTION_MAP[roleId],
     icon: ROLE_ICON_MAP[roleId],
     color: ROLE_COLOR_MAP[roleId],
@@ -155,11 +127,9 @@ export function mapPositionFromApi(positionApi: PositionApiItem): EmployeeSubRol
   const icon = ROLE_ICON_MAP[roleId]
   const color = ROLE_COLOR_MAP[roleId]
   
-  // Используем описание из POSITION_DESCRIPTION_MAP для manager/support, иначе из ROLE_DESCRIPTION_MAP
-  const description = POSITION_DESCRIPTION_MAP[positionApi.value] || ROLE_DESCRIPTION_MAP[roleId]
-  
-  // Используем русское название из маппинга, если доступно, иначе используем label из API
-  const title = POSITION_LABEL_RU_MAP[positionApi.label] || POSITION_LABEL_RU_MAP[positionApi.value] || positionApi.label
+  // Используем функции из labels.ts для получения названий и описаний
+  const description = getEmployeePositionDescription(positionApi.value) || ROLE_DESCRIPTION_MAP[roleId]
+  const title = getEmployeePositionLabel(positionApi.label) || getEmployeePositionLabel(positionApi.value) || positionApi.label
 
   if (!icon || !color) {
     return null
