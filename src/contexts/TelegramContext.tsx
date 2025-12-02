@@ -3,7 +3,7 @@
  * Выполняет авторизацию и настройку Telegram на верхнем уровне
  */
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
 import { useAppDispatch } from '../store/hooks'
 import { setInitData, setReady } from '../store/telegramSlice'
 import { getTelegramWebApp, isTelegramWebApp } from '../utils/telegram'
@@ -25,11 +25,19 @@ interface TelegramProviderProps {
  * Провайдер для инициализации Telegram Web App
  * Должен быть обернут вокруг всего приложения на верхнем уровне
  */
+// Глобальный флаг для предотвращения дублирования запросов авторизации
+// Используется вне компонента, чтобы работать даже в StrictMode
+let globalAuthAttempted = false
+
 export function TelegramProvider({ children }: TelegramProviderProps) {
     const dispatch = useAppDispatch()
     const { authTelegram } = useAuthActions()
     const [isReady, setIsReady] = useState(false)
     const [telegram, setTelegram] = useState<ReturnType<typeof getTelegramWebApp>>(null)
+    const hasAttemptedAuth = useRef(false)
+    // Сохраняем стабильную ссылку на authTelegram, чтобы избежать повторных вызовов
+    const authTelegramRef = useRef(authTelegram)
+    authTelegramRef.current = authTelegram
 
     // Функция для получения initData
     const getInitData = async (): Promise<string | null> => {
@@ -52,6 +60,12 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
             throw new Error('Telegram WebApp not found')
         }
 
+        // Проверяем, есть ли уже токен ПЕРЕД получением initData
+        // Это предотвращает ненужные вызовы авторизации
+        if (authService.isAuthenticated()) {
+            return webApp
+        }
+
         // Получаем initData
         const initData = await getInitData()
         if (!initData) {
@@ -61,13 +75,14 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
         // Сохраняем initData в Redux
         dispatch(setInitData(initData))
 
-        // Проверяем, есть ли уже токен
-        let accessToken = authService.getToken()
-        if (!accessToken) {
-            // Выполняем авторизацию
-            await authTelegram({ initData })
-            accessToken = authService.getToken()
+        // Проверяем еще раз после получения initData (на случай, если токен появился)
+        if (authService.isAuthenticated()) {
+            return webApp
         }
+
+        // Выполняем авторизацию ТОЛЬКО если токена нет
+        // Используем ref для гарантии, что используем актуальную функцию
+        await authTelegramRef.current({ initData })
 
         return webApp
     }
@@ -92,6 +107,18 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
 
     // Инициализация Telegram и авторизация
     useEffect(() => {
+        // Предотвращаем повторные попытки авторизации (защита от StrictMode и множественных вызовов)
+        if (hasAttemptedAuth.current || globalAuthAttempted) {
+            return
+        }
+
+        // Если уже есть токен, пропускаем авторизацию
+        if (authService.isAuthenticated()) {
+            setIsReady(true)
+            dispatch(setReady(true))
+            return
+        }
+
         let mounted = true
 
         const initTelegram = async () => {
@@ -99,8 +126,13 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
                 // В режиме разработки пропускаем проверку Telegram Web App
                 if (!import.meta.env.DEV && !isTelegramWebApp()) {
                     setIsReady(true)
+                    dispatch(setReady(true))
                     return
                 }
+
+                // Помечаем, что попытка авторизации была сделана (локально и глобально)
+                hasAttemptedAuth.current = true
+                globalAuthAttempted = true
 
                 // Выполняем авторизацию
                 const webApp = await performLogin()
@@ -116,6 +148,10 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
                 dispatch(setReady(true))
                 setIsReady(true)
             } catch (error) {
+                // Сбрасываем флаги при ошибке, чтобы можно было повторить попытку
+                hasAttemptedAuth.current = false
+                globalAuthAttempted = false
+
                 if (mounted) {
                     // В режиме разработки все равно помечаем как готово
                     if (import.meta.env.DEV) {
@@ -131,7 +167,8 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
         return () => {
             mounted = false
         }
-    }, [dispatch, authTelegram])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch])
 
     const value: TelegramContextValue = {
         isReady,

@@ -22,13 +22,11 @@ export interface EmployeeProfile {
 export interface UserData {
   id: number
   active: boolean
-  available_for_work: boolean
   average_rating: number
   bio: string | null
   created_at: string
   email: string | null
   employee_profile: EmployeeProfile | null
-  experience_years: number
   full_name: string
   language: string
   last_name: string
@@ -36,13 +34,9 @@ export interface UserData {
   name: string
   phone: string | null
   photo_url: string | null
-  position: string
   profile_complete: boolean
   profile_photo_url: string | null
   role: string
-  service_categories: unknown[]
-  service_categories_list: string | null
-  specialization: string | null
   telegram_id: number
   total_reviews: number
   updated_at: string
@@ -50,6 +44,24 @@ export interface UserData {
   website: string | null
   work_experience_summary: string | null
   work_preferences: Record<string, unknown>
+  // Опциональные поля, которые могут отсутствовать в ответе
+  available_for_work?: boolean
+  experience_years?: number
+  position?: string
+  service_categories?: unknown[]
+  service_categories_list?: string | null
+  specialization?: string | null
+}
+
+export interface SignInResponse {
+  success: boolean
+  data: {
+    id: number
+    role: string
+  }
+  meta: {
+    token: string
+  }
 }
 
 export interface AuthResponse {
@@ -82,7 +94,7 @@ export interface UpdateRoleResponse {
 export const authApi = api.injectEndpoints({
   endpoints: builder => ({
     // Авторизация через Telegram
-    authTelegram: builder.mutation<AuthResponse, TelegramAuthRequest>({
+    authTelegram: builder.mutation<SignInResponse, TelegramAuthRequest>({
       query: body => ({
         url: '/api/v1/auth/sign_in',
         method: 'POST',

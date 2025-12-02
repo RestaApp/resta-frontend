@@ -13,5 +13,6 @@ export * from './useUser'
 export * from './useUserProfile'
 export * from './useUsers'
 export * from './useUserPositions'
+export * from './useUserSpecializations'
 
 

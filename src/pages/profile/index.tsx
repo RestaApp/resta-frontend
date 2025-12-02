@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { EditProfileDialog } from './components/EditProfileDialog'
+import { getEmployeePositionLabel, getSpecializationLabel } from '../../constants/labels'
 import {
   Edit,
   Star,
@@ -9,6 +10,7 @@ import {
   Bell,
   HelpCircle,
   Plus,
+  PlusCircle,
   UserCircle,
 } from 'lucide-react'
 import { AppHeader } from '../home/components/AppHeader'
@@ -57,15 +59,24 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
   const isRestaurant = isVenueRole(role)
   const isSupplier = isSupplierRole(role)
 
+  // Получаем специализации напрямую из профиля (без запроса к API)
+  // Запрос к API будет только при открытии диалога редактирования
+  const specializationLabels = useMemo(() => {
+    const userSpecializations = userProfile?.employee_profile?.specializations || []
+    // Маппим значения на русские названия из labels.ts
+    return userSpecializations.map(specValue => getSpecializationLabel(specValue))
+  }, [userProfile?.employee_profile?.specializations])
+
   // Используем данные из API или значения по умолчанию
   const profile = {
     name: userProfile?.full_name || userProfile?.name || (isRestaurant ? 'Ресторан' : isSupplier ? 'Поставщик' : 'Пользователь'),
     role: role ? ROLE_LABELS[role] : userProfile?.role || 'Не указано',
     position: userProfile?.position || userProfile?.employee_profile?.position || null,
+    specializations: specializationLabels,
     rating: userProfile?.average_rating || 0,
     reviewCount: userProfile?.total_reviews || 0,
     shiftsCompleted: isRestaurant ? 124 : 47, // TODO: получить из API
-    experience: userProfile?.experience_years ? `${userProfile.experience_years} ${userProfile.experience_years === 1 ? 'год' : userProfile.experience_years < 5 ? 'года' : 'лет'}` : 'Не указано',
+    experience: userProfile?.employee_profile?.experience_years ? `${userProfile.employee_profile.experience_years} ${userProfile.employee_profile.experience_years === 1 ? 'год' : userProfile.employee_profile.experience_years < 5 ? 'года' : 'лет'}` : 'Не указано',
     certificates: isEmployee
       ? ['Безопасность пищи', 'Профессиональный повар', 'Управление кухней'] // TODO: получить из API
       : isRestaurant
@@ -191,12 +202,30 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
             </Avatar>
             <div className="flex-1">
               <h1 className="text-[20px] font-medium mb-1">{profile.name}</h1>
-              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <Badge variant="secondary">{profile.role}</Badge>
+              <div className="flex items-center gap-2 mb-2 flex-row">
                 {profile.position && (
                   <Badge variant="outline" className="text-xs">
-                    {profile.position}
+                    {getEmployeePositionLabel(profile.position)}
                   </Badge>
+                )}
+                {profile.specializations && profile.specializations.length > 0 && (
+                  <>
+                    {profile.specializations.map((spec, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {spec}
+                      </Badge>
+                    ))}
+                  </>
+                )}
+                {(!profile.specializations || profile.specializations.length === 0) && isEmployee && (
+                  <button
+                    type="button"
+                    className="h-6 w-6 p-0 rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors"
+                    onClick={() => setShowEditProfileDialog(true)}
+                    aria-label="Добавить специализацию"
+                  >
+                    <PlusCircle className="w-5 h-5 text-primary" strokeWidth={2.5} />
+                  </button>
                 )}
               </div>
               <div className="flex items-center gap-2 text-[14px]">

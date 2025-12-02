@@ -96,6 +96,57 @@ export const USER_ROLE_LABELS: Record<string, string> = {
 } as const
 
 /**
+ * Названия специализаций сотрудников
+ */
+export const SPECIALIZATION_LABELS: Record<string, string> = {
+  // Manager специализации
+  general_manager: 'Генеральный менеджер',
+  restaurant_manager: 'Менеджер ресторана',
+  kitchen_manager: 'Менеджер кухни',
+  bar_manager: 'Менеджер бара',
+  shift_supervisor: 'Супервайзер смены',
+  
+  // Bartender специализации
+  head_bartender: 'Старший бармен',
+  mixologist: 'Миксолог',
+  bar_back: 'Помощник бармена',
+  sommelier: 'Сомелье',
+  
+  // Chef специализации
+  executive_chef: 'Шеф-повар',
+  sous_chef: 'Су-шеф',
+  chef_de_partie: 'Шеф де парти',
+  line_cook: 'Повар линии',
+  prep_cook: 'Повар подготовки',
+  sushi_chef: 'Суши-повар',
+  pastry_chef: 'Кондитер',
+  baker: 'Пекарь',
+  butcher: 'Мясник',
+  fish_cook: 'Рыбный повар',
+  grill_cook: 'Повар гриля',
+  cold_station_cook: 'Повар холодного цеха',
+  hot_station_cook: 'Повар горячего цеха',
+  pizza_maker: 'Пиццайоло',
+  
+  // Waiter специализации
+  head_waiter: 'Старший официант',
+  server: 'Официант',
+  runner: 'Официант-курьер',
+  busser: 'Помощник официанта',
+  
+  // Barista специализации
+  head_barista: 'Старший бариста',
+  latte_artist: 'Латте-артист',
+  roaster: 'Обжарщик',
+  
+  // Dishwasher специализации
+  dishwasher: 'Мойщик посуды',
+  cleaner: 'Уборщик',
+  janitor: 'Дворник',
+  steward: 'Стюард',
+} as const
+
+/**
  * Утилитарные функции для получения названий
  */
 
@@ -146,5 +197,12 @@ export function getEmployeePositionDescription(value: string): string {
  */
 export function getUserRoleLabel(value: string): string {
   return USER_ROLE_LABELS[value] || value
+}
+
+/**
+ * Получить название специализации
+ */
+export function getSpecializationLabel(value: string): string {
+  return SPECIALIZATION_LABELS[value] || value
 }
 

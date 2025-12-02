@@ -20,6 +20,8 @@ export interface UpdateUserRequest {
     name?: string
     last_name?: string
     position?: string
+    specialization?: string | null
+    specializations?: string[]
     supplier_profile_attributes?: {
       supplier_type?: string
     }
@@ -51,6 +53,22 @@ export interface PositionApiItem {
 export interface UserPositionsResponse {
   success: boolean
   data: PositionApiItem[]
+}
+
+/**
+ * Специализация из API
+ */
+export interface SpecializationApiItem {
+  value: string
+  label: string
+}
+
+/**
+ * Ответ при получении специализаций
+ */
+export interface UserSpecializationsResponse {
+  success: boolean
+  data: SpecializationApiItem[]
 }
 
 /**
@@ -86,7 +104,17 @@ export const usersApi = api.injectEndpoints({
     // Получение позиций (подролей сотрудников)
     getUserPositions: builder.query<UserPositionsResponse, void>({
       query: () => ({
-        url: '/api/v1/users/positions',
+        url: '/api/v1/catalogs/positions',
+        method: 'GET',
+      }),
+      providesTags: ['User'],
+      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+    }),
+
+    // Получение специализаций для позиции
+    getUserSpecializations: builder.query<UserSpecializationsResponse, string>({
+      query: (position) => ({
+        url: `/api/v1/catalogs/specializations?position=${position}`,
         method: 'GET',
       }),
       providesTags: ['User'],
@@ -96,5 +124,10 @@ export const usersApi = api.injectEndpoints({
 })
 
 // Экспорт базовых хуков RTK Query (используются в кастомных хуках)
-export const { useGetUserQuery, useUpdateUserMutation, useGetUserPositionsQuery } = usersApi
+export const {
+  useGetUserQuery,
+  useUpdateUserMutation,
+  useGetUserPositionsQuery,
+  useGetUserSpecializationsQuery,
+} = usersApi
 

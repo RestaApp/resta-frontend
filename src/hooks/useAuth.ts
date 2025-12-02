@@ -11,9 +11,44 @@ import {
   useUpdateRoleMutation,
   type TelegramAuthRequest,
   type UpdateRoleRequest,
+  type UserData,
+  type SignInResponse,
 } from '../services/api/authApi'
 import { authService } from '../services/auth'
 import { updateUserDataInStore, dispatchAuthEvent } from '../utils/userData'
+
+/**
+ * Создает минимальный объект UserData из данных sign_in ответа
+ * Используется для временного сохранения данных до загрузки полного профиля
+ */
+function createMinimalUserData(signInData: SignInResponse['data']): UserData {
+  return {
+    id: signInData.id,
+    role: signInData.role,
+    active: false,
+    average_rating: 0,
+    bio: null,
+    created_at: '',
+    email: null,
+    employee_profile: null,
+    full_name: '',
+    language: '',
+    last_name: '',
+    location: null,
+    name: '',
+    phone: null,
+    photo_url: null,
+    profile_complete: false,
+    profile_photo_url: null,
+    telegram_id: 0,
+    total_reviews: 0,
+    updated_at: '',
+    username: '',
+    website: null,
+    work_experience_summary: null,
+    work_preferences: {},
+  }
+}
 
 /**
  * Хук для работы с авторизацией (мутации и действия)
@@ -37,8 +72,13 @@ export function useAuthActions() {
           // ВАЖНО: Сохраняем токен СРАЗУ и СИНХРОННО перед любыми другими операциями
           authService.setToken(result.meta.token)
 
-          // Сохраняем данные пользователя в Redux (они автоматически сохранятся в sessionStorage через redux-persist)
-          updateUserDataInStore(dispatch, result.data)
+          // При sign_in получаем только id и role, полные данные пользователя
+          // будут загружены отдельным запросом (например, через useUserProfile)
+          // Сохраняем минимальные данные (id и role) для возможности загрузки полного профиля
+          if (result.data) {
+            const minimalUserData = createMinimalUserData(result.data)
+            updateUserDataInStore(dispatch, minimalUserData)
+          }
 
           // Отправляем событие об успешной авторизации
           dispatchAuthEvent()

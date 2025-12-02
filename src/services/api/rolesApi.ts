@@ -40,7 +40,7 @@ export const rolesApi = api.injectEndpoints({
     // Используется только в компоненте RoleSelector
     getAvailableUserRoles: builder.query<AvailableUserRolesResponse, void>({
       query: () => ({
-        url: '/api/v1/users/available_user_roles',
+        url: '/api/v1/catalogs/roles',
         method: 'GET',
       }),
       providesTags: ['User'],
@@ -52,7 +52,7 @@ export const rolesApi = api.injectEndpoints({
     // Получить список типов поставщиков
     getSupplierTypes: builder.query<SupplierTypesResponse, void>({
       query: () => ({
-        url: '/api/v1/users/supplier_types',
+        url: '/api/v1/catalogs/supplier_types',
         method: 'GET',
       }),
       providesTags: ['User'],
@@ -62,7 +62,7 @@ export const rolesApi = api.injectEndpoints({
     // Получить список форматов ресторанов
     getRestaurantFormats: builder.query<RestaurantFormatsResponse, void>({
       query: () => ({
-        url: '/api/v1/users/restaurant_formats',
+        url: '/api/v1/catalogs/restaurant_formats',
         method: 'GET',
       }),
       providesTags: ['User'],
