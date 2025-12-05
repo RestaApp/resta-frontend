@@ -15,7 +15,6 @@ import {
   ANIMATION_DELAY_STEP,
 } from '../../../constants/animations'
 import type { EmployeeRole, UserRole } from '../../../types'
-import type { PositionApiItem } from '../../../services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
 
 interface EmployeeSubRoleSelectorProps {
@@ -24,7 +23,7 @@ interface EmployeeSubRoleSelectorProps {
   selectedSubRole: EmployeeRole | null
   onContinue: () => void
   onBack: () => void
-  employeeSubRoles?: PositionApiItem[]
+  employeeSubRoles?: string[]
   isLoading?: boolean
   isFetching?: boolean
 }

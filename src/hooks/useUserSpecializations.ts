@@ -5,7 +5,6 @@
 
 import { useAuth } from '../contexts/AuthContext'
 import { useGetUserSpecializationsQuery } from '../services/api/usersApi'
-import type { SpecializationApiItem } from '../services/api/usersApi'
 
 interface UseUserSpecializationsOptions {
   /**
@@ -38,7 +37,7 @@ export function useUserSpecializations(options: UseUserSpecializationsOptions) {
   const specializations = data?.data ?? []
 
   return {
-    specializations: specializations as SpecializationApiItem[],
+    specializations,
     isLoading,
     isFetching,
     error,

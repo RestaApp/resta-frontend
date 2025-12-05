@@ -87,6 +87,67 @@ export function logout(): void {
 }
 
 /**
+ * Декодирует JWT токен и возвращает payload
+ */
+export function decodeToken(token: string): { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown } | null {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) {
+      return null
+    }
+    const payload = parts[1]
+    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    return JSON.parse(decoded) as { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Получает id пользователя из токена
+ */
+export function getUserIdFromToken(token: string | null): number | null {
+  if (!token) {
+    return null
+  }
+  const decoded = decodeToken(token)
+  if (!decoded) {
+    return null
+  }
+  // Пробуем получить id из разных возможных полей
+  return (decoded.id ?? decoded.sub ?? decoded.userId ?? null) as number | null
+}
+
+/**
+ * Проверяет, истек ли токен
+ */
+export function isTokenExpired(token: string | null): boolean {
+  if (!token) {
+    return true
+  }
+
+  const decoded = decodeToken(token)
+  if (!decoded || !decoded.exp) {
+    return true
+  }
+
+  // exp - это timestamp в секундах, Date.now() - в миллисекундах
+  const expirationTime = decoded.exp * 1000
+  const currentTime = Date.now()
+
+  // Добавляем небольшой запас (5 секунд) для учета задержек сети
+  return currentTime >= expirationTime - 5000
+}
+
+/**
+ * Проверяет, валиден ли токен (существует и не истек)
+ */
+export function isTokenValid(): boolean {
+  const token = getToken()
+  return token !== null && !isTokenExpired(token)
+}
+
+/**
  * Проверяет, авторизован ли пользователь
  */
 export function isAuthenticated(): boolean {
@@ -103,4 +164,8 @@ export const authService = {
   removeRefreshToken,
   logout,
   isAuthenticated,
+  isTokenExpired,
+  isTokenValid,
+  decodeToken,
+  getUserIdFromToken,
 }

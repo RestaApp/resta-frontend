@@ -4,11 +4,13 @@
  */
 
 import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
-import { useAppDispatch } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setInitData, setReady } from '../store/telegramSlice'
 import { getTelegramWebApp, isTelegramWebApp } from '../utils/telegram'
 import { authService } from '../services/auth'
 import { useAuthActions } from '../hooks/useAuth'
+import { updateUserDataInStore } from '../utils/userData'
+import type { UserData } from '../services/api/authApi'
 
 interface TelegramContextValue {
     isReady: boolean
@@ -31,6 +33,7 @@ let globalAuthAttempted = false
 
 export function TelegramProvider({ children }: TelegramProviderProps) {
     const dispatch = useAppDispatch()
+    const userDataFromStore = useAppSelector(state => state.user.userData)
     const { authTelegram } = useAuthActions()
     const [isReady, setIsReady] = useState(false)
     const [telegram, setTelegram] = useState<ReturnType<typeof getTelegramWebApp>>(null)
@@ -53,6 +56,41 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
         return null
     }
 
+    // Функция для загрузки пользователя по id
+    const loadUserById = async (userId: number): Promise<void> => {
+        try {
+            const { rtkQueryConfig } = await import('../config/rtkQuery')
+            const token = authService.getToken()
+
+            if (!token) {
+                throw new Error('Token not found')
+            }
+
+            const response = await fetch(`${rtkQueryConfig.baseUrl}/api/v1/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to load user')
+            }
+
+            const result = (await response.json()) as { success: boolean; data: UserData }
+
+            if (result.success && result.data) {
+                updateUserDataInStore(dispatch, result.data)
+            } else {
+                throw new Error('Failed to load user')
+            }
+        } catch (error) {
+            // Если загрузка не удалась, делаем sign_in
+            throw error
+        }
+    }
+
     // Функция для выполнения авторизации
     const performLogin = async () => {
         const webApp = getTelegramWebApp()
@@ -60,10 +98,24 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
             throw new Error('Telegram WebApp not found')
         }
 
-        // Проверяем, есть ли уже токен ПЕРЕД получением initData
-        // Это предотвращает ненужные вызовы авторизации
-        if (authService.isAuthenticated()) {
-            return webApp
+        // Проверяем, валиден ли токен
+        const token = authService.getToken()
+        const isTokenValid = authService.isTokenValid()
+
+        // Если токен валиден, пытаемся загрузить пользователя по id
+        if (isTokenValid && token) {
+            // Получаем id из токена или из store
+            const userIdFromToken = authService.getUserIdFromToken(token)
+            const userId = userIdFromToken ?? userDataFromStore?.id
+
+            if (userId) {
+                try {
+                    await loadUserById(userId)
+                    return webApp
+                } catch {
+                    // Если загрузка не удалась, продолжаем с sign_in
+                }
+            }
         }
 
         // Получаем initData
@@ -75,12 +127,7 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
         // Сохраняем initData в Redux
         dispatch(setInitData(initData))
 
-        // Проверяем еще раз после получения initData (на случай, если токен появился)
-        if (authService.isAuthenticated()) {
-            return webApp
-        }
-
-        // Выполняем авторизацию ТОЛЬКО если токена нет
+        // Выполняем авторизацию (sign_in)
         // Используем ref для гарантии, что используем актуальную функцию
         await authTelegramRef.current({ initData })
 
@@ -112,8 +159,8 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
             return
         }
 
-        // Если уже есть токен, пропускаем авторизацию
-        if (authService.isAuthenticated()) {
+        // Если токен валиден и есть данные пользователя, пропускаем авторизацию
+        if (authService.isTokenValid() && userDataFromStore?.id) {
             setIsReady(true)
             dispatch(setReady(true))
             return

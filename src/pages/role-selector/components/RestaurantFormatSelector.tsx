@@ -25,7 +25,6 @@ import {
     checkIconAnimation,
     ANIMATION_DELAY_STEP,
 } from '../../../constants/animations'
-import type { RoleApiItem } from '../../../services/api/rolesApi'
 import {
     getRestaurantFormatLabel,
     getRestaurantFormatDescription,
@@ -36,7 +35,7 @@ interface RestaurantFormatSelectorProps {
     selectedFormat: string | null
     onContinue: () => void
     onBack: () => void
-    restaurantFormats?: RoleApiItem[]
+    restaurantFormats?: string[]
     isLoading?: boolean
     isFetching?: boolean
 }
@@ -107,11 +106,11 @@ export function RestaurantFormatSelector({
         }
 
         return restaurantFormats.map(format => ({
-            value: format.value,
-            label: getRestaurantFormatLabel(format.value),
-            description: getRestaurantFormatDescription(format.value),
-            icon: FORMAT_ICON_MAP[format.value] || Store,
-            color: FORMAT_COLOR_MAP[format.value] || 'from-orange-500 to-red-500',
+            value: format,
+            label: getRestaurantFormatLabel(format),
+            description: getRestaurantFormatDescription(format),
+            icon: FORMAT_ICON_MAP[format] || Store,
+            color: FORMAT_COLOR_MAP[format] || 'from-orange-500 to-red-500',
         }))
     }, [restaurantFormats])
 

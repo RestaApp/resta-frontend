@@ -12,7 +12,7 @@ import { useSupplierTypes } from '../../../hooks/useSupplierTypes'
 import { useRestaurantFormats } from '../../../hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../../../utils/rolesMapper'
 import { mapRoleFromApi } from '../../../utils/roles'
-import type { PositionApiItem, UpdateUserRequest } from '../../../services/api/usersApi'
+import type { UpdateUserRequest } from '../../../services/api/usersApi'
 import type { UserRole, EmployeeRole } from '../../../types'
 
 interface UseRoleSelectorProps {
@@ -33,21 +33,21 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   const userData = useAppSelector(state => state.user.userData)
   const { updateUser } = useUpdateUser()
   
-  // Проверяем, есть ли у пользователя уже присвоенная роль (не unverified)
-  const hasAssignedRole = useMemo(() => {
+  // Проверяем, что роль пользователя равна 'unverified'
+  // roles API вызывается ТОЛЬКО если роль в sign_in равна 'unverified'
+  const isUnverifiedRole = useMemo(() => {
     if (!userData?.role) {
       return false
     }
-    // Если роль "unverified", считаем, что роль еще не присвоена
     const normalizedRole = userData.role.toLowerCase().trim()
-    return normalizedRole !== 'unverified'
+    return normalizedRole === 'unverified'
   }, [userData?.role])
   
-  // Запрашиваем роли только если пользователь авторизован И у него еще нет роли (или роль unverified)
-  const { roles, isLoading, isFetching, error } = useRoles({ skip: hasAssignedRole })
+  // Запрашиваем роли только если пользователь авторизован И его роль равна 'unverified'
+  const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverifiedRole })
   
-  // Загружаем позиции только если выбрана роль employee (chef) И у пользователя еще нет роли
-  const shouldLoadPositions = (selectedRole === 'chef' || showEmployeeSubRoles) && !hasAssignedRole
+  // Загружаем позиции только если выбрана роль employee (chef) И роль пользователя unverified
+  const shouldLoadPositions = (selectedRole === 'chef' || showEmployeeSubRoles) && isUnverifiedRole
   
   const {
     positionsApi: employeeSubRoles,
@@ -55,8 +55,8 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     isFetching: isFetchingPositions,
   } = useUserPositions({ enabled: shouldLoadPositions })
 
-  // Загружаем типы поставщиков только если выбрана роль supplier И у пользователя еще нет роли
-  const shouldLoadSupplierTypes = (selectedRole === 'supplier' || showSupplierTypes) && !hasAssignedRole
+  // Загружаем типы поставщиков только если выбрана роль supplier И роль пользователя unverified
+  const shouldLoadSupplierTypes = (selectedRole === 'supplier' || showSupplierTypes) && isUnverifiedRole
 
   const {
     supplierTypes,
@@ -64,8 +64,8 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     isFetching: isFetchingSupplierTypes,
   } = useSupplierTypes({ enabled: shouldLoadSupplierTypes })
 
-  // Загружаем форматы ресторанов только если выбрана роль venue И у пользователя еще нет роли
-  const shouldLoadRestaurantFormats = (selectedRole === 'venue' || showRestaurantFormats) && !hasAssignedRole
+  // Загружаем форматы ресторанов только если выбрана роль venue И роль пользователя unverified
+  const shouldLoadRestaurantFormats = (selectedRole === 'venue' || showRestaurantFormats) && isUnverifiedRole
 
   const {
     restaurantFormats,
@@ -415,7 +415,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     error,
     roles,
     currentUserRole,
-    employeeSubRoles: employeeSubRoles as PositionApiItem[] | undefined,
+    employeeSubRoles,
     isLoadingPositions,
     isFetchingPositions,
     supplierTypes,

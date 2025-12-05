@@ -5,7 +5,6 @@
 
 import { useAuth } from '../contexts/AuthContext'
 import { useGetRestaurantFormatsQuery } from '../services/api/rolesApi'
-import type { RoleApiItem } from '../services/api/rolesApi'
 
 interface UseRestaurantFormatsOptions {
   /**
@@ -31,7 +30,7 @@ export function useRestaurantFormats(options: UseRestaurantFormatsOptions = {}) 
   const restaurantFormats = data?.data ?? []
 
   return {
-    restaurantFormats: restaurantFormats as RoleApiItem[],
+    restaurantFormats,
     isLoading,
     isFetching,
     error,

@@ -13,7 +13,6 @@ import {
     checkIconAnimation,
     ANIMATION_DELAY_STEP,
 } from '../../../constants/animations'
-import type { RoleApiItem } from '../../../services/api/rolesApi'
 import {
     getSupplierTypeLabel,
     getSupplierTypeDescription,
@@ -24,7 +23,7 @@ interface SupplierTypeSelectorProps {
     selectedType: string | null
     onContinue: () => void
     onBack: () => void
-    supplierTypes?: RoleApiItem[]
+    supplierTypes?: string[]
     isLoading?: boolean
     isFetching?: boolean
 }
@@ -83,11 +82,11 @@ export function SupplierTypeSelector({
         }
 
         return supplierTypes.map(type => ({
-            value: type.value,
-            label: getSupplierTypeLabel(type.value),
-            description: getSupplierTypeDescription(type.value),
-            icon: TYPE_ICON_MAP[type.value] || Package,
-            color: TYPE_COLOR_MAP[type.value] || 'from-indigo-500 to-blue-600',
+            value: type,
+            label: getSupplierTypeLabel(type),
+            description: getSupplierTypeDescription(type),
+            icon: TYPE_ICON_MAP[type] || Package,
+            color: TYPE_COLOR_MAP[type] || 'from-indigo-500 to-blue-600',
         }))
     }, [supplierTypes])
 

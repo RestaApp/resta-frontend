@@ -4,7 +4,6 @@
  */
 
 import { useGetAvailableUserRolesQuery } from '../services/api/rolesApi'
-import type { RoleApiItem } from '../services/api/rolesApi'
 import { useAuth } from '../contexts/AuthContext'
 
 interface UseRolesOptions {
@@ -36,7 +35,7 @@ export function useRoles(options: UseRolesOptions = {}) {
   )
 
   return {
-    roles: (data?.data ?? []) as RoleApiItem[],
+    roles: data?.data ?? [],
     isLoading,
     isFetching,
     error,

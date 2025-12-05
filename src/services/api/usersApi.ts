@@ -40,27 +40,11 @@ export interface UpdateUserResponse {
 }
 
 /**
- * Позиция (подроль) из API
- */
-export interface PositionApiItem {
-  value: string
-  label: string
-}
-
-/**
  * Ответ при получении позиций (подролей сотрудников)
  */
 export interface UserPositionsResponse {
   success: boolean
-  data: PositionApiItem[]
-}
-
-/**
- * Специализация из API
- */
-export interface SpecializationApiItem {
-  value: string
-  label: string
+  data: string[]
 }
 
 /**
@@ -68,7 +52,7 @@ export interface SpecializationApiItem {
  */
 export interface UserSpecializationsResponse {
   success: boolean
-  data: SpecializationApiItem[]
+  data: string[]
 }
 
 /**

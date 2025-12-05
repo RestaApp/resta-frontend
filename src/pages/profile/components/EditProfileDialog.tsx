@@ -171,9 +171,9 @@ export function EditProfileDialog({ open, onOpenChange, onSuccess }: EditProfile
                                     >
                                         <option value="">Выберите позицию</option>
                                         {positionsApi.map(pos => {
-                                            const label = getEmployeePositionLabel(pos.label) || getEmployeePositionLabel(pos.value) || pos.label
+                                            const label = getEmployeePositionLabel(pos)
                                             return (
-                                                <option key={pos.value} value={pos.value}>
+                                                <option key={pos} value={pos}>
                                                     {label}
                                                 </option>
                                             )
@@ -189,19 +189,19 @@ export function EditProfileDialog({ open, onOpenChange, onSuccess }: EditProfile
                                 <label className="block text-sm font-medium mb-2">
                                     Специализации
                                 </label>
-                                <div className="space-y-2">
+                                <div className="space-y-2 max-h-[200px] overflow-y-auto">
                                     {specializations.map(spec => {
-                                        const isChecked = selectedSpecializations.includes(spec.value)
-                                        const label = getSpecializationLabel(spec.value) || spec.label
+                                        const isChecked = selectedSpecializations.includes(spec)
+                                        const label = getSpecializationLabel(spec)
                                         return (
                                             <label
-                                                key={spec.value}
+                                                key={spec}
                                                 className="flex items-center gap-2 p-2 rounded-lg border border-border hover:bg-muted/50 cursor-pointer"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     checked={isChecked}
-                                                    onChange={() => handleSpecializationToggle(spec.value)}
+                                                    onChange={() => handleSpecializationToggle(spec)}
                                                     className="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary"
                                                 />
                                                 <span className="text-sm">{label}</span>

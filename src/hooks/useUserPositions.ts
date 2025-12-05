@@ -5,7 +5,6 @@
 
 import { useGetUserPositionsQuery } from '../services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '../utils/rolesMapper'
-import type { PositionApiItem } from '../services/api/usersApi'
 import { useAuth } from '../contexts/AuthContext'
 
 interface UseUserPositionsOptions {
@@ -30,11 +29,11 @@ export function useUserPositions(options: UseUserPositionsOptions = {}) {
   })
 
   const positions = data?.data ?? []
-  const mappedPositions = mapEmployeeSubRolesFromApi(positions as PositionApiItem[])
+  const mappedPositions = mapEmployeeSubRolesFromApi(positions)
 
   return {
     positions: mappedPositions,
-    positionsApi: positions as PositionApiItem[],
+    positionsApi: positions,
     isLoading,
     isFetching,
     error,

@@ -12,8 +12,6 @@ import {
   Package,
 } from 'lucide-react'
 import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
-import type { RoleApiItem } from '../services/api/rolesApi'
-import type { PositionApiItem } from '../services/api/usersApi'
 import {
   getEmployeePositionLabel,
   getEmployeePositionDescription,
@@ -89,8 +87,8 @@ const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
 /**
  * Преобразует данные роли из API в формат компонента
  */
-export function mapRoleOptionFromApi(roleApi: RoleApiItem): RoleOption | null {
-  const roleId = VALUE_TO_ROLE_MAP[roleApi.value]
+export function mapRoleOptionFromApi(roleValue: string): RoleOption | null {
+  const roleId = VALUE_TO_ROLE_MAP[roleValue]
   
   if (!roleId) {
     return null
@@ -98,7 +96,7 @@ export function mapRoleOptionFromApi(roleApi: RoleApiItem): RoleOption | null {
 
   return {
     id: roleId,
-    title: getUserRoleLabel(roleApi.value) || roleApi.label,
+    title: getUserRoleLabel(roleValue),
     description: ROLE_DESCRIPTION_MAP[roleId],
     icon: ROLE_ICON_MAP[roleId],
     color: ROLE_COLOR_MAP[roleId],
@@ -108,7 +106,7 @@ export function mapRoleOptionFromApi(roleApi: RoleApiItem): RoleOption | null {
 /**
  * Преобразует массив ролей из API в формат компонентов
  */
-export function mapRoleOptionsFromApi(rolesApi: RoleApiItem[]): RoleOption[] {
+export function mapRoleOptionsFromApi(rolesApi: string[]): RoleOption[] {
   return rolesApi
     .map(mapRoleOptionFromApi)
     .filter((role): role is RoleOption => role !== null)
@@ -117,8 +115,8 @@ export function mapRoleOptionsFromApi(rolesApi: RoleApiItem[]): RoleOption[] {
 /**
  * Преобразует одну позицию из API в формат компонента
  */
-export function mapPositionFromApi(positionApi: PositionApiItem): EmployeeSubRole | null {
-  const roleId = POSITION_VALUE_TO_ROLE_MAP[positionApi.value]
+export function mapPositionFromApi(positionValue: string): EmployeeSubRole | null {
+  const roleId = POSITION_VALUE_TO_ROLE_MAP[positionValue]
   
   if (!roleId) {
     return null
@@ -128,8 +126,8 @@ export function mapPositionFromApi(positionApi: PositionApiItem): EmployeeSubRol
   const color = ROLE_COLOR_MAP[roleId]
   
   // Используем функции из labels.ts для получения названий и описаний
-  const description = getEmployeePositionDescription(positionApi.value) || ROLE_DESCRIPTION_MAP[roleId]
-  const title = getEmployeePositionLabel(positionApi.label) || getEmployeePositionLabel(positionApi.value) || positionApi.label
+  const description = getEmployeePositionDescription(positionValue) || ROLE_DESCRIPTION_MAP[roleId]
+  const title = getEmployeePositionLabel(positionValue)
 
   if (!icon || !color) {
     return null
@@ -141,7 +139,7 @@ export function mapPositionFromApi(positionApi: PositionApiItem): EmployeeSubRol
     description,
     icon,
     color,
-    originalValue: positionApi.value, // Сохраняем оригинальное value для уникальности ключей
+    originalValue: positionValue, // Сохраняем оригинальное value для уникальности ключей
   }
 }
 
@@ -149,7 +147,7 @@ export function mapPositionFromApi(positionApi: PositionApiItem): EmployeeSubRol
  * Преобразует массив позиций из API в формат компонентов
  */
 export function mapEmployeeSubRolesFromApi(
-  positionsApi: PositionApiItem[]
+  positionsApi: string[]
 ): EmployeeSubRole[] {
   return positionsApi
     .map(mapPositionFromApi)

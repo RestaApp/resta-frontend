@@ -5,33 +5,25 @@
 import { api } from '../../store/api'
 
 /**
- * Роль из API
- */
-export interface RoleApiItem {
-  value: string
-  label: string
-}
-
-/**
  * Ответ API с доступными ролями
  */
 export interface AvailableUserRolesResponse {
   success: boolean
-  data: RoleApiItem[]
+  data: string[]
 }
 
 /**
  * Ответ API с типами поставщиков
  */
 export interface SupplierTypesResponse {
-  data: RoleApiItem[]
+  data: string[]
 }
 
 /**
  * Ответ API с форматами ресторанов
  */
 export interface RestaurantFormatsResponse {
-  data: RoleApiItem[]
+  data: string[]
 }
 
 export const rolesApi = api.injectEndpoints({

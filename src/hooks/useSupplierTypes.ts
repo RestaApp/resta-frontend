@@ -5,7 +5,6 @@
 
 import { useAuth } from '../contexts/AuthContext'
 import { useGetSupplierTypesQuery } from '../services/api/rolesApi'
-import type { RoleApiItem } from '../services/api/rolesApi'
 
 interface UseSupplierTypesOptions {
   /**
@@ -31,7 +30,7 @@ export function useSupplierTypes(options: UseSupplierTypesOptions = {}) {
   const supplierTypes = data?.data ?? []
 
   return {
-    supplierTypes: supplierTypes as RoleApiItem[],
+    supplierTypes,
     isLoading,
     isFetching,
     error,
