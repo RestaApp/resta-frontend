@@ -22,6 +22,16 @@ export interface UpdateUserRequest {
     position?: string
     specialization?: string | null
     specializations?: string[]
+    bio?: string | null
+    email?: string | null
+    phone?: string | null
+    location?: string | null
+    work_experience_summary?: string | null
+    employee_profile_attributes?: {
+      experience_years?: number
+      open_to_work?: boolean
+      skills?: string[]
+    }
     supplier_profile_attributes?: {
       supplier_type?: string
     }

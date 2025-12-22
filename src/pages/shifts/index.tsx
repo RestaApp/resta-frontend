@@ -3,12 +3,13 @@
  */
 
 import { useState } from 'react'
-import { Filter } from 'lucide-react'
+import { Filter, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import { AppHeader } from '../home/components/AppHeader'
-import { ShiftCard, type Shift } from './components/ShiftCard'
+import { ShiftCard } from './components/ShiftCard'
 import { Button } from '../../components/ui/button'
 import { cardAnimation, ANIMATION_DELAY_STEP } from '../../constants/animations'
+import { useReplacementShifts } from '../../hooks/useReplacementShifts'
 import type { Screen } from '../../types'
 
 interface ShiftsScreenProps {
@@ -20,58 +21,12 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
   void onBack
   const [savedShifts, setSavedShifts] = useState<string[]>([])
 
-  const mockShifts: Shift[] = [
-    {
-      id: '1',
-      restaurant: 'Ресторан "Гастроном"',
-      role: 'Повар',
-      date: '25 января',
-      time: '18:00 - 23:00',
-      pay: 150,
-      location: 'Минск, пр-т Независимости, 45',
-      urgent: true,
-    },
-    {
-      id: '2',
-      restaurant: 'Бар "Коктейль"',
-      role: 'Официант',
-      date: 'Сегодня',
-      time: '20:00 - 03:00',
-      pay: 220,
-      location: 'Минск, ул. Октябрьская, 15',
-      urgent: true,
-    },
-    {
-      id: '3',
-      restaurant: 'Кофейня "Утро"',
-      role: 'Официант',
-      date: '26 января',
-      time: '10:00 - 18:00',
-      pay: 120,
-      location: 'Минск, ул. Янки Купалы, 12',
-    },
-    {
-      id: '4',
-      restaurant: 'Банкетный зал "Премьера"',
-      role: 'Официант',
-      date: '27 января',
-      time: '15:00 - 02:00',
-      pay: 180,
-      location: 'Минск, ул. Кальварийская, 8',
-    },
-    {
-      id: '5',
-      restaurant: 'Ресторан "Элегант"',
-      role: 'Повар',
-      date: '28 января',
-      time: '19:00 - 01:00',
-      pay: 200,
-      location: 'Минск, пр-т Победителей, 23',
-    },
-  ]
+  // Получаем экстрасмены из API (только срочные)
+  const { shifts, isLoading, isFetching } = useReplacementShifts()
 
   const handleApply = (id: string) => {
-    const shift = mockShifts.find(s => s.id === id)
+    const shift = shifts.find(s => s.id === id)
+    // TODO: Реализовать отправку отклика на смену
     void shift
   }
 
@@ -87,40 +42,63 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <AppHeader title="Доска смен" onNavigate={onNavigate || (() => {})} />
+      <AppHeader title="Экстра смены" onNavigate={onNavigate || (() => { })} />
 
       <div className="px-4 py-4 space-y-4">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm">
             <Filter className="w-4 h-4" />
-            Фильтры
+            <span>Фильтры</span>
           </Button>
 
           <div className="text-[12px] text-muted-foreground ml-auto">
-            {mockShifts.length}{' '}
-            {mockShifts.length === 1 ? 'смена' : mockShifts.length < 5 ? 'смены' : 'смен'}
+            {shifts.length}{' '}
+            {shifts.length === 1 ? 'смена' : shifts.length < 5 ? 'смены' : 'смен'}
           </div>
         </div>
 
-        <div className="space-y-3">
-          {mockShifts.map((shift, index) => (
-            <motion.div
-              key={shift.id}
-              initial={cardAnimation.initial}
-              animate={cardAnimation.animate}
-              transition={{ delay: ANIMATION_DELAY_STEP * index }}
-            >
-              <ShiftCard
-                shift={{ ...shift, saved: savedShifts.includes(shift.id) }}
-                onApply={handleApply}
-                onSave={handleSave}
-                onClick={id => {
-                  void id
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
+        {(isLoading || isFetching) && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
+              <Zap className="w-8 h-8 text-muted-foreground animate-pulse" />
+            </div>
+            <p className="text-[14px] text-muted-foreground">Загрузка смен...</p>
+          </div>
+        )}
+
+        {!isLoading && !isFetching && (
+          <div className="space-y-3">
+            {shifts.map((shift, index) => (
+              <motion.div
+                key={shift.id}
+                initial={cardAnimation.initial}
+                animate={cardAnimation.animate}
+                transition={{ delay: ANIMATION_DELAY_STEP * index }}
+              >
+                <ShiftCard
+                  shift={{ ...shift, saved: savedShifts.includes(shift.id) }}
+                  onApply={handleApply}
+                  onSave={handleSave}
+                  onClick={id => {
+                    void id
+                  }}
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && !isFetching && shifts.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
+              <Zap className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-[16px] font-medium mb-2">Срочные смены не найдены</h3>
+            <p className="text-[14px] text-muted-foreground">
+              В данный момент нет доступных срочных смен для замены
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

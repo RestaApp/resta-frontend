@@ -50,3 +50,8 @@ export function NewsCard({ title, description, date, imageUrl, onClick }: NewsCa
 
 
 
+
+
+
+
+

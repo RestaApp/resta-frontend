@@ -39,7 +39,9 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'rounded-full font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
         sizeClasses[size],
         variantClasses[variant],
         className

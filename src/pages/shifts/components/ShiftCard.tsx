@@ -6,17 +6,21 @@ import { MapPin, Clock, Bookmark, AlertCircle } from 'lucide-react'
 import { Badge } from '../../../components/ui/badge'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
+import { getEmployeePositionLabel } from '../../../constants/labels'
 
 export type Shift = {
   id: string
   restaurant: string
-  role: 'Повар' | 'Официант'
+  role: string
   date: string
   time: string
   pay: number
   location: string
   urgent?: boolean
   saved?: boolean
+  canApply?: boolean
+  title?: string
+  applicationsCount?: number
 }
 
 interface ShiftCardProps {
@@ -35,9 +39,12 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-lg mb-1">{shift.restaurant}</h3>
+          {shift.title && (
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{shift.title}</p>
+          )}
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant="secondary" className="text-xs">
-              {shift.role}
+              {getEmployeePositionLabel(shift.role)}
             </Badge>
             {shift.urgent && (
               <Badge variant="destructive" className="text-xs flex items-center gap-1">
@@ -72,8 +79,22 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
           <MapPin className="w-4 h-4" />
           <span className="line-clamp-1">{shift.location}</span>
         </div>
-        <div className="text-lg font-bold text-primary">
-          {shift.pay} BYN
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-lg font-bold text-primary">
+              {shift.pay} BYN
+            </div>
+            {shift.applicationsCount !== undefined && shift.applicationsCount > 0 && (
+              <div className="text-[11px] text-muted-foreground mt-1">
+                {shift.applicationsCount}{' '}
+                {shift.applicationsCount === 1
+                  ? 'отклик'
+                  : shift.applicationsCount < 5
+                    ? 'отклика'
+                    : 'откликов'}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -83,10 +104,11 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
             e.stopPropagation()
             onApply(shift.id)
           }}
-          className="w-full"
+          disabled={shift.canApply === false}
+          className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
           size="sm"
         >
-          Откликнуться
+          {shift.canApply === false ? 'Недоступно' : 'Откликнуться'}
         </Button>
       )}
     </Card>

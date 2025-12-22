@@ -32,3 +32,8 @@ export function Footer({ selectedRole, onContinue }: FooterProps) {
 
 
 
+
+
+
+
+

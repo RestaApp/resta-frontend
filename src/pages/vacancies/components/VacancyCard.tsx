@@ -15,6 +15,25 @@ export type Vacancy = {
   imageUrl?: string
   urgent?: boolean
   saved?: boolean
+  description?: string
+  requirements?: string
+  shiftType?: 'vacancy' | 'replacement'
+  canApply?: boolean
+  applicationsCount?: number
+  user?: {
+    id: number
+    name: string
+    bio?: string
+    phone?: string
+    email?: string
+    average_rating?: number
+    total_reviews?: number
+    restaurant_profile?: {
+      city?: string
+      cuisine_types?: string[]
+      format?: string
+    }
+  }
 }
 
 interface VacancyCardProps {
@@ -77,6 +96,16 @@ export function VacancyCard({ vacancy, onApply, onSave, onClick }: VacancyCardPr
         <div>
           <div className="text-[13px] text-muted-foreground mb-1">Оплата</div>
           <div className="text-[24px] font-bold tracking-tight text-primary">{vacancy.salary}</div>
+          {vacancy.applicationsCount !== undefined && vacancy.applicationsCount > 0 && (
+            <div className="text-[11px] text-muted-foreground mt-1">
+              {vacancy.applicationsCount}{' '}
+              {vacancy.applicationsCount === 1
+                ? 'отклик'
+                : vacancy.applicationsCount < 5
+                  ? 'отклика'
+                  : 'откликов'}
+            </div>
+          )}
         </div>
         <Button
           size="sm"
@@ -84,9 +113,10 @@ export function VacancyCard({ vacancy, onApply, onSave, onClick }: VacancyCardPr
             e.stopPropagation()
             onApply?.(vacancy.id)
           }}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 h-10 font-semibold shadow-sm active:scale-95 transition-all"
+          disabled={vacancy.canApply === false}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 h-10 font-semibold shadow-sm active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Откликнуться
+          {vacancy.canApply === false ? 'Недоступно' : 'Откликнуться'}
         </Button>
       </div>
     </Card>

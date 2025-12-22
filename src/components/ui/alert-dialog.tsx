@@ -58,26 +58,29 @@ export function AlertDialogHeader({ children }: AlertDialogHeaderProps) {
 
 interface AlertDialogTitleProps {
   children: React.ReactNode
+  className?: string
 }
 
-export function AlertDialogTitle({ children }: AlertDialogTitleProps) {
-  return <h2 className="text-lg font-semibold mb-2">{children}</h2>
+export function AlertDialogTitle({ children, className }: AlertDialogTitleProps) {
+  return <h2 className={cn('text-lg font-semibold mb-2', className)}>{children}</h2>
 }
 
 interface AlertDialogDescriptionProps {
   children: React.ReactNode
+  className?: string
 }
 
-export function AlertDialogDescription({ children }: AlertDialogDescriptionProps) {
-  return <p className="text-sm text-muted-foreground">{children}</p>
+export function AlertDialogDescription({ children, className }: AlertDialogDescriptionProps) {
+  return <p className={cn('text-sm text-muted-foreground', className)}>{children}</p>
 }
 
 interface AlertDialogFooterProps {
   children: React.ReactNode
+  className?: string
 }
 
-export function AlertDialogFooter({ children }: AlertDialogFooterProps) {
-  return <div className="flex gap-3 justify-end mt-6">{children}</div>
+export function AlertDialogFooter({ children, className }: AlertDialogFooterProps) {
+  return <div className={cn('flex gap-3 justify-end mt-6', className)}>{children}</div>
 }
 
 interface AlertDialogActionProps {

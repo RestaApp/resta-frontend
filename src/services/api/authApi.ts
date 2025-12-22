@@ -24,6 +24,7 @@ export interface UserData {
   active: boolean
   average_rating: number
   bio: string | null
+  certifications?: string[]
   created_at: string
   email: string | null
   employee_profile: EmployeeProfile | null

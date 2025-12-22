@@ -6,6 +6,7 @@ import { VacancyCard } from './components/VacancyCard'
 import { VacancyDetailsScreen } from './components/VacancyDetailsScreen'
 import { Button } from '../../components/ui/button'
 import { cardAnimation, ANIMATION_DELAY_STEP } from '../../constants/animations'
+import { useVacancies } from '../../hooks/useVacancies'
 import type { Screen } from '../../types'
 
 interface VacanciesScreenProps {
@@ -38,127 +39,14 @@ export function VacanciesScreen({ onNavigate, onBack }: VacanciesScreenProps) {
     { id: 'one-time', label: 'Одноразовая' },
   ]
 
-  const vacancies = [
-    {
-      id: '1',
-      title: 'Повар в ресторан премиум-класса',
-      venueName: 'Ресторан "Гастроном"',
-      location: 'Минск, пр-т Независимости',
-      schedule: 'Полная занятость',
-      salary: 'от 2000 BYN',
-      type: 'Постоянная',
-      category: 'chef',
-      urgent: true,
-      imageUrl:
-        'https://images.unsplash.com/photo-1685040235380-a42a129ade4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjByZXN0YXVyYW50JTIwaW50ZXJpb3J8ZW58MXx8fHwxNzYwMjE5NjM2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    },
-    {
-      id: '2',
-      title: 'Бариста',
-      venueName: 'Кофейня "Утро"',
-      location: 'Минск, ул. Янки Купалы',
-      schedule: 'График 2/2',
-      salary: 'от 1200 BYN',
-      type: 'Постоянная',
-      category: 'barista',
-      imageUrl:
-        'https://images.unsplash.com/photo-1688975308004-6f10feed935f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXJpc3RhJTIwY29mZmVlJTIwc2hvcHxlbnwxfHx8fDE3NjAxNjQzMTF8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    },
-    {
-      id: '3',
-      title: 'Официант',
-      venueName: 'Банкетный зал "Премьера"',
-      location: 'Минск, ул. Кальварийская',
-      schedule: 'Гибкий график',
-      salary: 'от 1500 BYN',
-      type: 'Постоянная',
-      category: 'waiter',
-      imageUrl:
-        'https://images.unsplash.com/photo-1739723745132-97df9db49db2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb3p5JTIwY2FmZSUyMGludGVyaW9yfGVufDF8fHx8MTc2MDE5NTg0M3ww&ixlib=rb-4.1.0&q=80&w=1080',
-    },
-    {
-      id: '4',
-      title: 'Су-шеф',
-      venueName: 'Ресторан "Гастроном"',
-      location: 'Минск, пр-т Независимости',
-      schedule: 'Полная занятость',
-      salary: 'от 2500 BYN',
-      type: 'Постоянная',
-      category: 'chef',
-      imageUrl:
-        'https://images.unsplash.com/photo-1685040235380-a42a129ade4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjByZXN0YXVyYW50JTIwaW50ZXJpb3J8ZW58MXx8fHwxNzYwMjE5NjM2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    },
-    {
-      id: '5',
-      title: 'Бармен',
-      venueName: 'Бар "Коктейль"',
-      location: 'Минск, ул. Октябрьская',
-      schedule: 'Вечерние смены',
-      salary: 'от 1800 BYN',
-      type: 'Постоянная',
-      category: 'bartender',
-      imageUrl:
-        'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-    },
-    {
-      id: '6',
-      title: 'Официант на банкеты',
-      venueName: 'Ресторан "Элегант"',
-      location: 'Минск, пр-т Победителей',
-      schedule: 'Выходные дни',
-      salary: 'от 1600 BYN',
-      type: 'Постоянная',
-      category: 'waiter',
-      imageUrl:
-        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-    },
-    {
-      id: '7',
-      title: 'Повар на мероприятие',
-      venueName: 'Кейтеринг "Праздник"',
-      location: 'Минск, ул. Ленина',
-      schedule: '25 января, 18:00-23:00',
-      salary: '150 BYN',
-      type: 'Одноразовая',
-      category: 'chef',
-      imageUrl:
-        'https://images.unsplash.com/photo-1556912172-45b7abe8b7e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-    },
-    {
-      id: '8',
-      title: 'Официант на свадьбу',
-      venueName: 'Банкетный зал "Рояль"',
-      location: 'Минск, пр-т Дзержинского',
-      schedule: '30 января, 15:00-02:00',
-      salary: '120 BYN',
-      type: 'Одноразовая',
-      category: 'waiter',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-    },
-    {
-      id: '9',
-      title: 'Бармен на корпоратив',
-      venueName: 'Ресторан "Бизнес"',
-      location: 'Минск, ул. Тимирязева',
-      schedule: '28 января, 19:00-01:00',
-      salary: '140 BYN',
-      type: 'Одноразовая',
-      category: 'bartender',
-      imageUrl:
-        'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-    },
-  ]
-
-  const filteredVacancies = vacancies.filter(vacancy => {
-    if (category !== 'all' && vacancy.category !== category) return false
-    if (type !== 'all') {
-      if (type === 'permanent' && vacancy.type !== 'Постоянная') return false
-      if (type === 'one-time' && vacancy.type !== 'Одноразовая') return false
-    }
-    if (urgentOnly && !vacancy.urgent) return false
-    return true
+  // Получаем вакансии из API
+  const { vacancies, isLoading: isLoadingVacancies, isFetching: isFetchingVacancies } = useVacancies({
+    category: category !== 'all' ? category : undefined,
+    type: type !== 'all' ? type : undefined,
+    urgentOnly,
   })
+
+  const filteredVacancies = vacancies
 
   const handleApply = (id: string) => {
     const vacancy = vacancies.find(v => v.id === id)
@@ -181,7 +69,7 @@ export function VacanciesScreen({ onNavigate, onBack }: VacanciesScreenProps) {
     return (
       <VacancyDetailsScreen
         vacancyId={selectedVacancyId}
-        vacancies={vacancies}
+        vacancies={filteredVacancies}
         onBack={() => setSelectedVacancyId(null)}
         onNavigate={onNavigate}
       />
@@ -365,27 +253,38 @@ export function VacanciesScreen({ onNavigate, onBack }: VacanciesScreenProps) {
         </div>
 
         {/* Vacancies List */}
-        <div className="space-y-3">
-          {filteredVacancies.map((vacancy, index) => (
-            <motion.div
-              key={vacancy.id}
-              initial={cardAnimation.initial}
-              animate={cardAnimation.animate}
-              transition={{ delay: ANIMATION_DELAY_STEP * index }}
-            >
-              <VacancyCard
-                vacancy={{ ...vacancy, saved: savedVacancies.includes(vacancy.id) }}
-                onApply={handleApply}
-                onSave={handleSave}
-                onClick={id => {
-                  setSelectedVacancyId(id)
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
+        {(isLoadingVacancies || isFetchingVacancies) && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
+              <Zap className="w-8 h-8 text-muted-foreground animate-pulse" />
+            </div>
+            <p className="text-[14px] text-muted-foreground">Загрузка вакансий...</p>
+          </div>
+        )}
 
-        {filteredVacancies.length === 0 && (
+        {!isLoadingVacancies && !isFetchingVacancies && (
+          <div className="space-y-3">
+            {filteredVacancies.map((vacancy, index) => (
+              <motion.div
+                key={vacancy.id}
+                initial={cardAnimation.initial}
+                animate={cardAnimation.animate}
+                transition={{ delay: ANIMATION_DELAY_STEP * index }}
+              >
+                <VacancyCard
+                  vacancy={{ ...vacancy, saved: savedVacancies.includes(vacancy.id) }}
+                  onApply={handleApply}
+                  onSave={handleSave}
+                  onClick={id => {
+                    setSelectedVacancyId(id)
+                  }}
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {!isLoadingVacancies && !isFetchingVacancies && filteredVacancies.length === 0 && (
           <div className="text-center py-12">
             <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
               <Zap className="w-8 h-8 text-muted-foreground" />

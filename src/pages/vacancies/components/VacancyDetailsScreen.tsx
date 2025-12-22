@@ -33,7 +33,7 @@ export function VacancyDetailsScreen({
   if (!vacancy) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => {})} />
+        <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => { })} />
         <div className="px-4 py-8 text-center">
           <p>Вакансия не найдена</p>
           <Button onClick={onBack} className="mt-4">
@@ -52,19 +52,9 @@ export function VacancyDetailsScreen({
     // TODO: Реализовать открытие чата Telegram
   }
 
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      chef: 'Повар',
-      waiter: 'Официант',
-      bartender: 'Бармен',
-      barista: 'Бариста',
-    }
-    return labels[category] || category
-  }
-
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => {})} />
+      <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => { })} />
 
       <div className="px-4 py-6 space-y-6">
         {/* Header Card */}
@@ -121,55 +111,27 @@ export function VacancyDetailsScreen({
         </Card>
 
         {/* Requirements */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <FileText className="w-5 h-5 text-primary" />
-            <h2 className="text-[16px] font-medium">Требования</h2>
-          </div>
-          <ul className="space-y-2 text-[14px]">
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>
-                Минимум 2 года опыта работы в должности{' '}
-                {getCategoryLabel(vacancy.category).toLowerCase()}
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>Действующая медицинская книжка обязательна</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>Профессиональный внешний вид и отношение к работе</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>Пунктуальность и ответственность</span>
-            </li>
-            {vacancy.type === 'Постоянная' && (
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>Готовность к работе в команде и обучению</span>
-              </li>
-            )}
-          </ul>
-        </Card>
+        {vacancy.requirements && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FileText className="w-5 h-5 text-primary" />
+              <h2 className="text-[16px] font-medium">Требования</h2>
+            </div>
+            <div className="text-[14px] text-muted-foreground leading-relaxed whitespace-pre-line">
+              {vacancy.requirements}
+            </div>
+          </Card>
+        )}
 
         {/* Description */}
-        <Card className="p-6">
-          <h2 className="text-[16px] font-medium mb-3">О вакансии</h2>
-          <p className="text-[14px] text-muted-foreground leading-relaxed">
-            Мы ищем опытного {getCategoryLabel(vacancy.category).toLowerCase()} для{' '}
-            {vacancy.type === 'Постоянная' ? 'постоянной работы' : 'разового мероприятия'} в{' '}
-            {vacancy.venueName}. Это отличная возможность поработать в профессиональной среде с
-            преданной командой.{' '}
-            {vacancy.urgent
-              ? 'В связи со срочностью, мы предлагаем повышенную оплату.'
-              : vacancy.type === 'Постоянная'
-                ? 'Мы предлагаем стабильный график и возможности для профессионального роста.'
-                : ''}
-          </p>
-        </Card>
+        {vacancy.description && (
+          <Card className="p-6">
+            <h2 className="text-[16px] font-medium mb-3">О вакансии</h2>
+            <p className="text-[14px] text-muted-foreground leading-relaxed whitespace-pre-line">
+              {vacancy.description}
+            </p>
+          </Card>
+        )}
 
         {/* Venue Info */}
         <Card className="p-6">
@@ -182,35 +144,75 @@ export function VacancyDetailsScreen({
             </div>
             <div>
               <div className="text-[14px] font-medium">{vacancy.venueName}</div>
-              <div className="flex items-center gap-1 text-[12px] text-muted-foreground">
-                <span>⭐ 4.8</span>
-                <span>•</span>
-                <span>24 отзыва</span>
-              </div>
+              {vacancy.user && (
+                <div className="flex items-center gap-1 text-[12px] text-muted-foreground">
+                  {vacancy.user.average_rating !== undefined && vacancy.user.average_rating > 0 && (
+                    <>
+                      <span>⭐ {vacancy.user.average_rating.toFixed(1)}</span>
+                      {vacancy.user.total_reviews !== undefined && vacancy.user.total_reviews > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>
+                            {vacancy.user.total_reviews}{' '}
+                            {vacancy.user.total_reviews === 1
+                              ? 'отзыв'
+                              : vacancy.user.total_reviews < 5
+                                ? 'отзыва'
+                                : 'отзывов'}
+                          </span>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-          <p className="text-[12px] text-muted-foreground">
-            {vacancy.category === 'chef' || vacancy.category === 'waiter'
-              ? 'Ресторан европейской кухни в центре Минска'
-              : vacancy.category === 'barista'
-                ? 'Современная кофейня с уютной атмосферой'
-                : 'Премиальное заведение с высоким уровнем сервиса'}
-          </p>
+          {vacancy.user?.bio && (
+            <p className="text-[12px] text-muted-foreground mb-2">{vacancy.user.bio}</p>
+          )}
+          {vacancy.user?.restaurant_profile && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {vacancy.user.restaurant_profile.city && (
+                <Badge variant="outline" className="text-[11px]">
+                  {vacancy.user.restaurant_profile.city}
+                </Badge>
+              )}
+              {vacancy.user.restaurant_profile.format && (
+                <Badge variant="outline" className="text-[11px]">
+                  {vacancy.user.restaurant_profile.format}
+                </Badge>
+              )}
+              {vacancy.user.restaurant_profile.cuisine_types &&
+                vacancy.user.restaurant_profile.cuisine_types.length > 0 && (
+                  <Badge variant="outline" className="text-[11px]">
+                    {vacancy.user.restaurant_profile.cuisine_types.join(', ')}
+                  </Badge>
+                )}
+            </div>
+          )}
+          {vacancy.user?.phone && (
+            <div className="mt-3 text-[12px] text-muted-foreground">
+              <span className="font-medium">Телефон: </span>
+              {vacancy.user.phone}
+            </div>
+          )}
         </Card>
       </div>
 
       {/* Fixed Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 max-w-[390px] mx-auto">
         <div className="flex gap-3">
-          <Button variant="outline" onClick={handleContact} className="flex-1 gap-2">
+          <Button variant="outline" onClick={handleContact} className="flex-1">
             <MessageCircle className="w-4 h-4" />
-            Связаться
+            <span>Связаться</span>
           </Button>
           <Button
             onClick={handleApply}
-            className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
+            disabled={vacancy.canApply === false}
+            className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Откликнуться
+            {vacancy.canApply === false ? 'Недоступно' : 'Откликнуться'}
           </Button>
         </div>
       </div>
