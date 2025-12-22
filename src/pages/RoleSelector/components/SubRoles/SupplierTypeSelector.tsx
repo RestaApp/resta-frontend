@@ -5,18 +5,18 @@
 import { useCallback, useMemo, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Check, Package, Wrench, Briefcase, Truck } from 'lucide-react'
-import { Button } from '../../../components/ui/button'
-import { setupTelegramBackButton } from '../../../utils/telegram'
-import { cn } from '../../../utils/cn'
+import { Button } from '../../../../components/ui/button'
+import { setupTelegramBackButton } from '../../../../utils/telegram'
+import { cn } from '../../../../utils/cn'
 import {
     roleCardAnimation,
     checkIconAnimation,
     ANIMATION_DELAY_STEP,
-} from '../../../constants/animations'
+} from '../../../../constants/animations'
 import {
     getSupplierTypeLabel,
     getSupplierTypeDescription,
-} from '../../../constants/labels'
+} from '../../../../constants/labels'
 
 interface SupplierTypeSelectorProps {
     onSelectType: (typeValue: string) => void

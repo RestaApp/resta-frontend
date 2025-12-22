@@ -12,6 +12,7 @@ import { useSupplierTypes } from '../../../hooks/useSupplierTypes'
 import { useRestaurantFormats } from '../../../hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../../../utils/rolesMapper'
 import { mapRoleFromApi } from '../../../utils/roles'
+import { getCurrentUserId } from '../../../utils/user'
 import type { UpdateUserRequest } from '../../../services/api/usersApi'
 import type { UserRole, EmployeeRole } from '../../../types'
 
@@ -20,7 +21,8 @@ interface UseRoleSelectorProps {
 }
 
 export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
+  // draftSelectedRole — локальный выбор до подтверждения / отправки на сервер
+  const [draftSelectedRole, setDraftSelectedRole] = useState<UserRole | null>(null)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
   const [showSupplierTypes, setShowSupplierTypes] = useState(false)
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
@@ -47,7 +49,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverifiedRole })
   
   // Загружаем позиции только если выбрана роль employee (chef) И роль пользователя unverified
-  const shouldLoadPositions = (selectedRole === 'chef' || showEmployeeSubRoles) && isUnverifiedRole
+  const shouldLoadPositions = (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverifiedRole
   
   const {
     positionsApi: employeeSubRoles,
@@ -56,7 +58,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   } = useUserPositions({ enabled: shouldLoadPositions })
 
   // Загружаем типы поставщиков только если выбрана роль supplier И роль пользователя unverified
-  const shouldLoadSupplierTypes = (selectedRole === 'supplier' || showSupplierTypes) && isUnverifiedRole
+  const shouldLoadSupplierTypes = (draftSelectedRole === 'supplier' || showSupplierTypes) && isUnverifiedRole
 
   const {
     supplierTypes,
@@ -65,7 +67,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   } = useSupplierTypes({ enabled: shouldLoadSupplierTypes })
 
   // Загружаем форматы ресторанов только если выбрана роль venue И роль пользователя unverified
-  const shouldLoadRestaurantFormats = (selectedRole === 'venue' || showRestaurantFormats) && isUnverifiedRole
+  const shouldLoadRestaurantFormats = (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverifiedRole
 
   const {
     restaurantFormats,
@@ -91,7 +93,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
 
   const handleRoleSelect = useCallback(
     async (roleId: UserRole) => {
-      setSelectedRole(roleId)
+      setDraftSelectedRole(roleId)
       // Если выбрали сотрудника, показываем экран подролей
       if (roleId === 'chef') {
         setShowEmployeeSubRoles(true)
@@ -116,33 +118,20 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
         return
       }
 
-      // Получаем userId
-      let userId = userData?.id
-      
-      if (!userId) {
-        try {
-          const { store } = await import('../../../store')
-          const state = store.getState()
-          userId = state.user.userData?.id
-        } catch (error) {
-          // Ошибка при получении userId из store
-        }
-      }
-
+      // Получаем userId через утилиту
+      const userId = await getCurrentUserId()
       if (!userId) {
         onSelectRole(roleId)
         return
       }
 
       try {
-        // Для остальных ролей отправляем role через PATCH /api/v1/users/:id
-        // Формат: { user: { role: "role_name" } }
         const updateData: UpdateUserRequest = {
           user: {
             role: roleId,
           },
         }
-        
+
         await updateUser(userId, updateData)
         onSelectRole(roleId)
       } catch (error) {
@@ -150,68 +139,53 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
         onSelectRole(roleId)
       }
     },
-    [onSelectRole, updateUser, isAuthenticated, userData]
+    [onSelectRole, updateUser, isAuthenticated]
   )
 
   const handleContinue = useCallback(async () => {
-    if (!selectedRole) {
+    if (!draftSelectedRole) {
       return
     }
 
-    if (selectedRole === 'chef') {
+    if (draftSelectedRole === 'chef') {
       setShowEmployeeSubRoles(true)
       return
     }
 
-    if (selectedRole === 'supplier') {
+    if (draftSelectedRole === 'supplier') {
       setShowSupplierTypes(true)
       return
     }
 
-    if (selectedRole === 'venue') {
+    if (draftSelectedRole === 'venue') {
       setShowRestaurantFormats(true)
       return
     }
 
     if (!isAuthenticated) {
-      onSelectRole(selectedRole)
+      onSelectRole(draftSelectedRole)
       return
     }
 
-    // Получаем userId
-    let userId = userData?.id
-    
+    const userId = await getCurrentUserId()
     if (!userId) {
-      try {
-        const { store } = await import('../../../store')
-        const state = store.getState()
-        userId = state.user.userData?.id
-      } catch (error) {
-        // Ошибка при получении userId из store
-      }
-    }
-
-    if (!userId) {
-      onSelectRole(selectedRole)
+      onSelectRole(draftSelectedRole)
       return
     }
 
     try {
-      // Для остальных ролей отправляем на сервер
-      // Формат: { user: { role: "role_name" } }
       const updateData: UpdateUserRequest = {
         user: {
-          role: selectedRole,
+          role: draftSelectedRole,
         },
       }
-      
+
       await updateUser(userId, updateData)
-      onSelectRole(selectedRole)
+      onSelectRole(draftSelectedRole)
     } catch (error) {
-      // В случае ошибки все равно выбираем роль локально
-      onSelectRole(selectedRole)
+      onSelectRole(draftSelectedRole)
     }
-  }, [selectedRole, onSelectRole, updateUser, isAuthenticated, userData])
+  }, [draftSelectedRole, onSelectRole, updateUser, isAuthenticated])
 
   const handleSubRoleSelect = useCallback((subRole: EmployeeRole, positionValue: string) => {
     setSelectedSubRole(subRole)
@@ -228,48 +202,34 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
       return
     }
 
-    let userId = userData?.id
-    
-    if (!userId) {
-      try {
-        const { store } = await import('../../../store')
-        const state = store.getState()
-        userId = state.user.userData?.id
-      } catch (error) {
-        // Ошибка при получении userId из store
-      }
-    }
-
+    const userId = await getCurrentUserId()
     if (!userId) {
       onSelectRole(selectedSubRole)
       return
     }
 
-      try {
-        // Для employee отправляем role и position через PATCH /api/v1/users/:id
-        // Формат: { user: { role: "employee", position: "bartender" } }
-        const updateData: UpdateUserRequest = {
-          user: selectedPositionValue
-            ? {
-                role: 'employee',
-                position: selectedPositionValue,
-              }
-            : {
-                role: 'employee',
-              },
-        }
-      
+    try {
+      const updateData: UpdateUserRequest = {
+        user: selectedPositionValue
+          ? {
+              role: 'employee',
+              position: selectedPositionValue,
+            }
+          : {
+              role: 'employee',
+            },
+      }
+
       if (!updateUser) {
         throw new Error('updateUser функция не определена')
       }
-      
+
       await updateUser(userId, updateData)
       onSelectRole(selectedSubRole)
     } catch (error) {
-      // В случае ошибки все равно выбираем роль локально
       onSelectRole(selectedSubRole)
     }
-  }, [selectedSubRole, selectedPositionValue, onSelectRole, updateUser, isAuthenticated, userData])
+  }, [selectedSubRole, selectedPositionValue, onSelectRole, updateUser, isAuthenticated])
 
   const handleSupplierTypeSelect = useCallback((typeValue: string) => {
     setSelectedSupplierType(typeValue)
@@ -289,45 +249,31 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
       return
     }
 
-    let userId = userData?.id
-    
-    if (!userId) {
-      try {
-        const { store } = await import('../../../store')
-        const state = store.getState()
-        userId = state.user.userData?.id
-      } catch (error) {
-        // Ошибка при получении userId из store
-      }
-    }
-
+    const userId = await getCurrentUserId()
     if (!userId) {
       onSelectRole('supplier')
       return
     }
 
-      try {
-        // Для supplier отправляем role и supplier_type через PATCH /api/v1/users/:id
-        // Формат: { user: { role: "supplier", supplier_profile_attributes: { supplier_type: "products" } } }
-        const updateData: UpdateUserRequest = {
-          user: selectedSupplierType
-            ? {
-                role: 'supplier',
-                supplier_profile_attributes: { supplier_type: selectedSupplierType },
-              }
-            : {
-                role: 'supplier',
-              },
-        }
-      
+    try {
+      const updateData: UpdateUserRequest = {
+        user: selectedSupplierType
+          ? {
+              role: 'supplier',
+              supplier_profile_attributes: { supplier_type: selectedSupplierType },
+            }
+          : {
+              role: 'supplier',
+            },
+      }
+
       if (!updateUser) {
         throw new Error('updateUser функция не определена')
       }
-      
+
       await updateUser(userId, updateData)
       onSelectRole('supplier')
     } catch (error) {
-      // В случае ошибки все равно выбираем роль локально
       onSelectRole('supplier')
     }
   }, [selectedSupplierType, onSelectRole, updateUser, isAuthenticated, userData])
@@ -342,45 +288,31 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
       return
     }
 
-    let userId = userData?.id
-    
-    if (!userId) {
-      try {
-        const { store } = await import('../../../store')
-        const state = store.getState()
-        userId = state.user.userData?.id
-      } catch (error) {
-        // Ошибка при получении userId из store
-      }
-    }
-
+    const userId = await getCurrentUserId()
     if (!userId) {
       onSelectRole('venue')
       return
     }
 
-      try {
-        // Для venue отправляем role и restaurant_format через PATCH /api/v1/users/:id
-        // Формат: { user: { role: "restaurant", restaurant_profile_attributes: { restaurant_format: "full_service" } } }
-        const updateData: UpdateUserRequest = {
-          user: selectedRestaurantFormat
-            ? {
-                role: 'restaurant',
-                restaurant_profile_attributes: { restaurant_format: selectedRestaurantFormat },
-              }
-            : {
-                role: 'restaurant',
-              },
-        }
-      
+    try {
+      const updateData: UpdateUserRequest = {
+        user: selectedRestaurantFormat
+          ? {
+              role: 'restaurant',
+              restaurant_profile_attributes: { restaurant_format: selectedRestaurantFormat },
+            }
+          : {
+              role: 'restaurant',
+            },
+      }
+
       if (!updateUser) {
         throw new Error('updateUser функция не определена')
       }
-      
+
       await updateUser(userId, updateData)
       onSelectRole('venue')
     } catch (error) {
-      // В случае ошибки все равно выбираем роль локально
       onSelectRole('venue')
     }
   }, [selectedRestaurantFormat, onSelectRole, updateUser, isAuthenticated, userData])
@@ -402,7 +334,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   }, [showEmployeeSubRoles, showSupplierTypes, showRestaurantFormats])
 
   return {
-    selectedRole,
+    selectedRole: draftSelectedRole,
     showEmployeeSubRoles,
     showSupplierTypes,
     showRestaurantFormats,

@@ -9,7 +9,8 @@ import {
   UserCog,
   User,
   Store,
-  Package,
+  ChefHat,
+  Truck,
 } from 'lucide-react'
 import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
 import {
@@ -44,27 +45,27 @@ const POSITION_VALUE_TO_ROLE_MAP: Record<string, EmployeeRole> = {
  * Маппинг ролей на иконки
  */
 const ROLE_ICON_MAP: Record<UserRole, React.ComponentType<{ className?: string }>> = {
-  chef: User,
+  chef: ChefHat, // employee -> chef использует ChefHat
   waiter: UtensilsCrossed,
   bartender: Wine,
   barista: Coffee,
   admin: UserCog,
-  venue: Store,
-  supplier: Package,
+  venue: Store, // restaurant -> venue использует Store
+  supplier: Truck, // supplier использует Truck
   unverified: User,
 }
 
 /**
- * Маппинг ролей на цвета
+ * Маппинг ролей на цвета (градиенты)
  */
 const ROLE_COLOR_MAP: Record<UserRole, string> = {
-  chef: 'from-blue-500 to-cyan-500',
+  chef: 'from-[#d16b9f] to-[#8b5da8]', // employee -> chef
   waiter: 'from-green-500 to-emerald-500',
   bartender: 'from-purple-500 to-pink-500',
   barista: 'from-amber-500 to-orange-500',
   admin: 'from-indigo-500 to-blue-600',
-  venue: 'from-orange-500 to-red-500',
-  supplier: 'from-indigo-500 to-blue-600',
+  venue: 'from-[#8b5da8] to-[#6b4c9a]', // restaurant -> venue
+  supplier: 'from-[#7ec8e3] to-[#a8d5e2]',
   unverified: 'from-gray-500 to-gray-600',
 }
 
@@ -72,12 +73,12 @@ const ROLE_COLOR_MAP: Record<UserRole, string> = {
  * Маппинг ролей на описания
  */
 const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
-  chef: 'Готовлю блюда и управляю кухней',
+  chef: 'Ищу смены, работу, развитие', // employee -> chef
   waiter: 'Обслуживаю гостей в зале',
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
   admin: 'Управляю заведением и персоналом',
-  venue: 'Ищу персонал и поставщиков',
+  venue: 'Ищу персонал и поставщиков', // restaurant -> venue
   supplier: 'Предлагаю товары и услуги',
   unverified: 'Роль не подтверждена',
 }

@@ -4,7 +4,7 @@ import { isEmployeeRole } from '../utils/roles'
 
 interface BottomNavProps {
   activeTab: Tab
-  onTabChange: (tab: string) => void
+  onTabChange: (tab: Tab) => void
   role: UserRole
 }
 

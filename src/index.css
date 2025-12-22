@@ -4,82 +4,94 @@
 
 :root {
   --font-size: 16px;
-  --background: #f2f2f7;
-  --foreground: #1c1c1e;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
   --card: #ffffff;
-  --card-foreground: #1c1c1e;
-  --popover: #ffffff;
-  --popover-foreground: #1c1c1e;
-  --primary: #ffd700;
-  --primary-foreground: #1c1c1e;
-  --secondary: #e69a28;
-  --secondary-foreground: #1c1c1e;
-  --muted: #e5e5ea;
-  --muted-foreground: #8e8e93;
-  --accent: #ffd700;
-  --accent-foreground: #1c1c1e;
-  --destructive: #ff3b30;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
   --destructive-foreground: #ffffff;
   --border: rgba(0, 0, 0, 0.1);
   --input: transparent;
-  --input-background: #f2f2f7;
-  --switch-background: #e5e5ea;
-  --font-weight-medium: 600;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: rgba(255, 215, 0, 0.3);
-  --chart-1: #ffd700;
-  --chart-2: #e69a28;
-  --chart-3: #ff9500;
-  --chart-4: #34c759;
-  --chart-5: #007aff;
-  --radius: 1rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1c1c1e;
-  --sidebar-primary: #ffd700;
-  --sidebar-primary-foreground: #1c1c1e;
-  --sidebar-accent: #f2f2f7;
-  --sidebar-accent-foreground: #1c1c1e;
-  --sidebar-border: rgba(0, 0, 0, 0.1);
-  --sidebar-ring: rgba(255, 215, 0, 0.3);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Resta Premium Colors */
+  --purple-deep: #6B21A8;
+  --pink-electric: #EC4899;
+  --blue-cyber: #06B6D4;
+  --gradient-primary: linear-gradient(135deg, #6B21A8 0%, #EC4899 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(107, 33, 168, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #e0e0e0;
-  --card: #1c1c1e;
-  --card-foreground: #e0e0e0;
-  --popover: #1c1c1e;
-  --popover-foreground: #e0e0e0;
-  --primary: #ffd700;
-  --primary-foreground: #1c1c1e;
-  --secondary: #e69a28;
-  --secondary-foreground: #1c1c1e;
-  --muted: #2c2c2e;
-  --muted-foreground: #98989d;
-  --accent: #ffd700;
-  --accent-foreground: #1c1c1e;
-  --destructive: #ff453a;
-  --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: transparent;
-  --input-background: #2c2c2e;
-  --switch-background: #48484a;
-  --font-weight-medium: 600;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: rgba(255, 215, 0, 0.3);
-  --chart-1: #ffd700;
-  --chart-2: #e69a28;
-  --chart-3: #ff9500;
-  --chart-4: #30d158;
-  --chart-5: #0a84ff;
-  --sidebar: #1c1c1e;
-  --sidebar-foreground: #e0e0e0;
-  --sidebar-primary: #ffd700;
-  --sidebar-primary-foreground: #1c1c1e;
-  --sidebar-accent: #2c2c2e;
-  --sidebar-accent-foreground: #e0e0e0;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: rgba(255, 215, 0, 0.3);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+  
+  /* Resta Premium Colors - Dark Mode */
+  --purple-deep: #9333EA;
+  --pink-electric: #F472B6;
+  --blue-cyber: #22D3EE;
+  --gradient-primary: linear-gradient(135deg, #9333EA 0%, #F472B6 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(244, 114, 182, 0.15) 100%);
 }
 
 @theme inline {
@@ -131,84 +143,99 @@
   body {
     @apply bg-background text-foreground;
   }
-}
 
-/**
- * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
- */
-@layer base {
-  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
-    h1 {
-      font-size: var(--text-2xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  html {
+    font-size: var(--font-size);
+  }
 
-    h2 {
-      font-size: var(--text-xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    h3 {
-      font-size: var(--text-lg);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    h4 {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    p {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    label {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    button {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    input {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
   }
 }
 
-html {
-  font-size: var(--font-size);
+/* Resta Premium Styles */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
+/* Custom Gradient Utilities */
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  
+  .gradient-glow {
+    background: var(--gradient-glow);
+  }
+  
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 
+/* Glassmorphism effects */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
-.dark .glass {
-  background: rgba(28, 28, 30, 0.7);
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
 }

@@ -5,17 +5,17 @@
 import { useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
-import { Button } from '../../../components/ui/button'
-import { Badge } from '../../../components/ui/badge'
-import { cn } from '../../../utils/cn'
-import { setupTelegramBackButton } from '../../../utils/telegram'
+import { Button } from '../../../../components/ui/button'
+import { Badge } from '../../../../components/ui/badge'
+import { cn } from '../../../../utils/cn'
+import { setupTelegramBackButton } from '../../../../utils/telegram'
 import {
   roleCardAnimation,
   checkIconAnimation,
   ANIMATION_DELAY_STEP,
-} from '../../../constants/animations'
-import type { EmployeeRole, UserRole } from '../../../types'
-import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
+} from '../../../../constants/animations'
+import type { EmployeeRole, UserRole } from '../../../../types'
+import { mapEmployeeSubRolesFromApi } from '../../../../utils/rolesMapper'
 
 interface EmployeeSubRoleSelectorProps {
   currentRole: UserRole | null

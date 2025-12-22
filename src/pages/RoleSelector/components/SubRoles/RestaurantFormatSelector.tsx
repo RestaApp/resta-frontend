@@ -17,18 +17,18 @@ import {
     Beer,
     Zap,
 } from 'lucide-react'
-import { Button } from '../../../components/ui/button'
-import { setupTelegramBackButton } from '../../../utils/telegram'
-import { cn } from '../../../utils/cn'
+import { Button } from '../../../../components/ui/button'
+import { setupTelegramBackButton } from '../../../../utils/telegram'
+import { cn } from '../../../../utils/cn'
 import {
     roleCardAnimation,
     checkIconAnimation,
     ANIMATION_DELAY_STEP,
-} from '../../../constants/animations'
+} from '../../../../constants/animations'
 import {
     getRestaurantFormatLabel,
     getRestaurantFormatDescription,
-} from '../../../constants/labels'
+} from '../../../../constants/labels'
 
 interface RestaurantFormatSelectorProps {
     onSelectFormat: (formatValue: string) => void

@@ -29,3 +29,21 @@ export const cardAnimation = {
   initial: { scale: 0.9, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
 } as const
+
+/**
+ * Transition конфигурации для переиспользования
+ */
+export const logoTransition = {
+  duration: ANIMATION_DURATION,
+  ease: 'easeOut',
+} as const
+
+/**
+ * Создает transition конфигурацию для текстовых элементов с задержкой
+ */
+export function createTextTransition(delay: number) {
+  return {
+    delay,
+    duration: ANIMATION_DURATION,
+  } as const
+}

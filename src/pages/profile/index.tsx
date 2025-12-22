@@ -33,7 +33,7 @@ import {
   AlertDialogTitle,
 } from '../../components/ui/alert-dialog'
 import { BottomNav } from '../../components/BottomNav'
-import { EmployeeSubRoleSelector } from '../role-selector/components/EmployeeSubRoleSelector'
+import { EmployeeSubRoleSelector } from '../RoleSelector/components/SubRoles/EmployeeSubRoleSelector'
 import { useAppSelector, useAppDispatch } from '../../store/hooks'
 import { setSelectedRole } from '../../store/userSlice'
 import { useUserProfile } from '../../hooks/useUserProfile'
@@ -46,7 +46,7 @@ interface ProfileScreenProps {
   onNavigate: (destination: Screen) => void
   onBack?: () => void
   activeTab?: Tab
-  onTabChange?: (tab: string) => void
+  onTabChange?: (tab: Tab) => void
 }
 
 export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: ProfileScreenProps) {
