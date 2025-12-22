@@ -11,6 +11,8 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   bartender: 'Бармен',
   barista: 'Бариста',
   admin: 'Администратор',
+  manager: 'Менеджер',
+  support: 'Поддержка',
   venue: 'Заведение',
   supplier: 'Поставщик',
   unverified: 'Непроверенный',
@@ -54,10 +56,22 @@ export const EMPLOYEE_SUBROLES: ReadonlyArray<EmployeeSubRole> = [
   },
 ] as const
 
+// Emoji для быстрых визуализаций позиций (используется в UI выбора позиций)
+export const POSITION_EMOJI_MAP: Record<string, string> = {
+  chef: '👨‍🍳',
+  waiter: '🍽️',
+  bartender: '🍸',
+  barista: '☕',
+  manager: '👔',
+  support: '💼',
+} as const
+
 export const EMPLOYEE_ROLES: readonly EmployeeRole[] = [
   'chef',
   'waiter',
   'bartender',
   'barista',
   'admin',
+  'manager',
+  'support',
 ] as const

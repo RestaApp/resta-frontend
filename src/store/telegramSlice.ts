@@ -29,4 +29,3 @@ const telegramSlice = createSlice({
 
 export const { setInitData, setReady } = telegramSlice.actions
 export default telegramSlice.reducer
-

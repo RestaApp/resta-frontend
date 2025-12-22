@@ -19,13 +19,3 @@ export function VenueHome(_props: VenueHomeProps) {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-

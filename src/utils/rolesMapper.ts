@@ -11,6 +11,8 @@ import {
   Store,
   ChefHat,
   Truck,
+  Briefcase,
+  Headphones,
 } from 'lucide-react'
 import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
 import {
@@ -36,10 +38,20 @@ const POSITION_VALUE_TO_ROLE_MAP: Record<string, EmployeeRole> = {
   waiter: 'waiter',
   bartender: 'bartender',
   barista: 'barista',
-  manager: 'admin', // manager -> admin
-  support: 'admin', // support -> admin
+  manager: 'manager',
+  support: 'support',
 }
 
+// Иконки и цвета для отдельных позиций (override)
+const POSITION_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  manager: Briefcase,
+  support: Headphones,
+}
+
+const POSITION_COLOR_MAP: Record<string, string> = {
+  manager: 'from-indigo-500 to-blue-600',
+  support: 'from-gray-500 to-gray-600',
+}
 
 /**
  * Маппинг ролей на иконки
@@ -50,6 +62,8 @@ const ROLE_ICON_MAP: Record<UserRole, React.ComponentType<{ className?: string }
   bartender: Wine,
   barista: Coffee,
   admin: UserCog,
+  manager: Briefcase,
+  support: Headphones,
   venue: Store, // restaurant -> venue использует Store
   supplier: Truck, // supplier использует Truck
   unverified: User,
@@ -64,6 +78,8 @@ const ROLE_COLOR_MAP: Record<UserRole, string> = {
   bartender: 'from-purple-500 to-pink-500',
   barista: 'from-amber-500 to-orange-500',
   admin: 'from-indigo-500 to-blue-600',
+  manager: 'from-indigo-500 to-blue-600',
+  support: 'from-gray-500 to-gray-600',
   venue: 'from-[#8b5da8] to-[#6b4c9a]', // restaurant -> venue
   supplier: 'from-[#7ec8e3] to-[#a8d5e2]',
   unverified: 'from-gray-500 to-gray-600',
@@ -78,19 +94,19 @@ const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
   admin: 'Управляю заведением и персоналом',
+  manager: 'Управляю командой и процессами',
+  support: 'Оказываю поддержку и помощь',
   venue: 'Ищу персонал и поставщиков', // restaurant -> venue
   supplier: 'Предлагаю товары и услуги',
   unverified: 'Роль не подтверждена',
 }
-
-
 
 /**
  * Преобразует данные роли из API в формат компонента
  */
 export function mapRoleOptionFromApi(roleValue: string): RoleOption | null {
   const roleId = VALUE_TO_ROLE_MAP[roleValue]
-  
+
   if (!roleId) {
     return null
   }
@@ -108,9 +124,7 @@ export function mapRoleOptionFromApi(roleValue: string): RoleOption | null {
  * Преобразует массив ролей из API в формат компонентов
  */
 export function mapRoleOptionsFromApi(rolesApi: string[]): RoleOption[] {
-  return rolesApi
-    .map(mapRoleOptionFromApi)
-    .filter((role): role is RoleOption => role !== null)
+  return rolesApi.map(mapRoleOptionFromApi).filter((role): role is RoleOption => role !== null)
 }
 
 /**
@@ -118,16 +132,16 @@ export function mapRoleOptionsFromApi(rolesApi: string[]): RoleOption[] {
  */
 export function mapPositionFromApi(positionValue: string): EmployeeSubRole | null {
   const roleId = POSITION_VALUE_TO_ROLE_MAP[positionValue]
-  
+
   if (!roleId) {
     return null
   }
 
-  const icon = ROLE_ICON_MAP[roleId]
-  const color = ROLE_COLOR_MAP[roleId]
-  
+  const icon = POSITION_ICON_MAP[positionValue] || ROLE_ICON_MAP[roleId as UserRole]
+  const color = POSITION_COLOR_MAP[positionValue] || ROLE_COLOR_MAP[roleId as UserRole]
+
   // Используем функции из labels.ts для получения названий и описаний
-  const description = getEmployeePositionDescription(positionValue) || ROLE_DESCRIPTION_MAP[roleId]
+  const description = getEmployeePositionDescription(positionValue) || ROLE_DESCRIPTION_MAP[roleId as UserRole]
   const title = getEmployeePositionLabel(positionValue)
 
   if (!icon || !color) {
@@ -147,11 +161,8 @@ export function mapPositionFromApi(positionValue: string): EmployeeSubRole | nul
 /**
  * Преобразует массив позиций из API в формат компонентов
  */
-export function mapEmployeeSubRolesFromApi(
-  positionsApi: string[]
-): EmployeeSubRole[] {
+export function mapEmployeeSubRolesFromApi(positionsApi: string[]): EmployeeSubRole[] {
   return positionsApi
     .map(mapPositionFromApi)
     .filter((role): role is EmployeeSubRole => role !== null)
 }
-

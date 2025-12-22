@@ -89,7 +89,9 @@ export function logout(): void {
 /**
  * Декодирует JWT токен и возвращает payload
  */
-export function decodeToken(token: string): { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown } | null {
+export function decodeToken(
+  token: string
+): { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown } | null {
   try {
     const parts = token.split('.')
     if (parts.length !== 3) {
@@ -97,7 +99,13 @@ export function decodeToken(token: string): { exp?: number; id?: number; sub?: n
     }
     const payload = parts[1]
     const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
-    return JSON.parse(decoded) as { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown }
+    return JSON.parse(decoded) as {
+      exp?: number
+      id?: number
+      sub?: number
+      userId?: number
+      [key: string]: unknown
+    }
   } catch {
     return null
   }

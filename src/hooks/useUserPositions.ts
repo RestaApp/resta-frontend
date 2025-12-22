@@ -40,4 +40,3 @@ export function useUserPositions(options: UseUserPositionsOptions = {}) {
     refetch,
   }
 }
-

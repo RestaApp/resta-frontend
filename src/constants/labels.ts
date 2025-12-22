@@ -105,13 +105,13 @@ export const SPECIALIZATION_LABELS: Record<string, string> = {
   kitchen_manager: 'Менеджер кухни',
   bar_manager: 'Менеджер бара',
   shift_supervisor: 'Супервайзер смены',
-  
+
   // Bartender специализации
   head_bartender: 'Старший бармен',
   mixologist: 'Миксолог',
   bar_back: 'Помощник бармена',
   sommelier: 'Сомелье',
-  
+
   // Chef специализации
   executive_chef: 'Шеф-повар',
   sous_chef: 'Су-шеф',
@@ -127,18 +127,18 @@ export const SPECIALIZATION_LABELS: Record<string, string> = {
   cold_station_cook: 'Повар холодного цеха',
   hot_station_cook: 'Повар горячего цеха',
   pizza_maker: 'Пиццайоло',
-  
+
   // Waiter специализации
   head_waiter: 'Старший официант',
   server: 'Официант',
   runner: 'Официант-курьер',
   busser: 'Помощник официанта',
-  
+
   // Barista специализации
   head_barista: 'Старший бариста',
   latte_artist: 'Латте-артист',
   roaster: 'Обжарщик',
-  
+
   // Dishwasher специализации
   dishwasher: 'Мойщик посуды',
   cleaner: 'Уборщик',
@@ -205,4 +205,3 @@ export function getUserRoleLabel(value: string): string {
 export function getSpecializationLabel(value: string): string {
   return SPECIALIZATION_LABELS[value] || value
 }
-

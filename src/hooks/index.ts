@@ -16,5 +16,3 @@ export * from './useUserPositions'
 export * from './useUserSpecializations'
 export * from './useVacancies'
 export * from './useReplacementShifts'
-
-

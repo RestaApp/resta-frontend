@@ -17,7 +17,7 @@ import { SettingsScreen } from './pages/settings'
 import { SuppliersScreen } from './pages/suppliers'
 import { BottomNav } from './components/BottomNav'
 
-import { LoadingPage } from './pages/applications/components/LoadingPage/LoadingPage'
+import { LoadingPage } from './pages/applications/components/Loading/LoadingPage'
 import { useRole } from './hooks/useRole'
 import { useNavigation } from './hooks/useNavigation'
 import { useAuth } from './contexts/AuthContext'
@@ -25,7 +25,13 @@ import type { Tab, Screen, UserRole } from './types'
 import { ROUTES } from './constants/routes'
 import type { JSX } from 'react'
 
-const TABS_WITH_SCREENS: readonly Tab[] = ['vacancies', 'shifts', 'notifications', 'profile', 'home'] as const
+const TABS_WITH_SCREENS: readonly Tab[] = [
+  'vacancies',
+  'shifts',
+  'notifications',
+  'profile',
+  'home',
+] as const
 
 export default function App(): JSX.Element {
   const { isLoading } = useAuth()
@@ -48,15 +54,12 @@ export default function App(): JSX.Element {
     [handleRoleSelect]
   )
 
-  const handleTabChange = useCallback(
-    (tab: Tab) => {
-      setActiveTab(tab)
-      if (TABS_WITH_SCREENS.includes(tab)) {
-        setCurrentScreen(tab as Screen)
-      }
-    },
-    []
-  )
+  const handleTabChange = useCallback((tab: Tab) => {
+    setActiveTab(tab)
+    if (TABS_WITH_SCREENS.includes(tab)) {
+      setCurrentScreen(tab as Screen)
+    }
+  }, [])
 
   const handleCreateShift = useCallback(() => {
     // TODO: Добавить toast уведомление об успешной публикации
@@ -106,7 +109,16 @@ export default function App(): JSX.Element {
       default:
         return <Home role={selectedRole} onNavigate={navigate} />
     }
-  }, [currentScreen, selectedRole, navigate, back, handleRoleReset, activeTab, handleTabChange, handleCreateShift])
+  }, [
+    currentScreen,
+    selectedRole,
+    navigate,
+    back,
+    handleRoleReset,
+    activeTab,
+    handleTabChange,
+    handleCreateShift,
+  ])
 
   // Показываем экран загрузки только если:
   // 1. Идет загрузка И данных пользователя еще нет
@@ -127,7 +139,6 @@ export default function App(): JSX.Element {
       {currentScreen !== ROUTES.PROFILE && (
         <BottomNav activeTab={activeTab} onTabChange={handleTabChange} role={selectedRole} />
       )}
-
     </div>
   )
 }

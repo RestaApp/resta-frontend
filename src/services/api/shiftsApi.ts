@@ -119,10 +119,10 @@ export const shiftsApi = api.injectEndpoints({
     getVacancies: builder.query<VacanciesResponse, GetVacanciesParams>({
       query: params => {
         const searchParams = new URLSearchParams()
-        
+
         // Обязательный параметр
         searchParams.append('shift_type', params.shift_type)
-        
+
         // Опциональные параметры
         if (params.urgent !== undefined) {
           searchParams.append('urgent', String(params.urgent))

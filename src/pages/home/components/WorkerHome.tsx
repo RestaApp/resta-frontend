@@ -153,4 +153,3 @@ export function WorkerHome({ onNavigate }: WorkerHomeProps) {
     </div>
   )
 }
-

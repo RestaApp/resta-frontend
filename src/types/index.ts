@@ -8,11 +8,20 @@ export type UserRole =
   | 'bartender'
   | 'barista'
   | 'admin'
+  | 'manager'
+  | 'support'
   | 'venue'
   | 'supplier'
   | 'unverified'
 
-export type EmployeeRole = 'chef' | 'waiter' | 'bartender' | 'barista' | 'admin'
+export type EmployeeRole =
+  | 'chef'
+  | 'waiter'
+  | 'bartender'
+  | 'barista'
+  | 'admin'
+  | 'manager'
+  | 'support'
 
 export type Tab = 'home' | 'shifts' | 'notifications' | 'profile' | 'vacancies'
 

@@ -27,7 +27,7 @@ const userSlice = createSlice({
       // Автоматически устанавливаем selectedRole на основе роли пользователя
       if (action.payload) {
         const mappedRole = mapRoleFromApi(action.payload.role)
-        
+
         // Если роль unverified, оставляем selectedRole = null, чтобы показать RoleSelector
         // Если роль установлена и не unverified, устанавливаем selectedRole
         if (mappedRole && mappedRole !== 'unverified') {
@@ -53,4 +53,3 @@ const userSlice = createSlice({
 
 export const { setUserData, setSelectedRole, clearUserData } = userSlice.actions
 export default userSlice.reducer
-

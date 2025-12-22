@@ -1,8 +1,8 @@
-import { motion } from 'motion/react'
 import { RoleCard } from './components/RoleCard'
 import { EmployeeSubRoleSelector } from './components/SubRoles/EmployeeSubRoleSelector'
 import { SupplierTypeSelector } from './components/SubRoles/SupplierTypeSelector'
 import { RestaurantFormatSelector } from './components/SubRoles/RestaurantFormatSelector'
+import { SectionHeader } from '../../components/ui/section-header'
 import { useRoleSelector } from './hooks/useRoleSelector'
 import type { UserRole, RoleOption } from '../../types'
 import type { JSX } from 'react'
@@ -97,7 +97,9 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
   if (!isLoading && !isFetching && (error || mainRoles.length === 0)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
-        <p className="text-muted-foreground">{error ? 'Не удалось загрузить роли' : 'Роли не найдены'}</p>
+        <p className="text-muted-foreground">
+          {error ? 'Не удалось загрузить роли' : 'Роли не найдены'}
+        </p>
       </div>
     )
   }
@@ -105,19 +107,24 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="flex-1 flex flex-col px-6 py-8 overflow-y-auto">
-        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }} className="mb-8">
-          <h1 className="text-center text-2xl font-semibold mb-2 text-foreground">Кто вы?</h1>
-          <p className="text-center text-muted-foreground">Выберите вашу роль в экосистеме</p>
-        </motion.div>
+        <SectionHeader
+          title="Кто вы?"
+          description="Выберите вашу роль в экосистеме"
+          className="mb-8"
+        />
 
         <div className="flex-1 flex flex-col gap-4 max-w-md mx-auto w-full">
           {mainRoles.map((role: RoleOption, index: number) => (
-            <RoleCard key={role.id} role={role} isSelected={selectedRole === role.id} index={index} onSelect={handleRoleSelect} />
+            <RoleCard
+              key={role.id}
+              role={role}
+              isSelected={selectedRole === role.id}
+              index={index}
+              onSelect={handleRoleSelect}
+            />
           ))}
         </div>
       </div>
     </div>
   )
 }
-
-

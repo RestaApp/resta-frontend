@@ -42,7 +42,7 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <AppHeader title="Экстра смены" onNavigate={onNavigate || (() => { })} />
+      <AppHeader title="Экстра смены" onNavigate={onNavigate || (() => {})} />
 
       <div className="px-4 py-4 space-y-4">
         <div className="flex items-center gap-2">
@@ -52,8 +52,7 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
           </Button>
 
           <div className="text-[12px] text-muted-foreground ml-auto">
-            {shifts.length}{' '}
-            {shifts.length === 1 ? 'смена' : shifts.length < 5 ? 'смены' : 'смен'}
+            {shifts.length} {shifts.length === 1 ? 'смена' : shifts.length < 5 ? 'смены' : 'смен'}
           </div>
         </div>
 
@@ -103,8 +102,3 @@ export function ShiftsScreen({ onNavigate, onBack }: ShiftsScreenProps) {
     </div>
   )
 }
-
-
-
-
-

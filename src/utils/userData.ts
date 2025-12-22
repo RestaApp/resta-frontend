@@ -23,11 +23,13 @@ export function updateUserDataInStore(dispatch: AppDispatch, userData: UserData 
 export function invalidateUserCache(dispatch: AppDispatch): void {
   // Используем прямой импорт через динамический для избежания циклических зависимостей
   // при инициализации модулей
-  import('../store/api').then(({ api }) => {
-    dispatch(api.util.invalidateTags(['User']))
-  }).catch(() => {
-    // Игнорируем ошибки импорта
-  })
+  import('../store/api')
+    .then(({ api }) => {
+      dispatch(api.util.invalidateTags(['User']))
+    })
+    .catch(() => {
+      // Игнорируем ошибки импорта
+    })
 }
 
 /**
@@ -42,4 +44,3 @@ export function dispatchAuthEvent(): void {
     }
   }
 }
-

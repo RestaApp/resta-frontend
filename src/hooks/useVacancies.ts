@@ -116,25 +116,26 @@ export function useVacancies(options: UseVacanciesOptions = {}) {
         // Форматируем оплату
         let salary = 'Не указано'
         if (vacancy.payment) {
-          const paymentValue = typeof vacancy.payment === 'string' 
-            ? parseFloat(vacancy.payment) 
-            : vacancy.payment
+          const paymentValue =
+            typeof vacancy.payment === 'string' ? parseFloat(vacancy.payment) : vacancy.payment
           if (!isNaN(paymentValue)) {
             salary = `${paymentValue} BYN`
             // Если есть hourly_rate, показываем оба варианта
             if (vacancy.hourly_rate) {
-              const hourlyValue = typeof vacancy.hourly_rate === 'string'
-                ? parseFloat(vacancy.hourly_rate)
-                : vacancy.hourly_rate
+              const hourlyValue =
+                typeof vacancy.hourly_rate === 'string'
+                  ? parseFloat(vacancy.hourly_rate)
+                  : vacancy.hourly_rate
               if (!isNaN(hourlyValue)) {
                 salary = `${paymentValue} BYN (${hourlyValue} BYN/час)`
               }
             }
           }
         } else if (vacancy.hourly_rate) {
-          const hourlyValue = typeof vacancy.hourly_rate === 'string'
-            ? parseFloat(vacancy.hourly_rate)
-            : vacancy.hourly_rate
+          const hourlyValue =
+            typeof vacancy.hourly_rate === 'string'
+              ? parseFloat(vacancy.hourly_rate)
+              : vacancy.hourly_rate
           if (!isNaN(hourlyValue)) {
             salary = `от ${hourlyValue} BYN/час`
           }
@@ -146,10 +147,10 @@ export function useVacancies(options: UseVacanciesOptions = {}) {
           try {
             const startDate = new Date(vacancy.start_time)
             const endDate = new Date(vacancy.end_time)
-            
+
             // Проверяем, один ли это день
             const isSameDay = startDate.toDateString() === endDate.toDateString()
-            
+
             if (isSameDay) {
               // Один день: "25 января, 18:00-23:00"
               const dateStr = startDate.toLocaleDateString('ru-RU', {
@@ -198,9 +199,8 @@ export function useVacancies(options: UseVacanciesOptions = {}) {
         }
 
         // Определяем категорию из target_roles
-        const category = vacancy.target_roles && vacancy.target_roles.length > 0
-          ? vacancy.target_roles[0]
-          : 'chef'
+        const category =
+          vacancy.target_roles && vacancy.target_roles.length > 0 ? vacancy.target_roles[0] : 'chef'
 
         // Получаем название заведения из user
         const venueName = vacancy.user?.name || vacancy.user?.full_name || 'Не указано'
@@ -261,4 +261,3 @@ export function useVacancies(options: UseVacanciesOptions = {}) {
     meta: data?.meta,
   }
 }
-

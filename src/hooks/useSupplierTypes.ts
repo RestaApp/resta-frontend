@@ -37,4 +37,3 @@ export function useSupplierTypes(options: UseSupplierTypesOptions = {}) {
     refetch,
   }
 }
-

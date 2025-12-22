@@ -133,8 +133,4 @@ export const authApi = api.injectEndpoints({
 })
 
 // Экспорт базовых хуков RTK Query (используются в кастомных хуках)
-export const {
-  useAuthTelegramMutation,
-  useRefreshTokenMutation,
-  useUpdateRoleMutation,
-} = authApi
+export const { useAuthTelegramMutation, useRefreshTokenMutation, useUpdateRoleMutation } = authApi

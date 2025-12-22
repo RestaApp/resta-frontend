@@ -40,13 +40,3 @@ export function AppHeader({ onNavigate, subtitle, title }: AppHeaderProps) {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-

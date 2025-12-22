@@ -44,6 +44,3 @@ export function useUserSpecializations(options: UseUserSpecializationsOptions) {
     refetch,
   }
 }
-
-
-

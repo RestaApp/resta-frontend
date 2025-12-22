@@ -64,4 +64,8 @@ export const rolesApi = api.injectEndpoints({
 })
 
 // Экспорт хуков для использования в компонентах
-export const { useGetAvailableUserRolesQuery, useGetSupplierTypesQuery, useGetRestaurantFormatsQuery } = rolesApi
+export const {
+  useGetAvailableUserRolesQuery,
+  useGetSupplierTypesQuery,
+  useGetRestaurantFormatsQuery,
+} = rolesApi

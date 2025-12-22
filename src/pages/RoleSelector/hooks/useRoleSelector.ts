@@ -34,7 +34,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   const { isAuthenticated } = useAuth()
   const userData = useAppSelector(state => state.user.userData)
   const { updateUser } = useUpdateUser()
-  
+
   // Проверяем, что роль пользователя равна 'unverified'
   // roles API вызывается ТОЛЬКО если роль в sign_in равна 'unverified'
   const isUnverifiedRole = useMemo(() => {
@@ -44,13 +44,14 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     const normalizedRole = userData.role.toLowerCase().trim()
     return normalizedRole === 'unverified'
   }, [userData?.role])
-  
+
   // Запрашиваем роли только если пользователь авторизован И его роль равна 'unverified'
   const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverifiedRole })
-  
+
   // Загружаем позиции только если выбрана роль employee (chef) И роль пользователя unverified
-  const shouldLoadPositions = (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverifiedRole
-  
+  const shouldLoadPositions =
+    (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverifiedRole
+
   const {
     positionsApi: employeeSubRoles,
     isLoading: isLoadingPositions,
@@ -58,7 +59,8 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   } = useUserPositions({ enabled: shouldLoadPositions })
 
   // Загружаем типы поставщиков только если выбрана роль supplier И роль пользователя unverified
-  const shouldLoadSupplierTypes = (draftSelectedRole === 'supplier' || showSupplierTypes) && isUnverifiedRole
+  const shouldLoadSupplierTypes =
+    (draftSelectedRole === 'supplier' || showSupplierTypes) && isUnverifiedRole
 
   const {
     supplierTypes,
@@ -67,7 +69,8 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   } = useSupplierTypes({ enabled: shouldLoadSupplierTypes })
 
   // Загружаем форматы ресторанов только если выбрана роль venue И роль пользователя unverified
-  const shouldLoadRestaurantFormats = (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverifiedRole
+  const shouldLoadRestaurantFormats =
+    (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverifiedRole
 
   const {
     restaurantFormats,
@@ -367,5 +370,3 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     handleBack,
   }
 }
-
-

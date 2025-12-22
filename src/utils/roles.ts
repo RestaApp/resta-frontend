@@ -24,6 +24,8 @@ export function mapRoleFromApi(roleString: string | null | undefined): UserRole 
     bartender: 'bartender',
     barista: 'barista',
     admin: 'admin',
+    manager: 'manager',
+    support: 'support',
     venue: 'venue',
     supplier: 'supplier',
   }

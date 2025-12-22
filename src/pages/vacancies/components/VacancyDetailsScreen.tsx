@@ -33,7 +33,7 @@ export function VacancyDetailsScreen({
   if (!vacancy) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => { })} />
+        <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => {})} />
         <div className="px-4 py-8 text-center">
           <p>Вакансия не найдена</p>
           <Button onClick={onBack} className="mt-4">
@@ -54,7 +54,7 @@ export function VacancyDetailsScreen({
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => { })} />
+      <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => {})} />
 
       <div className="px-4 py-6 space-y-6">
         {/* Header Card */}
@@ -149,19 +149,20 @@ export function VacancyDetailsScreen({
                   {vacancy.user.average_rating !== undefined && vacancy.user.average_rating > 0 && (
                     <>
                       <span>⭐ {vacancy.user.average_rating.toFixed(1)}</span>
-                      {vacancy.user.total_reviews !== undefined && vacancy.user.total_reviews > 0 && (
-                        <>
-                          <span>•</span>
-                          <span>
-                            {vacancy.user.total_reviews}{' '}
-                            {vacancy.user.total_reviews === 1
-                              ? 'отзыв'
-                              : vacancy.user.total_reviews < 5
-                                ? 'отзыва'
-                                : 'отзывов'}
-                          </span>
-                        </>
-                      )}
+                      {vacancy.user.total_reviews !== undefined &&
+                        vacancy.user.total_reviews > 0 && (
+                          <>
+                            <span>•</span>
+                            <span>
+                              {vacancy.user.total_reviews}{' '}
+                              {vacancy.user.total_reviews === 1
+                                ? 'отзыв'
+                                : vacancy.user.total_reviews < 5
+                                  ? 'отзыва'
+                                  : 'отзывов'}
+                            </span>
+                          </>
+                        )}
                     </>
                   )}
                 </div>

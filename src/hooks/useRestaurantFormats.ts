@@ -37,4 +37,3 @@ export function useRestaurantFormats(options: UseRestaurantFormatsOptions = {}) 
     refetch,
   }
 }
-

@@ -6,7 +6,13 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
-import { logoAnimation, textAnimation, logoTransition, createTextTransition, ANIMATION_DELAY_STEP } from '../../constants/animations'
+import {
+  logoAnimation,
+  textAnimation,
+  logoTransition,
+  createTextTransition,
+  ANIMATION_DELAY_STEP,
+} from '../../constants/animations'
 
 interface LogoWithTextProps {
   /** Иконка или изображение логотипа */
@@ -71,4 +77,3 @@ export const LogoWithText = memo(function LogoWithText({
     </motion.div>
   )
 })
-

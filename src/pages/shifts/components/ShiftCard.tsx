@@ -81,9 +81,7 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-lg font-bold text-primary">
-              {shift.pay} BYN
-            </div>
+            <div className="text-lg font-bold text-primary">{shift.pay} BYN</div>
             {shift.applicationsCount !== undefined && shift.applicationsCount > 0 && (
               <div className="text-[11px] text-muted-foreground mt-1">
                 {shift.applicationsCount}{' '}
@@ -114,8 +112,3 @@ export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
     </Card>
   )
 }
-
-
-
-
-

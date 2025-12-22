@@ -225,7 +225,7 @@ const retryDelay = (attemptIndex: number): number => {
 const prepareHeaders = (headers: Headers): Headers => {
   // Добавляем токен авторизации
   const token = authService.getToken()
-  
+
   if (token) {
     headers.set('authorization', `Bearer ${token}`)
   }

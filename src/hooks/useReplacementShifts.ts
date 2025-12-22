@@ -165,9 +165,7 @@ export function useReplacementShifts(options: UseReplacementShiftsOptions = {}) 
 
       // Определяем роль из target_roles (используем значение как есть для маппинга)
       const role =
-        vacancy.target_roles && vacancy.target_roles.length > 0
-          ? vacancy.target_roles[0]
-          : 'chef'
+        vacancy.target_roles && vacancy.target_roles.length > 0 ? vacancy.target_roles[0] : 'chef'
 
       // Получаем название заведения из user
       const restaurant = vacancy.user?.name || vacancy.user?.full_name || 'Не указано'
@@ -202,4 +200,3 @@ export function useReplacementShifts(options: UseReplacementShiftsOptions = {}) 
     meta: data?.meta,
   }
 }
-

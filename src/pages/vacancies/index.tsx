@@ -40,7 +40,11 @@ export function VacanciesScreen({ onNavigate, onBack }: VacanciesScreenProps) {
   ]
 
   // Получаем вакансии из API
-  const { vacancies, isLoading: isLoadingVacancies, isFetching: isFetchingVacancies } = useVacancies({
+  const {
+    vacancies,
+    isLoading: isLoadingVacancies,
+    isFetching: isFetchingVacancies,
+  } = useVacancies({
     category: category !== 'all' ? category : undefined,
     type: type !== 'all' ? type : undefined,
     urgentOnly,

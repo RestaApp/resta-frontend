@@ -107,7 +107,7 @@ export const usersApi = api.injectEndpoints({
 
     // Получение специализаций для позиции
     getUserSpecializations: builder.query<UserSpecializationsResponse, string>({
-      query: (position) => ({
+      query: position => ({
         url: `/api/v1/catalogs/specializations?position=${position}`,
         method: 'GET',
       }),
@@ -124,4 +124,3 @@ export const {
   useGetUserPositionsQuery,
   useGetUserSpecializationsQuery,
 } = usersApi
-
