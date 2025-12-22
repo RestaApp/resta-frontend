@@ -22,6 +22,7 @@ interface SpecializationDrawerProps {
     title: string
     specializations: string[]
     isLoading: boolean
+    isLoadingLocation?: boolean
     selectedSpecializations: string[]
     formData: EmployeeFormData
     onSpecializationToggle: (spec: string) => void
@@ -36,6 +37,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
     title,
     specializations,
     isLoading,
+    isLoadingLocation = false,
     selectedSpecializations,
     formData,
     onSpecializationToggle,
@@ -85,6 +87,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                             formData={formData}
                             onLocationRequest={onLocationRequest}
                             onFormDataUpdate={onFormDataUpdate}
+                            isLoadingLocation={isLoadingLocation}
                         />
                     </>
                 ) : (
@@ -119,10 +122,18 @@ interface OptionalFieldsProps {
     onFormDataUpdate: (updates: Partial<EmployeeFormData>) => void
 }
 
+interface OptionalFieldsProps {
+    formData: EmployeeFormData
+    onLocationRequest: () => void
+    onFormDataUpdate: (updates: Partial<EmployeeFormData>) => void
+    isLoadingLocation?: boolean
+}
+
 const OptionalFields = memo(function OptionalFields({
     formData,
     onLocationRequest,
     onFormDataUpdate,
+    isLoadingLocation = false,
 }: OptionalFieldsProps): JSX.Element {
     return (
         <div className="space-y-4 pt-4 border-t border-border">
@@ -138,6 +149,7 @@ const OptionalFields = memo(function OptionalFields({
                 value={formData.location}
                 onChange={value => onFormDataUpdate({ location: value })}
                 onLocationRequest={onLocationRequest}
+                isLoading={isLoadingLocation}
             />
         </div>
     )
