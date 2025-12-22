@@ -5,7 +5,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { setupTelegramBackButton } from '../../../../../utils/telegram'
 import { useUserSpecializations } from '../../../../../hooks/useUserSpecializations'
-import { getEmployeePositionLabel } from '../../../../../constants/labels'
 import type { EmployeeRole } from '../../../../../types'
 import { mapEmployeeSubRolesFromApi } from '../../../../../utils/rolesMapper'
 
@@ -21,6 +20,7 @@ interface UseEmployeeSubRoleSelectorProps {
   selectedSubRole: EmployeeRole | null
   onSelectSubRole: (role: EmployeeRole, positionValue: string) => void
   onBack: () => void
+  onContinue?: (formData: EmployeeFormData) => void
 }
 
 export function useEmployeeSubRoleSelector({
@@ -28,6 +28,7 @@ export function useEmployeeSubRoleSelector({
   selectedSubRole,
   onSelectSubRole,
   onBack,
+  onContinue,
 }: UseEmployeeSubRoleSelectorProps) {
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState<EmployeeFormData>({
@@ -72,14 +73,18 @@ export function useEmployeeSubRoleSelector({
 
   // Получаем заголовок для drawer на основе позиции
   const drawerTitle = useMemo(() => {
-    if (!selectedPositionValueLocal) return 'Выберите специализации'
-    const positionLabel = getEmployeePositionLabel(selectedPositionValueLocal)
-    if (selectedPositionValueLocal === 'chef') return 'Какой вы повар?'
-    if (selectedPositionValueLocal === 'waiter') return 'Ваша специализация официанта?'
-    if (selectedPositionValueLocal === 'bartender') return 'Ваш уровень в барменстве?'
-    if (selectedPositionValueLocal === 'barista') return 'Ваш уровень бариста?'
-    return `Ваша специализация ${positionLabel.toLowerCase()}?`
-  }, [selectedPositionValueLocal])
+    if (!selectedPositionValueLocal) return 'Настройка профиля'
+    // Если есть специализации, показываем вопрос про специализацию
+    if (drawerSpecializations.length > 0) {
+      if (selectedPositionValueLocal === 'chef') return 'Какой вы повар?'
+      if (selectedPositionValueLocal === 'waiter') return 'Ваша специализация?'
+      if (selectedPositionValueLocal === 'bartender') return 'Ваш уровень в барменстве?'
+      if (selectedPositionValueLocal === 'barista') return 'Ваш уровень бариста?'
+      return 'Ваша специализация?'
+    }
+    // Если специализаций нет, показываем общий заголовок
+    return 'Настройка профиля'
+  }, [selectedPositionValueLocal, drawerSpecializations.length])
 
   useEffect(() => {
     const cleanup = setupTelegramBackButton(() => {
@@ -150,10 +155,10 @@ export function useEmployeeSubRoleSelector({
       
       let response: Response
       try {
+        // Убираем User-Agent заголовок - браузер не позволяет его устанавливать
         response = await fetch(url, {
           method: 'GET',
           headers: {
-            'User-Agent': 'RestaApp/1.0',
             'Accept': 'application/json',
           },
         })
@@ -232,10 +237,25 @@ export function useEmployeeSubRoleSelector({
   }, [isLoadingLocation])
 
   const handleSpecializationDone = useCallback(() => {
-    setFormData(prev => ({ ...prev, specializations: selectedSpecializations }))
+    // Используем функциональную форму setFormData для получения актуального состояния
+    setFormData(prev => {
+      // Создаем финальный formData с актуальными данными
+      const finalFormData: EmployeeFormData = {
+        ...prev,
+        specializations: selectedSpecializations,
+      }
+      
+      // Вызываем callback с финальными данными для сохранения
+      if (onContinue) {
+        onContinue(finalFormData)
+      }
+      
+      return finalFormData
+    })
+    
     setShowSpecializationDrawer(false)
     setShowForm(true)
-  }, [selectedSpecializations])
+  }, [selectedSpecializations, onContinue])
 
   const updateFormData = useCallback((updates: Partial<EmployeeFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }))

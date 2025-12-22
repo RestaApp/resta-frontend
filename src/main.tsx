@@ -8,10 +8,6 @@ import { store, persistor } from './store'
 import { TelegramProvider } from './contexts/TelegramContext'
 import { AuthProvider } from './contexts/AuthContext'
 
-// Отключение темной темы
-document.documentElement.classList.remove('dark')
-localStorage.removeItem('theme')
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>

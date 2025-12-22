@@ -49,9 +49,11 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerHeader>
                 <DrawerTitle>{title}</DrawerTitle>
-                <DrawerDescription>
-                    {specializations.length === 1 ? 'Выберите специализацию' : 'Выберите одну или несколько специализаций'}
-                </DrawerDescription>
+                {specializations.length > 0 && (
+                    <DrawerDescription>
+                        {specializations.length === 1 ? 'Выберите специализацию' : 'Выберите одну или несколько специализаций'}
+                    </DrawerDescription>
+                )}
             </DrawerHeader>
 
             <div className="px-4 pb-4 max-h-[50vh] overflow-y-auto">
@@ -59,39 +61,40 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                     <p className="text-muted-foreground text-sm text-center py-4">
                         Загрузка специализаций...
                     </p>
-                ) : specializations.length > 0 ? (
+                ) : (
                     <>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            {specializations.map(spec => (
-                                <motion.button
-                                    key={spec}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => onSpecializationToggle(spec)}
-                                    className="px-4 py-2 rounded-full border-2 transition-all text-sm"
-                                    style={{
-                                        background: selectedSpecializations.includes(spec)
-                                            ? 'var(--gradient-primary)'
-                                            : 'transparent',
-                                        borderColor: selectedSpecializations.includes(spec)
-                                            ? 'transparent'
-                                            : 'var(--border)',
-                                        color: selectedSpecializations.includes(spec) ? 'white' : 'inherit',
-                                    }}
-                                >
-                                    {getSpecializationLabel(spec)}
-                                </motion.button>
-                            ))}
-                        </div>
+                        {specializations.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-6">
+                                {specializations.map(spec => (
+                                    <motion.button
+                                        key={spec}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => onSpecializationToggle(spec)}
+                                        className="px-4 py-2 rounded-full border-2 transition-all text-sm font-medium"
+                                        style={{
+                                            background: selectedSpecializations.includes(spec)
+                                                ? 'var(--gradient-primary)'
+                                                : 'transparent',
+                                            borderColor: selectedSpecializations.includes(spec)
+                                                ? 'transparent'
+                                                : '#E0E0E0',
+                                            color: selectedSpecializations.includes(spec) ? 'white' : 'inherit',
+                                        }}
+                                    >
+                                        {getSpecializationLabel(spec)}
+                                    </motion.button>
+                                ))}
+                            </div>
+                        )}
 
                         <OptionalFields
                             formData={formData}
                             onLocationRequest={onLocationRequest}
                             onFormDataUpdate={onFormDataUpdate}
                             isLoadingLocation={isLoadingLocation}
+                            showSpecializations={specializations.length > 0}
                         />
                     </>
-                ) : (
-                    <p className="text-muted-foreground text-sm text-center py-4">Специализации не найдены</p>
                 )}
             </div>
 
@@ -99,7 +102,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                 <motion.button
                     whileTap={{ scale: 0.98 }}
                     onClick={onDone}
-                    disabled={selectedSpecializations.length === 0}
+                    disabled={specializations.length > 0 && selectedSpecializations.length === 0}
                     className="w-full py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                         background: 'var(--gradient-primary)',
@@ -107,7 +110,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                 >
                     Готово
                 </motion.button>
-                <p className="text-center text-xs text-muted-foreground mt-2">
+                <p className="text-center text-xs text-muted-foreground mt-4 opacity-70">
                     Полные данные профиля вы сможете заполнить
                     позже в разделе «Профиль».
                 </p>
@@ -120,13 +123,8 @@ interface OptionalFieldsProps {
     formData: EmployeeFormData
     onLocationRequest: () => void
     onFormDataUpdate: (updates: Partial<EmployeeFormData>) => void
-}
-
-interface OptionalFieldsProps {
-    formData: EmployeeFormData
-    onLocationRequest: () => void
-    onFormDataUpdate: (updates: Partial<EmployeeFormData>) => void
     isLoadingLocation?: boolean
+    showSpecializations?: boolean
 }
 
 const OptionalFields = memo(function OptionalFields({
@@ -134,9 +132,10 @@ const OptionalFields = memo(function OptionalFields({
     onLocationRequest,
     onFormDataUpdate,
     isLoadingLocation = false,
+    showSpecializations = false,
 }: OptionalFieldsProps): JSX.Element {
     return (
-        <div className="space-y-4 pt-4 border-t border-border">
+        <div className={`space-y-5 ${showSpecializations ? 'pt-4 border-t border-border' : ''}`}>
             <ExperienceField
                 value={formData.experienceYears}
                 onChange={value => onFormDataUpdate({ experienceYears: value })}

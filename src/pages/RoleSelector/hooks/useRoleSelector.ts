@@ -11,10 +11,10 @@ import { useUserPositions } from '../../../hooks/useUserPositions'
 import { useSupplierTypes } from '../../../hooks/useSupplierTypes'
 import { useRestaurantFormats } from '../../../hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../../../utils/rolesMapper'
-import { mapRoleFromApi } from '../../../utils/roles'
 import { getCurrentUserId } from '../../../utils/user'
 import type { UpdateUserRequest } from '../../../services/api/usersApi'
 import type { UserRole, EmployeeRole } from '../../../types'
+import type { EmployeeFormData } from '../components/SubRoles/hooks/useEmployeeSubRoleSelector'
 
 interface UseRoleSelectorProps {
   onSelectRole: (role: UserRole) => void
@@ -86,13 +86,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     return mapRoleOptionsFromApi(roles)
   }, [roles])
 
-  // Получаем текущую роль пользователя из userData
-  const currentUserRole = useMemo(() => {
-    if (!userData?.role) {
-      return null
-    }
-    return mapRoleFromApi(userData.role)
-  }, [userData])
 
   const handleRoleSelect = useCallback(
     async (roleId: UserRole) => {
@@ -145,57 +138,13 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     [onSelectRole, updateUser, isAuthenticated]
   )
 
-  const handleContinue = useCallback(async () => {
-    if (!draftSelectedRole) {
-      return
-    }
-
-    if (draftSelectedRole === 'chef') {
-      setShowEmployeeSubRoles(true)
-      return
-    }
-
-    if (draftSelectedRole === 'supplier') {
-      setShowSupplierTypes(true)
-      return
-    }
-
-    if (draftSelectedRole === 'venue') {
-      setShowRestaurantFormats(true)
-      return
-    }
-
-    if (!isAuthenticated) {
-      onSelectRole(draftSelectedRole)
-      return
-    }
-
-    const userId = await getCurrentUserId()
-    if (!userId) {
-      onSelectRole(draftSelectedRole)
-      return
-    }
-
-    try {
-      const updateData: UpdateUserRequest = {
-        user: {
-          role: draftSelectedRole,
-        },
-      }
-
-      await updateUser(userId, updateData)
-      onSelectRole(draftSelectedRole)
-    } catch (error) {
-      onSelectRole(draftSelectedRole)
-    }
-  }, [draftSelectedRole, onSelectRole, updateUser, isAuthenticated])
 
   const handleSubRoleSelect = useCallback((subRole: EmployeeRole, positionValue: string) => {
     setSelectedSubRole(subRole)
     setSelectedPositionValue(positionValue)
   }, [])
 
-  const handleSubRoleContinue = useCallback(async () => {
+  const handleSubRoleContinue = useCallback(async (formData?: EmployeeFormData) => {
     if (!selectedSubRole) {
       return
     }
@@ -221,6 +170,28 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
           : {
               role: 'employee',
             },
+      }
+
+      // Обязательно сохраняем специализации, если они есть
+      if (formData?.specializations && formData.specializations.length > 0) {
+        updateData.user.specializations = formData.specializations
+      }
+
+      // Опциональные поля
+      if (formData?.location) {
+        updateData.user.location = formData.location
+      }
+
+      // Опциональные поля employee_profile_attributes
+      const employeeAttrs: Record<string, unknown> = {}
+      if (typeof formData?.experienceYears === 'number' && formData.experienceYears > 0) {
+        employeeAttrs.experience_years = formData.experienceYears
+      }
+      if (typeof formData?.openToWork === 'boolean') {
+        employeeAttrs.open_to_work = formData.openToWork
+      }
+      if (Object.keys(employeeAttrs).length > 0) {
+        updateData.user.employee_profile_attributes = employeeAttrs
       }
 
       if (!updateUser) {
@@ -318,7 +289,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     } catch (error) {
       onSelectRole('venue')
     }
-  }, [selectedRestaurantFormat, onSelectRole, updateUser, isAuthenticated, userData])
+  }, [selectedRestaurantFormat, onSelectRole, updateUser, isAuthenticated])
 
   const handleBack = useCallback(() => {
     if (showEmployeeSubRoles) {
@@ -348,8 +319,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     isLoading,
     isFetching,
     error,
-    roles,
-    currentUserRole,
     employeeSubRoles,
     isLoadingPositions,
     isFetchingPositions,
@@ -360,7 +329,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     isLoadingRestaurantFormats,
     isFetchingRestaurantFormats,
     handleRoleSelect,
-    handleContinue,
     handleSubRoleSelect,
     handleSubRoleContinue,
     handleSupplierTypeSelect,

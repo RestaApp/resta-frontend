@@ -3,6 +3,7 @@ import { EmployeeSubRoleSelector } from './components/SubRoles/EmployeeSubRoleSe
 import { SupplierTypeSelector } from './components/SubRoles/SupplierTypeSelector'
 import { RestaurantFormatSelector } from './components/SubRoles/RestaurantFormatSelector'
 import { SectionHeader } from '../../components/ui/section-header'
+import { LoadingState } from './components/SubRoles/components/LoadingState'
 import { useRoleSelector } from './hooks/useRoleSelector'
 import type { UserRole, RoleOption } from '../../types'
 import type { JSX } from 'react'
@@ -87,20 +88,12 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
-        <p className="text-muted-foreground">Загрузка ролей...</p>
-      </div>
-    )
+    return <LoadingState message="Загрузка ролей..." />
   }
 
   if (!isLoading && !isFetching && (error || mainRoles.length === 0)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
-        <p className="text-muted-foreground">
-          {error ? 'Не удалось загрузить роли' : 'Роли не найдены'}
-        </p>
-      </div>
+      <LoadingState message={error ? 'Не удалось загрузить роли' : 'Роли не найдены'} />
     )
   }
 

@@ -27,37 +27,60 @@ export const ExperienceField = memo(function ExperienceField({
         return 'лет'
     }
 
+    const getValueText = (): string => {
+        if (value === 0) return 'Без опыта'
+        if (value === 5) return '5+ лет'
+        return `${value} ${getYearsLabel(value)}`
+    }
+
     const content = (
-        <>
-            <label className={`block ${withAnimation ? 'mb-3' : 'mb-2'} text-foreground font-medium text-sm`}>
-                Опыт работы: {value === 0 ? 'Без опыта' : value === 5 ? '5+' : `${value} ${getYearsLabel(value)}`}
+        <div>
+            <label className="block mb-1 text-muted-foreground text-sm font-medium">
+                Ваш стаж
             </label>
-            <input
-                type="range"
-                min="0"
-                max="5"
-                value={value}
-                onChange={e => onChange(Number(e.target.value))}
-                onTouchStart={e => {
-                    e.stopPropagation()
-                }}
-                onTouchMove={e => {
-                    e.stopPropagation()
-                }}
-                onTouchEnd={e => {
-                    e.stopPropagation()
-                }}
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                style={{
-                    accentColor: 'var(--primary)',
-                    touchAction: 'none',
-                }}
-            />
-            <div className={`flex justify-between ${withAnimation ? 'mt-2' : 'mt-1'} text-muted-foreground text-xs`}>
-                <span>Без опыта</span>
-                <span>5+ лет</span>
+            <div className="mb-3">
+                <span className="text-lg font-semibold" style={{ color: 'var(--primary)' }}>
+                    {getValueText()}
+                </span>
             </div>
-        </>
+            <div className="relative">
+                <input
+                    type="range"
+                    min="0"
+                    max="5"
+                    step="1"
+                    value={value}
+                    onChange={e => onChange(Number(e.target.value))}
+                    onTouchStart={e => {
+                        e.stopPropagation()
+                    }}
+                    onTouchMove={e => {
+                        e.stopPropagation()
+                    }}
+                    onTouchEnd={e => {
+                        e.stopPropagation()
+                    }}
+                    className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer relative"
+                    style={{
+                        accentColor: 'var(--primary)',
+                        touchAction: 'none',
+                        background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${(value / 5) * 100}%, #E0E0E0 ${(value / 5) * 100}%, #E0E0E0 100%)`,
+                    }}
+                />
+                {/* Засечки */}
+                <div className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none" style={{ top: '-2px' }}>
+                    {[0, 1, 2, 3, 4, 5].map(tick => (
+                        <div
+                            key={tick}
+                            className="w-1 h-1.5 rounded-full"
+                            style={{
+                                backgroundColor: value >= tick ? 'var(--primary)' : '#E0E0E0',
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+        </div>
     )
 
     if (withAnimation) {
@@ -90,7 +113,7 @@ export const OpenToWorkToggle = memo(function OpenToWorkToggle({
 }: OpenToWorkToggleProps): JSX.Element {
     const content = (
         <div className="flex items-center justify-between bg-muted/50 p-3 rounded-xl">
-            <span className="text-sm font-medium text-foreground">Ищу работу прямо сейчас</span>
+            <span className="text-sm font-medium text-foreground">В активном поиске</span>
             <button
                 onClick={() => onChange(!value)}
                 className={cn(
@@ -101,7 +124,7 @@ export const OpenToWorkToggle = memo(function OpenToWorkToggle({
             >
                 <div
                     className={cn(
-                        'absolute top-1 w-6 h-6 bg-white rounded-full transition-transform',
+                        'absolute top-1 w-6 h-6 bg-white rounded-full transition-transform shadow-sm',
                         value ? 'translate-x-7' : 'translate-x-1'
                     )}
                 />
@@ -142,32 +165,32 @@ export const LocationField = memo(function LocationField({
     isLoading = false,
 }: LocationFieldProps): JSX.Element {
     const content = (
-        <>
-            <label className={`block ${withAnimation ? 'mb-2' : 'mb-2'} text-foreground font-medium text-sm`}>
+        <div>
+            <label className="block mb-2 text-muted-foreground text-sm font-medium">
                 Город
             </label>
-            <div className="flex gap-2">
+            <div className="relative">
                 <input
                     type="text"
                     value={value}
                     onChange={e => onChange(e.target.value)}
                     placeholder="Минск"
-                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-border bg-input-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all text-sm"
+                    className="w-full px-4 py-3 pr-12 rounded-2xl border border-[#E0E0E0] bg-input-background focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/50 transition-all text-sm text-foreground"
                 />
                 <button
                     onClick={onLocationRequest}
                     disabled={isLoading}
-                    className="px-4 py-3 rounded-2xl border-2 border-border hover:border-primary/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Определить местоположение"
                 >
                     {isLoading ? (
-                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     ) : (
-                        <MapPin className="w-5 h-5 text-muted-foreground" />
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
                     )}
                 </button>
             </div>
-        </>
+        </div>
     )
 
     if (withAnimation) {

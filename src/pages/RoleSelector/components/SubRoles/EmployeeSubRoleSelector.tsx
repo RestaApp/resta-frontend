@@ -10,11 +10,13 @@ import { LoadingState } from './components/LoadingState'
 import type { EmployeeRole, UserRole } from '../../../../types'
 import type { JSX } from 'react'
 
+import type { EmployeeFormData } from './hooks/useEmployeeSubRoleSelector'
+
 interface EmployeeSubRoleSelectorProps {
   currentRole: UserRole | null
   onSelectSubRole: (role: EmployeeRole, positionValue: string) => void
   selectedSubRole: EmployeeRole | null
-  onContinue: () => void
+  onContinue: (formData: EmployeeFormData) => void
   onBack: () => void
   employeeSubRoles?: string[]
   isLoading?: boolean
@@ -24,6 +26,7 @@ interface EmployeeSubRoleSelectorProps {
 export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   onSelectSubRole,
   selectedSubRole,
+  onContinue,
   onBack,
   employeeSubRoles,
   isLoading = false,
@@ -49,6 +52,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
     selectedSubRole,
     onSelectSubRole,
     onBack,
+    onContinue,
   })
 
   if (isLoading || isFetching) {
