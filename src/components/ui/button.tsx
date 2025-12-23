@@ -5,7 +5,7 @@ interface ButtonProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
   size?: 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost'
+  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
@@ -31,6 +31,7 @@ export function Button({
     secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
     outline: 'border border-border bg-transparent hover:bg-muted',
     ghost: 'bg-transparent hover:bg-muted',
+    destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
   }
 
   return (

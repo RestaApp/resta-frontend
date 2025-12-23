@@ -20,11 +20,13 @@ export function useUpdateUser() {
       try {
         const result = await updateUserMutation({ id, data }).unwrap()
 
-        // Обновляем данные пользователя в Redux после успешного обновления
+        // Обновляем данные пользователя в Redux только при успешном обновлении
+        // и только если success: true и есть данные
         if (result.success && result.data) {
           updateUserDataInStore(dispatch, result.data)
         }
 
+        // Если success: false, возвращаем результат с ошибками, но не обновляем Redux
         return result
       } catch (error) {
         throw error

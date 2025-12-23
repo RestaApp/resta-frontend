@@ -141,7 +141,8 @@ export function mapPositionFromApi(positionValue: string): EmployeeSubRole | nul
   const color = POSITION_COLOR_MAP[positionValue] || ROLE_COLOR_MAP[roleId as UserRole]
 
   // Используем функции из labels.ts для получения названий и описаний
-  const description = getEmployeePositionDescription(positionValue) || ROLE_DESCRIPTION_MAP[roleId as UserRole]
+  const description =
+    getEmployeePositionDescription(positionValue) || ROLE_DESCRIPTION_MAP[roleId as UserRole]
   const title = getEmployeePositionLabel(positionValue)
 
   if (!icon || !color) {

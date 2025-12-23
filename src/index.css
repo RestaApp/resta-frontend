@@ -39,7 +39,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
+
   /* Resta Premium Colors */
   --purple-deep: #6B21A8;
   --pink-electric: #EC4899;
@@ -176,11 +176,11 @@
   .gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-glow {
     background: var(--gradient-glow);
   }
-  
+
   .text-gradient {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -213,4 +213,25 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--foreground);
+}
+
+/* Плавная анимация для range slider */
+input[type="range"] {
+  transition: background 0.3s ease-out;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+input[type="range"]::-moz-range-thumb {
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.1);
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.1);
 }

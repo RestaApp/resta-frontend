@@ -46,7 +46,8 @@ export interface UpdateUserRequest {
  */
 export interface UpdateUserResponse {
   success: boolean
-  data: UserData
+  data?: UserData
+  errors?: string[]
 }
 
 /**

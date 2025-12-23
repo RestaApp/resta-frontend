@@ -6,15 +6,15 @@ import { memo } from 'react'
 import type { JSX } from 'react'
 
 interface LoadingStateProps {
-    message: string
+  message: string
 }
 
 export const LoadingState = memo(function LoadingState({
-    message,
+  message,
 }: LoadingStateProps): JSX.Element {
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
-            <p className="text-muted-foreground">{message}</p>
-        </div>
-    )
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center">
+      <p className="text-muted-foreground">{message}</p>
+    </div>
+  )
 })

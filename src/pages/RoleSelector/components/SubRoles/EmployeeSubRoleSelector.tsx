@@ -16,11 +16,12 @@ interface EmployeeSubRoleSelectorProps {
   currentRole: UserRole | null
   onSelectSubRole: (role: EmployeeRole, positionValue: string) => void
   selectedSubRole: EmployeeRole | null
-  onContinue: (formData: EmployeeFormData) => void
+  onContinue: (formData: EmployeeFormData) => Promise<boolean> | void
   onBack: () => void
   employeeSubRoles?: string[]
   isLoading?: boolean
   isFetching?: boolean
+  errorDialogOpen?: boolean
 }
 
 export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
@@ -31,6 +32,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   employeeSubRoles,
   isLoading = false,
   isFetching = false,
+  errorDialogOpen = false,
 }: EmployeeSubRoleSelectorProps): JSX.Element {
   const {
     subRoles,
@@ -63,7 +65,6 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
     return <LoadingState message="Не удалось загрузить позиции" />
   }
 
-
   return (
     <>
       <PositionSelectionScreen
@@ -85,6 +86,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
         onLocationRequest={handleLocationRequest}
         onFormDataUpdate={updateFormData}
         onDone={handleSpecializationDone}
+        errorDialogOpen={errorDialogOpen}
       />
     </>
   )

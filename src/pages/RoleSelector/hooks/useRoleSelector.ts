@@ -2,7 +2,7 @@
  * Хук для логики страницы выбора роли
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useAppSelector } from '../../../store/hooks'
 import { useRoles } from '../../../hooks/useRoles'
@@ -34,6 +34,9 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   const { isAuthenticated } = useAuth()
   const userData = useAppSelector(state => state.user.userData)
   const { updateUser } = useUpdateUser()
+  const isSubmittingRef = useRef(false)
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   // Проверяем, что роль пользователя равна 'unverified'
   // roles API вызывается ТОЛЬКО если роль в sign_in равна 'unverified'
@@ -86,7 +89,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     return mapRoleOptionsFromApi(roles)
   }, [roles])
 
-
   const handleRoleSelect = useCallback(
     async (roleId: UserRole) => {
       setDraftSelectedRole(roleId)
@@ -138,72 +140,102 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     [onSelectRole, updateUser, isAuthenticated]
   )
 
-
   const handleSubRoleSelect = useCallback((subRole: EmployeeRole, positionValue: string) => {
     setSelectedSubRole(subRole)
     setSelectedPositionValue(positionValue)
   }, [])
 
-  const handleSubRoleContinue = useCallback(async (formData?: EmployeeFormData) => {
-    if (!selectedSubRole) {
-      return
-    }
-
-    if (!isAuthenticated) {
-      onSelectRole(selectedSubRole)
-      return
-    }
-
-    const userId = await getCurrentUserId()
-    if (!userId) {
-      onSelectRole(selectedSubRole)
-      return
-    }
-
-    try {
-      const updateData: UpdateUserRequest = {
-        user: selectedPositionValue
-          ? {
-              role: 'employee',
-              position: selectedPositionValue,
-            }
-          : {
-              role: 'employee',
-            },
+  const handleSubRoleContinue = useCallback(
+    async (formData?: EmployeeFormData): Promise<boolean> => {
+      if (!selectedSubRole) {
+        return false
       }
 
-      // Обязательно сохраняем специализации, если они есть
-      if (formData?.specializations && formData.specializations.length > 0) {
-        updateData.user.specializations = formData.specializations
+      // Защита от двойного вызова - проверяем только если уже идет отправка
+      if (isSubmittingRef.current) {
+        return false
       }
 
-      // Опциональные поля
-      if (formData?.location) {
-        updateData.user.location = formData.location
+      if (!isAuthenticated) {
+        onSelectRole(selectedSubRole)
+        return true // Возвращаем true, чтобы drawer закрылся
       }
 
-      // Опциональные поля employee_profile_attributes
-      const employeeAttrs: Record<string, unknown> = {}
-      if (typeof formData?.experienceYears === 'number' && formData.experienceYears > 0) {
-        employeeAttrs.experience_years = formData.experienceYears
-      }
-      if (typeof formData?.openToWork === 'boolean') {
-        employeeAttrs.open_to_work = formData.openToWork
-      }
-      if (Object.keys(employeeAttrs).length > 0) {
-        updateData.user.employee_profile_attributes = employeeAttrs
+      const userId = await getCurrentUserId()
+      if (!userId) {
+        onSelectRole(selectedSubRole)
+        return true // Возвращаем true, чтобы drawer закрылся
       }
 
-      if (!updateUser) {
-        throw new Error('updateUser функция не определена')
-      }
+      isSubmittingRef.current = true
 
-      await updateUser(userId, updateData)
-      onSelectRole(selectedSubRole)
-    } catch (error) {
-      onSelectRole(selectedSubRole)
-    }
-  }, [selectedSubRole, selectedPositionValue, onSelectRole, updateUser, isAuthenticated])
+      try {
+        const updateData: UpdateUserRequest = {
+          user: {
+            role: 'employee',
+          },
+        }
+
+        // Обязательно сохраняем позицию, если она выбрана
+        if (selectedPositionValue) {
+          updateData.user.position = selectedPositionValue
+        }
+
+        // Обязательно сохраняем специализации, если они есть
+        if (formData?.specializations && formData.specializations.length > 0) {
+          updateData.user.specializations = formData.specializations
+        }
+
+        // Опциональные поля - отправляем только если есть значение
+        if (formData?.location && formData.location.trim() !== '') {
+          updateData.user.location = formData.location.trim()
+        }
+
+        // Опциональные поля employee_profile_attributes
+        const employeeAttrs: Record<string, unknown> = {}
+        if (typeof formData?.experienceYears === 'number' && formData.experienceYears > 0) {
+          employeeAttrs.experience_years = formData.experienceYears
+        }
+        if (typeof formData?.openToWork === 'boolean') {
+          employeeAttrs.open_to_work = formData.openToWork
+        }
+        if (Object.keys(employeeAttrs).length > 0) {
+          updateData.user.employee_profile_attributes = employeeAttrs
+        }
+
+        if (!updateUser) {
+          throw new Error('updateUser функция не определена')
+        }
+
+        // Обновляем данные пользователя через API
+        const result = await updateUser(userId, updateData)
+
+        // Проверяем результат на наличие ошибок
+        if (!result.success) {
+          // Если success: false, показываем ошибку и не переходим на следующую страницу
+          const errors = result.errors || ['Произошла ошибка при сохранении данных']
+          setErrorMessage(errors.join('\n'))
+          setErrorDialogOpen(true)
+          isSubmittingRef.current = false
+          return false // Возвращаем false, чтобы drawer не закрывался
+        }
+
+        // Только при успешном ответе переходим на следующую страницу
+        // updateUser автоматически обновит данные в Redux через updateUserDataInStore
+        onSelectRole(selectedSubRole)
+        return true // Возвращаем true, чтобы drawer закрылся
+      } catch (error) {
+        console.error('Ошибка обновления данных пользователя:', error)
+        // В случае исключения показываем ошибку
+        setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
+        setErrorDialogOpen(true)
+        return false // Возвращаем false, чтобы drawer не закрывался
+      } finally {
+        isSubmittingRef.current = false
+      }
+    },
+    [selectedSubRole, selectedPositionValue, onSelectRole, updateUser, isAuthenticated]
+  )
 
   const handleSupplierTypeSelect = useCallback((typeValue: string) => {
     setSelectedSupplierType(typeValue)
@@ -245,10 +277,21 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
         throw new Error('updateUser функция не определена')
       }
 
-      await updateUser(userId, updateData)
+      const result = await updateUser(userId, updateData)
+
+      // Проверяем результат на наличие ошибок
+      if (!result.success) {
+        const errors = result.errors || ['Произошла ошибка при сохранении данных']
+        setErrorMessage(errors.join('\n'))
+        setErrorDialogOpen(true)
+        return
+      }
+
       onSelectRole('supplier')
     } catch (error) {
-      onSelectRole('supplier')
+      console.error('Ошибка обновления данных пользователя:', error)
+      setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
+      setErrorDialogOpen(true)
     }
   }, [selectedSupplierType, onSelectRole, updateUser, isAuthenticated, userData])
 
@@ -284,10 +327,21 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
         throw new Error('updateUser функция не определена')
       }
 
-      await updateUser(userId, updateData)
+      const result = await updateUser(userId, updateData)
+
+      // Проверяем результат на наличие ошибок
+      if (!result.success) {
+        const errors = result.errors || ['Произошла ошибка при сохранении данных']
+        setErrorMessage(errors.join('\n'))
+        setErrorDialogOpen(true)
+        return
+      }
+
       onSelectRole('venue')
     } catch (error) {
-      onSelectRole('venue')
+      console.error('Ошибка обновления данных пользователя:', error)
+      setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
+      setErrorDialogOpen(true)
     }
   }, [selectedRestaurantFormat, onSelectRole, updateUser, isAuthenticated])
 
@@ -336,5 +390,8 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     handleRestaurantFormatSelect,
     handleRestaurantFormatContinue,
     handleBack,
+    errorDialogOpen,
+    setErrorDialogOpen,
+    errorMessage,
   }
 }
