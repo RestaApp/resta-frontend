@@ -90,6 +90,7 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
           supplierTypes={supplierTypes}
           isLoading={isLoadingSupplierTypes}
           isFetching={isFetchingSupplierTypes}
+          errorDialogOpen={errorDialogOpen}
         />
         <Modal isOpen={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
           <ModalContent
@@ -117,6 +118,7 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
           restaurantFormats={restaurantFormats}
           isLoading={isLoadingRestaurantFormats}
           isFetching={isFetchingRestaurantFormats}
+          errorDialogOpen={errorDialogOpen}
         />
         <Modal isOpen={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
           <ModalContent

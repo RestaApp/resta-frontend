@@ -34,9 +34,11 @@ export interface UpdateUserRequest {
     }
     supplier_profile_attributes?: {
       supplier_type?: string
+      name?: string
     }
     restaurant_profile_attributes?: {
       restaurant_format?: string
+      name?: string
     }
   }
 }

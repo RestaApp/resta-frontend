@@ -15,6 +15,8 @@ import { getCurrentUserId } from '../../../utils/user'
 import type { UpdateUserRequest } from '../../../services/api/usersApi'
 import type { UserRole, EmployeeRole } from '../../../types'
 import type { EmployeeFormData } from '../components/SubRoles/hooks/useEmployeeSubRoleSelector'
+import type { RestaurantFormData } from '../components/SubRoles/hooks/useRestaurantFormSelector'
+import type { SupplierFormData } from '../components/SubRoles/hooks/useSupplierFormSelector'
 
 interface UseRoleSelectorProps {
   onSelectRole: (role: UserRole) => void
@@ -245,105 +247,172 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     setSelectedRestaurantFormat(formatValue)
   }, [])
 
-  const handleSupplierTypeContinue = useCallback(async () => {
-    if (!selectedSupplierType) {
-      return
-    }
-
-    if (!isAuthenticated) {
-      onSelectRole('supplier')
-      return
-    }
-
-    const userId = await getCurrentUserId()
-    if (!userId) {
-      onSelectRole('supplier')
-      return
-    }
-
-    try {
-      const updateData: UpdateUserRequest = {
-        user: selectedSupplierType
-          ? {
-              role: 'supplier',
-              supplier_profile_attributes: { supplier_type: selectedSupplierType },
-            }
-          : {
-              role: 'supplier',
-            },
+  const handleRestaurantFormatContinue = useCallback(
+    async (formData?: RestaurantFormData): Promise<boolean> => {
+      if (!formData?.format) {
+        return false
       }
 
-      if (!updateUser) {
-        throw new Error('updateUser функция не определена')
+      // Защита от двойного вызова
+      if (isSubmittingRef.current) {
+        return false
       }
 
-      const result = await updateUser(userId, updateData)
+      if (!isAuthenticated) {
+        onSelectRole('venue')
+        return true
+      }
 
-      // Проверяем результат на наличие ошибок
-      if (!result.success) {
-        const errors = result.errors || ['Произошла ошибка при сохранении данных']
-        setErrorMessage(errors.join('\n'))
+      const userId = await getCurrentUserId()
+      if (!userId) {
+        onSelectRole('venue')
+        return true
+      }
+
+      isSubmittingRef.current = true
+
+      try {
+        const updateData: UpdateUserRequest = {
+          user: {
+            role: 'restaurant',
+          },
+        }
+
+        // Обязательно сохраняем формат ресторана
+        if (formData.format) {
+          updateData.user.restaurant_profile_attributes = {
+            restaurant_format: formData.format,
+          }
+        }
+
+        // Опциональные поля - отправляем только если есть значение
+        if (formData.name && formData.name.trim() !== '') {
+          if (!updateData.user.restaurant_profile_attributes) {
+            updateData.user.restaurant_profile_attributes = {}
+          }
+          updateData.user.restaurant_profile_attributes.name = formData.name.trim()
+        }
+
+        if (formData.city && formData.city.trim() !== '') {
+          updateData.user.location = formData.city.trim()
+        }
+
+        if (!updateUser) {
+          throw new Error('updateUser функция не определена')
+        }
+
+        // Обновляем данные пользователя через API
+        const result = await updateUser(userId, updateData)
+
+        // Проверяем результат на наличие ошибок
+        if (!result.success) {
+          // Если success: false, показываем ошибку и не переходим на следующую страницу
+          const errors = result.errors || ['Произошла ошибка при сохранении данных']
+          setErrorMessage(errors.join('\n'))
+          setErrorDialogOpen(true)
+          isSubmittingRef.current = false
+          return false // Возвращаем false, чтобы форма не закрывалась
+        }
+
+        // Только при успешном ответе переходим на следующую страницу
+        onSelectRole('venue')
+        return true // Возвращаем true, чтобы форма закрылась
+      } catch (error) {
+        console.error('Ошибка обновления данных пользователя:', error)
+        // В случае исключения показываем ошибку
+        setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
         setErrorDialogOpen(true)
-        return
+        return false // Возвращаем false, чтобы форма не закрывалась
+      } finally {
+        isSubmittingRef.current = false
+      }
+    },
+    [onSelectRole, updateUser, isAuthenticated]
+  )
+
+  const handleSupplierTypeContinue = useCallback(
+    async (formData?: SupplierFormData): Promise<boolean> => {
+      if (!formData?.type) {
+        return false
       }
 
-      onSelectRole('supplier')
-    } catch (error) {
-      console.error('Ошибка обновления данных пользователя:', error)
-      setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
-      setErrorDialogOpen(true)
-    }
-  }, [selectedSupplierType, onSelectRole, updateUser, isAuthenticated, userData])
-
-  const handleRestaurantFormatContinue = useCallback(async () => {
-    if (!selectedRestaurantFormat) {
-      return
-    }
-
-    if (!isAuthenticated) {
-      onSelectRole('venue')
-      return
-    }
-
-    const userId = await getCurrentUserId()
-    if (!userId) {
-      onSelectRole('venue')
-      return
-    }
-
-    try {
-      const updateData: UpdateUserRequest = {
-        user: selectedRestaurantFormat
-          ? {
-              role: 'restaurant',
-              restaurant_profile_attributes: { restaurant_format: selectedRestaurantFormat },
-            }
-          : {
-              role: 'restaurant',
-            },
+      // Защита от двойного вызова
+      if (isSubmittingRef.current) {
+        return false
       }
 
-      if (!updateUser) {
-        throw new Error('updateUser функция не определена')
+      if (!isAuthenticated) {
+        onSelectRole('supplier')
+        return true
       }
 
-      const result = await updateUser(userId, updateData)
+      const userId = await getCurrentUserId()
+      if (!userId) {
+        onSelectRole('supplier')
+        return true
+      }
 
-      // Проверяем результат на наличие ошибок
-      if (!result.success) {
-        const errors = result.errors || ['Произошла ошибка при сохранении данных']
-        setErrorMessage(errors.join('\n'))
+      isSubmittingRef.current = true
+
+      try {
+        const updateData: UpdateUserRequest = {
+          user: {
+            role: 'supplier',
+          },
+        }
+
+        // Обязательно сохраняем тип поставщика
+        if (formData.type) {
+          updateData.user.supplier_profile_attributes = {
+            supplier_type: formData.type,
+          }
+        }
+
+        // Опциональные поля - отправляем только если есть значение
+        if (formData.name && formData.name.trim() !== '') {
+          if (!updateData.user.supplier_profile_attributes) {
+            updateData.user.supplier_profile_attributes = {}
+          }
+          updateData.user.supplier_profile_attributes.name = formData.name.trim()
+        }
+
+        if (formData.city && formData.city.trim() !== '') {
+          updateData.user.location = formData.city.trim()
+        }
+
+        if (!updateUser) {
+          throw new Error('updateUser функция не определена')
+        }
+
+        // Обновляем данные пользователя через API
+        const result = await updateUser(userId, updateData)
+
+        // Проверяем результат на наличие ошибок
+        if (!result.success) {
+          // Если success: false, показываем ошибку и не переходим на следующую страницу
+          const errors = result.errors || ['Произошла ошибка при сохранении данных']
+          setErrorMessage(errors.join('\n'))
+          setErrorDialogOpen(true)
+          isSubmittingRef.current = false
+          return false // Возвращаем false, чтобы форма не закрывалась
+        }
+
+        // Только при успешном ответе переходим на следующую страницу
+        onSelectRole('supplier')
+        return true // Возвращаем true, чтобы форма закрылась
+      } catch (error) {
+        console.error('Ошибка обновления данных пользователя:', error)
+        // В случае исключения показываем ошибку
+        setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
         setErrorDialogOpen(true)
-        return
+        return false // Возвращаем false, чтобы форма не закрывалась
+      } finally {
+        isSubmittingRef.current = false
       }
+    },
+    [onSelectRole, updateUser, isAuthenticated]
+  )
 
-      onSelectRole('venue')
-    } catch (error) {
-      console.error('Ошибка обновления данных пользователя:', error)
-      setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
-      setErrorDialogOpen(true)
-    }
-  }, [selectedRestaurantFormat, onSelectRole, updateUser, isAuthenticated])
 
   const handleBack = useCallback(() => {
     if (showEmployeeSubRoles) {
