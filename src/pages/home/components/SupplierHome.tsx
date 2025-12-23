@@ -19,3 +19,4 @@ export function SupplierHome(_props: SupplierHomeProps) {
     </div>
   )
 }
+

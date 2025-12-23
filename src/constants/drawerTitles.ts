@@ -25,3 +25,4 @@ export function getDrawerTitle(position: string | null, hasSpecializations: bool
   return DRAWER_TITLES[position.toLowerCase()] || DRAWER_TITLES.default
 }
 
+
