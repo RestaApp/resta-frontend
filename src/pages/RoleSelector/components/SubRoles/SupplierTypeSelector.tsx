@@ -3,21 +3,19 @@
  */
 
 import { memo } from 'react'
-import { SupplierFormScreen } from './components/SupplierFormScreen'
-import { useSupplierFormSelector } from './hooks/useSupplierFormSelector'
+import { FormScreen } from './components/FormScreen'
+import { useFormSelector } from './hooks/useFormSelector'
 import { LoadingState } from './components/LoadingState'
+import { getSupplierTypeLabel } from '../../../../constants/labels'
 import type { JSX } from 'react'
-import type { SupplierFormData } from './hooks/useSupplierFormSelector'
+import type { FormData } from './hooks/useFormSelector'
 
 interface SupplierTypeSelectorProps {
-  onSelectType: (typeValue: string) => void
-  selectedType: string | null
-  onContinue: (formData: SupplierFormData) => Promise<boolean> | void
+  onContinue: (formData: FormData) => Promise<boolean> | void
   onBack: () => void
   supplierTypes?: string[]
   isLoading?: boolean
   isFetching?: boolean
-  errorDialogOpen?: boolean
 }
 
 export const SupplierTypeSelector = memo(function SupplierTypeSelector({
@@ -33,8 +31,7 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
     handleLocationRequest,
     handleFormDataUpdate,
     handleContinue,
-  } = useSupplierFormSelector({
-    supplierTypes,
+  } = useFormSelector({
     onContinue,
     onBack,
   })
@@ -48,14 +45,21 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
   }
 
   return (
-    <SupplierFormScreen
-      supplierTypes={supplierTypes || []}
+    <FormScreen
+      title="Информация о поставщике"
+      description="Заполните данные о вашей компании"
+      nameLabel="Название компании"
+      namePlaceholder="Введите название компании"
+      typeLabel="Категория товаров"
+      types={supplierTypes || []}
+      getTypeLabel={getSupplierTypeLabel}
       formData={formData}
       onFormDataUpdate={handleFormDataUpdate}
       onLocationRequest={handleLocationRequest}
       onContinue={handleContinue}
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
+      continueButtonAriaLabel="Продолжить заполнение формы поставщика"
     />
   )
 })

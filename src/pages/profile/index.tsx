@@ -154,12 +154,12 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
     },
     ...(canViewShifts(role)
       ? [
-          {
-            icon: Briefcase,
-            label: 'Мои смены',
-            action: () => onNavigate(ROUTES.SHIFTS),
-          },
-        ]
+        {
+          icon: Briefcase,
+          label: 'Мои смены',
+          action: () => onNavigate(ROUTES.SHIFTS),
+        },
+      ]
       : []),
     {
       icon: Settings,
@@ -186,7 +186,6 @@ export function ProfileScreen({ onNavigate, onBack, activeTab, onTabChange }: Pr
   if (showEmployeeSubRoles) {
     return (
       <EmployeeSubRoleSelector
-        currentRole={role}
         onSelectSubRole={handleSubRoleSelect}
         selectedSubRole={selectedSubRole}
         onContinue={handleSubRoleContinue}

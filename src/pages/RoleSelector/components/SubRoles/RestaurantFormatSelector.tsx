@@ -3,21 +3,19 @@
  */
 
 import { memo } from 'react'
-import { RestaurantFormScreen } from './components/RestaurantFormScreen'
-import { useRestaurantFormSelector } from './hooks/useRestaurantFormSelector'
+import { FormScreen } from './components/FormScreen'
+import { useFormSelector } from './hooks/useFormSelector'
 import { LoadingState } from './components/LoadingState'
+import { getRestaurantFormatLabel } from '../../../../constants/labels'
 import type { JSX } from 'react'
-import type { RestaurantFormData } from './hooks/useRestaurantFormSelector'
+import type { FormData } from './hooks/useFormSelector'
 
 interface RestaurantFormatSelectorProps {
-  onSelectFormat: (formatValue: string) => void
-  selectedFormat: string | null
-  onContinue: (formData: RestaurantFormData) => Promise<boolean> | void
+  onContinue: (formData: FormData) => Promise<boolean> | void
   onBack: () => void
   restaurantFormats?: string[]
   isLoading?: boolean
   isFetching?: boolean
-  errorDialogOpen?: boolean
 }
 
 export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
@@ -33,8 +31,7 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
     handleLocationRequest,
     handleFormDataUpdate,
     handleContinue,
-  } = useRestaurantFormSelector({
-    restaurantFormats,
+  } = useFormSelector({
     onContinue,
     onBack,
   })
@@ -48,14 +45,21 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
   }
 
   return (
-    <RestaurantFormScreen
-      restaurantFormats={restaurantFormats || []}
+    <FormScreen
+      title="Информация о ресторане"
+      description="Заполните данные о вашем заведении"
+      nameLabel="Название ресторана"
+      namePlaceholder="Введите название"
+      typeLabel="Тип заведения"
+      types={restaurantFormats || []}
+      getTypeLabel={getRestaurantFormatLabel}
       formData={formData}
       onFormDataUpdate={handleFormDataUpdate}
       onLocationRequest={handleLocationRequest}
       onContinue={handleContinue}
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
+      continueButtonAriaLabel="Продолжить заполнение формы ресторана"
     />
   )
 })

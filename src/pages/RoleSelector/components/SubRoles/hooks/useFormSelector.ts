@@ -1,28 +1,23 @@
 /**
- * Хук для бизнес-логики формы поставщика
+ * Переиспользуемый хук для управления формой (ресторан/поставщик)
  */
 
 import { useState, useCallback } from 'react'
 import { useGeolocation } from '../../../../../hooks/useGeolocation'
 
-export interface SupplierFormData {
+export interface FormData {
     name: string
     type: string | null
     city: string
 }
 
-interface UseSupplierFormSelectorProps {
-    supplierTypes?: string[]
-    onContinue?: (formData: SupplierFormData) => Promise<boolean> | void
+interface UseFormSelectorProps {
+    onContinue?: (formData: FormData) => Promise<boolean> | void
     onBack: () => void
 }
 
-export function useSupplierFormSelector({
-    supplierTypes: _supplierTypes = [],
-    onContinue,
-    onBack: _onBack,
-}: UseSupplierFormSelectorProps) {
-    const [formData, setFormData] = useState<SupplierFormData>({
+export function useFormSelector({ onContinue, onBack: _onBack }: UseFormSelectorProps) {
+    const [formData, setFormData] = useState<FormData>({
         name: '',
         type: null,
         city: '',
@@ -41,7 +36,7 @@ export function useSupplierFormSelector({
         }
     }, [getLocation])
 
-    const handleFormDataUpdate = useCallback((updates: Partial<SupplierFormData>) => {
+    const handleFormDataUpdate = useCallback((updates: Partial<FormData>) => {
         setFormData(prev => ({ ...prev, ...updates }))
     }, [])
 

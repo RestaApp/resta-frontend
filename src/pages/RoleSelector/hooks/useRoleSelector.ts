@@ -15,8 +15,7 @@ import { getCurrentUserId } from '../../../utils/user'
 import type { UpdateUserRequest } from '../../../services/api/usersApi'
 import type { UserRole, EmployeeRole } from '../../../types'
 import type { EmployeeFormData } from '../components/SubRoles/hooks/useEmployeeSubRoleSelector'
-import type { RestaurantFormData } from '../components/SubRoles/hooks/useRestaurantFormSelector'
-import type { SupplierFormData } from '../components/SubRoles/hooks/useSupplierFormSelector'
+import type { FormData } from '../components/SubRoles/hooks/useFormSelector'
 
 interface UseRoleSelectorProps {
   onSelectRole: (role: UserRole) => void
@@ -30,8 +29,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
   const [selectedSubRole, setSelectedSubRole] = useState<EmployeeRole | null>(null)
   const [selectedPositionValue, setSelectedPositionValue] = useState<string | null>(null)
-  const [selectedSupplierType, setSelectedSupplierType] = useState<string | null>(null)
-  const [selectedRestaurantFormat, setSelectedRestaurantFormat] = useState<string | null>(null)
 
   const { isAuthenticated } = useAuth()
   const userData = useAppSelector(state => state.user.userData)
@@ -239,99 +236,16 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     [selectedSubRole, selectedPositionValue, onSelectRole, updateUser, isAuthenticated]
   )
 
-  const handleSupplierTypeSelect = useCallback((typeValue: string) => {
-    setSelectedSupplierType(typeValue)
-  }, [])
 
-  const handleRestaurantFormatSelect = useCallback((formatValue: string) => {
-    setSelectedRestaurantFormat(formatValue)
-  }, [])
-
-  const handleRestaurantFormatContinue = useCallback(
-    async (formData?: RestaurantFormData): Promise<boolean> => {
-      if (!formData?.format) {
-        return false
-      }
-
-      // Защита от двойного вызова
-      if (isSubmittingRef.current) {
-        return false
-      }
-
-      if (!isAuthenticated) {
-        onSelectRole('venue')
-        return true
-      }
-
-      const userId = await getCurrentUserId()
-      if (!userId) {
-        onSelectRole('venue')
-        return true
-      }
-
-      isSubmittingRef.current = true
-
-      try {
-        const updateData: UpdateUserRequest = {
-          user: {
-            role: 'restaurant',
-          },
-        }
-
-        // Обязательно сохраняем формат ресторана
-        if (formData.format) {
-          updateData.user.restaurant_profile_attributes = {
-            restaurant_format: formData.format,
-          }
-        }
-
-        // Опциональные поля - отправляем только если есть значение
-        if (formData.name && formData.name.trim() !== '') {
-          if (!updateData.user.restaurant_profile_attributes) {
-            updateData.user.restaurant_profile_attributes = {}
-          }
-          updateData.user.restaurant_profile_attributes.name = formData.name.trim()
-        }
-
-        if (formData.city && formData.city.trim() !== '') {
-          updateData.user.location = formData.city.trim()
-        }
-
-        if (!updateUser) {
-          throw new Error('updateUser функция не определена')
-        }
-
-        // Обновляем данные пользователя через API
-        const result = await updateUser(userId, updateData)
-
-        // Проверяем результат на наличие ошибок
-        if (!result.success) {
-          // Если success: false, показываем ошибку и не переходим на следующую страницу
-          const errors = result.errors || ['Произошла ошибка при сохранении данных']
-          setErrorMessage(errors.join('\n'))
-          setErrorDialogOpen(true)
-          isSubmittingRef.current = false
-          return false // Возвращаем false, чтобы форма не закрывалась
-        }
-
-        // Только при успешном ответе переходим на следующую страницу
-        onSelectRole('venue')
-        return true // Возвращаем true, чтобы форма закрылась
-      } catch (error) {
-        console.error('Ошибка обновления данных пользователя:', error)
-        // В случае исключения показываем ошибку
-        setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
-        setErrorDialogOpen(true)
-        return false // Возвращаем false, чтобы форма не закрывалась
-      } finally {
-        isSubmittingRef.current = false
-      }
-    },
-    [onSelectRole, updateUser, isAuthenticated]
-  )
-
-  const handleSupplierTypeContinue = useCallback(
-    async (formData?: SupplierFormData): Promise<boolean> => {
+  // Общая функция для сохранения формы с профилем
+  const saveFormWithProfile = useCallback(
+    async (
+      formData: FormData,
+      role: 'restaurant' | 'supplier',
+      targetRole: UserRole,
+      profileKey: 'restaurant_profile_attributes' | 'supplier_profile_attributes',
+      typeKey: 'restaurant_format' | 'supplier_type'
+    ): Promise<boolean> => {
       if (!formData?.type) {
         return false
       }
@@ -342,13 +256,13 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
       }
 
       if (!isAuthenticated) {
-        onSelectRole('supplier')
+        onSelectRole(targetRole)
         return true
       }
 
       const userId = await getCurrentUserId()
       if (!userId) {
-        onSelectRole('supplier')
+        onSelectRole(targetRole)
         return true
       }
 
@@ -357,25 +271,23 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
       try {
         const updateData: UpdateUserRequest = {
           user: {
-            role: 'supplier',
+            role,
           },
         }
 
-        // Обязательно сохраняем тип поставщика
-        if (formData.type) {
-          updateData.user.supplier_profile_attributes = {
-            supplier_type: formData.type,
-          }
+        // Создаем объект профиля
+        const profileAttributes: Record<string, string> = {
+          [typeKey]: formData.type,
         }
 
-        // Опциональные поля - отправляем только если есть значение
+        // Добавляем название, если есть
         if (formData.name && formData.name.trim() !== '') {
-          if (!updateData.user.supplier_profile_attributes) {
-            updateData.user.supplier_profile_attributes = {}
-          }
-          updateData.user.supplier_profile_attributes.name = formData.name.trim()
+          profileAttributes.name = formData.name.trim()
         }
 
+        updateData.user[profileKey] = profileAttributes
+
+        // Добавляем город, если есть
         if (formData.city && formData.city.trim() !== '') {
           updateData.user.location = formData.city.trim()
         }
@@ -389,28 +301,58 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
 
         // Проверяем результат на наличие ошибок
         if (!result.success) {
-          // Если success: false, показываем ошибку и не переходим на следующую страницу
           const errors = result.errors || ['Произошла ошибка при сохранении данных']
           setErrorMessage(errors.join('\n'))
           setErrorDialogOpen(true)
           isSubmittingRef.current = false
-          return false // Возвращаем false, чтобы форма не закрывалась
+          return false
         }
 
         // Только при успешном ответе переходим на следующую страницу
-        onSelectRole('supplier')
-        return true // Возвращаем true, чтобы форма закрылась
+        onSelectRole(targetRole)
+        return true
       } catch (error) {
         console.error('Ошибка обновления данных пользователя:', error)
-        // В случае исключения показываем ошибку
         setErrorMessage('Произошла ошибка при сохранении данных. Попробуйте еще раз.')
         setErrorDialogOpen(true)
-        return false // Возвращаем false, чтобы форма не закрывалась
+        return false
       } finally {
         isSubmittingRef.current = false
       }
     },
     [onSelectRole, updateUser, isAuthenticated]
+  )
+
+  const handleRestaurantFormatContinue = useCallback(
+    async (formData?: FormData): Promise<boolean> => {
+      if (!formData) {
+        return false
+      }
+      return saveFormWithProfile(
+        formData,
+        'restaurant',
+        'venue',
+        'restaurant_profile_attributes',
+        'restaurant_format'
+      )
+    },
+    [saveFormWithProfile]
+  )
+
+  const handleSupplierTypeContinue = useCallback(
+    async (formData?: FormData): Promise<boolean> => {
+      if (!formData) {
+        return false
+      }
+      return saveFormWithProfile(
+        formData,
+        'supplier',
+        'supplier',
+        'supplier_profile_attributes',
+        'supplier_type'
+      )
+    },
+    [saveFormWithProfile]
   )
 
 
@@ -422,11 +364,9 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     }
     if (showSupplierTypes) {
       setShowSupplierTypes(false)
-      setSelectedSupplierType(null)
     }
     if (showRestaurantFormats) {
       setShowRestaurantFormats(false)
-      setSelectedRestaurantFormat(null)
     }
   }, [showEmployeeSubRoles, showSupplierTypes, showRestaurantFormats])
 
@@ -436,8 +376,6 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     showSupplierTypes,
     showRestaurantFormats,
     selectedSubRole,
-    selectedSupplierType,
-    selectedRestaurantFormat,
     mainRoles,
     isLoading,
     isFetching,
@@ -454,9 +392,7 @@ export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
     handleRoleSelect,
     handleSubRoleSelect,
     handleSubRoleContinue,
-    handleSupplierTypeSelect,
     handleSupplierTypeContinue,
-    handleRestaurantFormatSelect,
     handleRestaurantFormatContinue,
     handleBack,
     errorDialogOpen,

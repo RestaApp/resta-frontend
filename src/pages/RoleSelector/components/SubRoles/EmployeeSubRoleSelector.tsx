@@ -7,13 +7,12 @@ import { useEmployeeSubRoleSelector } from './hooks/useEmployeeSubRoleSelector'
 import { PositionSelectionScreen } from './components/PositionSelectionScreen'
 import { SpecializationDrawer } from './components/SpecializationDrawer'
 import { LoadingState } from './components/LoadingState'
-import type { EmployeeRole, UserRole } from '../../../../types'
+import type { EmployeeRole } from '../../../../types'
 import type { JSX } from 'react'
 
 import type { EmployeeFormData } from './hooks/useEmployeeSubRoleSelector'
 
 interface EmployeeSubRoleSelectorProps {
-  currentRole: UserRole | null
   onSelectSubRole: (role: EmployeeRole, positionValue: string) => void
   selectedSubRole: EmployeeRole | null
   onContinue: (formData: EmployeeFormData) => Promise<boolean> | void

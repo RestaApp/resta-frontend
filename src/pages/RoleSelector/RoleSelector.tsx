@@ -4,9 +4,7 @@ import { SupplierTypeSelector } from './components/SubRoles/SupplierTypeSelector
 import { RestaurantFormatSelector } from './components/SubRoles/RestaurantFormatSelector'
 import { SectionHeader } from '../../components/ui/section-header'
 import { LoadingState } from './components/SubRoles/components/LoadingState'
-import { Modal } from '../../components/ui/modal'
-import { ModalContent } from '../../components/ui/modal-content'
-import { AlertTriangle } from 'lucide-react'
+import { ErrorModal } from './components/ErrorModal'
 import { useRoleSelector } from './hooks/useRoleSelector'
 import type { UserRole, RoleOption } from '../../types'
 import type { JSX } from 'react'
@@ -35,14 +33,10 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
     isLoadingRestaurantFormats,
     isFetchingRestaurantFormats,
     selectedSubRole,
-    selectedSupplierType,
-    selectedRestaurantFormat,
     handleRoleSelect,
     handleSubRoleSelect,
     handleSubRoleContinue,
-    handleSupplierTypeSelect,
     handleSupplierTypeContinue,
-    handleRestaurantFormatSelect,
     handleRestaurantFormatContinue,
     handleBack,
     errorDialogOpen,
@@ -54,7 +48,6 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
     return (
       <>
         <EmployeeSubRoleSelector
-          currentRole={selectedRole}
           onSelectSubRole={handleSubRoleSelect}
           selectedSubRole={selectedSubRole}
           onContinue={handleSubRoleContinue}
@@ -64,17 +57,11 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
           isFetching={isFetchingPositions}
           errorDialogOpen={errorDialogOpen}
         />
-        <Modal isOpen={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-          <ModalContent
-            icon={<AlertTriangle className="w-8 h-8 text-destructive" />}
-            title="Ошибка сохранения"
-            description={errorMessage || 'Произошла ошибка при сохранении данных'}
-            primaryButton={{
-              label: 'Понятно',
-              onClick: () => setErrorDialogOpen(false),
-            }}
-          />
-        </Modal>
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={() => setErrorDialogOpen(false)}
+          message={errorMessage}
+        />
       </>
     )
   }
@@ -83,26 +70,17 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
     return (
       <>
         <SupplierTypeSelector
-          onSelectType={handleSupplierTypeSelect}
-          selectedType={selectedSupplierType}
           onContinue={handleSupplierTypeContinue}
           onBack={handleBack}
           supplierTypes={supplierTypes}
           isLoading={isLoadingSupplierTypes}
           isFetching={isFetchingSupplierTypes}
-          errorDialogOpen={errorDialogOpen}
         />
-        <Modal isOpen={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-          <ModalContent
-            icon={<AlertTriangle className="w-8 h-8 text-destructive" />}
-            title="Ошибка сохранения"
-            description={errorMessage || 'Произошла ошибка при сохранении данных'}
-            primaryButton={{
-              label: 'Понятно',
-              onClick: () => setErrorDialogOpen(false),
-            }}
-          />
-        </Modal>
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={() => setErrorDialogOpen(false)}
+          message={errorMessage}
+        />
       </>
     )
   }
@@ -111,26 +89,17 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
     return (
       <>
         <RestaurantFormatSelector
-          onSelectFormat={handleRestaurantFormatSelect}
-          selectedFormat={selectedRestaurantFormat}
           onContinue={handleRestaurantFormatContinue}
           onBack={handleBack}
           restaurantFormats={restaurantFormats}
           isLoading={isLoadingRestaurantFormats}
           isFetching={isFetchingRestaurantFormats}
-          errorDialogOpen={errorDialogOpen}
         />
-        <Modal isOpen={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-          <ModalContent
-            icon={<AlertTriangle className="w-8 h-8 text-destructive" />}
-            title="Ошибка сохранения"
-            description={errorMessage || 'Произошла ошибка при сохранении данных'}
-            primaryButton={{
-              label: 'Понятно',
-              onClick: () => setErrorDialogOpen(false),
-            }}
-          />
-        </Modal>
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={() => setErrorDialogOpen(false)}
+          message={errorMessage}
+        />
       </>
     )
   }
@@ -167,17 +136,11 @@ export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
         </div>
       </div>
 
-      <Modal isOpen={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-        <ModalContent
-          icon={<AlertTriangle className="w-8 h-8 text-destructive" />}
-          title="Ошибка сохранения"
-          description={errorMessage || 'Произошла ошибка при сохранении данных'}
-          primaryButton={{
-            label: 'Понятно',
-            onClick: () => setErrorDialogOpen(false),
-          }}
-        />
-      </Modal>
+      <ErrorModal
+        isOpen={errorDialogOpen}
+        onClose={() => setErrorDialogOpen(false)}
+        message={errorMessage}
+      />
     </>
   )
 }
