@@ -15,7 +15,7 @@ import type { Tab, Screen, UserRole } from './types'
 import { ROUTES } from './constants/routes'
 import type { JSX } from 'react'
 
-export default function App(): JSX.Element {
+export const App = (): JSX.Element => {
   const { isLoading } = useAuth()
   const { selectedRole, handleRoleSelect } = useRole()
   const userData = useAppSelector(state => state.user.userData)
