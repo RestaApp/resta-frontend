@@ -2,7 +2,7 @@
  * Компонент для отображения контента табов
  */
 
-import { FeedPage } from '../../feed'
+import { FeedPage } from '../../Feed'
 import type { Tab, UserRole } from '../../../types'
 import type { JSX } from 'react'
 

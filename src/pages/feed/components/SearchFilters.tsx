@@ -8,7 +8,7 @@ interface SearchFiltersProps {
 
 export const SearchFilters = ({ query, onQueryChange }: SearchFiltersProps): JSX.Element => {
     return (
-        <div className="px-4 py-4 bg-card border-b border-border">
+        <div className="px-4 py-2 bg-card border-b border-border">
             <div className="flex gap-2">
                 <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
