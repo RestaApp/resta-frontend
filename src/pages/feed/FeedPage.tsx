@@ -3,16 +3,17 @@ import { motion } from 'motion/react'
 import { useUserProfile } from '../../hooks/useUserProfile'
 import { useToast } from '../../hooks/useToast'
 import { Tabs } from '../../components/ui/tabs'
-import { SearchFilters } from './components/SearchFilters'
-import { HotOffers } from './components/HotOffers'
-import { ShiftCard } from './components/ShiftCard'
-import { JobCard } from './components/JobCard'
-import { MapFAB } from './components/MapFAB'
+
 import { Toast } from '../../components/ui/toast'
 import type { FeedType } from './types'
 import type { Shift, Job } from './types'
 import type { TabOption } from '../../components/ui/tabs'
 import type { JSX } from 'react'
+import { SearchFilters } from './components/SearchFilters'
+import { HotOffers } from './components/HotOffers'
+import { ShiftCard } from './components/ShiftCard'
+import { JobCard } from './components/JobCard'
+import { MapFAB } from './components/MapFAB'
 
 const hotShifts = [
     { id: 1, restaurant: 'Sunset', emoji: '🌅', boost: 'x1.5', time: 'Сегодня вечер' },
