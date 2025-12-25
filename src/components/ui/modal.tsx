@@ -6,7 +6,7 @@
 import { useEffect, memo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '../../utils/cn'
-import type { JSX } from 'react'
+
 
 interface ModalProps {
   isOpen: boolean
@@ -20,7 +20,7 @@ export const Modal = memo(function Modal({
   onClose,
   children,
   className,
-}: ModalProps): JSX.Element {
+}: ModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'

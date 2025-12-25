@@ -9,7 +9,7 @@ import { LocationField } from './FormFields'
 import { Button } from '../../../../../components/ui/button'
 import { SelectableTagButton } from './SelectableTagButton'
 import { setupTelegramBackButton } from '../../../../../utils/telegram'
-import type { JSX } from 'react'
+
 
 interface FormScreenData {
     name: string
@@ -49,7 +49,7 @@ export const FormScreen = memo(function FormScreen({
     onBack,
     isLoadingLocation = false,
     continueButtonAriaLabel,
-}: FormScreenProps): JSX.Element {
+}: FormScreenProps) {
     useEffect(() => {
         const cleanup = setupTelegramBackButton(() => {
             onBack()

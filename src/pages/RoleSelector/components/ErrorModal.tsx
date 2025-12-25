@@ -6,7 +6,7 @@ import { memo } from 'react'
 import { Modal } from '../../../components/ui/modal'
 import { ModalContent } from '../../../components/ui/modal-content'
 import { AlertTriangle } from 'lucide-react'
-import type { JSX } from 'react'
+
 
 interface ErrorModalProps {
     isOpen: boolean
@@ -18,7 +18,7 @@ export const ErrorModal = memo(function ErrorModal({
     isOpen,
     onClose,
     message,
-}: ErrorModalProps): JSX.Element {
+}: ErrorModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalContent

@@ -5,9 +5,10 @@
  * - Минималистичная реализация, без сторонних примесей
  * - Полная типизация пропсов
  * - Явные именованные экспорты
+ * - Мемоизация для оптимизации производительности
  */
 
-import React from 'react'
+import React, { memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '../../utils/cn'
 
@@ -23,7 +24,7 @@ type OverlayProps = {
   onClick?: () => void
 }
 
-function DrawerOverlay({ className, onClick }: OverlayProps) {
+const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -35,25 +36,28 @@ function DrawerOverlay({ className, onClick }: OverlayProps) {
       aria-hidden
     />
   )
-}
+})
+
+DrawerOverlay.displayName = 'DrawerOverlay'
 
 type DrawerContentProps = {
   className?: string
   children?: React.ReactNode
   onOpenChange: (open: boolean) => void
+  preventClose?: boolean
 }
 
-function DrawerContent({
+const DrawerContent = memo(({
   className,
   children,
   onOpenChange,
   preventClose,
-}: DrawerContentProps & { preventClose?: boolean }) {
-  const handleOverlayClick = () => {
+}: DrawerContentProps) => {
+  const handleOverlayClick = useCallback(() => {
     if (!preventClose) {
       onOpenChange(false)
     }
-  }
+  }, [preventClose, onOpenChange])
 
   return (
     <>
@@ -75,7 +79,9 @@ function DrawerContent({
       </motion.div>
     </>
   )
-}
+})
+
+DrawerContent.displayName = 'DrawerContent'
 
 function Drawer({ open, onOpenChange, children, preventClose }: DrawerProps) {
   return (

@@ -1,12 +1,11 @@
 import { Search, SlidersHorizontal } from 'lucide-react'
-import type { JSX } from 'react'
 
 interface SearchFiltersProps {
     query: string
     onQueryChange: (q: string) => void
 }
 
-export const SearchFilters = ({ query, onQueryChange }: SearchFiltersProps): JSX.Element => {
+export const SearchFilters = ({ query, onQueryChange }: SearchFiltersProps => {
     return (
         <div className="px-4 py-2 bg-card border-b border-border">
             <div className="flex gap-2">

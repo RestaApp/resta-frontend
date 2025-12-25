@@ -4,14 +4,14 @@
 
 import { FeedPage } from '../../Feed'
 import type { Tab, UserRole } from '../../../types'
-import type { JSX } from 'react'
+
 
 interface TabContentProps {
     activeTab: Tab
     role: UserRole
 }
 
-export const TabContent = ({ activeTab, role }: TabContentProps): JSX.Element => {
+export const TabContent = ({ activeTab, role }: TabContentProps) => {
     // Для таба feed показываем FeedPage
     if (activeTab === 'feed') {
         return <FeedPage />

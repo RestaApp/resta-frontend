@@ -28,6 +28,7 @@ type TagType =
   | 'Supplier'
   | 'Venue'
   | 'News'
+  | 'Catalog'
 
 /**
  * Настройки RTK Query
@@ -54,6 +55,7 @@ export const rtkQueryConfig = {
     'Supplier',
     'Venue',
     'News',
+    'Catalog', // Справочные данные (роли, позиции, специализации и т.д.)
   ] as const satisfies readonly TagType[],
 
   // Настройки кэша ошибок

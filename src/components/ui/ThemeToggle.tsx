@@ -1,14 +1,13 @@
 import { useEffect, useState, useRef } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
-import type { JSX } from 'react'
 import { getInitialTheme, toggleTheme } from '../../utils/theme'
 
 interface ThemeToggleProps {
     size?: number
 }
 
-export const ThemeToggle = ({ size = 20 }: ThemeToggleProps): JSX.Element => {
+export const ThemeToggle = ({ size = 20 }: ThemeToggleProps) => {
     const [theme, setTheme] = useState<'light' | 'dark'>(() => getInitialTheme())
 
     useEffect(() => {
@@ -42,7 +41,7 @@ export const ThemeToggle = ({ size = 20 }: ThemeToggleProps): JSX.Element => {
     )
 }
 
-export const ThemeToggleCompact = (): JSX.Element => {
+export const ThemeToggleCompact = () => {
     const [theme, setTheme] = useState<'light' | 'dark'>(() => getInitialTheme())
     const containerRef = useRef<HTMLDivElement>(null)
     const lightButtonRef = useRef<HTMLButtonElement>(null)

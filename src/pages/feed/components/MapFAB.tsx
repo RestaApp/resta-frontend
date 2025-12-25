@@ -1,13 +1,12 @@
 import { motion } from 'motion/react'
 import { Map } from 'lucide-react'
-import type { JSX } from 'react'
 
 interface MapFABProps {
     onOpen: () => void
     className?: string
 }
 
-export const MapFAB = ({ onOpen, className }: MapFABProps): JSX.Element => {
+export const MapFAB = ({ onOpen, className }: MapFABProps => {
     return (
         <motion.button
             initial={{ scale: 0 }}

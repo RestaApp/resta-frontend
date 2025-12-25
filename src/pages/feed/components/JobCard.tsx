@@ -1,13 +1,12 @@
 import { Star } from 'lucide-react'
-import type { Job } from '../types'
-import type { JSX } from 'react'
+import type { Job } from '../../Feed/types'
 
 interface JobCardProps {
     job: Job
     onContact: (restaurant: string) => void
 }
 
-export const JobCard = ({ job, onContact }: JobCardProps): JSX.Element => {
+export const JobCard = ({ job, onContact }: JobCardProps => {
     return (
         <div className="bg-card rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow">
             <div className="flex items-start gap-4 mb-4">

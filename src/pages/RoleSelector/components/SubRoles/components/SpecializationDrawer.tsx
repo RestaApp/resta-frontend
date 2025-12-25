@@ -15,7 +15,7 @@ import { getSpecializationLabel } from '../../../../../constants/labels'
 import { ExperienceField, LocationField, OpenToWorkToggle } from './FormFields'
 import { SelectableTagButton } from './SelectableTagButton'
 import type { EmployeeFormData } from '../hooks/useEmployeeSubRoleSelector'
-import type { JSX } from 'react'
+
 
 interface SpecializationDrawerProps {
     open: boolean
@@ -47,7 +47,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
     onFormDataUpdate,
     onDone,
     errorDialogOpen = false,
-}: SpecializationDrawerProps): JSX.Element {
+}: SpecializationDrawerProps) {
     const handleOpenChange = (newOpen: boolean) => {
         // Предотвращаем закрытие drawer при открытом модальном окне ошибки
         if (!newOpen && errorDialogOpen) {
@@ -136,7 +136,7 @@ const OptionalFields = memo(function OptionalFields({
     onFormDataUpdate,
     isLoadingLocation = false,
     showSpecializations = false,
-}: OptionalFieldsProps): JSX.Element {
+}: OptionalFieldsProps) {
     return (
         <div className={`space-y-5 ${showSpecializations ? 'pt-4 border-t border-border' : ''}`}>
             <ExperienceField

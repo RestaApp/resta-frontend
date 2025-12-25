@@ -8,7 +8,7 @@ import { PositionSelectionScreen } from './components/PositionSelectionScreen'
 import { SpecializationDrawer } from './components/SpecializationDrawer'
 import { LoadingState } from './components/LoadingState'
 import type { EmployeeRole } from '../../../../types'
-import type { JSX } from 'react'
+ 
 
 import type { EmployeeFormData } from './hooks/useEmployeeSubRoleSelector'
 
@@ -32,7 +32,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   isLoading = false,
   isFetching = false,
   errorDialogOpen = false,
-}: EmployeeSubRoleSelectorProps): JSX.Element {
+}: EmployeeSubRoleSelectorProps) {
   const {
     subRoles,
     formData,

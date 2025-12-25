@@ -4,7 +4,7 @@
 
 import { memo } from 'react'
 import { motion } from 'motion/react'
-import type { JSX } from 'react'
+
 
 interface SectionHeaderProps {
   title: string
@@ -16,7 +16,7 @@ export const SectionHeader = memo(function SectionHeader({
   title,
   description,
   className,
-}: SectionHeaderProps): JSX.Element {
+}: SectionHeaderProps) {
   return (
     <motion.div
       initial={{ y: -20, opacity: 0 }}

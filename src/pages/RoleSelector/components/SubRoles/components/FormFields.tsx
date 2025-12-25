@@ -6,7 +6,7 @@ import { memo, useState, useEffect } from 'react'
 import { motion, useSpring, useMotionValueEvent, useTransform } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import { cn } from '../../../../../utils/cn'
-import type { JSX } from 'react'
+ 
 
 interface ExperienceFieldProps {
     value: number
@@ -20,7 +20,7 @@ export const ExperienceField = memo(function ExperienceField({
     onChange,
     withAnimation = false,
     animationDelay = 0,
-}: ExperienceFieldProps): JSX.Element {
+}: ExperienceFieldProps) {
     const spring = useSpring(value, {
         stiffness: 220,
         damping: 18,
@@ -151,7 +151,7 @@ export const OpenToWorkToggle = memo(function OpenToWorkToggle({
     onChange,
     withAnimation = false,
     animationDelay = 0,
-}: OpenToWorkToggleProps): JSX.Element {
+}: OpenToWorkToggleProps) {
     const content = (
         <div className="flex items-center justify-between bg-muted/50 p-3 rounded-xl">
             <span className="text-sm font-medium text-foreground">В активном поиске</span>
@@ -204,7 +204,7 @@ export const LocationField = memo(function LocationField({
     withAnimation = false,
     animationDelay = 0,
     isLoading = false,
-}: LocationFieldProps): JSX.Element {
+}: LocationFieldProps) {
     const content = (
         <div>
             <label className="block mb-2 text-muted-foreground text-sm font-medium">Город</label>

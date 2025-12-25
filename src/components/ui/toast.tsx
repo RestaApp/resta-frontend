@@ -7,7 +7,7 @@ import { memo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 import { cn } from '../../utils/cn'
-import type { JSX } from 'react'
+ 
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
 
@@ -40,7 +40,7 @@ export const Toast = memo(function Toast({
     isVisible,
     onClose,
     className,
-}: ToastProps): JSX.Element | null {
+}: ToastProps) {
     const Icon = TOAST_ICONS[type]
     const colorClass = TOAST_COLORS[type]
 

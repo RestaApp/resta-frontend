@@ -7,7 +7,7 @@ import { FormScreen } from './components/FormScreen'
 import { useFormSelector } from './hooks/useFormSelector'
 import { LoadingState } from './components/LoadingState'
 import { getRestaurantFormatLabel } from '../../../../constants/labels'
-import type { JSX } from 'react'
+ 
 import type { FormData } from './hooks/useFormSelector'
 
 interface RestaurantFormatSelectorProps {
@@ -24,7 +24,7 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
   restaurantFormats,
   isLoading = false,
   isFetching = false,
-}: RestaurantFormatSelectorProps): JSX.Element {
+}: RestaurantFormatSelectorProps) {
   const {
     formData,
     isLoadingLocation,

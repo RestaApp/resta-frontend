@@ -7,7 +7,7 @@ import { FormScreen } from './components/FormScreen'
 import { useFormSelector } from './hooks/useFormSelector'
 import { LoadingState } from './components/LoadingState'
 import { getSupplierTypeLabel } from '../../../../constants/labels'
-import type { JSX } from 'react'
+ 
 import type { FormData } from './hooks/useFormSelector'
 
 interface SupplierTypeSelectorProps {
@@ -24,7 +24,7 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
   supplierTypes,
   isLoading = false,
   isFetching = false,
-}: SupplierTypeSelectorProps): JSX.Element {
+}: SupplierTypeSelectorProps) {
   const {
     formData,
     isLoadingLocation,

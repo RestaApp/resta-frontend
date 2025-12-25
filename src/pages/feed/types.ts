@@ -10,6 +10,10 @@ export interface Shift {
   time: string
   pay: number
   currency: string
+  location?: string
+  duration?: string // Длительность смены в часах
+  urgent?: boolean // Срочная смена
+  badges?: string[] // Дополнительные бейджи
 }
 
 export interface Job {

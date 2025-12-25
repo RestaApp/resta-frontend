@@ -7,13 +7,11 @@ import { LoadingState } from './components/SubRoles/components/LoadingState'
 import { ErrorModal } from './components/ErrorModal'
 import { useRoleSelector } from './hooks/useRoleSelector'
 import type { UserRole, RoleOption } from '../../types'
-import type { JSX } from 'react'
-
 interface RoleSelectorProps {
   onSelectRole: (role: UserRole) => void
 }
 
-export const RoleSelector = ({ onSelectRole }: RoleSelectorProps): JSX.Element => {
+export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
   const {
     selectedRole,
     showEmployeeSubRoles,

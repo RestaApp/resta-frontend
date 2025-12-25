@@ -13,9 +13,8 @@ import { useNavigation } from './hooks/useNavigation'
 import { useAuth } from './contexts/AuthContext'
 import type { Tab, Screen, UserRole } from './types'
 import { ROUTES } from './constants/routes'
-import type { JSX } from 'react'
 
-export const App = (): JSX.Element => {
+export const App = () => {
   const { isLoading } = useAuth()
   const { selectedRole, handleRoleSelect } = useRole()
   const userData = useAppSelector(state => state.user.userData)

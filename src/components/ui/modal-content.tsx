@@ -7,7 +7,7 @@ import { memo } from 'react'
 import { motion } from 'motion/react'
 import { Button } from './button'
 import { cn } from '../../utils/cn'
-import type { JSX } from 'react'
+
 
 export interface ModalButton {
   label: string
@@ -32,7 +32,7 @@ export const ModalContent = memo(function ModalContent({
   primaryButton,
   secondaryButton,
   className,
-}: ModalContentProps): JSX.Element {
+}: ModalContentProps) {
   return (
     <div className={cn('bg-card border border-border shadow-xl rounded-3xl p-6 w-full', className)}>
       {/* Icon */}

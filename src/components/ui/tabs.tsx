@@ -4,7 +4,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import type { JSX } from 'react'
+
 
 export type TabOption<T extends string> = {
   id: T
@@ -24,7 +24,7 @@ export const Tabs = <T extends string>({
   activeId,
   onChange,
   className,
-}: TabsProps<T>): JSX.Element => {
+}: TabsProps<T>) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Map<T, HTMLButtonElement>>(new Map())
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })

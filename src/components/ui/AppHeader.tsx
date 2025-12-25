@@ -1,13 +1,12 @@
 import { motion } from 'motion/react'
 import { useUserProfile } from '../../hooks/useUserProfile'
-import type { JSX } from 'react'
 import { ThemeToggleCompact } from './ThemeToggle'
 
 interface AppHeaderProps {
     greetingName?: string
 }
 
-export const AppHeader = ({ greetingName }: AppHeaderProps): JSX.Element => {
+export const AppHeader = ({ greetingName }: AppHeaderProps) => {
     const { userProfile } = useUserProfile()
     const sourceName = greetingName ?? userProfile?.full_name ?? userProfile?.name
     const name = sourceName ? String(sourceName).split(' ')[0] : 'Пользователь'

@@ -7,7 +7,7 @@ import { useDashboard } from './hooks/useDashboard'
 import { TabContent } from './components/TabContent'
 import { BottomNav } from '../../components/BottomNav'
 import type { UserRole, Screen } from '../../types'
-import type { JSX } from 'react'
+
 import { AppHeader } from '../../components/ui/AppHeader'
 
 interface DashboardProps {
@@ -16,7 +16,7 @@ interface DashboardProps {
     currentScreen?: Screen | null
 }
 
-export const Dashboard = ({ role, onNavigate, currentScreen = null }: DashboardProps): JSX.Element => {
+export const Dashboard = ({ role, onNavigate, currentScreen = null }: DashboardProps) => {
     const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
 
     return (
