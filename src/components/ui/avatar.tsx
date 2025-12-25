@@ -6,7 +6,7 @@ interface AvatarProps {
   className?: string
 }
 
-export function Avatar({ children, className }: AvatarProps) {
+export const Avatar = ({ children, className }: AvatarProps) => {
   return (
     <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>
       {children}
@@ -21,7 +21,7 @@ interface AvatarImageProps {
   onError?: () => void
 }
 
-export function AvatarImage({ src, alt = '', className, onError }: AvatarImageProps) {
+export const AvatarImage = ({ src, alt = '', className, onError }: AvatarImageProps) => {
   const [imgError, setImgError] = useState(false)
 
   if (!src || imgError) {
@@ -50,7 +50,7 @@ interface AvatarFallbackProps {
   className?: string
 }
 
-export function AvatarFallback({ children, className }: AvatarFallbackProps) {
+export const AvatarFallback = ({ children, className }: AvatarFallbackProps) => {
   return (
     <div className={cn('flex h-full w-full items-center justify-center rounded-full', className)}>
       {children}

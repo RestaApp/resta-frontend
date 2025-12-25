@@ -43,7 +43,7 @@ interface VacancyCardProps {
   onClick?: (id: string) => void
 }
 
-export function VacancyCard({ vacancy, onApply, onSave, onClick }: VacancyCardProps) {
+export const VacancyCard = ({ vacancy, onApply, onSave, onClick }: VacancyCardProps) => {
   return (
     <Card
       className="p-5 glass hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer border border-border/50 shadow-sm"

@@ -18,7 +18,7 @@ interface UseSupplierTypesOptions {
  * Запрос выполняется только после успешной авторизации (получения токена)
  * @param options - Опции для управления загрузкой
  */
-export function useSupplierTypes(options: UseSupplierTypesOptions = {}) {
+export const useSupplierTypes = (options: UseSupplierTypesOptions = {}) => {
   const { enabled = false } = options
   const { isAuthenticated } = useAuth()
 

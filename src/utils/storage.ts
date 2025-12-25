@@ -13,7 +13,7 @@ const VALID_ROLES: readonly UserRole[] = [
   'supplier',
 ] as const
 
-export function getStoredRole(): UserRole | null {
+export const getStoredRole = (): UserRole | null => {
   const role = localStorage.getItem(ROLE_STORAGE_KEY)
   if (role && VALID_ROLES.includes(role as UserRole)) {
     return role as UserRole
@@ -21,10 +21,10 @@ export function getStoredRole(): UserRole | null {
   return null
 }
 
-export function setStoredRole(role: UserRole): void {
+export const setStoredRole = (role: UserRole): void => {
   localStorage.setItem(ROLE_STORAGE_KEY, role)
 }
 
-export function removeStoredRole(): void {
+export const removeStoredRole = (): void => {
   localStorage.removeItem(ROLE_STORAGE_KEY)
 }

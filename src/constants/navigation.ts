@@ -9,7 +9,7 @@ import { ROUTES } from './routes'
  * Маппинг экранов на табы для синхронизации
  */
 export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
-  [ROUTES.HOME]: 'home',
+  [ROUTES.HOME]: 'feed',
   [ROUTES.SHIFTS]: 'shifts',
   [ROUTES.VACANCIES]: 'vacancies',
   [ROUTES.NOTIFICATIONS]: 'notifications',

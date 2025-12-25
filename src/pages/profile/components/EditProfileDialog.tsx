@@ -26,7 +26,7 @@ interface EditProfileDialogProps {
     onSuccess?: () => void
 }
 
-export function EditProfileDialog({ open, onOpenChange, onSuccess }: EditProfileDialogProps) {
+export const EditProfileDialog = ({ open, onOpenChange, onSuccess }: EditProfileDialogProps) => {
     const { userProfile } = useUserProfile()
     const { updateUser } = useUpdateUser()
     const userData = useAppSelector(state => state.user.userData)

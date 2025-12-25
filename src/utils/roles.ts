@@ -9,7 +9,7 @@ import { EMPLOYEE_ROLES } from '../constants/roles'
  * Маппинг роли из API (строка) в UserRole
  * API может возвращать: 'unverified', 'employee', 'restaurant', 'supplier', 'chef', 'waiter', 'bartender', 'barista', 'admin', 'venue'
  */
-export function mapRoleFromApi(roleString: string | null | undefined): UserRole | null {
+export const mapRoleFromApi = (roleString: string | null | undefined): UserRole | null => {
   if (!roleString) {
     return null
   }
@@ -51,7 +51,7 @@ export function mapRoleFromApi(roleString: string | null | undefined): UserRole 
 /**
  * Проверяет, является ли роль ролью сотрудника
  */
-export function isEmployeeRole(role: UserRole | null): role is EmployeeRole {
+export const isEmployeeRole = (role: UserRole | null): role is EmployeeRole => {
   if (!role) return false
   return EMPLOYEE_ROLES.includes(role as EmployeeRole)
 }
@@ -59,20 +59,20 @@ export function isEmployeeRole(role: UserRole | null): role is EmployeeRole {
 /**
  * Проверяет, является ли роль ролью заведения
  */
-export function isVenueRole(role: UserRole | null): boolean {
+export const isVenueRole = (role: UserRole | null): boolean => {
   return role === 'venue'
 }
 
 /**
  * Проверяет, является ли роль ролью поставщика
  */
-export function isSupplierRole(role: UserRole | null): boolean {
+export const isSupplierRole = (role: UserRole | null): boolean => {
   return role === 'supplier'
 }
 
 /**
  * Проверяет, может ли роль просматривать смены
  */
-export function canViewShifts(role: UserRole | null): boolean {
+export const canViewShifts = (role: UserRole | null): boolean => {
   return isEmployeeRole(role) || isVenueRole(role)
 }

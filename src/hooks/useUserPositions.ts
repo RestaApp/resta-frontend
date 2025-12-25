@@ -19,7 +19,7 @@ interface UseUserPositionsOptions {
  * Запрос выполняется только после успешной авторизации (получения токена)
  * @param options - Опции для управления загрузкой
  */
-export function useUserPositions(options: UseUserPositionsOptions = {}) {
+export const useUserPositions = (options: UseUserPositionsOptions = {}) => {
   const { enabled = false } = options
   const { isAuthenticated } = useAuth()
 

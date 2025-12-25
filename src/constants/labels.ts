@@ -153,55 +153,55 @@ export const SPECIALIZATION_LABELS: Record<string, string> = {
 /**
  * Получить название типа поставщика
  */
-export function getSupplierTypeLabel(value: string): string {
+export const getSupplierTypeLabel = (value: string): string => {
   return SUPPLIER_TYPE_LABELS[value] || value
 }
 
 /**
  * Получить описание типа поставщика
  */
-export function getSupplierTypeDescription(value: string): string {
+export const getSupplierTypeDescription = (value: string): string => {
   return SUPPLIER_TYPE_DESCRIPTIONS[value] || ''
 }
 
 /**
  * Получить название формата ресторана
  */
-export function getRestaurantFormatLabel(value: string): string {
+export const getRestaurantFormatLabel = (value: string): string => {
   return RESTAURANT_FORMAT_LABELS[value] || value
 }
 
 /**
  * Получить описание формата ресторана
  */
-export function getRestaurantFormatDescription(value: string): string {
+export const getRestaurantFormatDescription = (value: string): string => {
   return RESTAURANT_FORMAT_DESCRIPTIONS[value] || ''
 }
 
 /**
  * Получить название позиции сотрудника
  */
-export function getEmployeePositionLabel(value: string): string {
+export const getEmployeePositionLabel = (value: string): string => {
   return EMPLOYEE_POSITION_LABELS[value] || value
 }
 
 /**
  * Получить описание позиции сотрудника
  */
-export function getEmployeePositionDescription(value: string): string {
+export const getEmployeePositionDescription = (value: string): string => {
   return EMPLOYEE_POSITION_DESCRIPTIONS[value.toLowerCase()] || ''
 }
 
 /**
  * Получить название роли пользователя
  */
-export function getUserRoleLabel(value: string): string {
+export const getUserRoleLabel = (value: string): string => {
   return USER_ROLE_LABELS[value] || value
 }
 
 /**
  * Получить название специализации
  */
-export function getSpecializationLabel(value: string): string {
+export const getSpecializationLabel = (value: string): string => {
   return SPECIALIZATION_LABELS[value] || value
 }

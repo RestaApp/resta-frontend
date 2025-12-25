@@ -47,7 +47,7 @@ interface UseReplacementShiftsOptions {
  * Запрос выполняется только после успешной авторизации (получения токена)
  * По умолчанию возвращает только срочные смены (urgent: true)
  */
-export function useReplacementShifts(options: UseReplacementShiftsOptions = {}) {
+export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) => {
   const {
     category,
     location,

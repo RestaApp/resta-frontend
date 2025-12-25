@@ -5,12 +5,13 @@ interface ChefProfileProps {
   onSettings: () => void
 }
 
-export function ChefProfile({ onFindReplacement, onSettings }: ChefProfileProps) {
+export const ChefProfile = ({ onFindReplacement, onSettings }: ChefProfileProps) => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6">
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold mb-2">Профиль повара</h1>
+
         </div>
 
         <div className="bg-card rounded-2xl p-6 border border-border mb-4">

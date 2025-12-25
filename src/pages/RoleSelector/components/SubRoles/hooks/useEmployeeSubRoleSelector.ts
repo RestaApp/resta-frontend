@@ -25,13 +25,13 @@ interface UseEmployeeSubRoleSelectorProps {
   onContinue?: (formData: EmployeeFormData) => Promise<boolean> | void
 }
 
-export function useEmployeeSubRoleSelector({
+export const useEmployeeSubRoleSelector = ({
   employeeSubRoles,
   selectedSubRole,
   onSelectSubRole,
   onBack,
   onContinue,
-}: UseEmployeeSubRoleSelectorProps) {
+}: UseEmployeeSubRoleSelectorProps) => {
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState<EmployeeFormData>({
     specializations: [],

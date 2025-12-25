@@ -8,7 +8,7 @@ import type { UserRole } from '../types'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
 import { setSelectedRole } from '../store/userSlice'
 
-export function useRole() {
+export const useRole = () => {
   const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(state => state.user.selectedRole)
 

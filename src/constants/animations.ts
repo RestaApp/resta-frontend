@@ -41,7 +41,7 @@ export const logoTransition = {
 /**
  * Создает transition конфигурацию для текстовых элементов с задержкой
  */
-export function createTextTransition(delay: number) {
+export const createTextTransition = (delay: number) => {
   return {
     delay,
     duration: ANIMATION_DURATION,

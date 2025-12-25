@@ -6,7 +6,7 @@ interface BadgeProps {
   variant?: 'default' | 'primary' | 'secondary' | 'success' | 'destructive' | 'outline'
 }
 
-export function Badge({ children, className, variant = 'default' }: BadgeProps) {
+export const Badge = ({ children, className, variant = 'default' }: BadgeProps) => {
   const variants = {
     default: 'bg-muted text-muted-foreground',
     primary: 'bg-primary text-primary-foreground',

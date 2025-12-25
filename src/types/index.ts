@@ -23,7 +23,20 @@ export type EmployeeRole =
   | 'manager'
   | 'support'
 
-export type Tab = 'home' | 'shifts' | 'notifications' | 'profile' | 'vacancies'
+export type Tab =
+  | 'home'
+  | 'shifts'
+  | 'notifications'
+  | 'profile'
+  | 'vacancies'
+  | 'exchange'
+  | 'suppliers'
+  | 'myshifts'
+  | 'staff'
+  | 'requests'
+  | 'showcase'
+  | 'feed'
+  | 'activity'
 
 export type Screen =
   | 'home'

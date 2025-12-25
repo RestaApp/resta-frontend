@@ -30,7 +30,7 @@ interface ShiftCardProps {
   onClick?: (id: string) => void
 }
 
-export function ShiftCard({ shift, onApply, onSave, onClick }: ShiftCardProps) {
+export const ShiftCard = ({ shift, onApply, onSave, onClick }: ShiftCardProps) => {
   return (
     <Card
       className="p-5 glass hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer border border-border/50 shadow-sm"

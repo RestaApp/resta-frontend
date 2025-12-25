@@ -20,7 +20,7 @@ interface UseToastReturn {
 
 const DEFAULT_DURATION = 3000
 
-export function useToast(): UseToastReturn {
+export const useToast = (): UseToastReturn => {
   const [toast, setToast] = useState<ToastState>({
     message: '',
     type: 'info',

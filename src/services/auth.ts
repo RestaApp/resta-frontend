@@ -10,7 +10,7 @@ const REFRESH_TOKEN_STORAGE_KEY = STORAGE_KEYS.REFRESH_TOKEN
 /**
  * Получает токен авторизации
  */
-export function getToken(): string | null {
+export const getToken = (): string | null => {
   if (typeof window === 'undefined') {
     return null
   }
@@ -20,7 +20,7 @@ export function getToken(): string | null {
 /**
  * Сохраняет токен авторизации
  */
-export function setToken(token: string): void {
+export const setToken = (token: string): void => {
   if (typeof window === 'undefined') {
     return
   }
@@ -30,7 +30,7 @@ export function setToken(token: string): void {
 /**
  * Получает refresh токен
  */
-export function getRefreshToken(): string | null {
+export const getRefreshToken = (): string | null => {
   if (typeof window === 'undefined') {
     return null
   }
@@ -40,7 +40,7 @@ export function getRefreshToken(): string | null {
 /**
  * Сохраняет refresh токен
  */
-export function setRefreshToken(token: string): void {
+export const setRefreshToken = (token: string): void => {
   if (typeof window === 'undefined') {
     return
   }
@@ -50,7 +50,7 @@ export function setRefreshToken(token: string): void {
 /**
  * Удаляет токен авторизации
  */
-export function removeToken(): void {
+export const removeToken = (): void => {
   if (typeof window === 'undefined') {
     return
   }
@@ -60,7 +60,7 @@ export function removeToken(): void {
 /**
  * Удаляет refresh токен
  */
-export function removeRefreshToken(): void {
+export const removeRefreshToken = (): void => {
   if (typeof window === 'undefined') {
     return
   }
@@ -70,7 +70,7 @@ export function removeRefreshToken(): void {
 /**
  * Сохраняет оба токена
  */
-export function setTokens(accessToken: string, refreshToken: string): void {
+export const setTokens = (accessToken: string, refreshToken: string): void => {
   setToken(accessToken)
   setRefreshToken(refreshToken)
 }
@@ -78,7 +78,7 @@ export function setTokens(accessToken: string, refreshToken: string): void {
 /**
  * Выполняет выход (очищает все токены и данные пользователя)
  */
-export function logout(): void {
+export const logout = (): void => {
   removeToken()
   removeRefreshToken()
   // Очищаем данные пользователя из Redux
@@ -89,9 +89,9 @@ export function logout(): void {
 /**
  * Декодирует JWT токен и возвращает payload
  */
-export function decodeToken(
+export const decodeToken = (
   token: string
-): { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown } | null {
+): { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown } | null => {
   try {
     const parts = token.split('.')
     if (parts.length !== 3) {
@@ -114,7 +114,7 @@ export function decodeToken(
 /**
  * Получает id пользователя из токена
  */
-export function getUserIdFromToken(token: string | null): number | null {
+export const getUserIdFromToken = (token: string | null): number | null => {
   if (!token) {
     return null
   }
@@ -129,7 +129,7 @@ export function getUserIdFromToken(token: string | null): number | null {
 /**
  * Проверяет, истек ли токен
  */
-export function isTokenExpired(token: string | null): boolean {
+export const isTokenExpired = (token: string | null): boolean => {
   if (!token) {
     return true
   }
@@ -150,7 +150,7 @@ export function isTokenExpired(token: string | null): boolean {
 /**
  * Проверяет, валиден ли токен (существует и не истек)
  */
-export function isTokenValid(): boolean {
+export const isTokenValid = (): boolean => {
   const token = getToken()
   return token !== null && !isTokenExpired(token)
 }
@@ -158,7 +158,7 @@ export function isTokenValid(): boolean {
 /**
  * Проверяет, авторизован ли пользователь
  */
-export function isAuthenticated(): boolean {
+export const isAuthenticated = (): boolean => {
   return getToken() !== null
 }
 

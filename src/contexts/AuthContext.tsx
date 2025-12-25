@@ -23,7 +23,7 @@ interface AuthProviderProps {
  * Провайдер для глобального состояния авторизации
  * Должен быть обернут вокруг всего приложения
  */
-export function AuthProvider({ children }: AuthProviderProps) {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => authService.isAuthenticated())
   const [isError, setIsError] = useState(false)
   const [error, setError] = useState<unknown>(null)
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
  * Хук для использования состояния авторизации
  * Использует глобальный контекст, предотвращая дублирование запросов
  */
-export function useAuth(): AuthContextValue {
+export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext)
   if (context === undefined) {
     throw new Error('useAuth должен использоваться внутри AuthProvider')

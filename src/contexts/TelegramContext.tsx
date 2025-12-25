@@ -31,7 +31,7 @@ interface TelegramProviderProps {
 // Используется вне компонента, чтобы работать даже в StrictMode
 let globalAuthAttempted = false
 
-export function TelegramProvider({ children }: TelegramProviderProps) {
+export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const dispatch = useAppDispatch()
   const userDataFromStore = useAppSelector(state => state.user.userData)
   const { authTelegram } = useAuthActions()
@@ -228,7 +228,7 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
 /**
  * Хук для использования Telegram контекста
  */
-export function useTelegram(): TelegramContextValue {
+export const useTelegram = (): TelegramContextValue => {
   const context = useContext(TelegramContext)
   if (context === undefined) {
     throw new Error('useTelegram должен использоваться внутри TelegramProvider')

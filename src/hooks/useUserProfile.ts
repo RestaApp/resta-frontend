@@ -25,7 +25,7 @@ interface UseUserProfileOptions {
  * Приоритет: данные из Redux > данные из API
  * @param options - Опции для управления загрузкой
  */
-export function useUserProfile(options: UseUserProfileOptions = {}) {
+export const useUserProfile = (options: UseUserProfileOptions = {}) => {
   const { skip = false, forceRefetch = false } = options
   const { isAuthenticated } = useAuth()
   const dispatch = useAppDispatch()

@@ -12,7 +12,7 @@ import type { UserData } from '../services/api/authApi'
  * @param dispatch - Redux dispatch функция
  * @param userData - Данные пользователя для сохранения
  */
-export function updateUserDataInStore(dispatch: AppDispatch, userData: UserData | null): void {
+export const updateUserDataInStore = (dispatch: AppDispatch, userData: UserData | null): void => {
   dispatch(setUserData(userData))
 }
 
@@ -20,7 +20,7 @@ export function updateUserDataInStore(dispatch: AppDispatch, userData: UserData 
  * Инвалидирует кэш пользователя в RTK Query
  * @param dispatch - Redux dispatch функция
  */
-export function invalidateUserCache(dispatch: AppDispatch): void {
+export const invalidateUserCache = (dispatch: AppDispatch): void => {
   // Используем прямой импорт через динамический для избежания циклических зависимостей
   // при инициализации модулей
   import('../store/api')
@@ -35,7 +35,7 @@ export function invalidateUserCache(dispatch: AppDispatch): void {
 /**
  * Отправляет событие об успешной авторизации
  */
-export function dispatchAuthEvent(): void {
+export const dispatchAuthEvent = (): void => {
   if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
     try {
       window.dispatchEvent(new CustomEvent('auth:authorized'))

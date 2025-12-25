@@ -16,7 +16,7 @@ interface UseFormSelectorProps {
     onBack: () => void
 }
 
-export function useFormSelector({ onContinue, onBack: _onBack }: UseFormSelectorProps) {
+export const useFormSelector = ({ onContinue, onBack: _onBack }: UseFormSelectorProps) => {
     const [formData, setFormData] = useState<FormData>({
         name: '',
         type: null,

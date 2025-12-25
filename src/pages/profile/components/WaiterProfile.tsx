@@ -5,7 +5,7 @@ interface WaiterProfileProps {
   onSettings: () => void
 }
 
-export function WaiterProfile({ onFindReplacement, onSettings }: WaiterProfileProps) {
+export const WaiterProfile = ({ onFindReplacement, onSettings }: WaiterProfileProps) => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6">

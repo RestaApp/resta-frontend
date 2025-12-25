@@ -18,7 +18,7 @@ interface UseRestaurantFormatsOptions {
  * Запрос выполняется только после успешной авторизации (получения токена)
  * @param options - Опции для управления загрузкой
  */
-export function useRestaurantFormats(options: UseRestaurantFormatsOptions = {}) {
+export const useRestaurantFormats = (options: UseRestaurantFormatsOptions = {}) => {
   const { enabled = false } = options
   const { isAuthenticated } = useAuth()
 

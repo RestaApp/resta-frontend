@@ -124,7 +124,7 @@ function isGeolocationError(error: unknown): boolean {
   )
 }
 
-export function useGeolocation(): UseGeolocationReturn {
+export const useGeolocation = (): UseGeolocationReturn => {
   const [isLoading, setIsLoading] = useState(false)
   const isLoadingRef = useRef(false)
 

@@ -10,7 +10,7 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset'
 }
 
-export function Button({
+export const Button = ({
   children,
   className,
   onClick,
@@ -18,7 +18,7 @@ export function Button({
   variant = 'default',
   disabled = false,
   type = 'button',
-}: ButtonProps) {
+}: ButtonProps) => {
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-6 py-3 text-base',

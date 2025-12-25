@@ -53,7 +53,7 @@ function createMinimalUserData(signInData: SignInResponse['data']): UserData {
 /**
  * Хук для работы с авторизацией (мутации и действия)
  */
-export function useAuthActions() {
+export const useAuthActions = () => {
   const dispatch = useAppDispatch()
   const [authTelegramMutation, { isLoading: isAuthLoading }] = useAuthTelegramMutation()
   const [refreshTokenMutation, { isLoading: isRefreshLoading }] = useRefreshTokenMutation()

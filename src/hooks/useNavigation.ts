@@ -13,7 +13,7 @@ interface UseNavigationProps {
   setActiveTab: (tab: Tab) => void
 }
 
-export function useNavigation({ setCurrentScreen, setActiveTab }: UseNavigationProps) {
+export const useNavigation = ({ setCurrentScreen, setActiveTab }: UseNavigationProps) => {
   const navigate = useCallback(
     (destination: string) => {
       if (VALID_SCREENS.includes(destination as Screen)) {

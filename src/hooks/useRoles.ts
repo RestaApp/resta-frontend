@@ -19,7 +19,7 @@ interface UseRolesOptions {
  * Запрос выполняется только после успешной авторизации (получения токена)
  * @param options - Опции для управления загрузкой
  */
-export function useRoles(options: UseRolesOptions = {}) {
+export const useRoles = (options: UseRolesOptions = {}) => {
   const { isAuthenticated } = useAuth()
   const { skip: additionalSkip = false } = options
 

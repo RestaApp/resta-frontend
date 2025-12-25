@@ -11,7 +11,7 @@ import { updateUserDataInStore } from '../utils/userData'
 /**
  * Хук для обновления данных пользователя
  */
-export function useUpdateUser() {
+export const useUpdateUser = () => {
   const dispatch = useAppDispatch()
   const [updateUserMutation, { isLoading, error }] = useUpdateUserMutation()
 

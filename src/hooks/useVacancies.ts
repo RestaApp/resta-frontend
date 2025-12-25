@@ -54,7 +54,7 @@ interface UseVacanciesOptions {
  * Хук для получения вакансий
  * Запрос выполняется только после успешной авторизации (получения токена)
  */
-export function useVacancies(options: UseVacanciesOptions = {}) {
+export const useVacancies = (options: UseVacanciesOptions = {}) => {
   const {
     category,
     type,

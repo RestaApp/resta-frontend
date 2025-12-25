@@ -13,7 +13,7 @@ interface RoleSelectorProps {
   onSelectRole: (role: UserRole) => void
 }
 
-export function RoleSelector({ onSelectRole }: RoleSelectorProps): JSX.Element {
+export const RoleSelector = ({ onSelectRole }: RoleSelectorProps): JSX.Element => {
   const {
     selectedRole,
     showEmployeeSubRoles,

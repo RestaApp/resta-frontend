@@ -16,7 +16,7 @@ import {
 /**
  * Хук для получения списка смен
  */
-export function useShifts(params?: { status?: string; role?: string }) {
+export const useShifts = (params?: { status?: string; role?: string }) => {
   const { data, isLoading, isFetching, error, refetch } = useGetShiftsQuery(params ?? {})
 
   return {
@@ -31,7 +31,7 @@ export function useShifts(params?: { status?: string; role?: string }) {
 /**
  * Хук для получения смены по ID
  */
-export function useShift(id: string | null) {
+export const useShift = (id: string | null) => {
   const { data, isLoading, isFetching, error, refetch } = useGetShiftByIdQuery(id ?? '', {
     skip: !id,
   })
@@ -48,7 +48,7 @@ export function useShift(id: string | null) {
 /**
  * Хук для создания смены
  */
-export function useCreateShift() {
+export const useCreateShift = () => {
   const [createShiftMutation, { isLoading, error }] = useCreateShiftMutation()
 
   const createShift = async (request: CreateShiftRequest): Promise<Shift> => {
@@ -65,7 +65,7 @@ export function useCreateShift() {
 /**
  * Хук для обновления смены
  */
-export function useUpdateShift() {
+export const useUpdateShift = () => {
   const [updateShiftMutation, { isLoading, error }] = useUpdateShiftMutation()
 
   const updateShift = async (id: string, data: Partial<CreateShiftRequest>): Promise<Shift> => {
@@ -82,7 +82,7 @@ export function useUpdateShift() {
 /**
  * Хук для удаления смены
  */
-export function useDeleteShift() {
+export const useDeleteShift = () => {
   const [deleteShiftMutation, { isLoading, error }] = useDeleteShiftMutation()
 
   const deleteShift = async (id: string): Promise<void> => {

@@ -7,6 +7,10 @@ import App from './App.tsx'
 import { store, persistor } from './store'
 import { TelegramProvider } from './contexts/TelegramContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { initTheme } from './utils/theme'
+
+// Инициализация темы до рендера (localStorage / prefers-color-scheme)
+initTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

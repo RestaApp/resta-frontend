@@ -104,7 +104,7 @@ const ROLE_DESCRIPTION_MAP: Record<UserRole, string> = {
 /**
  * Преобразует данные роли из API в формат компонента
  */
-export function mapRoleOptionFromApi(roleValue: string): RoleOption | null {
+export const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
   const roleId = VALUE_TO_ROLE_MAP[roleValue]
 
   if (!roleId) {
@@ -123,14 +123,14 @@ export function mapRoleOptionFromApi(roleValue: string): RoleOption | null {
 /**
  * Преобразует массив ролей из API в формат компонентов
  */
-export function mapRoleOptionsFromApi(rolesApi: string[]): RoleOption[] {
+export const mapRoleOptionsFromApi = (rolesApi: string[]): RoleOption[] => {
   return rolesApi.map(mapRoleOptionFromApi).filter((role): role is RoleOption => role !== null)
 }
 
 /**
  * Преобразует одну позицию из API в формат компонента
  */
-export function mapPositionFromApi(positionValue: string): EmployeeSubRole | null {
+export const mapPositionFromApi = (positionValue: string): EmployeeSubRole | null => {
   const roleId = POSITION_VALUE_TO_ROLE_MAP[positionValue]
 
   if (!roleId) {
@@ -162,7 +162,7 @@ export function mapPositionFromApi(positionValue: string): EmployeeSubRole | nul
 /**
  * Преобразует массив позиций из API в формат компонентов
  */
-export function mapEmployeeSubRolesFromApi(positionsApi: string[]): EmployeeSubRole[] {
+export const mapEmployeeSubRolesFromApi = (positionsApi: string[]): EmployeeSubRole[] => {
   return positionsApi
     .map(mapPositionFromApi)
     .filter((role): role is EmployeeSubRole => role !== null)

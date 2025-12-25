@@ -112,31 +112,39 @@ declare global {
   }
 }
 
-export function isTelegramWebApp(): boolean {
+export const isTelegramWebApp = (): boolean => {
   return typeof window !== 'undefined' && window.Telegram?.WebApp !== undefined
 }
 
-export function getTelegramWebApp() {
+export const getTelegramWebApp = () => {
   if (!isTelegramWebApp()) {
     return null
   }
   return window.Telegram!.WebApp
 }
 
-export function initTelegramWebApp() {
+export const initTelegramWebApp = () => {
   const webApp = getTelegramWebApp()
   if (webApp) {
     webApp.ready()
     webApp.expand()
 
-    // Устанавливаем цвет фона приложения через themeParams
-    if (webApp.themeParams.bg_color) {
-      document.documentElement.style.setProperty('--background', webApp.themeParams.bg_color)
+    // Всегда принудительно используем светлую тему в приложении,
+    // игнорируем тёмные настройки, приходящие от Telegram.
+    // Устанавливаем data-theme='light' и явный светлый фон.
+    try {
+      document.documentElement.dataset.theme = 'light'
+      // Яркий светлый фон — можно изменить при необходимости
+      document.documentElement.style.setProperty('--background', '#ffffff')
+    } catch (err) {
+      // не ломаем приложение, если доступ к document недоступен
+      // eslint-disable-next-line no-console
+      console.warn('Failed to force light theme for Telegram WebApp', err)
     }
   }
 }
 
-export function setupTelegramBackButton(onBack: () => void) {
+export const setupTelegramBackButton = (onBack: () => void) => {
   const webApp = getTelegramWebApp()
   if (webApp) {
     webApp.BackButton.show()
@@ -150,7 +158,7 @@ export function setupTelegramBackButton(onBack: () => void) {
   return () => {}
 }
 
-export function hideTelegramBackButton() {
+export const hideTelegramBackButton = () => {
   const webApp = getTelegramWebApp()
   if (webApp) {
     webApp.BackButton.hide()
@@ -162,7 +170,7 @@ export function hideTelegramBackButton() {
  * initData - это строка, содержащая данные для авторизации
  * В режиме разработки использует моковые данные, если Telegram Web App недоступен
  */
-export function getTelegramInitData(): string | null {
+export const getTelegramInitData = (): string | null => {
   const webApp = getTelegramWebApp()
 
   // Если Telegram Web App доступен и есть initData - используем его
@@ -181,7 +189,7 @@ export function getTelegramInitData(): string | null {
 /**
  * Получает данные пользователя из Telegram (безопасный способ)
  */
-export function getTelegramUser() {
+export const getTelegramUser = () => {
   const webApp = getTelegramWebApp()
   if (!webApp || !webApp.initDataUnsafe?.user) {
     return null

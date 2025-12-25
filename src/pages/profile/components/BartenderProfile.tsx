@@ -5,7 +5,7 @@ interface BartenderProfileProps {
   onSettings: () => void
 }
 
-export function BartenderProfile({ onFindReplacement, onSettings }: BartenderProfileProps) {
+export const BartenderProfile = ({ onFindReplacement, onSettings }: BartenderProfileProps) => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6">

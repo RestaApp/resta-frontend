@@ -7,7 +7,6 @@ import {
   Bookmark,
   AlertCircle,
 } from 'lucide-react'
-import { AppHeader } from '../../home/components/AppHeader'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
 import { Badge } from '../../../components/ui/badge'
@@ -22,18 +21,16 @@ interface VacancyDetailsScreenProps {
   onNavigate?: (destination: Screen) => void
 }
 
-export function VacancyDetailsScreen({
+export const VacancyDetailsScreen = ({
   vacancyId,
   vacancies,
   onBack,
-  onNavigate,
-}: VacancyDetailsScreenProps) {
+}: VacancyDetailsScreenProps) => {
   const vacancy = vacancies.find(v => v.id === vacancyId)
 
   if (!vacancy) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => {})} />
         <div className="px-4 py-8 text-center">
           <p>Вакансия не найдена</p>
           <Button onClick={onBack} className="mt-4">
@@ -54,7 +51,6 @@ export function VacancyDetailsScreen({
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppHeader title="Детали вакансии" onNavigate={onNavigate || (() => {})} />
 
       <div className="px-4 py-6 space-y-6">
         {/* Header Card */}

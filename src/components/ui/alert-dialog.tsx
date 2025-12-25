@@ -8,7 +8,7 @@ interface AlertDialogProps {
   children: React.ReactNode
 }
 
-export function AlertDialog({ open, onOpenChange, children }: AlertDialogProps) {
+export const AlertDialog = ({ open, onOpenChange, children }: AlertDialogProps) => {
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden'
@@ -35,7 +35,7 @@ interface AlertDialogContentProps {
   className?: string
 }
 
-export function AlertDialogContent({ children, className }: AlertDialogContentProps) {
+export const AlertDialogContent = ({ children, className }: AlertDialogContentProps) => {
   return (
     <div
       className={cn(
@@ -52,7 +52,7 @@ interface AlertDialogHeaderProps {
   children: React.ReactNode
 }
 
-export function AlertDialogHeader({ children }: AlertDialogHeaderProps) {
+export const AlertDialogHeader = ({ children }: AlertDialogHeaderProps) => {
   return <div className="mb-4">{children}</div>
 }
 
@@ -61,7 +61,7 @@ interface AlertDialogTitleProps {
   className?: string
 }
 
-export function AlertDialogTitle({ children, className }: AlertDialogTitleProps) {
+export const AlertDialogTitle = ({ children, className }: AlertDialogTitleProps) => {
   return <h2 className={cn('text-lg font-semibold mb-2', className)}>{children}</h2>
 }
 
@@ -70,7 +70,7 @@ interface AlertDialogDescriptionProps {
   className?: string
 }
 
-export function AlertDialogDescription({ children, className }: AlertDialogDescriptionProps) {
+export const AlertDialogDescription = ({ children, className }: AlertDialogDescriptionProps) => {
   return <p className={cn('text-sm text-muted-foreground', className)}>{children}</p>
 }
 
@@ -79,7 +79,7 @@ interface AlertDialogFooterProps {
   className?: string
 }
 
-export function AlertDialogFooter({ children, className }: AlertDialogFooterProps) {
+export const AlertDialogFooter = ({ children, className }: AlertDialogFooterProps) => {
   return <div className={cn('flex gap-3 justify-end mt-6', className)}>{children}</div>
 }
 
@@ -89,7 +89,7 @@ interface AlertDialogActionProps {
   className?: string
 }
 
-export function AlertDialogAction({ children, onClick, className }: AlertDialogActionProps) {
+export const AlertDialogAction = ({ children, onClick, className }: AlertDialogActionProps) => {
   return (
     <Button onClick={onClick} className={cn('rounded-xl', className)}>
       {children}
@@ -103,7 +103,7 @@ interface AlertDialogCancelProps {
   className?: string
 }
 
-export function AlertDialogCancel({ children, onClick, className }: AlertDialogCancelProps) {
+export const AlertDialogCancel = ({ children, onClick, className }: AlertDialogCancelProps) => {
   return (
     <Button variant="outline" onClick={onClick} className={cn('rounded-xl', className)}>
       {children}

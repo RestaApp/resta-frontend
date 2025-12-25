@@ -13,7 +13,7 @@ export const DRAWER_TITLES: Record<string, string> = {
 /**
  * Получить заголовок drawer на основе позиции
  */
-export function getDrawerTitle(position: string | null, hasSpecializations: boolean): string {
+export const getDrawerTitle = (position: string | null, hasSpecializations: boolean): string => {
   if (!position) {
     return DRAWER_TITLES.default
   }

@@ -2,7 +2,7 @@ interface SupplierProfileProps {
   onSettings: () => void
 }
 
-export function SupplierProfile(_props: SupplierProfileProps) {
+export const SupplierProfile = (_props: SupplierProfileProps) => {
   void _props
   return (
     <div className="min-h-screen bg-background pb-20">

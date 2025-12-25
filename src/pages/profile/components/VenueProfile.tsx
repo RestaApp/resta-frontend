@@ -2,7 +2,7 @@ interface VenueProfileProps {
   onSettings: () => void
 }
 
-export function VenueProfile(_props: VenueProfileProps) {
+export const VenueProfile = (_props: VenueProfileProps) => {
   void _props
   return (
     <div className="min-h-screen bg-background pb-20">

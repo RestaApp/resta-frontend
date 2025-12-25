@@ -22,7 +22,7 @@ interface UseUserSpecializationsOptions {
  * Запрос выполняется только после успешной авторизации (получения токена)
  * @param options - Опции для управления загрузкой
  */
-export function useUserSpecializations(options: UseUserSpecializationsOptions) {
+export const useUserSpecializations = (options: UseUserSpecializationsOptions) => {
   const { enabled = false, position } = options
   const { isAuthenticated } = useAuth()
 

@@ -21,7 +21,7 @@ interface UseRoleSelectorProps {
   onSelectRole: (role: UserRole) => void
 }
 
-export function useRoleSelector({ onSelectRole }: UseRoleSelectorProps) {
+export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
   // draftSelectedRole — локальный выбор до подтверждения / отправки на сервер
   const [draftSelectedRole, setDraftSelectedRole] = useState<UserRole | null>(null)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
