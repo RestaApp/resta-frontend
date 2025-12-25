@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { JSX } from 'react'
@@ -44,6 +44,10 @@ export const ThemeToggle = ({ size = 20 }: ThemeToggleProps): JSX.Element => {
 
 export const ThemeToggleCompact = (): JSX.Element => {
     const [theme, setTheme] = useState<'light' | 'dark'>(() => getInitialTheme())
+    const containerRef = useRef<HTMLDivElement>(null)
+    const lightButtonRef = useRef<HTMLButtonElement>(null)
+    const darkButtonRef = useRef<HTMLButtonElement>(null)
+    const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
 
     useEffect(() => {
         const observer = new MutationObserver(() => {
@@ -52,6 +56,21 @@ export const ThemeToggleCompact = (): JSX.Element => {
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
         return () => observer.disconnect()
     }, [])
+
+    useEffect(() => {
+        const activeButton = theme === 'light' ? lightButtonRef.current : darkButtonRef.current
+        const container = containerRef.current
+
+        if (activeButton && container) {
+            const containerRect = container.getBoundingClientRect()
+            const buttonRect = activeButton.getBoundingClientRect()
+
+            setIndicatorStyle({
+                left: buttonRect.left - containerRect.left,
+                width: buttonRect.width,
+            })
+        }
+    }, [theme])
 
     const setLight = () => {
         if (theme === 'light') return
@@ -66,18 +85,49 @@ export const ThemeToggleCompact = (): JSX.Element => {
     }
 
     return (
-        <div className="inline-flex rounded-full bg-muted p-1 border border-border">
+        <div
+            ref={containerRef}
+            className="relative inline-flex rounded-full bg-muted p-1 border border-border"
+        >
+            {/* Анимированный индикатор */}
+            <motion.div
+                className="absolute top-1 bottom-1 rounded-full"
+                style={{
+                    background: 'var(--gradient-primary)',
+                    left: indicatorStyle.left,
+                    width: indicatorStyle.width,
+                }}
+                initial={false}
+                animate={{
+                    left: indicatorStyle.left,
+                    width: indicatorStyle.width,
+                }}
+                transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30,
+                }}
+            />
+
             <button
+                ref={lightButtonRef}
                 onClick={setLight}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${theme === 'light' ? 'gradient-primary text-white' : 'text-muted-foreground'}`}
+                className="relative z-10 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300"
+                style={{
+                    color: theme === 'light' ? 'white' : 'var(--muted-foreground)',
+                }}
                 aria-pressed={theme === 'light'}
                 aria-label="Выбрать светлую тему"
             >
                 <Sun className="w-4 h-4" aria-hidden="true" />
             </button>
             <button
+                ref={darkButtonRef}
                 onClick={setDark}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${theme === 'dark' ? 'gradient-primary text-white' : 'text-muted-foreground'}`}
+                className="relative z-10 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300"
+                style={{
+                    color: theme === 'dark' ? 'white' : 'var(--muted-foreground)',
+                }}
                 aria-pressed={theme === 'dark'}
                 aria-label="Выбрать тёмную тему"
             >

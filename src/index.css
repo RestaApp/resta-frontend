@@ -166,12 +166,27 @@
   html {
     -webkit-tap-highlight-color: transparent;
     /* Убирает синий квадрат при тапе на iOS */
+    /* Плавное переключение темы - как включение/выключение света */
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Лучшая типографика */
+    /* Плавный переход для фона и текста */
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Плавные переходы для всех элементов при смене темы */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, color, border-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.4s;
   }
 
   /* Исправленные размеры шрифтов (используем rem вместо несуществующих переменных) */

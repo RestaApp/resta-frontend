@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setInitData, setReady } from '../store/telegramSlice'
 import { getTelegramWebApp, isTelegramWebApp } from '../utils/telegram'
 import { authService } from '../services/auth'
+import { usersApi } from '../services/api/usersApi'
 import { useAuthActions } from '../hooks/useAuth'
 import { updateUserDataInStore } from '../utils/userData'
 import type { UserData } from '../services/api/authApi'
@@ -56,38 +57,33 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     return null
   }
 
-  // Функция для загрузки пользователя по id
+  // Функция для загрузки пользователя по id (через RTK Query)
   const loadUserById = async (userId: number): Promise<void> => {
+    // dispatch(usersApi.endpoints.getUser.initiate(...)) возвращает объект-подписку (promise-like) с unsubscribe
+    let subscription: any
     try {
-      const { rtkQueryConfig } = await import('../config/rtkQuery')
-      const token = authService.getToken()
+      subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
+      const result = await subscription
 
-      if (!token) {
-        throw new Error('Token not found')
+      // RTK Query возвращает объект с полем data при успешном ответе
+      if (result && 'data' in result && result.data) {
+        updateUserDataInStore(dispatch, result.data as UserData)
+        return
       }
 
-      const response = await fetch(`${rtkQueryConfig.baseUrl}/api/v1/users/${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to load user')
-      }
-
-      const result = (await response.json()) as { success: boolean; data: UserData }
-
-      if (result.success && result.data) {
-        updateUserDataInStore(dispatch, result.data)
-      } else {
-        throw new Error('Failed to load user')
-      }
+      throw new Error('Failed to load user')
     } catch (error) {
-      // Если загрузка не удалась, делаем sign_in
+      // Пробрасываем ошибку, чтобы performLogin сделал fallback на sign_in
       throw error
+    } finally {
+      // Отписываемся, чтобы не держать постоянную подписку в store
+      if (subscription?.unsubscribe) {
+        try {
+          subscription.unsubscribe()
+        } catch {
+          // ignore unsubscribe errors
+        }
+      }
     }
   }
 
@@ -143,10 +139,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       webApp.ready()
       webApp.expand()
 
-      // Установка цветов из themeParams
-      if (webApp.themeParams?.bg_color) {
-        document.documentElement.style.setProperty('--background', webApp.themeParams.bg_color)
-      }
+      // Не устанавливаем инлайн-переменную --background из Telegram,
+      // чтобы не перекрывать тему приложения. Telegram цвета можно использовать
+      // как подсказку, но не применяем их напрямую.
     } catch (error) {
       // Ошибка при настройке Telegram Web App
     }
