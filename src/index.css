@@ -167,8 +167,8 @@
     -webkit-tap-highlight-color: transparent;
     /* Убирает синий квадрат при тапе на iOS */
     /* Плавное переключение темы - как включение/выключение света */
-    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   body {
@@ -176,17 +176,18 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Лучшая типографика */
     /* Плавный переход для фона и текста */
-    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: background-color, color;
   }
 
   /* Плавные переходы для всех элементов при смене темы */
   *,
   *::before,
   *::after {
-    transition-property: background-color, color, border-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 0.4s;
+    transition-property: background-color, color, border-color, fill, stroke, box-shadow;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 0.7s;
   }
 
   /* Исправленные размеры шрифтов (используем rem вместо несуществующих переменных) */
