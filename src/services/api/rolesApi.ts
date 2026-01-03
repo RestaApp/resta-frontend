@@ -35,7 +35,7 @@ export const rolesApi = api.injectEndpoints({
         url: '/api/v1/catalogs/roles',
         method: 'GET',
       }),
-      providesTags: ['User'],
+      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
       // Настройки кэширования
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
       // refetchOnMountOrArgChange, refetchOnFocus, refetchOnReconnect управляются на уровне хука
@@ -47,7 +47,7 @@ export const rolesApi = api.injectEndpoints({
         url: '/api/v1/catalogs/supplier_types',
         method: 'GET',
       }),
-      providesTags: ['User'],
+      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
     }),
 
@@ -57,7 +57,7 @@ export const rolesApi = api.injectEndpoints({
         url: '/api/v1/catalogs/restaurant_formats',
         method: 'GET',
       }),
-      providesTags: ['User'],
+      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
     }),
   }),

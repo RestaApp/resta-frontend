@@ -41,17 +41,21 @@ export const CardSelect = memo(function CardSelect({
   const isHorizontal = layout === 'horizontal'
   const isIcon = imageType === 'icon'
 
+  // Default: спокойный серый фон (bg-card)
+  // Selected: акцентный градиент (bg-gradient-glow)
   const cardStyle = isSelected
     ? {
-        background: 'var(--gradient-glow)',
-        borderColor: 'var(--pink-electric)',
-      }
+      background: 'var(--gradient-glow)',
+      borderColor: 'var(--pink-electric)',
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
+    }
     : undefined
 
   const iconStyle = isIcon
     ? {
-        background: 'var(--gradient-primary)',
-      }
+      background: 'var(--gradient-primary)',
+    }
     : undefined
 
   return (
@@ -66,7 +70,7 @@ export const CardSelect = memo(function CardSelect({
       whileTap={{ scale: 0.97 }}
       onClick={() => onSelect(id)}
       className={cn(
-        'group relative overflow-hidden bg-white rounded-2xl shadow-md transition-all duration-300 w-full p-6 border-2',
+        'group relative overflow-hidden rounded-2xl shadow-md transition-all duration-300 w-full p-6 border-2 bg-card backdrop-blur-xl',
         isSelected ? 'shadow-xl scale-[1.02]' : 'border-transparent',
         !isHorizontal && 'flex flex-col items-center gap-3',
         className

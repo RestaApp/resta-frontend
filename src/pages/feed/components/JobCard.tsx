@@ -6,27 +6,29 @@ interface JobCardProps {
     onContact: (restaurant: string) => void
 }
 
-export const JobCard = ({ job, onContact }: JobCardProps => {
+export const JobCard = ({ job, onContact }: JobCardProps) => {
     return (
-        <div className="bg-card rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow">
+        <div
+            className="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow backdrop-blur-xl bg-card"
+        >
             <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center">
+                <div className="flex-shrink-0 w-14 h-14 bg-secondary/50 rounded-xl flex items-center justify-center border border-border/50">
                     <span className="text-2xl">{job.logo}</span>
                 </div>
 
                 <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                        <h3>{job.restaurant}</h3>
+                        <h3 className="text-foreground">{job.restaurant}</h3>
                         <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-gray-600">{job.rating}</span>
+                            <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                            <span className="text-muted-foreground">{job.rating}</span>
                         </div>
                     </div>
-                    <h4 className="text-gray-700">{job.position}</h4>
+                    <h4 className="text-foreground">{job.position}</h4>
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 mb-4 text-gray-600">
+            <div className="flex items-center gap-4 mb-4 text-muted-foreground">
                 <span>График: {job.schedule}</span>
             </div>
 

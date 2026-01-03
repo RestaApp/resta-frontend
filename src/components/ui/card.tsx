@@ -10,7 +10,7 @@ export const Card = ({ children, className, onClick }: CardProps) => {
   return (
     <div
       onClick={onClick}
-      className={cn('bg-card rounded-3xl border border-border transition-all', className)}
+      className={cn('rounded-3xl border border-border transition-all backdrop-blur-xl bg-card', className)}
     >
       {children}
     </div>

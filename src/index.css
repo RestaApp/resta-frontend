@@ -1,12 +1,13 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --font-size: 16px;
 
-  /* Base Colors */
+  /* --- Base Colors (Light Mode) --- */
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
-  /* Почти черный текст */
 
   --card: #ffffff;
   --card-foreground: oklch(0.145 0 0);
@@ -14,9 +15,8 @@
   --popover: #ffffff;
   --popover-foreground: oklch(0.145 0 0);
 
-  /* BRANDING: Делаем фиолетовый основным цветом взаимодействия */
+  /* BRAND: Фиолетовый бренд везде! */
   --primary: #6B21A8;
-  /* Resta Purple */
   --primary-foreground: #ffffff;
 
   --secondary: #f4f4f5;
@@ -31,26 +31,24 @@
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  /* Borders & Inputs */
   --border: #e4e4e7;
   --input: #e4e4e7;
-  /* Цвет границы инпута */
   --input-background: #f4f4f5;
-  /* Фон инпута */
+  --switch-background: #e4e4e7;
+
   --ring: #6B21A8;
-  /* Цвет фокуса совпадает с брендом */
 
   --radius: 0.75rem;
-  /* 12px - более современно для мобилок */
+  /* 12px */
 
-  /* Charts & Visualization */
+  /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
 
-  /* Sidebar (если используется) */
+  /* Sidebar */
   --sidebar: #f8fafc;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #6B21A8;
@@ -60,7 +58,7 @@
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #6B21A8;
 
-  /* Resta Premium Colors (Light Mode) */
+  /* Resta Premium Colors (Light) */
   --purple-deep: #6B21A8;
   --pink-electric: #EC4899;
   --blue-cyber: #06B6D4;
@@ -68,20 +66,24 @@
   --gradient-glow: linear-gradient(135deg, rgba(107, 33, 168, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
 }
 
-/* Dark theme variables */
 .dark {
-  /* Backgrounds: Deep OLED friendly gray */
-  --background: #0a0a0f;
-  --foreground: #f3f3f5;
+  /* FIX: Фон теперь не "черная дыра", а глубокий Zinc. 
+     Это убирает ощущение давления.
+  */
+  --background: #09090b;
+  --foreground: #fdfdfd;
 
-  --card: #141419;
-  --card-foreground: #f3f3f5;
+  /* FIX: Карточки теперь спокойного темного цвета.
+     Градиенты будем добавлять точечно классами.
+  */
+  --card: #18181b;
+  --card-foreground: #fdfdfd;
 
-  --popover: #141419;
-  --popover-foreground: #f3f3f5;
+  --popover: #18181b;
+  --popover-foreground: #fdfdfd;
 
+  /* FIX: Возвращаем фиолетовый бренд в темную тему (чуть светлее для контраста) */
   --primary: #9333EA;
-  /* Lighter purple for dark mode */
   --primary-foreground: #ffffff;
 
   --secondary: #27272a;
@@ -98,15 +100,25 @@
 
   --border: #27272a;
   --input: #27272a;
-  --input-background: #1e1e28;
-  --ring: #A855F7;
-  /* Neon purple focus */
+  --input-background: #18181b;
+  /* Под цвет карточки */
+  --switch-background: #27272a;
 
-  /* Resta Premium Colors (Dark Mode - Neon/Pastel) */
+  --ring: #A855F7;
+
+  /* Charts Dark */
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  /* Resta Premium Colors (Dark - Neon/Pastel) */
   --purple-deep: #9333EA;
   --pink-electric: #F472B6;
   --blue-cyber: #22D3EE;
   --gradient-primary: linear-gradient(135deg, #9333EA 0%, #F472B6 100%);
+  /* Свечение чуть ярче в темноте */
   --gradient-glow: linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(244, 114, 182, 0.25) 100%);
 }
 
@@ -130,6 +142,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
   --color-ring: var(--ring);
 
   --color-chart-1: var(--chart-1);
@@ -152,10 +165,13 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Mapping Custom Colors to Tailwind */
+  /* Custom Colors Mapping */
   --color-purple-deep: var(--purple-deep);
   --color-pink-electric: var(--pink-electric);
   --color-blue-cyber: var(--blue-cyber);
+  /* Добавляем градиенты как background-image утилиты */
+  --background-image-gradient-primary: var(--gradient-primary);
+  --background-image-gradient-glow: var(--gradient-glow);
 }
 
 @layer base {
@@ -164,81 +180,61 @@
   }
 
   html {
+    font-size: var(--font-size);
     -webkit-tap-highlight-color: transparent;
-    /* Убирает синий квадрат при тапе на iOS */
-    /* Плавное переключение темы - как включение/выключение света */
-    transition: background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      color 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* Лучшая типографика */
-    /* Плавный переход для фона и текста */
-    transition: background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      color 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: background-color, color;
+    /* FIX: Убрали глобальную анимацию. 
+       Анимируем только фон и цвет текста, чтобы не лагали кнопки.
+    */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Плавные переходы для всех элементов при смене темы */
-  *,
-  *::before,
-  *::after {
-    transition-property: background-color, color, border-color, fill, stroke, box-shadow;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    transition-duration: 0.7s;
-  }
-
-  /* Исправленные размеры шрифтов (используем rem вместо несуществующих переменных) */
+  /* FIX: Используем Tailwind классы для применения размеров */
   h1 {
-    @apply text-2xl font-medium tracking-tight;
+    @apply text-2xl font-medium leading-tight tracking-tight;
   }
 
   h2 {
-    @apply text-xl font-medium tracking-tight;
+    @apply text-xl font-medium leading-snug tracking-tight;
   }
 
   h3 {
-    @apply text-lg font-medium;
+    @apply text-lg font-medium leading-snug;
   }
 
   h4 {
-    @apply text-base font-medium;
+    @apply text-base font-medium leading-snug;
   }
 
-  /* Сброс стилей для кнопок iOS */
+  label {
+    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
   button,
   input,
-  textarea,
-  select {
+  textarea {
     @apply font-sans;
   }
 }
 
 @layer utilities {
-  .gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .gradient-glow {
-    background: var(--gradient-glow);
-  }
-
-  .text-gradient {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  /* Glassmorphism Logic */
+  /* Gradient Glow Utility - для акцентных карточек */
+  .bg-gradient-glow {
+    background: var(--gradient-glow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Glassmorphism */
   .glass {
-    /* Light Mode Glass: Немного белый, но с границей для контраста */
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -246,7 +242,6 @@
   }
 }
 
-/* Glass Override for Dark Mode */
 .dark .glass {
   background: rgba(20, 20, 25, 0.6);
   backdrop-filter: blur(12px);
@@ -254,7 +249,26 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Animations */
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Animation Utils */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -271,31 +285,13 @@
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
-}
-
-/* Input Range Styling (Slider) */
+/* Range Slider */
 input[type="range"] {
   @apply h-2 bg-secondary rounded-lg appearance-none cursor-pointer;
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  @apply w-5 h-5 bg-white border-2 border-primary rounded-full appearance-none shadow-sm transition-transform;
+  @apply w-5 h-5 bg-white dark:bg-card border-2 border-primary rounded-full appearance-none shadow-sm transition-transform;
 }
 
 input[type="range"]:active::-webkit-slider-thumb {

@@ -7,7 +7,7 @@ import { CardSelect } from '../../../../../components/ui/card-select'
 import { SectionHeader } from '../../../../../components/ui/section-header'
 import { POSITION_EMOJI_MAP } from '../../../../../constants/roles'
 import type { EmployeeSubRole, EmployeeRole } from '../../../../../types'
-import type { JSX } from 'react'
+ 
 
 interface PositionSelectionScreenProps {
   subRoles: EmployeeSubRole[]
@@ -19,7 +19,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   subRoles,
   selectedSubRole,
   onPositionSelect,
-}: PositionSelectionScreenProps): JSX.Element {
+}: PositionSelectionScreenProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col px-6 py-12">
       <SectionHeader

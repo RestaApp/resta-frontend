@@ -21,4 +21,5 @@ export { CardSelect } from './card-select'
 export { LogoWithText } from './LogoWithText'
 export { SectionHeader } from './section-header'
 export { Separator } from './separator'
+export { Switch } from './switch'
 

@@ -91,17 +91,25 @@ export interface VacancyApiItem {
 }
 
 /**
+ * Метаданные пагинации
+ */
+export interface PaginationMeta {
+  current_page?: number
+  next_page?: number | null
+  prev_page?: number | null
+  per_page?: number
+  total_pages?: number
+  total_count?: number
+}
+
+/**
  * Ответ API с вакансиями
  */
 export interface VacanciesResponse {
   success: boolean
   data: VacancyApiItem[]
-  meta?: {
-    current_page?: number
-    per_page?: number
-    total_pages?: number
-    total_count?: number
-  }
+  meta?: PaginationMeta
+  pagination?: PaginationMeta // API может возвращать как meta, так и pagination
 }
 
 export const shiftsApi = api.injectEndpoints({

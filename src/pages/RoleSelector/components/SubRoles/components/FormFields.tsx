@@ -52,29 +52,31 @@ export const ExperienceField = memo(function ExperienceField({
         <div>
             <label className="block mb-1 text-muted-foreground text-sm font-medium">Ваш стаж</label>
             <div className="mb-3">
-                <span className="text-lg font-semibold" style={{ color: 'var(--primary)' }}>
+                <span className="text-lg font-semibold text-gradient">
                     {getValueText()}
                 </span>
             </div>
             <div className="relative" style={{ height: '6px' }}>
                 {/* Фон слайдера */}
-                <div className="w-full h-1.5 bg-[#E0E0E0] rounded-full relative overflow-visible">
+                <div className="w-full h-1.5 bg-[#E0E0E0] dark:bg-white/20 rounded-full relative overflow-visible">
                     <motion.div
-                        className="absolute top-0 left-0 h-full bg-primary rounded-full"
+                        className="absolute top-0 left-0 h-full rounded-full"
                         style={{
                             width: useTransform(spring, v => `${(Math.max(0, Math.min(5, v)) / 5) * 100}%`),
+                            background: 'var(--gradient-primary)',
                         }}
                     />
                 </div>
 
                 {/* Визуальный бегунок */}
                 <motion.div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full shadow-lg pointer-events-none z-20"
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
                     style={{
                         left: useTransform(spring, v => {
                             const percentage = (Math.max(0, Math.min(5, v)) / 5) * 100
                             return `calc(${percentage}% - 8px)`
                         }),
+                        background: 'var(--gradient-primary)',
                     }}
                 />
 
@@ -111,7 +113,9 @@ export const ExperienceField = memo(function ExperienceField({
                             key={tick}
                             className="w-1 h-1.5 rounded-full"
                             animate={{
-                                backgroundColor: animatedValue >= tick ? 'var(--primary)' : '#E0E0E0',
+                                background: animatedValue >= tick 
+                                    ? 'var(--gradient-primary)' 
+                                    : '#E0E0E0',
                             }}
                             transition={{
                                 duration: 0.3,
@@ -158,16 +162,26 @@ export const OpenToWorkToggle = memo(function OpenToWorkToggle({
             <button
                 onClick={() => onChange(!value)}
                 className={cn(
-                    'w-14 h-8 rounded-full transition-colors relative',
-                    value ? 'bg-primary' : 'bg-muted-foreground/30'
+                    'relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background',
+                    value ? 'focus:ring-purple-500/50' : 'focus:ring-muted-foreground/50'
                 )}
+                style={{
+                    background: value
+                        ? 'var(--gradient-primary)'
+                        : 'var(--switch-background)',
+                }}
                 aria-label={value ? 'Отключить поиск работы' : 'Включить поиск работы'}
             >
-                <div
-                    className={cn(
-                        'absolute top-1 w-6 h-6 bg-white rounded-full transition-transform shadow-sm',
-                        value ? 'translate-x-7' : 'translate-x-1'
-                    )}
+                <motion.div
+                    className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"
+                    animate={{
+                        x: value ? 28 : 2,
+                    }}
+                    transition={{
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 30,
+                    }}
                 />
             </button>
         </div>

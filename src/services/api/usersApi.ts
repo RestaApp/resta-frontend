@@ -104,7 +104,7 @@ export const usersApi = api.injectEndpoints({
         url: '/api/v1/catalogs/positions',
         method: 'GET',
       }),
-      providesTags: ['User'],
+      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
     }),
 
@@ -114,7 +114,7 @@ export const usersApi = api.injectEndpoints({
         url: `/api/v1/catalogs/specializations?position=${position}`,
         method: 'GET',
       }),
-      providesTags: ['User'],
+      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
     }),
   }),
