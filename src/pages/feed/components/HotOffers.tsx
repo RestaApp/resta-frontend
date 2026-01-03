@@ -1,4 +1,3 @@
-
 interface HotOffer {
     id: number
     emoji: string
