@@ -2,11 +2,12 @@
  * Переиспользуемые поля формы для сотрудника
  */
 
-import { memo, useState, useEffect } from 'react'
-import { motion, useSpring, useMotionValueEvent, useTransform } from 'motion/react'
+import { memo } from 'react'
+import { motion } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import { cn } from '../../../../../utils/cn'
- 
+import { RangeSlider } from '../../../../../components/ui'
+
 
 interface ExperienceFieldProps {
     value: number
@@ -21,21 +22,6 @@ export const ExperienceField = memo(function ExperienceField({
     withAnimation = false,
     animationDelay = 0,
 }: ExperienceFieldProps) {
-    const spring = useSpring(value, {
-        stiffness: 220,
-        damping: 18,
-        mass: 0.35,
-    })
-
-    const [animatedValue, setAnimatedValue] = useState(value)
-
-    useEffect(() => {
-        spring.set(value)
-    }, [value, spring])
-
-    useMotionValueEvent(spring, 'change', latest => {
-        setAnimatedValue(Math.round(latest))
-    })
     const getYearsLabel = (years: number): string => {
         if (years === 1) return 'год'
         if (years < 5) return 'года'
@@ -56,75 +42,15 @@ export const ExperienceField = memo(function ExperienceField({
                     {getValueText()}
                 </span>
             </div>
-            <div className="relative" style={{ height: '6px' }}>
-                {/* Фон слайдера */}
-                <div className="w-full h-1.5 bg-[#E0E0E0] dark:bg-white/20 rounded-full relative overflow-visible">
-                    <motion.div
-                        className="absolute top-0 left-0 h-full rounded-full"
-                        style={{
-                            width: useTransform(spring, v => `${(Math.max(0, Math.min(5, v)) / 5) * 100}%`),
-                            background: 'var(--gradient-primary)',
-                        }}
-                    />
-                </div>
-
-                {/* Визуальный бегунок */}
-                <motion.div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
-                    style={{
-                        left: useTransform(spring, v => {
-                            const percentage = (Math.max(0, Math.min(5, v)) / 5) * 100
-                            return `calc(${percentage}% - 8px)`
-                        }),
-                        background: 'var(--gradient-primary)',
-                    }}
-                />
-
-                {/* Input для управления */}
-                <input
-                    type="range"
-                    min="0"
-                    max="5"
-                    step="1"
-                    value={value}
-                    onChange={e => onChange(Number(e.target.value))}
-                    onTouchStart={e => {
-                        e.stopPropagation()
-                    }}
-                    onTouchMove={e => {
-                        e.stopPropagation()
-                    }}
-                    onTouchEnd={e => {
-                        e.stopPropagation()
-                    }}
-                    className="absolute top-0 left-0 w-full h-6 opacity-0 cursor-pointer z-10"
-                    style={{
-                        touchAction: 'none',
-                    }}
-                />
-
-                {/* Засечки */}
-                <div
-                    className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none"
-                    style={{ top: '-2px' }}
-                >
-                    {[0, 1, 2, 3, 4, 5].map(tick => (
-                        <motion.div
-                            key={tick}
-                            className="w-1 h-1.5 rounded-full"
-                            animate={{
-                                background: animatedValue >= tick 
-                                    ? 'var(--gradient-primary)' 
-                                    : '#E0E0E0',
-                            }}
-                            transition={{
-                                duration: 0.3,
-                                ease: 'easeOut',
-                            }}
-                        />
-                    ))}
-                </div>
-            </div>
+            <RangeSlider
+                min={0}
+                max={5}
+                step={1}
+                value={value}
+                onChange={onChange}
+                showTicks={true}
+                tickCount={5}
+            />
         </div>
     )
 

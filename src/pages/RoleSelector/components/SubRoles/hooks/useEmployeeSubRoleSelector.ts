@@ -7,6 +7,7 @@ import { setupTelegramBackButton } from '../../../../../utils/telegram'
 import { useUserSpecializations } from '../../../../../hooks/useUserSpecializations'
 import { useGeolocation } from '../../../../../hooks/useGeolocation'
 import { getDrawerTitle } from '../../../../../constants/drawerTitles'
+import { isPromise } from '../../../../../utils/promise'
 import type { EmployeeRole } from '../../../../../types'
 import { mapEmployeeSubRolesFromApi } from '../../../../../utils/rolesMapper'
 
@@ -27,12 +28,10 @@ interface UseEmployeeSubRoleSelectorProps {
 
 export const useEmployeeSubRoleSelector = ({
   employeeSubRoles,
-  selectedSubRole,
   onSelectSubRole,
   onBack,
   onContinue,
 }: UseEmployeeSubRoleSelectorProps) => {
-  const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState<EmployeeFormData>({
     specializations: [],
     experienceYears: 0,
@@ -55,20 +54,6 @@ export const useEmployeeSubRoleSelector = ({
     return []
   }, [employeeSubRoles])
 
-  // Получаем positionValue из selectedSubRole через маппинг
-  const positionValue = useMemo(() => {
-    if (!selectedSubRole) return null
-    const subRole = subRoles.find(r => r.id === selectedSubRole)
-    return subRole?.originalValue || null
-  }, [selectedSubRole, subRoles])
-
-  // Загружаем специализации для выбранной позиции
-  const { specializations: availableSpecializations, isLoading: isLoadingSpecs } =
-    useUserSpecializations({
-      position: positionValue,
-      enabled: showForm && !!positionValue,
-    })
-
   // Специализации для drawer (выбор сразу после позиции)
   const { specializations: drawerSpecializations = [], isLoading: isLoadingDrawerSpecs } =
     useUserSpecializations({
@@ -83,14 +68,10 @@ export const useEmployeeSubRoleSelector = ({
 
   useEffect(() => {
     const cleanup = setupTelegramBackButton(() => {
-      if (showForm) {
-        setShowForm(false)
-      } else {
-        onBack()
-      }
+      onBack()
     })
     return cleanup
-  }, [onBack, showForm])
+  }, [onBack])
 
   const handlePositionSelect = useCallback(
     (role: EmployeeRole, positionValue: string) => {
@@ -146,17 +127,9 @@ export const useEmployeeSubRoleSelector = ({
     try {
       const result = onContinue(finalFormData)
 
-      // Проверяем, является ли результат промисом
-      const isPromise =
-        result !== undefined &&
-        result !== null &&
-        typeof result === 'object' &&
-        'then' in result &&
-        typeof (result as Promise<unknown>).then === 'function'
-
-      if (isPromise) {
+      if (isPromise<boolean | void>(result)) {
         // Ждем результат промиса
-        const promiseResult = await (result as Promise<boolean | void>)
+        const promiseResult = await result
         // Закрываем drawer ТОЛЬКО если результат true (успех)
         if (promiseResult === true) {
           setShowSpecializationDrawer(false)
@@ -180,12 +153,9 @@ export const useEmployeeSubRoleSelector = ({
 
   return {
     subRoles,
-    showForm,
     formData,
     showSpecializationDrawer,
     selectedSpecializations,
-    availableSpecializations,
-    isLoadingSpecs,
     drawerSpecializations,
     isLoadingDrawerSpecs,
     drawerTitle,

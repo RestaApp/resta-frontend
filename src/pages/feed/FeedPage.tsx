@@ -20,16 +20,8 @@ import { MapFAB } from '../Feed/components/MapFAB'
 import { EmptyState } from '../Feed/components/EmptyState'
 import { ShiftSkeleton } from '../../components/ui/ShiftSkeleton'
 import { ShiftDetailsScreen } from '../Feed/components/ShiftDetailsScreen'
-import { FilterChips } from '../Feed/components/FilterChips'
 import { AdvancedFilters, type AdvancedFiltersData } from '../Feed/components/AdvancedFilters'
 import { InfiniteScrollTrigger } from '../Feed/components/InfiniteScrollTrigger'
-
-const hotShifts = [
-    { id: 1, restaurant: 'Sunset', emoji: '🌅', boost: 'x1.5', time: 'Сегодня вечер' },
-    { id: 2, restaurant: 'Культура', emoji: '🍹', boost: 'x2.0', time: 'Срочно!' },
-    { id: 3, restaurant: 'Лаванда', emoji: '🌸', boost: 'x1.3', time: 'Завтра утро' },
-    { id: 4, restaurant: 'Хлеб', emoji: '🥖', boost: 'x1.5', time: 'Сегодня ночь' },
-]
 
 /**
  * Преобразует данные вакансии из API в формат Shift для компонента
@@ -169,6 +161,7 @@ export const FeedPage = () => {
     const { toast, showToast, hideToast } = useToast()
     const [feedType, setFeedType] = useState<FeedType>('shifts')
     const [query, setQuery] = useState('')
+    const [debouncedQuery, setDebouncedQuery] = useState('')
     const [appliedShifts, setAppliedShifts] = useState<number[]>([])
     const [showMapFAB] = useState(true)
     const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
@@ -187,46 +180,125 @@ export const FeedPage = () => {
         per_page: 4, // Загружаем до 4 срочных смен для горящих предложений
     })
 
-    // Загрузка всех смен (replacement) из API - срочные и не срочные
-    const { data: shiftsResponse, isLoading: isLoadingShifts, isError: isErrorShifts, isFetching } = useGetVacanciesQuery({
-        shift_type: 'replacement',
-        page: currentPage,
-        per_page: 5, // Загружаем по 5 записей
+    // Debounce для поиска (300ms задержка, но для пустого значения сразу)
+    useEffect(() => {
+        // Если запрос пустой, обновляем сразу (без задержки)
+        if (query === '') {
+            setDebouncedQuery('')
+            return
+        }
+
+        // Для непустого запроса используем debounce
+        const timer = setTimeout(() => {
+            setDebouncedQuery(query)
+        }, 300)
+
+        return () => clearTimeout(timer)
+    }, [query])
+
+    // Формируем параметры запроса с учетом фильтров
+    const queryParams = useMemo(() => {
+        const params: Parameters<typeof useGetVacanciesQuery>[0] = {
+            shift_type: 'replacement',
+            page: currentPage,
+            per_page: 5,
+        }
+
+        // Поиск по тексту (используем debounced значение)
+        if (debouncedQuery) {
+            params.search = debouncedQuery
+        }
+
+        // Быстрые фильтры
+        if (activeFilter === 'urgent') {
+            params.urgent = true
+        }
+
+        // Расширенные фильтры
+        if (advancedFilters) {
+            if (advancedFilters.priceRange) {
+                params.min_payment = advancedFilters.priceRange[0]
+                params.max_payment = advancedFilters.priceRange[1]
+            }
+
+            if (advancedFilters.selectedRoles.length > 0) {
+                // Преобразуем названия ролей в формат API
+                const roleMapping: Record<string, string> = {
+                    'Повар': 'chef',
+                    'Су-шеф': 'chef',
+                    'Бармен': 'bartender',
+                    'Официант': 'waiter',
+                    'Бариста': 'barista',
+                    'Мойщик': 'support',
+                    'Админ': 'manager',
+                }
+                params.target_roles = advancedFilters.selectedRoles
+                    .map(role => roleMapping[role] || role.toLowerCase())
+                    .filter(Boolean)
+            }
+
+            if (advancedFilters.timeOfDay.length > 0) {
+                params.time_of_day = advancedFilters.timeOfDay
+            }
+        }
+
+        return params
+    }, [debouncedQuery, activeFilter, advancedFilters, currentPage])
+
+    // Загрузка всех смен (replacement) из API с фильтрами
+    const { data: shiftsResponse, isLoading: isLoadingShifts, isError: isErrorShifts, isFetching } = useGetVacanciesQuery(queryParams, {
+        refetchOnMountOrArgChange: true, // Обновлять при изменении параметров
+        // Принудительно обновлять данные при изменении параметров, игнорируя кэш
+        skip: false,
     })
+
+    // Флаг для отслеживания обработки данных
+    const [isDataProcessed, setIsDataProcessed] = useState(false)
 
     // Объединяем новые данные с уже загруженными
     useEffect(() => {
-        if (shiftsResponse?.data) {
-            const newShifts = shiftsResponse.data.map(mapVacancyToShift)
+        if (shiftsResponse) {
             // API может возвращать pagination или meta
             const pagination = shiftsResponse.pagination || shiftsResponse.meta
             const responsePage = pagination?.current_page || currentPage
 
+            // Для первой страницы всегда заменяем данные (даже если они пустые)
             if (responsePage === 1) {
-                // Первая загрузка - заменяем все данные
-                setAllShifts(newShifts)
-                const newMap = new Map<number, VacancyApiItem>()
-                shiftsResponse.data.forEach(vacancy => {
-                    newMap.set(vacancy.id, vacancy)
-                })
-                setAllVacancies(newMap)
+                if (shiftsResponse.data && Array.isArray(shiftsResponse.data) && shiftsResponse.data.length > 0) {
+                    const newShifts = shiftsResponse.data.map(mapVacancyToShift)
+                    setAllShifts(newShifts)
+                    const newMap = new Map<number, VacancyApiItem>()
+                    shiftsResponse.data.forEach(vacancy => {
+                        newMap.set(vacancy.id, vacancy)
+                    })
+                    setAllVacancies(newMap)
+                } else {
+                    // Пустой ответ - очищаем данные
+                    setAllShifts([])
+                    setAllVacancies(new Map())
+                }
             } else {
                 // Последующие загрузки - добавляем к существующим
-                setAllShifts(prev => {
-                    const existingIds = new Set(prev.map(s => s.id))
-                    const uniqueNewShifts = newShifts.filter(s => !existingIds.has(s.id))
-                    return [...prev, ...uniqueNewShifts]
-                })
-                setAllVacancies(prev => {
-                    const newMap = new Map(prev)
-                    shiftsResponse.data.forEach(vacancy => {
-                        if (!newMap.has(vacancy.id)) {
-                            newMap.set(vacancy.id, vacancy)
-                        }
+                if (shiftsResponse.data && Array.isArray(shiftsResponse.data) && shiftsResponse.data.length > 0) {
+                    const newShifts = shiftsResponse.data.map(mapVacancyToShift)
+                    setAllShifts(prev => {
+                        const existingIds = new Set(prev.map(s => s.id))
+                        const uniqueNewShifts = newShifts.filter(s => !existingIds.has(s.id))
+                        return [...prev, ...uniqueNewShifts]
                     })
-                    return newMap
-                })
+                    setAllVacancies(prev => {
+                        const newMap = new Map(prev)
+                        shiftsResponse.data.forEach(vacancy => {
+                            if (!newMap.has(vacancy.id)) {
+                                newMap.set(vacancy.id, vacancy)
+                            }
+                        })
+                        return newMap
+                    })
+                }
             }
+            // Данные обработаны
+            setIsDataProcessed(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shiftsResponse])
@@ -236,7 +308,8 @@ export const FeedPage = () => {
         setCurrentPage(1)
         setAllShifts([])
         setAllVacancies(new Map())
-    }, [query, activeFilter, advancedFilters])
+        setIsDataProcessed(false) // Сбрасываем флаг обработки при изменении фильтров
+    }, [debouncedQuery, activeFilter, advancedFilters])
 
     // Используем все загруженные смены
     const shifts: Shift[] = allShifts
@@ -293,8 +366,8 @@ export const FeedPage = () => {
                 }
             })
         }
-        // Если нет срочных смен, используем моковые данные
-        return hotShifts
+        // Если нет срочных смен, возвращаем пустой массив (моковые данные удалены)
+        return []
     }, [hotShiftsResponse])
 
     const feedTypeOptions: TabOption<FeedType>[] = [
@@ -344,24 +417,14 @@ export const FeedPage = () => {
     const userData = useAppSelector(state => state.user.userData)
     const userPosition = userData?.position || userData?.employee_profile?.position
 
-    // Фильтрация смен
+
+    // Смены уже отфильтрованы на сервере, но применяем клиентские фильтры для быстрых фильтров
+    // которые не поддерживаются API (high_pay, nearby, my_role)
     const filteredShifts = useMemo(() => {
         let result = [...shifts]
 
-        // Поиск по тексту
-        if (query) {
-            result = result.filter(
-                s =>
-                    s.restaurant.toLowerCase().includes(query.toLowerCase()) ||
-                    s.position.toLowerCase().includes(query.toLowerCase())
-            )
-        }
-
-        // Быстрые фильтры
+        // Быстрые фильтры, которые требуют клиентской обработки
         switch (activeFilter) {
-            case 'urgent':
-                result = result.filter(s => s.urgent)
-                break
             case 'high_pay':
                 // Сортируем по оплате и берем топ 30%
                 result = result.sort((a, b) => b.pay - a.pay).slice(0, Math.ceil(result.length * 0.3))
@@ -380,60 +443,16 @@ export const FeedPage = () => {
                     })
                 }
                 break
+            case 'urgent':
             case 'all':
             default:
-                // Без фильтрации
+                // urgent и все остальное уже обработано на сервере
                 break
         }
 
-        // Расширенные фильтры
-        if (advancedFilters) {
-            // Фильтр по цене
-            if (advancedFilters.priceRange) {
-                result = result.filter(
-                    s => s.pay >= advancedFilters.priceRange[0] && s.pay <= advancedFilters.priceRange[1]
-                )
-            }
-
-            // Фильтр по специализации
-            if (advancedFilters.selectedRoles.length > 0) {
-                result = result.filter(s => {
-                    const shiftPosition = s.position.toLowerCase()
-                    return advancedFilters.selectedRoles.some(role => {
-                        const roleLower = role.toLowerCase()
-                        return shiftPosition.includes(roleLower) || roleLower.includes(shiftPosition)
-                    })
-                })
-            }
-
-            // Фильтр по времени суток
-            if (advancedFilters.timeOfDay.length > 0) {
-                result = result.filter(s => {
-                    // Парсим время из формата "10:00 - 22:00"
-                    const timeMatch = s.time.match(/(\d{1,2}):\d{2}/)
-                    if (!timeMatch) return false
-
-                    const hour = parseInt(timeMatch[1])
-                    return advancedFilters.timeOfDay.some(time => {
-                        switch (time) {
-                            case 'morning':
-                                return hour < 12
-                            case 'day':
-                                return hour >= 12 && hour < 18
-                            case 'evening':
-                                return hour >= 18 && hour < 22
-                            case 'night':
-                                return hour >= 22 || hour < 6
-                            default:
-                                return false
-                        }
-                    })
-                })
-            }
-        }
-
         return result
-    }, [shifts, query, activeFilter, advancedFilters, userPosition])
+    }, [shifts, activeFilter, userPosition])
+
 
     const handleContact = (restaurant: string) => {
         showToast(`Открытие Telegram-чата с менеджером "${restaurant}"`, 'info')
@@ -445,19 +464,16 @@ export const FeedPage = () => {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            {/* Sticky Filters */}
-            <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-2 pt-2 transition-all border-b border-border/50">
-                <div className="px-4 mt-4">
+            <div className="top-0 z-10 bg-background/95 backdrop-blur-sm pb-2 pt-2 transition-all border-b border-border/50">
+                <div className="px-4 pb-2">
                     <Tabs options={feedTypeOptions} activeId={feedType} onChange={setFeedType} />
                 </div>
-                <SearchFilters query={query} onQueryChange={setQuery} />
-                {feedType === 'shifts' && (
-                    <FilterChips
-                        activeFilter={activeFilter}
-                        onFilterChange={setActiveFilter}
-                        onOpenAdvanced={() => setIsFiltersOpen(true)}
-                    />
-                )}
+                <SearchFilters
+                    query={query}
+                    onQueryChange={setQuery}
+                    onOpenFilters={() => setIsFiltersOpen(true)}
+                    isLoading={isFetching}
+                />
             </div>
 
             {feedType === 'shifts' && (
@@ -499,17 +515,17 @@ export const FeedPage = () => {
 
             <div className="px-4 py-4 space-y-4">
                 {feedType === 'shifts' ? (
-                    isLoadingShifts && currentPage === 1 ? (
+                    (isLoadingShifts || isFetching) && currentPage === 1 && allShifts.length === 0 ? (
                         <ShiftSkeleton />
                     ) : isErrorShifts && currentPage === 1 ? (
                         <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
-                    ) : filteredShifts.length === 0 ? (
+                    ) : !isFetching && !isLoadingShifts && isDataProcessed && filteredShifts.length === 0 ? (
                         <EmptyState
-                            message={query || activeFilter !== 'all' || advancedFilters
+                            message={debouncedQuery || activeFilter !== 'all' || advancedFilters
                                 ? 'По вашим фильтрам ничего не найдено'
                                 : 'Смены не найдены'}
                             onReset={handleResetFilters}
-                            showResetButton={!!(query || activeFilter !== 'all' || advancedFilters)}
+                            showResetButton={!!(debouncedQuery || activeFilter !== 'all' || advancedFilters)}
                         />
                     ) : (
                         <>
@@ -571,6 +587,14 @@ export const FeedPage = () => {
                 onClose={() => setIsFiltersOpen(false)}
                 onApply={handleApplyAdvancedFilters}
                 initialFilters={advancedFilters || undefined}
+                filteredCount={filteredShifts.length}
+                searchQuery={query}
+                activeFilter={activeFilter}
+                onReset={() => {
+                    setAdvancedFilters(null)
+                    setQuery('')
+                    setActiveFilter('all')
+                }}
             />
         </div>
     )

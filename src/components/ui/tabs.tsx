@@ -42,7 +42,7 @@ export const Tabs = <T extends string>({
         width: tabRect.width,
       })
     }
-  }, [activeId, options])
+  }, [activeId])
 
   return (
     <div
@@ -56,8 +56,6 @@ export const Tabs = <T extends string>({
         className="absolute top-1 bottom-1 rounded-lg"
         style={{
           background: 'var(--gradient-primary)',
-          left: indicatorStyle.left,
-          width: indicatorStyle.width,
         }}
         initial={false}
         animate={{

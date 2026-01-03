@@ -297,3 +297,20 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]:active::-webkit-slider-thumb {
   @apply scale-110;
 }
+
+/* Dual Range Slider Fix */
+.range-slider-input {
+  pointer-events: none;
+}
+
+.range-slider-input::-webkit-slider-thumb {
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 50;
+}
+
+.range-slider-input::-moz-range-thumb {
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 50;
+}

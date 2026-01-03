@@ -4,6 +4,7 @@
 
 import { useState, useCallback } from 'react'
 import { useGeolocation } from '../../../../../hooks/useGeolocation'
+import { isPromise } from '../../../../../utils/promise'
 
 export interface FormData {
     name: string
@@ -52,16 +53,8 @@ export const useFormSelector = ({ onContinue, onBack: _onBack }: UseFormSelector
         try {
             const result = onContinue(formData)
 
-            // Проверяем, является ли результат промисом
-            const isPromise =
-                result !== undefined &&
-                result !== null &&
-                typeof result === 'object' &&
-                'then' in result &&
-                typeof (result as Promise<unknown>).then === 'function'
-
-            if (isPromise) {
-                await (result as Promise<boolean | void>)
+            if (isPromise<boolean | void>(result)) {
+                await result
             }
         } catch (error) {
             console.error('Ошибка при сохранении:', error)

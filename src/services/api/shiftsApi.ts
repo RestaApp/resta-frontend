@@ -33,6 +33,8 @@ export interface GetVacanciesParams {
   max_payment?: number
   start_date?: string // YYYY-MM-DD
   target_roles?: string[] // chef, waiter, bartender, barista, manager, support
+  search?: string // Поиск по названию ресторана или позиции
+  time_of_day?: string[] // morning, day, evening, night
   page?: number
   per_page?: number
 }
@@ -152,6 +154,14 @@ export const shiftsApi = api.injectEndpoints({
             searchParams.append('target_roles[]', role)
           })
         }
+        if (params.search) {
+          searchParams.append('search', params.search)
+        }
+        if (params.time_of_day && params.time_of_day.length > 0) {
+          params.time_of_day.forEach(time => {
+            searchParams.append('time_of_day[]', time)
+          })
+        }
         if (params.page !== undefined) {
           searchParams.append('page', String(params.page))
         }
@@ -165,7 +175,7 @@ export const shiftsApi = api.injectEndpoints({
         }
       },
       providesTags: ['Shift'],
-      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+      keepUnusedDataFor: 0, // Не кэшировать данные, чтобы всегда получать актуальные результаты
     }),
 
     // Получить смену по ID

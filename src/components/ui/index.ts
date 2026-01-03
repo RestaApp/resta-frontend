@@ -22,4 +22,5 @@ export { LogoWithText } from './LogoWithText'
 export { SectionHeader } from './section-header'
 export { Separator } from './separator'
 export { Switch } from './switch'
+export { RangeSlider } from './range-slider'
 
