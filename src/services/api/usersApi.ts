@@ -110,8 +110,14 @@ export const usersApi = api.injectEndpoints({
         url: `/api/v1/catalogs/specializations?position=${position}`,
         method: 'GET',
       }),
+      // КРИТИЧНО: Нормализуем аргумент для корректного кеширования
+      // Это гарантирует, что запросы для "chef" и "Chef" будут различаться
+      serializeQueryArgs: ({ queryArgs }) => {
+        // Нормализуем позицию к lowercase для консистентности
+        return queryArgs.toLowerCase()
+      },
       providesTags: (_result, _error, position) => [
-        { type: 'Catalog' as const, id: `specializations-${position}` },
+        { type: 'Catalog' as const, id: `specializations-${position.toLowerCase()}` },
         'Catalog',
       ],
       keepUnusedDataFor: 3600, // Кэшировать данные 1 час

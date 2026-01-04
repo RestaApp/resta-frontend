@@ -51,6 +51,7 @@ export interface RestaurantProfileApi {
   city?: string
   cuisine_types?: string[]
   format?: string
+  restaurant_format?: string 
 }
 
 /**
@@ -87,6 +88,8 @@ export interface VacancyApiItem {
   duration?: string
   urgent?: boolean
   shift_type?: 'vacancy' | 'replacement'
+  position?: string // Позиция (chef, waiter, bartender, barista, manager, support)
+  specialization?: string | null // Специализация сотрудника
   target_roles?: string[]
   requirements?: string
   status?: string
@@ -117,6 +120,32 @@ export interface VacanciesResponse {
   data: VacancyApiItem[]
   meta?: PaginationMeta
   pagination?: PaginationMeta // API может возвращать как meta, так и pagination
+}
+
+/**
+ * Запрос на отклик на смену
+ */
+export interface ApplyToShiftRequest {
+  message?: string // Опциональное сообщение
+}
+
+/**
+ * Ответ на отклик на смену
+ */
+export interface ApplyToShiftResponse {
+  success: boolean
+  message?: string
+  data?: {
+    application_id?: number
+  }
+}
+
+/**
+ * Ответ на отмену заявки
+ */
+export interface CancelApplicationResponse {
+  success: boolean
+  message?: string
 }
 
 export const shiftsApi = api.injectEndpoints({
@@ -177,6 +206,35 @@ export const shiftsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Shift'],
     }),
+
+    // Откликнуться на смену
+    applyToShift: builder.mutation<ApplyToShiftResponse, { id: number; data?: ApplyToShiftRequest }>({
+      query: ({ id, data }) => ({
+        url: `/api/v1/shifts/${id}/apply`,
+        method: 'POST',
+        body: data || {},
+      }),
+      invalidatesTags: ['Shift', 'AppliedShift'],
+    }),
+
+    // Отменить заявку на смену
+    cancelApplication: builder.mutation<CancelApplicationResponse, number>({
+      query: id => ({
+        url: `/api/v1/shifts/${id}/cancel_application`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Shift', 'AppliedShift'],
+    }),
+
+    // Получить смены, на которые поданы заявки
+    getAppliedShifts: builder.query<VacanciesResponse, void>({
+      query: () => ({
+        url: '/api/v1/shifts/applied_shifts',
+        method: 'GET',
+      }),
+      providesTags: ['AppliedShift'],
+      keepUnusedDataFor: 60, // Кэшируем на 60 секунд
+    }),
   }),
 })
 
@@ -188,4 +246,7 @@ export const {
   useCreateShiftMutation,
   useUpdateShiftMutation,
   useDeleteShiftMutation,
+  useApplyToShiftMutation,
+  useCancelApplicationMutation,
+  useGetAppliedShiftsQuery,
 } = shiftsApi

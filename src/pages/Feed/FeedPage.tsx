@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { Tabs } from '@/components/ui/tabs'
-import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
+import { useGetVacanciesQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getTelegramWebApp } from '@/utils/telegram'
 import { useAppSelector } from '@/store/hooks'
@@ -21,6 +21,7 @@ import { ShiftSkeleton } from '@/components/ui/ShiftSkeleton'
 import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
 import { AdvancedFilters, type AdvancedFiltersData } from './components/AdvancedFilters'
 import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
+import { useShiftApplication } from './hooks/useShiftApplication'
 
 /**
  * Преобразует данные вакансии из API в формат Shift для компонента
@@ -119,8 +120,9 @@ const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
         id: vacancy.id,
         logo: getLogo(),
         restaurant: vacancy.user?.name || vacancy.user?.full_name || vacancy.title || 'Ресторан',
-        rating: vacancy.user?.average_rating || 4.5,
-        position: vacancy.target_roles?.[0] || 'Сотрудник',
+        rating: vacancy.user?.average_rating || 0,
+        position: vacancy.position || vacancy.target_roles?.[0] || 'Сотрудник',
+        specialization: vacancy.specialization || null,
         date: formatDate(vacancy.start_time),
         time: timeWithDuration,
         pay: getPayment(vacancy.payment, vacancy.hourly_rate, vacancy.start_time, vacancy.end_time),
@@ -203,14 +205,6 @@ export const FeedPage = () => {
     const [isDataProcessed, setIsDataProcessed] = useState(false)
 
 
-    // Загрузка горящих смен (urgent: true) для секции "Горящие смены"
-    const { data: hotShiftsResponse } = useGetVacanciesQuery({
-        shift_type: 'replacement',
-        urgent: true,
-        page: 1,
-        per_page: 4, // Загружаем до 4 срочных смен для горящих предложений
-    })
-
     // Формируем параметры запроса с учетом фильтров
     // Используем только параметры из API документации
     const queryParams = useMemo(() => {
@@ -254,6 +248,55 @@ export const FeedPage = () => {
 
         return params
     }, [activeFilter, advancedFilters, currentPage])
+
+    // Формируем параметры запроса для горящих смен с учетом фильтров
+    // Всегда urgent: true, но применяем расширенные фильтры
+    const hotShiftsQueryParams = useMemo(() => {
+        const params: Parameters<typeof useGetVacanciesQuery>[0] = {
+            shift_type: 'replacement',
+            urgent: true, // Горящие смены всегда срочные
+            page: 1,
+            per_page: 4, // Загружаем до 4 срочных смен для горящих предложений
+        }
+
+        // Применяем расширенные фильтры (быстрые фильтры не применяем, т.к. urgent уже true)
+        if (advancedFilters) {
+            if (advancedFilters.priceRange) {
+                params.min_payment = advancedFilters.priceRange[0]
+                params.max_payment = advancedFilters.priceRange[1]
+            }
+
+            // Используем позицию, если выбрана
+            if (advancedFilters.selectedPosition) {
+                params.position = advancedFilters.selectedPosition
+            }
+
+            // Используем специализацию, если выбрана
+            if (advancedFilters.selectedSpecializations && advancedFilters.selectedSpecializations.length > 0) {
+                params.specialization = advancedFilters.selectedSpecializations[0]
+            }
+
+            // Используем даты, если выбраны
+            if (advancedFilters.startDate) {
+                params.start_date = advancedFilters.startDate
+            }
+            if (advancedFilters.endDate) {
+                params.end_date = advancedFilters.endDate
+            }
+        }
+
+        return params
+    }, [advancedFilters])
+
+    // Загрузка смен с поданными заявками
+    const { data: appliedShiftsResponse } = useGetAppliedShiftsQuery(undefined, {
+        refetchOnMountOrArgChange: true, // Обновлять при монтировании
+    })
+
+    // Загрузка горящих смен (urgent: true) для секции "Горящие смены" с учетом фильтров
+    const { data: hotShiftsResponse } = useGetVacanciesQuery(hotShiftsQueryParams, {
+        refetchOnMountOrArgChange: false,
+    })
 
     // Загрузка всех смен (replacement) из API с фильтрами
     const { data: shiftsResponse, isLoading: isLoadingShifts, isError: isErrorShifts, isFetching } = useGetVacanciesQuery(queryParams, {
@@ -382,18 +425,35 @@ export const FeedPage = () => {
             // Преобразуем данные из API в формат HotOffer
             return hotShiftsResponse.data.slice(0, 4).map(vacancy => {
                 const shift = mapVacancyToShift(vacancy)
+                // Убеждаемся, что payment всегда число
+                const payment = typeof shift.pay === 'number' && !isNaN(shift.pay) ? shift.pay : 0
                 return {
                     id: shift.id,
                     emoji: shift.logo,
-                    boost: 'x1.5', // Можно добавить в API или рассчитать
+                    payment,
                     time: shift.date,
                     restaurant: shift.restaurant,
+                    position: vacancy.position || shift.position || 'Сотрудник',
+                    specialization: vacancy.specialization || null,
                 }
             })
         }
         // Если нет срочных смен, возвращаем пустой массив (моковые данные удалены)
         return []
     }, [hotShiftsResponse])
+
+    // Получаем общее количество горящих смен
+    const hotShiftsTotalCount = useMemo(() => {
+        const pagination = hotShiftsResponse?.pagination || hotShiftsResponse?.meta
+        return pagination?.total_count ?? undefined
+    }, [hotShiftsResponse])
+
+    // Обработчик для показа всех горящих смен (применяем фильтр urgent)
+    const handleShowAllHotShifts = useCallback(() => {
+        setActiveFilter('urgent')
+        // Прокручиваем к началу списка смен
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [])
 
     const feedTypeOptions: TabOption<FeedType>[] = [
         { id: 'shifts', label: '🔥 Смены' },
@@ -408,24 +468,43 @@ export const FeedPage = () => {
         setSelectedShiftId(null)
     }
 
-    const handleApply = (shiftId: number) => {
-        // Используем нативный HapticFeedback из Telegram WebApp
-        const webApp = getTelegramWebApp()
-        if (webApp?.HapticFeedback) {
-            try {
-                webApp.HapticFeedback.impactOccurred('light')
-            } catch {
-                // Fallback на стандартный vibrate
-                if (navigator.vibrate) {
-                    navigator.vibrate(50)
-                }
-            }
-        } else if (navigator.vibrate) {
-            navigator.vibrate(50)
+    // Обновляем список appliedShifts на основе данных с сервера
+    useEffect(() => {
+        if (appliedShiftsResponse?.data) {
+            const appliedIds = appliedShiftsResponse.data.map(vacancy => vacancy.id)
+            setAppliedShifts(appliedIds)
         }
-        setAppliedShifts(prev => [...prev, shiftId])
-        showToast('✅ Заявка отправлена! Если вас утвердят, бот пришлет сообщение.', 'success')
-        handleCloseShiftDetails()
+    }, [appliedShiftsResponse])
+
+    const { apply, cancel } = useShiftApplication({
+        onSuccess: () => {
+            handleCloseShiftDetails()
+        },
+    })
+
+    const handleApply = async (shiftId: number) => {
+        try {
+            await apply(shiftId)
+            // Обновляем локальное состояние для немедленного отображения
+            setAppliedShifts(prev => {
+                if (!prev.includes(shiftId)) {
+                    return [...prev, shiftId]
+                }
+                return prev
+            })
+        } catch {
+            // Ошибка уже обработана в хуке
+        }
+    }
+
+    const handleCancel = async (shiftId: number) => {
+        try {
+            await cancel(shiftId)
+            // Обновляем локальное состояние для немедленного отображения
+            setAppliedShifts(prev => prev.filter(id => id !== shiftId))
+        } catch {
+            // Ошибка уже обработана в хуке
+        }
     }
 
     const handleResetFilters = () => {
@@ -521,6 +600,8 @@ export const FeedPage = () => {
             {feedType === 'shifts' && (
                 <HotOffers
                     items={actualHotShifts}
+                    totalCount={hotShiftsTotalCount}
+                    onShowAll={hotShiftsTotalCount && actualHotShifts.length < hotShiftsTotalCount ? handleShowAllHotShifts : undefined}
                     onItemClick={(item: HotOffer) => {
                         // HapticFeedback при клике
                         const webApp = getTelegramWebApp()
@@ -616,6 +697,7 @@ export const FeedPage = () => {
                     isOpen={!!selectedShiftId}
                     onClose={handleCloseShiftDetails}
                     onApply={handleApply}
+                    onCancel={handleCancel}
                     isApplied={appliedShifts.includes(selectedShiftId)}
                 />
             )}

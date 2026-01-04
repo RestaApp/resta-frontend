@@ -22,6 +22,7 @@ type TagType =
   | 'Shift'
   | 'Vacancy'
   | 'Application'
+  | 'AppliedShift'
   | 'Notification'
   | 'User'
   | 'Profile'
@@ -49,6 +50,7 @@ export const rtkQueryConfig = {
     'Shift',
     'Vacancy',
     'Application',
+    'AppliedShift', // Смены с поданными заявками
     'Notification',
     'User',
     'Profile',

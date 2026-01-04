@@ -35,7 +35,7 @@ export function createCatalogQuery<
   TResponse,
   TQueryArg = void,
 >(
-  builder: EndpointBuilder<CustomBaseQuery, 'Catalog' | 'User' | 'Shift' | 'Vacancy' | 'Application' | 'Notification' | 'Profile' | 'Supplier' | 'Venue' | 'News', 'api'>,
+  builder: EndpointBuilder<CustomBaseQuery, 'Catalog' | 'User' | 'Shift' | 'Vacancy' | 'Application' | 'AppliedShift' | 'Notification' | 'Profile' | 'Supplier' | 'Venue' | 'News', 'api'>,
   config: {
     url: string
     method?: 'GET' | 'POST'

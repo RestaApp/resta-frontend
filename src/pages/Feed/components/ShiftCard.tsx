@@ -1,6 +1,8 @@
+import { memo, useMemo } from 'react'
 import { MapPin, Clock, CalendarDays } from 'lucide-react'
 import type { Shift } from '../types'
 import type React from 'react'
+import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
 
 interface ShiftCardProps {
     shift: Shift
@@ -8,7 +10,7 @@ interface ShiftCardProps {
     onApply: (id: number) => void
 }
 
-export const ShiftCard = ({ shift, isApplied = false, onApply }: ShiftCardProps) => {
+export const ShiftCard = memo(({ shift, isApplied = false, onApply }: ShiftCardProps) => {
     const handleCardClick = (e: React.MouseEvent) => {
         // Предотвращаем открытие деталей при клике на кнопку
         if ((e.target as HTMLElement).closest('button')) {
@@ -17,6 +19,15 @@ export const ShiftCard = ({ shift, isApplied = false, onApply }: ShiftCardProps)
         // Вызываем onApply для открытия деталей (будет переименовано)
         onApply(shift.id)
     }
+
+    // Форматирование позиции и специализации
+    const positionText = useMemo(() => {
+        const position = getEmployeePositionLabel(shift.position)
+        const specialization = shift.specialization
+            ? ` • ${getSpecializationLabel(shift.specialization)}`
+            : ''
+        return `${position}${specialization}`
+    }, [shift.position, shift.specialization])
 
     return (
         <div
@@ -32,13 +43,13 @@ export const ShiftCard = ({ shift, isApplied = false, onApply }: ShiftCardProps)
                     </div>
 
                     <div>
-                        <h3 className="font-bold text-base leading-tight pr-8">{shift.position}</h3>
-                        <p className="text-sm text-muted-foreground mt-0.5">{shift.restaurant}</p>
-
-                        {/* Рейтинг (опционально, если есть место) */}
-                        <div className="flex items-center gap-1 mt-1 text-xs font-medium text-amber-500">
-                            ★ {shift.rating}
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-bold text-base leading-tight">{positionText}</h3>
+                            <div className="flex items-center gap-1 text-xs font-medium text-amber-500">
+                                ★ {shift.rating}
+                            </div>
                         </div>
+                        <p className="text-sm text-muted-foreground mt-0.5">{shift.restaurant}</p>
                     </div>
                 </div>
 
@@ -83,11 +94,16 @@ export const ShiftCard = ({ shift, isApplied = false, onApply }: ShiftCardProps)
                         onApply(shift.id)
                     }}
                     disabled={isApplied}
-                    className={`px-6 py-2 rounded-xl transition-all flex-shrink-0 ${isApplied ? 'bg-card/60 text-muted-foreground cursor-not-allowed' : 'gradient-primary text-white hover:opacity-90 shadow-md'}`}
+                    className={`px-6 py-2 rounded-xl transition-all flex-shrink-0 ${isApplied
+                            ? 'bg-secondary text-foreground/70 cursor-not-allowed'
+                            : 'gradient-primary text-white hover:opacity-90 shadow-md'
+                        }`}
                 >
                     {isApplied ? '✓ Заявка отправлена' : 'Откликнуться'}
                 </button>
             </div>
         </div>
     )
-}
+})
+
+ShiftCard.displayName = 'ShiftCard'

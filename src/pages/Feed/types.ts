@@ -6,6 +6,7 @@ export interface Shift {
   restaurant: string
   rating: number
   position: string
+  specialization?: string | null // Специализация сотрудника
   date: string
   time: string
   pay: number

@@ -1,15 +1,15 @@
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback } from 'react'
 import type React from 'react'
 import {
     MapPin,
     Clock,
     DollarSign,
     FileText,
-    MessageCircle,
     CalendarDays,
     Flame,
-    Star,
     X,
+    Users,
+    Briefcase,
     type LucideIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,10 @@ import { Separator } from '@/components/ui/separator'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
+import { getRestaurantFormatLabel } from '@/constants/labels'
+import { useShiftDetails } from '../hooks/useShiftDetails'
+import { formatReviews } from '../utils/formatting'
+import { useShiftApplication } from '../hooks/useShiftApplication'
 
 
 interface ShiftDetailsScreenProps {
@@ -26,8 +30,9 @@ interface ShiftDetailsScreenProps {
     vacancyData?: VacancyApiItem | null
     isOpen: boolean
     onClose: () => void
-    onApply: (id: number) => void
+    onApply?: (id: number) => void // Опционально для обратной совместимости
     isApplied?: boolean
+    onCancel?: (id: number) => void // Callback для отмены заявки
 }
 
 /**
@@ -79,15 +84,6 @@ const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => (
 
 TextCard.displayName = 'TextCard'
 
-/**
- * Форматирует количество отзывов
- */
-const formatReviews = (count: number): string => {
-    if (count === 1) return 'отзыв'
-    if (count < 5) return 'отзыва'
-    return 'отзывов'
-}
-
 export const ShiftDetailsScreen = memo(({
     shift,
     vacancyData,
@@ -95,37 +91,63 @@ export const ShiftDetailsScreen = memo(({
     onClose,
     onApply,
     isApplied = false,
+    onCancel,
 }: ShiftDetailsScreenProps) => {
-    const handleApply = useCallback(() => {
-        if (shift) {
+    const {
+        restaurantInfo,
+        hourlyRate,
+        shiftTypeLabel,
+        vacancyTitle,
+        positionLabel,
+        specializationLabel,
+        applicationsInfo,
+    } = useShiftDetails(shift, vacancyData)
+
+    const { apply, cancel, isLoading: isApplicationLoading } = useShiftApplication({
+        onSuccess: () => {
+            onClose()
+        },
+    })
+
+    const handleApply = useCallback(async () => {
+        if (!shift) return
+
+        // Если есть старый callback, используем его для обратной совместимости
+        if (onApply) {
             onApply(shift.id)
             onClose()
+            return
         }
-    }, [shift, onApply, onClose])
 
-    const handleContact = useCallback(() => {
-        // TODO: Реализовать открытие чата Telegram
-    }, [])
+        // Иначе используем новый API
+        try {
+            await apply(shift.id)
+        } catch {
+            // Ошибка уже обработана в хуке
+        }
+    }, [shift, onApply, onClose, apply])
+
+    const handleCancel = useCallback(async () => {
+        if (!shift) return
+
+        // Если есть callback для отмены, используем его
+        if (onCancel) {
+            onCancel(shift.id)
+            onClose()
+            return
+        }
+
+        // Иначе используем новый API
+        try {
+            await cancel(shift.id)
+        } catch {
+            // Ошибка уже обработана в хуке
+        }
+    }, [shift, onCancel, onClose, cancel])
 
     const handleOpenMap = useCallback(() => {
         // TODO: Реализовать открытие карты
     }, [])
-
-    // Мемоизация данных о ресторане
-    const restaurantInfo = useMemo(() => {
-        if (!vacancyData?.user) return null
-
-        const { user } = vacancyData
-        const hasRating = user.average_rating !== undefined && user.average_rating > 0
-        const hasReviews = user.total_reviews !== undefined && user.total_reviews > 0
-
-        return {
-            rating: hasRating ? user.average_rating : null,
-            reviews: hasReviews ? user.total_reviews : null,
-            bio: user.bio || null,
-            profile: user.restaurant_profile || null,
-        }
-    }, [vacancyData])
 
     // Ранний возврат если нет данных
     if (!shift) {
@@ -136,7 +158,7 @@ export const ShiftDetailsScreen = memo(({
         <Drawer open={isOpen} onOpenChange={onClose}>
             <DrawerHeader className="pb-2">
                 <div className="flex items-center justify-between mb-2">
-                    <DrawerTitle className="text-xl">{shift.position}</DrawerTitle>
+                    <DrawerTitle className="text-xl">{vacancyTitle}</DrawerTitle>
                     <button
                         onClick={onClose}
                         className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-primary transition-colors"
@@ -153,10 +175,13 @@ export const ShiftDetailsScreen = memo(({
                             Срочно
                         </Badge>
                     )}
-                    <div className="flex items-center gap-1 text-amber-500 text-sm">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span className="font-medium">{shift.rating.toFixed(1)}</span>
-                    </div>
+                    {shiftTypeLabel && (
+                        <Badge variant="outline" className="gap-1">
+                            <Briefcase className="w-3 h-3" />
+                            {shiftTypeLabel}
+                        </Badge>
+                    )}
+
                 </div>
             </DrawerHeader>
 
@@ -186,6 +211,19 @@ export const ShiftDetailsScreen = memo(({
 
                     {/* Key Details */}
                     <div className="space-y-3">
+                        {positionLabel && (
+                            <DetailRow
+                                icon={Briefcase}
+                                iconColor="text-indigo-500"
+                                label="Позиция"
+                                value={positionLabel}
+                                subValue={
+                                    specializationLabel
+                                        ? `Специализация: ${specializationLabel}`
+                                        : undefined
+                                }
+                            />
+                        )}
                         <DetailRow
                             icon={CalendarDays}
                             iconColor="text-purple-500"
@@ -224,8 +262,21 @@ export const ShiftDetailsScreen = memo(({
                                     {shift.pay} {shift.currency}
                                 </span>
                             }
-                            subValue="за смену"
+                            subValue={
+                                hourlyRate
+                                    ? `за смену (${hourlyRate} ${shift.currency}/час)`
+                                    : 'за смену'
+                            }
                         />
+                        {applicationsInfo && (
+                            <DetailRow
+                                icon={Users}
+                                iconColor="text-green-500"
+                                label="Заявок"
+                                value={applicationsInfo.value}
+                                subValue={applicationsInfo.label}
+                            />
+                        )}
                     </div>
                 </Card>
 
@@ -276,9 +327,11 @@ export const ShiftDetailsScreen = memo(({
                                         {restaurantInfo.profile.city}
                                     </Badge>
                                 )}
-                                {restaurantInfo.profile.format && (
+                                {(restaurantInfo.profile.restaurant_format || restaurantInfo.profile.format) && (
                                     <Badge variant="outline" className="text-[11px]">
-                                        {restaurantInfo.profile.format}
+                                        {getRestaurantFormatLabel(
+                                            restaurantInfo.profile.restaurant_format || restaurantInfo.profile.format || ''
+                                        )}
                                     </Badge>
                                 )}
                                 {restaurantInfo.profile.cuisine_types &&
@@ -296,17 +349,24 @@ export const ShiftDetailsScreen = memo(({
             {/* Fixed Bottom Actions */}
             <DrawerFooter className="border-t border-border">
                 <div className="flex gap-3">
-                    <Button variant="outline" onClick={handleContact} className="flex-1">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        <span>Связаться</span>
-                    </Button>
-                    <Button
-                        onClick={handleApply}
-                        disabled={isApplied}
-                        className="flex-1 gradient-primary text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isApplied ? '✓ Заявка отправлена' : 'Откликнуться'}
-                    </Button>
+                    {isApplied ? (
+                        <Button
+                            onClick={handleCancel}
+                            disabled={isApplicationLoading}
+                            variant="outline"
+                            className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
+                        >
+                            {isApplicationLoading ? 'Отмена...' : 'Отменить заявку'}
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleApply}
+                            disabled={isApplicationLoading}
+                            className="flex-1 gradient-primary text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isApplicationLoading ? 'Отправка...' : 'Откликнуться'}
+                        </Button>
+                    )}
                 </div>
             </DrawerFooter>
         </Drawer>

@@ -2,7 +2,7 @@
  * Redux slice для каталогов (позиции, специализации)
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from './index'
 
 export interface CatalogState {
@@ -25,7 +25,9 @@ const catalogSlice = createSlice({
       state.positions = action.payload
     },
     setSpecializations: (state, action: PayloadAction<{ position: string; specializations: string[] }>) => {
-      state.specializations[action.payload.position] = action.payload.specializations
+      // Нормализуем позицию к lowercase для консистентности
+      const normalizedPosition = action.payload.position.toLowerCase()
+      state.specializations[normalizedPosition] = action.payload.specializations
     },
     setSelectedPosition: (state, action: PayloadAction<string | null>) => {
       state.selectedPosition = action.payload
@@ -39,10 +41,19 @@ const catalogSlice = createSlice({
 export const { setPositions, setSpecializations, setSelectedPosition, clearSpecializations } = catalogSlice.actions
 export default catalogSlice.reducer
 
+const EMPTY_SPECIALIZATIONS: string[] = []
+
 // Селекторы
 export const selectPositions = (state: RootState) => state.catalog.positions
-export const selectSpecializationsByPosition = (position: string) => (state: RootState) =>
-  state.catalog.specializations[position] || []
+const selectCatalogSpecializations = (state: RootState) => state.catalog.specializations
+export const selectSpecializationsByPosition = createSelector(
+  [selectCatalogSpecializations, (_: RootState, position: string | null) => position],
+  (specializations, position) => {
+    if (!position) return EMPTY_SPECIALIZATIONS
+    const normalizedPosition = position.toLowerCase()
+    return specializations[normalizedPosition] || EMPTY_SPECIALIZATIONS
+  }
+)
 export const selectSelectedPosition = (state: RootState) => state.catalog.selectedPosition
 export const selectAllSpecializations = (state: RootState) => state.catalog.specializations
 
