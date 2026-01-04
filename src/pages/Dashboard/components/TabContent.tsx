@@ -2,8 +2,8 @@
  * Компонент для отображения контента табов
  */
 
-import { FeedPage } from '@/pages/Feed'
-import type { Tab, UserRole } from '@/types'
+import { FeedPage } from '../../Feed'
+import type { Tab, UserRole } from '../../../types'
 
 
 
