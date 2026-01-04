@@ -1,4 +1,4 @@
-import { FeedPage } from "@/pages/Feed"
+import { FeedPage } from "@/pages/Feed/FeedPage"
 import type { Tab, UserRole } from "@/types"
 
 interface TabContentProps {
