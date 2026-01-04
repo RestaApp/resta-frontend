@@ -6,7 +6,7 @@
 
 import { api } from '@/store/api'
 import type { UserData } from './authApi'
-import { createCatalogQuery, CATALOG_ENDPOINT_CONFIG } from './helpers'
+import { createCatalogQuery } from './helpers'
 
 export type { UserData } from './authApi'
 
@@ -110,7 +110,11 @@ export const usersApi = api.injectEndpoints({
         url: `/api/v1/catalogs/specializations?position=${position}`,
         method: 'GET',
       }),
-      ...CATALOG_ENDPOINT_CONFIG,
+      providesTags: (_result, _error, position) => [
+        { type: 'Catalog' as const, id: `specializations-${position}` },
+        'Catalog',
+      ],
+      keepUnusedDataFor: 3600, // Кэшировать данные 1 час
     }),
   }),
 })

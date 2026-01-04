@@ -1,14 +1,12 @@
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useCallback } from 'react'
 import { RangeSlider, DatePicker } from '@/components/ui'
-import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { useUserPositions } from '@/hooks/useUserPositions'
 import { useUserSpecializations } from '@/hooks/useUserSpecializations'
 import { getSpecializationLabel } from '@/constants/labels'
-import { mapEmployeeSubRolesFromApi } from '@/utils/rolesMapper'
-import { setPositions, setSpecializations, setSelectedPosition as setSelectedPositionAction } from '@/store/catalogSlice'
 import { SelectableTagButton } from '@/pages/RoleSelector/components/SubRoles/components/SelectableTagButton'
+import { useAdvancedFilters } from '../hooks/useAdvancedFilters'
 
 
 export interface AdvancedFiltersData {
@@ -30,8 +28,6 @@ interface AdvancedFiltersProps {
     activeFilter?: string
 }
 
-const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
-
 export const AdvancedFilters = ({
     isOpen,
     onClose,
@@ -40,24 +36,26 @@ export const AdvancedFilters = ({
     filteredCount,
     onReset,
 }: AdvancedFiltersProps) => {
-    const dispatch = useAppDispatch()
-    const positionsFromStore = useAppSelector(state => state.catalog.positions)
-
-    const [priceRange, setPriceRange] = useState<[number, number]>(
-        initialFilters?.priceRange || DEFAULT_PRICE_RANGE
-    )
-    const [selectedPosition, setSelectedPosition] = useState<string | null>(
-        initialFilters?.selectedPosition || null
-    )
-    const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>(
-        initialFilters?.selectedSpecializations || []
-    )
-    const [startDate, setStartDate] = useState<string | null>(
-        initialFilters?.startDate || null
-    )
-    const [endDate, setEndDate] = useState<string | null>(
-        initialFilters?.endDate || null
-    )
+    // Используем кастомный хук для управления логикой фильтров
+    const {
+        priceRange,
+        selectedPosition,
+        selectedSpecializations,
+        startDate,
+        endDate,
+        setPriceRange,
+        setStartDate,
+        setEndDate,
+        handlePositionSelect,
+        toggleSpecialization,
+        handleReset,
+        hasActiveFilters,
+    } = useAdvancedFilters({
+        initialFilters: initialFilters || null,
+        isOpen,
+        onApply,
+        onReset,
+    })
 
     // Получаем минимальную дату для начальной даты (сегодня)
     const getMinStartDate = useCallback((): string => {
@@ -76,177 +74,21 @@ export const AdvancedFilters = ({
         return today.toISOString().split('T')[0]
     }, [startDate])
 
-    // Сбрасываем endDate, если он меньше startDate
-    useEffect(() => {
-        if (startDate && endDate) {
-            const start = new Date(startDate)
-            const end = new Date(endDate)
-            start.setHours(0, 0, 0, 0)
-            end.setHours(0, 0, 0, 0)
-            if (end < start) {
-                setEndDate(null)
-            }
-        }
-    }, [startDate, endDate])
+    // Загружаем позиции (хук сам использует Redux кеш и сохраняет данные)
+    const { positions: positionsForDisplay } = useUserPositions({ enabled: isOpen })
 
-    // Загружаем позиции (используем существующий хук)
-    const { positionsApi } = useUserPositions({ enabled: isOpen })
-
-    // Сохраняем позиции в Redux после загрузки
-    useEffect(() => {
-        if (positionsApi && positionsApi.length > 0) {
-            dispatch(setPositions(positionsApi))
-        }
-    }, [positionsApi, dispatch])
-
-    // Используем позиции из Redux или из запроса, преобразуем в формат с названиями
-    const positionsForDisplay = useMemo(() => {
-        const positionsToUse = positionsFromStore.length > 0 ? positionsFromStore : positionsApi
-        return mapEmployeeSubRolesFromApi(positionsToUse)
-    }, [positionsFromStore, positionsApi])
-
-    // Загружаем специализации при выборе позиции (используем существующий хук)
+    // Загружаем специализации при выборе позиции (хук сам использует Redux кеш и сохраняет данные)
     const { specializations: availableSpecializations } = useUserSpecializations({
         position: selectedPosition,
-        enabled: isOpen && !!selectedPosition, // Загружаем только если модальное окно открыто И позиция выбрана
+        enabled: isOpen && !!selectedPosition,
     })
 
-    // Сохраняем специализации в Redux после загрузки
-    useEffect(() => {
-        if (availableSpecializations.length > 0 && selectedPosition) {
-            dispatch(setSpecializations({ position: selectedPosition, specializations: availableSpecializations }))
-        }
-    }, [availableSpecializations, selectedPosition, dispatch])
-
-    // Синхронизируем внутреннее состояние с initialFilters только при открытии модального окна
-    // Используем ref для отслеживания, было ли модальное окно открыто ранее
-    const prevIsOpenRef = useRef(false)
-
-    useEffect(() => {
-        // Синхронизируем только при открытии модального окна (переход из закрытого в открытое)
-        if (isOpen && !prevIsOpenRef.current) {
-            if (initialFilters) {
-                setPriceRange(initialFilters.priceRange)
-                setSelectedPosition(initialFilters.selectedPosition || null)
-                setSelectedSpecializations(initialFilters.selectedSpecializations || [])
-                setStartDate(initialFilters.startDate || null)
-                setEndDate(initialFilters.endDate || null)
-                // НЕ применяем фильтры при открытии - они уже применены
-            } else {
-                // Сбрасываем к значениям по умолчанию, если нет initialFilters
-                setPriceRange(DEFAULT_PRICE_RANGE)
-                setSelectedPosition(null)
-                setSelectedSpecializations([])
-                setStartDate(null)
-                setEndDate(null)
-            }
-        }
-
-        prevIsOpenRef.current = isOpen
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen]) // Синхронизируем только при открытии/закрытии модального окна
-
-    const handlePositionSelect = useCallback((position: string) => {
-        if (selectedPosition === position) {
-            // Если позиция уже выбрана, снимаем выбор
-            setSelectedPosition(null)
-            setSelectedSpecializations([])
-            dispatch(setSelectedPositionAction(null))
-        } else {
-            // Выбираем новую позицию
-            setSelectedPosition(position)
-            setSelectedSpecializations([]) // Сбрасываем специализации при смене позиции
-            dispatch(setSelectedPositionAction(position))
-        }
-    }, [selectedPosition, dispatch])
-
-    const toggleSpecialization = useCallback((specialization: string) => {
-        setSelectedSpecializations(prev =>
-            prev.includes(specialization)
-                ? prev.filter(s => s !== specialization)
-                : [...prev, specialization]
-        )
-    }, [])
-
-    const hasActiveFilters = useMemo(() => {
-        const isDefaultPriceRange =
-            priceRange[0] === DEFAULT_PRICE_RANGE[0] &&
-            priceRange[1] === DEFAULT_PRICE_RANGE[1]
-        return !isDefaultPriceRange ||
-            selectedPosition !== null || selectedSpecializations.length > 0 ||
-            startDate !== null || endDate !== null
-    }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate])
-
     // Используем filteredCount из пропсов (из основного запроса в FeedPage)
-    // Не делаем отдельный preview запрос, чтобы избежать дублирования запросов
     const previewCount = filteredCount ?? 0
-
-    const handleReset = useCallback(() => {
-        setPriceRange(DEFAULT_PRICE_RANGE)
-        setSelectedPosition(null)
-        setSelectedSpecializations([])
-        setStartDate(null)
-        setEndDate(null)
-        dispatch(setSelectedPositionAction(null))
-        onReset?.()
-    }, [onReset, dispatch])
 
     const handleRangeChange = useCallback((range: [number, number]) => {
         setPriceRange(range)
-    }, [])
-
-    // Автоматически применяем фильтры при изменении (только когда модальное окно открыто)
-    // Используем ref для отслеживания, были ли фильтры уже применены при открытии
-    const isInitialMountRef = useRef(true)
-    const prevIsOpenForApplyRef = useRef(false)
-
-    useEffect(() => {
-        // При открытии модального окна сбрасываем флаг
-        if (isOpen && !prevIsOpenForApplyRef.current) {
-            isInitialMountRef.current = true
-            prevIsOpenForApplyRef.current = true
-            return
-        }
-
-        // При закрытии модального окна применяем текущие фильтры и сбрасываем флаг
-        if (!isOpen && prevIsOpenForApplyRef.current) {
-            // Применяем фильтры при закрытии, если пользователь что-то изменил
-            const filters = {
-                priceRange,
-                selectedPosition,
-                selectedSpecializations,
-                startDate,
-                endDate
-            }
-            onApply(filters)
-
-            prevIsOpenForApplyRef.current = false
-            isInitialMountRef.current = true
-            return
-        }
-
-        // Пропускаем первое применение после открытия модального окна
-        if (isOpen && isInitialMountRef.current) {
-            isInitialMountRef.current = false
-            return
-        }
-
-        // Применяем фильтры только при реальном изменении пользователем
-        if (isOpen) {
-            const timeoutId = setTimeout(() => {
-                const filters = {
-                    priceRange,
-                    selectedPosition,
-                    selectedSpecializations,
-                    startDate,
-                    endDate
-                }
-                onApply(filters)
-            }, 300) // 300ms задержка для всех фильтров
-
-            return () => clearTimeout(timeoutId)
-        }
-    }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate, onApply, isOpen])
+    }, [setPriceRange])
 
     return (
         <AnimatePresence>
@@ -326,14 +168,12 @@ export const AdvancedFilters = ({
                                     <DatePicker
                                         value={startDate}
                                         onChange={setStartDate}
-                                        placeholder="ДД.ММ.ГГГГ"
                                         minDate={getMinStartDate()}
                                         label="От"
                                     />
                                     <DatePicker
                                         value={endDate}
                                         onChange={setEndDate}
-                                        placeholder="ДД.ММ.ГГГГ"
                                         minDate={getMinEndDate()}
                                         label="До"
                                     />

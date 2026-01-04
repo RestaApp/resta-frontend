@@ -20,10 +20,11 @@ type CustomBaseQuery = BaseQueryFn<
 
 /**
  * Конфигурация для catalog endpoints (справочные данные)
+ * Справочные данные кешируются дольше, так как они редко меняются
  */
 export const CATALOG_ENDPOINT_CONFIG = {
   providesTags: ['Catalog'] as const,
-  keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+  keepUnusedDataFor: 3600, // Кэшировать данные 1 час (справочные данные редко меняются)
 } as const
 
 /**

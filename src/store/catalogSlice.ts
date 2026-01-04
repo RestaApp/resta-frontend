@@ -3,8 +3,9 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import type { RootState } from './index'
 
-interface CatalogState {
+export interface CatalogState {
   positions: string[]
   specializations: Record<string, string[]> // ключ - позиция, значение - массив специализаций
   selectedPosition: string | null
@@ -37,5 +38,12 @@ const catalogSlice = createSlice({
 
 export const { setPositions, setSpecializations, setSelectedPosition, clearSpecializations } = catalogSlice.actions
 export default catalogSlice.reducer
+
+// Селекторы
+export const selectPositions = (state: RootState) => state.catalog.positions
+export const selectSpecializationsByPosition = (position: string) => (state: RootState) =>
+  state.catalog.specializations[position] || []
+export const selectSelectedPosition = (state: RootState) => state.catalog.selectedPosition
+export const selectAllSpecializations = (state: RootState) => state.catalog.specializations
 
 

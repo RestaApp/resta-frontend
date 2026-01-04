@@ -514,6 +514,7 @@ export const FeedPage = () => {
                     onOpenFilters={() => setIsFiltersOpen(true)}
                     isLoading={isFetching}
                     hasActiveFilters={hasActiveAdvancedFilters}
+                    activeFilters={advancedFilters}
                 />
             </div>
 
