@@ -195,7 +195,9 @@ export const ShiftDetailsScreen = memo(({
                         <div className="flex-1">
                             <h2 className="text-lg font-semibold mb-1">{shift.restaurant}</h2>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <span>⭐ {shift.rating.toFixed(1)}</span>
+                                {typeof shift.rating === 'number' && (
+                                    <span>⭐ {shift.rating.toFixed(1)}</span>
+                                )}
                                 {restaurantInfo?.reviews && (
                                     <>
                                         <span>•</span>
@@ -302,7 +304,7 @@ export const ShiftDetailsScreen = memo(({
                             </div>
                             <div>
                                 <div className="text-[14px] font-medium">{shift.restaurant}</div>
-                                {restaurantInfo.rating && (
+                                {restaurantInfo.rating && typeof restaurantInfo.rating === 'number' && (
                                     <div className="flex items-center gap-1 text-[12px] text-muted-foreground">
                                         <span>⭐ {restaurantInfo.rating.toFixed(1)}</span>
                                         {restaurantInfo.reviews && (

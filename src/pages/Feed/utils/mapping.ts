@@ -111,6 +111,20 @@ const getLogo = (id: number): string => {
 }
 
 /**
+ * Безопасно преобразует значение в число
+ */
+const toNumber = (value: unknown, defaultValue = 0): number => {
+  if (typeof value === 'number' && !isNaN(value)) {
+    return value
+  }
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value)
+    return !isNaN(parsed) ? parsed : defaultValue
+  }
+  return defaultValue
+}
+
+/**
  * Преобразует данные вакансии из API в формат Shift для компонента
  */
 export const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
@@ -123,7 +137,7 @@ export const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
     logo: getLogo(vacancy.id),
     restaurant:
       vacancy.user?.name || vacancy.user?.full_name || vacancy.title || 'Ресторан',
-    rating: vacancy.user?.average_rating || 0,
+    rating: toNumber(vacancy.user?.average_rating, 0),
     position: vacancy.position || vacancy.target_roles?.[0] || 'Сотрудник',
     specialization: vacancy.specialization || null,
     date: formatDate(vacancy.start_time),
