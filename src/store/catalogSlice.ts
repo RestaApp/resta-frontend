@@ -38,3 +38,4 @@ const catalogSlice = createSlice({
 export const { setPositions, setSpecializations, setSelectedPosition, clearSpecializations } = catalogSlice.actions
 export default catalogSlice.reducer
 
+
