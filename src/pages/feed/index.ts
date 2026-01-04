@@ -2,7 +2,7 @@
  * Экспорт компонента FeedPage
  */
 
-export { FeedPage } from '../Feed/FeedPage'
+export { FeedPage } from './FeedPage'
 
 
 

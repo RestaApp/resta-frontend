@@ -26,20 +26,22 @@ export interface CreateShiftRequest {
 /**
  * Параметры запроса для получения вакансий
  */
+/**
+ * Параметры запроса для получения вакансий
+ * Только параметры, указанные в API документации
+ */
 export interface GetVacanciesParams {
   shift_type: 'vacancy' | 'replacement'
-  urgent?: boolean
-  location?: string
-  min_payment?: number
-  max_payment?: number
-  start_date?: string // YYYY-MM-DD
-  target_roles?: string[] // chef, waiter, bartender, barista, manager, support
-  position?: string // Позиция из каталога
-  specializations?: string[] // Специализации из каталога
-  search?: string // Поиск по названию ресторана или позиции
-  time_of_day?: string[] // morning, day, evening, night
-  page?: number
-  per_page?: number
+  position?: string // Позиция для фильтрации: chef, waiter, bartender, barista, manager, support
+  specialization?: string // Специализация для фильтрации (опционально)
+  city?: string // Фильтр по городу ресторана (ILIKE поиск)
+  min_payment?: number // Минимальная оплата за смену
+  max_payment?: number // Максимальная оплата за смену
+  start_date?: string // Дата начала фильтрации (формат: YYYY-MM-DD)
+  end_date?: string // Дата окончания фильтрации (формат: YYYY-MM-DD)
+  urgent?: boolean // Срочные смены
+  page?: number // Номер страницы для пагинации (по умолчанию: 1)
+  per_page?: number // Количество смен на странице (по умолчанию: 20, макс: 100)
 }
 
 /**

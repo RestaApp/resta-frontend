@@ -1,15 +1,22 @@
-import { X, Check } from 'lucide-react'
+import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { RangeSlider } from '../../../components/ui'
 import { SelectableTagButton } from '../../RoleSelector/components/SubRoles/components/SelectableTagButton'
-import { useGetVacanciesQuery } from '../../../services/api/shiftsApi'
+import { useAppSelector, useAppDispatch } from '../../../store/hooks'
+import { useUserPositions } from '../../../hooks/useUserPositions'
+import { useUserSpecializations } from '../../../hooks/useUserSpecializations'
+import { getSpecializationLabel } from '../../../constants/labels'
+import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
+import { setPositions, setSpecializations, setSelectedPosition as setSelectedPositionAction } from '../../../store/catalogSlice'
 
 
 export interface AdvancedFiltersData {
     priceRange: [number, number]
-    selectedRoles: string[]
-    timeOfDay: string[]
+    selectedPosition?: string | null
+    selectedSpecializations?: string[]
+    startDate?: string | null // YYYY-MM-DD
+    endDate?: string | null // YYYY-MM-DD
 }
 
 interface AdvancedFiltersProps {
@@ -23,15 +30,6 @@ interface AdvancedFiltersProps {
     activeFilter?: string
 }
 
-const ROLES = ['Повар', 'Су-шеф', 'Бармен', 'Официант', 'Бариста', 'Мойщик', 'Админ']
-
-const TIMES = [
-    { id: 'morning', label: '🌅 Утро', desc: 'до 12:00' },
-    { id: 'day', label: '☀️ День', desc: '12:00 - 18:00' },
-    { id: 'evening', label: '🌆 Вечер', desc: 'после 18:00' },
-    { id: 'night', label: '🌙 Ночь', desc: 'смены в ночь' },
-]
-
 const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
 
 export const AdvancedFilters = ({
@@ -41,108 +39,286 @@ export const AdvancedFilters = ({
     initialFilters,
     filteredCount,
     onReset,
-    searchQuery = '',
-    activeFilter = 'all',
 }: AdvancedFiltersProps) => {
+    const dispatch = useAppDispatch()
+    const positionsFromStore = useAppSelector(state => state.catalog.positions)
+
     const [priceRange, setPriceRange] = useState<[number, number]>(
         initialFilters?.priceRange || DEFAULT_PRICE_RANGE
     )
-    const [selectedRoles, setSelectedRoles] = useState<string[]>(
-        initialFilters?.selectedRoles || []
+    const [selectedPosition, setSelectedPosition] = useState<string | null>(
+        initialFilters?.selectedPosition || null
     )
-    const [timeOfDay, setTimeOfDay] = useState<string[]>(initialFilters?.timeOfDay || [])
+    const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>(
+        initialFilters?.selectedSpecializations || []
+    )
+    const [startDate, setStartDate] = useState<string | null>(
+        initialFilters?.startDate || null
+    )
+    const [endDate, setEndDate] = useState<string | null>(
+        initialFilters?.endDate || null
+    )
 
-    const toggleRole = useCallback((role: string) => {
-        setSelectedRoles(prev => (prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]))
+    // Форматируем дату для отображения (DD.MM.YYYY)
+    const formatDateForDisplay = useCallback((dateString: string | null): string => {
+        if (!dateString) return ''
+        try {
+            const date = new Date(dateString)
+            if (isNaN(date.getTime())) return ''
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = date.getFullYear()
+            return `${day}.${month}.${year}`
+        } catch {
+            return ''
+        }
     }, [])
 
-    const toggleTime = useCallback((time: string) => {
-        setTimeOfDay(prev => (prev.includes(time) ? prev.filter(t => t !== time) : [...prev, time]))
+    const parseDateFromDisplay = useCallback((displayValue: string): string | null => {
+        if (!displayValue) return null
+        const cleaned = displayValue.replace(/[^\d.]/g, '')
+        const parts = cleaned.split('.').filter(Boolean)
+        if (parts.length === 3) {
+            const day = parts[0].padStart(2, '0')
+            const month = parts[1].padStart(2, '0')
+            const year = parts[2]
+            const dateStr = `${year}-${month}-${day}`
+            const date = new Date(dateStr)
+            const isValid = !isNaN(date.getTime()) &&
+                date.getFullYear() === parseInt(year) &&
+                date.getMonth() + 1 === parseInt(month) &&
+                date.getDate() === parseInt(day)
+            if (isValid) {
+                return dateStr
+            }
+        }
+        return null
+    }, [])
+
+    // Обработчики для полей дат с маской
+    const handleStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value
+        // Разрешаем только цифры и точки
+        const cleaned = value.replace(/[^\d.]/g, '')
+
+        // Применяем маску DD.MM.YYYY
+        let masked = cleaned
+        if (cleaned.length > 2 && !cleaned.includes('.', 2)) {
+            masked = cleaned.slice(0, 2) + '.' + cleaned.slice(2)
+        }
+        if (cleaned.length > 5 && cleaned.split('.').length === 2) {
+            masked = cleaned.slice(0, 5) + '.' + cleaned.slice(5, 9)
+        }
+
+        // Ограничиваем длину
+        if (masked.length <= 10) {
+            const parsed = parseDateFromDisplay(masked)
+            if (parsed) {
+                // Проверяем, что дата не в прошлом
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const selectedDate = new Date(parsed)
+                selectedDate.setHours(0, 0, 0, 0)
+
+                if (selectedDate >= today) {
+                    setStartDate(parsed)
+                }
+            } else if (masked.length === 0) {
+                setStartDate(null)
+            }
+        }
+    }, [parseDateFromDisplay])
+
+    const handleEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value
+        const cleaned = value.replace(/[^\d.]/g, '')
+
+        let masked = cleaned
+        if (cleaned.length > 2 && !cleaned.includes('.', 2)) {
+            masked = cleaned.slice(0, 2) + '.' + cleaned.slice(2)
+        }
+        if (cleaned.length > 5 && cleaned.split('.').length === 2) {
+            masked = cleaned.slice(0, 5) + '.' + cleaned.slice(5, 9)
+        }
+
+        if (masked.length <= 10) {
+            const parsed = parseDateFromDisplay(masked)
+            if (parsed) {
+                // Проверяем, что дата не раньше startDate и не в прошлом
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const minDate = startDate ? new Date(startDate) : today
+                minDate.setHours(0, 0, 0, 0)
+                const selectedDate = new Date(parsed)
+                selectedDate.setHours(0, 0, 0, 0)
+
+                if (selectedDate >= minDate) {
+                    setEndDate(parsed)
+                }
+            } else if (masked.length === 0) {
+                setEndDate(null)
+            }
+        }
+    }, [parseDateFromDisplay, startDate])
+
+    // Загружаем позиции (используем существующий хук)
+    const { positionsApi } = useUserPositions({ enabled: isOpen })
+
+    // Сохраняем позиции в Redux после загрузки
+    useEffect(() => {
+        if (positionsApi && positionsApi.length > 0) {
+            dispatch(setPositions(positionsApi))
+        }
+    }, [positionsApi, dispatch])
+
+    // Используем позиции из Redux или из запроса, преобразуем в формат с названиями
+    const positionsForDisplay = useMemo(() => {
+        const positionsToUse = positionsFromStore.length > 0 ? positionsFromStore : positionsApi
+        return mapEmployeeSubRolesFromApi(positionsToUse)
+    }, [positionsFromStore, positionsApi])
+
+    // Загружаем специализации при выборе позиции (используем существующий хук)
+    const { specializations: availableSpecializations } = useUserSpecializations({
+        position: selectedPosition,
+        enabled: isOpen && !!selectedPosition, // Загружаем только если модальное окно открыто И позиция выбрана
+    })
+
+    // Сохраняем специализации в Redux после загрузки
+    useEffect(() => {
+        if (availableSpecializations.length > 0 && selectedPosition) {
+            dispatch(setSpecializations({ position: selectedPosition, specializations: availableSpecializations }))
+        }
+    }, [availableSpecializations, selectedPosition, dispatch])
+
+    // Синхронизируем внутреннее состояние с initialFilters только при открытии модального окна
+    // Используем ref для отслеживания, было ли модальное окно открыто ранее
+    const prevIsOpenRef = useRef(false)
+
+    useEffect(() => {
+        // Синхронизируем только при открытии модального окна (переход из закрытого в открытое)
+        if (isOpen && !prevIsOpenRef.current) {
+            if (initialFilters) {
+                setPriceRange(initialFilters.priceRange)
+                setSelectedPosition(initialFilters.selectedPosition || null)
+                setSelectedSpecializations(initialFilters.selectedSpecializations || [])
+                setStartDate(initialFilters.startDate || null)
+                setEndDate(initialFilters.endDate || null)
+                // НЕ применяем фильтры при открытии - они уже применены
+            } else {
+                // Сбрасываем к значениям по умолчанию, если нет initialFilters
+                setPriceRange(DEFAULT_PRICE_RANGE)
+                setSelectedPosition(null)
+                setSelectedSpecializations([])
+                setStartDate(null)
+                setEndDate(null)
+            }
+        }
+
+        prevIsOpenRef.current = isOpen
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]) // Синхронизируем только при открытии/закрытии модального окна
+
+    const handlePositionSelect = useCallback((position: string) => {
+        if (selectedPosition === position) {
+            // Если позиция уже выбрана, снимаем выбор
+            setSelectedPosition(null)
+            setSelectedSpecializations([])
+            dispatch(setSelectedPositionAction(null))
+        } else {
+            // Выбираем новую позицию
+            setSelectedPosition(position)
+            setSelectedSpecializations([]) // Сбрасываем специализации при смене позиции
+            dispatch(setSelectedPositionAction(position))
+        }
+    }, [selectedPosition, dispatch])
+
+    const toggleSpecialization = useCallback((specialization: string) => {
+        setSelectedSpecializations(prev =>
+            prev.includes(specialization)
+                ? prev.filter(s => s !== specialization)
+                : [...prev, specialization]
+        )
     }, [])
 
     const hasActiveFilters = useMemo(() => {
         const isDefaultPriceRange =
             priceRange[0] === DEFAULT_PRICE_RANGE[0] &&
             priceRange[1] === DEFAULT_PRICE_RANGE[1]
-        return !isDefaultPriceRange || selectedRoles.length > 0 || timeOfDay.length > 0
-    }, [priceRange, selectedRoles, timeOfDay])
+        return !isDefaultPriceRange ||
+            selectedPosition !== null || selectedSpecializations.length > 0 ||
+            startDate !== null || endDate !== null
+    }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate])
 
-    // Формируем параметры для preview запроса
-    const previewParams = useMemo(() => {
-        const roleMapping: Record<string, string> = {
-            'Повар': 'chef',
-            'Су-шеф': 'chef',
-            'Бармен': 'bartender',
-            'Официант': 'waiter',
-            'Бариста': 'barista',
-            'Мойщик': 'support',
-            'Админ': 'manager',
-        }
-
-        const params: Parameters<typeof useGetVacanciesQuery>[0] = {
-            shift_type: 'replacement',
-            page: 1,
-            per_page: 1, // Нам нужен только total_count
-        }
-
-        // Поиск по тексту (используем текущее значение из пропсов)
-        if (searchQuery) {
-            params.search = searchQuery
-        }
-
-        // Быстрые фильтры
-        if (activeFilter === 'urgent') {
-            params.urgent = true
-        }
-
-        // Расширенные фильтры
-        if (priceRange[0] !== 0 || priceRange[1] !== 1000) {
-            params.min_payment = priceRange[0]
-            params.max_payment = priceRange[1]
-        }
-
-        if (selectedRoles.length > 0) {
-            params.target_roles = selectedRoles
-                .map(role => roleMapping[role] || role.toLowerCase())
-                .filter(Boolean)
-        }
-
-        if (timeOfDay.length > 0) {
-            params.time_of_day = timeOfDay
-        }
-
-        return params
-    }, [priceRange, selectedRoles, timeOfDay, searchQuery, activeFilter])
-
-    // Запрос для preview количества смен
-    const { data: previewResponse } = useGetVacanciesQuery(previewParams, {
-        skip: !isOpen, // Запрашиваем только когда модалка открыта
-    })
-
-    // Подсчет количества смен с учетом текущих фильтров в модалке
-    const previewCount = useMemo(() => {
-        if (previewResponse) {
-            const pagination = previewResponse.pagination || previewResponse.meta
-            return pagination?.total_count ?? 0
-        }
-        return filteredCount ?? 0
-    }, [previewResponse, filteredCount])
+    // Используем filteredCount из пропсов (из основного запроса в FeedPage)
+    // Не делаем отдельный preview запрос, чтобы избежать дублирования запросов
+    const previewCount = filteredCount ?? 0
 
     const handleReset = useCallback(() => {
         setPriceRange(DEFAULT_PRICE_RANGE)
-        setSelectedRoles([])
-        setTimeOfDay([])
+        setSelectedPosition(null)
+        setSelectedSpecializations([])
+        setStartDate(null)
+        setEndDate(null)
+        dispatch(setSelectedPositionAction(null))
         onReset?.()
-    }, [onReset])
-
-    const handleApply = useCallback(() => {
-        onApply({ priceRange, selectedRoles, timeOfDay })
-        onClose()
-    }, [priceRange, selectedRoles, timeOfDay, onApply, onClose])
+    }, [onReset, dispatch])
 
     const handleRangeChange = useCallback((range: [number, number]) => {
         setPriceRange(range)
     }, [])
+
+    // Автоматически применяем фильтры при изменении (только когда модальное окно открыто)
+    // Используем ref для отслеживания, были ли фильтры уже применены при открытии
+    const isInitialMountRef = useRef(true)
+    const prevIsOpenForApplyRef = useRef(false)
+
+    useEffect(() => {
+        // При открытии модального окна сбрасываем флаг
+        if (isOpen && !prevIsOpenForApplyRef.current) {
+            isInitialMountRef.current = true
+            prevIsOpenForApplyRef.current = true
+            return
+        }
+
+        // При закрытии модального окна применяем текущие фильтры и сбрасываем флаг
+        if (!isOpen && prevIsOpenForApplyRef.current) {
+            // Применяем фильтры при закрытии, если пользователь что-то изменил
+            const filters = {
+                priceRange,
+                selectedPosition,
+                selectedSpecializations,
+                startDate,
+                endDate
+            }
+            onApply(filters)
+
+            prevIsOpenForApplyRef.current = false
+            isInitialMountRef.current = true
+            return
+        }
+
+        // Пропускаем первое применение после открытия модального окна
+        if (isOpen && isInitialMountRef.current) {
+            isInitialMountRef.current = false
+            return
+        }
+
+        // Применяем фильтры только при реальном изменении пользователем
+        if (isOpen) {
+            const timeoutId = setTimeout(() => {
+                const filters = {
+                    priceRange,
+                    selectedPosition,
+                    selectedSpecializations,
+                    startDate,
+                    endDate
+                }
+                onApply(filters)
+            }, 300) // 300ms задержка для всех фильтров
+
+            return () => clearTimeout(timeoutId)
+        }
+    }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate, onApply, isOpen])
 
     return (
         <AnimatePresence>
@@ -163,7 +339,7 @@ export const AdvancedFilters = ({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                        className="fixed bottom-0 left-0 right-0 bg-card rounded-t-[24px] z-50 max-h-[90vh] flex flex-col"
+                        className="fixed bottom-15 left-0 right-0 bg-card rounded-t-[24px] z-50 max-h-[90vh] flex flex-col"
                     >
                         {/* Drag Handle */}
                         <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>
@@ -215,80 +391,111 @@ export const AdvancedFilters = ({
                                 </div>
                             </div>
 
-                            {/* 2. Время суток (Grid) */}
+                            {/* 2. Даты */}
                             <div className="space-y-3">
-                                <h3 className="font-semibold text-base">Время начала</h3>
+                                <h3 className="font-semibold text-base">Период</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                    {TIMES.map((time) => {
-                                        const isSelected = timeOfDay.includes(time.id)
-                                        return (
-                                            <button
-                                                key={time.id}
-                                                onClick={() => toggleTime(time.id)}
-                                                className={`
-                                                    flex items-center gap-3 p-3 rounded-xl border text-left transition-all
-                                                    ${isSelected
-                                                        ? 'border-primary bg-primary/5 shadow-sm'
-                                                        : 'border-border bg-secondary/30'
-                                                    }
-                                                `}
-                                            >
-                                                <div
-                                                    className={`
-                                                    w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0
-                                                    ${isSelected ? 'border-primary bg-primary' : 'border-muted-foreground'}
-                                                `}
-                                                >
-                                                    {isSelected && <Check size={12} className="text-white" />}
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-medium">{time.label}</div>
-                                                    <div className="text-[10px] text-muted-foreground">{time.desc}</div>
-                                                </div>
-                                            </button>
-                                        )
-                                    })}
+                                    <div className="space-y-2">
+                                        <label className="text-sm text-muted-foreground">От</label>
+                                        <input
+                                            type="text"
+                                            value={formatDateForDisplay(startDate)}
+                                            onChange={handleStartDateChange}
+                                            placeholder="ДД.ММ.ГГГГ"
+                                            maxLength={10}
+                                            className="w-full px-3 py-2 bg-card/60 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm text-muted-foreground">До</label>
+                                        <input
+                                            type="text"
+                                            value={formatDateForDisplay(endDate)}
+                                            onChange={handleEndDateChange}
+                                            placeholder="ДД.ММ.ГГГГ"
+                                            maxLength={10}
+                                            className="w-full px-3 py-2 bg-card/60 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* 3. Специализация (Tags) */}
-                            <div className="space-y-3">
-                                <h3 className="font-semibold text-base">Специализация</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {ROLES.map((role) => (
-                                        <SelectableTagButton
-                                            key={role}
-                                            value={role}
-                                            label={role}
-                                            isSelected={selectedRoles.includes(role)}
-                                            onClick={toggleRole}
-                                            ariaLabel={`Выбрать специализацию: ${role}`}
-                                        />
-                                    ))}
+                            {/* 3. Позиция */}
+                            {positionsForDisplay.length > 0 && (
+                                <div className="space-y-3">
+                                    <h3 className="font-semibold text-base">Позиция</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {positionsForDisplay.map((position) => {
+                                            const positionValue = position.originalValue || position.id
+                                            return (
+                                                <SelectableTagButton
+                                                    key={positionValue}
+                                                    value={positionValue}
+                                                    label={position.title}
+                                                    isSelected={selectedPosition === positionValue}
+                                                    onClick={() => handlePositionSelect(positionValue)}
+                                                    ariaLabel={`Выбрать позицию: ${position.title}`}
+                                                />
+                                            )
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {/* 4. Специализация (показываем только если выбрана позиция) */}
+                            <AnimatePresence>
+                                {selectedPosition && availableSpecializations.length > 0 && (
+                                    <motion.div
+                                        key={`specializations-${selectedPosition}`}
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                        layout
+                                        className="space-y-3 overflow-hidden"
+                                    >
+                                        <h3 className="font-semibold text-base">Специализация</h3>
+                                        <motion.div
+                                            layout
+                                            className="flex flex-wrap gap-2"
+                                            transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
+                                        >
+                                            <AnimatePresence mode="popLayout">
+                                                {availableSpecializations.map((specialization) => (
+                                                    <motion.div
+                                                        key={specialization}
+                                                        layout
+                                                        initial={{ opacity: 0, scale: 0.8 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.8 }}
+                                                        transition={{ duration: 0.2 }}
+                                                    >
+                                                        <SelectableTagButton
+                                                            value={specialization}
+                                                            label={getSpecializationLabel(specialization)}
+                                                            isSelected={selectedSpecializations.includes(specialization)}
+                                                            onClick={() => toggleSpecialization(specialization)}
+                                                            ariaLabel={`Выбрать специализацию: ${getSpecializationLabel(specialization)}`}
+                                                        />
+                                                    </motion.div>
+                                                ))}
+                                            </AnimatePresence>
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                         </div>
 
-                        {/* Информация о количестве найденных смен - над кнопками */}
+                        {/* Информация о количестве найденных смен */}
                         {previewCount !== undefined && (
-                            <div className="px-5 py-2 text-center text-sm text-muted-foreground border-b border-border/50 bg-card/50">
+                            <div className="px-5 py-4 text-center text-sm text-muted-foreground border-t border-border/50 bg-card/50">
                                 Найдено смен: <span className="font-semibold text-foreground">{previewCount}</span>
                             </div>
                         )}
-
-                        {/* Sticky Footer Buttons */}
-                        <div className="p-4 bg-card border-t border-border/50 safe-area-bottom shadow-lg flex-shrink-0">
-                            <button
-                                onClick={handleApply}
-                                className="w-full py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-500/25 active:scale-[0.98] transition-all"
-                            >
-                                Применить
-                            </button>
-                        </div>
                     </motion.div>
                 </>
             )}
         </AnimatePresence>
     )
 }
-

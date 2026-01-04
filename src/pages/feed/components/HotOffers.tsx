@@ -1,4 +1,4 @@
-interface HotOffer {
+export interface HotOffer {
     id: number
     emoji: string
     boost: string

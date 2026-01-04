@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react'
-import type { Job } from '../../Feed/types'
+import type { Job } from '../types'
 
 interface JobCardProps {
     job: Job

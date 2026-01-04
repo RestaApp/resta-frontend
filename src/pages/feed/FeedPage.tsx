@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import { useUserProfile } from '../../hooks/useUserProfile'
 import { useToast } from '../../hooks/useToast'
@@ -9,19 +9,18 @@ import { getTelegramWebApp } from '../../utils/telegram'
 import { useAppSelector } from '../../store/hooks'
 
 import { Toast } from '../../components/ui/toast'
-import type { FeedType } from '../Feed/types'
-import type { Shift, Job } from '../Feed/types'
+import type { FeedType } from './types'
+import type { Shift, Job } from './types'
 import type { TabOption } from '../../components/ui/tabs'
-import { SearchFilters } from '../Feed/components/SearchFilters'
-import { HotOffers } from '../Feed/components/HotOffers'
-import { ShiftCard } from '../Feed/components/ShiftCard'
-import { JobCard } from '../Feed/components/JobCard'
-import { MapFAB } from '../Feed/components/MapFAB'
-import { EmptyState } from '../Feed/components/EmptyState'
+import { SearchFilters } from './components/SearchFilters'
+import { HotOffers, type HotOffer } from './components/HotOffers'
+import { ShiftCard } from './components/ShiftCard'
+import { JobCard } from './components/JobCard'
+import { EmptyState } from './components/EmptyState'
 import { ShiftSkeleton } from '../../components/ui/ShiftSkeleton'
-import { ShiftDetailsScreen } from '../Feed/components/ShiftDetailsScreen'
-import { AdvancedFilters, type AdvancedFiltersData } from '../Feed/components/AdvancedFilters'
-import { InfiniteScrollTrigger } from '../Feed/components/InfiniteScrollTrigger'
+import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
+import { AdvancedFilters, type AdvancedFiltersData } from './components/AdvancedFilters'
+import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
 
 /**
  * Преобразует данные вакансии из API в формат Shift для компонента
@@ -160,17 +159,49 @@ export const FeedPage = () => {
     useUserProfile()
     const { toast, showToast, hideToast } = useToast()
     const [feedType, setFeedType] = useState<FeedType>('shifts')
-    const [query, setQuery] = useState('')
-    const [debouncedQuery, setDebouncedQuery] = useState('')
     const [appliedShifts, setAppliedShifts] = useState<number[]>([])
-    const [showMapFAB] = useState(true)
     const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
     const [activeFilter, setActiveFilter] = useState('all')
     const [isFiltersOpen, setIsFiltersOpen] = useState(false)
-    const [advancedFilters, setAdvancedFilters] = useState<AdvancedFiltersData | null>(null)
+
+    // Инициализируем фильтры синхронно, если у пользователя есть позиция
+    const userData = useAppSelector(state => state.user.userData)
+    const userPosition = userData?.position || userData?.employee_profile?.position
+
+    // Lazy initialization для фильтров - вычисляется только один раз при первом рендере
+    const [advancedFilters, setAdvancedFilters] = useState<AdvancedFiltersData | null>(() => {
+        const position = userData?.position || userData?.employee_profile?.position
+        if (position) {
+            const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
+            return {
+                priceRange: DEFAULT_PRICE_RANGE,
+                selectedPosition: position,
+                selectedSpecializations: [],
+                startDate: null,
+                endDate: null,
+            }
+        }
+        return null
+    })
+
+    // Обновляем фильтры, если позиция пользователя появилась после загрузки
+    useEffect(() => {
+        if (userPosition && !advancedFilters) {
+            const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
+            setAdvancedFilters({
+                priceRange: DEFAULT_PRICE_RANGE,
+                selectedPosition: userPosition,
+                selectedSpecializations: [],
+                startDate: null,
+                endDate: null,
+            })
+        }
+    }, [userPosition]) // Только userPosition, чтобы не было циклов
     const [currentPage, setCurrentPage] = useState(1)
     const [allShifts, setAllShifts] = useState<Shift[]>([])
     const [allVacancies, setAllVacancies] = useState<Map<number, VacancyApiItem>>(new Map())
+    const [isDataProcessed, setIsDataProcessed] = useState(false)
+
 
     // Загрузка горящих смен (urgent: true) для секции "Горящие смены"
     const { data: hotShiftsResponse } = useGetVacanciesQuery({
@@ -180,33 +211,13 @@ export const FeedPage = () => {
         per_page: 4, // Загружаем до 4 срочных смен для горящих предложений
     })
 
-    // Debounce для поиска (300ms задержка, но для пустого значения сразу)
-    useEffect(() => {
-        // Если запрос пустой, обновляем сразу (без задержки)
-        if (query === '') {
-            setDebouncedQuery('')
-            return
-        }
-
-        // Для непустого запроса используем debounce
-        const timer = setTimeout(() => {
-            setDebouncedQuery(query)
-        }, 300)
-
-        return () => clearTimeout(timer)
-    }, [query])
-
     // Формируем параметры запроса с учетом фильтров
+    // Используем только параметры из API документации
     const queryParams = useMemo(() => {
         const params: Parameters<typeof useGetVacanciesQuery>[0] = {
             shift_type: 'replacement',
             page: currentPage,
             per_page: 5,
-        }
-
-        // Поиск по тексту (используем debounced значение)
-        if (debouncedQuery) {
-            params.search = debouncedQuery
         }
 
         // Быстрые фильтры
@@ -221,39 +232,34 @@ export const FeedPage = () => {
                 params.max_payment = advancedFilters.priceRange[1]
             }
 
-            if (advancedFilters.selectedRoles.length > 0) {
-                // Преобразуем названия ролей в формат API
-                const roleMapping: Record<string, string> = {
-                    'Повар': 'chef',
-                    'Су-шеф': 'chef',
-                    'Бармен': 'bartender',
-                    'Официант': 'waiter',
-                    'Бариста': 'barista',
-                    'Мойщик': 'support',
-                    'Админ': 'manager',
-                }
-                params.target_roles = advancedFilters.selectedRoles
-                    .map(role => roleMapping[role] || role.toLowerCase())
-                    .filter(Boolean)
+            // Используем позицию, если выбрана
+            if (advancedFilters.selectedPosition) {
+                params.position = advancedFilters.selectedPosition
             }
 
-            if (advancedFilters.timeOfDay.length > 0) {
-                params.time_of_day = advancedFilters.timeOfDay
+            // Используем специализацию, если выбрана (согласно API документации - string, не массив)
+            // Передаем первую выбранную специализацию, если их несколько
+            if (advancedFilters.selectedSpecializations && advancedFilters.selectedSpecializations.length > 0) {
+                params.specialization = advancedFilters.selectedSpecializations[0]
+            }
+
+            // Используем даты, если выбраны
+            if (advancedFilters.startDate) {
+                params.start_date = advancedFilters.startDate
+            }
+            if (advancedFilters.endDate) {
+                params.end_date = advancedFilters.endDate
             }
         }
 
         return params
-    }, [debouncedQuery, activeFilter, advancedFilters, currentPage])
+    }, [activeFilter, advancedFilters, currentPage])
 
     // Загрузка всех смен (replacement) из API с фильтрами
     const { data: shiftsResponse, isLoading: isLoadingShifts, isError: isErrorShifts, isFetching } = useGetVacanciesQuery(queryParams, {
-        refetchOnMountOrArgChange: true, // Обновлять при изменении параметров
-        // Принудительно обновлять данные при изменении параметров, игнорируя кэш
+        refetchOnMountOrArgChange: false, // Не обновлять при монтировании, только при изменении параметров
         skip: false,
     })
-
-    // Флаг для отслеживания обработки данных
-    const [isDataProcessed, setIsDataProcessed] = useState(false)
 
     // Объединяем новые данные с уже загруженными
     useEffect(() => {
@@ -304,12 +310,31 @@ export const FeedPage = () => {
     }, [shiftsResponse])
 
     // Сбрасываем пагинацию при изменении фильтров
+    // Используем ref для отслеживания предыдущих значений, чтобы не сбрасывать при каждом рендере
+    const prevFiltersRef = useRef({ activeFilter, advancedFilters })
+
     useEffect(() => {
-        setCurrentPage(1)
-        setAllShifts([])
-        setAllVacancies(new Map())
-        setIsDataProcessed(false) // Сбрасываем флаг обработки при изменении фильтров
-    }, [debouncedQuery, activeFilter, advancedFilters])
+        const prevFilters = prevFiltersRef.current
+        // Сравниваем advancedFilters более надежным способом
+        const advancedFiltersChanged =
+            !prevFilters.advancedFilters && advancedFilters ||
+            prevFilters.advancedFilters && !advancedFilters ||
+            (prevFilters.advancedFilters && advancedFilters && (
+                JSON.stringify(prevFilters.advancedFilters) !== JSON.stringify(advancedFilters)
+            ))
+
+        const filtersChanged =
+            prevFilters.activeFilter !== activeFilter ||
+            advancedFiltersChanged
+
+        if (filtersChanged) {
+            setCurrentPage(1)
+            setAllShifts([])
+            setAllVacancies(new Map())
+            setIsDataProcessed(false) // Сбрасываем флаг обработки при изменении фильтров
+            prevFiltersRef.current = { activeFilter, advancedFilters }
+        }
+    }, [activeFilter, advancedFilters])
 
     // Используем все загруженные смены
     const shifts: Shift[] = allShifts
@@ -404,18 +429,16 @@ export const FeedPage = () => {
     }
 
     const handleResetFilters = () => {
-        setQuery('')
         setActiveFilter('all')
         setAdvancedFilters(null)
     }
 
     const handleApplyAdvancedFilters = useCallback((filters: AdvancedFiltersData) => {
+        console.log('handleApplyAdvancedFilters called with:', filters)
+        // Устанавливаем новое состояние - фильтры сохраняются
         setAdvancedFilters(filters)
     }, [])
 
-    // Получаем данные пользователя для фильтра "Моя роль"
-    const userData = useAppSelector(state => state.user.userData)
-    const userPosition = userData?.position || userData?.employee_profile?.position
 
 
     // Смены уже отфильтрованы на сервере, но применяем клиентские фильтры для быстрых фильтров
@@ -458,9 +481,28 @@ export const FeedPage = () => {
         showToast(`Открытие Telegram-чата с менеджером "${restaurant}"`, 'info')
     }
 
-    const handleOpenMap = () => {
-        showToast('🗺 Открытие карты с метками смен', 'info')
-    }
+    // Определяем, есть ли активные фильтры (расширенные или быстрые)
+    const hasActiveAdvancedFilters = useMemo(() => {
+        // Проверяем быстрые фильтры
+        const hasActiveQuickFilter = activeFilter !== 'all'
+
+        // Проверяем расширенные фильтры
+        let hasAdvancedFilters = false
+        if (advancedFilters) {
+            const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
+            const isDefaultPriceRange =
+                advancedFilters.priceRange[0] === DEFAULT_PRICE_RANGE[0] &&
+                advancedFilters.priceRange[1] === DEFAULT_PRICE_RANGE[1]
+            const hasNonDefaultPrice = !isDefaultPriceRange
+            const hasPosition = advancedFilters.selectedPosition !== null && advancedFilters.selectedPosition !== undefined
+            const hasSpecializations = (advancedFilters.selectedSpecializations?.length ?? 0) > 0
+            const hasDates = advancedFilters.startDate !== null || advancedFilters.endDate !== null
+            hasAdvancedFilters = hasNonDefaultPrice || hasPosition || hasSpecializations || hasDates
+        }
+
+        const result = hasActiveQuickFilter || hasAdvancedFilters
+        return result
+    }, [advancedFilters, activeFilter])
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -469,17 +511,16 @@ export const FeedPage = () => {
                     <Tabs options={feedTypeOptions} activeId={feedType} onChange={setFeedType} />
                 </div>
                 <SearchFilters
-                    query={query}
-                    onQueryChange={setQuery}
                     onOpenFilters={() => setIsFiltersOpen(true)}
                     isLoading={isFetching}
+                    hasActiveFilters={hasActiveAdvancedFilters}
                 />
             </div>
 
             {feedType === 'shifts' && (
                 <HotOffers
                     items={actualHotShifts}
-                    onItemClick={(item) => {
+                    onItemClick={(item: HotOffer) => {
                         // HapticFeedback при клике
                         const webApp = getTelegramWebApp()
                         if (webApp?.HapticFeedback) {
@@ -521,11 +562,11 @@ export const FeedPage = () => {
                         <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
                     ) : !isFetching && !isLoadingShifts && isDataProcessed && filteredShifts.length === 0 ? (
                         <EmptyState
-                            message={debouncedQuery || activeFilter !== 'all' || advancedFilters
+                            message={activeFilter !== 'all' || advancedFilters
                                 ? 'По вашим фильтрам ничего не найдено'
                                 : 'Смены не найдены'}
                             onReset={handleResetFilters}
-                            showResetButton={!!(debouncedQuery || activeFilter !== 'all' || advancedFilters)}
+                            showResetButton={!!(activeFilter !== 'all' || advancedFilters)}
                         />
                     ) : (
                         <>
@@ -556,7 +597,6 @@ export const FeedPage = () => {
                     )
                 ) : (
                     jobs
-                        .filter(j => j.restaurant.toLowerCase().includes(query.toLowerCase()) || j.position.toLowerCase().includes(query.toLowerCase()))
                         .map((job, index) => (
                             <motion.div key={job.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 + index * 0.05 }}>
                                 <JobCard job={job} onContact={handleContact} />
@@ -564,8 +604,6 @@ export const FeedPage = () => {
                         ))
                 )}
             </div>
-
-            {showMapFAB && <MapFAB onOpen={handleOpenMap} />}
 
             <Toast message={toast.message} type={toast.type} isVisible={toast.isVisible} onClose={hideToast} />
 
@@ -587,12 +625,12 @@ export const FeedPage = () => {
                 onClose={() => setIsFiltersOpen(false)}
                 onApply={handleApplyAdvancedFilters}
                 initialFilters={advancedFilters || undefined}
-                filteredCount={filteredShifts.length}
-                searchQuery={query}
-                activeFilter={activeFilter}
+                filteredCount={(() => {
+                    const pagination = shiftsResponse?.pagination || shiftsResponse?.meta
+                    return pagination?.total_count ?? 0
+                })()}
                 onReset={() => {
                     setAdvancedFilters(null)
-                    setQuery('')
                     setActiveFilter('all')
                 }}
             />
