@@ -6,7 +6,7 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
 import { Button } from './button'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 
 export interface ModalButton {

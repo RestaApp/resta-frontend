@@ -3,8 +3,8 @@
  */
 
 import { Home, Zap, Package, User, Users, Store, Search } from 'lucide-react'
-import type { Tab, UserRole } from '../types'
-import { isEmployeeRole } from '../utils/roles'
+import type { Tab, UserRole } from '@/types'
+import { isEmployeeRole } from '@/utils/roles'
 
 export interface TabItem {
   id: Tab

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { motion } from 'motion/react'
-import { useUserProfile } from '../../hooks/useUserProfile'
+import { useUserProfile } from '@/hooks/useUserProfile'
 import { ThemeToggleCompact } from './ThemeToggle'
 import { Avatar, AvatarImage, AvatarFallback } from './avatar'
 

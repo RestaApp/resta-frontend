@@ -12,13 +12,13 @@ import {
     X,
     type LucideIcon,
 } from 'lucide-react'
-import { Button } from '../../../components/ui/button'
-import { Card } from '../../../components/ui/card'
-import { Badge } from '../../../components/ui/badge'
-import { Separator } from '../../../components/ui/separator'
-import { Drawer, DrawerHeader, DrawerTitle, DrawerFooter } from '../../../components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Drawer, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
-import type { VacancyApiItem } from '../../../services/api/shiftsApi'
 
 
 interface ShiftDetailsScreenProps {

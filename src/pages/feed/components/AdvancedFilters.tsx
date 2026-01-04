@@ -1,14 +1,14 @@
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-import { RangeSlider, DatePicker } from '../../../components/ui'
-import { SelectableTagButton } from '../../RoleSelector/components/SubRoles/components/SelectableTagButton'
-import { useAppSelector, useAppDispatch } from '../../../store/hooks'
-import { useUserPositions } from '../../../hooks/useUserPositions'
-import { useUserSpecializations } from '../../../hooks/useUserSpecializations'
-import { getSpecializationLabel } from '../../../constants/labels'
-import { mapEmployeeSubRolesFromApi } from '../../../utils/rolesMapper'
-import { setPositions, setSpecializations, setSelectedPosition as setSelectedPositionAction } from '../../../store/catalogSlice'
+import { RangeSlider, DatePicker } from '@/components/ui'
+import { useAppSelector, useAppDispatch } from '@/store/hooks'
+import { useUserPositions } from '@/hooks/useUserPositions'
+import { useUserSpecializations } from '@/hooks/useUserSpecializations'
+import { getSpecializationLabel } from '@/constants/labels'
+import { mapEmployeeSubRolesFromApi } from '@/utils/rolesMapper'
+import { setPositions, setSpecializations, setSelectedPosition as setSelectedPositionAction } from '@/store/catalogSlice'
+import { SelectableTagButton } from '@/pages/RoleSelector/components/SubRoles/components/SelectableTagButton'
 
 
 export interface AdvancedFiltersData {

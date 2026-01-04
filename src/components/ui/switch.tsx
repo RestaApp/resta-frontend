@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 interface SwitchProps {
   checked: boolean

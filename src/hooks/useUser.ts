@@ -2,9 +2,9 @@
  * Хук для работы с данными пользователя из Redux
  */
 
-import { useAppSelector, useAppDispatch } from '../store/hooks'
-import { setUserData, clearUserData } from '../store/userSlice'
-import type { UserData } from '../services/api/authApi'
+import { useAppSelector, useAppDispatch } from '@/store/hooks'
+import { setUserData, clearUserData } from '@/store/userSlice'
+import type { UserData } from '@/services/api/authApi'
 
 export const useUser = () => {
   const dispatch = useAppDispatch()

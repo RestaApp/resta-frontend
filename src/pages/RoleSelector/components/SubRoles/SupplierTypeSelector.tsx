@@ -6,8 +6,8 @@ import { memo } from 'react'
 import { FormScreen } from './components/FormScreen'
 import { useFormSelector } from './hooks/useFormSelector'
 import { LoadingState } from './components/LoadingState'
-import { getSupplierTypeLabel } from '../../../../constants/labels'
- 
+import { getSupplierTypeLabel } from '@/constants/labels'
+
 import type { FormData } from './hooks/useFormSelector'
 
 interface SupplierTypeSelectorProps {
@@ -33,7 +33,6 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
     handleContinue,
   } = useFormSelector({
     onContinue,
-    onBack,
   })
 
   if (isLoading || isFetching) {

@@ -14,12 +14,12 @@ import {
   Briefcase,
   Headphones,
 } from 'lucide-react'
-import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '../types'
+import type { RoleOption, EmployeeSubRole, UserRole, EmployeeRole } from '@/types'
 import {
   getEmployeePositionLabel,
   getEmployeePositionDescription,
   getUserRoleLabel,
-} from '../constants/labels'
+} from '@/constants/labels'
 
 /**
  * Маппинг value из API на UserRole

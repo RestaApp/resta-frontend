@@ -3,8 +3,8 @@
  * Инкапсулирует логику работы со специализациями пользователей
  */
 
-import { useAuth } from '../contexts/AuthContext'
-import { useGetUserSpecializationsQuery } from '../services/api/usersApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useGetUserSpecializationsQuery } from '@/services/api/usersApi'
 
 interface UseUserSpecializationsOptions {
   /**

@@ -2,14 +2,14 @@
  * Хук для бизнес-логики выбора подроли сотрудника
  */
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
-import { setupTelegramBackButton } from '../../../../../utils/telegram'
-import { useUserSpecializations } from '../../../../../hooks/useUserSpecializations'
-import { useGeolocation } from '../../../../../hooks/useGeolocation'
-import { getDrawerTitle } from '../../../../../constants/drawerTitles'
-import { isPromise } from '../../../../../utils/promise'
-import type { EmployeeRole } from '../../../../../types'
-import { mapEmployeeSubRolesFromApi } from '../../../../../utils/rolesMapper'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useUserSpecializations } from '@/hooks/useUserSpecializations'
+import { useGeolocation } from '@/hooks/useGeolocation'
+import { getDrawerTitle } from '@/constants/drawerTitles'
+import { isPromise } from '@/utils/promise'
+import type { EmployeeRole } from '@/types'
+import { mapEmployeeSubRolesFromApi } from '@/utils/rolesMapper'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 export interface EmployeeFormData {
   specializations: string[]
@@ -41,7 +41,6 @@ export const useEmployeeSubRoleSelector = ({
   const [showSpecializationDrawer, setShowSpecializationDrawer] = useState(false)
   const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>([])
   const [selectedPositionValueLocal, setSelectedPositionValueLocal] = useState<string | null>(null)
-  const isSubmittingRef = useRef(false)
 
   // Хук для геолокации
   const { getLocation, isLoading: isLoadingLocation } = useGeolocation()
@@ -100,13 +99,6 @@ export const useEmployeeSubRoleSelector = ({
   }, [getLocation])
 
   const handleSpecializationDone = useCallback(async () => {
-    // Защита от двойного вызова
-    if (isSubmittingRef.current) {
-      return
-    }
-
-    isSubmittingRef.current = true
-
     // Создаем финальный formData с актуальными данными
     const finalFormData: EmployeeFormData = {
       ...formData,
@@ -120,7 +112,6 @@ export const useEmployeeSubRoleSelector = ({
     // НЕ закрываем drawer сразу - ждем результата
     if (!onContinue) {
       setShowSpecializationDrawer(false)
-      isSubmittingRef.current = false
       return
     }
 
@@ -142,8 +133,6 @@ export const useEmployeeSubRoleSelector = ({
     } catch (error) {
       // При ошибке drawer остается открытым
       console.error('Ошибка при сохранении:', error)
-    } finally {
-      isSubmittingRef.current = false
     }
   }, [selectedSpecializations, onContinue, formData])
 

@@ -3,9 +3,9 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { UserRole } from '../types'
-import type { UserData } from '../services/api/authApi'
-import { mapRoleFromApi, isVerifiedRole } from '../utils/roles'
+import type { UserRole } from '@/types'
+import type { UserData } from '@/services/api/authApi'
+import { mapRoleFromApi, isVerifiedRole } from '@/utils/roles'
 
 interface UserState {
   userData: UserData | null

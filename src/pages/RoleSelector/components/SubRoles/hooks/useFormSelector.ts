@@ -3,8 +3,8 @@
  */
 
 import { useState, useCallback } from 'react'
-import { useGeolocation } from '../../../../../hooks/useGeolocation'
-import { isPromise } from '../../../../../utils/promise'
+import { useGeolocation } from '@/hooks/useGeolocation'
+import { isPromise } from '@/utils/promise'
 
 export interface FormData {
     name: string
@@ -14,10 +14,9 @@ export interface FormData {
 
 interface UseFormSelectorProps {
     onContinue?: (formData: FormData) => Promise<boolean> | void
-    onBack: () => void
 }
 
-export const useFormSelector = ({ onContinue, onBack: _onBack }: UseFormSelectorProps) => {
+export const useFormSelector = ({ onContinue }: UseFormSelectorProps) => {
     const [formData, setFormData] = useState<FormData>({
         name: '',
         type: null,
@@ -41,23 +40,27 @@ export const useFormSelector = ({ onContinue, onBack: _onBack }: UseFormSelector
         setFormData(prev => ({ ...prev, ...updates }))
     }, [])
 
-    const handleContinue = useCallback(async () => {
+    const handleContinue = useCallback(async (): Promise<boolean> => {
         if (!formData.name.trim() || !formData.type || !formData.city.trim()) {
-            return
+            return false
         }
 
         if (!onContinue) {
-            return
+            return false
         }
 
         try {
             const result = onContinue(formData)
 
             if (isPromise<boolean | void>(result)) {
-                await result
+                const promiseResult = await result
+                return promiseResult === true
             }
+
+            return true
         } catch (error) {
             console.error('Ошибка при сохранении:', error)
+            return false
         }
     }, [formData, onContinue])
 

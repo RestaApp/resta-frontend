@@ -1,4 +1,4 @@
-import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '../config/telegram'
+import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '@/config/telegram'
 
 export const isTelegramWebApp = (): boolean => {
   return typeof window !== 'undefined' && (window as any).Telegram?.WebApp !== undefined

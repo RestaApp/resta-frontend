@@ -3,9 +3,9 @@
  * Инкапсулирует логику работы с позициями пользователей
  */
 
-import { useGetUserPositionsQuery } from '../services/api/usersApi'
-import { mapEmployeeSubRolesFromApi } from '../utils/rolesMapper'
-import { useAuth } from '../contexts/AuthContext'
+import { useGetUserPositionsQuery } from '@/services/api/usersApi'
+import { mapEmployeeSubRolesFromApi } from '@/utils/rolesMapper'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface UseUserPositionsOptions {
   /**

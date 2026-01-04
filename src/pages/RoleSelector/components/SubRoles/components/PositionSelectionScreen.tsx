@@ -3,11 +3,11 @@
  */
 
 import { memo } from 'react'
-import { CardSelect } from '../../../../../components/ui/card-select'
-import { SectionHeader } from '../../../../../components/ui/section-header'
-import { POSITION_EMOJI_MAP } from '../../../../../constants/roles'
-import type { EmployeeSubRole, EmployeeRole } from '../../../../../types'
- 
+import { CardSelect } from '@/components/ui/card-select'
+import { SectionHeader } from '@/components/ui/section-header'
+import { POSITION_EMOJI_MAP } from '@/constants/roles'
+import type { EmployeeSubRole, EmployeeRole } from '@/types'
+
 
 interface PositionSelectionScreenProps {
   subRoles: EmployeeSubRole[]

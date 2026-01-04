@@ -10,11 +10,11 @@ import {
     DrawerTitle,
     DrawerDescription,
     DrawerFooter,
-} from '../../../../../components/ui/drawer'
-import { getSpecializationLabel } from '../../../../../constants/labels'
+} from '@/components/ui/drawer'
+import { getSpecializationLabel } from '@/constants/labels'
 import { ExperienceField, LocationField, OpenToWorkToggle } from './FormFields'
 import { SelectableTagButton } from './SelectableTagButton'
-import type { EmployeeFormData } from '../hooks/useEmployeeSubRoleSelector'
+import type { EmployeeFormData } from '@/pages/RoleSelector/components/SubRoles/hooks/useEmployeeSubRoleSelector'
 
 
 interface SpecializationDrawerProps {

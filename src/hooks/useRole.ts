@@ -4,9 +4,9 @@
  */
 
 import { useCallback } from 'react'
-import type { UserRole } from '../types'
-import { useAppSelector, useAppDispatch } from '../store/hooks'
-import { setSelectedRole } from '../store/userSlice'
+import type { UserRole } from '@/types'
+import { useAppSelector, useAppDispatch } from '@/store/hooks'
+import { setSelectedRole } from '@/store/userSlice'
 
 export const useRole = () => {
   const dispatch = useAppDispatch()

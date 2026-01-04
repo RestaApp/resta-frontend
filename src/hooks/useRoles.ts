@@ -3,8 +3,8 @@
  * Инкапсулирует логику работы с ролями пользователей
  */
 
-import { useGetAvailableUserRolesQuery } from '../services/api/rolesApi'
-import { useAuth } from '../contexts/AuthContext'
+import { useGetAvailableUserRolesQuery } from '@/services/api/rolesApi'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface UseRolesOptions {
   /**

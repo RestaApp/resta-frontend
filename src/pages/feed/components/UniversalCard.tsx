@@ -1,6 +1,6 @@
 import { MapPin, Clock, Calendar, Briefcase, Flame, Star, ChevronRight } from 'lucide-react'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
-import type { VacancyApiItem } from '../../../services/api/shiftsApi'
 
 interface UniversalCardProps {
     data: Shift | VacancyApiItem

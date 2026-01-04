@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 interface DatePickerProps {
     value: string | null // YYYY-MM-DD

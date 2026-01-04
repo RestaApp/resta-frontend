@@ -4,8 +4,8 @@
  */
 
 import { memo, useCallback } from 'react'
-import { CardSelect } from '../../../components/ui/card-select'
-import type { UserRole, RoleOption } from '../../../types'
+import { CardSelect } from '@/components/ui/card-select'
+import type { UserRole, RoleOption } from '@/types'
 
 interface RoleCardProps {
   role: RoleOption

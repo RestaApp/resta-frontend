@@ -11,7 +11,7 @@ import {
   useDeleteShiftMutation,
   type CreateShiftRequest,
   type Shift,
-} from '../services/api/shiftsApi'
+} from '@/services/api/shiftsApi'
 
 /**
  * Хук для получения списка смен

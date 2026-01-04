@@ -3,10 +3,10 @@
  */
 
 import { useCallback } from 'react'
-import type { Screen, Tab } from '../types'
-import { VALID_SCREENS } from '../constants/routes'
-import { SCREEN_TO_TAB_MAP } from '../constants/navigation'
-import { ROUTES } from '../constants/routes'
+import type { Screen, Tab } from '@/types'
+import { VALID_SCREENS } from '@/constants/routes'
+import { SCREEN_TO_TAB_MAP } from '@/constants/navigation'
+import { ROUTES } from '@/constants/routes'
 
 interface UseNavigationProps {
   setCurrentScreen: (screen: Screen) => void

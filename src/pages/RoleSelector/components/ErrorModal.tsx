@@ -3,8 +3,8 @@
  */
 
 import { memo } from 'react'
-import { Modal } from '../../../components/ui/modal'
-import { ModalContent } from '../../../components/ui/modal-content'
+import { Modal } from '@/components/ui/modal'
+import { ModalContent } from '@/components/ui/modal-content'
 import { AlertTriangle } from 'lucide-react'
 
 

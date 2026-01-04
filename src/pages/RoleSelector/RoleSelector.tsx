@@ -1,19 +1,19 @@
-import { useCallback } from 'react'
+import { memo } from 'react'
 import { RoleCard } from './components/RoleCard'
 import { EmployeeSubRoleSelector } from './components/SubRoles/EmployeeSubRoleSelector'
 import { SupplierTypeSelector } from './components/SubRoles/SupplierTypeSelector'
 import { RestaurantFormatSelector } from './components/SubRoles/RestaurantFormatSelector'
-import { SectionHeader } from '../../components/ui/section-header'
+import { SectionHeader } from '@/components/ui/section-header'
 import { LoadingState } from './components/SubRoles/components/LoadingState'
 import { ErrorModal } from './components/ErrorModal'
 import { useRoleSelector } from './hooks/useRoleSelector'
-import type { UserRole, RoleOption } from '../../types'
+import type { UserRole, RoleOption } from '@/types'
 
 interface RoleSelectorProps {
   onSelectRole: (role: UserRole) => void
 }
 
-export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
+export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const {
     selectedRole,
     showEmployeeSubRoles,
@@ -44,15 +44,10 @@ export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
     errorMessage,
   } = useRoleSelector({ onSelectRole })
 
-  // Мемоизированный колбэк для закрытия модального окна ошибки
-  const handleCloseError = useCallback(() => {
-    setErrorDialogOpen(false)
-  }, [setErrorDialogOpen])
-
-  // Рендерим основной контент
-  const renderContent = () => {
-    if (showEmployeeSubRoles) {
-      return (
+  // Ранние возвраты для подролей
+  if (showEmployeeSubRoles) {
+    return (
+      <>
         <EmployeeSubRoleSelector
           onSelectSubRole={handleSubRoleSelect}
           selectedSubRole={selectedSubRole}
@@ -63,11 +58,18 @@ export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
           isFetching={isFetchingPositions}
           errorDialogOpen={errorDialogOpen}
         />
-      )
-    }
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={setErrorDialogOpen}
+          message={errorMessage}
+        />
+      </>
+    )
+  }
 
-    if (showSupplierTypes) {
-      return (
+  if (showSupplierTypes) {
+    return (
+      <>
         <SupplierTypeSelector
           onContinue={handleSupplierTypeContinue}
           onBack={handleBack}
@@ -75,11 +77,18 @@ export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
           isLoading={isLoadingSupplierTypes}
           isFetching={isFetchingSupplierTypes}
         />
-      )
-    }
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={setErrorDialogOpen}
+          message={errorMessage}
+        />
+      </>
+    )
+  }
 
-    if (showRestaurantFormats) {
-      return (
+  if (showRestaurantFormats) {
+    return (
+      <>
         <RestaurantFormatSelector
           onContinue={handleRestaurantFormatContinue}
           onBack={handleBack}
@@ -87,18 +96,46 @@ export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
           isLoading={isLoadingRestaurantFormats}
           isFetching={isFetchingRestaurantFormats}
         />
-      )
-    }
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={setErrorDialogOpen}
+          message={errorMessage}
+        />
+      </>
+    )
+  }
 
-    if (isLoading || isFetching) {
-      return <LoadingState message="Загрузка ролей..." />
-    }
-
-    if (!isLoading && !isFetching && (error || mainRoles.length === 0)) {
-      return <LoadingState message={error ? 'Не удалось загрузить роли' : 'Роли не найдены'} />
-    }
-
+  // Состояния загрузки
+  if (isLoading || isFetching) {
     return (
+      <>
+        <LoadingState message="Загрузка ролей..." />
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={setErrorDialogOpen}
+          message={errorMessage}
+        />
+      </>
+    )
+  }
+
+  // Состояния ошибки или пустого списка
+  if (error || mainRoles.length === 0) {
+    return (
+      <>
+        <LoadingState message={error ? 'Не удалось загрузить роли' : 'Роли не найдены'} />
+        <ErrorModal
+          isOpen={errorDialogOpen}
+          onClose={setErrorDialogOpen}
+          message={errorMessage}
+        />
+      </>
+    )
+  }
+
+  // Основной экран выбора ролей
+  return (
+    <>
       <div className="min-h-screen bg-background flex flex-col">
         <div className="flex-1 flex flex-col px-6 py-8 overflow-y-auto">
           <SectionHeader
@@ -120,17 +157,11 @@ export const RoleSelector = ({ onSelectRole }: RoleSelectorProps) => {
           </div>
         </div>
       </div>
-    )
-  }
-
-  return (
-    <>
-      {renderContent()}
       <ErrorModal
         isOpen={errorDialogOpen}
-        onClose={handleCloseError}
+        onClose={setErrorDialogOpen}
         message={errorMessage}
       />
     </>
   )
-}
+})

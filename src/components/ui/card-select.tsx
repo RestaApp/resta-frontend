@@ -5,8 +5,8 @@
 
 import { memo, type ReactNode } from 'react'
 import { motion } from 'motion/react'
-import { cn } from '../../utils/cn'
-import { roleCardAnimation, ANIMATION_DELAY_STEP } from '../../constants/animations'
+import { cn } from '@/utils/cn'
+import { roleCardAnimation, ANIMATION_DELAY_STEP } from '@/constants/animations'
 
 export type CardLayout = 'horizontal' | 'vertical'
 export type ImageType = 'icon' | 'emoji'

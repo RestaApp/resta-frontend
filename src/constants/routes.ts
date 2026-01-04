@@ -2,7 +2,7 @@
  * Константы маршрутов приложения
  */
 
-import type { Screen } from '../types'
+import type { Screen } from '@/types'
 
 export const ROUTES = {
   HOME: 'home',

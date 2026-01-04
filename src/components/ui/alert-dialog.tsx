@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Button } from './button'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 interface AlertDialogProps {
   open: boolean

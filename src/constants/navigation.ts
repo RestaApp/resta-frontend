@@ -2,7 +2,7 @@
  * Константы для навигации и синхронизации табов
  */
 
-import type { Screen, Tab } from '../types'
+import type { Screen, Tab } from '@/types'
 import { ROUTES } from './routes'
 
 /**

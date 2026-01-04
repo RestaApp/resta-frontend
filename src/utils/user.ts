@@ -4,7 +4,7 @@
  */
 export async function getCurrentUserId(): Promise<number | undefined> {
   try {
-    const { store } = await import('../store')
+    const { store } = await import('@/store')
     const state = store.getState()
     return state.user.userData?.id
   } catch {

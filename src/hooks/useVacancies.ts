@@ -3,8 +3,8 @@
  * Инкапсулирует логику работы с вакансиями из API
  */
 
-import { useAuth } from '../contexts/AuthContext'
-import { useGetVacanciesQuery, type GetVacanciesParams } from '../services/api/shiftsApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useGetVacanciesQuery, type GetVacanciesParams } from '@/services/api/shiftsApi'
 import { useMemo } from 'react'
 
 interface UseVacanciesOptions {

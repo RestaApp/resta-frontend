@@ -20,7 +20,7 @@ import catalogReducer from './catalogSlice'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api
-import '../services/api'
+import '@/services/api'
 
 /**
  * Конфигурация persist для user slice

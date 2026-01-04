@@ -5,7 +5,7 @@
 
 import { useEffect, memo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 
 interface ModalProps {

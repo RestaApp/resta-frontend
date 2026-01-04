@@ -7,12 +7,12 @@ import {
   Bookmark,
   AlertCircle,
 } from 'lucide-react'
-import { Button } from '../../../components/ui/button'
-import { Card } from '../../../components/ui/card'
-import { Badge } from '../../../components/ui/badge'
-import { Separator } from '../../../components/ui/separator'
-import type { Screen } from '../../../types'
-import type { Vacancy } from './VacancyCard'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import type { Screen } from '@/types'
+import type { Vacancy } from '@/pages/vacancies/components/VacancyCard'
 
 interface VacancyDetailsScreenProps {
   vacancyId: string

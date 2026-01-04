@@ -6,7 +6,7 @@
 import { memo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
  
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'

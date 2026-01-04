@@ -6,8 +6,8 @@ import { memo } from 'react'
 import { FormScreen } from './components/FormScreen'
 import { useFormSelector } from './hooks/useFormSelector'
 import { LoadingState } from './components/LoadingState'
-import { getRestaurantFormatLabel } from '../../../../constants/labels'
- 
+import { getRestaurantFormatLabel } from '@/constants/labels'
+
 import type { FormData } from './hooks/useFormSelector'
 
 interface RestaurantFormatSelectorProps {
@@ -33,7 +33,6 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
     handleContinue,
   } = useFormSelector({
     onContinue,
-    onBack,
   })
 
   if (isLoading || isFetching) {

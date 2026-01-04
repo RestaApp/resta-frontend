@@ -4,8 +4,8 @@
  * Бизнес-логика вынесена в хуки
  */
 
-import { api } from '../../store/api'
-import { authService } from '../auth'
+import { api } from '@/store/api'
+import { authService } from '@/services/auth'
 
 export interface TelegramAuthRequest {
   initData: string

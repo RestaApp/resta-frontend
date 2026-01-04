@@ -4,11 +4,11 @@
 
 import { memo, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { SectionHeader } from '../../../../../components/ui/section-header'
+import { SectionHeader } from '@/components/ui/section-header'
 import { LocationField } from './FormFields'
-import { Button } from '../../../../../components/ui/button'
+import { Button } from '@/components/ui/button'
 import { SelectableTagButton } from './SelectableTagButton'
-import { setupTelegramBackButton } from '../../../../../utils/telegram'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 
 interface FormScreenData {

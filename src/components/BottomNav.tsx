@@ -4,9 +4,9 @@
  */
 
 import { motion } from 'motion/react'
-import { getTabsForRole } from '../constants/tabs'
-import { isEmployeeRole } from '../utils/roles'
-import type { UserRole, Tab } from '../types'
+import { getTabsForRole } from '@/constants/tabs'
+import { isEmployeeRole } from '@/utils/roles'
+import type { UserRole, Tab } from '@/types'
 
 interface BottomNavProps {
   activeTab: Tab

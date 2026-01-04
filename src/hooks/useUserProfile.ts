@@ -4,10 +4,10 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import { useAuth } from '../contexts/AuthContext'
-import { useGetUserQuery } from '../services/api/usersApi'
-import { useAppSelector, useAppDispatch } from '../store/hooks'
-import { updateUserDataInStore } from '../utils/userData'
+import { useAuth } from '@/contexts/AuthContext'
+import { useGetUserQuery } from '@/services/api/usersApi'
+import { useAppSelector, useAppDispatch } from '@/store/hooks'
+import { updateUserDataInStore } from '@/utils/userData'
 
 interface UseUserProfileOptions {
   /**

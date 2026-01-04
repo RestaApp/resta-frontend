@@ -2,8 +2,8 @@
  * Утилиты для работы с ролями
  */
 
-import type { UserRole, EmployeeRole } from '../types'
-import { EMPLOYEE_ROLES } from '../constants/roles'
+import type { UserRole, EmployeeRole } from '@/types'
+import { EMPLOYEE_ROLES } from '@/constants/roles'
 
 /**
  * Маппинг роли из API (строка) в UserRole

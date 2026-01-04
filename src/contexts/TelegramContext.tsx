@@ -4,14 +4,14 @@
  */
 
 import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
-import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { setInitData, setReady } from '../store/telegramSlice'
-import { getTelegramWebApp, isTelegramWebApp } from '../utils/telegram'
-import { authService } from '../services/auth'
-import { usersApi } from '../services/api/usersApi'
-import { useAuthActions } from '../hooks/useAuth'
-import { updateUserDataInStore } from '../utils/userData'
-import type { UserData } from '../services/api/authApi'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { setInitData, setReady } from '@/store/telegramSlice'
+import { getTelegramWebApp, isTelegramWebApp } from '@/utils/telegram'
+import { authService } from '@/services/auth'
+import { usersApi } from '@/services/api/usersApi'
+import { useAuthActions } from '@/hooks/useAuth'
+import { updateUserDataInStore } from '@/utils/userData'
+import type { UserData } from '@/services/api/authApi'
 
 interface TelegramContextValue {
   isReady: boolean
@@ -51,7 +51,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     }
     // В режиме разработки используем моковые данные
     if (import.meta.env.DEV) {
-      const { MOCK_INIT_DATA } = await import('../config/telegram')
+      const { MOCK_INIT_DATA } = await import('@/config/telegram')
       return MOCK_INIT_DATA
     }
     return null

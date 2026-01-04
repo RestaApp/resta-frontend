@@ -7,8 +7,8 @@ import { useEmployeeSubRoleSelector } from './hooks/useEmployeeSubRoleSelector'
 import { PositionSelectionScreen } from './components/PositionSelectionScreen'
 import { SpecializationDrawer } from './components/SpecializationDrawer'
 import { LoadingState } from './components/LoadingState'
-import type { EmployeeRole } from '../../../../types'
- 
+import type { EmployeeRole } from '@/types'
+
 
 import type { EmployeeFormData } from './hooks/useEmployeeSubRoleSelector'
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
-import { getInitialTheme, toggleTheme } from '../../utils/theme'
+import { getInitialTheme, toggleTheme } from '@/utils/theme'
 
 interface ThemeToggleProps {
     size?: number

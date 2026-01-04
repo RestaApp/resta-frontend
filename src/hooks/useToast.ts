@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react'
-import type { ToastType } from '../components/ui/toast'
+import type { ToastType } from '@/components/ui/toast'
 
 interface ToastState {
   message: string

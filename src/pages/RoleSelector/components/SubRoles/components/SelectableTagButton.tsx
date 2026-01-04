@@ -4,7 +4,7 @@
 
 import { memo } from 'react'
 import { motion } from 'motion/react'
-import { cn } from '../../../../../utils/cn'
+import { cn } from '@/utils/cn'
 
 
 interface SelectableTagButtonProps {
@@ -28,7 +28,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
             onClick={() => onClick(value)}
             className={cn(
                 'px-4 py-2 rounded-full text-sm font-medium transition-all border',
-                isSelected 
+                isSelected
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20 border-transparent'
                     : 'bg-secondary/40 text-muted-foreground hover:bg-secondary border-transparent'
             )}

@@ -5,8 +5,8 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
 import { MapPin } from 'lucide-react'
-import { cn } from '../../../../../utils/cn'
-import { RangeSlider } from '../../../../../components/ui'
+import { cn } from '@/utils/cn'
+import { RangeSlider } from '@/components/ui'
 
 
 interface ExperienceFieldProps {

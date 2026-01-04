@@ -12,7 +12,7 @@ import {
   logoTransition,
   createTextTransition,
   ANIMATION_DELAY_STEP,
-} from '../../constants/animations'
+} from '@/constants/animations'
 
 interface LogoWithTextProps {
   /** Иконка или изображение логотипа */

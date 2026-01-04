@@ -2,7 +2,7 @@
  * API для работы со сменами через RTK Query
  */
 
-import { api } from '../../store/api'
+import { api } from '@/store/api'
 import { buildQueryParams } from './helpers'
 
 export interface Shift {

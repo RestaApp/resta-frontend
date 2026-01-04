@@ -4,11 +4,11 @@
  */
 
 import { useCallback, useRef } from 'react'
-import { useAuth } from '../../../contexts/AuthContext'
-import { useUpdateUser } from '../../../hooks/useUsers'
-import { getCurrentUserId } from '../../../utils/user'
-import type { UpdateUserRequest } from '../../../services/api/usersApi'
-import type { UserRole } from '../../../types'
+import { useUpdateUser } from '@/hooks/useUsers'
+import { getCurrentUserId } from '@/utils/user'
+import type { UpdateUserRequest } from '@/services/api/usersApi'
+import type { UserRole } from '@/types'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface UseUserUpdateResult {
   updateUserRole: (

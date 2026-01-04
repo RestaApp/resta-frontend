@@ -3,7 +3,7 @@
  */
 
 import { ChefHat, UtensilsCrossed, Wine, Coffee, UserCog } from 'lucide-react'
-import type { EmployeeSubRole, UserRole, EmployeeRole } from '../types'
+import type { EmployeeSubRole, UserRole, EmployeeRole } from '@/types'
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   chef: 'Повар',

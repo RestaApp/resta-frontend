@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from 'react'
-import { useAppDispatch } from '../store/hooks'
+import { useAppDispatch } from '@/store/hooks'
 import {
   useAuthTelegramMutation,
   useRefreshTokenMutation,
@@ -13,11 +13,11 @@ import {
   type UpdateRoleRequest,
   type UserData,
   type SignInResponse,
-} from '../services/api/authApi'
-import { usersApi } from '../services/api/usersApi'
-import { authService } from '../services/auth'
-import { updateUserDataInStore, dispatchAuthEvent } from '../utils/userData'
-import { isVerifiedRole } from '../utils/roles'
+} from '@/services/api/authApi'
+import { usersApi } from '@/services/api/usersApi'
+import { authService } from '@/services/auth'
+import { updateUserDataInStore, dispatchAuthEvent } from '@/utils/userData'
+import { isVerifiedRole } from '@/utils/roles'
 
 /**
  * Создает минимальный объект UserData из данных sign_in ответа

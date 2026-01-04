@@ -4,10 +4,10 @@
 
 import { useState, useCallback } from 'react'
 import { useUserUpdate } from './useUserUpdate'
-import type { UpdateUserRequest } from '../../../services/api/usersApi'
-import type { UserRole, EmployeeRole } from '../../../types'
-import type { EmployeeFormData } from '../components/SubRoles/hooks/useEmployeeSubRoleSelector'
-import type { FormData } from '../components/SubRoles/hooks/useFormSelector'
+import type { UpdateUserRequest } from '@/services/api/usersApi'
+import type { UserRole, EmployeeRole } from '@/types'
+import type { EmployeeFormData } from '@/pages/RoleSelector/components/SubRoles/hooks/useEmployeeSubRoleSelector'
+import type { FormData } from '@/pages/RoleSelector/components/SubRoles/hooks/useFormSelector'
 
 interface UseSubRoleSubmissionProps {
   onSelectRole: (role: UserRole) => void

@@ -1,5 +1,5 @@
-import type { UserRole } from '../types'
-import { STORAGE_KEYS } from '../constants/storage'
+import type { UserRole } from '@/types'
+import { STORAGE_KEYS } from '@/constants/storage'
 import {
   getLocalStorageItem,
   setLocalStorageItem,

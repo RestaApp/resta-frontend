@@ -13,7 +13,7 @@ import {
 } from '@reduxjs/toolkit/query/react'
 
 import { API_BASE_URL } from './api'
-import { authService } from '../services/auth'
+import { authService } from '@/services/auth'
 
 /**
  * Типы для конфигурации

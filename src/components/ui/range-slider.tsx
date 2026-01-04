@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useState } from 'react'
 import { motion, useSpring, useMotionValueEvent, useTransform } from 'motion/react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 interface RangeSliderProps {
     /** Минимальное значение */

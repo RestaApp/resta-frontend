@@ -10,7 +10,7 @@
 
 import React, { memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/utils/cn'
 
 type DrawerProps = {
   open: boolean

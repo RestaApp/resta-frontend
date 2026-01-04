@@ -4,9 +4,9 @@
  */
 
 import { useCallback } from 'react'
-import { useAppDispatch } from '../store/hooks'
-import { useUpdateUserMutation, type UpdateUserRequest } from '../services/api/usersApi'
-import { updateUserDataInStore } from '../utils/userData'
+import { useAppDispatch } from '@/store/hooks'
+import { useUpdateUserMutation, type UpdateUserRequest } from '@/services/api/usersApi'
+import { updateUserDataInStore } from '@/utils/userData'
 
 /**
  * Хук для обновления данных пользователя
