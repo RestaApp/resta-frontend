@@ -3,6 +3,7 @@
  */
 
 import { api } from '../../store/api'
+import { buildQueryParams } from './helpers'
 
 export interface Shift {
   id: string
@@ -33,6 +34,8 @@ export interface GetVacanciesParams {
   max_payment?: number
   start_date?: string // YYYY-MM-DD
   target_roles?: string[] // chef, waiter, bartender, barista, manager, support
+  position?: string // Позиция из каталога
+  specializations?: string[] // Специализации из каталога
   search?: string // Поиск по названию ресторана или позиции
   time_of_day?: string[] // morning, day, evening, night
   page?: number
@@ -128,49 +131,9 @@ export const shiftsApi = api.injectEndpoints({
     // Получить вакансии (смены с shift_type=vacancy)
     getVacancies: builder.query<VacanciesResponse, GetVacanciesParams>({
       query: params => {
-        const searchParams = new URLSearchParams()
-
-        // Обязательный параметр
-        searchParams.append('shift_type', params.shift_type)
-
-        // Опциональные параметры
-        if (params.urgent !== undefined) {
-          searchParams.append('urgent', String(params.urgent))
-        }
-        if (params.location) {
-          searchParams.append('location', params.location)
-        }
-        if (params.min_payment !== undefined) {
-          searchParams.append('min_payment', String(params.min_payment))
-        }
-        if (params.max_payment !== undefined) {
-          searchParams.append('max_payment', String(params.max_payment))
-        }
-        if (params.start_date) {
-          searchParams.append('start_date', params.start_date)
-        }
-        if (params.target_roles && params.target_roles.length > 0) {
-          params.target_roles.forEach(role => {
-            searchParams.append('target_roles[]', role)
-          })
-        }
-        if (params.search) {
-          searchParams.append('search', params.search)
-        }
-        if (params.time_of_day && params.time_of_day.length > 0) {
-          params.time_of_day.forEach(time => {
-            searchParams.append('time_of_day[]', time)
-          })
-        }
-        if (params.page !== undefined) {
-          searchParams.append('page', String(params.page))
-        }
-        if (params.per_page !== undefined) {
-          searchParams.append('per_page', String(params.per_page))
-        }
-
+        const queryString = buildQueryParams(params as unknown as Record<string, unknown>)
         return {
-          url: `/api/v1/shifts?${searchParams.toString()}`,
+          url: `/api/v1/shifts${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
         }
       },

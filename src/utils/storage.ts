@@ -1,5 +1,10 @@
 import type { UserRole } from '../types'
 import { STORAGE_KEYS } from '../constants/storage'
+import {
+  getLocalStorageItem,
+  setLocalStorageItem,
+  removeLocalStorageItem,
+} from './localStorage'
 
 const ROLE_STORAGE_KEY = STORAGE_KEYS.USER_ROLE
 
@@ -14,7 +19,7 @@ const VALID_ROLES: readonly UserRole[] = [
 ] as const
 
 export const getStoredRole = (): UserRole | null => {
-  const role = localStorage.getItem(ROLE_STORAGE_KEY)
+  const role = getLocalStorageItem(ROLE_STORAGE_KEY)
   if (role && VALID_ROLES.includes(role as UserRole)) {
     return role as UserRole
   }
@@ -22,9 +27,9 @@ export const getStoredRole = (): UserRole | null => {
 }
 
 export const setStoredRole = (role: UserRole): void => {
-  localStorage.setItem(ROLE_STORAGE_KEY, role)
+  setLocalStorageItem(ROLE_STORAGE_KEY, role)
 }
 
 export const removeStoredRole = (): void => {
-  localStorage.removeItem(ROLE_STORAGE_KEY)
+  removeLocalStorageItem(ROLE_STORAGE_KEY)
 }

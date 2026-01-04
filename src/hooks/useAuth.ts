@@ -14,6 +14,7 @@ import {
   type UserData,
   type SignInResponse,
 } from '../services/api/authApi'
+import { usersApi } from '../services/api/usersApi'
 import { authService } from '../services/auth'
 import { updateUserDataInStore, dispatchAuthEvent } from '../utils/userData'
 
@@ -78,6 +79,34 @@ export const useAuthActions = () => {
           if (result.data) {
             const minimalUserData = createMinimalUserData(result.data)
             updateUserDataInStore(dispatch, minimalUserData)
+
+            // Сразу загружаем полные данные пользователя по его ID
+            // Это должно происходить перед загрузкой каких-либо других данных
+            const userId = result.data.id
+            if (userId) {
+              let subscription: any
+              try {
+                subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
+                const userResult = await subscription
+
+                // RTK Query возвращает объект с полем data при успешном ответе
+                if (userResult && 'data' in userResult && userResult.data?.data) {
+                  updateUserDataInStore(dispatch, userResult.data.data)
+                }
+              } catch (error) {
+                // Игнорируем ошибки загрузки пользователя, минимальные данные уже сохранены
+                console.error('Ошибка загрузки данных пользователя:', error)
+              } finally {
+                // Отписываемся, чтобы не держать постоянную подписку в store
+                if (subscription?.unsubscribe) {
+                  try {
+                    subscription.unsubscribe()
+                  } catch {
+                    // ignore unsubscribe errors
+                  }
+                }
+              }
+            }
           }
 
           // Отправляем событие об успешной авторизации

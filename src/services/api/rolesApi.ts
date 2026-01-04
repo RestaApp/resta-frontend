@@ -3,6 +3,7 @@
  */
 
 import { api } from '../../store/api'
+import { createCatalogQuery } from './helpers'
 
 /**
  * Ответ API с доступными ролями
@@ -30,36 +31,25 @@ export const rolesApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить список доступных ролей для страницы выбора роли
     // Используется только в компоненте RoleSelector
-    getAvailableUserRoles: builder.query<AvailableUserRolesResponse, void>({
-      query: () => ({
+    getAvailableUserRoles: createCatalogQuery<AvailableUserRolesResponse, void>(
+      builder,
+      {
         url: '/api/v1/catalogs/roles',
-        method: 'GET',
-      }),
-      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
-      // Настройки кэширования
-      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
-      // refetchOnMountOrArgChange, refetchOnFocus, refetchOnReconnect управляются на уровне хука
-    }),
+      }
+    ),
 
     // Получить список типов поставщиков
-    getSupplierTypes: builder.query<SupplierTypesResponse, void>({
-      query: () => ({
-        url: '/api/v1/catalogs/supplier_types',
-        method: 'GET',
-      }),
-      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
-      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+    getSupplierTypes: createCatalogQuery<SupplierTypesResponse, void>(builder, {
+      url: '/api/v1/catalogs/supplier_types',
     }),
 
     // Получить список форматов ресторанов
-    getRestaurantFormats: builder.query<RestaurantFormatsResponse, void>({
-      query: () => ({
+    getRestaurantFormats: createCatalogQuery<RestaurantFormatsResponse, void>(
+      builder,
+      {
         url: '/api/v1/catalogs/restaurant_formats',
-        method: 'GET',
-      }),
-      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
-      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
-    }),
+      }
+    ),
   }),
 })
 

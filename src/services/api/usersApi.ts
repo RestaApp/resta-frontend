@@ -6,6 +6,7 @@
 
 import { api } from '../../store/api'
 import type { UserData } from './authApi'
+import { createCatalogQuery, CATALOG_ENDPOINT_CONFIG } from './helpers'
 
 export type { UserData } from './authApi'
 
@@ -99,13 +100,8 @@ export const usersApi = api.injectEndpoints({
     }),
 
     // Получение позиций (подролей сотрудников)
-    getUserPositions: builder.query<UserPositionsResponse, void>({
-      query: () => ({
-        url: '/api/v1/catalogs/positions',
-        method: 'GET',
-      }),
-      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
-      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+    getUserPositions: createCatalogQuery<UserPositionsResponse, void>(builder, {
+      url: '/api/v1/catalogs/positions',
     }),
 
     // Получение специализаций для позиции
@@ -114,8 +110,7 @@ export const usersApi = api.injectEndpoints({
         url: `/api/v1/catalogs/specializations?position=${position}`,
         method: 'GET',
       }),
-      providesTags: ['Catalog'], // Используем отдельный тег для справочных данных
-      keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+      ...CATALOG_ENDPOINT_CONFIG,
     }),
   }),
 })

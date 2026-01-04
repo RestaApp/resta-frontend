@@ -3,6 +3,11 @@
  */
 
 import { STORAGE_KEYS } from '../constants/storage'
+import {
+  getLocalStorageItem,
+  setLocalStorageItem,
+  removeLocalStorageItem,
+} from '../utils/localStorage'
 
 const TOKEN_STORAGE_KEY = STORAGE_KEYS.AUTH_TOKEN
 const REFRESH_TOKEN_STORAGE_KEY = STORAGE_KEYS.REFRESH_TOKEN
@@ -11,60 +16,42 @@ const REFRESH_TOKEN_STORAGE_KEY = STORAGE_KEYS.REFRESH_TOKEN
  * Получает токен авторизации
  */
 export const getToken = (): string | null => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-  return localStorage.getItem(TOKEN_STORAGE_KEY)
+  return getLocalStorageItem(TOKEN_STORAGE_KEY)
 }
 
 /**
  * Сохраняет токен авторизации
  */
 export const setToken = (token: string): void => {
-  if (typeof window === 'undefined') {
-    return
-  }
-  localStorage.setItem(TOKEN_STORAGE_KEY, token)
+  setLocalStorageItem(TOKEN_STORAGE_KEY, token)
 }
 
 /**
  * Получает refresh токен
  */
 export const getRefreshToken = (): string | null => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-  return localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)
+  return getLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
 }
 
 /**
  * Сохраняет refresh токен
  */
 export const setRefreshToken = (token: string): void => {
-  if (typeof window === 'undefined') {
-    return
-  }
-  localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, token)
+  setLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY, token)
 }
 
 /**
  * Удаляет токен авторизации
  */
 export const removeToken = (): void => {
-  if (typeof window === 'undefined') {
-    return
-  }
-  localStorage.removeItem(TOKEN_STORAGE_KEY)
+  removeLocalStorageItem(TOKEN_STORAGE_KEY)
 }
 
 /**
  * Удаляет refresh токен
  */
 export const removeRefreshToken = (): void => {
-  if (typeof window === 'undefined') {
-    return
-  }
-  localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY)
+  removeLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
 }
 
 /**

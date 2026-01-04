@@ -1,3 +1,5 @@
+import { getLocalStorageItem, setLocalStorageItem } from './localStorage'
+
 export type Theme = 'light' | 'dark'
 
 export const THEME_KEY = 'resta-theme'
@@ -12,21 +14,13 @@ export const applyTheme = (newTheme: Theme) => {
 }
 
 export const saveTheme = (newTheme: Theme) => {
-  try {
-    localStorage.setItem(THEME_KEY, newTheme)
-  } catch {
-    /* silent */
-  }
+  setLocalStorageItem(THEME_KEY, newTheme)
 }
 
 export const getSavedTheme = (): Theme | null => {
-  try {
-    const v = localStorage.getItem(THEME_KEY)
-    if (v === 'dark' || v === 'light') return v
-    return null
-  } catch {
-    return null
-  }
+  const v = getLocalStorageItem(THEME_KEY)
+  if (v === 'dark' || v === 'light') return v
+  return null
 }
 
 export const getInitialTheme = (): Theme => {

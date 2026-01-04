@@ -16,6 +16,7 @@ import {
 import { api } from './api'
 import userReducer from './userSlice'
 import telegramReducer from './telegramSlice'
+import catalogReducer from './catalogSlice'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api
@@ -75,6 +76,7 @@ export const store = configureStore({
     [api.reducerPath]: api.reducer,
     user: persistedUserReducer,
     telegram: telegramReducer,
+    catalog: catalogReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
