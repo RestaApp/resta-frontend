@@ -36,8 +36,6 @@ export const App = () => {
     [handleRoleSelect]
   )
 
-  // Временная функция для создания смены — пока не используется
-
   // Рендеринг: пока поддерживаем только экран поиска (Dashboard) и выбор роли
   const renderedScreen = selectedRole ? (
     <Dashboard role={selectedRole as UserRole} onNavigate={navigate} currentScreen={currentScreen} />

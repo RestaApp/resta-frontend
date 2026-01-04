@@ -6,6 +6,7 @@
 import { useCallback, useRef } from 'react'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { getCurrentUserId } from '@/utils/user'
+import { logger } from '@/utils/logger'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UserRole } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
@@ -117,7 +118,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         onSuccess()
         return true
       } catch (error) {
-        console.error('Ошибка обновления данных пользователя:', error)
+        logger.error('Ошибка обновления данных пользователя:', error)
         const errorMessage =
           error instanceof Error
             ? error.message

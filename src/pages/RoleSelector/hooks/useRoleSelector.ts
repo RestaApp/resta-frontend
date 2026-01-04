@@ -6,6 +6,7 @@
 import { useCallback } from 'react'
 import { useRoleSelection } from './useRoleSelection'
 import { useSubRoleSubmission } from './useSubRoleSubmission'
+import { logger } from '@/utils/logger'
 import type { UserRole } from '@/types'
 
 interface UseRoleSelectorProps {
@@ -17,8 +18,7 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
   const subRoleSubmission = useSubRoleSubmission({
     onSelectRole,
     onError: useCallback((message: string) => {
-      // Обработка ошибок уже происходит в useSubRoleSubmission
-      console.error('Ошибка при сохранении подроли:', message)
+      logger.error('Ошибка при сохранении подроли:', message)
     }, []),
   })
 

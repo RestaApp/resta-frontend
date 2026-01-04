@@ -1,12 +1,44 @@
 import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '@/config/telegram'
 
-export const isTelegramWebApp = (): boolean => {
-  return typeof window !== 'undefined' && (window as any).Telegram?.WebApp !== undefined
+interface TelegramWebApp {
+  ready: () => void
+  expand: () => void
+  initData?: string
+  initDataUnsafe?: {
+    user?: {
+      id: number
+      first_name?: string
+      last_name?: string
+      username?: string
+    }
+  }
+  BackButton: {
+    show: () => void
+    hide: () => void
+    onClick: (callback: () => void) => void
+    offClick: (callback: () => void) => void
+  }
+  HapticFeedback?: {
+    impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void
+  }
 }
 
-export const getTelegramWebApp = () => {
+interface TelegramWindow extends Window {
+  Telegram?: {
+    WebApp: TelegramWebApp
+  }
+}
+
+export const isTelegramWebApp = (): boolean => {
+  if (typeof window === 'undefined') return false
+  const telegramWindow = window as TelegramWindow
+  return telegramWindow.Telegram?.WebApp !== undefined
+}
+
+export const getTelegramWebApp = (): TelegramWebApp | null => {
   if (!isTelegramWebApp()) return null
-  return (window as any).Telegram.WebApp
+  const telegramWindow = window as TelegramWindow
+  return telegramWindow.Telegram?.WebApp ?? null
 }
 
 export const initTelegramWebApp = () => {

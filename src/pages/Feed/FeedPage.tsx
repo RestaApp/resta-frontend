@@ -7,7 +7,7 @@ import { useGetVacanciesQuery, useGetAppliedShiftsQuery } from '@/services/api/s
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getTelegramWebApp } from '@/utils/telegram'
 import { useAppSelector } from '@/store/hooks'
-
+import { DEFAULT_PRICE_RANGE, hasActiveFilters } from '@/utils/filters'
 import { Toast } from '@/components/ui/toast'
 import type { FeedType } from './types'
 import type { Shift, Job } from './types'
@@ -22,117 +22,7 @@ import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
 import { AdvancedFilters, type AdvancedFiltersData } from './components/AdvancedFilters'
 import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
 import { useShiftApplication } from './hooks/useShiftApplication'
-
-/**
- * Преобразует данные вакансии из API в формат Shift для компонента
- */
-const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
-    const formatDate = (dateString?: string): string => {
-        if (!dateString) return 'Дата не указана'
-        try {
-            const date = new Date(dateString)
-            const day = date.getDate()
-            const month = date.toLocaleDateString('ru-RU', { month: 'long' })
-            return `${day} ${month}`
-        } catch {
-            return dateString
-        }
-    }
-
-    const formatTime = (startTime?: string, endTime?: string): string => {
-        if (!startTime && !endTime) return 'Время не указано'
-        if (startTime && endTime) {
-            const start = new Date(startTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-            const end = new Date(endTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-            return `${start} - ${end}`
-        }
-        return startTime || endTime || 'Время не указано'
-    }
-
-    /**
-     * Рассчитывает длительность смены в часах
-     */
-    const getDuration = (start?: string, end?: string): string => {
-        if (!start || !end) return ''
-        try {
-            const startDate = new Date(start)
-            const endDate = new Date(end)
-            const diffMs = endDate.getTime() - startDate.getTime()
-            const diffHrs = Math.round(diffMs / (1000 * 60 * 60))
-            return diffHrs > 0 ? `${diffHrs} ч.` : ''
-        } catch {
-            return ''
-        }
-    }
-
-    /**
-     * Получает оплату с приоритетом общей суммы над почасовой ставкой
-     * Если есть общая сумма (payment) - используем её
-     * Иначе считаем: hourly_rate * длительность
-     */
-    const getPayment = (payment?: string | number, hourlyRate?: string | number, startTime?: string, endTime?: string): number => {
-        // Приоритет 1: Общая сумма (payment)
-        if (payment) {
-            const pay = typeof payment === 'string' ? parseFloat(payment) : payment
-            if (!isNaN(pay) && pay > 0) {
-                return pay
-            }
-        }
-
-        // Приоритет 2: Почасовая ставка * длительность
-        if (hourlyRate && startTime && endTime) {
-            try {
-                const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
-                if (!isNaN(rate) && rate > 0) {
-                    const startDate = new Date(startTime)
-                    const endDate = new Date(endTime)
-                    const diffMs = endDate.getTime() - startDate.getTime()
-                    const diffHrs = diffMs / (1000 * 60 * 60)
-                    const total = rate * diffHrs
-                    return Math.round(total)
-                }
-            } catch {
-                // Игнорируем ошибки парсинга
-            }
-        }
-
-        // Приоритет 3: Только почасовая ставка (если нет длительности)
-        if (hourlyRate) {
-            const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
-            if (!isNaN(rate) && rate > 0) {
-                return rate
-            }
-        }
-
-        return 0
-    }
-
-    const getLogo = (): string => {
-        const logos = ['🌅', '🌸', '🍹', '🥖', '🍕', '☕️', '🍽', '🥘']
-        return logos[vacancy.id % logos.length]
-    }
-
-    const duration = getDuration(vacancy.start_time, vacancy.end_time)
-    const timeFormatted = formatTime(vacancy.start_time, vacancy.end_time)
-    const timeWithDuration = duration ? `${timeFormatted} (${duration})` : timeFormatted
-
-    return {
-        id: vacancy.id,
-        logo: getLogo(),
-        restaurant: vacancy.user?.name || vacancy.user?.full_name || vacancy.title || 'Ресторан',
-        rating: vacancy.user?.average_rating || 0,
-        position: vacancy.position || vacancy.target_roles?.[0] || 'Сотрудник',
-        specialization: vacancy.specialization || null,
-        date: formatDate(vacancy.start_time),
-        time: timeWithDuration,
-        pay: getPayment(vacancy.payment, vacancy.hourly_rate, vacancy.start_time, vacancy.end_time),
-        currency: 'BYN',
-        location: vacancy.location || vacancy.user?.restaurant_profile?.city || '',
-        duration,
-        urgent: vacancy.urgent || false,
-        badges: vacancy.urgent ? ['🔥 Срочно'] : undefined,
-    }
-}
+import { mapVacancyToShift } from './utils/mapping'
 
 const jobs: Job[] = [
     {
@@ -174,7 +64,6 @@ export const FeedPage = () => {
     const [advancedFilters, setAdvancedFilters] = useState<AdvancedFiltersData | null>(() => {
         const position = userData?.position || userData?.employee_profile?.position
         if (position) {
-            const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
             return {
                 priceRange: DEFAULT_PRICE_RANGE,
                 selectedPosition: position,
@@ -189,7 +78,6 @@ export const FeedPage = () => {
     // Обновляем фильтры, если позиция пользователя появилась после загрузки
     useEffect(() => {
         if (userPosition && !advancedFilters) {
-            const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
             setAdvancedFilters({
                 priceRange: DEFAULT_PRICE_RANGE,
                 selectedPosition: userPosition,
@@ -198,7 +86,8 @@ export const FeedPage = () => {
                 endDate: null,
             })
         }
-    }, [userPosition]) // Только userPosition, чтобы не было циклов
+    }, [userPosition, advancedFilters])
+
     const [currentPage, setCurrentPage] = useState(1)
     const [allShifts, setAllShifts] = useState<Shift[]>([])
     const [allVacancies, setAllVacancies] = useState<Map<number, VacancyApiItem>>(new Map())
@@ -513,8 +402,6 @@ export const FeedPage = () => {
     }
 
     const handleApplyAdvancedFilters = useCallback((filters: AdvancedFiltersData) => {
-        console.log('handleApplyAdvancedFilters called with:', filters)
-        // Устанавливаем новое состояние - фильтры сохраняются
         setAdvancedFilters(filters)
     }, [])
 
@@ -562,26 +449,16 @@ export const FeedPage = () => {
 
     // Определяем, есть ли активные фильтры (расширенные или быстрые)
     const hasActiveAdvancedFilters = useMemo(() => {
-        // Проверяем быстрые фильтры
         const hasActiveQuickFilter = activeFilter !== 'all'
-
-        // Проверяем расширенные фильтры
-        let hasAdvancedFilters = false
-        if (advancedFilters) {
-            const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
-            const isDefaultPriceRange =
-                advancedFilters.priceRange[0] === DEFAULT_PRICE_RANGE[0] &&
-                advancedFilters.priceRange[1] === DEFAULT_PRICE_RANGE[1]
-            const hasNonDefaultPrice = !isDefaultPriceRange
-            const hasPosition = advancedFilters.selectedPosition !== null && advancedFilters.selectedPosition !== undefined
-            const hasSpecializations = (advancedFilters.selectedSpecializations?.length ?? 0) > 0
-            const hasDates = advancedFilters.startDate !== null || advancedFilters.endDate !== null
-            hasAdvancedFilters = hasNonDefaultPrice || hasPosition || hasSpecializations || hasDates
-        }
-
-        const result = hasActiveQuickFilter || hasAdvancedFilters
-        return result
+        const hasAdvancedFilters = advancedFilters ? hasActiveFilters(advancedFilters) : false
+        return hasActiveQuickFilter || hasAdvancedFilters
     }, [advancedFilters, activeFilter])
+
+    // Количество отфильтрованных смен
+    const filteredCount = useMemo(() => {
+        const pagination = shiftsResponse?.pagination || shiftsResponse?.meta
+        return pagination?.total_count ?? 0
+    }, [shiftsResponse])
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -597,7 +474,7 @@ export const FeedPage = () => {
                 />
             </div>
 
-            {feedType === 'shifts' && (
+            {feedType === 'shifts' && actualHotShifts.length > 0 && (
                 <HotOffers
                     items={actualHotShifts}
                     totalCount={hotShiftsTotalCount}
@@ -708,10 +585,7 @@ export const FeedPage = () => {
                 onClose={() => setIsFiltersOpen(false)}
                 onApply={handleApplyAdvancedFilters}
                 initialFilters={advancedFilters || undefined}
-                filteredCount={(() => {
-                    const pagination = shiftsResponse?.pagination || shiftsResponse?.meta
-                    return pagination?.total_count ?? 0
-                })()}
+                filteredCount={filteredCount}
                 onReset={() => {
                     setAdvancedFilters(null)
                     setActiveFilter('all')
