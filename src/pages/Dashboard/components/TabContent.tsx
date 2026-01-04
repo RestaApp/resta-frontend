@@ -2,9 +2,9 @@
  * Компонент для отображения контента табов
  */
 
-import { FeedPage } from '../../Feed/FeedPage'
 import type { Tab, UserRole } from '../../../types'
- 
+import { FeedPage } from '../../Feed'
+
 
 
 interface TabContentProps {
