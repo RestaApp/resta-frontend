@@ -25,4 +25,3 @@ export const TabContent = ({ activeTab, role }: TabContentProps) => {
         </div>
     )
 }
-
