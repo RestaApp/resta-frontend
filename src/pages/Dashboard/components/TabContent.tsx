@@ -3,7 +3,7 @@
  */
 
 import type { Tab, UserRole } from '../../../types'
-import { FeedPage } from '../../Feed'
+import { FeedPage } from '../../Feed/index'
 
 
 
