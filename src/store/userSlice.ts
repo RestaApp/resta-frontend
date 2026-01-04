@@ -5,7 +5,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { UserRole } from '../types'
 import type { UserData } from '../services/api/authApi'
-import { mapRoleFromApi } from '../utils/roles'
+import { mapRoleFromApi, isVerifiedRole } from '../utils/roles'
 
 interface UserState {
   userData: UserData | null
@@ -28,9 +28,9 @@ const userSlice = createSlice({
       if (action.payload) {
         const mappedRole = mapRoleFromApi(action.payload.role)
 
+        // Если роль подтверждена (не unverified), устанавливаем selectedRole
         // Если роль unverified, оставляем selectedRole = null, чтобы показать RoleSelector
-        // Если роль установлена и не unverified, устанавливаем selectedRole
-        if (mappedRole && mappedRole !== 'unverified') {
+        if (mappedRole && isVerifiedRole(mappedRole)) {
           state.selectedRole = mappedRole
         } else {
           // Для unverified или неизвестной роли оставляем selectedRole = null

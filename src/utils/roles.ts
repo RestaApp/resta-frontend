@@ -76,3 +76,25 @@ export const isSupplierRole = (role: UserRole | null): boolean => {
 export const canViewShifts = (role: UserRole | null): boolean => {
   return isEmployeeRole(role) || isVenueRole(role)
 }
+
+/**
+ * Проверяет, является ли роль unverified (не подтвержденной)
+ * Принимает либо строку роли из API, либо уже маппленную роль UserRole
+ */
+export const isUnverifiedRole = (role: string | null | undefined | UserRole): boolean => {
+  if (!role) {
+    return true // null/undefined считается unverified
+  }
+
+  // Маппим роль (mapRoleFromApi умеет работать и со строками из API, и с уже маппленными ролями)
+  const mappedRole = mapRoleFromApi(role)
+  return !mappedRole || mappedRole === 'unverified'
+}
+
+/**
+ * Проверяет, является ли роль подтвержденной (не unverified)
+ * Обратная функция к isUnverifiedRole
+ */
+export const isVerifiedRole = (role: string | null | undefined | UserRole): boolean => {
+  return !isUnverifiedRole(role)
+}

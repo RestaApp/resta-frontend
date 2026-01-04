@@ -1,7 +1,7 @@
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-import { RangeSlider } from '../../../components/ui'
+import { RangeSlider, DatePicker } from '../../../components/ui'
 import { SelectableTagButton } from '../../RoleSelector/components/SubRoles/components/SelectableTagButton'
 import { useAppSelector, useAppDispatch } from '../../../store/hooks'
 import { useUserPositions } from '../../../hooks/useUserPositions'
@@ -59,107 +59,35 @@ export const AdvancedFilters = ({
         initialFilters?.endDate || null
     )
 
-    // Форматируем дату для отображения (DD.MM.YYYY)
-    const formatDateForDisplay = useCallback((dateString: string | null): string => {
-        if (!dateString) return ''
-        try {
-            const date = new Date(dateString)
-            if (isNaN(date.getTime())) return ''
-            const day = String(date.getDate()).padStart(2, '0')
-            const month = String(date.getMonth() + 1).padStart(2, '0')
-            const year = date.getFullYear()
-            return `${day}.${month}.${year}`
-        } catch {
-            return ''
-        }
+    // Получаем минимальную дату для начальной даты (сегодня)
+    const getMinStartDate = useCallback((): string => {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return today.toISOString().split('T')[0]
     }, [])
 
-    const parseDateFromDisplay = useCallback((displayValue: string): string | null => {
-        if (!displayValue) return null
-        const cleaned = displayValue.replace(/[^\d.]/g, '')
-        const parts = cleaned.split('.').filter(Boolean)
-        if (parts.length === 3) {
-            const day = parts[0].padStart(2, '0')
-            const month = parts[1].padStart(2, '0')
-            const year = parts[2]
-            const dateStr = `${year}-${month}-${day}`
-            const date = new Date(dateStr)
-            const isValid = !isNaN(date.getTime()) &&
-                date.getFullYear() === parseInt(year) &&
-                date.getMonth() + 1 === parseInt(month) &&
-                date.getDate() === parseInt(day)
-            if (isValid) {
-                return dateStr
-            }
+    // Получаем минимальную дату для конечной даты (сегодня или startDate)
+    const getMinEndDate = useCallback((): string => {
+        if (startDate) {
+            return startDate
         }
-        return null
-    }, [])
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return today.toISOString().split('T')[0]
+    }, [startDate])
 
-    // Обработчики для полей дат с маской
-    const handleStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        // Разрешаем только цифры и точки
-        const cleaned = value.replace(/[^\d.]/g, '')
-
-        // Применяем маску DD.MM.YYYY
-        let masked = cleaned
-        if (cleaned.length > 2 && !cleaned.includes('.', 2)) {
-            masked = cleaned.slice(0, 2) + '.' + cleaned.slice(2)
-        }
-        if (cleaned.length > 5 && cleaned.split('.').length === 2) {
-            masked = cleaned.slice(0, 5) + '.' + cleaned.slice(5, 9)
-        }
-
-        // Ограничиваем длину
-        if (masked.length <= 10) {
-            const parsed = parseDateFromDisplay(masked)
-            if (parsed) {
-                // Проверяем, что дата не в прошлом
-                const today = new Date()
-                today.setHours(0, 0, 0, 0)
-                const selectedDate = new Date(parsed)
-                selectedDate.setHours(0, 0, 0, 0)
-
-                if (selectedDate >= today) {
-                    setStartDate(parsed)
-                }
-            } else if (masked.length === 0) {
-                setStartDate(null)
-            }
-        }
-    }, [parseDateFromDisplay])
-
-    const handleEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        const cleaned = value.replace(/[^\d.]/g, '')
-
-        let masked = cleaned
-        if (cleaned.length > 2 && !cleaned.includes('.', 2)) {
-            masked = cleaned.slice(0, 2) + '.' + cleaned.slice(2)
-        }
-        if (cleaned.length > 5 && cleaned.split('.').length === 2) {
-            masked = cleaned.slice(0, 5) + '.' + cleaned.slice(5, 9)
-        }
-
-        if (masked.length <= 10) {
-            const parsed = parseDateFromDisplay(masked)
-            if (parsed) {
-                // Проверяем, что дата не раньше startDate и не в прошлом
-                const today = new Date()
-                today.setHours(0, 0, 0, 0)
-                const minDate = startDate ? new Date(startDate) : today
-                minDate.setHours(0, 0, 0, 0)
-                const selectedDate = new Date(parsed)
-                selectedDate.setHours(0, 0, 0, 0)
-
-                if (selectedDate >= minDate) {
-                    setEndDate(parsed)
-                }
-            } else if (masked.length === 0) {
+    // Сбрасываем endDate, если он меньше startDate
+    useEffect(() => {
+        if (startDate && endDate) {
+            const start = new Date(startDate)
+            const end = new Date(endDate)
+            start.setHours(0, 0, 0, 0)
+            end.setHours(0, 0, 0, 0)
+            if (end < start) {
                 setEndDate(null)
             }
         }
-    }, [parseDateFromDisplay, startDate])
+    }, [startDate, endDate])
 
     // Загружаем позиции (используем существующий хук)
     const { positionsApi } = useUserPositions({ enabled: isOpen })
@@ -395,28 +323,20 @@ export const AdvancedFilters = ({
                             <div className="space-y-3">
                                 <h3 className="font-semibold text-base">Период</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-2">
-                                        <label className="text-sm text-muted-foreground">От</label>
-                                        <input
-                                            type="text"
-                                            value={formatDateForDisplay(startDate)}
-                                            onChange={handleStartDateChange}
-                                            placeholder="ДД.ММ.ГГГГ"
-                                            maxLength={10}
-                                            className="w-full px-3 py-2 bg-card/60 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm text-muted-foreground">До</label>
-                                        <input
-                                            type="text"
-                                            value={formatDateForDisplay(endDate)}
-                                            onChange={handleEndDateChange}
-                                            placeholder="ДД.ММ.ГГГГ"
-                                            maxLength={10}
-                                            className="w-full px-3 py-2 bg-card/60 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
-                                        />
-                                    </div>
+                                    <DatePicker
+                                        value={startDate}
+                                        onChange={setStartDate}
+                                        placeholder="ДД.ММ.ГГГГ"
+                                        minDate={getMinStartDate()}
+                                        label="От"
+                                    />
+                                    <DatePicker
+                                        value={endDate}
+                                        onChange={setEndDate}
+                                        placeholder="ДД.ММ.ГГГГ"
+                                        minDate={getMinEndDate()}
+                                        label="До"
+                                    />
                                 </div>
                             </div>
 
