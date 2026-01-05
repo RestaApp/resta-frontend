@@ -31,17 +31,18 @@ export const Tabs = <T extends string>({
 
   useLayoutEffect(() => {
     const activeTab = tabRefs.current.get(activeId)
-    const container = containerRef.current
+    if (!activeTab) return
 
-    if (activeTab && container) {
-      const containerRect = container.getBoundingClientRect()
-      const tabRect = activeTab.getBoundingClientRect()
-
+    const updateIndicator = () => {
       setIndicatorStyle({
-        left: tabRect.left - containerRect.left,
-        width: tabRect.width,
+        left: activeTab.offsetLeft,
+        width: activeTab.offsetWidth,
       })
     }
+
+    updateIndicator()
+    const rafId = requestAnimationFrame(updateIndicator)
+    return () => cancelAnimationFrame(rafId)
   }, [activeId])
 
   return (
@@ -109,5 +110,4 @@ export const Tabs = <T extends string>({
     </div>
   )
 }
-
 
