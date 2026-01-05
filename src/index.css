@@ -193,9 +193,9 @@
     transition: background-color 0.3s ease;
   }
 
-  /* Only background color transitions should be smooth; everything else is instant. */
+  /* Keep background and borders smooth to avoid blinking; everything else is instant. */
   * {
-    transition-property: background-color !important;
+    transition-property: background-color, border-color, outline-color !important;
     transition-duration: 0.3s !important;
     transition-timing-function: ease !important;
   }
