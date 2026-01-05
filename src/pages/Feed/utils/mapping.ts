@@ -12,11 +12,15 @@ const formatDate = (dateString?: string): string => {
   if (!dateString) return 'Дата не указана'
   try {
     const date = new Date(dateString)
+    // Проверяем валидность даты
+    if (isNaN(date.getTime())) {
+      return 'Дата не указана'
+    }
     const day = date.getDate()
     const month = date.toLocaleDateString('ru-RU', { month: 'long' })
     return `${day} ${month}`
   } catch {
-    return dateString
+    return 'Дата не указана'
   }
 }
 
@@ -26,15 +30,27 @@ const formatDate = (dateString?: string): string => {
 const formatTime = (startTime?: string, endTime?: string): string => {
   if (!startTime && !endTime) return 'Время не указано'
   if (startTime && endTime) {
-    const start = new Date(startTime).toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-    const end = new Date(endTime).toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-    return `${start} - ${end}`
+    try {
+      const startDate = new Date(startTime)
+      const endDate = new Date(endTime)
+      
+      // Проверяем валидность дат
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return 'Время не указано'
+      }
+      
+      const start = startDate.toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      const end = endDate.toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      return `${start} - ${end}`
+    } catch {
+      return 'Время не указано'
+    }
   }
   return startTime || endTime || 'Время не указано'
 }
@@ -47,6 +63,12 @@ const getDuration = (start?: string, end?: string): string => {
   try {
     const startDate = new Date(start)
     const endDate = new Date(end)
+    
+    // Проверяем валидность дат
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return ''
+    }
+    
     const diffMs = endDate.getTime() - startDate.getTime()
     const diffHrs = Math.round(diffMs / (1000 * 60 * 60))
     return diffHrs > 0 ? `${diffHrs} ч.` : ''
@@ -81,6 +103,12 @@ const getPayment = (
       if (!isNaN(rate) && rate > 0) {
         const startDate = new Date(startTime)
         const endDate = new Date(endTime)
+        
+        // Проверяем валидность дат
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          return 0
+        }
+        
         const diffMs = endDate.getTime() - startDate.getTime()
         const diffHrs = diffMs / (1000 * 60 * 60)
         const total = rate * diffHrs

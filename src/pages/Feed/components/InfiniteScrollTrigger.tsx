@@ -33,9 +33,7 @@ export const InfiniteScrollTrigger = ({
         }
 
         return () => {
-            if (currentTarget) {
-                observer.unobserve(currentTarget)
-            }
+            observer.disconnect()
         }
     }, [hasMore, isLoading, isError, onLoadMore])
 

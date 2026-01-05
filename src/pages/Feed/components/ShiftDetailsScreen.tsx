@@ -22,7 +22,6 @@ import type { Shift } from '../types'
 import { getRestaurantFormatLabel } from '@/constants/labels'
 import { useShiftDetails } from '../hooks/useShiftDetails'
 import { formatReviews } from '../utils/formatting'
-import { useShiftApplication } from '../hooks/useShiftApplication'
 
 
 interface ShiftDetailsScreenProps {
@@ -30,9 +29,10 @@ interface ShiftDetailsScreenProps {
     vacancyData?: VacancyApiItem | null
     isOpen: boolean
     onClose: () => void
-    onApply?: (id: number) => void // Опционально для обратной совместимости
-    isApplied?: boolean
-    onCancel?: (id: number) => void // Callback для отмены заявки
+    onApply: (id: number) => Promise<void>
+    isApplied: boolean
+    onCancel: (id: number) => Promise<void>
+    isLoading?: boolean
     isVacancy?: boolean // Флаг для вакансий (оплата за месяц, а не за смену)
 }
 
@@ -91,8 +91,9 @@ export const ShiftDetailsScreen = memo(({
     isOpen,
     onClose,
     onApply,
-    isApplied = false,
+    isApplied,
     onCancel,
+    isLoading = false,
     isVacancy = false,
 }: ShiftDetailsScreenProps) => {
     const {
@@ -105,47 +106,25 @@ export const ShiftDetailsScreen = memo(({
         applicationsInfo,
     } = useShiftDetails(shift, vacancyData)
 
-    const { apply, cancel, isLoading: isApplicationLoading } = useShiftApplication({
-        onSuccess: () => {
-            onClose()
-        },
-    })
-
     const handleApply = useCallback(async () => {
         if (!shift) return
-
-        // Если есть старый callback, используем его для обратной совместимости
-        if (onApply) {
-            onApply(shift.id)
-            onClose()
-            return
-        }
-
-        // Иначе используем новый API
         try {
-            await apply(shift.id)
+            await onApply(shift.id)
+            onClose()
         } catch {
             // Ошибка уже обработана в хуке
         }
-    }, [shift, onApply, onClose, apply])
+    }, [shift, onApply, onClose])
 
     const handleCancel = useCallback(async () => {
         if (!shift) return
-
-        // Если есть callback для отмены, используем его
-        if (onCancel) {
-            onCancel(shift.id)
-            onClose()
-            return
-        }
-
-        // Иначе используем новый API
         try {
-            await cancel(shift.id)
+            await onCancel(shift.id)
+            onClose()
         } catch {
             // Ошибка уже обработана в хуке
         }
-    }, [shift, onCancel, onClose, cancel])
+    }, [shift, onCancel, onClose])
 
     const handleOpenMap = useCallback(() => {
         // TODO: Реализовать открытие карты
@@ -360,19 +339,19 @@ export const ShiftDetailsScreen = memo(({
                     {isApplied ? (
                         <Button
                             onClick={handleCancel}
-                            disabled={isApplicationLoading}
+                            disabled={isLoading}
                             variant="outline"
                             className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
                         >
-                            {isApplicationLoading ? 'Отмена...' : 'Отменить заявку'}
+                            {isLoading ? 'Отмена...' : 'Отменить заявку'}
                         </Button>
                     ) : (
                         <Button
                             onClick={handleApply}
-                            disabled={isApplicationLoading}
+                            disabled={isLoading}
                             className="flex-1 gradient-primary text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {isApplicationLoading ? 'Отправка...' : 'Откликнуться'}
+                            {isLoading ? 'Отправка...' : 'Откликнуться'}
                         </Button>
                     )}
                 </div>

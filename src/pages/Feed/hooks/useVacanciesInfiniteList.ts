@@ -2,7 +2,7 @@
  * Хук для бесконечной загрузки вакансий с пагинацией
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
@@ -40,6 +40,9 @@ export const useVacanciesInfiniteList = (
   const [currentPage, setCurrentPage] = useState(1)
   const [items, setItems] = useState<Shift[]>([])
   const [vacanciesMap, setVacanciesMap] = useState<Map<number, VacancyApiItem>>(new Map())
+  
+  // Отслеживаем предыдущие параметры для определения изменений
+  const prevParamsRef = useRef<{ baseQuery: typeof baseQuery; shiftType: typeof shiftType } | null>(null)
 
   // Формируем параметры запроса с пагинацией
   const queryParams = useMemo<GetVacanciesParams>(
@@ -60,11 +63,24 @@ export const useVacanciesInfiniteList = (
 
   // Обработка данных
   useEffect(() => {
-    // Обрабатываем данные только если загрузка завершена
-    if (!enabled || !response || isFetching || isLoading) {
+    // Пропускаем обработку, если запрос отключен или идет первичная загрузка
+    if (!enabled) {
       return
     }
 
+    // Если нет данных и идет загрузка - не обрабатываем (ждем данные)
+    if (!response && (isLoading || isFetching)) {
+      return
+    }
+
+    // Если нет данных и загрузка не идет - это может быть ошибка или пустой ответ
+    // Не очищаем существующие данные, чтобы не потерять их при refetch
+    if (!response) {
+      return
+    }
+
+    // Обрабатываем данные, даже если идет refetch (isFetching === true)
+    // Это важно для предотвращения потери данных при обновлении
     const pagination = response.pagination || response.meta
     const responsePage = pagination?.current_page || currentPage
     const apiItems = Array.isArray(response.data) ? response.data : []
@@ -80,9 +96,12 @@ export const useVacanciesInfiniteList = (
         })
         setVacanciesMap(newMap)
       } else {
-        // Пустой ответ - очищаем данные
-        setItems([])
-        setVacanciesMap(new Map())
+        // Пустой ответ - очищаем данные только если это не refetch
+        // При refetch сохраняем существующие данные, если новых нет
+        if (!isFetching) {
+          setItems([])
+          setVacanciesMap(new Map())
+        }
       }
       return
     }
@@ -104,7 +123,7 @@ export const useVacanciesInfiniteList = (
         return newMap
       })
     }
-  }, [response, isFetching, isLoading, currentPage, enabled])
+  }, [response, isLoading, currentPage, enabled, isFetching])
 
   // Проверяем, есть ли еще данные для загрузки
   const hasMore = useMemo(() => {
@@ -132,9 +151,22 @@ export const useVacanciesInfiniteList = (
 
   // Сброс при изменении базовых параметров
   useEffect(() => {
-    setCurrentPage(1)
-    setItems([])
-    setVacanciesMap(new Map())
+    const prevParams = prevParamsRef.current
+    const hasParamsChanged = 
+      !prevParams ||
+      prevParams.shiftType !== shiftType ||
+      JSON.stringify(prevParams.baseQuery) !== JSON.stringify(baseQuery)
+    
+    if (hasParamsChanged) {
+      setCurrentPage(1)
+      // Очищаем данные только если параметры действительно изменились
+      // Это предотвратит потерю данных при случайных ре-рендерах
+      if (prevParams !== null) {
+        setItems([])
+        setVacanciesMap(new Map())
+      }
+      prevParamsRef.current = { baseQuery, shiftType }
+    }
   }, [baseQuery, shiftType])
 
   const loadMore = useCallback(() => {

@@ -169,7 +169,7 @@ export const shiftsApi = api.injectEndpoints({
         }
       },
       providesTags: ['Shift'],
-      keepUnusedDataFor: 0, // Не кэшировать данные, чтобы всегда получать актуальные результаты
+      keepUnusedDataFor: 30, // Кэшировать данные 30 секунд для предотвращения потери данных при refetch
     }),
 
     // Получить смену по ID

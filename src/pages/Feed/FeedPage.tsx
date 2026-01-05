@@ -1,9 +1,8 @@
-import { useMemo, useCallback, useState, useEffect } from 'react'
+import { useMemo, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { Tabs } from '@/components/ui/tabs'
-import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
 import { Toast } from '@/components/ui/toast'
 import type { FeedType } from './types'
@@ -16,14 +15,14 @@ import { ShiftSkeleton } from '@/components/ui/ShiftSkeleton'
 import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
 import { AdvancedFilters, type AdvancedFiltersData } from './components/AdvancedFilters'
 import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
-import { useShiftApplication } from './hooks/useShiftApplication'
-import { mapVacancyToShift } from './utils/mapping'
 import { useFeedFiltersState } from './hooks/useFeedFiltersState'
 import { useVacanciesInfiniteList } from './hooks/useVacanciesInfiniteList'
-import { buildVacanciesBaseParams, buildVacanciesQueryParams } from './utils/queryParams'
+import { buildVacanciesBaseParams } from './utils/queryParams'
 import { applyClientQuickFilters } from './utils/clientFilters'
-import { useAppliedShifts } from './hooks/useAppliedShifts'
 import { useHaptics } from '@/utils/haptics'
+import { useHotOffers } from './hooks/useHotOffers'
+import { useShiftActions } from './hooks/useShiftActions'
+import { mapVacancyToShift } from './utils/mapping'
 
 export const FeedPage = () => {
     useUserProfile()
@@ -47,11 +46,11 @@ export const FeedPage = () => {
     } = useFeedFiltersState()
 
     const {
-        appliedShifts,
         appliedShiftsSet,
-        markApplied,
-        unmarkApplied,
-    } = useAppliedShifts()
+        handleApply,
+        handleCancel,
+        isShiftLoading,
+    } = useShiftActions()
 
     const baseQuery = useMemo(
         () => buildVacanciesBaseParams({ activeQuickFilter: quickFilter, advanced: advancedFilters }),
@@ -79,56 +78,15 @@ export const FeedPage = () => {
     // Выбираем активный список в зависимости от типа фида
     const activeList = feedType === 'shifts' ? shiftsList : jobsList
 
-    // Параметры для запроса горящих смен
-    const hotShiftsQueryParams = useMemo(() => {
-        return buildVacanciesQueryParams({
-            shiftType: 'replacement',
-            page: 1,
-            perPage: 4,
-            urgent: true,
-            advanced: advancedFilters,
-        })
-    }, [advancedFilters])
-
-    // Загрузка горящих смен
-    const { data: hotShiftsResponse } = useGetVacanciesQuery(hotShiftsQueryParams, {
-        refetchOnMountOrArgChange: false,
-        skip: feedType !== 'shifts',
+    const {
+        hotOffers,
+        hotVacancies,
+        hotOffersTotalCount,
+    } = useHotOffers({
+        feedType,
+        advancedFilters,
+        addVacanciesToMap: addShiftsVacanciesToMap,
     })
-
-    // Сохраняем данные из hotShiftsResponse в vacanciesMap для доступа к детальной информации
-    useEffect(() => {
-        if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0 && feedType === 'shifts') {
-            // Добавляем только в vacanciesMap для доступа к детальной информации
-            addShiftsVacanciesToMap(hotShiftsResponse.data)
-        }
-    }, [hotShiftsResponse, feedType, addShiftsVacanciesToMap])
-
-    // Получаем горящие смены из отдельного запроса
-    const actualHotShifts = useMemo(() => {
-        if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0) {
-            return hotShiftsResponse.data.slice(0, 4).map(vacancy => {
-                const shift = mapVacancyToShift(vacancy)
-                const payment = typeof shift.pay === 'number' && !isNaN(shift.pay) ? shift.pay : 0
-                return {
-                    id: shift.id,
-                    emoji: shift.logo,
-                    payment,
-                    time: shift.date,
-                    restaurant: shift.restaurant,
-                    position: vacancy.position || shift.position || 'Сотрудник',
-                    specialization: vacancy.specialization || null,
-                }
-            })
-        }
-        return []
-    }, [hotShiftsResponse])
-
-    // Получаем общее количество горящих смен
-    const hotShiftsTotalCount = useMemo(() => {
-        const pagination = hotShiftsResponse?.pagination || hotShiftsResponse?.meta
-        return pagination?.total_count ?? undefined
-    }, [hotShiftsResponse])
 
     // Применяем клиентские фильтры
     const filteredShifts = useMemo(() => {
@@ -138,45 +96,6 @@ export const FeedPage = () => {
             userPosition,
         })
     }, [activeList.items, quickFilter, userPosition])
-
-    // Хук для работы с заявками
-    const { apply, cancel } = useShiftApplication({
-        onSuccess: () => {
-            // Не закрываем детальный экран при отклике с карточки
-        },
-    })
-
-    const [loadingShiftId, setLoadingShiftId] = useState<number | null>(null)
-
-    const handleApply = useCallback(
-        async (shiftId: number) => {
-            setLoadingShiftId(shiftId)
-            try {
-                await apply(shiftId)
-                markApplied(shiftId)
-            } catch {
-                // Ошибка уже обработана в хуке
-            } finally {
-                setLoadingShiftId(null)
-            }
-        },
-        [apply, markApplied]
-    )
-
-    const handleCancel = useCallback(
-        async (shiftId: number) => {
-            setLoadingShiftId(shiftId)
-            try {
-                await cancel(shiftId)
-                unmarkApplied(shiftId)
-            } catch {
-                // Ошибка уже обработана в хуке
-            } finally {
-                setLoadingShiftId(null)
-            }
-        },
-        [cancel, unmarkApplied]
-    )
 
     const handleOpenShiftDetails = useCallback((shiftId: number) => {
         setSelectedShiftId(shiftId)
@@ -198,7 +117,7 @@ export const FeedPage = () => {
             handleOpenShiftDetails(item.id)
             return
         }
-        const vacancyFromHot = hotShiftsResponse?.data?.find(vacancy => vacancy.id === item.id)
+        const vacancyFromHot = hotVacancies.find(vacancy => vacancy.id === item.id)
         if (vacancyFromHot) {
             addShiftsVacanciesToMap([vacancyFromHot])
             handleOpenShiftDetails(item.id)
@@ -216,7 +135,7 @@ export const FeedPage = () => {
         haptics,
         filteredShifts,
         activeList.vacanciesMap,
-        hotShiftsResponse,
+        hotVacancies,
         addShiftsVacanciesToMap,
         handleOpenShiftDetails,
     ])
@@ -283,11 +202,11 @@ export const FeedPage = () => {
                 />
             </div>
 
-            {feedType === 'shifts' && actualHotShifts.length > 0 && (
+            {feedType === 'shifts' && hotOffers.length > 0 && (
                 <HotOffers
-                    items={actualHotShifts}
-                    totalCount={hotShiftsTotalCount}
-                    onShowAll={hotShiftsTotalCount && actualHotShifts.length < hotShiftsTotalCount ? handleShowAllHotShifts : undefined}
+                    items={hotOffers}
+                    totalCount={hotOffersTotalCount}
+                    onShowAll={hotOffersTotalCount && hotOffers.length < hotOffersTotalCount ? handleShowAllHotShifts : undefined}
                     onItemClick={handleHotOfferClick}
                 />
             )}
@@ -322,7 +241,7 @@ export const FeedPage = () => {
                                     onOpenDetails={handleOpenShiftDetails}
                                     onApply={handleApply}
                                     onCancel={handleCancel}
-                                    isLoading={loadingShiftId === shift.id}
+                                    isLoading={isShiftLoading(shift.id)}
                                     isVacancy={feedType === 'jobs'}
                                 />
                             </motion.div>
@@ -350,7 +269,8 @@ export const FeedPage = () => {
                     onClose={handleCloseShiftDetails}
                     onApply={handleApply}
                     onCancel={handleCancel}
-                    isApplied={appliedShifts.includes(selectedShiftId)}
+                    isApplied={appliedShiftsSet.has(selectedShiftId)}
+                    isLoading={isShiftLoading(selectedShiftId)}
                     isVacancy={feedType === 'jobs'}
                 />
             )}
@@ -362,10 +282,7 @@ export const FeedPage = () => {
                 onApply={handleApplyAdvancedFilters}
                 initialFilters={advancedFilters || undefined}
                 filteredCount={filteredCount}
-                onReset={() => {
-                    setQuickFilter('all')
-                    setSelectedShiftId(null)
-                }}
+                onReset={resetFeedFilters}
             />
         </div>
     )
