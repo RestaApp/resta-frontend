@@ -39,23 +39,54 @@ const normalizeDateString = (dateString: string): string => {
  */
 const parseDate = (dateString?: string): Date | null => {
   if (!dateString) return null
-  
+
   try {
     // Нормализуем формат перед парсингом
     const normalized = normalizeDateString(dateString)
     const date = new Date(normalized)
-    
-    // Проверяем валидность даты
-    if (isNaN(date.getTime())) {
-      // Пробуем парсить без нормализации (на случай другого формата)
-      const fallbackDate = new Date(dateString)
-      if (isNaN(fallbackDate.getTime())) {
-        return null
-      }
+
+    if (!isNaN(date.getTime())) {
+      return date
+    }
+
+    // Пробуем парсить без нормализации (на случай другого формата)
+    const fallbackDate = new Date(dateString)
+    if (!isNaN(fallbackDate.getTime())) {
       return fallbackDate
     }
-    
-    return date
+
+    // Ручной парсинг для строгих WebView (например, Telegram)
+    const match = dateString.trim().match(
+      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.(\d{3}))?(?:\s*(Z|([+-])(\d{2}):?(\d{2})))?$/
+    )
+    if (!match) {
+      return null
+    }
+
+    const year = Number(match[1])
+    const month = Number(match[2]) - 1
+    const day = Number(match[3])
+    const hour = Number(match[4])
+    const minute = Number(match[5])
+    const second = match[6] ? Number(match[6]) : 0
+    const ms = match[7] ? Number(match[7]) : 0
+    const timezone = match[8]
+    const sign = match[9]
+    const tzHour = match[10] ? Number(match[10]) : 0
+    const tzMin = match[11] ? Number(match[11]) : 0
+
+    if (timezone === 'Z') {
+      return new Date(Date.UTC(year, month, day, hour, minute, second, ms))
+    }
+
+    if (sign) {
+      const offsetMinutes = tzHour * 60 + tzMin
+      const utcMs = Date.UTC(year, month, day, hour, minute, second, ms)
+      const offsetMs = offsetMinutes * 60 * 1000
+      return new Date(sign === '+' ? utcMs - offsetMs : utcMs + offsetMs)
+    }
+
+    return new Date(year, month, day, hour, minute, second, ms)
   } catch {
     return null
   }
@@ -238,4 +269,3 @@ export const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
     badges: vacancy.urgent ? ['🔥 Срочно'] : undefined,
   }
 }
-
