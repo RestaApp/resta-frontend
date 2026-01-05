@@ -8,8 +8,8 @@ interface ShiftCardProps {
     shift: Shift
     isApplied?: boolean
     onOpenDetails: (id: number) => void
-    onApply: (id: number) => Promise<void>
-    onCancel: (id: number) => Promise<void>
+    onApply: (id: number) => void
+    onCancel: (id: number) => void
     isLoading?: boolean
     isVacancy?: boolean // Флаг для вакансий (оплата за месяц, а не за смену)
 }
@@ -24,16 +24,12 @@ const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, 
         onOpenDetails(shift.id)
     }
 
-    const handleButtonClick = async (e: React.MouseEvent) => {
+    const handleButtonClick = (e: React.MouseEvent) => {
         e.stopPropagation()
-        try {
-            if (isApplied) {
-                await onCancel(shift.id)
-            } else {
-                await onApply(shift.id)
-            }
-        } catch {
-            // Ошибка уже обработана в хуке
+        if (isApplied) {
+            onCancel(shift.id)
+        } else {
+            onApply(shift.id)
         }
     }
 

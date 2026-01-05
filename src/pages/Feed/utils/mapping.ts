@@ -8,29 +8,14 @@ import type { Shift } from '../types'
 /**
  * Форматирует дату для отображения
  */
-const formatDate = (dateString?: string | null): string => {
-  // Проверяем на null, undefined и пустую строку
-  if (!dateString || dateString.trim() === '') {
-    return 'Дата не указана'
-  }
-  
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return 'Дата не указана'
   try {
     const date = new Date(dateString)
     // Проверяем валидность даты
     if (isNaN(date.getTime())) {
-      // Пробуем альтернативные форматы
-      const timestamp = Date.parse(dateString)
-      if (!isNaN(timestamp)) {
-        const dateFromTimestamp = new Date(timestamp)
-        if (!isNaN(dateFromTimestamp.getTime())) {
-          const day = dateFromTimestamp.getDate()
-          const month = dateFromTimestamp.toLocaleDateString('ru-RU', { month: 'long' })
-          return `${day} ${month}`
-        }
-      }
       return 'Дата не указана'
     }
-    
     const day = date.getDate()
     const month = date.toLocaleDateString('ru-RU', { month: 'long' })
     return `${day} ${month}`
@@ -42,40 +27,15 @@ const formatDate = (dateString?: string | null): string => {
 /**
  * Форматирует время для отображения
  */
-const formatTime = (startTime?: string | null, endTime?: string | null): string => {
-  // Проверяем на null, undefined и пустые строки
-  const hasStart = startTime && startTime.trim() !== ''
-  const hasEnd = endTime && endTime.trim() !== ''
-  
-  if (!hasStart && !hasEnd) return 'Время не указано'
-  
-  if (hasStart && hasEnd) {
+const formatTime = (startTime?: string, endTime?: string): string => {
+  if (!startTime && !endTime) return 'Время не указано'
+  if (startTime && endTime) {
     try {
-      const startDate = new Date(startTime!)
-      const endDate = new Date(endTime!)
+      const startDate = new Date(startTime)
+      const endDate = new Date(endTime)
       
       // Проверяем валидность дат
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        // Пробуем альтернативные форматы
-        const startTimestamp = Date.parse(startTime!)
-        const endTimestamp = Date.parse(endTime!)
-        
-        if (!isNaN(startTimestamp) && !isNaN(endTimestamp)) {
-          const startDateFromTimestamp = new Date(startTimestamp)
-          const endDateFromTimestamp = new Date(endTimestamp)
-          
-          if (!isNaN(startDateFromTimestamp.getTime()) && !isNaN(endDateFromTimestamp.getTime())) {
-            const start = startDateFromTimestamp.toLocaleTimeString('ru-RU', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-            const end = endDateFromTimestamp.toLocaleTimeString('ru-RU', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-            return `${start} - ${end}`
-          }
-        }
         return 'Время не указано'
       }
       
@@ -92,8 +52,7 @@ const formatTime = (startTime?: string | null, endTime?: string | null): string 
       return 'Время не указано'
     }
   }
-  
-  return hasStart ? startTime! : (hasEnd ? endTime! : 'Время не указано')
+  return startTime || endTime || 'Время не указано'
 }
 
 /**
@@ -197,12 +156,8 @@ const toNumber = (value: unknown, defaultValue = 0): number => {
  * Преобразует данные вакансии из API в формат Shift для компонента
  */
 export const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
-  // Нормализуем start_time и end_time - проверяем на пустые строки
-  const startTime = vacancy.start_time && vacancy.start_time.trim() !== '' ? vacancy.start_time : undefined
-  const endTime = vacancy.end_time && vacancy.end_time.trim() !== '' ? vacancy.end_time : undefined
-  
-  const duration = getDuration(startTime, endTime)
-  const timeFormatted = formatTime(startTime, endTime)
+  const duration = getDuration(vacancy.start_time, vacancy.end_time)
+  const timeFormatted = formatTime(vacancy.start_time, vacancy.end_time)
   const timeWithDuration = duration ? `${timeFormatted} (${duration})` : timeFormatted
 
   return {
@@ -213,13 +168,13 @@ export const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
     rating: toNumber(vacancy.user?.average_rating, 0),
     position: vacancy.position || vacancy.target_roles?.[0] || 'Сотрудник',
     specialization: vacancy.specialization || null,
-    date: formatDate(startTime),
+    date: formatDate(vacancy.start_time),
     time: timeWithDuration,
     pay: getPayment(
       vacancy.payment,
       vacancy.hourly_rate,
-      startTime,
-      endTime
+      vacancy.start_time,
+      vacancy.end_time
     ),
     currency: 'BYN',
     location: vacancy.location || vacancy.user?.restaurant_profile?.city || '',
