@@ -86,7 +86,7 @@ export const Tabs = <T extends string>({
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(option.id)}
-            className="relative z-10 flex-1 py-2 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
+            className="relative z-10 flex-1 py-2 rounded-lg flex items-center justify-center gap-2"
             style={{
               color: isActive ? 'white' : 'inherit',
             }}
@@ -103,11 +103,10 @@ export const Tabs = <T extends string>({
                 <Icon className="w-4 h-4" />
               </motion.div>
             ) : null}
-            <span className="transition-all duration-300">{option.label}</span>
+            <span>{option.label}</span>
           </button>
         )
       })}
     </div>
   )
 }
-
