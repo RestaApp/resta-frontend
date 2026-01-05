@@ -70,6 +70,14 @@ export interface UserSpecializationsResponse {
 }
 
 /**
+ * Ответ при получении городов
+ */
+export interface CitiesResponse {
+  success: boolean
+  data: string[]
+}
+
+/**
  * Ответ при получении данных пользователя
  */
 export interface GetUserResponse {
@@ -122,6 +130,11 @@ export const usersApi = api.injectEndpoints({
       ],
       keepUnusedDataFor: 3600, // Кэшировать данные 1 час
     }),
+
+    // Получение городов
+    getCities: createCatalogQuery<CitiesResponse, void>(builder, {
+      url: '/api/v1/catalogs/cities',
+    }),
   }),
 })
 
@@ -131,4 +144,5 @@ export const {
   useUpdateUserMutation,
   useGetUserPositionsQuery,
   useGetUserSpecializationsQuery,
+  useGetCitiesQuery,
 } = usersApi

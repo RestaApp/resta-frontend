@@ -17,6 +17,7 @@ type DrawerProps = {
   onOpenChange: (open: boolean) => void
   children?: React.ReactNode
   preventClose?: boolean
+  hasBottomNav?: boolean
 }
 
 type OverlayProps = {
@@ -45,6 +46,7 @@ type DrawerContentProps = {
   children?: React.ReactNode
   onOpenChange: (open: boolean) => void
   preventClose?: boolean
+  hasBottomNav?: boolean
 }
 
 const DrawerContent = memo(({
@@ -52,6 +54,7 @@ const DrawerContent = memo(({
   children,
   onOpenChange,
   preventClose,
+  hasBottomNav = true,
 }: DrawerContentProps) => {
   const handleOverlayClick = useCallback(() => {
     if (!preventClose) {
@@ -68,7 +71,8 @@ const DrawerContent = memo(({
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className={cn(
-          'fixed inset-x-0 bottom-15 z-50 flex h-auto max-h-[85vh] flex-col rounded-t-2xl border-t border-border bg-background shadow-xl',
+          'fixed inset-x-0 z-50 flex h-auto max-h-[85vh] flex-col rounded-t-2xl border-t border-border bg-background shadow-xl',
+          hasBottomNav ? 'bottom-15' : 'bottom-0',
           className
         )}
         role="dialog"
@@ -83,11 +87,11 @@ const DrawerContent = memo(({
 
 DrawerContent.displayName = 'DrawerContent'
 
-function Drawer({ open, onOpenChange, children, preventClose }: DrawerProps) {
+function Drawer({ open, onOpenChange, children, preventClose, hasBottomNav = true }: DrawerProps) {
   return (
     <AnimatePresence>
       {open && (
-        <DrawerContent onOpenChange={onOpenChange} preventClose={preventClose}>
+        <DrawerContent onOpenChange={onOpenChange} preventClose={preventClose} hasBottomNav={hasBottomNav}>
           {children}
         </DrawerContent>
       )}

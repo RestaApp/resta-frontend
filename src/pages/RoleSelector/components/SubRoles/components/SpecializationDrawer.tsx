@@ -57,7 +57,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
     }
 
     return (
-        <Drawer open={open} onOpenChange={handleOpenChange} preventClose={errorDialogOpen}>
+        <Drawer open={open} onOpenChange={handleOpenChange} preventClose={errorDialogOpen} hasBottomNav={false}>
             <DrawerHeader>
                 <DrawerTitle>{title}</DrawerTitle>
                 {specializations.length > 0 && (

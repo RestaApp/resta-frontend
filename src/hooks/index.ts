@@ -3,6 +3,7 @@
  */
 
 export * from './useAuth'
+export * from './useCities'
 export * from './useNavigation'
 export * from './useRole'
 export * from './useRoles'
