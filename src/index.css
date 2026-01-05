@@ -190,7 +190,14 @@
     /* FIX: Убрали глобальную анимацию. 
        Анимируем только фон и цвет текста, чтобы не лагали кнопки.
     */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease;
+  }
+
+  /* Only background color transitions should be smooth; everything else is instant. */
+  * {
+    transition-property: background-color !important;
+    transition-duration: 0.3s !important;
+    transition-timing-function: ease !important;
   }
 
   /* FIX: Используем Tailwind классы для применения размеров */
