@@ -5,6 +5,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { authService } from '@/services/auth'
 import { useAppSelector } from '@/store/hooks'
+import { clearUserData } from '@/store/userSlice'
+import { store } from '@/store'
 
 interface AuthContextValue {
   isLoading: boolean
@@ -40,11 +42,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Слушаем события авторизации
     const handleAuthChange = () => checkAuth()
-    const handleLogout = async () => {
+    const handleLogout = () => {
       checkAuth()
       // Очищаем данные пользователя из Redux
-      const { clearUserData } = await import('@/store/userSlice')
-      const { store } = await import('@/store')
       store.dispatch(clearUserData())
     }
 

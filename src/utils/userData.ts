@@ -6,6 +6,7 @@
 import type { AppDispatch } from '@/store'
 import { setUserData } from '@/store/userSlice'
 import type { UserData } from '@/services/api/authApi'
+import { api } from '@/store/api'
 
 /**
  * Обновляет данные пользователя в Redux store
@@ -21,15 +22,7 @@ export const updateUserDataInStore = (dispatch: AppDispatch, userData: UserData 
  * @param dispatch - Redux dispatch функция
  */
 export const invalidateUserCache = (dispatch: AppDispatch): void => {
-  // Используем прямой импорт через динамический для избежания циклических зависимостей
-  // при инициализации модулей
-  import('@/store/api')
-    .then(({ api }) => {
-      dispatch(api.util.invalidateTags(['User']))
-    })
-    .catch(() => {
-      // Игнорируем ошибки импорта
-    })
+  dispatch(api.util.invalidateTags(['User']))
 }
 
 /**

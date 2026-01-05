@@ -45,7 +45,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         return true
       }
 
-      const userId = await getCurrentUserId()
+      const userId = getCurrentUserId()
       if (!userId) {
         onSelectRole(role)
         return true
@@ -95,7 +95,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         return true
       }
 
-      const userId = await getCurrentUserId()
+      const userId = getCurrentUserId()
       if (!userId) {
         onSuccess()
         return true
