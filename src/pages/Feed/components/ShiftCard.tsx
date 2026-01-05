@@ -11,9 +11,10 @@ interface ShiftCardProps {
     onApply: (id: number) => void
     onCancel: (id: number) => void
     isLoading?: boolean
+    isVacancy?: boolean // Флаг для вакансий (оплата за месяц, а не за смену)
 }
 
-const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, onCancel, isLoading = false }: ShiftCardProps) => {
+const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, onCancel, isLoading = false, isVacancy = false }: ShiftCardProps) => {
     const handleCardClick = (e: React.MouseEvent) => {
         // Предотвращаем открытие деталей при клике на кнопку
         if ((e.target as HTMLElement).closest('button')) {
@@ -72,7 +73,7 @@ const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, 
                     </div>
                     {/* Если есть почасовая, можно вывести мелко снизу */}
                     <div className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-md inline-block">
-                        за смену
+                        {isVacancy ? 'за месяц' : 'за смену'}
                     </div>
                 </div>
             </div>

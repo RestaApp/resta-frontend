@@ -33,6 +33,7 @@ interface ShiftDetailsScreenProps {
     onApply?: (id: number) => void // Опционально для обратной совместимости
     isApplied?: boolean
     onCancel?: (id: number) => void // Callback для отмены заявки
+    isVacancy?: boolean // Флаг для вакансий (оплата за месяц, а не за смену)
 }
 
 /**
@@ -92,6 +93,7 @@ export const ShiftDetailsScreen = memo(({
     onApply,
     isApplied = false,
     onCancel,
+    isVacancy = false,
 }: ShiftDetailsScreenProps) => {
     const {
         restaurantInfo,
@@ -265,9 +267,13 @@ export const ShiftDetailsScreen = memo(({
                                 </span>
                             }
                             subValue={
-                                hourlyRate
-                                    ? `за смену (${hourlyRate} ${shift.currency}/час)`
-                                    : 'за смену'
+                                isVacancy
+                                    ? hourlyRate
+                                        ? `за месяц (${hourlyRate} ${shift.currency}/час)`
+                                        : 'за месяц'
+                                    : hourlyRate
+                                        ? `за смену (${hourlyRate} ${shift.currency}/час)`
+                                        : 'за смену'
                             }
                         />
                         {applicationsInfo && (

@@ -17,16 +17,6 @@ export interface Shift {
   badges?: string[] // Дополнительные бейджи
 }
 
-export interface Job {
-  id: number
-  logo: string
-  restaurant: string
-  rating: number
-  position: string
-  schedule: string
-  salary: string
-  currency: string
-}
 
 
 

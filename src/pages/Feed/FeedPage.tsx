@@ -10,12 +10,11 @@ import { useAppSelector } from '@/store/hooks'
 import { DEFAULT_PRICE_RANGE, hasActiveFilters } from '@/utils/filters'
 import { Toast } from '@/components/ui/toast'
 import type { FeedType } from './types'
-import type { Shift, Job } from './types'
+import type { Shift } from './types'
 import type { TabOption } from '@/components/ui/tabs'
 import { SearchFilters } from './components/SearchFilters'
 import { HotOffers, type HotOffer } from './components/HotOffers'
 import { ShiftCard } from './components/ShiftCard'
-import { JobCard } from './components/JobCard'
 import { EmptyState } from './components/EmptyState'
 import { ShiftSkeleton } from '@/components/ui/ShiftSkeleton'
 import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
@@ -24,32 +23,9 @@ import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
 import { useShiftApplication } from './hooks/useShiftApplication'
 import { mapVacancyToShift } from './utils/mapping'
 
-const jobs: Job[] = [
-    {
-        id: 1,
-        logo: '🍕',
-        restaurant: 'Pizzeria Napoli',
-        rating: 4.6,
-        position: 'Пиццайоло',
-        schedule: '5/2',
-        salary: 'от 2500',
-        currency: 'BYN',
-    },
-    {
-        id: 2,
-        logo: '☕️',
-        restaurant: 'Coffee House',
-        rating: 4.8,
-        position: 'Бариста',
-        schedule: '2/2',
-        salary: 'от 2000',
-        currency: 'BYN',
-    },
-]
-
 export const FeedPage = () => {
     useUserProfile()
-    const { toast, showToast, hideToast } = useToast()
+    const { toast, hideToast } = useToast()
     const [feedType, setFeedType] = useState<FeedType>('shifts')
     const [appliedShifts, setAppliedShifts] = useState<number[]>([])
     const [loadingShiftId, setLoadingShiftId] = useState<number | null>(null)
@@ -107,8 +83,19 @@ export const FeedPage = () => {
     const [allVacancies, setAllVacancies] = useState<Map<number, VacancyApiItem>>(new Map())
     const [isDataProcessed, setIsDataProcessed] = useState(false)
 
+    // Ref для отслеживания обработанных ответов, чтобы избежать повторной обработки
+    const processedResponseRef = useRef<string | null>(null)
 
-    // Формируем параметры запроса с учетом фильтров
+    // Состояния для вакансий (jobs)
+    const [currentPageJobs, setCurrentPageJobs] = useState(1)
+    const [allJobs, setAllJobs] = useState<Shift[]>([])
+    const [allJobsVacancies, setAllJobsVacancies] = useState<Map<number, VacancyApiItem>>(new Map())
+    const [isDataProcessedJobs, setIsDataProcessedJobs] = useState(false)
+
+    // Ref для отслеживания обработанных ответов вакансий
+    const processedJobsResponseRef = useRef<string | null>(null)
+
+    // Формируем параметры запроса с учетом фильтров для смен (replacement)
     // Используем только параметры из API документации
     const queryParams = useMemo(() => {
         const params: Parameters<typeof useGetVacanciesQuery>[0] = {
@@ -191,6 +178,48 @@ export const FeedPage = () => {
         return params
     }, [advancedFilters])
 
+    // Формируем параметры запроса для вакансий (vacancy) с учетом фильтров
+    const queryParamsJobs = useMemo(() => {
+        const params: Parameters<typeof useGetVacanciesQuery>[0] = {
+            shift_type: 'vacancy',
+            page: currentPageJobs,
+            per_page: 5,
+        }
+
+        // Быстрые фильтры
+        if (activeFilter === 'urgent') {
+            params.urgent = true
+        }
+
+        // Расширенные фильтры
+        if (advancedFilters) {
+            if (advancedFilters.priceRange) {
+                params.min_payment = advancedFilters.priceRange[0]
+                params.max_payment = advancedFilters.priceRange[1]
+            }
+
+            // Используем позицию, если выбрана
+            if (advancedFilters.selectedPosition) {
+                params.position = advancedFilters.selectedPosition
+            }
+
+            // Используем специализацию, если выбрана
+            if (advancedFilters.selectedSpecializations && advancedFilters.selectedSpecializations.length > 0) {
+                params.specialization = advancedFilters.selectedSpecializations[0]
+            }
+
+            // Используем даты, если выбраны
+            if (advancedFilters.startDate) {
+                params.start_date = advancedFilters.startDate
+            }
+            if (advancedFilters.endDate) {
+                params.end_date = advancedFilters.endDate
+            }
+        }
+
+        return params
+    }, [activeFilter, advancedFilters, currentPageJobs])
+
     // Загрузка смен с поданными заявками
     const { data: appliedShiftsResponse } = useGetAppliedShiftsQuery(undefined, {
         refetchOnMountOrArgChange: true, // Обновлять при монтировании
@@ -199,20 +228,37 @@ export const FeedPage = () => {
     // Загрузка горящих смен (urgent: true) для секции "Горящие смены" с учетом фильтров
     const { data: hotShiftsResponse } = useGetVacanciesQuery(hotShiftsQueryParams, {
         refetchOnMountOrArgChange: false,
+        skip: feedType !== 'shifts', // Пропускаем запрос, если не выбран тип 'shifts'
     })
 
     // Загрузка всех смен (replacement) из API с фильтрами
     const { data: shiftsResponse, isLoading: isLoadingShifts, isError: isErrorShifts, isFetching } = useGetVacanciesQuery(queryParams, {
         refetchOnMountOrArgChange: false, // Не обновлять при монтировании, только при изменении параметров
-        skip: false,
+        skip: feedType !== 'shifts', // Пропускаем запрос, если не выбран тип 'shifts'
     })
 
-    // Объединяем новые данные с уже загруженными
+    // Загрузка всех вакансий (vacancy) из API с фильтрами
+    const { data: jobsResponse, isLoading: isLoadingJobs, isError: isErrorJobs, isFetching: isFetchingJobs } = useGetVacanciesQuery(queryParamsJobs, {
+        refetchOnMountOrArgChange: false,
+        skip: feedType !== 'jobs', // Пропускаем запрос, если не выбран тип 'jobs'
+    })
+
+    // Объединяем новые данные смен с уже загруженными
+    // Обрабатываем только основной запрос (shiftsResponse), hotShiftsResponse обрабатывается отдельно
     useEffect(() => {
-        if (shiftsResponse) {
+        // Обрабатываем данные только если загрузка завершена (не в процессе загрузки)
+        if (shiftsResponse && feedType === 'shifts' && !isFetching && !isLoadingShifts) {
             // API может возвращать pagination или meta
             const pagination = shiftsResponse.pagination || shiftsResponse.meta
             const responsePage = pagination?.current_page || currentPage
+
+            // Создаем уникальный ключ для ответа (page + timestamp данных)
+            const responseKey = `${responsePage}-${shiftsResponse.data?.length || 0}-${shiftsResponse.data?.[0]?.id || ''}`
+
+            // Пропускаем обработку, если этот ответ уже был обработан
+            if (processedResponseRef.current === responseKey) {
+                return
+            }
 
             // Для первой страницы всегда заменяем данные (даже если они пустые)
             if (responsePage === 1) {
@@ -229,6 +275,9 @@ export const FeedPage = () => {
                     setAllShifts([])
                     setAllVacancies(new Map())
                 }
+                // Данные обработаны только после завершения загрузки и обработки основного запроса
+                setIsDataProcessed(true)
+                processedResponseRef.current = responseKey
             } else {
                 // Последующие загрузки - добавляем к существующим
                 if (shiftsResponse.data && Array.isArray(shiftsResponse.data) && shiftsResponse.data.length > 0) {
@@ -247,17 +296,75 @@ export const FeedPage = () => {
                         })
                         return newMap
                     })
+                    processedResponseRef.current = responseKey
                 }
             }
-            // Данные обработаны
-            setIsDataProcessed(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [shiftsResponse])
+    }, [shiftsResponse, feedType, isFetching, isLoadingShifts])
 
-    // Сбрасываем пагинацию при изменении фильтров
+    // Объединяем новые данные вакансий с уже загруженными
+    useEffect(() => {
+        // Обрабатываем данные только если загрузка завершена (не в процессе загрузки)
+        if (jobsResponse && feedType === 'jobs' && !isFetchingJobs && !isLoadingJobs) {
+            // API может возвращать pagination или meta
+            const pagination = jobsResponse.pagination || jobsResponse.meta
+            const responsePage = pagination?.current_page || currentPageJobs
+
+            // Создаем уникальный ключ для ответа (page + timestamp данных)
+            const responseKey = `${responsePage}-${jobsResponse.data?.length || 0}-${jobsResponse.data?.[0]?.id || ''}`
+
+            // Пропускаем обработку, если этот ответ уже был обработан
+            if (processedJobsResponseRef.current === responseKey) {
+                return
+            }
+
+            // Для первой страницы всегда заменяем данные (даже если они пустые)
+            if (responsePage === 1) {
+                if (jobsResponse.data && Array.isArray(jobsResponse.data) && jobsResponse.data.length > 0) {
+                    const newJobs = jobsResponse.data.map(mapVacancyToShift)
+                    setAllJobs(newJobs)
+                    const newMap = new Map<number, VacancyApiItem>()
+                    jobsResponse.data.forEach(vacancy => {
+                        newMap.set(vacancy.id, vacancy)
+                    })
+                    setAllJobsVacancies(newMap)
+                } else {
+                    // Пустой ответ - очищаем данные
+                    setAllJobs([])
+                    setAllJobsVacancies(new Map())
+                }
+                // Данные обработаны только после завершения загрузки и обработки основного запроса
+                setIsDataProcessedJobs(true)
+                processedJobsResponseRef.current = responseKey
+            } else {
+                // Последующие загрузки - добавляем к существующим
+                if (jobsResponse.data && Array.isArray(jobsResponse.data) && jobsResponse.data.length > 0) {
+                    const newJobs = jobsResponse.data.map(mapVacancyToShift)
+                    setAllJobs(prev => {
+                        const existingIds = new Set(prev.map(s => s.id))
+                        const uniqueNewJobs = newJobs.filter(s => !existingIds.has(s.id))
+                        return [...prev, ...uniqueNewJobs]
+                    })
+                    setAllJobsVacancies(prev => {
+                        const newMap = new Map(prev)
+                        jobsResponse.data.forEach(vacancy => {
+                            if (!newMap.has(vacancy.id)) {
+                                newMap.set(vacancy.id, vacancy)
+                            }
+                        })
+                        return newMap
+                    })
+                    processedJobsResponseRef.current = responseKey
+                }
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [jobsResponse, feedType, isFetchingJobs, isLoadingJobs])
+
+    // Сбрасываем пагинацию при изменении фильтров или типа фида
     // Используем ref для отслеживания предыдущих значений, чтобы не сбрасывать при каждом рендере
-    const prevFiltersRef = useRef({ activeFilter, advancedFilters })
+    const prevFiltersRef = useRef({ activeFilter, advancedFilters, feedType })
 
     useEffect(() => {
         const prevFilters = prevFiltersRef.current
@@ -271,36 +378,47 @@ export const FeedPage = () => {
 
         const filtersChanged =
             prevFilters.activeFilter !== activeFilter ||
+            prevFilters.feedType !== feedType ||
             advancedFiltersChanged
 
         if (filtersChanged) {
             // Обновляем ref сразу, чтобы избежать повторных срабатываний
-            prevFiltersRef.current = { activeFilter, advancedFilters }
+            prevFiltersRef.current = { activeFilter, advancedFilters, feedType }
 
             // Сбрасываем состояние в одном батче
             // Используем функциональные обновления, чтобы React батчил их вместе
             setCurrentPage(1)
+            setCurrentPageJobs(1)
             setAllShifts([])
             setAllVacancies(new Map())
+            setAllJobs([])
+            setAllJobsVacancies(new Map())
             setIsDataProcessed(false) // Сбрасываем флаг обработки при изменении фильтров
+            setIsDataProcessedJobs(false)
             setSelectedShiftId(null) // Закрываем детальную карточку при изменении фильтров
+            // Сбрасываем ref для отслеживания обработанных ответов
+            processedResponseRef.current = null
+            processedJobsResponseRef.current = null
         }
-    }, [activeFilter, advancedFilters])
+    }, [activeFilter, advancedFilters, feedType])
 
-    // Используем все загруженные смены
-    const shifts: Shift[] = allShifts
+    // Используем все загруженные смены или вакансии в зависимости от типа фида
+    const shifts: Shift[] = feedType === 'shifts' ? allShifts : allJobs
 
-    // Проверяем, есть ли еще данные для загрузки
+    // Проверяем, есть ли еще данные для загрузки смен
     const hasMore = useMemo(() => {
+        const response = feedType === 'shifts' ? shiftsResponse : jobsResponse
+        const items = feedType === 'shifts' ? allShifts : allJobs
+
         // API может возвращать pagination или meta
-        const pagination = shiftsResponse?.pagination || shiftsResponse?.meta
+        const pagination = response?.pagination || response?.meta
         if (!pagination) return false
 
         // Проверяем, загружены ли все записи по total_count
         const totalCount = pagination.total_count
         if (totalCount !== undefined && totalCount !== null) {
             // Если загружено меньше записей, чем всего есть - значит есть еще данные
-            if (allShifts.length < totalCount) {
+            if (items.length < totalCount) {
                 return true
             }
             // Если загружено столько же или больше - значит все загружено
@@ -318,24 +436,28 @@ export const FeedPage = () => {
         }
 
         return false
-    }, [shiftsResponse, allShifts.length])
+    }, [shiftsResponse, jobsResponse, allShifts.length, allJobs.length, feedType])
 
     // Функция для загрузки следующей страницы
     const handleLoadMore = useCallback(() => {
-        if (!isLoadingShifts && !isFetching && hasMore) {
-            setCurrentPage(prev => prev + 1)
+        const isLoading = feedType === 'shifts' ? isLoadingShifts : isLoadingJobs
+        const isFetchingValue = feedType === 'shifts' ? isFetching : isFetchingJobs
+
+        if (!isLoading && !isFetchingValue && hasMore) {
+            if (feedType === 'shifts') {
+                setCurrentPage(prev => prev + 1)
+            } else {
+                setCurrentPageJobs(prev => prev + 1)
+            }
         }
-    }, [isLoadingShifts, isFetching, hasMore])
+    }, [feedType, isLoadingShifts, isLoadingJobs, isFetching, isFetchingJobs, hasMore])
 
     // Сохраняем данные из hotShiftsResponse в allVacancies и allShifts для доступа к детальной информации
+    // Это делается только для доступа к детальной информации, не влияет на отображение списка
     useEffect(() => {
-        if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0) {
-            const newShifts = hotShiftsResponse.data.map(mapVacancyToShift)
-            setAllShifts(prev => {
-                const existingIds = new Set(prev.map(s => s.id))
-                const uniqueNewShifts = newShifts.filter(s => !existingIds.has(s.id))
-                return [...prev, ...uniqueNewShifts]
-            })
+        if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0 && feedType === 'shifts') {
+            // Добавляем только в allVacancies для доступа к детальной информации
+            // Не добавляем в allShifts, чтобы не вызывать повторное отображение
             setAllVacancies(prev => {
                 const newMap = new Map(prev)
                 hotShiftsResponse.data.forEach(vacancy => {
@@ -346,7 +468,7 @@ export const FeedPage = () => {
                 return newMap
             })
         }
-    }, [hotShiftsResponse])
+    }, [hotShiftsResponse, feedType])
 
     // Получаем горящие смены из отдельного запроса с urgent: true
     const actualHotShifts = useMemo(() => {
@@ -450,9 +572,13 @@ export const FeedPage = () => {
         setActiveFilter('all')
         setAdvancedFilters(null)
         setCurrentPage(1)
+        setCurrentPageJobs(1)
         setAllShifts([])
         setAllVacancies(new Map())
+        setAllJobs([])
+        setAllJobsVacancies(new Map())
         setIsDataProcessed(false)
+        setIsDataProcessedJobs(false)
         setSelectedShiftId(null) // Закрываем детальную карточку при сбросе фильтров
     }
 
@@ -498,10 +624,6 @@ export const FeedPage = () => {
     }, [shifts, activeFilter, userPosition])
 
 
-    const handleContact = (restaurant: string) => {
-        showToast(`Открытие Telegram-чата с менеджером "${restaurant}"`, 'info')
-    }
-
     // Определяем, есть ли активные фильтры (расширенные или быстрые)
     const hasActiveAdvancedFilters = useMemo(() => {
         const hasActiveQuickFilter = activeFilter !== 'all'
@@ -509,21 +631,22 @@ export const FeedPage = () => {
         return hasActiveQuickFilter || hasAdvancedFilters
     }, [advancedFilters, activeFilter])
 
-    // Количество отфильтрованных смен
+    // Количество отфильтрованных смен или вакансий
     const filteredCount = useMemo(() => {
-        const pagination = shiftsResponse?.pagination || shiftsResponse?.meta
+        const response = feedType === 'shifts' ? shiftsResponse : jobsResponse
+        const pagination = response?.pagination || response?.meta
         return pagination?.total_count ?? 0
-    }, [shiftsResponse])
+    }, [shiftsResponse, jobsResponse, feedType])
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            <div className="top-0 z-10 bg-background/95 backdrop-blur-sm pb-2 pt-2 transition-all border-b border-border/50">
+            <div className="top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 transition-all border-border/50">
                 <div className="px-4 pb-2">
                     <Tabs options={feedTypeOptions} activeId={feedType} onChange={setFeedType} />
                 </div>
                 <SearchFilters
                     onOpenFilters={() => setIsFiltersOpen(true)}
-                    isLoading={isFetching}
+                    isLoading={feedType === 'shifts' ? isFetching : isFetchingJobs}
                     hasActiveFilters={hasActiveAdvancedFilters}
                     activeFilters={advancedFilters}
                 />
@@ -569,71 +692,77 @@ export const FeedPage = () => {
             )}
 
             <div className="px-4 py-4 space-y-4">
-                {feedType === 'shifts' ? (
-                    (isLoadingShifts || isFetching) && currentPage === 1 && allShifts.length === 0 ? (
-                        <ShiftSkeleton />
-                    ) : isErrorShifts && currentPage === 1 ? (
-                        <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
-                    ) : !isFetching && !isLoadingShifts && isDataProcessed && filteredShifts.length === 0 ? (
-                        <EmptyState
-                            message={activeFilter !== 'all' || advancedFilters
-                                ? 'По вашим фильтрам ничего не найдено'
-                                : 'Смены не найдены'}
-                            onReset={handleResetFilters}
-                            showResetButton={!!(activeFilter !== 'all' || advancedFilters)}
-                        />
-                    ) : (
-                        <>
-                            {filteredShifts.map((shift, index) => (
-                                <motion.div
-                                    key={shift.id}
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 0.2 + index * 0.05 }}
-                                >
-                                    <ShiftCard
-                                        shift={shift}
-                                        isApplied={appliedShiftsSet.has(shift.id)}
-                                        onOpenDetails={handleOpenShiftDetails}
-                                        onApply={handleApply}
-                                        onCancel={handleCancel}
-                                        isLoading={loadingShiftId === shift.id}
-                                    />
-                                </motion.div>
-                            ))}
-                            {/* Infinite Scroll Trigger - показываем только если есть загруженные смены */}
-                            {filteredShifts.length > 0 && (
-                                <InfiniteScrollTrigger
-                                    onLoadMore={handleLoadMore}
-                                    hasMore={hasMore}
-                                    isLoading={isFetching}
-                                    isError={isErrorShifts}
-                                />
-                            )}
-                        </>
-                    )
+                {(feedType === 'shifts'
+                    ? ((isLoadingShifts || isFetching) && currentPage === 1 && !isDataProcessed)
+                    : ((isLoadingJobs || isFetchingJobs) && currentPageJobs === 1 && !isDataProcessedJobs)
+                ) ? (
+                    <ShiftSkeleton />
+                ) : (feedType === 'shifts'
+                    ? (isErrorShifts && currentPage === 1)
+                    : (isErrorJobs && currentPageJobs === 1)
+                ) ? (
+                    <div className="text-center py-8 text-destructive">
+                        Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}
+                    </div>
+                ) : (feedType === 'shifts' ? isDataProcessed : isDataProcessedJobs) &&
+                    filteredShifts.length === 0 ? (
+                    <EmptyState
+                        message={activeFilter !== 'all' || advancedFilters
+                            ? 'По вашим фильтрам ничего не найдено'
+                            : feedType === 'shifts' ? 'Смены не найдены' : 'Вакансии не найдены'}
+                        onReset={handleResetFilters}
+                        showResetButton={!!(activeFilter !== 'all' || advancedFilters)}
+                    />
                 ) : (
-                    jobs
-                        .map((job, index) => (
-                            <motion.div key={job.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 + index * 0.05 }}>
-                                <JobCard job={job} onContact={handleContact} />
+                    <>
+                        {filteredShifts.map((shift, index) => (
+                            <motion.div
+                                key={shift.id}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 + index * 0.05 }}
+                            >
+                                <ShiftCard
+                                    shift={shift}
+                                    isApplied={appliedShiftsSet.has(shift.id)}
+                                    onOpenDetails={handleOpenShiftDetails}
+                                    onApply={handleApply}
+                                    onCancel={handleCancel}
+                                    isLoading={loadingShiftId === shift.id}
+                                    isVacancy={feedType === 'jobs'}
+                                />
                             </motion.div>
-                        ))
+                        ))}
+                        {/* Infinite Scroll Trigger - показываем только если есть загруженные данные */}
+                        {filteredShifts.length > 0 && (
+                            <InfiniteScrollTrigger
+                                onLoadMore={handleLoadMore}
+                                hasMore={hasMore}
+                                isLoading={feedType === 'shifts' ? isFetching : isFetchingJobs}
+                                isError={feedType === 'shifts' ? isErrorShifts : isErrorJobs}
+                            />
+                        )}
+                    </>
                 )}
             </div>
 
             <Toast message={toast.message} type={toast.type} isVisible={toast.isVisible} onClose={hideToast} />
 
-            {/* Детальная карточка смены */}
+            {/* Детальная карточка смены или вакансии */}
             {selectedShiftId && (
                 <ShiftDetailsScreen
                     shift={shifts.find(s => s.id === selectedShiftId) || null}
-                    vacancyData={allVacancies.get(selectedShiftId) || null}
+                    vacancyData={
+                        feedType === 'shifts'
+                            ? allVacancies.get(selectedShiftId) || null
+                            : allJobsVacancies.get(selectedShiftId) || null
+                    }
                     isOpen={!!selectedShiftId}
                     onClose={handleCloseShiftDetails}
                     onApply={handleApply}
                     onCancel={handleCancel}
                     isApplied={appliedShifts.includes(selectedShiftId)}
+                    isVacancy={feedType === 'jobs'}
                 />
             )}
 
