@@ -6,16 +6,73 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
 
 /**
+ * Нормализует формат даты из API в ISO 8601 для корректного парсинга
+ * Преобразует "2026-01-07 09:00:00 +0100" в "2026-01-07T09:00:00+01:00"
+ */
+const normalizeDateString = (dateString: string): string => {
+  if (!dateString) return dateString
+  
+  // Если уже в ISO формате, возвращаем как есть
+  if (dateString.includes('T') && (dateString.includes('+') || dateString.includes('Z') || dateString.includes('-'))) {
+    // Проверяем, что часовой пояс уже нормализован (содержит двоеточие)
+    if (dateString.match(/[+-]\d{2}:\d{2}/)) {
+      return dateString
+    }
+  }
+  
+  // Убираем лишние пробелы
+  let normalized = dateString.trim()
+  
+  // Заменяем первый пробел между датой и временем на T
+  // Формат: "YYYY-MM-DD HH:mm:ss" -> "YYYY-MM-DDTHH:mm:ss"
+  normalized = normalized.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})/, '$1T$2')
+  
+  // Нормализуем часовой пояс: ищем паттерн +/-HHMM или +/-HH:MM в конце строки
+  // Преобразуем "+0100" -> "+01:00" или "-0500" -> "-05:00"
+  normalized = normalized.replace(/([+-])(\d{2})(\d{2})(\s*)$/, '$1$2:$3$4')
+  
+  return normalized
+}
+
+/**
+ * Безопасно парсит строку даты в Date объект
+ */
+const parseDate = (dateString?: string): Date | null => {
+  if (!dateString) return null
+  
+  try {
+    // Нормализуем формат перед парсингом
+    const normalized = normalizeDateString(dateString)
+    const date = new Date(normalized)
+    
+    // Проверяем валидность даты
+    if (isNaN(date.getTime())) {
+      // Пробуем парсить без нормализации (на случай другого формата)
+      const fallbackDate = new Date(dateString)
+      if (isNaN(fallbackDate.getTime())) {
+        return null
+      }
+      return fallbackDate
+    }
+    
+    return date
+  } catch {
+    return null
+  }
+}
+
+/**
  * Форматирует дату для отображения
  */
 const formatDate = (dateString?: string): string => {
   if (!dateString) return 'Дата не указана'
+  
+  const date = parseDate(dateString)
+  if (!date) {
+    return 'Дата не указана'
+  }
+  
   try {
-    const date = new Date(dateString)
-    // Проверяем валидность даты
-    if (isNaN(date.getTime())) {
-      return 'Дата не указана'
-    }
     const day = date.getDate()
     const month = date.toLocaleDateString('ru-RU', { month: 'long' })
     return `${day} ${month}`
@@ -30,15 +87,14 @@ const formatDate = (dateString?: string): string => {
 const formatTime = (startTime?: string, endTime?: string): string => {
   if (!startTime && !endTime) return 'Время не указано'
   if (startTime && endTime) {
+    const startDate = parseDate(startTime)
+    const endDate = parseDate(endTime)
+    
+    if (!startDate || !endDate) {
+      return 'Время не указано'
+    }
+    
     try {
-      const startDate = new Date(startTime)
-      const endDate = new Date(endTime)
-      
-      // Проверяем валидность дат
-      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        return 'Время не указано'
-      }
-      
       const start = startDate.toLocaleTimeString('ru-RU', {
         hour: '2-digit',
         minute: '2-digit',
@@ -60,15 +116,15 @@ const formatTime = (startTime?: string, endTime?: string): string => {
  */
 const getDuration = (start?: string, end?: string): string => {
   if (!start || !end) return ''
+  
+  const startDate = parseDate(start)
+  const endDate = parseDate(end)
+  
+  if (!startDate || !endDate) {
+    return ''
+  }
+  
   try {
-    const startDate = new Date(start)
-    const endDate = new Date(end)
-    
-    // Проверяем валидность дат
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      return ''
-    }
-    
     const diffMs = endDate.getTime() - startDate.getTime()
     const diffHrs = Math.round(diffMs / (1000 * 60 * 60))
     return diffHrs > 0 ? `${diffHrs} ч.` : ''
@@ -98,24 +154,23 @@ const getPayment = (
 
   // Приоритет 2: Почасовая ставка * длительность
   if (hourlyRate && startTime && endTime) {
-    try {
-      const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
-      if (!isNaN(rate) && rate > 0) {
-        const startDate = new Date(startTime)
-        const endDate = new Date(endTime)
-        
-        // Проверяем валидность дат
-        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-          return 0
-        }
-        
+    const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
+    if (!isNaN(rate) && rate > 0) {
+      const startDate = parseDate(startTime)
+      const endDate = parseDate(endTime)
+      
+      if (!startDate || !endDate) {
+        return 0
+      }
+      
+      try {
         const diffMs = endDate.getTime() - startDate.getTime()
         const diffHrs = diffMs / (1000 * 60 * 60)
         const total = rate * diffHrs
         return Math.round(total)
+      } catch {
+        // Игнорируем ошибки парсинга
       }
-    } catch {
-      // Игнорируем ошибки парсинга
     }
   }
 
