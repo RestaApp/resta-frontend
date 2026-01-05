@@ -8,7 +8,7 @@ import { createCatalogQuery } from './helpers'
 /**
  * Ответ API с доступными ролями
  */
-export interface AvailableUserRolesResponse {
+export interface AvailableUiRolesResponse {
   success: boolean
   data: string[]
 }
@@ -31,7 +31,7 @@ export const rolesApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить список доступных ролей для страницы выбора роли
     // Используется только в компоненте RoleSelector
-    getAvailableUserRoles: createCatalogQuery<AvailableUserRolesResponse, void>(
+    getAvailableUiRoles: createCatalogQuery<AvailableUiRolesResponse, void>(
       builder,
       {
         url: '/api/v1/catalogs/roles',
@@ -55,7 +55,7 @@ export const rolesApi = api.injectEndpoints({
 
 // Экспорт хуков для использования в компонентах
 export const {
-  useGetAvailableUserRolesQuery,
+  useGetAvailableUiRolesQuery,
   useGetSupplierTypesQuery,
   useGetRestaurantFormatsQuery,
 } = rolesApi

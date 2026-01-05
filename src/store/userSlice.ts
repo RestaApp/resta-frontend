@@ -1,15 +1,11 @@
-/**
- * Redux slice для данных пользователя и роли
- */
-
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { UserRole } from '@/types'
+import type { UiRole, ApiRole } from '@/types'
 import type { UserData } from '@/services/api/authApi'
-import { mapRoleFromApi, isVerifiedRole } from '@/utils/roles'
+import { mapRoleFromApi, mapApiRoleToDefaultUiRole, isVerifiedRole } from '@/utils/roles'
 
 interface UserState {
-  userData: UserData | null
-  selectedRole: UserRole | null
+  userData: (UserData & { role?: ApiRole | string | null }) | null
+  selectedRole: UiRole | null
 }
 
 const initialState: UserState = {
@@ -24,26 +20,19 @@ const userSlice = createSlice({
     setUserData: (state, action: PayloadAction<UserData | null>) => {
       state.userData = action.payload
 
-      // Автоматически устанавливаем selectedRole на основе роли пользователя
-      if (action.payload) {
-        const mappedRole = mapRoleFromApi(action.payload.role)
-
-        // Если роль подтверждена (не unverified), устанавливаем selectedRole
-        // Если роль unverified, оставляем selectedRole = null, чтобы показать RoleSelector
-        if (mappedRole && isVerifiedRole(mappedRole)) {
-          state.selectedRole = mappedRole
-        } else {
-          // Для unverified или неизвестной роли оставляем selectedRole = null
-          state.selectedRole = null
-        }
-      } else {
-        // Если userData = null, очищаем selectedRole
+      if (!action.payload) {
         state.selectedRole = null
+        return
       }
+
+      const apiRole = mapRoleFromApi(action.payload.role)
+      state.selectedRole = isVerifiedRole(apiRole) ? mapApiRoleToDefaultUiRole(apiRole) : null
     },
-    setSelectedRole: (state, action: PayloadAction<UserRole | null>) => {
+
+    setSelectedRole: (state, action: PayloadAction<UiRole | null>) => {
       state.selectedRole = action.payload
     },
+
     clearUserData: state => {
       state.userData = null
       state.selectedRole = null

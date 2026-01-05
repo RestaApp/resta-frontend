@@ -5,10 +5,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getTabsForRole } from '@/constants/tabs'
 import { SCREEN_TO_TAB_MAP } from '@/constants/navigation'
-import type { Tab, UserRole, Screen } from '@/types'
+import type { Tab, UiRole, Screen } from '@/types'
 
 interface UseDashboardProps {
-  role: UserRole
+  role: UiRole
   onNavigate?: (screen: Screen) => void
   currentScreen?: Screen | null
 }

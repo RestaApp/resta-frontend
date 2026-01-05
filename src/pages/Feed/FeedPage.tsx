@@ -52,6 +52,7 @@ export const FeedPage = () => {
     const { toast, showToast, hideToast } = useToast()
     const [feedType, setFeedType] = useState<FeedType>('shifts')
     const [appliedShifts, setAppliedShifts] = useState<number[]>([])
+    const [loadingShiftId, setLoadingShiftId] = useState<number | null>(null)
     const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
     const [activeFilter, setActiveFilter] = useState('all')
     const [isFiltersOpen, setIsFiltersOpen] = useState(false)
@@ -75,8 +76,20 @@ export const FeedPage = () => {
         return null
     })
 
-    // Обновляем фильтры, если позиция пользователя появилась после загрузки
+    // Обновляем фильтры один раз, когда позиция пользователя стала известна после загрузки
+    // Не переустанавливаем после ручного сброса (иначе position будет возвращаться)
+    const initializedPositionRef = useRef(false)
     useEffect(() => {
+        // Если уже инициализировали — выходим
+        if (initializedPositionRef.current) return
+
+        // Если при инициализации уже есть advancedFilters с позицией — считаем инициализированным
+        if (advancedFilters?.selectedPosition) {
+            initializedPositionRef.current = true
+            return
+        }
+
+        // Если позиция загрузилась позже и фильтры пустые — задаём стартовые фильтры один раз
         if (userPosition && !advancedFilters) {
             setAdvancedFilters({
                 priceRange: DEFAULT_PRICE_RANGE,
@@ -85,6 +98,7 @@ export const FeedPage = () => {
                 startDate: null,
                 endDate: null,
             })
+            initializedPositionRef.current = true
         }
     }, [userPosition, advancedFilters])
 
@@ -260,11 +274,16 @@ export const FeedPage = () => {
             advancedFiltersChanged
 
         if (filtersChanged) {
+            // Обновляем ref сразу, чтобы избежать повторных срабатываний
+            prevFiltersRef.current = { activeFilter, advancedFilters }
+
+            // Сбрасываем состояние в одном батче
+            // Используем функциональные обновления, чтобы React батчил их вместе
             setCurrentPage(1)
             setAllShifts([])
             setAllVacancies(new Map())
             setIsDataProcessed(false) // Сбрасываем флаг обработки при изменении фильтров
-            prevFiltersRef.current = { activeFilter, advancedFilters }
+            setSelectedShiftId(null) // Закрываем детальную карточку при изменении фильтров
         }
     }, [activeFilter, advancedFilters])
 
@@ -308,6 +327,27 @@ export const FeedPage = () => {
         }
     }, [isLoadingShifts, isFetching, hasMore])
 
+    // Сохраняем данные из hotShiftsResponse в allVacancies и allShifts для доступа к детальной информации
+    useEffect(() => {
+        if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0) {
+            const newShifts = hotShiftsResponse.data.map(mapVacancyToShift)
+            setAllShifts(prev => {
+                const existingIds = new Set(prev.map(s => s.id))
+                const uniqueNewShifts = newShifts.filter(s => !existingIds.has(s.id))
+                return [...prev, ...uniqueNewShifts]
+            })
+            setAllVacancies(prev => {
+                const newMap = new Map(prev)
+                hotShiftsResponse.data.forEach(vacancy => {
+                    if (!newMap.has(vacancy.id)) {
+                        newMap.set(vacancy.id, vacancy)
+                    }
+                })
+                return newMap
+            })
+        }
+    }, [hotShiftsResponse])
+
     // Получаем горящие смены из отдельного запроса с urgent: true
     const actualHotShifts = useMemo(() => {
         if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0) {
@@ -349,13 +389,13 @@ export const FeedPage = () => {
         { id: 'jobs', label: '💼 Вакансии' },
     ]
 
-    const handleOpenShiftDetails = (shiftId: number) => {
+    const handleOpenShiftDetails = useCallback((shiftId: number) => {
         setSelectedShiftId(shiftId)
-    }
+    }, [])
 
-    const handleCloseShiftDetails = () => {
+    const handleCloseShiftDetails = useCallback(() => {
         setSelectedShiftId(null)
-    }
+    }, [])
 
     // Обновляем список appliedShifts на основе данных с сервера
     useEffect(() => {
@@ -365,13 +405,17 @@ export const FeedPage = () => {
         }
     }, [appliedShiftsResponse])
 
+    // Мемоизируем Set для быстрой проверки isApplied
+    const appliedShiftsSet = useMemo(() => new Set(appliedShifts), [appliedShifts])
+
     const { apply, cancel } = useShiftApplication({
         onSuccess: () => {
-            handleCloseShiftDetails()
+            // Не закрываем детальный экран при отклике с карточки
         },
     })
 
-    const handleApply = async (shiftId: number) => {
+    const handleApply = useCallback(async (shiftId: number) => {
+        setLoadingShiftId(shiftId)
         try {
             await apply(shiftId)
             // Обновляем локальное состояние для немедленного отображения
@@ -383,25 +427,36 @@ export const FeedPage = () => {
             })
         } catch {
             // Ошибка уже обработана в хуке
+        } finally {
+            setLoadingShiftId(null)
         }
-    }
+    }, [apply])
 
-    const handleCancel = async (shiftId: number) => {
+    const handleCancel = useCallback(async (shiftId: number) => {
+        setLoadingShiftId(shiftId)
         try {
             await cancel(shiftId)
             // Обновляем локальное состояние для немедленного отображения
             setAppliedShifts(prev => prev.filter(id => id !== shiftId))
         } catch {
             // Ошибка уже обработана в хуке
+        } finally {
+            setLoadingShiftId(null)
         }
-    }
+    }, [cancel])
 
     const handleResetFilters = () => {
+        // Полный сброс состояния, чтобы сразу ушел запрос без старых параметров
         setActiveFilter('all')
         setAdvancedFilters(null)
+        setCurrentPage(1)
+        setAllShifts([])
+        setAllVacancies(new Map())
+        setIsDataProcessed(false)
+        setSelectedShiftId(null) // Закрываем детальную карточку при сбросе фильтров
     }
 
-    const handleApplyAdvancedFilters = useCallback((filters: AdvancedFiltersData) => {
+    const handleApplyAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
         setAdvancedFilters(filters)
     }, [])
 
@@ -538,8 +593,11 @@ export const FeedPage = () => {
                                 >
                                     <ShiftCard
                                         shift={shift}
-                                        isApplied={appliedShifts.includes(shift.id)}
-                                        onApply={handleOpenShiftDetails}
+                                        isApplied={appliedShiftsSet.has(shift.id)}
+                                        onOpenDetails={handleOpenShiftDetails}
+                                        onApply={handleApply}
+                                        onCancel={handleCancel}
+                                        isLoading={loadingShiftId === shift.id}
                                     />
                                 </motion.div>
                             ))}
@@ -587,8 +645,12 @@ export const FeedPage = () => {
                 initialFilters={advancedFilters || undefined}
                 filteredCount={filteredCount}
                 onReset={() => {
-                    setAdvancedFilters(null)
+                    // Объединяем все обновления состояния в один батч
+                    // React 18 автоматически батчит синхронные setState, но важно вызывать их вместе
                     setActiveFilter('all')
+                    setSelectedShiftId(null) // Закрываем детальную карточку при сбросе фильтров
+                    // advancedFilters сбрасываются через onApply(null) из handleReset в useAdvancedFilters
+                    // currentPage, allShifts, allVacancies будут сброшены через useEffect при изменении фильтров
                 }}
             />
         </div>

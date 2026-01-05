@@ -3,9 +3,9 @@
  */
 
 import { ChefHat, UtensilsCrossed, Wine, Coffee, UserCog } from 'lucide-react'
-import type { EmployeeSubRole, UserRole, EmployeeRole } from '@/types'
+import type { EmployeeSubRole, UiRole, EmployeeRole } from '@/types'
 
-export const ROLE_LABELS: Record<UserRole, string> = {
+export const ROLE_LABELS: Record<UiRole, string> = {
   chef: 'Повар',
   waiter: 'Официант',
   bartender: 'Бармен',
@@ -15,7 +15,6 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   support: 'Поддержка',
   venue: 'Заведение',
   supplier: 'Поставщик',
-  unverified: 'Непроверенный',
 } as const
 
 export const EMPLOYEE_SUBROLES: ReadonlyArray<EmployeeSubRole> = [

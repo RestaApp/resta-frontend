@@ -195,7 +195,7 @@ export const getEmployeePositionDescription = (value: string): string => {
 /**
  * Получить название роли пользователя
  */
-export const getUserRoleLabel = (value: string): string => {
+export const getUiRoleLabel = (value: string): string => {
   return USER_ROLE_LABELS[value] || value
 }
 

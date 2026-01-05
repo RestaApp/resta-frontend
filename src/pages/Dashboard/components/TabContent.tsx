@@ -1,9 +1,9 @@
 import { FeedPage } from "@/pages/Feed/FeedPage"
-import type { Tab, UserRole } from "@/types"
+import type { Tab, UiRole } from "@/types"
 
 interface TabContentProps {
     activeTab: Tab
-    role: UserRole
+    role: UiRole
 }
 
 export const TabContent = ({ activeTab, role }: TabContentProps) => {

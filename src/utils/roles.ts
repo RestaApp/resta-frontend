@@ -1,24 +1,134 @@
-/**
- * Утилиты для работы с ролями
- */
-
-import type { UserRole, EmployeeRole } from '@/types'
-import { EMPLOYEE_ROLES } from '@/constants/roles'
+// utils/roles.ts
+import type { ApiRole, UiRole, EmployeeRole } from '@/types'
+import { UI_ROLE_TO_API_ROLE } from '@/types'
 
 /**
- * Маппинг роли из API (строка) в UserRole
- * API может возвращать: 'unverified', 'employee', 'restaurant', 'supplier', 'chef', 'waiter', 'bartender', 'barista', 'admin', 'venue'
+ * Нормализация строки роли (из API / legacy)
  */
-export const mapRoleFromApi = (roleString: string | null | undefined): UserRole | null => {
-  if (!roleString) {
-    return null
+export const normalizeRole = (value: unknown): string =>
+  typeof value === 'string' ? value.toLowerCase().trim() : ''
+
+/**
+ * Привести любую входящую строку к ApiRole.
+ * Поддержка legacy:
+ * - venue -> restaurant
+ * - chef/waiter/... -> employee
+ */
+export const mapRoleFromApi = (roleString: unknown): ApiRole => {
+  const r = normalizeRole(roleString)
+
+  if (r === 'employee') return 'employee'
+  if (r === 'restaurant') return 'restaurant'
+  if (r === 'supplier') return 'supplier'
+  if (r === 'unverified') return 'unverified'
+
+  if (r === 'venue') return 'restaurant'
+
+  const employeePositions = new Set([
+    'chef',
+    'waiter',
+    'bartender',
+    'barista',
+    'admin',
+    'manager',
+    'support',
+  ])
+  if (employeePositions.has(r)) return 'employee'
+
+  return 'unverified'
+}
+
+/**
+ * ApiRole -> дефолтная UiRole
+ * (используется для авто-выбора UI после sign_in, если роль verified)
+ */
+export const mapApiRoleToDefaultUiRole = (apiRole: ApiRole): UiRole | null => {
+  switch (apiRole) {
+    case 'employee':
+      return 'chef'
+    case 'restaurant':
+      return 'venue'
+    case 'supplier':
+      return 'supplier'
+    case 'unverified':
+      return null
   }
+}
 
-  const normalizedRole = roleString.toLowerCase().trim()
+/**
+ * UiRole -> ApiRole (единственный правильный способ отправлять роль на сервер)
+ */
+export const mapUiRoleToApiRole = (uiRole: UiRole): ApiRole => UI_ROLE_TO_API_ROLE[uiRole]
 
+/**
+ * Проверки verified/unverified (работают строго на ApiRole)
+ */
+export const isUnverifiedRole = (role: ApiRole | null | undefined): boolean =>
+  !role || role === 'unverified'
+
+export const isVerifiedRole = (role: ApiRole | null | undefined): boolean =>
+  !isUnverifiedRole(role)
+
+/**
+ * ===== Backward-compatible helpers =====
+ * Эти функции часто используются в UI/навигции/табе.
+ * Принимают UiRole | null (потому что это выбранная роль в интерфейсе).
+ */
+
+export const isEmployeeRole = (role: UiRole | null | undefined): role is EmployeeRole => {
+  if (!role) return false
+  return (
+    role === 'chef' ||
+    role === 'waiter' ||
+    role === 'bartender' ||
+    role === 'barista' ||
+    role === 'admin' ||
+    role === 'manager' ||
+    role === 'support'
+  )
+}
+
+export const isVenueRole = (role: UiRole | null | undefined): boolean => role === 'venue'
+export const isSupplierRole = (role: UiRole | null | undefined): boolean => role === 'supplier'
+
+export const canViewShifts = (role: UiRole | null | undefined): boolean =>
+  isEmployeeRole(role) || isVenueRole(role)
+
+/**
+ * Преобразует строку из API списка ролей в UI роль
+ * Используется при отображении списка доступных ролей
+ */
+export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
+  const normalized = roleValue.toLowerCase().trim()
+  
   // Прямое соответствие
-  const directMap: Record<string, UserRole> = {
-    unverified: 'unverified',
+  if (normalized === 'employee') return 'chef'
+  if (normalized === 'restaurant') return 'venue'
+  if (normalized === 'supplier') return 'supplier'
+  
+  // Legacy значения
+  if (normalized === 'venue') return 'venue'
+  if (normalized === 'chef') return 'chef'
+  
+  // Позиции сотрудников (для обратной совместимости)
+  const employeePositions: Record<string, UiRole> = {
+    waiter: 'waiter',
+    bartender: 'bartender',
+    barista: 'barista',
+    admin: 'admin',
+    manager: 'manager',
+    support: 'support',
+  }
+  
+  return employeePositions[normalized] || null
+}
+
+/**
+ * Преобразует позицию сотрудника из API в EmployeeRole
+ */
+export const mapPositionFromApi = (positionValue: string): EmployeeRole | null => {
+  const normalized = normalizeRole(positionValue)
+  const employeeRoles: Record<string, EmployeeRole> = {
     chef: 'chef',
     waiter: 'waiter',
     bartender: 'bartender',
@@ -26,75 +136,6 @@ export const mapRoleFromApi = (roleString: string | null | undefined): UserRole 
     admin: 'admin',
     manager: 'manager',
     support: 'support',
-    venue: 'venue',
-    supplier: 'supplier',
   }
-
-  if (directMap[normalizedRole]) {
-    return directMap[normalizedRole]
-  }
-
-  // Маппинг из API формата
-  const apiMap: Record<string, UserRole> = {
-    employee: 'chef', // employee -> chef (для сотрудников)
-    restaurant: 'venue', // restaurant -> venue (для заведения)
-  }
-
-  if (apiMap[normalizedRole]) {
-    return apiMap[normalizedRole]
-  }
-
-  // Если роль не распознана, возвращаем null
-  return null
-}
-
-/**
- * Проверяет, является ли роль ролью сотрудника
- */
-export const isEmployeeRole = (role: UserRole | null): role is EmployeeRole => {
-  if (!role) return false
-  return EMPLOYEE_ROLES.includes(role as EmployeeRole)
-}
-
-/**
- * Проверяет, является ли роль ролью заведения
- */
-export const isVenueRole = (role: UserRole | null): boolean => {
-  return role === 'venue'
-}
-
-/**
- * Проверяет, является ли роль ролью поставщика
- */
-export const isSupplierRole = (role: UserRole | null): boolean => {
-  return role === 'supplier'
-}
-
-/**
- * Проверяет, может ли роль просматривать смены
- */
-export const canViewShifts = (role: UserRole | null): boolean => {
-  return isEmployeeRole(role) || isVenueRole(role)
-}
-
-/**
- * Проверяет, является ли роль unverified (не подтвержденной)
- * Принимает либо строку роли из API, либо уже маппленную роль UserRole
- */
-export const isUnverifiedRole = (role: string | null | undefined | UserRole): boolean => {
-  if (!role) {
-    return true // null/undefined считается unverified
-  }
-
-  // Маппим роль (mapRoleFromApi умеет работать и со строками из API, и с уже маппленными ролями)
-  const mappedRole = mapRoleFromApi(role)
-  return !mappedRole || mappedRole === 'unverified'
-}
-
-/**
- * Проверяет, является ли роль подтвержденной (не unverified)
- * Обратная функция к isUnverifiedRole
- */
-export const isVerifiedRole = (role: string | null | undefined | UserRole): boolean => {
-  return !isUnverifiedRole(role)
+  return employeeRoles[normalized] || null
 }

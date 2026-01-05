@@ -7,10 +7,10 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { LoadingState } from './components/SubRoles/components/LoadingState'
 import { ErrorModal } from './components/ErrorModal'
 import { useRoleSelector } from './hooks/useRoleSelector'
-import type { UserRole, RoleOption } from '@/types'
+import type { UiRole, RoleOption } from '@/types'
 
 interface RoleSelectorProps {
-  onSelectRole: (role: UserRole) => void
+  onSelectRole: (role: UiRole) => void
 }
 
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
@@ -58,11 +58,6 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
           isFetching={isFetchingPositions}
           errorDialogOpen={errorDialogOpen}
         />
-        <ErrorModal
-          isOpen={errorDialogOpen}
-          onClose={setErrorDialogOpen}
-          message={errorMessage}
-        />
       </>
     )
   }
@@ -76,11 +71,6 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
           supplierTypes={supplierTypes}
           isLoading={isLoadingSupplierTypes}
           isFetching={isFetchingSupplierTypes}
-        />
-        <ErrorModal
-          isOpen={errorDialogOpen}
-          onClose={setErrorDialogOpen}
-          message={errorMessage}
         />
       </>
     )
@@ -96,41 +86,18 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
           isLoading={isLoadingRestaurantFormats}
           isFetching={isFetchingRestaurantFormats}
         />
-        <ErrorModal
-          isOpen={errorDialogOpen}
-          onClose={setErrorDialogOpen}
-          message={errorMessage}
-        />
       </>
     )
   }
 
   // Состояния загрузки
   if (isLoading || isFetching) {
-    return (
-      <>
-        <LoadingState message="Загрузка ролей..." />
-        <ErrorModal
-          isOpen={errorDialogOpen}
-          onClose={setErrorDialogOpen}
-          message={errorMessage}
-        />
-      </>
-    )
+    return <LoadingState message="Загрузка ролей..." />
   }
 
   // Состояния ошибки или пустого списка
   if (error || mainRoles.length === 0) {
-    return (
-      <>
-        <LoadingState message={error ? 'Не удалось загрузить роли' : 'Роли не найдены'} />
-        <ErrorModal
-          isOpen={errorDialogOpen}
-          onClose={setErrorDialogOpen}
-          message={errorMessage}
-        />
-      </>
-    )
+    return <LoadingState message={error ? 'Не удалось загрузить роли' : 'Роли не найдены'} />
   }
 
   // Основной экран выбора ролей

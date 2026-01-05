@@ -5,13 +5,13 @@
 
 import { memo, useCallback } from 'react'
 import { CardSelect } from '@/components/ui/card-select'
-import type { UserRole, RoleOption } from '@/types'
+import type { UiRole, RoleOption } from '@/types'
 
 interface RoleCardProps {
   role: RoleOption
   isSelected: boolean
   index: number
-  onSelect: (roleId: UserRole) => void
+  onSelect: (roleId: UiRole) => void
 }
 
 export const RoleCard = memo(function RoleCard({
@@ -24,7 +24,7 @@ export const RoleCard = memo(function RoleCard({
 
   const handleSelect = useCallback(
     (id: string) => {
-      onSelect(id as UserRole)
+      onSelect(id as UiRole)
     },
     [onSelect]
   )

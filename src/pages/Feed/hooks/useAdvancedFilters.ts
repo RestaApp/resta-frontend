@@ -20,8 +20,9 @@ interface UseAdvancedFiltersOptions {
   isOpen: boolean
   /**
    * Callback при применении фильтров
+   * При сбросе может быть вызван с `null` (означает отсутствие расширенных фильтров)
    */
-  onApply: (filters: AdvancedFiltersData) => void
+  onApply: (filters: AdvancedFiltersData | null) => void
   /**
    * Callback при сбросе фильтров
    */
@@ -61,7 +62,6 @@ export const useAdvancedFilters = ({
   // Refs для отслеживания состояния модального окна
   const prevIsOpenRef = useRef(false)
   const isInitialMountRef = useRef(true)
-  const prevIsOpenForApplyRef = useRef(false)
 
   // Синхронизация с initialFilters при открытии модального окна
   useEffect(() => {
@@ -125,14 +125,21 @@ export const useAdvancedFilters = ({
   }, [])
 
   const handleReset = useCallback(() => {
+    // Сбрасываем локальное состояние
     setPriceRange(DEFAULT_PRICE_RANGE)
     setSelectedPosition(null)
     setSelectedSpecializations([])
     setStartDate(null)
     setEndDate(null)
     dispatch(setSelectedPositionAction(null))
+
+    // Внешний сброс (quick-фильтры и т.д.)
     onReset?.()
-  }, [onReset, dispatch])
+    // Немедленно сообщаем наружу об отсутствии расширенных фильтров
+    onApply(null)
+    // Готовим к следующему применению
+    isInitialMountRef.current = true
+  }, [onReset, dispatch, onApply])
 
   // Формируем текущие фильтры
   const currentFilters = useMemo<AdvancedFiltersData>(
@@ -152,24 +159,9 @@ export const useAdvancedFilters = ({
     [currentFilters]
   )
 
-  // Автоматическое применение фильтров с debounce
+  // Автоматическое применение фильтров с debounce (при открытом модальном окне)
   useEffect(() => {
-    // При открытии модального окна сбрасываем флаг
-    if (isOpen && !prevIsOpenForApplyRef.current) {
-      isInitialMountRef.current = true
-      prevIsOpenForApplyRef.current = true
-      return
-    }
-
-    // При закрытии модального окна применяем текущие фильтры
-    if (!isOpen && prevIsOpenForApplyRef.current) {
-      onApply(currentFilters)
-      prevIsOpenForApplyRef.current = false
-      isInitialMountRef.current = true
-      return
-    }
-
-    // Пропускаем первое применение после открытия модального окна
+    // Пропускаем самое первое срабатывание после открытия модалки (инициализация)
     if (isOpen && isInitialMountRef.current) {
       isInitialMountRef.current = false
       return

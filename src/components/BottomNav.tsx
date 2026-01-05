@@ -6,12 +6,12 @@
 import { motion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
 import { isEmployeeRole } from '@/utils/roles'
-import type { UserRole, Tab } from '@/types'
+import type { UiRole, Tab } from '@/types'
 
 interface BottomNavProps {
   activeTab: Tab
   onTabChange: (tab: Tab) => void
-  role: UserRole
+  role: UiRole
 }
 
 export const BottomNav = ({ activeTab, onTabChange, role }: BottomNavProps) => {

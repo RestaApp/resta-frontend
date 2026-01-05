@@ -214,7 +214,9 @@ export const shiftsApi = api.injectEndpoints({
         method: 'POST',
         body: data || {},
       }),
-      invalidatesTags: ['Shift', 'AppliedShift'],
+      // Инвалидируем только список поданных заявок, не весь список смен
+      // Список доступных смен не должен перезагружаться при отклике
+      invalidatesTags: ['AppliedShift'],
     }),
 
     // Отменить заявку на смену
@@ -223,7 +225,9 @@ export const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shifts/${id}/cancel_application`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Shift', 'AppliedShift'],
+      // Инвалидируем только список поданных заявок, не весь список смен
+      // Список доступных смен не должен перезагружаться при отмене
+      invalidatesTags: ['AppliedShift'],
     }),
 
     // Получить смены, на которые поданы заявки

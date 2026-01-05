@@ -20,7 +20,7 @@ export interface AdvancedFiltersData {
 interface AdvancedFiltersProps {
     isOpen: boolean
     onClose: () => void
-    onApply: (filters: AdvancedFiltersData) => void
+    onApply: (filters: AdvancedFiltersData | null) => void
     initialFilters?: AdvancedFiltersData
     filteredCount?: number
     onReset?: () => void

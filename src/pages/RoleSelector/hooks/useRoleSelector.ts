@@ -7,10 +7,10 @@ import { useCallback } from 'react'
 import { useRoleSelection } from './useRoleSelection'
 import { useSubRoleSubmission } from './useSubRoleSubmission'
 import { logger } from '@/utils/logger'
-import type { UserRole } from '@/types'
+import type { UiRole } from '@/types'
 
 interface UseRoleSelectorProps {
-  onSelectRole: (role: UserRole) => void
+  onSelectRole: (role: UiRole) => void
 }
 
 export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {

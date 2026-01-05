@@ -3,7 +3,7 @@
  * Инкапсулирует логику работы с ролями пользователей
  */
 
-import { useGetAvailableUserRolesQuery } from '@/services/api/rolesApi'
+import { useGetAvailableUiRolesQuery } from '@/services/api/rolesApi'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface UseRolesOptions {
@@ -26,7 +26,7 @@ export const useRoles = (options: UseRolesOptions = {}) => {
   // Пропускаем запрос до получения токена (sign_in должен выполниться первым)
   // Или если передан дополнительный флаг skip
   // Отключаем refetch при повторном монтировании (React StrictMode в DEV) — избежим двойного запроса
-  const { data, isLoading, isFetching, error, refetch } = useGetAvailableUserRolesQuery(undefined, {
+  const { data, isLoading, isFetching, error, refetch } = useGetAvailableUiRolesQuery(undefined, {
     skip: !isAuthenticated || additionalSkip,
     refetchOnMountOrArgChange: false,
   })

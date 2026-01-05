@@ -7,17 +7,29 @@ import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/la
 interface ShiftCardProps {
     shift: Shift
     isApplied?: boolean
+    onOpenDetails: (id: number) => void
     onApply: (id: number) => void
+    onCancel: (id: number) => void
+    isLoading?: boolean
 }
 
-export const ShiftCard = memo(({ shift, isApplied = false, onApply }: ShiftCardProps) => {
+const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, onCancel, isLoading = false }: ShiftCardProps) => {
     const handleCardClick = (e: React.MouseEvent) => {
         // Предотвращаем открытие деталей при клике на кнопку
         if ((e.target as HTMLElement).closest('button')) {
             return
         }
-        // Вызываем onApply для открытия деталей (будет переименовано)
-        onApply(shift.id)
+        // Открываем детали смены
+        onOpenDetails(shift.id)
+    }
+
+    const handleButtonClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (isApplied) {
+            onCancel(shift.id)
+        } else {
+            onApply(shift.id)
+        }
     }
 
     // Форматирование позиции и специализации
@@ -89,21 +101,43 @@ export const ShiftCard = memo(({ shift, isApplied = false, onApply }: ShiftCardP
                     <div className="flex-1" />
                 )}
                 <button
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        onApply(shift.id)
-                    }}
-                    disabled={isApplied}
-                    className={`px-6 py-2 rounded-xl transition-all flex-shrink-0 ${isApplied
-                            ? 'bg-secondary text-foreground/70 cursor-not-allowed'
+                    onClick={handleButtonClick}
+                    disabled={isLoading}
+                    className={`px-6 py-2 rounded-xl transition-all flex-shrink-0 ${isLoading
+                        ? 'bg-secondary text-foreground/70 cursor-wait'
+                        : isApplied
+                            ? 'bg-secondary text-foreground/70 hover:bg-destructive/10 hover:text-destructive border border-destructive/20'
                             : 'gradient-primary text-white hover:opacity-90 shadow-md'
                         }`}
                 >
-                    {isApplied ? '✓ Заявка отправлена' : 'Откликнуться'}
+                    {isLoading
+                        ? (isApplied ? 'Отмена...' : 'Отправка...')
+                        : isApplied
+                            ? 'Отменить заявку'
+                            : 'Откликнуться'}
                 </button>
             </div>
         </div>
     )
+}
+
+export const ShiftCard = memo(ShiftCardComponent, (prevProps, nextProps) => {
+    // Возвращаем true, если пропсы равны (не нужно перерисовывать)
+    // Возвращаем false, если пропсы изменились (нужно перерисовывать)
+    if (prevProps.shift.id !== nextProps.shift.id) return false
+    if (prevProps.shift.pay !== nextProps.shift.pay) return false
+    if (prevProps.shift.date !== nextProps.shift.date) return false
+    if (prevProps.shift.time !== nextProps.shift.time) return false
+    if (prevProps.shift.location !== nextProps.shift.location) return false
+    if (prevProps.shift.restaurant !== nextProps.shift.restaurant) return false
+    if (prevProps.shift.position !== nextProps.shift.position) return false
+    if (prevProps.shift.specialization !== nextProps.shift.specialization) return false
+    if (prevProps.shift.rating !== nextProps.shift.rating) return false
+    if (prevProps.isApplied !== nextProps.isApplied) return false
+    if (prevProps.isLoading !== nextProps.isLoading) return false
+
+    // Все важные пропсы равны - не нужно перерисовывать
+    return true
 })
 
 ShiftCard.displayName = 'ShiftCard'

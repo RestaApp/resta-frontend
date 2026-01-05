@@ -8,13 +8,14 @@ import { useUpdateUser } from '@/hooks/useUsers'
 import { getCurrentUserId } from '@/utils/user'
 import { logger } from '@/utils/logger'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
-import type { UserRole } from '@/types'
+import type { UiRole } from '@/types'
+import { mapUiRoleToApiRole } from '@/utils/roles'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface UseUserUpdateResult {
-  updateUserRole: (
-    role: UserRole,
-    onSelectRole: (role: UserRole) => void,
+  updateUiRole: (
+    role: UiRole,
+    onSelectRole: (role: UiRole) => void,
     onError?: (error: string) => void
   ) => Promise<boolean>
   updateUserWithData: (
@@ -31,11 +32,12 @@ export const useUserUpdate = (): UseUserUpdateResult => {
 
   /**
    * Обновляет роль пользователя
+   * Строгий контракт: onSelectRole вызывается только при успехе
    */
-  const updateUserRole = useCallback(
+  const updateUiRole = useCallback(
     async (
-      role: UserRole,
-      onSelectRole: (role: UserRole) => void,
+      role: UiRole,
+      onSelectRole: (role: UiRole) => void,
       onError?: (error: string) => void
     ): Promise<boolean> => {
       if (!isAuthenticated) {
@@ -51,20 +53,23 @@ export const useUserUpdate = (): UseUserUpdateResult => {
 
       try {
         const updateData: UpdateUserRequest = {
-          user: {
-            role,
-          },
+          user: { role: mapUiRoleToApiRole(role) },
         }
 
-        await updateUser(userId, updateData)
+        const result = await updateUser(userId, updateData)
+
+        // если updateUser возвращает success/errors — проверяем
+        if (result && typeof result === 'object' && 'success' in result && result.success === false) {
+          const msg = (result.errors || ['Произошла ошибка при сохранении данных']).join('\n')
+          onError?.(msg)
+          return false
+        }
+
         onSelectRole(role)
         return true
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Произошла ошибка при сохранении данных'
-        if (onError) {
-          onError(errorMessage)
-        }
-        onSelectRole(role)
+        const msg = error instanceof Error ? error.message : 'Произошла ошибка при сохранении данных'
+        onError?.(msg)
         return false
       }
     },
@@ -135,7 +140,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
   )
 
   return {
-    updateUserRole,
+    updateUiRole,
     updateUserWithData,
   }
 }

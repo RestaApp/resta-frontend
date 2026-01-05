@@ -9,34 +9,35 @@ import { useUserPositions } from '@/hooks/useUserPositions'
 import { useSupplierTypes } from '@/hooks/useSupplierTypes'
 import { useRestaurantFormats } from '@/hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '@/utils/rolesMapper'
-import { isVerifiedRole } from '@/utils/roles'
+import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
 import { useUserUpdate } from './useUserUpdate'
-import type { UserRole } from '@/types'
+import type { UiRole } from '@/types'
 
 interface UseRoleSelectionProps {
-  onSelectRole: (role: UserRole) => void
+  onSelectRole: (role: UiRole) => void
 }
 
 export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
-  const [draftSelectedRole, setDraftSelectedRole] = useState<UserRole | null>(null)
+  const [draftSelectedRole, setDraftSelectedRole] = useState<UiRole | null>(null)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
   const [showSupplierTypes, setShowSupplierTypes] = useState(false)
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
 
   const userData = useAppSelector(state => state.user.userData)
-  const { updateUserRole } = useUserUpdate()
+  const { updateUiRole } = useUserUpdate()
 
   // Проверяем, что роль пользователя равна 'unverified'
-  const isUnverifiedRole = useMemo(() => {
-    return !isVerifiedRole(userData?.role)
+  const isUnverified = useMemo(() => {
+    const apiRole = mapRoleFromApi(userData?.role)
+    return !isVerifiedRole(apiRole)
   }, [userData?.role])
 
   // Запрашиваем роли только если пользователь авторизован И его роль равна 'unverified'
-  const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverifiedRole })
+  const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverified })
 
   // Загружаем позиции только если выбрана роль employee (chef) И роль пользователя unverified
   const shouldLoadPositions =
-    (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverifiedRole
+    (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverified
 
   const {
     positionsApi: employeeSubRoles,
@@ -46,7 +47,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
 
   // Загружаем типы поставщиков только если выбрана роль supplier И роль пользователя unverified
   const shouldLoadSupplierTypes =
-    (draftSelectedRole === 'supplier' || showSupplierTypes) && isUnverifiedRole
+    (draftSelectedRole === 'supplier' || showSupplierTypes) && isUnverified
 
   const {
     supplierTypes,
@@ -56,7 +57,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
 
   // Загружаем форматы ресторанов только если выбрана роль venue И роль пользователя unverified
   const shouldLoadRestaurantFormats =
-    (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverifiedRole
+    (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverified
 
   const {
     restaurantFormats,
@@ -73,7 +74,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   }, [roles])
 
   const handleRoleSelect = useCallback(
-    async (roleId: UserRole) => {
+    async (roleId: UiRole) => {
       setDraftSelectedRole(roleId)
 
       // Если выбрали сотрудника, показываем экран подролей
@@ -95,12 +96,15 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
       }
 
       // Для остальных ролей отправляем на сервер
-      await updateUserRole(roleId, onSelectRole)
+      await updateUiRole(roleId, onSelectRole)
     },
-    [onSelectRole, updateUserRole]
+    [onSelectRole, updateUiRole]
   )
 
   const handleBack = useCallback(() => {
+    // Сбрасываем выбранную роль при возврате
+    setDraftSelectedRole(null)
+    
     if (showEmployeeSubRoles) {
       setShowEmployeeSubRoles(false)
     } else if (showSupplierTypes) {

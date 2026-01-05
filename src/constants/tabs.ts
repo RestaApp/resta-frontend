@@ -3,7 +3,7 @@
  */
 
 import { Home, Zap, Package, User, Users, Store, Search } from 'lucide-react'
-import type { Tab, UserRole } from '@/types'
+import type { Tab, UiRole } from '@/types'
 import { isEmployeeRole } from '@/utils/roles'
 
 export interface TabItem {
@@ -50,7 +50,7 @@ export const getSupplierTabs = (): TabItem[] => {
 /**
  * Получает список табов на основе роли пользователя
  */
-export const getTabsForRole = (role: UserRole): TabItem[] => {
+export const getTabsForRole = (role: UiRole): TabItem[] => {
   if (isEmployeeRole(role)) {
     return getEmployeeTabs()
   }

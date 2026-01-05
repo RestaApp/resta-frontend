@@ -6,12 +6,12 @@
 import { useDashboard } from './hooks/useDashboard'
 import { TabContent } from './components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
-import type { UserRole, Screen } from '@/types'
+import type { UiRole, Screen } from '@/types'
 
 import { AppHeader } from '@/components/ui/AppHeader'
 
 interface DashboardProps {
-    role: UserRole
+    role: UiRole
     onNavigate?: (screen: Screen) => void
     currentScreen?: Screen | null
 }

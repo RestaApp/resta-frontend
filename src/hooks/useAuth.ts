@@ -17,7 +17,7 @@ import {
 import { usersApi } from '@/services/api/usersApi'
 import { authService } from '@/services/auth'
 import { updateUserDataInStore, dispatchAuthEvent } from '@/utils/userData'
-import { isVerifiedRole } from '@/utils/roles'
+import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
 
 /**
  * Создает минимальный объект UserData из данных sign_in ответа
@@ -84,7 +84,8 @@ export const useAuthActions = () => {
             // Проверяем роль из ответа sign_in
             // Если роль не unverified - загружаем полные данные пользователя
             // Если роль unverified - не загружаем, переходим на RoleSelector
-            if (isVerifiedRole(result.data.role)) {
+            const apiRole = mapRoleFromApi(result.data.role)
+            if (isVerifiedRole(apiRole)) {
               // Роль выбрана (не unverified) - загружаем полные данные пользователя
               // Это должно происходить перед загрузкой каких-либо других данных
               const userId = result.data.id

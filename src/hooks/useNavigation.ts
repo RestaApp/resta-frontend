@@ -1,39 +1,28 @@
 /**
- * Хук для управления навигацией
+ * Хук для управления навигацией (без табов)
  */
 
 import { useCallback } from 'react'
-import type { Screen, Tab } from '@/types'
-import { VALID_SCREENS } from '@/constants/routes'
-import { SCREEN_TO_TAB_MAP } from '@/constants/navigation'
-import { ROUTES } from '@/constants/routes'
+import type { Screen } from '@/types'
+import { VALID_SCREENS, ROUTES } from '@/constants/routes'
 
 interface UseNavigationProps {
   setCurrentScreen: (screen: Screen) => void
-  setActiveTab: (tab: Tab) => void
 }
 
-export const useNavigation = ({ setCurrentScreen, setActiveTab }: UseNavigationProps) => {
+export const useNavigation = ({ setCurrentScreen }: UseNavigationProps) => {
   const navigate = useCallback(
     (destination: string) => {
       if (VALID_SCREENS.includes(destination as Screen)) {
-        const screen = destination as Screen
-        setCurrentScreen(screen)
-
-        // Синхронизация таба с экраном через маппинг
-        const tab = SCREEN_TO_TAB_MAP[screen]
-        if (tab) {
-          setActiveTab(tab)
-        }
+        setCurrentScreen(destination as Screen)
       }
     },
-    [setCurrentScreen, setActiveTab]
+    [setCurrentScreen]
   )
 
   const back = useCallback(() => {
     setCurrentScreen(ROUTES.HOME)
-    setActiveTab('home')
-  }, [setCurrentScreen, setActiveTab])
+  }, [setCurrentScreen])
 
   return { navigate, back }
 }
