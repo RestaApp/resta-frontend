@@ -6,7 +6,7 @@
 import { useCallback } from 'react'
 import { useApplyToShiftMutation, useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { useToast } from '@/hooks/useToast'
-import { getTelegramWebApp } from '@/utils/telegram'
+import { triggerHapticFeedback } from '@/utils/haptics'
 
 interface UseShiftApplicationOptions {
     onSuccess?: () => void
@@ -16,6 +16,12 @@ interface UseShiftApplicationOptions {
 /**
  * Хук для работы с заявками на смены
  */
+const getErrorMessage = (error: unknown, fallback: string) => {
+    return error && typeof error === 'object' && 'data' in error
+        ? (error.data as { message?: string })?.message || fallback
+        : fallback
+}
+
 export const useShiftApplication = (options: UseShiftApplicationOptions = {}) => {
     const { showToast } = useToast()
     const [applyToShift, { isLoading: isApplying }] = useApplyToShiftMutation()
@@ -28,18 +34,7 @@ export const useShiftApplication = (options: UseShiftApplicationOptions = {}) =>
         async (shiftId: number, message?: string) => {
             try {
                 // Тактильная обратная связь
-                const webApp = getTelegramWebApp()
-                if (webApp?.HapticFeedback) {
-                    try {
-                        webApp.HapticFeedback.impactOccurred('light')
-                    } catch {
-                        if (navigator.vibrate) {
-                            navigator.vibrate(50)
-                        }
-                    }
-                } else if (navigator.vibrate) {
-                    navigator.vibrate(50)
-                }
+                triggerHapticFeedback('light')
 
                 const result = await applyToShift({
                     id: shiftId,
@@ -53,10 +48,7 @@ export const useShiftApplication = (options: UseShiftApplicationOptions = {}) =>
                 options.onSuccess?.()
                 return result
             } catch (error) {
-                const errorMessage =
-                    error && typeof error === 'object' && 'data' in error
-                        ? (error.data as { message?: string })?.message || 'Не удалось отправить заявку'
-                        : 'Не удалось отправить заявку'
+                const errorMessage = getErrorMessage(error, 'Не удалось отправить заявку')
                 showToast(errorMessage, 'error')
                 options.onError?.(error)
                 throw error
@@ -77,10 +69,7 @@ export const useShiftApplication = (options: UseShiftApplicationOptions = {}) =>
                 options.onSuccess?.()
                 return result
             } catch (error) {
-                const errorMessage =
-                    error && typeof error === 'object' && 'data' in error
-                        ? (error.data as { message?: string })?.message || 'Не удалось отменить заявку'
-                        : 'Не удалось отменить заявку'
+                const errorMessage = getErrorMessage(error, 'Не удалось отменить заявку')
                 showToast(errorMessage, 'error')
                 options.onError?.(error)
                 throw error
@@ -97,4 +86,3 @@ export const useShiftApplication = (options: UseShiftApplicationOptions = {}) =>
         isLoading: isApplying || isCancelling,
     }
 }
-

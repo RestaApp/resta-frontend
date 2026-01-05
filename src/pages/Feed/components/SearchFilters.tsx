@@ -1,27 +1,19 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 import { SlidersHorizontal, Loader2 } from 'lucide-react'
-import type { AdvancedFiltersData } from '../components/AdvancedFilters'
-import { formatFiltersForDisplay } from '@/utils/filters'
 
 interface SearchFiltersProps {
     onOpenFilters?: () => void
     isLoading?: boolean
     hasActiveFilters?: boolean
-    activeFilters?: AdvancedFiltersData | null
+    activeFiltersList: string[]
 }
 
 function SearchFiltersComponent({
     onOpenFilters,
     isLoading = false,
     hasActiveFilters = false,
-    activeFilters = null
+    activeFiltersList,
 }: SearchFiltersProps) {
-    // Формируем список активных фильтров для отображения
-    const activeFiltersList = useMemo(
-        () => formatFiltersForDisplay(activeFilters),
-        [activeFilters]
-    )
-
     return (
         <div className="px-4 py-2 bg-card border-b border-border">
             <div className="flex gap-2 items-center">
@@ -70,8 +62,7 @@ export const SearchFilters = memo(SearchFiltersComponent, (prevProps, nextProps)
     return (
         prevProps.isLoading === nextProps.isLoading &&
         prevProps.hasActiveFilters === nextProps.hasActiveFilters &&
-        JSON.stringify(prevProps.activeFilters) === JSON.stringify(nextProps.activeFilters)
+        prevProps.activeFiltersList.join('|') === nextProps.activeFiltersList.join('|')
     )
 })
-
 

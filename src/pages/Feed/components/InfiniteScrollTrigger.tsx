@@ -24,7 +24,7 @@ export const InfiniteScrollTrigger = ({
                     onLoadMore()
                 }
             },
-            { threshold: 1.0 } // Срабатывает, когда элемент полностью виден
+            { threshold: 0, rootMargin: '200px' }
         )
 
         const currentTarget = observerTarget.current
@@ -76,4 +76,3 @@ export const InfiniteScrollTrigger = ({
         </div>
     )
 }
-

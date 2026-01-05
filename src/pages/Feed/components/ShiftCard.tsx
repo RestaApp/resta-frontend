@@ -122,23 +122,6 @@ const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, 
     )
 }
 
-export const ShiftCard = memo(ShiftCardComponent, (prevProps, nextProps) => {
-    // Возвращаем true, если пропсы равны (не нужно перерисовывать)
-    // Возвращаем false, если пропсы изменились (нужно перерисовывать)
-    if (prevProps.shift.id !== nextProps.shift.id) return false
-    if (prevProps.shift.pay !== nextProps.shift.pay) return false
-    if (prevProps.shift.date !== nextProps.shift.date) return false
-    if (prevProps.shift.time !== nextProps.shift.time) return false
-    if (prevProps.shift.location !== nextProps.shift.location) return false
-    if (prevProps.shift.restaurant !== nextProps.shift.restaurant) return false
-    if (prevProps.shift.position !== nextProps.shift.position) return false
-    if (prevProps.shift.specialization !== nextProps.shift.specialization) return false
-    if (prevProps.shift.rating !== nextProps.shift.rating) return false
-    if (prevProps.isApplied !== nextProps.isApplied) return false
-    if (prevProps.isLoading !== nextProps.isLoading) return false
-
-    // Все важные пропсы равны - не нужно перерисовывать
-    return true
-})
+export const ShiftCard = memo(ShiftCardComponent)
 
 ShiftCard.displayName = 'ShiftCard'
