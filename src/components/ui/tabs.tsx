@@ -2,7 +2,7 @@
  * Переиспользуемые табы с плавным свайпом
  */
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useLayoutEffect, useState } from 'react'
 import { motion } from 'motion/react'
 
 
@@ -29,7 +29,7 @@ export const Tabs = <T extends string>({
   const tabRefs = useRef<Map<T, HTMLButtonElement>>(new Map())
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const activeTab = tabRefs.current.get(activeId)
     const container = containerRef.current
 
@@ -109,6 +109,5 @@ export const Tabs = <T extends string>({
     </div>
   )
 }
-
 
 
