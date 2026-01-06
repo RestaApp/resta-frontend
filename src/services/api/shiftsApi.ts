@@ -126,6 +126,7 @@ export interface VacanciesResponse {
  * Запрос на отклик на смену
  */
 export interface ApplyToShiftRequest {
+  shift_id?: number // Когда формируем тело из клиента, сюда попадёт id смены
   message?: string // Опциональное сообщение
 }
 
@@ -207,27 +208,48 @@ export const shiftsApi = api.injectEndpoints({
       invalidatesTags: ['Shift'],
     }),
 
-    // Откликнуться на смену
+    // Откликнуться на смену (новый endpoint: создаём ресурс shift_application)
+    // Входной формат сохраняет прежнюю сигнатуру { id, data } для обратной совместимости,
+    // но отправляет тело { shift_id, ...data } на `/api/v1/shift_applications`.
     applyToShift: builder.mutation<ApplyToShiftResponse, { id: number; data?: ApplyToShiftRequest }>({
       query: ({ id, data }) => ({
-        url: `/api/v1/shifts/${id}/apply`,
+        url: `/api/v1/shift_applications`,
         method: 'POST',
-        body: data || {},
+        body: Object.assign({ shift_id: id }, data || {}),
       }),
       // Инвалидируем только список поданных заявок, не весь список смен
-      // Список доступных смен не должен перезагружаться при отклике
       invalidatesTags: ['AppliedShift'],
     }),
 
-    // Отменить заявку на смену
+    // Отменить заявку на смену (новый endpoint: удаляем ресурс shift_application по id)
+    // Параметр — id заявки (application id). Для обратной совместимости клиенты могут передавать
+    // прежний shift id, но это повлечёт ошибку на сервере, поэтому убедитесь, что вызывающие хуки
+    // используют application_id из ответа applyToShift.
     cancelApplication: builder.mutation<CancelApplicationResponse, number>({
       query: id => ({
-        url: `/api/v1/shifts/${id}/cancel_application`,
+        url: `/api/v1/shift_applications/${id}`,
         method: 'DELETE',
       }),
-      // Инвалидируем только список поданных заявок, не весь список смен
-      // Список доступных смен не должен перезагружаться при отмене
+      // Инвалидируем список поданных заявок
       invalidatesTags: ['AppliedShift'],
+    }),
+
+    // Принять заявку (только для владельца смены / ресторана)
+    acceptApplication: builder.mutation<ApplyToShiftResponse, number>({
+      query: id => ({
+        url: `/api/v1/shift_applications/${id}/accept`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AppliedShift', 'Shift'],
+    }),
+
+    // Отклонить заявку (только для владельца смены / ресторана)
+    rejectApplication: builder.mutation<ApplyToShiftResponse, number>({
+      query: id => ({
+        url: `/api/v1/shift_applications/${id}/reject`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AppliedShift', 'Shift'],
     }),
 
     // Получить смены, на которые поданы заявки
@@ -253,4 +275,6 @@ export const {
   useApplyToShiftMutation,
   useCancelApplicationMutation,
   useGetAppliedShiftsQuery,
+  useAcceptApplicationMutation,
+  useRejectApplicationMutation,
 } = shiftsApi
