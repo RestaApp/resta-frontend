@@ -4,6 +4,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
+import { selectUserPosition } from '@/store/userSlice'
 import { DEFAULT_PRICE_RANGE } from '@/utils/filters'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
@@ -32,12 +33,11 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
   // Инициализируем фильтры синхронно, если у пользователя есть позиция
-  const userData = useAppSelector(state => state.user.userData)
-  const userPosition = userData?.position || userData?.employee_profile?.position
+  const userPosition = useAppSelector(selectUserPosition)
 
   // Lazy initialization для фильтров - вычисляется только один раз при первом рендере
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFiltersData | null>(() => {
-    const position = userData?.position || userData?.employee_profile?.position
+    const position = userPosition
     if (position) {
       return {
         priceRange: DEFAULT_PRICE_RANGE,

@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useAppSelector } from '@/store/hooks'
+import { selectUserData } from '@/store/userSlice'
 import { useRoles } from '@/hooks/useRoles'
 import { useUserPositions } from '@/hooks/useUserPositions'
 import { useSupplierTypes } from '@/hooks/useSupplierTypes'
@@ -23,7 +24,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const [showSupplierTypes, setShowSupplierTypes] = useState(false)
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
 
-  const userData = useAppSelector(state => state.user.userData)
+  const userData = useAppSelector(selectUserData)
   const { updateUiRole } = useUserUpdate()
 
   // Проверяем, что роль пользователя равна 'unverified'
@@ -139,4 +140,3 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     setShowRestaurantFormats,
   }
 }
-

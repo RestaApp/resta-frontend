@@ -2,7 +2,8 @@
  * Redux slice для данных Telegram
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import type { RootState } from './index'
 
 interface TelegramState {
   initData: string | null
@@ -29,3 +30,14 @@ const telegramSlice = createSlice({
 
 export const { setInitData, setReady } = telegramSlice.actions
 export default telegramSlice.reducer
+
+const selectTelegramState = (state: RootState) => state.telegram
+
+export const selectTelegramInitData = createSelector(
+  [selectTelegramState],
+  telegram => telegram.initData
+)
+export const selectTelegramIsReady = createSelector(
+  [selectTelegramState],
+  telegram => telegram.isReady
+)

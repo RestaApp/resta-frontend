@@ -3,12 +3,12 @@
  */
 
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { setUserData, clearUserData } from '@/store/userSlice'
+import { clearUserData, selectUserData, setUserData } from '@/store/userSlice'
 import type { UserData } from '@/services/api/authApi'
 
 export const useUser = () => {
   const dispatch = useAppDispatch()
-  const userData = useAppSelector(state => state.user.userData)
+  const userData = useAppSelector(selectUserData)
 
   return {
     userData,
@@ -16,4 +16,3 @@ export const useUser = () => {
     clearUserData: () => dispatch(clearUserData()),
   }
 }
-

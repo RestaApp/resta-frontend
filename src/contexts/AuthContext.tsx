@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { authService } from '@/services/auth'
 import { useAppSelector } from '@/store/hooks'
 import { clearUserData } from '@/store/userSlice'
+import { selectTelegramIsReady } from '@/store/telegramSlice'
 import { store } from '@/store'
 
 interface AuthContextValue {
@@ -29,7 +30,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => authService.isAuthenticated())
   const [isError, setIsError] = useState(false)
   const [error, setError] = useState<unknown>(null)
-  const telegramReady = useAppSelector(state => state.telegram.isReady)
+  const telegramReady = useAppSelector(selectTelegramIsReady)
 
   // Отслеживаем изменения авторизации
   useEffect(() => {

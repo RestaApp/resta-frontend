@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { updateUserDataInStore } from '@/utils/userData'
+import { selectUserData } from '@/store/userSlice'
 
 interface UseUserProfileOptions {
   /**
@@ -29,7 +30,7 @@ export const useUserProfile = (options: UseUserProfileOptions = {}) => {
   const { skip = false, forceRefetch = false } = options
   const { isAuthenticated } = useAuth()
   const dispatch = useAppDispatch()
-  const userDataFromStore = useAppSelector(state => state.user.userData)
+  const userDataFromStore = useAppSelector(selectUserData)
 
   // Получаем userId из store
   const userId = userDataFromStore?.id

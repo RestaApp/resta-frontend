@@ -3,11 +3,12 @@
  * Возвращает undefined, если userId недоступен
  */
 import { store } from '@/store'
+import { selectUserId } from '@/store/userSlice'
 
 export function getCurrentUserId(): number | undefined {
   try {
     const state = store.getState()
-    return state.user.userData?.id
+    return selectUserId(state)
   } catch {
     return undefined
   }

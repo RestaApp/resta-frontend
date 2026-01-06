@@ -6,6 +6,7 @@
 import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setInitData, setReady } from '@/store/telegramSlice'
+import { selectUserData } from '@/store/userSlice'
 import { getTelegramWebApp, isTelegramWebApp } from '@/utils/telegram'
 import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'
@@ -34,7 +35,7 @@ let globalAuthAttempted = false
 
 export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const dispatch = useAppDispatch()
-  const userDataFromStore = useAppSelector(state => state.user.userData)
+  const userDataFromStore = useAppSelector(selectUserData)
   const { authTelegram } = useAuthActions()
   const [isReady, setIsReady] = useState(false)
   const [telegram, setTelegram] = useState<ReturnType<typeof getTelegramWebApp>>(null)
