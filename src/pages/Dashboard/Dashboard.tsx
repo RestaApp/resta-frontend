@@ -8,7 +8,7 @@ import { TabContent } from './components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
 import type { UiRole, Screen } from '@/types'
 
-import { AppHeader } from '@/components/ui/AppHeader'
+import { AppHeader } from '@/components/AppHeader'
 
 interface DashboardProps {
     role: UiRole
@@ -21,7 +21,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen = null }: DashboardP
 
     return (
         <div className="min-h-screen bg-background">
-            <AppHeader />
+            <AppHeader activeTab={activeTab} />
 
             <TabContent activeTab={activeTab} role={role} />
             <BottomNav activeTab={activeTab} onTabChange={handleTabChange} role={role} />

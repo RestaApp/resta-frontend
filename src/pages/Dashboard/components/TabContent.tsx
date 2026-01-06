@@ -1,4 +1,5 @@
 import { FeedPage } from "@/pages/Feed/FeedPage"
+import { ActivityPage } from "@/pages/Activity/ActivityPage"
 import type { Tab, UiRole } from "@/types"
 
 interface TabContentProps {
@@ -10,6 +11,10 @@ export const TabContent = ({ activeTab, role }: TabContentProps) => {
     // Для таба feed показываем FeedPage
     if (activeTab === 'feed') {
         return <FeedPage />
+    }
+
+    if (activeTab === 'activity') {
+        return <ActivityPage />
     }
 
     // Для остальных табов показываем заглушку
