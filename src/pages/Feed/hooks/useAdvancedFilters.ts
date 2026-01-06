@@ -7,7 +7,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useAppDispatch } from '@/store/hooks'
 import { setSelectedPosition as setSelectedPositionAction } from '@/store/catalogSlice'
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
-import { DEFAULT_PRICE_RANGE, hasActiveFilters as checkHasActiveFilters } from '@/utils/filters'
+import { hasActiveFilters as checkHasActiveFilters } from '@/utils/filters'
 
 interface UseAdvancedFiltersOptions {
   /**
@@ -31,6 +31,10 @@ interface UseAdvancedFiltersOptions {
    * Задержка перед применением фильтров (debounce) в миллисекундах
    */
   debounceMs?: number
+  /**
+   * Флаг для вакансий (используется для разных дефолтных значений диапазона цен)
+   */
+  isVacancy?: boolean
 }
 
 export const useAdvancedFilters = ({
@@ -43,8 +47,9 @@ export const useAdvancedFilters = ({
   const dispatch = useAppDispatch()
 
   // Локальное состояние фильтров
-  const [priceRange, setPriceRange] = useState<[number, number]>(
-    initialFilters?.priceRange || DEFAULT_PRICE_RANGE
+  // Не устанавливаем дефолтные значения - пользователь должен выбрать сам
+  const [priceRange, setPriceRange] = useState<[number, number] | null>(
+    initialFilters?.priceRange || null
   )
   const [selectedPosition, setSelectedPosition] = useState<string | null>(
     initialFilters?.selectedPosition || null
@@ -73,8 +78,8 @@ export const useAdvancedFilters = ({
         setStartDate(initialFilters.startDate || null)
         setEndDate(initialFilters.endDate || null)
       } else {
-        // Сбрасываем к значениям по умолчанию
-        setPriceRange(DEFAULT_PRICE_RANGE)
+        // Сбрасываем к пустым значениям
+        setPriceRange(null)
         setSelectedPosition(null)
         setSelectedSpecializations([])
         setStartDate(null)
@@ -126,7 +131,7 @@ export const useAdvancedFilters = ({
 
   const handleReset = useCallback(() => {
     // Сбрасываем локальное состояние
-    setPriceRange(DEFAULT_PRICE_RANGE)
+    setPriceRange(null)
     setSelectedPosition(null)
     setSelectedSpecializations([])
     setStartDate(null)
@@ -142,16 +147,25 @@ export const useAdvancedFilters = ({
   }, [onReset, dispatch, onApply])
 
   // Формируем текущие фильтры
-  const currentFilters = useMemo<AdvancedFiltersData>(
-    () => ({
-      priceRange,
-      selectedPosition,
-      selectedSpecializations,
-      startDate,
-      endDate,
-    }),
-    [priceRange, selectedPosition, selectedSpecializations, startDate, endDate]
-  )
+  const currentFilters = useMemo<AdvancedFiltersData | null>(() => {
+    // Если нет ни одного фильтра - возвращаем null
+    const hasPriceFilter = priceRange !== null
+    const hasPosition = selectedPosition !== null
+    const hasSpecializations = selectedSpecializations.length > 0
+    const hasDates = startDate !== null || endDate !== null
+
+    if (!hasPriceFilter && !hasPosition && !hasSpecializations && !hasDates) {
+      return null
+    }
+
+    return {
+      priceRange: priceRange, // null если не выбрано
+      selectedPosition: selectedPosition || undefined,
+      selectedSpecializations: selectedSpecializations.length > 0 ? selectedSpecializations : undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    }
+  }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate])
 
   // Проверяем, есть ли активные фильтры
   const hasActiveFiltersValue = useMemo(

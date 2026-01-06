@@ -11,6 +11,7 @@ export type ShiftType = 'replacement' | 'vacancy'
 export interface BaseQueryParams {
   activeQuickFilter?: QuickFilter
   advanced?: AdvancedFiltersData | null
+  shiftType?: ShiftType // Тип для исключения дат из вакансий
 }
 
 /**
@@ -28,7 +29,7 @@ export const buildVacanciesBaseParams = (
 
   // Расширенные фильтры
   if (options.advanced) {
-    if (options.advanced.priceRange) {
+    if (options.advanced.priceRange && Array.isArray(options.advanced.priceRange)) {
       params.min_payment = options.advanced.priceRange[0]
       params.max_payment = options.advanced.priceRange[1]
     }
@@ -43,12 +44,14 @@ export const buildVacanciesBaseParams = (
       params.specialization = options.advanced.selectedSpecializations[0]
     }
 
-    // Используем даты, если выбраны
-    if (options.advanced.startDate) {
-      params.start_date = options.advanced.startDate
-    }
-    if (options.advanced.endDate) {
-      params.end_date = options.advanced.endDate
+    // Используем даты, если выбраны (только для смен, не для вакансий)
+    if (options.shiftType !== 'vacancy') {
+      if (options.advanced.startDate) {
+        params.start_date = options.advanced.startDate
+      }
+      if (options.advanced.endDate) {
+        params.end_date = options.advanced.endDate
+      }
     }
   }
 
@@ -69,7 +72,7 @@ export const buildVacanciesQueryParams = (args: {
   const { shiftType, page, perPage, urgent, activeQuickFilter, advanced } = args
 
   const params: GetVacanciesParams = {
-    ...buildVacanciesBaseParams({ activeQuickFilter, advanced }),
+    ...buildVacanciesBaseParams({ activeQuickFilter, advanced, shiftType }),
     shift_type: shiftType,
     page,
     per_page: perPage,

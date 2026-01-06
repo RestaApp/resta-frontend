@@ -6,6 +6,7 @@ import type { AdvancedFiltersData } from '@/pages/Feed/components/AdvancedFilter
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
 
 export const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
+export const DEFAULT_JOBS_PRICE_RANGE: [number, number] = [0, 5000]
 
 /**
  * Проверяет, является ли диапазон цен значением по умолчанию
@@ -81,8 +82,8 @@ export const formatFiltersForDisplay = (filters: AdvancedFiltersData | null): st
     result.push(...formatSpecializations(filters.selectedSpecializations))
   }
 
-  // Диапазон цен (если не по умолчанию)
-  if (!isDefaultPriceRange(filters.priceRange)) {
+  // Диапазон цен (если не по умолчанию и не null)
+  if (filters.priceRange && !isDefaultPriceRange(filters.priceRange)) {
     result.push(`${filters.priceRange[0]}-${filters.priceRange[1]} BYN`)
   }
 
@@ -101,7 +102,7 @@ export const formatFiltersForDisplay = (filters: AdvancedFiltersData | null): st
 export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean => {
   if (!filters) return false
 
-  const hasNonDefaultPrice = !isDefaultPriceRange(filters.priceRange)
+  const hasNonDefaultPrice = filters.priceRange !== null && !isDefaultPriceRange(filters.priceRange)
   const hasPosition = filters.selectedPosition !== null && filters.selectedPosition !== undefined
   const hasSpecializations = (filters.selectedSpecializations?.length ?? 0) > 0
   const hasDates = filters.startDate !== null || filters.endDate !== null

@@ -96,7 +96,7 @@ export const useVacanciesInfiniteList = (
         })
         setVacanciesMap(newMap)
       } else {
-        // Пустой ответ - очищаем данные только если это не refetch
+        // Пустой ответ - очищаем данные только если это не refetch и не идет загрузка
         // При refetch сохраняем существующие данные, если новых нет
         if (!isFetching) {
           setItems([])
@@ -149,6 +149,9 @@ export const useVacanciesInfiniteList = (
     return false
   }, [response, items.length])
 
+  // Отслеживаем изменение параметров для определения момента сброса
+  const [isParamsChanging, setIsParamsChanging] = useState(false)
+  
   // Сброс при изменении базовых параметров
   useEffect(() => {
     const prevParams = prevParamsRef.current
@@ -159,6 +162,7 @@ export const useVacanciesInfiniteList = (
     
     if (hasParamsChanged) {
       setCurrentPage(1)
+      setIsParamsChanging(true)
       // Очищаем данные только если параметры действительно изменились
       // Это предотвратит потерю данных при случайных ре-рендерах
       if (prevParams !== null) {
@@ -168,6 +172,13 @@ export const useVacanciesInfiniteList = (
       prevParamsRef.current = { baseQuery, shiftType }
     }
   }, [baseQuery, shiftType])
+
+  // Сбрасываем флаг изменения параметров после получения ответа
+  useEffect(() => {
+    if (isParamsChanging && response) {
+      setIsParamsChanging(false)
+    }
+  }, [isParamsChanging, response])
 
   const loadMore = useCallback(() => {
     if (!isLoading && !isFetching && hasMore) {
@@ -195,14 +206,29 @@ export const useVacanciesInfiniteList = (
 
   const totalCount = useMemo(() => {
     const pagination = response?.pagination || response?.meta
-    return pagination?.total_count ?? 0
+    // -1 означает, что ответа от сервера по текущим параметрам ещё не было
+    // Это позволяет в UI не показывать "ничего не найдено", пока запрос не завершился
+    if (!pagination || typeof pagination.total_count !== 'number') {
+      return -1
+    }
+    return pagination.total_count
   }, [response])
+
+  // Определяем начальную загрузку: enabled, первая страница, нет данных, и либо идет загрузка, либо еще нет ответа
+  const isInitialLoading = useMemo(() => {
+    if (!enabled) return false
+    if (currentPage !== 1) return false
+    if (items.length > 0 && !isParamsChanging) return false
+    // Если идет загрузка, идет fetch, параметры меняются или еще нет ответа - это начальная загрузка
+    // Проверка !response важна для случая, когда enabled только что стал true и запрос еще не начался
+    return isLoading || isFetching || !response || isParamsChanging
+  }, [enabled, currentPage, items.length, isLoading, isFetching, response, isParamsChanging])
 
   return {
     items,
     vacanciesMap,
     hasMore,
-    isInitialLoading: enabled && currentPage === 1 && items.length === 0 && (isLoading || isFetching),
+    isInitialLoading,
     isFetching,
     error: isError ? error : null,
     totalCount,

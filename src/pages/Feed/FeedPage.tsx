@@ -23,6 +23,7 @@ import { useHaptics } from '@/utils/haptics'
 import { useHotOffers } from './hooks/useHotOffers'
 import { useShiftActions } from './hooks/useShiftActions'
 import { mapVacancyToShift } from './utils/mapping'
+import { syncFiltersPositionAndSpecializations } from './utils/filterSync'
 
 export const FeedPage = () => {
     useUserProfile()
@@ -37,6 +38,10 @@ export const FeedPage = () => {
         setQuickFilter,
         advancedFilters,
         setAdvancedFilters,
+        shiftsAdvancedFilters,
+        jobsAdvancedFilters,
+        setShiftsAdvancedFilters,
+        setJobsAdvancedFilters,
         selectedShiftId,
         setSelectedShiftId,
         isFiltersOpen,
@@ -52,15 +57,30 @@ export const FeedPage = () => {
         isShiftLoading,
     } = useShiftActions()
 
-    const baseQuery = useMemo(
-        () => buildVacanciesBaseParams({ activeQuickFilter: quickFilter, advanced: advancedFilters }),
-        [quickFilter, advancedFilters]
+    // Базовые параметры для смен (используем фильтры смен напрямую)
+    const shiftsBaseQuery = useMemo(
+        () => buildVacanciesBaseParams({
+            activeQuickFilter: quickFilter,
+            advanced: shiftsAdvancedFilters,
+            shiftType: 'replacement'
+        }),
+        [quickFilter, shiftsAdvancedFilters]
+    )
+
+    // Базовые параметры для вакансий (используем фильтры вакансий напрямую, без дат)
+    const jobsBaseQuery = useMemo(
+        () => buildVacanciesBaseParams({
+            activeQuickFilter: quickFilter,
+            advanced: jobsAdvancedFilters,
+            shiftType: 'vacancy'
+        }),
+        [quickFilter, jobsAdvancedFilters]
     )
 
     // Бесконечная загрузка смен
     const shiftsList = useVacanciesInfiniteList({
         shiftType: 'replacement',
-        baseQuery,
+        baseQuery: shiftsBaseQuery,
         enabled: feedType === 'shifts',
         perPage: 5,
     })
@@ -68,7 +88,7 @@ export const FeedPage = () => {
     // Бесконечная загрузка вакансий
     const jobsList = useVacanciesInfiniteList({
         shiftType: 'vacancy',
-        baseQuery,
+        baseQuery: jobsBaseQuery,
         enabled: feedType === 'jobs',
         perPage: 5,
     })
@@ -84,7 +104,7 @@ export const FeedPage = () => {
         hotOffersTotalCount,
     } = useHotOffers({
         feedType,
-        advancedFilters,
+        advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
         addVacanciesToMap: addShiftsVacanciesToMap,
     })
 
@@ -150,8 +170,20 @@ export const FeedPage = () => {
     }, [resetFeedFilters])
 
     const handleApplyAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
+        // Обновляем фильтры для текущего типа фида
         setAdvancedFilters(filters)
-    }, [setAdvancedFilters])
+
+        // Синхронизируем позиции и специализации с другим типом фида
+        if (filters) {
+            if (feedType === 'shifts') {
+                const syncedFilters = syncFiltersPositionAndSpecializations(filters, jobsAdvancedFilters)
+                setJobsAdvancedFilters(syncedFilters)
+            } else {
+                const syncedFilters = syncFiltersPositionAndSpecializations(filters, shiftsAdvancedFilters)
+                setShiftsAdvancedFilters(syncedFilters)
+            }
+        }
+    }, [setAdvancedFilters, feedType, shiftsAdvancedFilters, jobsAdvancedFilters, setShiftsAdvancedFilters, setJobsAdvancedFilters])
 
     // Определяем, есть ли активные фильтры
     const activeFiltersList = useMemo(() => {
@@ -166,7 +198,8 @@ export const FeedPage = () => {
 
     // Количество отфильтрованных смен или вакансий
     const filteredCount = useMemo(() => {
-        return activeList.totalCount
+        // В UI не хотим показывать -1, это служебное значение "еще не знаем"
+        return activeList.totalCount < 0 ? 0 : activeList.totalCount
     }, [activeList.totalCount])
 
     const selectedVacancy = useMemo(() => {
@@ -218,7 +251,7 @@ export const FeedPage = () => {
                     <div className="text-center py-8 text-destructive">
                         Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}
                     </div>
-                ) : filteredShifts.length === 0 ? (
+                ) : filteredShifts.length === 0 && (activeList.totalCount === 0 || (!activeList.isFetching && activeList.totalCount !== -1)) ? (
                     <EmptyState
                         message={quickFilter !== 'all' || advancedFilters
                             ? 'По вашим фильтрам ничего не найдено'
@@ -226,6 +259,8 @@ export const FeedPage = () => {
                         onReset={handleResetFilters}
                         showResetButton={!!(quickFilter !== 'all' || advancedFilters)}
                     />
+                ) : filteredShifts.length === 0 && activeList.isFetching ? (
+                    <ShiftSkeleton />
                 ) : (
                     <>
                         {filteredShifts.map((shift, index) => (
@@ -283,6 +318,7 @@ export const FeedPage = () => {
                 initialFilters={advancedFilters || undefined}
                 filteredCount={filteredCount}
                 onReset={resetFeedFilters}
+                isVacancy={feedType === 'jobs'}
             />
         </div>
     )
