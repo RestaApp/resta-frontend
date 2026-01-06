@@ -1,132 +1,213 @@
-import { useState } from 'react'
-import { Clock, Calendar, DollarSign } from 'lucide-react'
-import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '../../../components/ui/drawer'
-import { Input } from '@/components/ui/input'
-
-export interface PersonalShift {
-    id: string
-    title: string
-    date: string
-    startTime: string
-    endTime: string
-    pay?: number
-    color: 'work' | 'personal' | 'rest'
-    type: 'personal'
-}
-
-const colorOptions = [
-    { value: 'work', label: '💼 Работа', color: '#8B5CF6' },
-    { value: 'personal', label: '📝 Личное', color: '#06B6D4' },
-    { value: 'rest', label: '🌴 Отдых', color: '#10B981' },
-] as const
+import { useEffect, useMemo } from 'react'
+import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
+import { DatePicker } from '@/components/ui/date-picker'
+import type { CreateShiftResponse } from '@/services/api/shiftsApi'
+import { useUserPositions } from '@/hooks/useUserPositions'
+import { useUserSpecializations } from '@/hooks/useUserSpecializations'
+import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import { Toast } from '@/components/ui/toast'
+import { useToast } from '@/hooks/useToast'
+import { Field, TextField, TextAreaField, SelectField, TimeField, MoneyField, CheckboxField } from './fields'
+import { useAddShiftForm, type ShiftType } from '../hooks/useAddShiftForm'
 
 type AddShiftDrawerProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onSave?: (shift: PersonalShift) => void
+    onSave?: (shift: CreateShiftResponse | null) => void
 }
 
+type SelectFieldOption = {
+    value: string
+    label: string
+}
+
+const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
+
 export const AddShiftDrawer = ({ open, onOpenChange, onSave }: AddShiftDrawerProps) => {
-    const [title, setTitle] = useState('')
-    const [date, setDate] = useState('')
-    const [startTime, setStartTime] = useState('')
-    const [endTime, setEndTime] = useState('')
-    const [pay, setPay] = useState('')
-    const [selectedColor, setSelectedColor] = useState<'work' | 'personal' | 'rest'>('work')
+    const { userProfile } = useUserProfile()
+    const { toast, hideToast } = useToast()
+    const isEmployeeRole = userProfile?.role === 'employee'
+    const isRestaurantRole = userProfile?.role === 'restaurant'
+    const lockedShiftType = useMemo<ShiftType | null>(() => {
+        if (isEmployeeRole) return 'replacement'
+        if (isRestaurantRole) return 'vacancy'
+        return null
+    }, [isEmployeeRole, isRestaurantRole])
+
+    const form = useAddShiftForm({ initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE, onSave })
+    const {
+        title,
+        setTitle,
+        description,
+        setDescription,
+        date,
+        setDate,
+        startTime,
+        setStartTime,
+        endTime,
+        setEndTime,
+        pay,
+        setPay,
+        location,
+        setLocation,
+        requirements,
+        setRequirements,
+        shiftType,
+        setShiftType,
+        urgent,
+        setUrgent,
+        position: formPosition,
+        setPosition: setFormPosition,
+        specialization,
+        setSpecialization,
+        submitError,
+        isCreating,
+        isFormInvalid,
+        timeRangeError,
+        handleSave,
+    } = form
+
+    const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({ enabled: open })
+    const {
+        specializations: availableSpecializations,
+        isLoading: isSpecializationsLoading,
+    } = useUserSpecializations({
+        position: formPosition || null,
+        enabled: open && !!formPosition,
+    })
+
+    useEffect(() => {
+        if (!formPosition) {
+            setSpecialization('')
+        }
+    }, [formPosition, setSpecialization])
 
     const close = () => onOpenChange(false)
 
-    const handleSave = () => {
-        if (!title || !date || !startTime || !endTime) return
+    // handleSave provided by hook; when it succeeds we close the drawer
 
-        const newShift: PersonalShift = {
-            id: Date.now().toString(),
-            title,
-            date,
-            startTime,
-            endTime,
-            pay: pay ? parseFloat(pay) : undefined,
-            color: selectedColor,
-            type: 'personal',
+    // timeRangeError and isFormInvalid provided by hook
+    const specializationOptions = availableSpecializations.map(spec => ({
+        value: spec,
+        label: getSpecializationLabel(spec),
+    }))
+    const shiftTypeOptions: SelectFieldOption[] = [
+        { value: 'vacancy', label: 'Вакансия' },
+        { value: 'replacement', label: 'Замена' },
+    ]
+    const positionsOptions: SelectFieldOption[] = positionsForDisplay.map(item => {
+        const value = item.originalValue || item.id
+        return {
+            value,
+            label: item.title || getEmployeePositionLabel(value),
         }
-
-        onSave?.(newShift)
-        // reset
-        setTitle('')
-        setDate('')
-        setStartTime('')
-        setEndTime('')
-        setPay('')
-        setSelectedColor('work')
-        close()
-    }
+    })
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerHeader>
                 <DrawerTitle>Добавить смену</DrawerTitle>
-                <DrawerDescription>Создайте личную смену — она отобразится только у вас.</DrawerDescription>
+                <DrawerDescription>Найдите себе замену.</DrawerDescription>
             </DrawerHeader>
 
             <div className="space-y-5 p-4">
-                <div>
-                    <label className="block mb-2 text-sm text-muted-foreground">Название смены</label>
-                    <Input value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} placeholder='Например: "Основная работа", "Банкет"' />
-                </div>
+                <TextField
+                    label="Название смены"
+                    value={title}
+                    onChange={setTitle}
+                    placeholder='Например: "Основная работа", "Банкет"'
+                />
 
-                <div>
-                    <label className="block mb-2 text-sm text-muted-foreground">Дата</label>
-                    <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <Input type="date" value={date} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)} className="pl-11" />
-                    </div>
-                </div>
+                <TextAreaField
+                    label="Описание"
+                    value={description}
+                    onChange={setDescription}
+                    placeholder="Коротко опишите смену и обязанности"
+                    minHeight="96px"
+                />
+
+                <Field label="Дата">
+                    <DatePicker value={date} onChange={setDate} className="w-full" />
+                </Field>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block mb-2 text-sm text-muted-foreground">Начало</label>
-                        <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <Input type="time" value={startTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartTime(e.target.value)} className="pl-11" />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-sm text-muted-foreground">Конец</label>
-                        <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <Input type="time" value={endTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndTime(e.target.value)} className="pl-11" />
-                        </div>
-                    </div>
+                    <TimeField label="Начало" value={startTime} onChange={setStartTime} />
+                    <TimeField label="Конец" value={endTime} onChange={setEndTime} />
                 </div>
+                {timeRangeError && (
+                    <p className="text-sm text-red-500">{timeRangeError}</p>
+                )}
 
-                <div>
-                    <label className="block mb-2 text-sm text-muted-foreground">Оплата <span className="text-xs">(необязательно)</span></label>
-                    <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <Input type="number" value={pay} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPay(e.target.value)} placeholder="Сколько платят?" className="pl-11" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Укажите оплату, чтобы видеть прогноз заработка за месяц</p>
-                </div>
+                <MoneyField value={pay} onChange={setPay} />
 
-                <div>
-                    <label className="block mb-3 text-sm text-muted-foreground">Категория</label>
-                    <div className="grid grid-cols-3 gap-3">
-                        {colorOptions.map((option) => (
-                            <button
-                                key={option.value}
-                                onClick={() => setSelectedColor(option.value as any)}
-                                className="p-3 rounded-xl border-2 transition-all text-sm"
-                                style={{
-                                    background: selectedColor === option.value ? `${option.color}20` : 'transparent',
-                                    borderColor: selectedColor === option.value ? option.color : 'var(--border)',
-                                }}
-                                type="button"
-                            >
-                                {option.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                <TextField
+                    label="Локация"
+                    value={location}
+                    onChange={setLocation}
+                    placeholder='Например: "Минск, ул. Ленина 1"'
+                />
+
+                <TextAreaField
+                    label="Требования"
+                    value={requirements}
+                    onChange={setRequirements}
+                    placeholder="Опыт, навыки, наличие мед. книжки и т.д."
+                    minHeight="80px"
+                />
+
+                {!isEmployeeRole && (
+                    <SelectField
+                        label="Тип смены"
+                        value={shiftType}
+                        onChange={(value) => setShiftType(value as ShiftType)}
+                        disabled={!!lockedShiftType}
+                        options={shiftTypeOptions}
+                        hint={
+                            lockedShiftType
+                                ? lockedShiftType === 'vacancy'
+                                    ? 'Заведения создают только вакансии.'
+                                    : 'Сотрудники создают только замены.'
+                                : undefined
+                        }
+                    />
+                )}
+
+                <SelectField
+                    label="Позиция"
+                    value={formPosition}
+                    onChange={setFormPosition}
+                    options={positionsOptions}
+                    placeholder={isPositionsLoading ? 'Загрузка позиций...' : 'Выберите позицию'}
+
+                />
+
+                <SelectField
+                    label="Специализация"
+                    value={specialization}
+                    onChange={setSpecialization}
+                    options={specializationOptions}
+                    placeholder={
+                        !formPosition
+                            ? 'Сначала выберите позицию'
+                            : isSpecializationsLoading
+                                ? 'Загрузка специализаций...'
+                                : 'Без специализации'
+                    }
+                    disabled={!formPosition}
+                    className="text-muted-foreground"
+                />
+
+                <CheckboxField
+                    id="urgent-shift"
+                    label="Срочная смена"
+                    checked={urgent}
+                    onChange={setUrgent}
+                />
+
+                {submitError && (
+                    <p className="text-sm text-red-500">{submitError}</p>
+                )}
             </div>
 
             <DrawerFooter>
@@ -134,15 +215,22 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave }: AddShiftDrawerPro
                     <button onClick={close} className="py-3 rounded-xl border-2" style={{ borderColor: 'var(--border)' }}>
                         Отмена
                     </button>
-                    <button onClick={handleSave} disabled={!title || !date || !startTime || !endTime} style={{ background: 'var(--gradient-primary)' }} className="py-3 rounded-xl text-white disabled:opacity-50">
-                        Сохранить
+                    <button
+                        onClick={async () => {
+                            const ok = await handleSave()
+                            if (ok) close()
+                        }}
+                        disabled={isFormInvalid || isCreating}
+                        style={{ background: 'var(--gradient-primary)' }}
+                        className="py-3 rounded-xl text-white disabled:opacity-50"
+                    >
+                        {isCreating ? 'Сохраняем...' : 'Сохранить'}
                     </button>
                 </div>
             </DrawerFooter>
+            <Toast message={toast.message} type={toast.type} isVisible={toast.isVisible} onClose={hideToast} />
         </Drawer>
     )
 }
 
 export default AddShiftDrawer
-
-

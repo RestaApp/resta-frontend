@@ -8,7 +8,7 @@
  * - Мемоизация для оптимизации производительности
  */
 
-import React, { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/utils/cn'
 
@@ -71,7 +71,7 @@ const DrawerContent = memo(({
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className={cn(
-          'fixed inset-x-0 z-50 flex h-auto max-h-[85vh] flex-col rounded-t-2xl border-t border-border bg-background shadow-xl',
+          'fixed inset-x-0 z-50 flex h-auto max-h-[85vh] flex-col overflow-y-auto overscroll-contain rounded-t-2xl border-t border-border bg-background shadow-xl',
           hasBottomNav ? 'bottom-15' : 'bottom-0',
           className
         )}
@@ -87,7 +87,33 @@ const DrawerContent = memo(({
 
 DrawerContent.displayName = 'DrawerContent'
 
+let openDrawerCount = 0
+
 function Drawer({ open, onOpenChange, children, preventClose, hasBottomNav = true }: DrawerProps) {
+  useEffect(() => {
+    if (!open || typeof document === 'undefined') {
+      return
+    }
+
+    const { body } = document
+
+    if (openDrawerCount === 0) {
+      body.dataset.drawerOverflow = body.style.overflow
+      body.style.overflow = 'hidden'
+    }
+
+    openDrawerCount += 1
+
+    return () => {
+      openDrawerCount = Math.max(0, openDrawerCount - 1)
+      if (openDrawerCount === 0) {
+        const previousOverflow = body.dataset.drawerOverflow
+        body.style.overflow = previousOverflow ?? ''
+        delete body.dataset.drawerOverflow
+      }
+    }
+  }, [open])
+
   return (
     <AnimatePresence>
       {open && (

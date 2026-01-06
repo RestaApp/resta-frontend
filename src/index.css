@@ -339,3 +339,14 @@ input[type="range"]:active::-webkit-slider-thumb {
   cursor: pointer;
   z-index: 50;
 }
+
+/* Hide native time input picker indicator but keep input clickable */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+input[type="time"]::-ms-clear,
+input[type="time"]::-ms-expand {
+  display: none;
+}

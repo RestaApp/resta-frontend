@@ -24,4 +24,5 @@ export { Separator } from './separator'
 export { Switch } from './switch'
 export { RangeSlider } from './range-slider'
 export { DatePicker } from './date-picker'
+export { Input } from './input'
 

@@ -15,12 +15,28 @@ export interface Shift {
   status: 'active' | 'completed' | 'cancelled'
 }
 
-export interface CreateShiftRequest {
+export interface CreateShiftBody {
   title: string
-  venue: string
-  date: string
-  time: string
-  role: string
+  description?: string
+  start_time: string
+  end_time: string
+  payment?: number
+  location?: string
+  requirements?: string
+  shift_type: 'vacancy' | 'replacement'
+  urgent?: boolean
+  position: string
+  specialization?: string | null
+}
+
+export interface CreateShiftRequest {
+  shift: CreateShiftBody
+}
+
+export interface CreateShiftResponse {
+  success?: boolean
+  data?: VacancyApiItem
+  message?: string
 }
 
 /**
@@ -180,9 +196,9 @@ export const shiftsApi = api.injectEndpoints({
     }),
 
     // Создать смену
-    createShift: builder.mutation<Shift, CreateShiftRequest>({
+    createShift: builder.mutation<CreateShiftResponse, CreateShiftRequest>({
       query: body => ({
-        url: '/shifts',
+        url: '/api/v1/shifts',
         method: 'POST',
         body,
       }),

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
@@ -20,6 +20,13 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
         const sourceName = greetingName ?? userProfile?.full_name ?? userProfile?.name
         return sourceName ? String(sourceName).split(' ')[0] : 'Пользователь'
     }, [greetingName, userProfile?.full_name, userProfile?.name])
+
+    useEffect(() => {
+        // Закрываем drawer при смене таба, если он открыт и активный таб больше не "activity"
+        if (drawerOpen && activeTab !== 'activity') {
+            setDrawerOpen(false)
+        }
+    }, [activeTab, drawerOpen])
 
     return (
         <>
@@ -45,13 +52,7 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
                     </div>
                 </div>
             </motion.div>
-            <AddShiftDrawer open={drawerOpen} onOpenChange={setDrawerOpen} onSave={(shift) => {
-                // По умолчанию просто логируем созданную смену.
-                // При необходимости здесь можно диспатчить в стор или вызывать API.
-                // Оставляем простую реализацию, чтобы форма работала сразу.
-                // eslint-disable-next-line no-console
-                console.log('Создана личная смена:', shift)
-            }} />
+            <AddShiftDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
         </>
     )
 }
