@@ -15,7 +15,7 @@ export const AddShiftButton = ({ onClick }: AddShiftButtonProps) => {
             style={{ background: 'var(--gradient-primary)' }}
             aria-label="Добавить смену"
         >
-            <Plus className="w-5 h-5 text-white" />
+            <Plus className="w-4 h-4 text-white" />
         </motion.button>
     )
 }

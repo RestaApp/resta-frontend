@@ -1,13 +1,10 @@
-/**
- * Хук для бесконечной загрузки вакансий с пагинацией
- */
-
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
-import { mapVacancyToShift } from '../utils/mapping'
 import type { ShiftType } from '../utils/queryParams'
+import { stableSerialize } from '../utils/stableSerialize'
+import { vacancyToShift } from '../utils/mapping'
 
 export interface UseVacanciesInfiniteListOptions {
   shiftType: ShiftType
@@ -29,200 +26,136 @@ export interface UseVacanciesInfiniteListReturn {
   addVacanciesToMap: (vacancies: VacancyApiItem[]) => void
 }
 
-/**
- * Хук для бесконечной загрузки вакансий с пагинацией
- */
-export const useVacanciesInfiniteList = (
-  options: UseVacanciesInfiniteListOptions
-): UseVacanciesInfiniteListReturn => {
+export const useVacanciesInfiniteList = (options: UseVacanciesInfiniteListOptions): UseVacanciesInfiniteListReturn => {
   const { shiftType, baseQuery, enabled, perPage = 5 } = options
 
-  const [currentPage, setCurrentPage] = useState(1)
+  const [page, setPage] = useState(1)
   const [items, setItems] = useState<Shift[]>([])
   const [vacanciesMap, setVacanciesMap] = useState<Map<number, VacancyApiItem>>(new Map())
-  
-  // Отслеживаем предыдущие параметры для определения изменений
-  const prevParamsRef = useRef<{ baseQuery: typeof baseQuery; shiftType: typeof shiftType } | null>(null)
 
-  // Формируем параметры запроса с пагинацией
-  const queryParams = useMemo<GetVacanciesParams>(
-    () => ({
+  // ключ параметров без page/perPage — чтобы корректно понять смену фильтра
+  const baseKey = useMemo(() => stableSerialize({ shiftType, baseQuery }), [shiftType, baseQuery])
+  const prevBaseKeyRef = useRef<string | null>(null)
+
+  // флаг: ждём новую страницу 1 по новым параметрам (не чистим сразу UI)
+  const [pendingReplace, setPendingReplace] = useState(false)
+
+  useEffect(() => {
+    if (!enabled) return
+    if (prevBaseKeyRef.current === null) {
+      prevBaseKeyRef.current = baseKey
+      return
+    }
+    if (prevBaseKeyRef.current !== baseKey) {
+      prevBaseKeyRef.current = baseKey
+      setPage(1)
+      setPendingReplace(true)
+    }
+  }, [baseKey, enabled])
+
+  const queryParams = useMemo<GetVacanciesParams>(() => {
+    return {
       ...baseQuery,
       shift_type: shiftType,
-      page: currentPage,
+      page,
       per_page: perPage,
-    }),
-    [baseQuery, shiftType, currentPage, perPage]
-  )
+    }
+  }, [baseQuery, shiftType, page, perPage])
 
-  // Запрос данных
   const { data: response, isLoading, isFetching, isError, error } = useGetVacanciesQuery(queryParams, {
     refetchOnMountOrArgChange: false,
     skip: !enabled,
   })
 
-  // Обработка данных
   useEffect(() => {
-    // Пропускаем обработку, если запрос отключен или идет первичная загрузка
-    if (!enabled) {
-      return
-    }
+    if (!enabled) return
+    if (!response) return
 
-    // Если нет данных и идет загрузка - не обрабатываем (ждем данные)
-    if (!response && (isLoading || isFetching)) {
-      return
-    }
-
-    // Если нет данных и загрузка не идет - это может быть ошибка или пустой ответ
-    // Не очищаем существующие данные, чтобы не потерять их при refetch
-    if (!response) {
-      return
-    }
-
-    // Обрабатываем данные, даже если идет refetch (isFetching === true)
-    // Это важно для предотвращения потери данных при обновлении
     const pagination = response.pagination || response.meta
-    const responsePage = pagination?.current_page || currentPage
-    const apiItems = Array.isArray(response.data) ? response.data : []
-    const newItems = apiItems.map(mapVacancyToShift)
+    const responsePage = pagination?.current_page ?? page
 
-    // Для первой страницы всегда заменяем данные
+    const apiItems = Array.isArray(response.data) ? response.data : []
+    const mapped = apiItems.map(vacancyToShift)
+
+    // page 1: заменяем (если пришёл ответ)
     if (responsePage === 1) {
-      if (newItems.length > 0) {
-        setItems(newItems)
-        const newMap = new Map<number, VacancyApiItem>()
-        apiItems.forEach(vacancy => {
-          newMap.set(vacancy.id, vacancy)
-        })
-        setVacanciesMap(newMap)
-      } else {
-        // Пустой ответ - очищаем данные только если это не refetch и не идет загрузка
-        // При refetch сохраняем существующие данные, если новых нет
-        if (!isFetching) {
-          setItems([])
-          setVacanciesMap(new Map())
-        }
-      }
+      setItems(mapped)
+      const newMap = new Map<number, VacancyApiItem>()
+      for (const v of apiItems) newMap.set(v.id, v)
+      setVacanciesMap(newMap)
+      setPendingReplace(false)
       return
     }
 
-    // Последующие загрузки - добавляем к существующим
-    if (newItems.length > 0) {
+    // page > 1: дополняем уникальными
+    if (mapped.length) {
       setItems(prev => {
-        const existingIds = new Set(prev.map(s => s.id))
-        const uniqueNewItems = newItems.filter(s => !existingIds.has(s.id))
-        return uniqueNewItems.length > 0 ? [...prev, ...uniqueNewItems] : prev
+        const existing = new Set(prev.map(x => x.id))
+        const next = mapped.filter(x => !existing.has(x.id))
+        return next.length ? [...prev, ...next] : prev
       })
       setVacanciesMap(prev => {
-        const newMap = new Map(prev)
-        apiItems.forEach(vacancy => {
-          if (!newMap.has(vacancy.id)) {
-            newMap.set(vacancy.id, vacancy)
-          }
-        })
-        return newMap
+        const next = new Map(prev)
+        for (const v of apiItems) if (!next.has(v.id)) next.set(v.id, v)
+        return next
       })
     }
-  }, [response, isLoading, currentPage, enabled, isFetching])
-
-  // Проверяем, есть ли еще данные для загрузки
-  const hasMore = useMemo(() => {
-    const pagination = response?.pagination || response?.meta
-    if (!pagination) return false
-
-    // Проверяем по total_count
-    const totalCount = pagination.total_count
-    if (totalCount !== undefined && totalCount !== null) {
-      return items.length < totalCount
-    }
-
-    // Fallback: проверяем через next_page
-    if (pagination.next_page !== undefined && pagination.next_page !== null) {
-      return true
-    }
-
-    const { current_page, total_pages } = pagination
-    if (current_page && total_pages) {
-      return current_page < total_pages
-    }
-
-    return false
-  }, [response, items.length])
-
-  // Отслеживаем изменение параметров для определения момента сброса
-  const [isParamsChanging, setIsParamsChanging] = useState(false)
-  
-  // Сброс при изменении базовых параметров
-  useEffect(() => {
-    const prevParams = prevParamsRef.current
-    const hasParamsChanged = 
-      !prevParams ||
-      prevParams.shiftType !== shiftType ||
-      JSON.stringify(prevParams.baseQuery) !== JSON.stringify(baseQuery)
-    
-    if (hasParamsChanged) {
-      setCurrentPage(1)
-      setIsParamsChanging(true)
-      // Очищаем данные только если параметры действительно изменились
-      // Это предотвратит потерю данных при случайных ре-рендерах
-      if (prevParams !== null) {
-        setItems([])
-        setVacanciesMap(new Map())
-      }
-      prevParamsRef.current = { baseQuery, shiftType }
-    }
-  }, [baseQuery, shiftType])
-
-  // Сбрасываем флаг изменения параметров после получения ответа
-  useEffect(() => {
-    if (isParamsChanging && response) {
-      setIsParamsChanging(false)
-    }
-  }, [isParamsChanging, response])
-
-  const loadMore = useCallback(() => {
-    if (!isLoading && !isFetching && hasMore) {
-      setCurrentPage(prev => prev + 1)
-    }
-  }, [hasMore, isLoading, isFetching])
-
-  const reset = useCallback(() => {
-    setCurrentPage(1)
-    setItems([])
-    setVacanciesMap(new Map())
-  }, [])
-
-  const addVacanciesToMap = useCallback((vacancies: VacancyApiItem[]) => {
-    setVacanciesMap(prev => {
-      const newMap = new Map(prev)
-      vacancies.forEach(vacancy => {
-        if (!newMap.has(vacancy.id)) {
-          newMap.set(vacancy.id, vacancy)
-        }
-      })
-      return newMap
-    })
-  }, [])
+  }, [enabled, response, page])
 
   const totalCount = useMemo(() => {
     const pagination = response?.pagination || response?.meta
-    // -1 означает, что ответа от сервера по текущим параметрам ещё не было
-    // Это позволяет в UI не показывать "ничего не найдено", пока запрос не завершился
     if (!pagination || typeof pagination.total_count !== 'number') {
+      // -1 => “ещё не получили итог по текущим параметрам”
       return -1
     }
     return pagination.total_count
   }, [response])
 
-  // Определяем начальную загрузку: enabled, первая страница, нет данных, и либо идет загрузка, либо еще нет ответа
+  const hasMore = useMemo(() => {
+    const pagination = response?.pagination || response?.meta
+    if (!pagination) return false
+
+    if (typeof pagination.total_count === 'number') {
+      return items.length < pagination.total_count
+    }
+    if (pagination.next_page !== undefined && pagination.next_page !== null) return true
+
+    const { current_page, total_pages } = pagination
+    if (current_page && total_pages) return current_page < total_pages
+
+    return false
+  }, [response, items.length])
+
+  const loadMore = useCallback(() => {
+    if (!enabled) return
+    if (isLoading || isFetching) return
+    if (!hasMore) return
+    setPage(p => p + 1)
+  }, [enabled, hasMore, isLoading, isFetching])
+
+  const reset = useCallback(() => {
+    setPage(1)
+    setItems([])
+    setVacanciesMap(new Map())
+    setPendingReplace(false)
+    prevBaseKeyRef.current = null
+  }, [])
+
+  const addVacanciesToMap = useCallback((vacancies: VacancyApiItem[]) => {
+    setVacanciesMap(prev => {
+      const next = new Map(prev)
+      for (const v of vacancies) if (!next.has(v.id)) next.set(v.id, v)
+      return next
+    })
+  }, [])
+
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false
-    if (currentPage !== 1) return false
-    if (items.length > 0 && !isParamsChanging) return false
-    // Если идет загрузка, идет fetch, параметры меняются или еще нет ответа - это начальная загрузка
-    // Проверка !response важна для случая, когда enabled только что стал true и запрос еще не начался
-    return isLoading || isFetching || !response || isParamsChanging
-  }, [enabled, currentPage, items.length, isLoading, isFetching, response, isParamsChanging])
+    // если менялись параметры — считаем “начальной загрузкой”, но UI данные сохраняем до ответа
+    if (pendingReplace) return true
+    // обычная первая загрузка
+    return page === 1 && items.length === 0 && (isLoading || isFetching || !response)
+  }, [enabled, pendingReplace, page, items.length, isLoading, isFetching, response])
 
   return {
     items,

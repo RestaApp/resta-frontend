@@ -3,7 +3,6 @@ import { useShiftApplication } from './useShiftApplication'
 import { useAppliedShifts } from './useAppliedShifts'
 
 interface UseShiftActionsReturn {
-  appliedShifts: number[]
   appliedShiftsSet: Set<number>
   appliedApplicationsMap: Record<number, number | undefined>
   getApplicationId: (id: number) => number | undefined
@@ -13,65 +12,51 @@ interface UseShiftActionsReturn {
 }
 
 export const useShiftActions = (): UseShiftActionsReturn => {
-  const { appliedShifts, appliedShiftsSet, appliedApplicationsMap, markApplied, unmarkApplied, getApplicationId } = useAppliedShifts()
-  const { apply, cancel } = useShiftApplication({
-    onSuccess: () => {
-      // Не закрываем детальный экран при отклике с карточки
-    },
-  })
-  const [loadingShiftIds, setLoadingShiftIds] = useState<Set<number>>(new Set())
+  const { appliedShiftsSet, appliedApplicationsMap, markApplied, unmarkApplied, getApplicationId } = useAppliedShifts()
 
-  const setShiftLoading = useCallback((shiftId: number, isLoading: boolean) => {
-    setLoadingShiftIds(prev => {
+  const { apply, cancel } = useShiftApplication()
+
+  const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set())
+
+  const setLoading = useCallback((id: number, on: boolean) => {
+    setLoadingIds(prev => {
       const next = new Set(prev)
-      if (isLoading) {
-        next.add(shiftId)
-      } else {
-        next.delete(shiftId)
-      }
+      if (on) next.add(id)
+      else next.delete(id)
       return next
     })
   }, [])
 
   const handleApply = useCallback(
     async (shiftId: number) => {
-      setShiftLoading(shiftId, true)
+      setLoading(shiftId, true)
       try {
-        const result = await apply(shiftId)
-        const applicationId = result?.data?.application_id
-        markApplied(shiftId, applicationId)
-      } catch {
-        // Ошибка уже обработана в хуке
+        const res = await apply(shiftId)
+        const appId = res?.data?.application_id
+        markApplied(shiftId, appId)
       } finally {
-        setShiftLoading(shiftId, false)
+        setLoading(shiftId, false)
       }
     },
-    [apply, markApplied, setShiftLoading]
+    [apply, markApplied, setLoading]
   )
 
   const handleCancel = useCallback(
     async (applicationId: number | null | undefined, shiftId: number) => {
-      setShiftLoading(shiftId, true)
+      setLoading(shiftId, true)
       try {
-        // API ожидает application id; если его нет — вызов может завершиться ошибкой
-        await cancel(applicationId as number)
+        await cancel(applicationId)
         unmarkApplied(shiftId)
-      } catch {
-        // Ошибка уже обработана в хуке
       } finally {
-        setShiftLoading(shiftId, false)
+        setLoading(shiftId, false)
       }
     },
-    [cancel, unmarkApplied, setShiftLoading]
+    [cancel, unmarkApplied, setLoading]
   )
 
-  const isShiftLoading = useCallback(
-    (shiftId: number) => loadingShiftIds.has(shiftId),
-    [loadingShiftIds]
-  )
+  const isShiftLoading = useCallback((shiftId: number) => loadingIds.has(shiftId), [loadingIds])
 
   return {
-    appliedShifts,
     appliedShiftsSet,
     appliedApplicationsMap,
     getApplicationId,

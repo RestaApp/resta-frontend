@@ -3,8 +3,8 @@ import { useGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shifts
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
 import { buildVacanciesQueryParams } from '../utils/queryParams'
-import { mapVacancyToShift } from '../utils/mapping'
 import type { HotOffer } from '../components/HotOffers'
+import { vacancyToHotOffer } from '../utils/mapping'
 
 interface UseHotOffersParams {
   feedType: FeedType
@@ -18,12 +18,8 @@ interface UseHotOffersReturn {
   hotOffersTotalCount?: number
 }
 
-export const useHotOffers = ({
-  feedType,
-  advancedFilters,
-  addVacanciesToMap,
-}: UseHotOffersParams): UseHotOffersReturn => {
-  const hotShiftsQueryParams = useMemo(
+export const useHotOffers = ({ feedType, advancedFilters, addVacanciesToMap }: UseHotOffersParams): UseHotOffersReturn => {
+  const params = useMemo(
     () =>
       buildVacanciesQueryParams({
         shiftType: 'replacement',
@@ -35,49 +31,28 @@ export const useHotOffers = ({
     [advancedFilters]
   )
 
-  const { data: hotShiftsResponse } = useGetVacanciesQuery(hotShiftsQueryParams, {
+  const { data: resp } = useGetVacanciesQuery(params, {
     refetchOnMountOrArgChange: false,
     skip: feedType !== 'shifts',
   })
 
   useEffect(() => {
-    if (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0 && feedType === 'shifts') {
-      addVacanciesToMap(hotShiftsResponse.data)
-    }
-  }, [hotShiftsResponse, feedType, addVacanciesToMap])
+    if (feedType !== 'shifts') return
+    if (!resp?.data?.length) return
+    addVacanciesToMap(resp.data)
+  }, [resp, feedType, addVacanciesToMap])
+
+  const hotVacancies = useMemo(() => (resp?.data?.length ? resp.data : []), [resp])
 
   const hotOffers = useMemo<HotOffer[]>(() => {
-    if (!hotShiftsResponse?.data || hotShiftsResponse.data.length === 0) {
-      return []
-    }
-    return hotShiftsResponse.data.slice(0, 4).map(vacancy => {
-      const shift = mapVacancyToShift(vacancy)
-      const payment = typeof shift.pay === 'number' && !isNaN(shift.pay) ? shift.pay : 0
-      return {
-        id: shift.id,
-        emoji: shift.logo,
-        payment,
-        time: shift.date,
-        restaurant: shift.restaurant,
-        position: vacancy.position || shift.position || 'Сотрудник',
-        specialization: vacancy.specialization || null,
-      }
-    })
-  }, [hotShiftsResponse])
+    if (!resp?.data?.length) return []
+    return resp.data.slice(0, 4).map(vacancyToHotOffer)
+  }, [resp])
 
   const hotOffersTotalCount = useMemo(() => {
-    const pagination = hotShiftsResponse?.pagination || hotShiftsResponse?.meta
-    return pagination?.total_count ?? undefined
-  }, [hotShiftsResponse])
+    const p = resp?.pagination || resp?.meta
+    return p?.total_count ?? undefined
+  }, [resp])
 
-  const hotVacancies = useMemo(
-    () => (hotShiftsResponse?.data && hotShiftsResponse.data.length > 0 ? hotShiftsResponse.data : []),
-    [hotShiftsResponse]
-  )
-
-  return {
-    hotOffers,
-    hotVacancies,
-    hotOffersTotalCount,
-  }
+  return { hotOffers, hotVacancies, hotOffersTotalCount }
 }

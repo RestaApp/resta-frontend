@@ -1,118 +1,87 @@
-/**
- * Утилиты для преобразования данных из API в формат компонентов
- */
-
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import type { Shift } from '../types'
+import type { PayPeriod, Shift } from '../types'
+import {
+  formatDateRU,
+  formatDuration,
+  formatTimeRangeRU,
+  parseApiDateTime,
+  stripMinskPrefix,
+} from '../utils/formatting'
+import type { HotOffer } from '../components/HotOffers'
 
-import { parseDate, formatDate, formatTime, getDuration } from '@/utils/datetime'
-
-/**
- * Получает оплату с приоритетом общей суммы над почасовой ставкой
- * Если есть общая сумма (payment) - используем её
- * Иначе считаем: hourly_rate * длительность
- */
-const getPayment = (
-  payment?: string | number,
-  hourlyRate?: string | number,
-  startTime?: string,
-  endTime?: string
-): number => {
-  // Приоритет 1: Общая сумма (payment)
-  if (payment) {
-    const pay = typeof payment === 'string' ? parseFloat(payment) : payment
-    if (!isNaN(pay) && pay > 0) {
-      return pay
-    }
-  }
-
-  // Приоритет 2: Почасовая ставка * длительность
-  if (hourlyRate && startTime && endTime) {
-    const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
-    if (!isNaN(rate) && rate > 0) {
-      const startDate = parseDate(startTime)
-      const endDate = parseDate(endTime)
-      
-      if (!startDate || !endDate) {
-        return 0
-      }
-      
-      try {
-        const diffMs = endDate.getTime() - startDate.getTime()
-        const diffHrs = diffMs / (1000 * 60 * 60)
-        const total = rate * diffHrs
-        return Math.round(total)
-      } catch {
-        // Игнорируем ошибки парсинга
-      }
-    }
-  }
-
-  // Приоритет 3: Только почасовая ставка (если нет длительности)
-  if (hourlyRate) {
-    const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
-    if (!isNaN(rate) && rate > 0) {
-      return rate
-    }
-  }
-
-  return 0
+const toNumber = (v?: string | number | null): number => {
+  if (v === null || v === undefined) return 0
+  if (typeof v === 'number') return Number.isFinite(v) ? v : 0
+  const n = Number(v)
+  return Number.isFinite(n) ? n : 0
 }
 
-/**
- * Получает эмодзи-логотип для вакансии
- */
 const getLogo = (id: number): string => {
-  const logos = ['🌅', '🌸', '🍹', '🥖', '🍕', '☕️', '🍽', '🥘']
-  return logos[id % logos.length]
+  const logos = ['🍽️', '☕️', '🍕', '🥖', '🥘', '🍔', '🍣', '🍜']
+  return logos[Math.abs(id) % logos.length]
 }
 
-/**
- * Безопасно преобразует значение в число
- */
-const toNumber = (value: unknown, defaultValue = 0): number => {
-  if (typeof value === 'number' && !isNaN(value)) {
-    return value
-  }
-  if (typeof value === 'string') {
-    const parsed = parseFloat(value)
-    return !isNaN(parsed) ? parsed : defaultValue
-  }
-  return defaultValue
+// если у API город лежит в restaurant_profile
+const getCityFromUser = (item: VacancyApiItem): string | undefined => {
+  return item.user?.restaurant_profile?.city ?? undefined
 }
 
-/**
- * Преобразует данные вакансии из API в формат Shift для компонента
- */
-export const mapVacancyToShift = (vacancy: VacancyApiItem): Shift => {
-  const duration = getDuration(vacancy.start_time, vacancy.end_time)
-  const timeFormatted = formatTime(vacancy.start_time, vacancy.end_time)
-  const timeWithDuration = duration ? `${timeFormatted} (${duration})` : timeFormatted
+export const vacancyToShift = (item: VacancyApiItem): Shift => {
+  const start = parseApiDateTime(item.start_time ?? undefined)
+  const end = parseApiDateTime(item.end_time ?? undefined)
+
+  const date = start ? formatDateRU(start) : ''
+  const duration = formatDuration(item.duration)
+
+  const time =
+    start && end
+      ? `${formatTimeRangeRU(start, end)}${duration ? ` (${duration})` : ''}`
+      : ''
+
+  const payPeriod: PayPeriod = item.shift_type === 'vacancy' ? 'month' : 'shift'
+
+  const locationRaw = item.location ?? getCityFromUser(item)
+  const location = stripMinskPrefix(locationRaw)
 
   return {
-    id: vacancy.id,
-    logo: getLogo(vacancy.id),
-    restaurant:
-      vacancy.user?.name || vacancy.user?.full_name || vacancy.title || 'Ресторан',
-    rating: toNumber(vacancy.user?.average_rating, 0),
-    position: vacancy.position || vacancy.target_roles?.[0] || 'Сотрудник',
-    specialization: vacancy.specialization || null,
-    date: formatDate(vacancy.start_time),
-    time: timeWithDuration,
-    pay: getPayment(
-      vacancy.payment,
-      vacancy.hourly_rate,
-      vacancy.start_time,
-      vacancy.end_time
-    ),
+    id: item.id,
+    logo: getLogo(item.id),
+    restaurant: item.user?.full_name || item.user?.name || item.title || '—',
+    rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
+
+    position: item.position ?? 'chef',
+    specialization: item.specialization ?? null,
+
+    date,
+    time,
+
+    pay: toNumber(item.payment),
     currency: 'BYN',
-    location: vacancy.location || vacancy.user?.restaurant_profile?.city || '',
+    payPeriod,
+
+    location,
     duration,
-    urgent: vacancy.urgent || false,
-    badges: vacancy.urgent ? ['🔥 Срочно'] : undefined,
-    // Сохраняем id моей заявки (если есть) для возможности отмены по application id
-    applicationId: (vacancy as any).my_application?.id,
-    // Сохраняем id владельца вакансии для проверки "моя вакансия"
-    ownerId: vacancy.user?.id,
+    urgent: Boolean(item.urgent),
+    badges: item.urgent ? ['🔥 Срочно'] : undefined,
+
+    applicationId: item.my_application?.id ?? null,
+    ownerId: item.user?.id ?? null,
+
+    canApply: item.can_apply,
+    applicationsCount: item.applications_count,
+  }
+}
+
+export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
+  const s = vacancyToShift(v)
+  return {
+    id: s.id,
+    emoji: s.logo,
+    payment: s.pay,
+    currency: s.currency,
+    time: s.time || s.date,
+    restaurant: s.restaurant,
+    position: s.position,
+    specialization: s.specialization ?? null,
   }
 }

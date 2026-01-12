@@ -20,12 +20,14 @@ export const Dashboard = ({ role, onNavigate, currentScreen = null }: DashboardP
     const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background pb-[88px]">
             <AppHeader activeTab={activeTab} />
-
-            <TabContent activeTab={activeTab} role={role} />
+            <main className="mx-auto max-w-2xl">
+                <TabContent activeTab={activeTab} role={role} />
+            </main>
             <BottomNav activeTab={activeTab} onTabChange={handleTabChange} role={role} />
         </div>
     )
 }
+
 

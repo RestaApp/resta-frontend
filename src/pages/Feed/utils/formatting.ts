@@ -1,53 +1,76 @@
-/**
- * Утилиты для форматирования данных смен и вакансий
- */
-
-/**
- * Форматирует количество отзывов с правильным склонением
- */
 export const formatReviews = (count: number): string => {
-    if (count === 1) return 'отзыв'
-    if (count < 5) return 'отзыва'
+    const n = Math.abs(count)
+    const last = n % 10
+    const last2 = n % 100
+    if (last2 >= 11 && last2 <= 14) return 'отзывов'
+    if (last === 1) return 'отзыв'
+    if (last >= 2 && last <= 4) return 'отзыва'
     return 'отзывов'
-}
-
-/**
- * Форматирует почасовую ставку
- */
-export const formatHourlyRate = (hourlyRate?: string | number | null): string | null => {
-    if (!hourlyRate) return null
-    const rate = typeof hourlyRate === 'string' ? parseFloat(hourlyRate) : hourlyRate
-    return isNaN(rate) ? null : rate.toFixed(2)
-}
-
-/**
- * Форматирует тип смены в читаемый формат
- */
-export const formatShiftType = (shiftType?: 'vacancy' | 'replacement' | null): string | null => {
+  }
+  
+  export const formatMoney = (value: number): string => {
+    if (!Number.isFinite(value)) return '0'
+    return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(value)
+  }
+  
+  /**
+   * API: "2026-01-11 08:00:00 +0100"
+   * -> ISO: "2026-01-11T08:00:00+01:00"
+   */
+  export const parseApiDateTime = (value?: string | null): Date | null => {
+    if (!value) return null
+    const m = value.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) ([+-]\d{2})(\d{2})$/)
+    if (!m) return null
+    const [, d, t, oh, om] = m
+    const iso = `${d}T${t}${oh}:${om}`
+    const date = new Date(iso)
+    return Number.isNaN(date.getTime()) ? null : date
+  }
+  
+  export const formatDateRU = (d: Date): string => {
+    return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(d)
+  }
+  
+  export const formatTimeRangeRU = (start: Date, end: Date): string => {
+    const fmt = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit' })
+    return `${fmt.format(start)} – ${fmt.format(end)}`
+  }
+  
+  export const formatDuration = (hours?: string | number | null): string | undefined => {
+    if (hours === null || hours === undefined) return undefined
+    const n = typeof hours === 'string' ? Number(hours) : hours
+    if (!Number.isFinite(n) || n <= 0) return undefined
+    return `${Math.round(n)} ч.`
+  }
+  
+  export const stripMinskPrefix = (location?: string | null): string | undefined => {
+    if (!location) return undefined
+    return location.replace(/^Минск,\s*/i, '')
+  }
+  
+  export const formatHourlyRate = (hourlyRate?: string | number | null): string | null => {
+    if (hourlyRate === null || hourlyRate === undefined) return null
+    const n = typeof hourlyRate === 'string' ? Number(hourlyRate) : hourlyRate
+    if (!Number.isFinite(n) || n <= 0) return null
+    return n.toFixed(2)
+  }
+  
+  export const formatShiftType = (shiftType?: 'vacancy' | 'replacement' | null): string | null => {
     if (!shiftType) return null
     return shiftType === 'replacement' ? 'Замена' : 'Вакансия'
-}
-
-/**
- * Форматирует количество заявок с правильным склонением
- */
-export const formatApplicationsCount = (count: number): { value: string; label: string } => {
-    if (count === 0) {
-        return { value: '0', label: 'Пока нет заявок' }
-    }
-    if (count === 1) {
-        return { value: '1', label: 'заявка' }
-    }
-    if (count < 5) {
-        return { value: String(count), label: 'заявки' }
-    }
+  }
+  
+  export const formatApplicationsCount = (count: number): { value: string; label: string } => {
+    if (count <= 0) return { value: '0', label: 'Пока нет заявок' }
+    const last = count % 10
+    const last2 = count % 100
+    if (last2 >= 11 && last2 <= 14) return { value: String(count), label: 'заявок' }
+    if (last === 1) return { value: String(count), label: 'заявка' }
+    if (last >= 2 && last <= 4) return { value: String(count), label: 'заявки' }
     return { value: String(count), label: 'заявок' }
-}
-
-/**
- * Получает заголовок вакансии с приоритетом
- */
-export const getVacancyTitle = (title?: string | null, position?: string | null): string => {
+  }
+  
+  export const getVacancyTitle = (title?: string | null, position?: string | null): string => {
     return title || position || 'Вакансия'
-}
-
+  }
+  

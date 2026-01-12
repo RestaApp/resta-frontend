@@ -1,9 +1,4 @@
-/**
- * Компонент нижней навигации
- * Отображает табы в зависимости от роли пользователя
- */
-
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
 import { isEmployeeRole } from '@/utils/roles'
 import type { UiRole, Tab } from '@/types'
@@ -12,55 +7,69 @@ interface BottomNavProps {
   activeTab: Tab
   onTabChange: (tab: Tab) => void
   role: UiRole
+  layoutId?: string
 }
 
-export const BottomNav = ({ activeTab, onTabChange, role }: BottomNavProps) => {
+export const BottomNav = ({
+  activeTab,
+  onTabChange,
+  role,
+  layoutId = 'bottom-nav-active-tab',
+}: BottomNavProps) => {
   const tabs = getTabsForRole(role)
   const isEmployee = isEmployeeRole(role)
+  const reduceMotion = useReducedMotion()
 
   return (
-    <div
-      className={`fixed bottom-0 left-0 right-0 border-t z-50 ${isEmployee
-        ? 'bg-background/80 backdrop-blur-xl border-border'
-        : 'bg-background border-border'
-        }`}
+    <nav
+      aria-label="Нижняя навигация"
+      className={[
+        'fixed bottom-0 left-0 right-0 z-50 border-t border-border safe-area-bottom',
+        isEmployee ? 'bg-background/80 backdrop-blur-xl' : 'bg-background',
+      ].join(' ')}
     >
-      <div className="flex justify-around items-center max-w-2xl mx-auto px-4 py-2 safe-area-bottom">
+      <div className="mx-auto flex max-w-2xl items-center justify-around px-4 py-2">
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = activeTab === id
+
           return (
             <motion.button
               key={id}
-              whileTap={{ scale: 0.9 }}
+              type="button"
+              aria-label={label}
+              aria-current={isActive ? 'page' : undefined}
+              whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
-              className="flex flex-col items-center justify-center py-2 px-3 relative min-w-[60px]"
+              className={[
+                'relative flex min-h-[44px] min-w-[72px] flex-col items-center justify-center rounded-xl px-3 py-2',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pink-electric)] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+              ].join(' ')}
             >
-              <div className="relative">
-                <div
-                  style={{
-                    color: isActive ? 'var(--pink-electric)' : 'var(--muted-foreground)',
-                  }}
-                >
-                  <Icon
-                    className="w-6 h-6 transition-colors"
-                    strokeWidth={isActive ? 2.5 : 2}
-                  />
-                </div>
+              <span className="relative">
+                <Icon
+                  className={[
+                    'h-6 w-6 transition-colors',
+                    isActive ? 'text-[var(--pink-electric)]' : 'text-muted-foreground',
+                  ].join(' ')}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  aria-hidden="true"
+                />
+
                 {isActive && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute -inset-2 rounded-full -z-10"
-                    style={{
-                      background: 'var(--gradient-glow)',
-                    }}
+                  <motion.span
+                    layoutId={layoutId}
+                    className="absolute -inset-2 -z-10 rounded-full"
+                    style={{ background: 'var(--gradient-glow)' }}
+                    transition={reduceMotion ? { duration: 0 } : undefined}
                   />
                 )}
-              </div>
+              </span>
+
               <span
-                className="text-xs mt-1 transition-colors"
-                style={{
-                  color: isActive ? 'var(--pink-electric)' : 'var(--muted-foreground)',
-                }}
+                className={[
+                  'mt-1 text-xs transition-colors',
+                  isActive ? 'text-[var(--pink-electric)]' : 'text-muted-foreground',
+                ].join(' ')}
               >
                 {label}
               </span>
@@ -68,6 +77,6 @@ export const BottomNav = ({ activeTab, onTabChange, role }: BottomNavProps) => {
           )
         })}
       </div>
-    </div>
+    </nav>
   )
 }

@@ -1,7 +1,3 @@
-/**
- * Утилиты для формирования параметров запроса вакансий
- */
-
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
 import type { QuickFilter } from './clientFilters'
@@ -11,56 +7,39 @@ export type ShiftType = 'replacement' | 'vacancy'
 export interface BaseQueryParams {
   activeQuickFilter?: QuickFilter
   advanced?: AdvancedFiltersData | null
-  shiftType?: ShiftType // Тип для исключения дат из вакансий
+  shiftType?: ShiftType
 }
 
-/**
- * Формирует базовые параметры запроса без пагинации
- */
 export const buildVacanciesBaseParams = (
   options: BaseQueryParams
 ): Omit<GetVacanciesParams, 'page' | 'per_page' | 'shift_type'> => {
   const params: Omit<GetVacanciesParams, 'page' | 'per_page' | 'shift_type'> = {}
 
-  // Быстрые фильтры
-  if (options.activeQuickFilter === 'urgent') {
-    params.urgent = true
-  }
+  if (options.activeQuickFilter === 'urgent') params.urgent = true
 
-  // Расширенные фильтры
-  if (options.advanced) {
-    if (options.advanced.priceRange && Array.isArray(options.advanced.priceRange)) {
-      params.min_payment = options.advanced.priceRange[0]
-      params.max_payment = options.advanced.priceRange[1]
+  const adv = options.advanced
+  if (adv) {
+    if (adv.priceRange && Array.isArray(adv.priceRange)) {
+      params.min_payment = adv.priceRange[0]
+      params.max_payment = adv.priceRange[1]
     }
 
-    // Используем позицию, если выбрана
-    if (options.advanced.selectedPosition) {
-      params.position = options.advanced.selectedPosition
+    if (adv.selectedPosition) params.position = adv.selectedPosition
+
+    if (adv.selectedSpecializations?.length) {
+      params.specialization = adv.selectedSpecializations[0]
     }
 
-    // Используем специализацию, если выбрана
-    if (options.advanced.selectedSpecializations && options.advanced.selectedSpecializations.length > 0) {
-      params.specialization = options.advanced.selectedSpecializations[0]
-    }
-
-    // Используем даты, если выбраны (только для смен, не для вакансий)
+    // даты — только для смен
     if (options.shiftType !== 'vacancy') {
-      if (options.advanced.startDate) {
-        params.start_date = options.advanced.startDate
-      }
-      if (options.advanced.endDate) {
-        params.end_date = options.advanced.endDate
-      }
+      if (adv.startDate) params.start_date = adv.startDate
+      if (adv.endDate) params.end_date = adv.endDate
     }
   }
 
   return params
 }
 
-/**
- * Формирует параметры запроса вакансий с пагинацией
- */
 export const buildVacanciesQueryParams = (args: {
   shiftType: ShiftType
   page: number
@@ -78,9 +57,6 @@ export const buildVacanciesQueryParams = (args: {
     per_page: perPage,
   }
 
-  if (urgent) {
-    params.urgent = true
-  }
-
+  if (urgent) params.urgent = true
   return params
 }

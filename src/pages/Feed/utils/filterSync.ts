@@ -1,19 +1,10 @@
-/**
- * Утилиты для синхронизации фильтров между сменами и вакансиями
- */
-
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
 
-/**
- * Создает начальные фильтры для указанного типа фида
- */
-export const createInitialFilters = (
-  userPosition?: string | null
-): AdvancedFiltersData | null => {
+export const createInitialFilters = (userPosition?: string | null): AdvancedFiltersData | null => {
   if (!userPosition) return null
 
   return {
-    priceRange: null, // Пользователь должен сам выбрать цену
+    priceRange: null,
     selectedPosition: userPosition,
     selectedSpecializations: [],
     startDate: null,
@@ -21,10 +12,6 @@ export const createInitialFilters = (
   }
 }
 
-/**
- * Синхронизирует позицию и специализации между фильтрами смен и вакансий
- * Сохраняет индивидуальные значения для цены и дат
- */
 export const syncFiltersPositionAndSpecializations = (
   sourceFilters: AdvancedFiltersData | null,
   targetFilters: AdvancedFiltersData | null
@@ -33,10 +20,9 @@ export const syncFiltersPositionAndSpecializations = (
 
   const { selectedPosition, selectedSpecializations } = sourceFilters
 
-  // Если целевых фильтров нет, создаем новые с синхронизированными позицией/специализацией
   if (!targetFilters) {
     return {
-      priceRange: null, // Пользователь должен сам выбрать цену
+      priceRange: null,
       selectedPosition,
       selectedSpecializations: selectedSpecializations || [],
       startDate: null,
@@ -44,11 +30,9 @@ export const syncFiltersPositionAndSpecializations = (
     }
   }
 
-  // Обновляем только позицию и специализации, сохраняя цену и даты
   return {
     ...targetFilters,
     selectedPosition,
     selectedSpecializations: selectedSpecializations || [],
   }
 }
-

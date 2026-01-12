@@ -1,10 +1,12 @@
 import { memo, useMemo, useCallback } from 'react'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { formatMoney } from '../utils/formatting'
 
 export interface HotOffer {
     id: number
     emoji: string
     payment: number
+    currency?: string
     time: string
     restaurant: string
     position: string
@@ -23,70 +25,53 @@ interface HotOfferCardProps {
     onClick: (item: HotOffer) => void
 }
 
-/**
- * Компонент карточки горящей смены
- */
 const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
-    const handleClick = useCallback(() => {
-        onClick(item)
-    }, [item, onClick])
+    const handleClick = useCallback(() => onClick(item), [item, onClick])
 
     const positionText = useMemo(() => {
         const position = getEmployeePositionLabel(item.position)
-        const specialization = item.specialization
-            ? ` • ${getSpecializationLabel(item.specialization)}`
-            : ''
+        const specialization = item.specialization ? ` • ${getSpecializationLabel(item.specialization)}` : ''
         return `${position}${specialization}`
     }, [item.position, item.specialization])
 
     const paymentText = useMemo(() => {
-        if (item.payment > 0 && !isNaN(item.payment)) {
-            return `${Math.round(item.payment)} BYN`
-        }
-        return null
-    }, [item.payment])
+        if (!Number.isFinite(item.payment) || item.payment <= 0) return null
+        return `${formatMoney(item.payment)} ${item.currency ?? 'BYN'}`
+    }, [item.payment, item.currency])
 
     return (
-        <div
+        <button
+            type="button"
             onClick={handleClick}
-            className="snap-center flex-shrink-0 w-[100px] h-[130px] relative overflow-hidden rounded-2xl bg-card border border-border p-3 flex flex-col items-center justify-between shadow-sm cursor-pointer group active:scale-95 transition-transform"
+            className="snap-center flex-shrink-0 w-[110px] h-[135px] relative overflow-hidden rounded-2xl bg-card border border-border p-3 flex flex-col items-center justify-between shadow-sm cursor-pointer group active:scale-95 transition-transform text-left"
         >
-            {/* Градиентный фон */}
-            <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-colors" />
+            <span className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-colors" />
 
-            {/* Бейдж оплаты */}
-            {paymentText && (
-                <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-bl-lg">
+            {paymentText ? (
+                <span className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-bl-lg">
                     {paymentText}
-                </div>
-            )}
+                </span>
+            ) : null}
 
-            <div className="mt-2 text-3xl drop-shadow-sm transform group-hover:scale-110 transition-transform duration-300">
+            <span className="mt-2 text-3xl drop-shadow-sm transform group-hover:scale-110 transition-transform duration-300 z-10">
                 {item.emoji}
-            </div>
+            </span>
 
-            <div className="text-center w-full z-10">
-                <p className="text-[10px] text-muted-foreground truncate w-full mb-0.5">
+            <span className="text-center w-full z-10">
+                <span className="block text-[10px] text-muted-foreground truncate w-full mb-0.5">
                     {item.restaurant}
-                </p>
-                <p className="text-[9px] text-primary font-medium mb-0.5">{positionText}</p>
-                <p className="text-xs font-bold text-foreground leading-tight">{item.time}</p>
-            </div>
-        </div>
+                </span>
+                <span className="block text-[9px] text-primary font-medium mb-0.5 truncate">{positionText}</span>
+                <span className="block text-xs font-bold text-foreground leading-tight">{item.time}</span>
+            </span>
+        </button>
     )
 })
-
 HotOfferCard.displayName = 'HotOfferCard'
 
 export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: HotOffersProps) => {
-    const handleItemClick = useCallback(
-        (item: HotOffer) => {
-            onItemClick?.(item)
-        },
-        [onItemClick]
-    )
+    const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
-    // Проверяем, есть ли еще горящие смены для показа
     const hasMore = useMemo(
         () => totalCount !== undefined && items.length < totalCount,
         [totalCount, items.length]
@@ -97,20 +82,20 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
             <div className="px-4 mb-3 flex items-center justify-between">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                     <span className="text-xl">🔥</span> Горящие смены
-                    {totalCount !== undefined && (
-                        <span className="text-sm font-normal text-muted-foreground">
-                            ({totalCount})
-                        </span>
-                    )}
+                    {totalCount !== undefined ? (
+                        <span className="text-sm font-normal text-muted-foreground">({totalCount})</span>
+                    ) : null}
                 </h3>
-                {hasMore && onShowAll && (
-                    <span
+
+                {hasMore && onShowAll ? (
+                    <button
+                        type="button"
                         onClick={onShowAll}
-                        className="text-xs text-primary font-medium cursor-pointer hover:underline"
+                        className="text-xs text-primary font-medium hover:underline"
                     >
                         Все
-                    </span>
-                )}
+                    </button>
+                ) : null}
             </div>
 
             <div className="flex gap-3 overflow-x-auto px-4 scrollbar-hide snap-x">
@@ -121,5 +106,4 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
         </div>
     )
 })
-
 HotOffers.displayName = 'HotOffers'
