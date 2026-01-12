@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
 import { AddShiftButton } from '@/pages/Activity/components/AddShiftButton'
 import AddShiftDrawer from '@/pages/Activity/components/AddShiftDrawer'
 import type { Tab } from '@/types'
+import { ThemeToggleCompact } from './ui/ThemeToggle'
 
 interface AppHeaderProps {
     greetingName?: string
@@ -48,7 +49,7 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
                     </div>
                     <div className="flex items-center gap-2">
                         {activeTab === 'activity' && <AddShiftButton onClick={() => { setDrawerOpen(true); onAddShift?.() }} />}
-                        {/* <ThemeToggleCompact /> */}
+                        <ThemeToggleCompact />
                     </div>
                 </div>
             </motion.div>

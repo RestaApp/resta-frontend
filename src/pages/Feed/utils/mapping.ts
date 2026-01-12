@@ -8,6 +8,7 @@ import {
   stripMinskPrefix,
 } from '../utils/formatting'
 import type { HotOffer } from '../components/HotOffers'
+import { formatDate, formatTime } from '@/utils/datetime'
 
 const toNumber = (v?: string | number | null): number => {
   if (v === null || v === undefined) return 0
@@ -83,5 +84,39 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
     restaurant: s.restaurant,
     position: s.position,
     specialization: s.specialization ?? null,
+  }
+}
+
+export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
+  const restaurant = v.user?.name || v.user?.full_name || v.title || 'Ресторан'
+  const applicationId = v.my_application?.id ?? null
+  const applicationStatus = v.my_application?.status ?? v.status ?? null
+
+  const pay = v.payment ?? 0
+
+  return {
+    id: v.id,
+    logo: restaurant?.[0] ?? '🍽️',
+    restaurant,
+    rating: 0,
+
+    position: v.position ?? 'chef',
+    specialization: v.specialization ?? null,
+
+    date: formatDate(v.start_time),
+    time: formatTime(v.start_time, v.end_time),
+
+    pay: toNumber(pay),
+    currency: 'BYN',
+    payPeriod: v.shift_type === 'vacancy' ? 'month' : 'shift',
+
+    location: v.location ?? v.user?.restaurant_profile?.city ?? undefined,
+    urgent: Boolean(v.urgent),
+
+    applicationId,
+    ownerId: v.user?.id ?? null,
+    canApply: Boolean(v.can_apply),
+
+    applicationStatus,
   }
 }

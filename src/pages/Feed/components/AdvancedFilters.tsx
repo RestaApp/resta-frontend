@@ -166,7 +166,7 @@ export const AdvancedFilters = ({
                             stiffness: 300,
                             layout: { duration: 0.25, ease: 'easeInOut' },
                         }}
-                        className="fixed bottom-15 left-0 right-0 bg-card rounded-t-[24px] z-50 flex flex-col"
+                        className="fixed bottom-19 left-0 right-0 bg-card rounded-t-[24px] z-50 flex flex-col"
                     >
                         {/* Drag Handle */}
                         <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>

@@ -1,10 +1,8 @@
-import React, { useCallback } from 'react'
-import { Clock, Edit2, Trash2 } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { ActionButton } from '@/components/ui/ActionButton'
+import React, { useCallback, useMemo } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { cn } from '@/utils/cn'
 import { formatDate, formatTime } from '@/utils/datetime'
+import { ShiftCard } from '@/pages/Feed/components/ShiftCard'
+import type { Shift } from '@/pages/Feed/types'
 
 interface PersonalShiftCardProps {
     shift: VacancyApiItem
@@ -14,61 +12,53 @@ interface PersonalShiftCardProps {
 }
 
 export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({ shift, onEdit, onDelete, isDeleting }) => {
-    const handleEdit = useCallback(() => {
-        onEdit(shift.id)
-    }, [onEdit, shift.id])
-
-    const handleDelete = useCallback(() => {
-        onDelete(shift.id)
-    }, [onDelete, shift.id])
+    const handleEdit = useCallback((id: number) => onEdit(id), [onEdit])
+    const handleDelete = useCallback((id: number) => onDelete(id), [onDelete])
 
     const dateText = formatDate(shift.start_time)
     const timeText = formatTime(shift.start_time, shift.end_time)
 
-    const pay = shift.payment ?? shift.hourly_rate ?? null
+    const pay = useMemo(() => {
+        const v = shift.payment ?? shift.hourly_rate ?? 0
+        return typeof v === 'string' ? Number(v) : v
+    }, [shift.payment, shift.hourly_rate])
+
+    const mappedShift: Shift = useMemo(() => ({
+        id: shift.id,
+        logo: shift.title?.[0] ?? '🧾',
+        restaurant: shift.title || 'Моя смена',
+        rating: 0,
+
+        position: shift.position ?? 'chef',
+        specialization: shift.specialization ?? null,
+
+        date: dateText,
+        time: timeText,
+
+        pay: Number.isFinite(pay) ? pay : 0,
+        currency: 'BYN',
+        payPeriod: shift.shift_type === 'vacancy' ? 'month' : 'shift',
+
+        location: shift.location ?? undefined,
+        urgent: Boolean(shift.urgent),
+
+        applicationId: null,
+        ownerId: shift.user?.id ?? null,
+        canApply: false,
+
+        isMine: true,
+    }), [shift, dateText, timeText, pay])
 
     return (
-        <Card className="p-4">
-            <div className="flex items-start justify-between">
-                <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className={cn('w-3 h-3 rounded-full', shift.urgent ? 'bg-amber-500' : 'bg-primary')} />
-                        <span className="text-xs text-muted-foreground">Моя смена</span>
-                    </div>
-
-                    <h4 className="mb-1 font-semibold text-base">📝 {shift.title || 'Без названия'}</h4>
-
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            <div>
-                                <div>{dateText}</div>
-                                <div className="text-[13px]">{timeText}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {pay && (
-                    <div className="text-right ml-4 flex-shrink-0">
-                        <div className="text-lg font-semibold">{pay} <span className="text-sm font-normal text-muted-foreground">BYN</span></div>
-                    </div>
-                )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 pt-3">
-                <ActionButton onClick={handleEdit} className="flex items-center justify-center gap-2">
-                    <Edit2 className="w-4 h-4" />
-                    Изменить
-                </ActionButton>
-                <ActionButton isLoading={!!isDeleting} active onClick={handleDelete} className="flex items-center justify-center gap-2">
-                    <Trash2 className="w-4 h-4" />
-                    {isDeleting ? 'Удаляем...' : 'Удалить'}
-                </ActionButton>
-            </div>
-        </Card>
+        <ShiftCard
+            shift={mappedShift}
+            onOpenDetails={() => { }}
+            onApply={() => { }}
+            onCancel={() => { }}
+            ownerActions={{ onEdit: handleEdit, onDelete: handleDelete, isDeleting }}
+            variant="iconActions"
+        />
     )
 }
 
 PersonalShiftCard.displayName = 'PersonalShiftCard'
-

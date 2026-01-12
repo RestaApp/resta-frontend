@@ -72,7 +72,7 @@ const DrawerContent = memo(({
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className={cn(
           'fixed inset-x-0 z-50 flex h-auto max-h-[85vh] flex-col overflow-y-auto overscroll-contain rounded-t-2xl border-t border-border bg-background shadow-xl',
-          hasBottomNav ? 'bottom-15' : 'bottom-0',
+          hasBottomNav ? 'bottom-19' : 'bottom-0',
           className
         )}
         role="dialog"

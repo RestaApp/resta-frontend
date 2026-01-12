@@ -6,26 +6,23 @@ export interface Shift {
   logo: string
   restaurant: string
   rating: number
-
   position: string
   specialization?: string | null
-
   date: string
   time: string
-
   pay: number
   currency: string
-  payPeriod: PayPeriod
-
+  payPeriod: 'shift' | 'month'
   location?: string
   duration?: string
   urgent?: boolean
   badges?: string[]
-
   applicationId?: number | null
   ownerId?: number | null
-
-  // бизнес-флаги (из API)
   canApply?: boolean
   applicationsCount?: number
+  isMine?: boolean
+
+  // NEW: чтобы ShiftCard не лазил в any
+  applicationStatus?: string | null
 }

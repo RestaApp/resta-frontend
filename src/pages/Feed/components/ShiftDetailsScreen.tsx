@@ -1,6 +1,16 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import type React from 'react'
-import { MapPin, Clock, DollarSign, FileText, CalendarDays, Flame, X, Users, Briefcase, type LucideIcon } from 'lucide-react'
+import {
+    MapPin,
+    Clock,
+    DollarSign,
+    FileText,
+    CalendarDays,
+    X,
+    Users,
+    Briefcase,
+    type LucideIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -12,6 +22,7 @@ import { getRestaurantFormatLabel } from '@/constants/labels'
 import { useShiftDetails } from '../hooks/useShiftDetails'
 import { formatReviews } from '../utils/formatting'
 import { getCurrentUserId } from '@/utils/user'
+import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
 
 interface ShiftDetailsScreenProps {
     shift: Shift | null
@@ -65,44 +76,61 @@ const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => (
 TextCard.displayName = 'TextCard'
 
 export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
-    const { shift, vacancyData, applicationId = null, isOpen, onClose, onApply, isApplied, onCancel, isLoading = false } = props
+    const {
+        shift,
+        vacancyData,
+        applicationId = null,
+        isOpen,
+        onClose,
+        onApply,
+        isApplied,
+        onCancel,
+        isLoading = false,
+    } = props
 
     const { restaurantInfo, hourlyRate, shiftTypeLabel, vacancyTitle, positionLabel, specializationLabel, applicationsInfo } =
         useShiftDetails(shift, vacancyData)
-
-    const handleApply = useCallback(async () => {
-        if (!shift) return
-        await onApply(shift.id)
-        onClose()
-    }, [shift, onApply, onClose])
-
-    const handleCancel = useCallback(async () => {
-        if (!shift) return
-        const appId = applicationId ?? shift.applicationId ?? vacancyData?.my_application?.id ?? null
-        await onCancel(appId, shift.id)
-        onClose()
-    }, [shift, onCancel, onClose, applicationId, vacancyData])
-
-    const handleOpenMap = useCallback(() => {
-        // TODO: открыть карту
-    }, [])
 
     const currentUserId = getCurrentUserId()
     const isOwner = Boolean(currentUserId && shift?.ownerId && shift.ownerId === currentUserId)
 
     if (!shift) return null
 
-    const appStatus = vacancyData?.my_application?.status ?? null
+    const appStatus: ShiftStatus = vacancyData?.my_application?.status ?? (shift as any).applicationStatus ?? null
     const isAccepted = appStatus === 'accepted'
 
-    const paySuffix =
-        shift.payPeriod === 'month'
-            ? hourlyRate
-                ? `за месяц (${hourlyRate} ${shift.currency}/час)`
-                : 'за месяц'
-            : hourlyRate
-                ? `за смену (${hourlyRate} ${shift.currency}/час)`
+    const paySuffix = useMemo(() => {
+        const base =
+            shift.payPeriod === 'month'
+                ? 'за месяц'
                 : 'за смену'
+
+        if (!hourlyRate) return base
+        return `${base} (${hourlyRate} ${shift.currency}/час)`
+    }, [shift.payPeriod, hourlyRate, shift.currency])
+
+    const handleApply = useCallback(async () => {
+        try {
+            await onApply(shift.id)
+            onClose()
+        } catch {
+            // toast/ошибка уже должны обрабатываться выше по стеку
+        }
+    }, [shift.id, onApply, onClose])
+
+    const handleCancel = useCallback(async () => {
+        const appId = applicationId ?? shift.applicationId ?? vacancyData?.my_application?.id ?? null
+        try {
+            await onCancel(appId, shift.id)
+            onClose()
+        } catch {
+            // toast/ошибка уже должны обрабатываться выше по стеку
+        }
+    }, [applicationId, shift.applicationId, vacancyData, shift.id, onCancel, onClose])
+
+    const handleOpenMap = useCallback(() => {
+        // TODO: открыть карту
+    }, [])
 
     return (
         <Drawer open={isOpen} onOpenChange={onClose}>
@@ -122,10 +150,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                     <Badge variant="secondary">{shift.restaurant}</Badge>
 
                     {shift.urgent ? (
-                        <Badge variant="destructive" className="gap-1">
-                            <Flame className="w-3 h-3" />
-                            Срочно
-                        </Badge>
+                        // Важно: "Срочно" брендовый, чтобы не конфликтовать с rejected/destructive
+                        <UrgentPill />
                     ) : null}
 
                     {shiftTypeLabel ? (
@@ -134,6 +160,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             {shiftTypeLabel}
                         </Badge>
                     ) : null}
+
+                    {/* Статус заявки — в стиле проекта */}
+                    <StatusPill status={appStatus} />
                 </div>
             </DrawerHeader>
 
@@ -147,7 +176,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             <h2 className="text-lg font-semibold mb-1">{shift.restaurant}</h2>
 
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <span>⭐ {shift.rating.toFixed(1)}</span>
+                                {shift.rating > 0 ? <span>⭐ {shift.rating.toFixed(1)}</span> : null}
                                 {restaurantInfo?.reviews ? (
                                     <>
                                         <span>•</span>
@@ -210,7 +239,13 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                         />
 
                         {applicationsInfo ? (
-                            <DetailRow icon={Users} iconColor="text-green-500" label="Заявок" value={applicationsInfo.value} subValue={applicationsInfo.label} />
+                            <DetailRow
+                                icon={Users}
+                                iconColor="text-green-500"
+                                label="Заявок"
+                                value={applicationsInfo.value}
+                                subValue={applicationsInfo.label}
+                            />
                         ) : null}
                     </div>
                 </Card>
@@ -234,7 +269,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
                                 {(restaurantInfo.profile.restaurant_format || restaurantInfo.profile.format) ? (
                                     <Badge variant="outline" className="text-[11px]">
-                                        {getRestaurantFormatLabel(restaurantInfo.profile.restaurant_format || restaurantInfo.profile.format || '')}
+                                        {getRestaurantFormatLabel(
+                                            restaurantInfo.profile.restaurant_format || restaurantInfo.profile.format || ''
+                                        )}
                                     </Badge>
                                 ) : null}
 
@@ -252,11 +289,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             <DrawerFooter className="border-t border-border">
                 {isOwner ? null : (
                     <div className="flex gap-3">
-                        {isAccepted ? (
-                            <div className="flex-1 flex items-center justify-center">
-                                <span className="px-4 py-2 rounded-full bg-blue-600 text-white font-medium">Подтверждена</span>
-                            </div>
-                        ) : isApplied ? (
+                        {/* Не показываем метку "подтверждена" в футере */}
+                        {isAccepted ? null : isApplied ? (
                             <Button
                                 onClick={handleCancel}
                                 disabled={isLoading}
@@ -266,7 +300,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                                 {isLoading ? 'Отмена...' : 'Отменить заявку'}
                             </Button>
                         ) : (
-                            <Button onClick={handleApply} disabled={isLoading} className="flex-1 gradient-primary text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                            <Button
+                                onClick={handleApply}
+                                disabled={isLoading}
+                                className="flex-1 gradient-primary text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 {isLoading ? 'Отправка...' : 'Откликнуться'}
                             </Button>
                         )}

@@ -3,6 +3,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+
+  --bottom-nav-h: calc(64px + env(safe-area-inset-bottom));
+
   --font-size: 16px;
 
   /* --- Base Colors (Light Mode) --- */

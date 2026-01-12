@@ -9,6 +9,8 @@ import { AppliedShiftCard } from './components/AppliedShiftCard'
 import { useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import { useDeleteShift } from '@/hooks/useShifts'
 import { useToast } from '@/hooks/useToast'
+import { ShiftSkeleton } from '@/components/ui/ShiftSkeleton'
+import { EmptyState } from '@/pages/Feed/components/EmptyState'
 
 type ActivityTab = 'list' | 'calendar'
 export const ActivityPage = () => {
@@ -45,9 +47,6 @@ export const ActivityPage = () => {
 
 
 
-    if (isLoading) return <div className="p-4">Загрузка смен...</div>
-    if (isError) return <div className="p-4 text-red-500">Ошибка загрузки смен</div>
-
     return (
         <div className="min-h-screen bg-background pb-20">
             <div className="top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 transition-all border-border/50">
@@ -60,25 +59,36 @@ export const ActivityPage = () => {
                 <div className="text-sm text-muted-foreground mb-3">Найдено смен: {shifts.length}</div>
 
                 {activeTab === 'list' && (
-                    <div className="space-y-3">
-                        {shifts.map((shift: any) => (
-                            <PersonalShiftCard
-                                key={shift.id}
-                                shift={shift}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
-                                isDeleting={isDeleting}
-                            />
-                        ))}
-                        {appliedShifts.length > 0 && (
-                            <>
-                                <div className="text-sm text-muted-foreground mt-4 mb-2">Мои отклики</div>
-                                <div className="space-y-3">
-                                    {appliedShifts.map((shift: any) => (
-                                        <AppliedShiftCard key={shift.id} shift={shift} showToast={(m, t) => showToast(m, t as any)} />
-                                    ))}
-                                </div>
-                            </>
+                    <div className="space-y-4">
+                        {isLoading ? (
+                            <ShiftSkeleton />
+                        ) : isError ? (
+                            <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
+                        ) : shifts.length === 0 ? (
+                            <EmptyState message="Смены не найдены" />
+                        ) : (
+                            <div className="space-y-3">
+                                {shifts.map((shift: any) => (
+                                    <PersonalShiftCard
+                                        key={shift.id}
+                                        shift={shift}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                        isDeleting={isDeleting}
+                                    />
+                                ))}
+
+                                {appliedShifts.length > 0 && (
+                                    <>
+                                        <div className="text-sm text-muted-foreground mt-4 mb-2">Мои отклики</div>
+                                        <div className="space-y-4">
+                                            {appliedShifts.map((shift: any) => (
+                                                <AppliedShiftCard key={shift.id} shift={shift} showToast={(m, t) => showToast(m, t as any)} />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
@@ -87,6 +97,7 @@ export const ActivityPage = () => {
                     <div className="text-muted-foreground">Календарь пока не реализован</div>
                 )}
             </div>
+
             <AddShiftDrawer
                 open={isDrawerOpen}
                 onOpenChange={(open) => {
