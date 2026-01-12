@@ -15,6 +15,8 @@ export interface Shift {
   duration?: string // Длительность смены в часах
   urgent?: boolean // Срочная смена
   badges?: string[] // Дополнительные бейджи
+  applicationId?: number // id моей заявки на эту смену (если подана)
+  ownerId?: number // id пользователя, который создал вакансию/смену
 }
 
 

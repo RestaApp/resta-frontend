@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
-import { AddShiftButton } from '../pages/Activity/components/AddShiftButton'
+import { AddShiftButton } from '@/pages/Activity/components/AddShiftButton'
 import AddShiftDrawer from '@/pages/Activity/components/AddShiftDrawer'
 import type { Tab } from '@/types'
 

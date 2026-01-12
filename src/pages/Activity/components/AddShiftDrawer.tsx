@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
 import { DatePicker } from '@/components/ui/date-picker'
-import type { CreateShiftResponse } from '@/services/api/shiftsApi'
+import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsApi'
 import { useUserPositions } from '@/hooks/useUserPositions'
 import { useUserSpecializations } from '@/hooks/useUserSpecializations'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
@@ -15,6 +15,7 @@ type AddShiftDrawerProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
     onSave?: (shift: CreateShiftResponse | null) => void
+    initialValues?: VacancyApiItem | null
 }
 
 type SelectFieldOption = {
@@ -24,7 +25,7 @@ type SelectFieldOption = {
 
 const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
 
-export const AddShiftDrawer = ({ open, onOpenChange, onSave }: AddShiftDrawerProps) => {
+export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = null }: AddShiftDrawerProps) => {
     const { userProfile } = useUserProfile()
     const { toast, hideToast } = useToast()
     const isEmployeeRole = userProfile?.role === 'employee'
@@ -35,7 +36,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave }: AddShiftDrawerPro
         return null
     }, [isEmployeeRole, isRestaurantRole])
 
-    const form = useAddShiftForm({ initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE, onSave })
+    const form = useAddShiftForm({ initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE, onSave, initialValues })
     const {
         title,
         setTitle,

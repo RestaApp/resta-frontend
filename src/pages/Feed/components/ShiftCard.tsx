@@ -1,20 +1,23 @@
 import { memo, useMemo } from 'react'
 import { MapPin, Clock, CalendarDays } from 'lucide-react'
+import { ActionButton } from '@/components/ui/ActionButton'
 import type { Shift } from '../types'
 import type React from 'react'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { getCurrentUserId } from '@/utils/user'
 
 interface ShiftCardProps {
     shift: Shift
     isApplied?: boolean
+    applicationId?: number | null
     onOpenDetails: (id: number) => void
     onApply: (id: number) => void
-    onCancel: (id: number) => void
+    onCancel: (applicationId: number | null | undefined, shiftId: number) => void
     isLoading?: boolean
     isVacancy?: boolean // Флаг для вакансий (оплата за месяц, а не за смену)
 }
 
-const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, onCancel, isLoading = false, isVacancy = false }: ShiftCardProps) => {
+const ShiftCardComponent = ({ shift, isApplied = false, applicationId = null, onOpenDetails, onApply, onCancel, isLoading = false, isVacancy = false }: ShiftCardProps) => {
     const handleCardClick = (e: React.MouseEvent) => {
         // Предотвращаем открытие деталей при клике на кнопку
         if ((e.target as HTMLElement).closest('button')) {
@@ -26,8 +29,12 @@ const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, 
 
     const handleButtonClick = (e: React.MouseEvent) => {
         e.stopPropagation()
+        const currentUserId = getCurrentUserId()
+        const isOwner = shift.ownerId !== undefined ? shift.ownerId === currentUserId : ((shift as any).user?.id === currentUserId)
+        if (isOwner) return
+
         if (isApplied) {
-            onCancel(shift.id)
+            onCancel(applicationId ?? (shift as any).applicationId, shift.id)
         } else {
             onApply(shift.id)
         }
@@ -101,22 +108,18 @@ const ShiftCardComponent = ({ shift, isApplied = false, onOpenDetails, onApply, 
                 ) : (
                     <div className="flex-1" />
                 )}
-                <button
-                    onClick={handleButtonClick}
-                    disabled={isLoading}
-                    className={`px-6 py-2 rounded-xl transition-all flex-shrink-0 ${isLoading
-                        ? 'bg-secondary text-foreground/70 cursor-wait'
-                        : isApplied
-                            ? 'bg-secondary text-foreground/70 hover:bg-destructive/10 hover:text-destructive border border-destructive/20'
-                            : 'gradient-primary text-white hover:opacity-90 shadow-md'
-                        }`}
-                >
-                    {isLoading
-                        ? (isApplied ? 'Отмена...' : 'Отправка...')
-                        : isApplied
-                            ? 'Отменить заявку'
-                            : 'Откликнуться'}
-                </button>
+                {(() => {
+                    const currentUserId = getCurrentUserId()
+                    const isOwner = shift.ownerId !== undefined ? shift.ownerId === currentUserId : ((shift as any).user?.id === currentUserId)
+                    if (isOwner) {
+                        return null
+                    }
+                    return (
+                        <ActionButton isLoading={isLoading} active={isApplied} onClick={handleButtonClick} disabled={isLoading}>
+                            {isLoading ? (isApplied ? 'Отмена...' : 'Отправка...') : isApplied ? 'Отменить заявку' : 'Откликнуться'}
+                        </ActionButton>
+                    )
+                })()}
             </div>
         </div>
     )

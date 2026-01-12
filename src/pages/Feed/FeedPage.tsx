@@ -52,6 +52,8 @@ export const FeedPage = () => {
 
     const {
         appliedShiftsSet,
+        appliedApplicationsMap,
+        getApplicationId,
         handleApply,
         handleCancel,
         isShiftLoading,
@@ -272,6 +274,7 @@ export const FeedPage = () => {
                             >
                                 <ShiftCard
                                     shift={shift}
+                                    applicationId={appliedApplicationsMap[shift.id] ?? getApplicationId(shift.id)}
                                     isApplied={appliedShiftsSet.has(shift.id)}
                                     onOpenDetails={handleOpenShiftDetails}
                                     onApply={handleApply}
@@ -300,12 +303,13 @@ export const FeedPage = () => {
                 <ShiftDetailsScreen
                     shift={selectedShift}
                     vacancyData={selectedVacancy}
+                    applicationId={appliedApplicationsMap[selectedShiftId!] ?? getApplicationId(selectedShiftId!)}
                     isOpen={!!selectedShiftId}
                     onClose={handleCloseShiftDetails}
                     onApply={handleApply}
                     onCancel={handleCancel}
-                    isApplied={appliedShiftsSet.has(selectedShiftId)}
-                    isLoading={isShiftLoading(selectedShiftId)}
+                    isApplied={appliedShiftsSet.has(selectedShiftId!)}
+                    isLoading={isShiftLoading(selectedShiftId!)}
                     isVacancy={feedType === 'jobs'}
                 />
             )}

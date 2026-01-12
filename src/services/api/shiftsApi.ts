@@ -97,6 +97,19 @@ export interface VacancyApiItem {
   title: string
   description?: string
   location?: string
+  /**
+   * Моя заявка на эту смену (если пользователь подавал заявку)
+   */
+  my_application?: {
+    id: number
+    applied_at?: string
+    message?: string | null
+    priority?: number
+    responded_at?: string | null
+    shift_id?: number
+    status?: string
+    user_id?: number
+  }
   payment?: string | number
   hourly_rate?: string | number
   start_time?: string
@@ -170,7 +183,7 @@ export const shiftsApi = api.injectEndpoints({
     // Получить все смены
     getShifts: builder.query<Shift[], { status?: string; role?: string }>({
       query: params => ({
-        url: '/shifts',
+        url: '/api/v1/shifts',
         params,
       }),
       providesTags: ['Shift'],
@@ -191,7 +204,7 @@ export const shiftsApi = api.injectEndpoints({
 
     // Получить смену по ID
     getShiftById: builder.query<Shift, string>({
-      query: id => `/shifts/${id}`,
+      query: id => `/api/v1/shifts/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Shift', id }],
     }),
 
@@ -208,17 +221,17 @@ export const shiftsApi = api.injectEndpoints({
     // Обновить смену
     updateShift: builder.mutation<Shift, { id: string; data: Partial<CreateShiftRequest> }>({
       query: ({ id, data }) => ({
-        url: `/shifts/${id}`,
+        url: `/api/v1/shifts/${id}`,
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Shift', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Shift', id }, 'Shift'],
     }),
 
     // Удалить смену
     deleteShift: builder.mutation<void, string>({
       query: id => ({
-        url: `/shifts/${id}`,
+        url: `/api/v1/shifts/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Shift'],
@@ -277,6 +290,16 @@ export const shiftsApi = api.injectEndpoints({
       providesTags: ['AppliedShift'],
       keepUnusedDataFor: 60, // Кэшируем на 60 секунд
     }),
+    
+    // Получить мои смены (список смен текущего пользователя)
+    getMyShifts: builder.query<Shift[], void>({
+      query: () => ({
+        url: '/api/v1/shifts/my_shifts',
+        method: 'GET',
+      }),
+      providesTags: ['Shift'],
+      keepUnusedDataFor: 60,
+    }),
   }),
 })
 
@@ -291,6 +314,7 @@ export const {
   useApplyToShiftMutation,
   useCancelApplicationMutation,
   useGetAppliedShiftsQuery,
+  useGetMyShiftsQuery,
   useAcceptApplicationMutation,
   useRejectApplicationMutation,
 } = shiftsApi

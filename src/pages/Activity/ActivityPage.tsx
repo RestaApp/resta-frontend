@@ -1,14 +1,42 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { CalendarDays, List } from 'lucide-react'
 import { Tabs } from '@/components/ui/tabs'
 import type { TabOption } from '@/components/ui/tabs'
-import { useGetShiftsQuery } from '@/services/api/shiftsApi'
+import { useGetMyShiftsQuery } from '@/services/api/shiftsApi'
+import { PersonalShiftCard } from './components/PersonalShiftCard'
+import AddShiftDrawer from './components/AddShiftDrawer'
+import { AppliedShiftCard } from './components/AppliedShiftCard'
+import { useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
+import { useDeleteShift } from '@/hooks/useShifts'
+import { useToast } from '@/hooks/useToast'
 
 type ActivityTab = 'list' | 'calendar'
 export const ActivityPage = () => {
     const [activeTab, setActiveTab] = useState<ActivityTab>('list')
 
-    const { data: shifts = [], isLoading, isError } = useGetShiftsQuery({})
+    const { data, isLoading, isError } = useGetMyShiftsQuery()
+    const shifts = Array.isArray(data) ? data : (data && (data as any).data ? (data as any).data : [])
+    const { data: appliedData } = useGetAppliedShiftsQuery()
+    const appliedShifts = Array.isArray(appliedData) ? appliedData : (appliedData && (appliedData as any).data ? (appliedData as any).data : [])
+    const { deleteShift, isLoading: isDeleting } = useDeleteShift()
+    const { showToast } = useToast()
+
+    const handleEdit = useCallback((id: number) => {
+        const found = shifts.find((s: any) => s.id === id) || null
+        setEditingShift(found)
+        setIsDrawerOpen(true)
+    }, [shifts])
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [editingShift, setEditingShift] = useState<any | null>(null)
+
+    const handleDelete = useCallback(async (id: number) => {
+        try {
+            await deleteShift(String(id))
+            showToast('Смена удалена', 'success')
+        } catch {
+            showToast('Не удалось удалить смену', 'error')
+        }
+    }, [deleteShift, showToast])
 
     const tabOptions = useMemo<TabOption<ActivityTab>[]>(() => [
         { id: 'list', label: 'Список', icon: List },
@@ -29,8 +57,51 @@ export const ActivityPage = () => {
             </div>
 
             <div className="p-4">
-                <div className="text-sm text-muted-foreground">Найдено смен: {shifts.length}</div>
+                <div className="text-sm text-muted-foreground mb-3">Найдено смен: {shifts.length}</div>
+
+                {activeTab === 'list' && (
+                    <div className="space-y-3">
+                        {shifts.map((shift: any) => (
+                            <PersonalShiftCard
+                                key={shift.id}
+                                shift={shift}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                                isDeleting={isDeleting}
+                            />
+                        ))}
+                        {appliedShifts.length > 0 && (
+                            <>
+                                <div className="text-sm text-muted-foreground mt-4 mb-2">Мои отклики</div>
+                                <div className="space-y-3">
+                                    {appliedShifts.map((shift: any) => (
+                                        <AppliedShiftCard key={shift.id} shift={shift} showToast={(m, t) => showToast(m, t as any)} />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'calendar' && (
+                    <div className="text-muted-foreground">Календарь пока не реализован</div>
+                )}
             </div>
+            <AddShiftDrawer
+                open={isDrawerOpen}
+                onOpenChange={(open) => {
+                    setIsDrawerOpen(open)
+                    if (!open) setEditingShift(null)
+                }}
+                initialValues={editingShift}
+                onSave={(res) => {
+                    setIsDrawerOpen(false)
+                    setEditingShift(null)
+                    if (res) {
+                        showToast('Смена сохранена', 'success')
+                    }
+                }}
+            />
 
         </div>
     )

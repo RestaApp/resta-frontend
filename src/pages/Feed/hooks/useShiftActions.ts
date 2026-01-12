@@ -5,13 +5,15 @@ import { useAppliedShifts } from './useAppliedShifts'
 interface UseShiftActionsReturn {
   appliedShifts: number[]
   appliedShiftsSet: Set<number>
+  appliedApplicationsMap: Record<number, number | undefined>
+  getApplicationId: (id: number) => number | undefined
   handleApply: (shiftId: number) => Promise<void>
-  handleCancel: (shiftId: number) => Promise<void>
+  handleCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (shiftId: number) => boolean
 }
 
 export const useShiftActions = (): UseShiftActionsReturn => {
-  const { appliedShifts, appliedShiftsSet, markApplied, unmarkApplied } = useAppliedShifts()
+  const { appliedShifts, appliedShiftsSet, appliedApplicationsMap, markApplied, unmarkApplied, getApplicationId } = useAppliedShifts()
   const { apply, cancel } = useShiftApplication({
     onSuccess: () => {
       // Не закрываем детальный экран при отклике с карточки
@@ -35,8 +37,9 @@ export const useShiftActions = (): UseShiftActionsReturn => {
     async (shiftId: number) => {
       setShiftLoading(shiftId, true)
       try {
-        await apply(shiftId)
-        markApplied(shiftId)
+        const result = await apply(shiftId)
+        const applicationId = result?.data?.application_id
+        markApplied(shiftId, applicationId)
       } catch {
         // Ошибка уже обработана в хуке
       } finally {
@@ -47,10 +50,11 @@ export const useShiftActions = (): UseShiftActionsReturn => {
   )
 
   const handleCancel = useCallback(
-    async (shiftId: number) => {
+    async (applicationId: number | null | undefined, shiftId: number) => {
       setShiftLoading(shiftId, true)
       try {
-        await cancel(shiftId)
+        // API ожидает application id; если его нет — вызов может завершиться ошибкой
+        await cancel(applicationId as number)
         unmarkApplied(shiftId)
       } catch {
         // Ошибка уже обработана в хуке
@@ -69,6 +73,8 @@ export const useShiftActions = (): UseShiftActionsReturn => {
   return {
     appliedShifts,
     appliedShiftsSet,
+    appliedApplicationsMap,
+    getApplicationId,
     handleApply,
     handleCancel,
     isShiftLoading,

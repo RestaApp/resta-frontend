@@ -22,16 +22,18 @@ import type { Shift } from '../types'
 import { getRestaurantFormatLabel } from '@/constants/labels'
 import { useShiftDetails } from '../hooks/useShiftDetails'
 import { formatReviews } from '../utils/formatting'
+import { getCurrentUserId } from '@/utils/user'
 
 
 interface ShiftDetailsScreenProps {
     shift: Shift | null
     vacancyData?: VacancyApiItem | null
+    applicationId?: number | null
     isOpen: boolean
     onClose: () => void
     onApply: (id: number) => Promise<void>
     isApplied: boolean
-    onCancel: (id: number) => Promise<void>
+    onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
     isLoading?: boolean
     isVacancy?: boolean // Флаг для вакансий (оплата за месяц, а не за смену)
 }
@@ -88,6 +90,7 @@ TextCard.displayName = 'TextCard'
 export const ShiftDetailsScreen = memo(({
     shift,
     vacancyData,
+    applicationId = null,
     isOpen,
     onClose,
     onApply,
@@ -119,16 +122,21 @@ export const ShiftDetailsScreen = memo(({
     const handleCancel = useCallback(async () => {
         if (!shift) return
         try {
-            await onCancel(shift.id)
+            // Передаём id заявки: сначала из пропса, затем из vacancyData или поля shift
+            const appId = applicationId ?? vacancyData?.my_application?.id ?? (shift as any).applicationId
+            await onCancel(appId, shift.id)
             onClose()
         } catch {
             // Ошибка уже обработана в хуке
         }
-    }, [shift, onCancel, onClose])
+    }, [shift, onCancel, onClose, applicationId, vacancyData])
 
     const handleOpenMap = useCallback(() => {
         // TODO: Реализовать открытие карты
     }, [])
+
+    const currentUserId = getCurrentUserId()
+    const isOwner = vacancyData?.user?.id === currentUserId || (shift as any).ownerId === currentUserId
 
     // Ранний возврат если нет данных
     if (!shift) {
@@ -336,7 +344,7 @@ export const ShiftDetailsScreen = memo(({
             {/* Fixed Bottom Actions */}
             <DrawerFooter className="border-t border-border">
                 <div className="flex gap-3">
-                    {isApplied ? (
+                    {isOwner ? null : isApplied ? (
                         <Button
                             onClick={handleCancel}
                             disabled={isLoading}

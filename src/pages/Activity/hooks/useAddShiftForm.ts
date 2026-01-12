@@ -1,5 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
-import { useCreateShiftMutation, type CreateShiftResponse } from '@/services/api/shiftsApi'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+    useCreateShiftMutation,
+    useUpdateShiftMutation,
+    type CreateShiftResponse,
+    type VacancyApiItem,
+} from '@/services/api/shiftsApi'
 import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime } from '@/utils/date'
 
@@ -8,11 +13,13 @@ export type ShiftType = 'vacancy' | 'replacement'
 type UseAddShiftFormOptions = {
     initialShiftType?: ShiftType | null
     onSave?: (shift: CreateShiftResponse | null) => void
+    initialValues?: VacancyApiItem | null
 }
 
-export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave }: UseAddShiftFormOptions = {}) => {
+export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialValues = null }: UseAddShiftFormOptions = {}) => {
     const { showToast } = useToast()
     const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
+    const [updateShiftMutation] = useUpdateShiftMutation()
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -60,7 +67,8 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave }: UseAdd
         setSubmitError(null)
 
         try {
-            const response = await createShift({
+            let response: CreateShiftResponse | null = null
+            const payload = {
                 shift: {
                     title,
                     description: description || undefined,
@@ -74,11 +82,36 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave }: UseAdd
                     position,
                     specialization: specialization || undefined,
                 },
-            }).unwrap()
+            }
+
+            if (initialValues?.id) {
+                // update existing shift
+                const updateResult = await updateShiftMutation({ id: String(initialValues.id), data: payload }).unwrap()
+                // сервер может вернуть { success: false, errors: [...] } even with 200
+                if ((updateResult as any)?.success === false || (updateResult as any)?.errors) {
+                    const errs = (updateResult as any).errors ?? ((updateResult as any).message ? [(updateResult as any).message] : [])
+                    const msg = Array.isArray(errs) ? errs.join('; ') : String(errs)
+                    setSubmitError(msg)
+                    showToast?.(msg, 'error')
+                    return false
+                }
+                showToast?.('Смена успешно обновлена', 'success')
+                response = null
+            } else {
+                const createResult = await createShift(payload).unwrap()
+                if (createResult?.success === false || (createResult as any)?.errors) {
+                    const errs = (createResult as any).errors ?? (createResult.message ? [createResult.message] : [])
+                    const msg = Array.isArray(errs) ? errs.join('; ') : String(errs)
+                    setSubmitError(msg)
+                    showToast?.(msg, 'error')
+                    return false
+                }
+                response = createResult
+                showToast?.('Смена успешно создана', 'success')
+            }
 
             onSave?.(response ?? null)
             resetForm()
-            showToast?.('Смена успешно создана', 'success')
             return true
         } catch (error) {
             const message: string =
@@ -110,7 +143,38 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave }: UseAdd
         resetForm,
         showToast,
         timeRangeError,
+        initialValues,
+        updateShiftMutation,
     ])
+
+    useEffect(() => {
+        if (initialValues) {
+            setTitle(initialValues.title || '')
+            setDescription(initialValues.description || '')
+            // try to extract date part from ISO-like start_time
+            if (initialValues.start_time) {
+                const dt = new Date(initialValues.start_time)
+                // format as yyyy-mm-dd for DatePicker value
+                const yyyy = dt.getFullYear()
+                const mm = String(dt.getMonth() + 1).padStart(2, '0')
+                const dd = String(dt.getDate()).padStart(2, '0')
+                setDate(`${yyyy}-${mm}-${dd}`)
+                setStartTime(dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }))
+            }
+            if (initialValues.end_time) {
+                const dt2 = new Date(initialValues.end_time)
+                setEndTime(dt2.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }))
+            }
+            setPay(initialValues.payment ? String(initialValues.payment) : (initialValues.hourly_rate ? String(initialValues.hourly_rate) : ''))
+            setLocation(initialValues.location || '')
+            setRequirements(initialValues.requirements || '')
+            // prefer explicit nullish coalescing to avoid operator precedence issues
+            setShiftType((initialValues.shift_type as ShiftType) ?? initialShiftType ?? 'vacancy')
+            setUrgent(!!initialValues.urgent)
+            setPosition(initialValues.position || '')
+            setSpecialization(initialValues.specialization || '')
+        }
+    }, [initialValues, initialShiftType])
 
     return {
         title,

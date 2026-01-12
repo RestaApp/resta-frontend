@@ -61,9 +61,15 @@ export const useShiftApplication = (options: UseShiftApplicationOptions = {}) =>
      * Отменить заявку на смену
      */
     const cancel = useCallback(
-        async (shiftId: number) => {
+        async (applicationId: number | null | undefined) => {
             try {
-                const result = await cancelApplication(shiftId).unwrap()
+                if (!applicationId) {
+                    const err = new Error('application id is required to cancel application')
+                    showToast('Не удалось отменить заявку: неизвестный id', 'error')
+                    options.onError?.(err)
+                    throw err
+                }
+                const result = await cancelApplication(applicationId).unwrap()
 
                 showToast(result.message || '✅ Заявка отменена', 'success')
                 options.onSuccess?.()
