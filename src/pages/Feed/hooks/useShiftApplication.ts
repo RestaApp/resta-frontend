@@ -10,9 +10,18 @@ interface UseShiftApplicationOptions {
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (error && typeof error === 'object' && 'data' in error) {
-    const data = (error as { data?: { message?: string } }).data
+    const data = (error as { data?: { message?: string; missing_fields?: string[] } }).data
+
+    // Специальная обработка ответа от API: профиль неполный
+    if (data?.message === 'profile_incomplete') {
+      const missing: string[] = Array.isArray(data.missing_fields) ? data.missing_fields : []
+      const fieldsText = missing.length > 0 ? missing.join(', ') : 'неизвестные поля'
+      return `Профиль неполный: отсутствуют поля — ${fieldsText}. Пожалуйста, заполните профиль в настройках.`
+    }
+
     return data?.message || fallback
   }
+
   return fallback
 }
 

@@ -1,9 +1,19 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { Tabs } from '@/components/ui/tabs'
 import { Toast } from '@/components/ui/toast'
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogAction,
+    AlertDialogCancel,
+} from '@/components/ui'
 import { SearchFilters } from './components/SearchFilters'
 import { HotOffers, type HotOffer } from './components/HotOffers'
 import { ShiftCard } from './components/ShiftCard'
@@ -25,10 +35,12 @@ import type { FeedType } from './types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { Shift } from './types'
 import { vacancyToShift } from '../Feed/utils/mapping'
+import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/constants/storage'
 
 const FEED_TYPE_OPTIONS: TabOption<FeedType>[] = [
-    { id: 'shifts', label: '🔥 Смены' },
     { id: 'jobs', label: '💼 Вакансии' },
+    { id: 'shifts', label: '🔥 Смены' },
 ]
 
 export const FeedPage = () => {
@@ -55,8 +67,45 @@ export const FeedPage = () => {
         userPosition,
     } = useFeedFiltersState()
 
+    // Проверка флага для переключения на вкладку смен
+    useEffect(() => {
+        const shouldShowShifts = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
+        if (shouldShowShifts === 'true' && feedType !== 'shifts') {
+            setFeedType('shifts')
+            removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
+        }
+    }, [feedType, setFeedType])
+
     const { appliedShiftsSet, appliedApplicationsMap, getApplicationId, handleApply, handleCancel, isShiftLoading } =
         useShiftActions()
+
+    const [alertOpen, setAlertOpen] = useState(false)
+    const [alertMessage, setAlertMessage] = useState('')
+    const [, setAlertMissingFields] = useState<string[]>([])
+
+    const handleApplyWithModal = useCallback(
+        async (shiftId: number) => {
+            try {
+                await handleApply(shiftId)
+            } catch (error: any) {
+                const data = error && typeof error === 'object' && 'data' in error ? error.data : null
+                if (data?.message === 'profile_incomplete') {
+                    const missing: string[] = Array.isArray(data.missing_fields) ? data.missing_fields : []
+                    setAlertMissingFields(missing)
+                    setAlertMessage(
+                        `Профиль неполный: отсутствуют поля — ${missing.length ? missing.join(', ') : 'неизвестные поля'}. Пожалуйста, заполните профиль в настройках.`
+                    )
+                    setAlertOpen(true)
+                } else {
+                    // на остальные ошибки уже показывается toast в хуке; на всякий случай покажем модал
+                    setAlertMessage('Не удалось отправить заявку. Попробуйте позже.')
+                    setAlertMissingFields([])
+                    setAlertOpen(true)
+                }
+            }
+        },
+        [handleApply]
+    )
 
     const shiftsBaseQuery = useMemo(
         () => buildVacanciesBaseParams({ activeQuickFilter: quickFilter, advanced: shiftsAdvancedFilters, shiftType: 'replacement' }),
@@ -230,7 +279,7 @@ export const FeedPage = () => {
                                     applicationStatus={activeList.vacanciesMap.get(shift.id)?.my_application?.status ?? null}
                                     isApplied={appliedShiftsSet.has(shift.id)}
                                     onOpenDetails={handleOpenShiftDetails}
-                                    onApply={handleApply}
+                                    onApply={handleApplyWithModal}
                                     onCancel={handleCancel}
                                     isLoading={isShiftLoading(shift.id)}
                                 />
@@ -264,6 +313,26 @@ export const FeedPage = () => {
                     isLoading={isShiftLoading(selectedShiftId)}
                 />
             ) : null}
+
+            <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Ошибка профиля</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setAlertOpen(false)}>Закрыть</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                setAlertOpen(false)
+                                // TODO: Навигация в профиль (если есть) — можно добавить по требованию
+                            }}
+                        >
+                            Открыть профиль
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             <AdvancedFilters
                 isOpen={isFiltersOpen}

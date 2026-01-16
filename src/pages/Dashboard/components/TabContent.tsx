@@ -1,10 +1,12 @@
 import { FeedPage } from '@/pages/Feed/FeedPage'
 import { ActivityPage } from '@/pages/Activity/ActivityPage'
+import { ProfilePage } from '@/pages/Profile/ProfilePage'
 import type { Tab, UiRole } from '@/types'
 
 const TAB_COMPONENTS: Partial<Record<Tab, React.ComponentType>> = {
     feed: FeedPage,
     activity: ActivityPage,
+    profile: ProfilePage,
 }
 
 export const TabContent = ({ activeTab, role }: { activeTab: Tab; role: UiRole }) => {

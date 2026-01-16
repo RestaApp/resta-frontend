@@ -7,4 +7,5 @@ export const STORAGE_KEYS = {
   USER_DATA: 'user_data',
   AUTH_TOKEN: 'auth_token',
   REFRESH_TOKEN: 'refresh_token',
+  NAVIGATE_TO_FEED_SHIFTS: 'navigate_to_feed_shifts',
 } as const

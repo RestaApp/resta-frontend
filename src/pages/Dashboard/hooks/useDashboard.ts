@@ -6,6 +6,8 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getTabsForRole } from '@/constants/tabs'
 import { SCREEN_TO_TAB_MAP } from '@/constants/navigation'
 import type { Tab, UiRole, Screen } from '@/types'
+import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/constants/storage'
 
 interface UseDashboardProps {
   role: UiRole
@@ -16,6 +18,26 @@ interface UseDashboardProps {
 export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDashboardProps) => {
   const tabs = useMemo(() => getTabsForRole(role), [role])
   const [activeTab, setActiveTab] = useState<Tab>(tabs[0]?.id ?? 'home')
+
+  // Проверка флага для перехода на Feed с вкладкой смен
+  useEffect(() => {
+    const shouldNavigateToFeed = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
+    if (shouldNavigateToFeed === 'true') {
+      setActiveTab('feed')
+      removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
+    }
+
+    // Слушаем событие для переключения на Feed с вкладкой смен
+    const handleNavigateToFeedShifts = () => {
+      setActiveTab('feed')
+      setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS, 'true')
+    }
+
+    window.addEventListener('navigateToFeedShifts', handleNavigateToFeedShifts)
+    return () => {
+      window.removeEventListener('navigateToFeedShifts', handleNavigateToFeedShifts)
+    }
+  }, [])
 
   // Синхронизация внешнего currentScreen -> activeTab
   useEffect(() => {

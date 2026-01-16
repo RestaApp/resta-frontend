@@ -229,7 +229,7 @@ const ShiftCardComponent = ({
                         onClick={isApplied ? handleCancelClick : handleApplyClick}
                         disabled={isLoading || (!canApply && !isApplied)}
                     >
-                        {!canApply && !isApplied ? 'Недоступно' : actionLabel}
+                        {!canApply && !isApplied ? 'Уже откликнулся' : actionLabel}
                     </ActionButton>
                 ) : null}
             </div>

@@ -31,7 +31,7 @@ export interface UseFeedFiltersStateReturn {
 }
 
 export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
-  const [feedType, setFeedType] = useState<FeedType>('shifts')
+  const [feedType, setFeedType] = useState<FeedType>('jobs')
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all')
   const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
