@@ -27,15 +27,29 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
       removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     }
 
+    const shouldNavigateToProfileEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
+    if (shouldNavigateToProfileEdit === 'true') {
+      setActiveTab('profile')
+      removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
+    }
+
     // Слушаем событие для переключения на Feed с вкладкой смен
     const handleNavigateToFeedShifts = () => {
       setActiveTab('feed')
       setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS, 'true')
     }
 
+    // Слушаем событие для переключения на профиль с открытием drawer
+    const handleNavigateToProfileEdit = () => {
+      setActiveTab('profile')
+      setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
+    }
+
     window.addEventListener('navigateToFeedShifts', handleNavigateToFeedShifts)
+    window.addEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
     return () => {
       window.removeEventListener('navigateToFeedShifts', handleNavigateToFeedShifts)
+      window.removeEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
     }
   }, [])
 

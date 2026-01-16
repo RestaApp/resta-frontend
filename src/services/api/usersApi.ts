@@ -27,6 +27,7 @@ export interface UpdateUserRequest {
     email?: string | null
     phone?: string | null
     location?: string | null
+    city?: string | null
     work_experience_summary?: string | null
     employee_profile_attributes?: {
       experience_years?: number

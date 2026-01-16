@@ -51,7 +51,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       // Опциональные поля - отправляем только если есть значение
       if (formData?.location && formData.location.trim() !== '') {
-        updateData.user.location = formData.location.trim()
+        updateData.user.city = formData.location.trim()
       }
 
       // Опциональные поля employee_profile_attributes
@@ -107,7 +107,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       // Добавляем город, если есть
       if (formData.city && formData.city.trim() !== '') {
-        updateData.user.location = formData.city.trim()
+        updateData.user.city = formData.city.trim()
       }
 
       const success = await updateUserWithData(
@@ -151,7 +151,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       // Добавляем город, если есть
       if (formData.city && formData.city.trim() !== '') {
-        updateData.user.location = formData.city.trim()
+        updateData.user.city = formData.city.trim()
       }
 
       const success = await updateUserWithData(

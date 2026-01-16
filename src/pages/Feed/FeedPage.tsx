@@ -37,6 +37,7 @@ import type { Shift } from './types'
 import { vacancyToShift } from '../Feed/utils/mapping'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { setLocalStorageItem } from '@/utils/localStorage'
 
 const FEED_TYPE_OPTIONS: TabOption<FeedType>[] = [
     { id: 'jobs', label: '💼 Вакансии' },
@@ -325,7 +326,12 @@ export const FeedPage = () => {
                         <AlertDialogAction
                             onClick={() => {
                                 setAlertOpen(false)
-                                // TODO: Навигация в профиль (если есть) — можно добавить по требованию
+                                // Устанавливаем флаг для перехода на профиль с открытием drawer
+                                setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
+                                // Отправляем событие для переключения таба
+                                window.dispatchEvent(new CustomEvent('navigateToProfileEdit'))
+                                // Отправляем событие для открытия drawer (если профиль уже открыт)
+                                window.dispatchEvent(new CustomEvent('openProfileEdit'))
                             }}
                         >
                             Открыть профиль

@@ -9,12 +9,14 @@ export interface CatalogState {
   positions: string[]
   specializations: Record<string, string[]> // ключ - позиция, значение - массив специализаций
   selectedPosition: string | null
+  cities: string[]
 }
 
 const initialState: CatalogState = {
   positions: [],
   specializations: {},
   selectedPosition: null,
+  cities: [],
 }
 
 const catalogSlice = createSlice({
@@ -35,10 +37,13 @@ const catalogSlice = createSlice({
     clearSpecializations: (state, action: PayloadAction<string>) => {
       delete state.specializations[action.payload]
     },
+    setCities: (state, action: PayloadAction<string[]>) => {
+      state.cities = action.payload
+    },
   },
 })
 
-export const { setPositions, setSpecializations, setSelectedPosition, clearSpecializations } = catalogSlice.actions
+export const { setPositions, setSpecializations, setSelectedPosition, clearSpecializations, setCities } = catalogSlice.actions
 export default catalogSlice.reducer
 
 const EMPTY_SPECIALIZATIONS: string[] = []
@@ -56,5 +61,6 @@ export const selectSpecializationsByPosition = createSelector(
 )
 export const selectSelectedPosition = (state: RootState) => state.catalog.selectedPosition
 export const selectAllSpecializations = (state: RootState) => state.catalog.specializations
+export const selectCities = (state: RootState) => state.catalog.cities
 
 
