@@ -1,5 +1,6 @@
 import { useMemo, useCallback, useState, useEffect } from 'react'
 import { motion } from 'motion/react'
+
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { Tabs } from '@/components/ui/tabs'
@@ -11,17 +12,19 @@ import {
     AlertDialogTitle,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogAction,
     AlertDialogCancel,
-} from '@/components/ui'
+    AlertDialogAction,
+} from '@/components/ui/alert-dialog'
+
 import { SearchFilters } from './components/SearchFilters'
 import { HotOffers, type HotOffer } from './components/HotOffers'
 import { ShiftCard } from './components/ShiftCard'
 import { EmptyState } from './components/EmptyState'
-import { ShiftSkeleton } from '@/components/ui/ShiftSkeleton'
+import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
 import { AdvancedFilters, type AdvancedFiltersData } from './components/AdvancedFilters'
 import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
+
 import { useFeedFiltersState } from './hooks/useFeedFiltersState'
 import { useVacanciesInfiniteList } from './hooks/useVacanciesInfiniteList'
 import { buildVacanciesBaseParams } from './utils/queryParams'
@@ -31,13 +34,14 @@ import { useHotOffers } from './hooks/useHotOffers'
 import { useShiftActions } from './hooks/useShiftActions'
 import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
 import { syncFiltersPositionAndSpecializations } from './utils/filterSync'
+
 import type { FeedType } from './types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { Shift } from './types'
 import { vacancyToShift } from '../Feed/utils/mapping'
-import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
+
+import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
-import { setLocalStorageItem } from '@/utils/localStorage'
 
 const FEED_TYPE_OPTIONS: TabOption<FeedType>[] = [
     { id: 'jobs', label: '💼 Вакансии' },
@@ -46,6 +50,7 @@ const FEED_TYPE_OPTIONS: TabOption<FeedType>[] = [
 
 export const FeedPage = () => {
     useUserProfile()
+
     const { toast, hideToast } = useToast()
     const haptics = useHaptics()
 
@@ -68,7 +73,7 @@ export const FeedPage = () => {
         userPosition,
     } = useFeedFiltersState()
 
-    // Проверка флага для переключения на вкладку смен
+    // Переключение на таб "Смены" из внешнего флага
     useEffect(() => {
         const shouldShowShifts = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
         if (shouldShowShifts === 'true' && feedType !== 'shifts') {
@@ -77,44 +82,62 @@ export const FeedPage = () => {
         }
     }, [feedType, setFeedType])
 
-    const { appliedShiftsSet, appliedApplicationsMap, getApplicationId, handleApply, handleCancel, isShiftLoading } =
-        useShiftActions()
+    const {
+        appliedShiftsSet,
+        appliedApplicationsMap,
+        getApplicationId,
+        handleApply,
+        handleCancel,
+        isShiftLoading,
+    } = useShiftActions()
 
     const [alertOpen, setAlertOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
-    const [, setAlertMissingFields] = useState<string[]>([])
+    const [alertMissingFields, setAlertMissingFields] = useState<string[]>([])
 
     const handleApplyWithModal = useCallback(
         async (shiftId: number) => {
             try {
                 await handleApply(shiftId)
             } catch (error: any) {
-                const data = error && typeof error === 'object' && 'data' in error ? error.data : null
+                const data = error && typeof error === 'object' && 'data' in error ? (error as any).data : null
+
                 if (data?.message === 'profile_incomplete') {
                     const missing: string[] = Array.isArray(data.missing_fields) ? data.missing_fields : []
                     setAlertMissingFields(missing)
                     setAlertMessage(
-                        `Профиль неполный: отсутствуют поля — ${missing.length ? missing.join(', ') : 'неизвестные поля'}. Пожалуйста, заполните профиль в настройках.`
+                        `Профиль неполный: отсутствуют поля — ${missing.length ? missing.join(', ') : 'неизвестные поля'
+                        }. Пожалуйста, заполните профиль в настройках.`
                     )
                     setAlertOpen(true)
-                } else {
-                    // на остальные ошибки уже показывается toast в хуке; на всякий случай покажем модал
-                    setAlertMessage('Не удалось отправить заявку. Попробуйте позже.')
-                    setAlertMissingFields([])
-                    setAlertOpen(true)
+                    return
                 }
+
+                setAlertMissingFields([])
+                setAlertMessage('Не удалось отправить заявку. Попробуйте позже.')
+                setAlertOpen(true)
             }
         },
         [handleApply]
     )
 
     const shiftsBaseQuery = useMemo(
-        () => buildVacanciesBaseParams({ activeQuickFilter: quickFilter, advanced: shiftsAdvancedFilters, shiftType: 'replacement' }),
+        () =>
+            buildVacanciesBaseParams({
+                activeQuickFilter: quickFilter,
+                advanced: shiftsAdvancedFilters,
+                shiftType: 'replacement',
+            }),
         [quickFilter, shiftsAdvancedFilters]
     )
 
     const jobsBaseQuery = useMemo(
-        () => buildVacanciesBaseParams({ activeQuickFilter: quickFilter, advanced: jobsAdvancedFilters, shiftType: 'vacancy' }),
+        () =>
+            buildVacanciesBaseParams({
+                activeQuickFilter: quickFilter,
+                advanced: jobsAdvancedFilters,
+                shiftType: 'vacancy',
+            }),
         [quickFilter, jobsAdvancedFilters]
     )
 
@@ -142,7 +165,11 @@ export const FeedPage = () => {
 
     // items уже Shift[]
     const filteredShifts = useMemo(() => {
-        return applyClientQuickFilters({ shifts: activeList.items, quickFilter, userPosition })
+        return applyClientQuickFilters({
+            shifts: activeList.items,
+            quickFilter,
+            userPosition,
+        })
     }, [activeList.items, quickFilter, userPosition])
 
     const shiftsById = useMemo(() => {
@@ -196,7 +223,14 @@ export const FeedPage = () => {
                 setShiftsAdvancedFilters(syncFiltersPositionAndSpecializations(filters, shiftsAdvancedFilters))
             }
         },
-        [setAdvancedFilters, feedType, jobsAdvancedFilters, shiftsAdvancedFilters, setJobsAdvancedFilters, setShiftsAdvancedFilters]
+        [
+            setAdvancedFilters,
+            feedType,
+            jobsAdvancedFilters,
+            shiftsAdvancedFilters,
+            setJobsAdvancedFilters,
+            setShiftsAdvancedFilters,
+        ]
     )
 
     const activeFiltersList = useMemo(() => formatFiltersForDisplay(advancedFilters), [advancedFilters])
@@ -207,7 +241,10 @@ export const FeedPage = () => {
         return hasQuick || hasAdv
     }, [advancedFilters, quickFilter])
 
-    const filteredCount = useMemo(() => (activeList.totalCount < 0 ? 0 : activeList.totalCount), [activeList.totalCount])
+    const filteredCount = useMemo(
+        () => (activeList.totalCount < 0 ? 0 : activeList.totalCount),
+        [activeList.totalCount]
+    )
 
     const selectedVacancy = useMemo(() => {
         if (!selectedShiftId) return null
@@ -224,7 +261,7 @@ export const FeedPage = () => {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            <div className="top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 transition-all border-border/50">
+            <div className="top-0 z-10 border-border/50 bg-background/95 pt-2 backdrop-blur-sm transition-all">
                 <div className="px-4 pb-2">
                     <Tabs options={FEED_TYPE_OPTIONS} activeId={feedType} onChange={setFeedType} />
                 </div>
@@ -246,12 +283,15 @@ export const FeedPage = () => {
                 />
             ) : null}
 
-            <div className="px-4 py-4 space-y-4">
+            <div className="space-y-4 px-4 py-4">
                 {activeList.isInitialLoading ? (
                     <ShiftSkeleton />
                 ) : activeList.error ? (
-                    <div className="text-center py-8 text-destructive">Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}</div>
-                ) : filteredShifts.length === 0 && (activeList.totalCount === 0 || (!activeList.isFetching && activeList.totalCount !== -1)) ? (
+                    <div className="py-8 text-center text-destructive">
+                        Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}
+                    </div>
+                ) : filteredShifts.length === 0 &&
+                    (activeList.totalCount === 0 || (!activeList.isFetching && activeList.totalCount !== -1)) ? (
                     <EmptyState
                         message={
                             quickFilter !== 'all' || advancedFilters
@@ -320,17 +360,29 @@ export const FeedPage = () => {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Ошибка профиля</AlertDialogTitle>
                     </AlertDialogHeader>
-                    <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
+
+                    <AlertDialogDescription>
+                        {alertMessage}
+                        {alertMissingFields.length ? (
+                            <span className="block mt-2 text-xs text-muted-foreground">
+                                missing_fields: {alertMissingFields.join(', ')}
+                            </span>
+                        ) : null}
+                    </AlertDialogDescription>
+
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setAlertOpen(false)}>Закрыть</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => {
                                 setAlertOpen(false)
-                                // Устанавливаем флаг для перехода на профиль с открытием drawer
+
+                                // флаг для ProfilePage, чтобы открыть EditProfileDrawer
                                 setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
-                                // Отправляем событие для переключения таба
+
+                                // переключить таб на "Профиль" (если у тебя навигация слушает это событие)
                                 window.dispatchEvent(new CustomEvent('navigateToProfileEdit'))
-                                // Отправляем событие для открытия drawer (если профиль уже открыт)
+
+                                // если ProfilePage уже открыт — открыть drawer сразу
                                 window.dispatchEvent(new CustomEvent('openProfileEdit'))
                             }}
                         >

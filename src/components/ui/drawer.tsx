@@ -1,22 +1,22 @@
-/**
- * Drawer (Bottom Sheet) — мобильный, лёгкий компонент
- *
- * Правила:
- * - Минималистичная реализация, без сторонних примесей
- * - Полная типизация пропсов
- * - Явные именованные экспорты
- * - Мемоизация для оптимизации производительности
- */
-
 import { memo, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { cn } from '@/utils/cn'
 
-type DrawerProps = {
+export type DrawerProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   children?: React.ReactNode
   preventClose?: boolean
+
+  /**
+   * Новый API: явный отступ снизу (например высота BottomNav)
+   */
+  bottomOffsetPx?: number
+
+  /**
+   * Backward-compat: старый проп.
+   * Если true -> отступ снизу (примерно под BottomNav), если false -> 0.
+   */
   hasBottomNav?: boolean
 }
 
@@ -25,20 +25,17 @@ type OverlayProps = {
   onClick?: () => void
 }
 
-const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
-      className={cn('fixed inset-0 z-50 bg-black/50', className)}
-      onClick={onClick}
-      aria-hidden
-    />
-  )
-})
-
+const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.18 }}
+    className={cn('fixed inset-0 z-50 bg-black/50', className)}
+    onPointerDown={onClick}
+    aria-hidden="true"
+  />
+))
 DrawerOverlay.displayName = 'DrawerOverlay'
 
 type DrawerContentProps = {
@@ -46,20 +43,20 @@ type DrawerContentProps = {
   children?: React.ReactNode
   onOpenChange: (open: boolean) => void
   preventClose?: boolean
-  hasBottomNav?: boolean
+  bottomOffsetPx: number
 }
 
-const DrawerContent = memo(({
+const DrawerContent = memo(function DrawerContent({
   className,
   children,
   onOpenChange,
   preventClose,
-  hasBottomNav = true,
-}: DrawerContentProps) => {
+  bottomOffsetPx,
+}: DrawerContentProps) {
+  const reduceMotion = useReducedMotion()
+
   const handleOverlayClick = useCallback(() => {
-    if (!preventClose) {
-      onOpenChange(false)
-    }
+    if (!preventClose) onOpenChange(false)
   }, [preventClose, onOpenChange])
 
   return (
@@ -69,31 +66,43 @@ const DrawerContent = memo(({
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        transition={reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }}
         className={cn(
-          'fixed inset-x-0 z-50 flex h-auto max-h-[85vh] flex-col overflow-y-auto overscroll-contain rounded-t-2xl border-t border-border bg-background shadow-xl',
-          hasBottomNav ? 'bottom-19' : 'bottom-0',
+          'fixed inset-x-0 z-50 flex max-h-[85vh] flex-col overflow-y-auto overscroll-contain',
+          'rounded-t-2xl border-t border-border bg-background shadow-xl',
           className
         )}
+        style={{ bottom: bottomOffsetPx }}
         role="dialog"
         aria-modal="true"
       >
-        <div className="bg-muted mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full" />
+        <div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
         {children}
       </motion.div>
     </>
   )
 })
 
-DrawerContent.displayName = 'DrawerContent'
-
 let openDrawerCount = 0
 
-function Drawer({ open, onOpenChange, children, preventClose, hasBottomNav = true }: DrawerProps) {
+export const Drawer = ({
+  open,
+  onOpenChange,
+  children,
+  preventClose,
+  bottomOffsetPx,
+  hasBottomNav,
+}: DrawerProps) => {
+  // Backward-compat: если bottomOffsetPx не задан — вычисляем от hasBottomNav
+  const resolvedBottomOffset =
+    typeof bottomOffsetPx === 'number'
+      ? bottomOffsetPx
+      : hasBottomNav
+        ? 76 // подстрой под реальную высоту BottomNav (например 76/88)
+        : 0
+
   useEffect(() => {
-    if (!open || typeof document === 'undefined') {
-      return
-    }
+    if (!open || typeof document === 'undefined') return
 
     const { body } = document
 
@@ -101,23 +110,32 @@ function Drawer({ open, onOpenChange, children, preventClose, hasBottomNav = tru
       body.dataset.drawerOverflow = body.style.overflow
       body.style.overflow = 'hidden'
     }
-
     openDrawerCount += 1
 
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !preventClose) onOpenChange(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+
     return () => {
+      window.removeEventListener('keydown', onKeyDown)
       openDrawerCount = Math.max(0, openDrawerCount - 1)
+
       if (openDrawerCount === 0) {
-        const previousOverflow = body.dataset.drawerOverflow
-        body.style.overflow = previousOverflow ?? ''
+        body.style.overflow = body.dataset.drawerOverflow ?? ''
         delete body.dataset.drawerOverflow
       }
     }
-  }, [open])
+  }, [open, onOpenChange, preventClose])
 
   return (
     <AnimatePresence>
       {open && (
-        <DrawerContent onOpenChange={onOpenChange} preventClose={preventClose} hasBottomNav={hasBottomNav}>
+        <DrawerContent
+          onOpenChange={onOpenChange}
+          preventClose={preventClose}
+          bottomOffsetPx={resolvedBottomOffset}
+        >
           {children}
         </DrawerContent>
       )}
@@ -125,52 +143,23 @@ function Drawer({ open, onOpenChange, children, preventClose, hasBottomNav = tru
   )
 }
 
-function DrawerHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      data-slot="drawer-header"
-      className={cn('flex flex-col gap-1.5 p-4', className)}
-      {...props}
-    />
-  )
+// ----- Subcomponents (чтобы импорты не ломались) -----
+
+export const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  return <div className={cn('flex flex-col gap-1.5 p-4', className)} {...props} />
 }
 
-function DrawerFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      data-slot="drawer-footer"
-      className={cn('mt-auto flex flex-col gap-2 p-4', className)}
-      {...props}
-    />
-  )
+export const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  return <div className={cn('mt-auto flex flex-col gap-2 p-4', className)} {...props} />
 }
 
-function DrawerTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h2
-      data-slot="drawer-title"
-      className={cn('text-foreground font-semibold text-lg', className)}
-      {...props}
-    />
-  )
+export const DrawerTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+  return <h2 className={cn('text-lg font-semibold text-foreground', className)} {...props} />
 }
 
-function DrawerDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p
-      data-slot="drawer-description"
-      className={cn('text-muted-foreground text-sm', className)}
-      {...props}
-    />
-  )
-}
-
-export {
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerTitle,
-  DrawerDescription,
+export const DrawerDescription = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) => {
+  return <p className={cn('text-sm text-muted-foreground', className)} {...props} />
 }

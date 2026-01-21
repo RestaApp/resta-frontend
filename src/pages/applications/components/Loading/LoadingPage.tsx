@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { ChefHat } from 'lucide-react'
-import { LogoWithText } from '@/components/ui/LogoWithText'
+import { LogoWithText } from '@/components/ui/logo-with-text'
 
 export const LoadingPage = memo(function LoadingPage() {
   const logoIcon = (

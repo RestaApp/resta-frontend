@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
-import { ActionButton } from '@/components/ui/ActionButton'
+import { ActionButton } from '@/components/ui/action-button.tsx'
 import type { Shift } from '../types'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
 import { formatMoney, stripMinskPrefix } from '../utils/formatting'

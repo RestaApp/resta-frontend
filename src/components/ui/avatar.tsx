@@ -1,59 +1,42 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/utils/cn'
 
-interface AvatarProps {
-  children: React.ReactNode
-  className?: string
-}
+export const Avatar = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>{children}</div>
+)
 
-export const Avatar = ({ children, className }: AvatarProps) => {
-  return (
-    <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>
-      {children}
-    </div>
-  )
-}
-
-interface AvatarImageProps {
+export const AvatarImage = ({
+  src,
+  alt = '',
+  className,
+  onError,
+}: {
   src?: string | null
   alt?: string
   className?: string
   onError?: () => void
-}
-
-export const AvatarImage = ({ src, alt = '', className, onError }: AvatarImageProps) => {
+}) => {
   const [imgError, setImgError] = useState(false)
 
-  if (!src || imgError) {
-    return null
-  }
+  useEffect(() => {
+    setImgError(false)
+  }, [src])
 
-  const handleError = () => {
-    setImgError(true)
-    if (onError) {
-      onError()
-    }
-  }
+  if (!src || imgError) return null
 
   return (
     <img
       src={src}
       alt={alt}
       className={cn('h-full w-full object-cover', className)}
-      onError={handleError}
+      onError={() => {
+        setImgError(true)
+        onError?.()
+      }}
     />
   )
 }
 
-interface AvatarFallbackProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export const AvatarFallback = ({ children, className }: AvatarFallbackProps) => {
-  return (
-    <div className={cn('flex h-full w-full items-center justify-center rounded-full', className)}>
-      {children}
-    </div>
-  )
-}
+export const AvatarFallback = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <div className={cn('flex h-full w-full items-center justify-center rounded-full', className)}>{children}</div>
+)

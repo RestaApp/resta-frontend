@@ -1,12 +1,10 @@
-import React from 'react'
+import type { ComponentProps } from 'react'
+import { cn } from '@/utils/cn'
 
-interface ActionButtonProps {
-  children: React.ReactNode
+type ActionButtonProps = {
   isLoading?: boolean
   active?: boolean
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-  disabled?: boolean
-  className?: string
+} & Omit<ComponentProps<'button'>, 'type'> & {
   type?: 'button' | 'submit' | 'reset'
 }
 
@@ -14,10 +12,10 @@ export const ActionButton = ({
   children,
   isLoading = false,
   active = false,
-  onClick,
-  disabled = false,
-  className = '',
+  disabled,
+  className,
   type = 'button',
+  ...rest
 }: ActionButtonProps) => {
   const base = 'px-6 py-2 rounded-xl transition-all flex-shrink-0'
 
@@ -30,14 +28,12 @@ export const ActionButton = ({
   return (
     <button
       type={type}
-      onClick={onClick}
       disabled={disabled || isLoading}
-      className={`${base} ${stateClass} ${className}`.trim()}
+      aria-busy={isLoading || undefined}
+      className={cn(base, stateClass, className)}
+      {...rest}
     >
       {children}
     </button>
   )
 }
-
-export default ActionButton
-

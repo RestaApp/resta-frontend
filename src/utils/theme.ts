@@ -3,48 +3,56 @@ import { getLocalStorageItem, setLocalStorageItem } from './localStorage'
 export type Theme = 'light' | 'dark'
 
 export const THEME_KEY = 'resta-theme'
+export const THEME_CHANGE_EVENT = 'theme:change' as const
 
-export const applyTheme = (newTheme: Theme) => {
-  const root = document.documentElement
-  if (newTheme === 'dark') {
-    root.classList.add('dark')
-  } else {
-    root.classList.remove('dark')
-  }
+const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined'
+
+export const applyTheme = (theme: Theme) => {
+  if (!isBrowser()) return
+  document.documentElement.classList.toggle('dark', theme === 'dark')
 }
 
-export const saveTheme = (newTheme: Theme) => {
-  setLocalStorageItem(THEME_KEY, newTheme)
+export const saveTheme = (theme: Theme) => {
+  setLocalStorageItem(THEME_KEY, theme)
 }
 
 export const getSavedTheme = (): Theme | null => {
   const v = getLocalStorageItem(THEME_KEY)
-  if (v === 'dark' || v === 'light') return v
-  return null
+  return v === 'dark' || v === 'light' ? v : null
 }
 
-export const getInitialTheme = (): Theme => {
-  const saved = getSavedTheme()
-  if (saved) return saved
-  const prefersDark =
-    typeof window !== 'undefined' &&
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  return prefersDark ? 'dark' : 'light'
+export const getSystemTheme = (): Theme => {
+  if (!isBrowser() || !window.matchMedia) return 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
+
+export const getInitialTheme = (): Theme => getSavedTheme() ?? getSystemTheme()
 
 export const initTheme = () => {
   const theme = getInitialTheme()
   applyTheme(theme)
+  // опционально: если хочешь, чтобы отсутствие сохранённой темы фиксировалось сразу:
+  // saveTheme(theme)
+}
+
+/**
+ * Установить тему явно: применить + сохранить + оповестить подписчиков
+ */
+export const setTheme = (theme: Theme) => {
+  applyTheme(theme)
+  saveTheme(theme)
+
+  if (!isBrowser()) return
+  window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: theme }))
+}
+
+export const getCurrentTheme = (): Theme => {
+  if (!isBrowser()) return 'light'
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
 }
 
 export const toggleTheme = (): Theme => {
-  const root = document.documentElement
-  const current: Theme = root.classList.contains('dark') ? 'dark' : 'light'
-  const next: Theme = current === 'dark' ? 'light' : 'dark'
-  applyTheme(next)
-  saveTheme(next)
+  const next: Theme = getCurrentTheme() === 'dark' ? 'light' : 'dark'
+  setTheme(next)
   return next
 }
-
-

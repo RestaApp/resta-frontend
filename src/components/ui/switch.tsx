@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 
@@ -10,10 +10,6 @@ interface SwitchProps {
   ariaLabel?: string
 }
 
-/**
- * Универсальный Switch компонент в стиле Resta
- * Использует градиент Resta (фиолетово-розовый) когда включен
- */
 export const Switch = memo(function Switch({
   checked,
   onCheckedChange,
@@ -21,40 +17,45 @@ export const Switch = memo(function Switch({
   className,
   ariaLabel,
 }: SwitchProps) {
+  const toggle = useCallback(() => {
+    if (disabled) return
+    onCheckedChange(!checked)
+  }, [checked, disabled, onCheckedChange])
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (disabled) return
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault()
+        toggle()
+      }
+    },
+    [disabled, toggle]
+  )
+
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? 'Switch'}
       disabled={disabled}
-      onClick={() => !disabled && onCheckedChange(!checked)}
+      onClick={toggle}
+      onKeyDown={onKeyDown}
       className={cn(
-        'relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background',
+        'relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-        checked
-          ? 'focus:ring-purple-500/50'
-          : 'focus:ring-muted-foreground/50',
+        checked ? 'focus-visible:ring-purple-500/50' : 'focus-visible:ring-muted-foreground/50',
         className
       )}
-      style={{
-        background: checked
-          ? 'var(--gradient-primary)'
-          : 'var(--switch-background)',
-      }}
+      style={{ background: checked ? 'var(--gradient-primary)' : 'var(--switch-background)' }}
     >
       <motion.div
         className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"
-        animate={{
-          x: checked ? 28 : 2,
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 30,
-        }}
+        animate={{ x: checked ? 28 : 2 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       />
     </button>
   )
 })
-

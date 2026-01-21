@@ -8,9 +8,11 @@ interface SeparatorProps {
 export const Separator = ({ className, orientation = 'horizontal' }: SeparatorProps) => {
   return (
     <div
+      role="separator"
+      aria-orientation={orientation}
       className={cn(
         'shrink-0 bg-border',
-        orientation === 'horizontal' ? 'h-[1px] w-full' : 'h-full w-[1px]',
+        orientation === 'horizontal' ? 'h-px w-full' : 'h-full w-px',
         className
       )}
     />

@@ -1,22 +1,15 @@
-/**
- * Универсальный компонент карточки для выбора
- * Поддерживает различные варианты отображения: роли (горизонтально) и позиции (вертикально)
- */
-
-import { memo, type ReactNode } from 'react'
-import { motion } from 'motion/react'
+import { memo, useMemo } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { roleCardAnimation, ANIMATION_DELAY_STEP } from '@/constants/animations'
 
 export type CardLayout = 'horizontal' | 'vertical'
 export type ImageType = 'icon' | 'emoji'
 
-interface CardSelectProps {
+type BaseProps = {
   id: string
   title: string
   description?: string
-  image: ReactNode
-  imageType: ImageType
   isSelected: boolean
   index: number
   layout?: CardLayout
@@ -25,52 +18,55 @@ interface CardSelectProps {
   ariaLabel?: string
 }
 
-export const CardSelect = memo(function CardSelect({
-  id,
-  title,
-  description,
-  image,
-  imageType,
-  isSelected,
-  index,
-  layout = 'horizontal',
-  onSelect,
-  className,
-  ariaLabel,
-}: CardSelectProps) {
+type CardSelectProps =
+  | (BaseProps & { imageType: 'emoji'; image: string })
+  | (BaseProps & { imageType: 'icon'; image: React.ReactNode })
+
+export const CardSelect = memo(function CardSelect(props: CardSelectProps) {
+  const reduceMotion = useReducedMotion()
+
+  const {
+    id,
+    title,
+    description,
+    image,
+    imageType,
+    isSelected,
+    index,
+    layout = 'horizontal',
+    onSelect,
+    className,
+    ariaLabel,
+  } = props
+
   const isHorizontal = layout === 'horizontal'
   const isIcon = imageType === 'icon'
 
-  // Default: спокойный серый фон (bg-card)
-  // Selected: акцентный градиент (bg-gradient-glow)
-  const cardStyle = isSelected
-    ? {
+  const cardStyle = useMemo<React.CSSProperties | undefined>(() => {
+    if (!isSelected) return undefined
+    return {
       background: 'var(--gradient-glow)',
       borderColor: 'var(--pink-electric)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
     }
-    : undefined
+  }, [isSelected])
 
-  const iconStyle = isIcon
-    ? {
-      background: 'var(--gradient-primary)',
-    }
-    : undefined
+  const iconStyle = useMemo<React.CSSProperties | undefined>(() => {
+    if (!isIcon) return undefined
+    return { background: 'var(--gradient-primary)' }
+  }, [isIcon])
 
   return (
     <motion.button
+      type="button"
       initial={roleCardAnimation.initial}
       animate={roleCardAnimation.animate}
-      transition={{
-        delay: ANIMATION_DELAY_STEP * index,
-        duration: 0.4,
-      }}
-      /* hover removed for mobile-first app */
-      whileTap={{ scale: 0.97 }}
+      transition={{ delay: ANIMATION_DELAY_STEP * index, duration: 0.4 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.97 }}
       onClick={() => onSelect(id)}
       className={cn(
-        'group relative overflow-hidden rounded-2xl shadow-md transition-all duration-300 w-full p-6 border-2 bg-card backdrop-blur-xl',
+        'group relative w-full overflow-hidden rounded-2xl border-2 bg-card p-6 shadow-md backdrop-blur-xl transition-all duration-300',
         isSelected ? 'shadow-xl scale-[1.02]' : 'border-transparent',
         !isHorizontal && 'flex flex-col items-center gap-3',
         className
@@ -84,18 +80,17 @@ export const CardSelect = memo(function CardSelect({
           <div
             className={cn(
               isIcon
-                ? 'p-3 rounded-xl flex items-center justify-center flex-shrink-0'
+                ? 'flex shrink-0 items-center justify-center rounded-xl p-3'
                 : 'flex items-center justify-center'
             )}
             style={iconStyle}
           >
-            {typeof image === 'string' ? <span className="text-4xl">{image}</span> : image}
+            {imageType === 'emoji' ? <span className="text-4xl">{image}</span> : image}
           </div>
+
           <div className="flex-1 text-left">
-            <h3 className="text-lg mb-1 font-semibold text-foreground">{title}</h3>
-            {description && (
-              <p className="text-sm text-muted-foreground leading-tight">{description}</p>
-            )}
+            <h3 className="mb-1 text-lg font-semibold text-foreground">{title}</h3>
+            {description && <p className="text-sm leading-tight text-muted-foreground">{description}</p>}
           </div>
         </div>
       ) : (
@@ -103,14 +98,14 @@ export const CardSelect = memo(function CardSelect({
           <div
             className={cn(
               isIcon
-                ? 'p-3 rounded-xl flex items-center justify-center flex-shrink-0'
+                ? 'flex shrink-0 items-center justify-center rounded-xl p-3'
                 : 'flex items-center justify-center'
             )}
             style={iconStyle}
           >
-            {typeof image === 'string' ? <span className="text-4xl">{image}</span> : image}
+            {imageType === 'emoji' ? <span className="text-4xl">{image}</span> : image}
           </div>
-          <div className="text-center text-foreground font-medium">{title}</div>
+          <div className="text-center font-medium text-foreground">{title}</div>
         </>
       )}
     </motion.button>

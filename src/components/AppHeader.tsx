@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { AddShiftButton } from '@/pages/Activity/components/AddShiftButton'
 import AddShiftDrawer from '@/pages/Activity/components/AddShiftDrawer'
 import type { Tab } from '@/types'
-import { ThemeToggleCompact } from '@/components/ui/ThemeToggle'
+import { ThemeToggleCompact } from '@/components/ui/theme-toggle-compact'
 
 interface AppHeaderProps {
     greetingName?: string

@@ -2,7 +2,6 @@ import { useMemo, useCallback, useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { User, Calendar, TrendingUp, Settings, HelpCircle, LogOut, Moon, Edit2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { ThemeToggleCompact } from '@/components/ui/ThemeToggle'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import { mapRoleFromApi } from '@/utils/roles'
@@ -16,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, AlertCircle } from 'lucide-react'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { ThemeToggleCompact } from '@/components/ui/theme-toggle-compact'
 
 export const ProfilePage = () => {
     const { userProfile, isLoading: isProfileLoading, refetch } = useUserProfile()

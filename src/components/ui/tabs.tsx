@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'motion/react'
+import { cn } from '@/utils/cn'
 
 export type TabOption<T extends string> = {
   id: T
@@ -33,26 +34,20 @@ export const Tabs = <T extends string>({
     const container = containerRef.current
     if (!el || !container) return
 
-    // left относительно контейнера
-    const containerRect = container.getBoundingClientRect()
-    const elRect = el.getBoundingClientRect()
+    const c = container.getBoundingClientRect()
+    const r = el.getBoundingClientRect()
 
-    setIndicator({
-      left: elRect.left - containerRect.left,
-      width: elRect.width,
-    })
+    setIndicator({ left: r.left - c.left, width: r.width })
   }, [activeId])
 
   useLayoutEffect(() => {
     updateIndicator()
-
     const container = containerRef.current
     if (!container) return
 
-    const ro = new ResizeObserver(() => updateIndicator())
+    const ro = new ResizeObserver(updateIndicator)
     ro.observe(container)
 
-    // наблюдаем и активный таб тоже (на случай динамического текста/иконок)
     const activeEl = tabRefs.current.get(activeId)
     if (activeEl) ro.observe(activeEl)
 
@@ -98,19 +93,18 @@ export const Tabs = <T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       onKeyDown={onKeyDown}
-      className={`relative flex gap-2 p-1 rounded-xl border ${className ?? ''}`}
-      style={{ borderColor: 'var(--border)' }}
+      className={cn('relative flex gap-2 rounded-xl border border-border p-1', className)}
     >
       <motion.div
         aria-hidden="true"
-        className="absolute top-1 bottom-1 rounded-lg"
+        className="absolute bottom-1 top-1 rounded-lg"
         style={{ background: 'var(--gradient-primary)' }}
         initial={false}
         animate={{ left: indicator.left, width: indicator.width }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       />
 
-      {options.map((option) => {
+      {options.map(option => {
         const isActive = option.id === activeId
         const Icon = option.icon
 
@@ -127,18 +121,13 @@ export const Tabs = <T extends string>({
               if (el) tabRefs.current.set(option.id, el)
               else tabRefs.current.delete(option.id)
             }}
-            className="relative z-10 flex-1 py-2 rounded-lg flex items-center justify-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            style={{ color: isActive ? 'white' : 'inherit' }}
+            className={cn(
+              'relative z-10 flex flex-1 items-center justify-center gap-2 rounded-lg py-2',
+              'outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              isActive ? 'text-white' : 'text-foreground'
+            )}
           >
-            {Icon ? (
-              <motion.span
-                aria-hidden="true"
-                animate={{ scale: isActive ? 1.1 : 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Icon className="w-4 h-4" />
-              </motion.span>
-            ) : null}
+            {Icon ? <Icon className="h-4 w-4" aria-hidden="true" /> : null}
             <span className="text-sm font-medium">{option.label}</span>
           </button>
         )
