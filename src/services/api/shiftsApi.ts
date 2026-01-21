@@ -248,8 +248,8 @@ export const shiftsApi = api.injectEndpoints({
         method: 'POST',
         body: Object.assign({ shift_id: id }, data || {}),
       }),
-      // Инвалидируем только список поданных заявок, не весь список смен
-      invalidatesTags: ['AppliedShift'],
+      // Инвалидируем список поданных заявок и список смен (чтобы обновился статус в Feed)
+      invalidatesTags: ['AppliedShift', 'Shift'],
     }),
 
     // Отменить заявку на смену (новый endpoint: удаляем ресурс shift_application по id)
@@ -261,8 +261,8 @@ export const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shift_applications/${id}`,
         method: 'DELETE',
       }),
-      // Инвалидируем список поданных заявок
-      invalidatesTags: ['AppliedShift'],
+      // Инвалидируем список поданных заявок и список смен (чтобы обновился статус в Feed)
+      invalidatesTags: ['AppliedShift', 'Shift'],
     }),
 
     // Принять заявку (только для владельца смены / ресторана)

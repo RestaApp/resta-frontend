@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { formatDate, formatTime } from '@/utils/datetime'
 import { ShiftCard } from '@/features/feed/ui/components/ShiftCard'
 import type { Shift } from '@/features/feed/model/types'
+import { parseApiDateTime, formatDateRU, formatTimeRangeRU } from '@/features/feed/model/utils/formatting'
 
 interface PersonalShiftCardProps {
     shift: VacancyApiItem
@@ -15,8 +15,12 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({ shift, onE
     const handleEdit = useCallback((id: number) => onEdit(id), [onEdit])
     const handleDelete = useCallback((id: number) => onDelete(id), [onDelete])
 
-    const dateText = formatDate(shift.start_time)
-    const timeText = formatTime(shift.start_time, shift.end_time)
+    // Используем parseApiDateTime для корректного парсинга формата API
+    const start = parseApiDateTime(shift.start_time ?? undefined)
+    const end = parseApiDateTime(shift.end_time ?? undefined)
+
+    const dateText = start ? formatDateRU(start) : ''
+    const timeText = start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
 
     const pay = useMemo(() => {
         const v = shift.payment ?? shift.hourly_rate ?? 0

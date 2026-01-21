@@ -8,7 +8,6 @@ import {
   stripMinskPrefix,
 } from '../utils/formatting'
 import type { HotOffer } from '../../ui/components/HotOffers'
-import { formatDate, formatTime } from '@/utils/datetime'
 
 const toNumber = (v?: string | number | null): number => {
   if (v === null || v === undefined) return 0
@@ -94,6 +93,13 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
 
   const pay = v.payment ?? 0
 
+  // Используем parseApiDateTime для корректного парсинга формата API
+  const start = parseApiDateTime(v.start_time ?? undefined)
+  const end = parseApiDateTime(v.end_time ?? undefined)
+
+  const date = start ? formatDateRU(start) : ''
+  const time = start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
+
   return {
     id: v.id,
     logo: restaurant?.[0] ?? '🍽️',
@@ -103,8 +109,8 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     position: v.position ?? 'chef',
     specialization: v.specialization ?? null,
 
-    date: formatDate(v.start_time),
-    time: formatTime(v.start_time, v.end_time),
+    date,
+    time,
 
     pay: toNumber(pay),
     currency: 'BYN',
