@@ -8,6 +8,7 @@ interface BottomNavProps {
   onTabChange: (tab: Tab) => void
   role: UiRole
   layoutId?: string
+  hasIncompleteProfile?: boolean
 }
 
 export const BottomNav = ({
@@ -15,6 +16,7 @@ export const BottomNav = ({
   onTabChange,
   role,
   layoutId = 'bottom-nav-active-tab',
+  hasIncompleteProfile = false,
 }: BottomNavProps) => {
   const tabs = getTabsForRole(role)
   const isEmployee = isEmployeeRole(role)
@@ -61,6 +63,15 @@ export const BottomNav = ({
                     className="absolute -inset-2 -z-10 rounded-full"
                     style={{ background: 'var(--gradient-glow)' }}
                     transition={reduceMotion ? { duration: 0 } : undefined}
+                  />
+                )}
+
+                {/* Индикатор незаполненного профиля на вкладке профиля */}
+                {id === 'profile' && hasIncompleteProfile && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background"
+                    style={{ backgroundColor: 'var(--pink-electric)' }}
+                    aria-label="Требуется заполнить профиль"
                   />
                 )}
               </span>

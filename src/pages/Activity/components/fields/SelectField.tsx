@@ -37,7 +37,7 @@ export const SelectField = ({ label, value, onChange, options, placeholder, disa
                     </option>
                 ))}
             </select>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <ChevronDown className="w-4 h-4" />
             </span>
         </div>

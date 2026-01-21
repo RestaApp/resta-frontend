@@ -3,6 +3,7 @@ import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } fr
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { ChevronDown } from 'lucide-react'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
@@ -260,19 +261,24 @@ export const EditProfileDrawer = ({ open, onOpenChange, onSuccess }: EditProfile
                     {isCitiesLoading ? (
                         <div className="text-sm text-muted-foreground py-2">Загрузка городов...</div>
                     ) : (
-                        <select
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                            disabled={isLoading}
-                            className="w-full h-11 rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50"
-                        >
-                            <option value="">Выберите город</option>
-                            {cities.map((cityName) => (
-                                <option key={cityName} value={cityName}>
-                                    {cityName}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <select
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                disabled={isLoading}
+                                className="w-full h-11 rounded-xl border border-border/50 px-4 pr-10 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 appearance-none"
+                            >
+                                <option value="">Выберите город</option>
+                                {cities.map((cityName) => (
+                                    <option key={cityName} value={cityName}>
+                                        {cityName}
+                                    </option>
+                                ))}
+                            </select>
+                            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                <ChevronDown className="w-4 h-4" />
+                            </span>
+                        </div>
                     )}
                 </div>
             </div>
