@@ -32,7 +32,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
     const [shiftType, setShiftType] = useState<ShiftType>(initialShiftType ?? 'vacancy')
     const [urgent, setUrgent] = useState(false)
     const [position, setPosition] = useState('')
-    const [specialization, setSpecialization] = useState('')
+    const [specializations, setSpecializations] = useState<string[]>([])
     const [submitError, setSubmitError] = useState<string | null>(null)
 
     const timeRangeError = useMemo(() => {
@@ -58,7 +58,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         setShiftType(initialShiftType ?? 'vacancy')
         setUrgent(false)
         setPosition('')
-        setSpecialization('')
+        setSpecializations([])
         setSubmitError(null)
     }, [initialShiftType])
 
@@ -80,7 +80,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
                     shift_type: shiftType,
                     urgent,
                     position,
-                    specialization: specialization || undefined,
+                    specialization: specializations.length > 0 ? specializations.join(',') : undefined,
                 },
             }
 
@@ -137,7 +137,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         shiftType,
         urgent,
         position,
-        specialization,
+        specializations,
         createShift,
         onSave,
         resetForm,
@@ -172,7 +172,9 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
             setShiftType((initialValues.shift_type as ShiftType) ?? initialShiftType ?? 'vacancy')
             setUrgent(!!initialValues.urgent)
             setPosition(initialValues.position || '')
-            setSpecialization(initialValues.specialization || '')
+            // Если specialization - строка с разделителями, разбиваем на массив
+            const specValue = initialValues.specialization || ''
+            setSpecializations(specValue ? specValue.split(',').map(s => s.trim()).filter(Boolean) : [])
         }
     }, [initialValues, initialShiftType])
 
@@ -199,8 +201,8 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         setUrgent,
         position,
         setPosition,
-        specialization,
-        setSpecialization,
+        specializations,
+        setSpecializations,
         submitError,
         isCreating,
         isFormInvalid,

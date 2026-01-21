@@ -4,11 +4,11 @@ import { DatePicker } from '@/components/ui/date-picker'
 import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsApi'
 import { useUserPositions } from '@/hooks/useUserPositions'
 import { useUserSpecializations } from '@/hooks/useUserSpecializations'
-import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { getEmployeePositionLabel } from '@/constants/labels'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/hooks/useToast'
-import { Field, TextField, TextAreaField, SelectField, TimeField, MoneyField, CheckboxField } from './fields'
+import { Field, TextField, TextAreaField, SelectField, MultiSelectSpecializations, TimeField, MoneyField, CheckboxField } from './fields'
 import { useAddShiftForm, type ShiftType } from '../hooks/useAddShiftForm'
 
 type AddShiftDrawerProps = {
@@ -60,8 +60,8 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
         setUrgent,
         position: formPosition,
         setPosition: setFormPosition,
-        specialization,
-        setSpecialization,
+        specializations,
+        setSpecializations,
         submitError,
         isCreating,
         isFormInvalid,
@@ -80,19 +80,15 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
 
     useEffect(() => {
         if (!formPosition) {
-            setSpecialization('')
+            setSpecializations([])
         }
-    }, [formPosition, setSpecialization])
+    }, [formPosition, setSpecializations])
 
     const close = () => onOpenChange(false)
 
     // handleSave provided by hook; when it succeeds we close the drawer
 
     // timeRangeError and isFormInvalid provided by hook
-    const specializationOptions = availableSpecializations.map(spec => ({
-        value: spec,
-        label: getSpecializationLabel(spec),
-    }))
     const shiftTypeOptions: SelectFieldOption[] = [
         { value: 'vacancy', label: 'Вакансия' },
         { value: 'replacement', label: 'Замена' },
@@ -183,20 +179,20 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
 
                 />
 
-                <SelectField
+                <MultiSelectSpecializations
                     label="Специализация"
-                    value={specialization}
-                    onChange={setSpecialization}
-                    options={specializationOptions}
+                    value={specializations}
+                    onChange={setSpecializations}
+                    options={availableSpecializations}
                     placeholder={
                         !formPosition
                             ? 'Сначала выберите позицию'
                             : isSpecializationsLoading
                                 ? 'Загрузка специализаций...'
-                                : 'Без специализации'
+                                : 'Нет доступных специализаций'
                     }
                     disabled={!formPosition}
-                    className="text-muted-foreground"
+                    isLoading={isSpecializationsLoading}
                 />
 
                 <CheckboxField

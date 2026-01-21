@@ -23,7 +23,7 @@ export const ActivityPage = () => {
 
     const { data, isLoading, isError } = useGetMyShiftsQuery()
     const shifts = Array.isArray(data) ? data : (data && (data as any).data ? (data as any).data : [])
-    const { data: appliedData } = useGetAppliedShiftsQuery()
+    const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery()
     const appliedShifts = Array.isArray(appliedData) ? appliedData : (appliedData && (appliedData as any).data ? (appliedData as any).data : [])
     const { deleteShift, isLoading: isDeleting } = useDeleteShift()
     const { showToast } = useToast()
@@ -162,11 +162,11 @@ export const ActivityPage = () => {
             <div className="p-4">
                 {activeTab === 'list' && (
                     <div className="space-y-4">
-                        {isLoading ? (
+                        {(isLoading || isAppliedLoading) ? (
                             <ShiftSkeleton />
                         ) : isError ? (
                             <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
-                        ) : shifts.length === 0 ? (
+                        ) : shifts.length === 0 && appliedShifts.length === 0 ? (
                             <EmptyState message="Смены не найдены" />
                         ) : (
                             <div className="space-y-3">
@@ -182,7 +182,9 @@ export const ActivityPage = () => {
 
                                 {appliedShifts.length > 0 && (
                                     <>
-                                        <div className="text-sm text-muted-foreground mt-4 mb-2">Мои отклики</div>
+                                        {shifts.length > 0 && (
+                                            <div className="text-sm text-muted-foreground mt-4 mb-2">Мои отклики</div>
+                                        )}
                                         <div className="space-y-4">
                                             {appliedShifts.map((shift: any) => (
                                                 <AppliedShiftCard key={shift.id} shift={shift} showToast={(m, t) => showToast(m, t as any)} />

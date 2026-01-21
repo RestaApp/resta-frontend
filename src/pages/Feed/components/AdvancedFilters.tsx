@@ -166,15 +166,15 @@ export const AdvancedFilters = ({
                             stiffness: 300,
                             layout: { duration: 0.25, ease: 'easeInOut' },
                         }}
-                        className="fixed bottom-19 left-0 right-0 bg-card rounded-t-[24px] z-50 flex flex-col"
+                        className="fixed bottom-19 left-0 right-0 bg-card rounded-t-[24px] z-50 flex flex-col max-h-[calc(100vh-4.75rem)]"
                     >
                         {/* Drag Handle */}
-                        <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>
+                        <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0" onClick={onClose}>
                             <div className="w-12 h-1.5 bg-muted rounded-full" />
                         </div>
 
-                        {/* Header */}
-                        <div className="px-5 py-3 flex items-center justify-between border-b border-border/50">
+                        {/* Header - фиксированный */}
+                        <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-card sticky top-0 z-10">
                             <h2 className="text-xl font-bold">Фильтры</h2>
                             <div className="flex items-center gap-2">
                                 {hasActiveFilters && (
@@ -188,7 +188,7 @@ export const AdvancedFilters = ({
                                 )}
                                 <button
                                     onClick={onClose}
-                                    className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors"
+                                    className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
                                     aria-label="Закрыть"
                                 >
                                     <X size={24} />
@@ -199,7 +199,7 @@ export const AdvancedFilters = ({
                         <motion.div
                             layout
                             transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
-                            className="p-5 space-y-8 pb-4 overflow-y-auto flex-1"
+                            className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
                         >
                             {/* 1. Бюджет (Range Slider) */}
                             <div className="space-y-4">
