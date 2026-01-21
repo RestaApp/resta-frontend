@@ -7,7 +7,7 @@ import { motion } from 'motion/react'
 import { SectionHeader } from '@/components/ui/section-header'
 import { LocationField } from './LocationField'
 import { Button } from '@/components/ui/button'
-import { SelectableTagButton } from './SelectableTagButton'
+import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { setupTelegramBackButton } from '@/utils/telegram'
 
 interface FormScreenData {

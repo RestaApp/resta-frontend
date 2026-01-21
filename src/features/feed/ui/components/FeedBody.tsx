@@ -14,10 +14,10 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 
-import { ShiftCard } from './ShiftCard'
-import { EmptyState } from './EmptyState'
+import { ShiftCard } from '@/components/ui/ShiftCard'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { InfiniteScrollTrigger } from './InfiniteScrollTrigger'
-import { ShiftDetailsScreen } from './ShiftDetailsScreen'
+import { ShiftDetailsScreen } from '@/components/ui/ShiftDetailsScreen'
 import { AdvancedFilters, type AdvancedFiltersData } from './AdvancedFilters'
 
 import type { FeedType, Shift } from '../../model/types'

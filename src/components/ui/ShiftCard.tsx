@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
 import { ActionButton } from '@/components/ui/action-button.tsx'
-import type { Shift } from '../../model/types'
+import type { Shift } from '@/features/feed/model/types'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
-import { formatMoney, stripMinskPrefix } from '../../model/utils/formatting'
-import { useCurrentUserId } from '../../model/hooks/useCurrentUserId'
+import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
+import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
 
 type ShiftCardVariant = 'default' | 'iconActions'

@@ -131,7 +131,7 @@ export const RangeSlider = memo(function RangeSlider({
                 <div className="w-full h-1.5 bg-[#E0E0E0] dark:bg-white/20 rounded-full relative overflow-visible">
                     {/* Активный диапазон */}
                     <motion.div
-                        className="absolute top-0 h-full rounded-full"
+                        className="absolute top-0 h-full rounded-full gradient-primary"
                         style={{
                             left: useTransform(minSpring, v => `${((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100}%`),
                             width: useTransform(
@@ -143,32 +143,29 @@ export const RangeSlider = memo(function RangeSlider({
                                     return `${maxPct - minPct}%`
                                 }
                             ),
-                            background: 'var(--gradient-primary)',
                         }}
                     />
                 </div>
 
                 {/* Визуальный бегунок для min */}
                 <motion.div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20 gradient-primary"
                     style={{
                         left: useTransform(minSpring, v => {
                             const percentage = ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100
                             return `calc(${percentage}% - 8px)`
                         }),
-                        background: 'var(--gradient-primary)',
                     }}
                 />
 
                 {/* Визуальный бегунок для max */}
                 <motion.div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20 gradient-primary"
                     style={{
                         left: useTransform(maxSpring, v => {
                             const percentage = ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100
                             return `calc(${percentage}% - 8px)`
                         }),
-                        background: 'var(--gradient-primary)',
                     }}
                 />
 
@@ -213,13 +210,7 @@ export const RangeSlider = memo(function RangeSlider({
                         {ticks.map((tick, index) => (
                             <motion.div
                                 key={index}
-                                className="w-1 h-1.5 rounded-full"
-                                animate={{
-                                    background:
-                                        animatedMin <= tick && tick <= animatedMax
-                                            ? 'var(--gradient-primary)'
-                                            : '#E0E0E0',
-                                }}
+                                className={`w-1 h-1.5 rounded-full ${animatedMin <= tick && tick <= animatedMax ? 'gradient-primary' : 'bg-[#E0E0E0]'}`}
                                 transition={{
                                     duration: 0.3,
                                     ease: 'easeOut',
@@ -238,23 +229,21 @@ export const RangeSlider = memo(function RangeSlider({
             {/* Фон слайдера */}
             <div className="w-full h-1.5 bg-[#E0E0E0] dark:bg-white/20 rounded-full relative overflow-visible">
                 <motion.div
-                    className="absolute top-0 left-0 h-full rounded-full"
+                    className="absolute top-0 left-0 h-full rounded-full gradient-primary"
                     style={{
                         width: useTransform(singleSpring, v => `${((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100}%`),
-                        background: 'var(--gradient-primary)',
                     }}
                 />
             </div>
 
             {/* Визуальный бегунок */}
             <motion.div
-                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20 gradient-primary"
                 style={{
                     left: useTransform(singleSpring, v => {
                         const percentage = ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100
                         return `calc(${percentage}% - 8px)`
                     }),
-                    background: 'var(--gradient-primary)',
                 }}
             />
 
@@ -286,11 +275,7 @@ export const RangeSlider = memo(function RangeSlider({
                     {ticks.map((tick, index) => (
                         <motion.div
                             key={index}
-                            className="w-1 h-1.5 rounded-full"
-                            animate={{
-                                background:
-                                    animatedSingleValue >= tick ? 'var(--gradient-primary)' : '#E0E0E0',
-                            }}
+                            className={`w-1 h-1.5 rounded-full ${animatedSingleValue >= tick ? 'gradient-primary' : 'bg-[#E0E0E0]'}`}
                             transition={{
                                 duration: 0.3,
                                 ease: 'easeOut',

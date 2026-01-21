@@ -1,354 +1,116 @@
-# Правила написания кода для проекта Resta
 
-## Общие принципы
+# Project Context & Role
+You are a Senior Frontend Engineer and Software Architect specializing in React ecosystem (2025 standards).
+You are working on a Telegram Mini App named "Resta".
+Your goal is to write clean, maintainable, scalable, and highly optimized code following SOLID principles.
 
-### SOLID принципы
-- **Single Responsibility**: Каждый компонент, функция, модуль должен отвечать за одну задачу
-- **Open/Closed**: Открыт для расширения, закрыт для модификации
-- **Liskov Substitution**: Подтипы должны быть заменяемы базовыми типами
-- **Interface Segregation**: Много специфичных интерфейсов лучше одного общего
-- **Dependency Inversion**: Зависимости должны быть на абстракциях, а не на конкретных реализациях
+# Tech Stack
+- **Framework:** React 19 (Functional Components, Hooks).
+- **Language:** TypeScript 5.x (Strict Mode).
+- **State Management:** Redux Toolkit (Latest), RTK Query for async data.
+- **Styling:** CSS Modules / Tailwind (adapt based on project setup), responsive, mobile-first.
+- **Build Tool:** Vite.
+- **Platform:** Telegram Mini App (Web App).
 
-### DRY (Don't Repeat Yourself)
-- Избегайте дублирования кода
-- Выносите повторяющуюся логику в переиспользуемые функции/хуки
-- Используйте константы из `constants/` вместо магических значений
+# Core Coding Principles (SOLID & 2025 Standards)
+1.  **Single Responsibility Principle (SRP):** Each component, hook, or slice must have one clear purpose. Break down large components into smaller sub-components.
+2.  **Open/Closed Principle:** Components should be open for extension (via props/composition) but closed for modification.
+3.  **DRY (Don't Repeat Yourself):** Extract reusable logic into custom hooks (`useHookName`) and UI patterns into shared components.
+4.  **Immutability:** Always respect state immutability. Use Redux Toolkit's built-in Immer support.
+5.  **Strict Typing:** NO `any`. All props, state, and API responses must be typed via Interfaces or Types. Use Zod for runtime validation if applicable.
+6.  **Early Returns:** Use early returns to reduce nesting and improve readability.
 
-### KISS (Keep It Simple, Stupid)
-- Пишите простой, понятный код
-- Избегайте преждевременной оптимизации
-- Приоритет читаемости над "умным" кодом
+# React Best Practices
+- **Components:** Use Functional Components with named exports.
+- **Props:** Use Interface for Props definition. Destructure props directly in the function signature.
+- **Hooks:**
+    - Prioritize custom hooks for business logic separation from UI.
+    - Use `useCallback` and `useMemo` judiciously for expensive calculations or reference stability, but don't optimize prematurely.
+- **Rendering:** Avoid unnecessary re-renders. Use `React.memo` only when profiling shows a need.
+- **Effects:** Minimize `useEffect`. Prefer derived state calculation during render or event handlers for side effects.
+- **2025 Features:** Be ready to use the `use` API for data fetching if applicable in the architecture, but stick to RTK Query for global server state.
 
-### YAGNI (You Aren't Gonna Need It)
-- Не добавляйте функциональность "на будущее"
-- Реализуйте только то, что требуется сейчас
+# Redux Toolkit & RTK Query Rules
+- **Structure:** Feature-based slices. Group reducer logic by domain (e.g., `authSlice`, `shiftSlice`).
+- **RTK Query:**
+    - Use `createApi` for all API interactions.
+    - Utilize caching and invalidation tags (`providesTags`, `invalidatesTags`) effectively to avoid manual state updates.
+    - Generate hooks automatically (`useGetShiftsQuery`, `useUpdateProfileMutation`).
+- **Selectors:** Use `createSelector` for memoized state selection. Never access deep state directly in components (e.g., `state.auth.user.id` ❌ -> `selectUserId` ✅).
+- **Async Logic:** Do not use `createAsyncThunk` if RTK Query can handle the request.
 
-## Структура проекта
+# UI/UX & Styling
+- **Mobile First:** Since this is a Telegram Mini App, prioritize mobile layouts and touch interactions.
+- **Feedback:** Always implement loading states (Skeletons) and error handling for async operations.
+- **Accessibility:** Ensure semantic HTML and proper ARIA attributes.
+
+# File Structure & Naming Conventions
+- **Components:** `PascalCase.tsx` (e.g., `ShiftCard.tsx`).
+- **Hooks:** `camelCase.ts` (e.g., `useAuth.ts`).
+- **Slices/API:** `camelCaseSlice.ts`, `camelCaseApi.ts`.
+- **Types:** `PascalCase.types.ts` or inside the feature folder.
+- **Directory Structure:**
 
 ```
+
 src/
-├── components/     # React компоненты
-│   ├── ui/         # Переиспользуемые UI компоненты
-│   └── ...         # Функциональные компоненты
-├── constants/       # Константы (маршруты, роли, анимации)
-├── hooks/          # Кастомные React хуки
-├── types/           # TypeScript типы и интерфейсы
-├── utils/           # Утилитарные функции
-└── pages/           # Страницы (если используются)
+components/      # Shared UI components (Buttons, Inputs)
+features/        # Domain specific modules (Auth, Shifts, Profile)
+components/
+model/         # Slices, Selectors, Types
+api/           # RTK Query endpoints
+hooks/
+app/             # App setup, store configuration, router
+shared/          # Utils, constants, types
+
 ```
 
-## TypeScript правила
+# Example of Code Style
 
-### Типизация
-- **Всегда** используйте типы, избегайте `any`
-- Используйте `type` для примитивных типов и объединений
-- Используйте `interface` для объектов и компонентов
-- Экспортируйте типы из `types/index.ts`
-- Используйте `readonly` для неизменяемых массивов/объектов
+## Component
+```tsx
+import { memo } from 'react';
+import { useGetShiftQuery } from '@/features/shifts/api/shiftsApi';
+import { ShiftCard } from '@/features/shifts/components/ShiftCard';
+import { Skeleton } from '@/shared/ui/Skeleton';
 
-```typescript
-// ✅ Правильно
-type UserRole = 'chef' | 'waiter' | 'bartender'
-interface User {
-  readonly id: string
-  name: string
+interface ShiftListProps {
+status: 'active' | 'archived';
 }
 
-// ❌ Неправильно
-const role: any = 'chef'
-const user = { id: '1', name: 'John' }
+export const ShiftList = memo(({ status }: ShiftListProps) => {
+const { data: shifts, isLoading, isError } = useGetShiftQuery(status);
+
+if (isLoading) return <Skeleton count={3} />;
+if (isError) return <div>Error loading shifts</div>;
+if (!shifts?.length) return <div>No shifts found</div>;
+
+return (
+  <div className="flex flex-col gap-4">
+    {shifts.map((shift) => (
+      <ShiftCard key={shift.id} {...shift} />
+    ))}
+  </div>
+);
+});
+
 ```
 
-### Именование типов
-- Интерфейсы: `PascalCase` (например, `UserProfile`)
-- Типы: `PascalCase` (например, `UserRole`)
-- Props интерфейсы: `ComponentNameProps` (например, `ButtonProps`)
+## RTK Query Endpoint
 
-## React правила
+```ts
+build.query<Shift[], string>({
+  query: (status) => `/shifts?status=${status}`,
+  providesTags: (result) =>
+    result
+      ? [...result.map(({ id }) => ({ type: 'Shifts' as const, id })), 'Shifts']
+      : ['Shifts'],
+});
 
-### Компоненты
-- Используйте функциональные компоненты
-- Именуйте компоненты в `PascalCase`
-- Один компонент = один файл
-- Файл компонента должен иметь то же имя, что и компонент
-
-```typescript
-// ✅ Правильно: Button.tsx
-export function Button({ children, onClick }: ButtonProps) {
-  return <button onClick={onClick}>{children}</button>
-}
-
-// ❌ Неправильно: button.tsx или buttonComponent.tsx
 ```
 
-### Props
-- Всегда типизируйте props через интерфейс
-- Используйте деструктуризацию для props
-- Неиспользуемые props помечайте через `void props` или удаляйте
+# Instruction for AI
 
-```typescript
-// ✅ Правильно
-interface ButtonProps {
-  children: React.ReactNode
-  onClick: () => void
-  variant?: 'primary' | 'secondary'
-}
+When asked to write code, always check these rules first. If the user asks for a feature, plan the folder structure, data model, and API endpoints before writing the React component. Use TypeScript strictly.
 
-export function Button({ children, onClick, variant = 'primary' }: ButtonProps) {
-  // ...
-}
 ```
-
-### Хуки
-- Используйте кастомные хуки для переиспользуемой логики
-- Именуйте хуки с префиксом `use` (например, `useRole`, `useNavigation`)
-- Храните хуки в `hooks/`
-- Один хук = одна ответственность
-
-```typescript
-// ✅ Правильно: hooks/useRole.ts
-export function useRole() {
-  const [role, setRole] = useState<UserRole | null>(null)
-  // ...
-  return { role, setRole }
-}
-```
-
-### State Management
-- Используйте `useState` для локального состояния
-- Используйте `useCallback` для мемоизации функций, передаваемых в дочерние компоненты
-- Используйте `useMemo` только при необходимости оптимизации
-- Избегайте избыточной мемоизации
-
-### Условный рендеринг
-- Используйте ранний возврат для условий
-- Избегайте вложенных тернарных операторов (максимум 2 уровня)
-
-```typescript
-// ✅ Правильно
-if (!user) return null
-if (isLoading) return <Loader />
-return <UserProfile user={user} />
-
-// ❌ Неправильно
-return isLoading ? <Loader /> : user ? <UserProfile user={user} /> : null
-```
-
-## Именование
-
-### Переменные и функции
-- `camelCase` для переменных и функций
-- Имена должны быть описательными
-- Избегайте сокращений (кроме общепринятых: `id`, `url`, `api`)
-
-```typescript
-// ✅ Правильно
-const userName = 'John'
-const handleSubmit = () => {}
-const isUserLoggedIn = true
-
-// ❌ Неправильно
-const un = 'John'
-const hS = () => {}
-const isULI = true
-```
-
-### Константы
-- `UPPER_SNAKE_CASE` для констант
-- Храните в `constants/` директории
-- Группируйте по функциональности
-
-```typescript
-// ✅ Правильно: constants/routes.ts
-export const ROUTES = {
-  HOME: 'home',
-  PROFILE: 'profile',
-} as const
-```
-
-### Компоненты
-- `PascalCase` для компонентов
-- Имена должны быть существительными
-
-## Функции
-
-### Чистые функции
-- Предпочитайте чистые функции (без побочных эффектов)
-- Функция должна делать одно дело
-- Максимальная длина функции: 50 строк
-
-```typescript
-// ✅ Правильно
-function calculateTotal(items: Item[]): number {
-  return items.reduce((sum, item) => sum + item.price, 0)
-}
-
-// ❌ Неправильно
-function processOrder(items: Item[]) {
-  let total = 0
-  items.forEach(item => {
-    total += item.price
-    console.log(item.name) // Побочный эффект
-  })
-  return total
-}
-```
-
-### Параметры
-- Максимум 3 параметра, иначе используйте объект
-- Используйте деструктуризацию для объектов
-
-```typescript
-// ✅ Правильно
-function createUser({ name, email, role }: CreateUserParams) {
-  // ...
-}
-
-// ❌ Неправильно
-function createUser(name: string, email: string, role: UserRole, age: number, city: string) {
-  // ...
-}
-```
-
-## Комментарии
-
-### Когда комментировать
-- Объясняйте "почему", а не "что"
-- Комментируйте сложную бизнес-логику
-- Документируйте публичные API
-
-### Когда НЕ комментировать
-- Очевидный код
-- Дублирование того, что уже видно в коде
-
-```typescript
-// ✅ Правильно
-// Используем setTimeout для обхода бага в Safari с focus
-setTimeout(() => inputRef.current?.focus(), 0)
-
-// ❌ Неправильно
-// Устанавливаем значение в state
-setValue(newValue)
-```
-
-## Обработка ошибок
-
-- Всегда обрабатывайте ошибки
-- Используйте try-catch для асинхронных операций
-- Предоставляйте понятные сообщения об ошибках
-
-```typescript
-// ✅ Правильно
-try {
-  const data = await fetchUserData()
-  return data
-} catch (error) {
-  console.error('Ошибка загрузки пользователя:', error)
-  throw new Error('Не удалось загрузить данные пользователя')
-}
-```
-
-## Импорты
-
-### Порядок импортов
-1. React и библиотеки
-2. Внутренние компоненты
-3. Утилиты и хуки
-4. Типы
-5. Константы
-6. Стили
-
-```typescript
-// ✅ Правильно
-import { useState, useCallback } from 'react'
-import { motion } from 'motion/react'
-import { Button } from './ui/button'
-import { useRole } from '../hooks/useRole'
-import type { UserRole } from '../types'
-import { ROUTES } from '../constants/routes'
-```
-
-### Абсолютные vs относительные пути
-- Используйте относительные пути (`../`, `./`)
-- Группируйте импорты по типу
-
-## Стилизация
-
-### Tailwind CSS
-- Используйте Tailwind классы вместо инлайн-стилей
-- Группируйте классы логически
-- Используйте `cn()` для условных классов
-
-```typescript
-// ✅ Правильно
-<div className={cn(
-  'flex items-center gap-4',
-  isActive && 'bg-primary',
-  className
-)}>
-
-// ❌ Неправильно
-<div style={{ display: 'flex', alignItems: 'center' }}>
-```
-
-## Производительность
-
-### Оптимизация
-- Используйте `React.memo` только при необходимости
-- Избегайте создания объектов/функций в render
-- Используйте `useCallback` для функций, передаваемых в дочерние компоненты
-- Используйте `useMemo` для тяжелых вычислений
-
-```typescript
-// ✅ Правильно
-const handleClick = useCallback(() => {
-  // ...
-}, [dependencies])
-
-// ❌ Неправильно
-const handleClick = () => {
-  // Создается новая функция при каждом render
-}
-```
-
-## Тестирование
-
-- Пишите тесты для критичной бизнес-логики
-- Тестируйте поведение, а не реализацию
-- Используйте описательные имена тестов
-
-## Git и коммиты
-
-### Commit messages
-- Используйте понятные сообщения
-- Формат: `тип: описание` (например, `feat: добавить выбор роли`)
-
-Типы:
-- `feat`: новая функциональность
-- `fix`: исправление бага
-- `refactor`: рефакторинг
-- `style`: форматирование
-- `docs`: документация
-- `test`: тесты
-- `chore`: рутинные задачи
-
-## Запрещено
-
-- ❌ Использовать `any` без крайней необходимости
-- ❌ Создавать компоненты больше 300 строк
-- ❌ Использовать `var` (только `const`/`let`)
-- ❌ Оставлять `console.log` в production коде
-- ❌ Коммитить закомментированный код
-- ❌ Использовать магические числа/строки
-- ❌ Создавать глубокую вложенность (максимум 3 уровня)
-
-## Рекомендуется
-
-- ✅ Использовать TypeScript strict mode
-- ✅ Проверять код линтером перед коммитом
-- ✅ Форматировать код через Prettier
-- ✅ Документировать публичные API
-- ✅ Писать самодокументируемый код
-- ✅ Регулярно рефакторить код
-- ✅ Следовать принципам accessibility (a11y)
-

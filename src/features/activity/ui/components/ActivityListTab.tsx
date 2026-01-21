@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
-import { EmptyState } from '@/features/feed/ui/components/EmptyState'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 

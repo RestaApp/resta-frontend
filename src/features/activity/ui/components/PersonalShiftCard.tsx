@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { ShiftCard } from '@/features/feed/ui/components/ShiftCard'
+import { ShiftCard } from '@/components/ui/ShiftCard'
 import type { Shift } from '@/features/feed/model/types'
 import { parseApiDateTime, formatDateRU, formatTimeRangeRU } from '@/features/feed/model/utils/formatting'
 

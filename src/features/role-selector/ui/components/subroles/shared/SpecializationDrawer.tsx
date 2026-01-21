@@ -7,7 +7,7 @@ import { motion } from 'motion/react'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui'
 import { getSpecializationLabel } from '@/constants/labels'
 import { ExperienceField, LocationField, OpenToWorkToggle } from './index'
-import { SelectableTagButton } from '../shared/SelectableTagButton'
+import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import type { EmployeeFormData } from '../../../../model/useEmployeeSubRoleSelector'
 
 interface SpecializationDrawerProps {
@@ -101,10 +101,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
           whileTap={{ scale: 0.98 }}
           onClick={onDone}
           disabled={specializations.length > 0 && selectedSpecializations.length === 0}
-          className="w-full py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            background: 'var(--gradient-primary)',
-          }}
+          className="w-full py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed gradient-primary"
         >
           Готово
         </motion.button>
