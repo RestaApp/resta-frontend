@@ -18,7 +18,12 @@ const VALID_ROLES: readonly UiRole[] = [
 
 export const getStoredRole = (): UiRole | null => {
   const role = getLocalStorageItem(ROLE_STORAGE_KEY)
-  return role && VALID_ROLES.includes(role as UiRole) ? (role as UiRole) : null
+  if (!isUiRole(role)) return null
+  return role
+}
+
+function isUiRole(value: unknown): value is UiRole {
+  return typeof value === 'string' && (VALID_ROLES as readonly string[]).includes(value)
 }
 
 export const setStoredRole = (role: UiRole): void => setLocalStorageItem(ROLE_STORAGE_KEY, role)

@@ -102,7 +102,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
     })
 
     return (
-        <Drawer open={open} onOpenChange={onOpenChange}>
+        <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
             <DrawerHeader>
                 <DrawerTitle>Добавить смену</DrawerTitle>
                 <DrawerDescription>Найдите себе замену.</DrawerDescription>

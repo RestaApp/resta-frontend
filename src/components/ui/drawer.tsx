@@ -12,12 +12,6 @@ export type DrawerProps = {
    * Новый API: явный отступ снизу (например высота BottomNav)
    */
   bottomOffsetPx?: number
-
-  /**
-   * Backward-compat: старый проп.
-   * Если true -> отступ снизу (примерно под BottomNav), если false -> 0.
-   */
-  hasBottomNav?: boolean
 }
 
 type OverlayProps = {
@@ -91,15 +85,8 @@ export const Drawer = ({
   children,
   preventClose,
   bottomOffsetPx,
-  hasBottomNav,
 }: DrawerProps) => {
-  // Backward-compat: если bottomOffsetPx не задан — вычисляем от hasBottomNav
-  const resolvedBottomOffset =
-    typeof bottomOffsetPx === 'number'
-      ? bottomOffsetPx
-      : hasBottomNav
-        ? 76 // подстрой под реальную высоту BottomNav (например 76/88)
-        : 0
+  const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
 
   useEffect(() => {
     if (!open || typeof document === 'undefined') return

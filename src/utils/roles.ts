@@ -1,6 +1,6 @@
 // utils/roles.ts
-import type { ApiRole, UiRole, EmployeeRole } from '@/types'
-import { UI_ROLE_TO_API_ROLE } from '@/types'
+import type { ApiRole, UiRole, EmployeeRole } from '@/shared/types/roles.types'
+import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 
 /**
  * Список позиций сотрудников для проверки и маппинга

@@ -3,6 +3,8 @@ import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } fr
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { RangeSlider } from '@/components/ui'
+import { formatExperienceText } from '@/utils/experience'
 import { ChevronDown } from 'lucide-react'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -124,7 +126,7 @@ export const EditProfileDrawer = ({ open, onOpenChange, onSuccess }: EditProfile
     }
 
     return (
-        <Drawer open={open} onOpenChange={onOpenChange}>
+        <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
             <DrawerHeader>
                 <DrawerTitle>Редактировать профиль</DrawerTitle>
                 <DrawerDescription>Обновите информацию о себе</DrawerDescription>
@@ -201,17 +203,19 @@ export const EditProfileDrawer = ({ open, onOpenChange, onSuccess }: EditProfile
                     <>
                         <div>
                             <label className="block text-sm font-medium mb-2">Опыт работы (лет)</label>
-                            <Input
-                                type="number"
-                                min="0"
-                                max="50"
-                                value={experienceYears}
-                                onChange={(e) => {
-                                    const val = e.target.value
-                                    setExperienceYears(val === '' ? '' : Number(val))
-                                }}
-                                placeholder="Введите опыт работы"
-                                disabled={isLoading}
+                            <div className="mb-3">
+                                <span className="text-lg font-semibold text-gradient">
+                                    {formatExperienceText(typeof experienceYears === 'number' ? experienceYears : 0)}
+                                </span>
+                            </div>
+                            <RangeSlider
+                                min={0}
+                                max={5}
+                                step={1}
+                                value={typeof experienceYears === 'number' ? experienceYears : 0}
+                                onChange={(value) => setExperienceYears(value)}
+                                showTicks={true}
+                                tickCount={5}
                             />
                         </div>
 

@@ -1,113 +1,87 @@
-import { memo, useMemo } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import { memo, useCallback } from 'react'
+import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
-import { roleCardAnimation, ANIMATION_DELAY_STEP } from '@/constants/animations'
 
-export type CardLayout = 'horizontal' | 'vertical'
-export type ImageType = 'icon' | 'emoji'
+type ImageType = 'emoji' | 'icon'
 
-type BaseProps = {
-  id: string
+interface CardSelectBaseProps {
   title: string
   description?: string
-  isSelected: boolean
-  index: number
-  layout?: CardLayout
-  onSelect: (id: string) => void
+  image?: React.ReactNode
+  imageType?: ImageType
+  isSelected?: boolean
+  index?: number
+  layout?: 'horizontal' | 'vertical'
   className?: string
   ariaLabel?: string
 }
 
-type CardSelectProps =
-  | (BaseProps & { imageType: 'emoji'; image: string })
-  | (BaseProps & { imageType: 'icon'; image: React.ReactNode })
+export interface CardSelectProps<TId extends string> extends CardSelectBaseProps {
+  id: TId
+  onSelect: (id: TId) => void
+}
 
-export const CardSelect = memo(function CardSelect(props: CardSelectProps) {
-  const reduceMotion = useReducedMotion()
-
-  const {
-    id,
-    title,
-    description,
-    image,
-    imageType,
-    isSelected,
-    index,
-    layout = 'horizontal',
-    onSelect,
-    className,
-    ariaLabel,
-  } = props
-
-  const isHorizontal = layout === 'horizontal'
-  const isIcon = imageType === 'icon'
-
-  const cardStyle = useMemo<React.CSSProperties | undefined>(() => {
-    if (!isSelected) return undefined
-    return {
-      background: 'var(--gradient-glow)',
-      borderColor: 'var(--pink-electric)',
-      backdropFilter: 'blur(10px)',
-      WebkitBackdropFilter: 'blur(10px)',
-    }
-  }, [isSelected])
-
-  const iconStyle = useMemo<React.CSSProperties | undefined>(() => {
-    if (!isIcon) return undefined
-    return { background: 'var(--gradient-primary)' }
-  }, [isIcon])
+const CardSelectInner = <TId extends string>({
+  id,
+  title,
+  description,
+  image,
+  imageType = 'icon',
+  isSelected = false,
+  layout = 'horizontal',
+  className,
+  ariaLabel,
+  onSelect,
+}: CardSelectProps<TId>) => {
+  const handleClick = useCallback(() => onSelect(id), [id, onSelect])
 
   return (
     <motion.button
       type="button"
-      initial={roleCardAnimation.initial}
-      animate={roleCardAnimation.animate}
-      transition={{ delay: ANIMATION_DELAY_STEP * index, duration: 0.4 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-      onClick={() => onSelect(id)}
+      whileTap={{ scale: 0.98 }}
+      onClick={handleClick}
+      aria-label={ariaLabel ?? title}
+      aria-pressed={isSelected}
       className={cn(
-        'group relative w-full overflow-hidden rounded-2xl border-2 bg-card p-6 shadow-md backdrop-blur-xl transition-all duration-300',
-        isSelected ? 'shadow-xl scale-[1.02]' : 'border-transparent',
-        !isHorizontal && 'flex flex-col items-center gap-3',
+        'w-full rounded-2xl border p-4 text-left transition-all',
+        isSelected ? 'border-transparent shadow-lg' : 'border-border',
+        layout === 'horizontal' ? 'flex items-center gap-4' : 'flex flex-col items-center gap-3',
         className
       )}
-      style={cardStyle}
-      aria-pressed={isSelected}
-      aria-label={ariaLabel || `Выбрать: ${title}`}
+      style={isSelected ? { background: 'var(--gradient-primary)', color: 'white' } : undefined}
     >
-      {isHorizontal ? (
-        <div className="flex items-center gap-4">
-          <div
-            className={cn(
-              isIcon
-                ? 'flex shrink-0 items-center justify-center rounded-xl p-3'
-                : 'flex items-center justify-center'
-            )}
-            style={iconStyle}
-          >
-            {imageType === 'emoji' ? <span className="text-4xl">{image}</span> : image}
-          </div>
-
-          <div className="flex-1 text-left">
-            <h3 className="mb-1 text-lg font-semibold text-foreground">{title}</h3>
-            {description && <p className="text-sm leading-tight text-muted-foreground">{description}</p>}
-          </div>
+      {image ? (
+        <div
+          className={cn(
+            'shrink-0 flex items-center justify-center rounded-2xl',
+            layout === 'horizontal' ? 'h-12 w-12' : 'h-14 w-14',
+            isSelected ? 'bg-white/20' : 'bg-muted/50'
+          )}
+          aria-hidden="true"
+        >
+          {typeof image === 'string' && imageType === 'emoji' ? (
+            <span className="text-2xl leading-none">{image}</span>
+          ) : (
+            image
+          )}
         </div>
-      ) : (
-        <>
-          <div
-            className={cn(
-              isIcon
-                ? 'flex shrink-0 items-center justify-center rounded-xl p-3'
-                : 'flex items-center justify-center'
-            )}
-            style={iconStyle}
-          >
-            {imageType === 'emoji' ? <span className="text-4xl">{image}</span> : image}
+      ) : null}
+
+      <div className={cn(layout === 'horizontal' ? 'min-w-0 flex-1' : 'text-center')}>
+        <div className={cn('font-semibold', isSelected ? 'text-white' : 'text-foreground')}>
+          {title}
+        </div>
+        {description ? (
+          <div className={cn('mt-1 text-sm', isSelected ? 'text-white/80' : 'text-muted-foreground')}>
+            {description}
           </div>
-          <div className="text-center font-medium text-foreground">{title}</div>
-        </>
-      )}
+        ) : null}
+      </div>
     </motion.button>
   )
-})
+}
+
+/**
+ * Важно: memo не ломает generic, если экспортировать так
+ */
+export const CardSelect = memo(CardSelectInner) as typeof CardSelectInner

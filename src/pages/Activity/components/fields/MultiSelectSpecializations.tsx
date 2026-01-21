@@ -1,5 +1,5 @@
 import { Field } from './Field'
-import { SelectableTagButton } from '@/pages/RoleSelector/components/SubRoles/components/SelectableTagButton'
+import { SelectableTagButton } from '@/features/roleSelector/ui/subRoles/shared/SelectableTagButton'
 import { getSpecializationLabel } from '@/constants/labels'
 
 interface MultiSelectSpecializationsProps {

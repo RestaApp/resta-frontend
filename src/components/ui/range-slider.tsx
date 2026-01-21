@@ -1,29 +1,36 @@
-import { memo, useCallback, useMemo } from 'react'
-import { motion, useSpring, useTransform } from 'motion/react'
+import { memo, useCallback, useEffect, useState } from 'react'
+import { motion, useSpring, useMotionValueEvent, useTransform } from 'motion/react'
 import { cn } from '@/utils/cn'
 
 interface RangeSliderProps {
+    /** Минимальное значение */
     min: number
+    /** Максимальное значение */
     max: number
+    /** Текущее значение (для single mode) */
     value?: number
+    /** Диапазон значений [min, max] (для range mode) */
     range?: [number, number]
+    /** Callback при изменении значения (для single mode) */
     onChange?: (value: number) => void
+    /** Callback при изменении диапазона (для range mode) */
     onRangeChange?: (range: [number, number]) => void
+    /** Шаг изменения значения */
     step?: number
+    /** Класс для контейнера */
     className?: string
+    /** Показывать ли засечки (ticks) */
     showTicks?: boolean
-    tickCount?: number // рекомендуй <= 20
+    /** Количество засечек (если showTicks=true) */
+    tickCount?: number
 }
 
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v))
-const toNumber = (v: unknown) => (typeof v === 'number' ? v : Number(v))
-
-const buildTicks = (min: number, max: number, count: number) => {
-    const safe = Math.max(2, Math.min(21, count))
-    const step = (max - min) / (safe - 1)
-    return Array.from({ length: safe }, (_, i) => min + i * step)
-}
-
+/**
+ * Универсальный компонент слайдера для выбора значения или диапазона.
+ * Поддерживает два режима:
+ * - Single mode: выбор одного значения (value + onChange)
+ * - Range mode: выбор диапазона (range + onRangeChange)
+ */
 export const RangeSlider = memo(function RangeSlider({
     min,
     max,
@@ -34,118 +41,191 @@ export const RangeSlider = memo(function RangeSlider({
     step = 1,
     className,
     showTicks = false,
-    tickCount = 11,
+    tickCount,
 }: RangeSliderProps) {
     const isRangeMode = range !== undefined && onRangeChange !== undefined
 
-    const ticks = useMemo(
-        () => (showTicks ? buildTicks(min, max, tickCount) : []),
-        [showTicks, min, max, tickCount]
+    // Single mode
+    const singleValue = value ?? min
+    const singleSpring = useSpring(singleValue, {
+        stiffness: 220,
+        damping: 18,
+        mass: 0.35,
+    })
+    const [animatedSingleValue, setAnimatedSingleValue] = useState(singleValue)
+
+    useEffect(() => {
+        singleSpring.set(singleValue)
+    }, [singleValue, singleSpring])
+
+    useMotionValueEvent(singleSpring, 'change', latest => {
+        setAnimatedSingleValue(Math.round(latest))
+    })
+
+    // Range mode
+    const [rangeMin, rangeMax] = range ?? [min, max]
+    const minSpring = useSpring(rangeMin, {
+        stiffness: 220,
+        damping: 18,
+        mass: 0.35,
+    })
+    const maxSpring = useSpring(rangeMax, {
+        stiffness: 220,
+        damping: 18,
+        mass: 0.35,
+    })
+    const [animatedMin, setAnimatedMin] = useState(rangeMin)
+    const [animatedMax, setAnimatedMax] = useState(rangeMax)
+
+    useEffect(() => {
+        minSpring.set(rangeMin)
+        maxSpring.set(rangeMax)
+    }, [rangeMin, rangeMax, minSpring, maxSpring])
+
+    useMotionValueEvent(minSpring, 'change', latest => {
+        setAnimatedMin(Math.round(latest))
+    })
+    useMotionValueEvent(maxSpring, 'change', latest => {
+        setAnimatedMax(Math.round(latest))
+    })
+
+    const handleSingleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = Number(e.target.value)
+            onChange?.(newValue)
+        },
+        [onChange]
     )
 
+    const handleMinChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newMin = Number(e.target.value)
+            // Ограничиваем, чтобы min не превышал max
+            const clampedMin = Math.min(newMin, rangeMax)
+            onRangeChange?.([clampedMin, rangeMax])
+        },
+        [rangeMax, onRangeChange]
+    )
+
+    const handleMaxChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newMax = Number(e.target.value)
+            // Ограничиваем, чтобы max не был меньше min
+            const clampedMax = Math.max(newMax, rangeMin)
+            onRangeChange?.([rangeMin, clampedMax])
+        },
+        [rangeMin, onRangeChange]
+    )
+
+    const ticks = showTicks
+        ? Array.from({ length: (tickCount ?? max - min) + 1 }, (_, i) => min + i * ((max - min) / (tickCount ?? max - min)))
+        : []
+
     if (isRangeMode) {
-        const [rMin, rMax] = range
-        const minSpring = useSpring(clamp(rMin, min, max), { stiffness: 220, damping: 18, mass: 0.35 })
-        const maxSpring = useSpring(clamp(rMax, min, max), { stiffness: 220, damping: 18, mass: 0.35 })
-
-        const leftPct = useTransform(minSpring, (v) => {
-            const n = clamp(toNumber(v), min, max)
-            return `${((n - min) / (max - min)) * 100}%`
-        })
-
-        const widthPct = useTransform([minSpring, maxSpring], ([a, b]) => {
-            const minVal = clamp(toNumber(a), min, max)
-            const maxVal = clamp(toNumber(b), min, max)
-            const minPct = ((minVal - min) / (max - min)) * 100
-            const maxPct = ((maxVal - min) / (max - min)) * 100
-            return `${Math.max(0, maxPct - minPct)}%`
-        })
-
-        const minThumbLeft = useTransform(minSpring, (v) => {
-            const n = clamp(toNumber(v), min, max)
-            const pct = ((n - min) / (max - min)) * 100
-            return `calc(${pct}% - 8px)`
-        })
-
-        const maxThumbLeft = useTransform(maxSpring, (v) => {
-            const n = clamp(toNumber(v), min, max)
-            const pct = ((n - min) / (max - min)) * 100
-            return `calc(${pct}% - 8px)`
-        })
-
-        const handleMin = useCallback(
-            (e: React.ChangeEvent<HTMLInputElement>) => {
-                const nextMin = Number(e.target.value)
-                onRangeChange([Math.min(nextMin, rMax), rMax])
-            },
-            [onRangeChange, rMax]
-        )
-
-        const handleMax = useCallback(
-            (e: React.ChangeEvent<HTMLInputElement>) => {
-                const nextMax = Number(e.target.value)
-                onRangeChange([rMin, Math.max(nextMax, rMin)])
-            },
-            [onRangeChange, rMin]
-        )
-
         return (
-            <div className={cn('relative', className)} style={{ height: 6 }}>
-                <div className="relative h-1.5 w-full rounded-full bg-[#E0E0E0] dark:bg-white/20">
+            <div
+                className={cn('relative', className)}
+                style={{ height: '6px' }}
+            >
+                {/* Фон слайдера */}
+                <div className="w-full h-1.5 bg-[#E0E0E0] dark:bg-white/20 rounded-full relative overflow-visible">
+                    {/* Активный диапазон */}
                     <motion.div
                         className="absolute top-0 h-full rounded-full"
                         style={{
-                            left: leftPct,
-                            width: widthPct,
+                            left: useTransform(minSpring, v => `${((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100}%`),
+                            width: useTransform(
+                                [minSpring, maxSpring],
+                                (values: number[]) => {
+                                    const [minVal, maxVal] = values
+                                    const minPct = ((Math.max(min, Math.min(max, minVal)) - min) / (max - min)) * 100
+                                    const maxPct = ((Math.max(min, Math.min(max, maxVal)) - min) / (max - min)) * 100
+                                    return `${maxPct - minPct}%`
+                                }
+                            ),
                             background: 'var(--gradient-primary)',
                         }}
                     />
                 </div>
 
+                {/* Визуальный бегунок для min */}
                 <motion.div
-                    className="pointer-events-none absolute top-1/2 z-20 h-4 w-4 -translate-y-1/2 rounded-full shadow-lg"
-                    style={{ left: minThumbLeft, background: 'var(--gradient-primary)' }}
-                />
-                <motion.div
-                    className="pointer-events-none absolute top-1/2 z-20 h-4 w-4 -translate-y-1/2 rounded-full shadow-lg"
-                    style={{ left: maxThumbLeft, background: 'var(--gradient-primary)' }}
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
+                    style={{
+                        left: useTransform(minSpring, v => {
+                            const percentage = ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100
+                            return `calc(${percentage}% - 8px)`
+                        }),
+                        background: 'var(--gradient-primary)',
+                    }}
                 />
 
-                {/* Нижний слой */}
+                {/* Визуальный бегунок для max */}
+                <motion.div
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
+                    style={{
+                        left: useTransform(maxSpring, v => {
+                            const percentage = ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100
+                            return `calc(${percentage}% - 8px)`
+                        }),
+                        background: 'var(--gradient-primary)',
+                    }}
+                />
+
+                {/* Input для min - нижний слой, ограничен max */}
                 <input
                     type="range"
                     min={min}
                     max={max}
                     step={step}
-                    value={rMin}
-                    onChange={handleMin}
-                    className="absolute left-0 top-0 z-10 h-6 w-full cursor-pointer opacity-0"
-                    style={{ touchAction: 'none' }}
+                    value={rangeMin}
+                    onChange={handleMinChange}
+                    className="range-slider-input absolute top-1/2 -translate-y-1/2 h-10 opacity-0 cursor-pointer z-20"
+                    style={{
+                        touchAction: 'none',
+                        left: '-8px',
+                        width: 'calc(100% + 16px)',
+                    }}
                 />
-                {/* Верхний слой */}
+
+                {/* Input для max - верхний слой, ограничен min */}
                 <input
                     type="range"
                     min={min}
                     max={max}
                     step={step}
-                    value={rMax}
-                    onChange={handleMax}
-                    className="absolute left-0 top-0 z-20 h-6 w-full cursor-pointer opacity-0"
-                    style={{ touchAction: 'none' }}
+                    value={rangeMax}
+                    onChange={handleMaxChange}
+                    className="range-slider-input absolute top-1/2 -translate-y-1/2 h-10 opacity-0 cursor-pointer z-20"
+                    style={{
+                        touchAction: 'none',
+                        left: '-8px',
+                        width: 'calc(100% + 16px)',
+                    }}
                 />
 
+                {/* Засечки */}
                 {showTicks && ticks.length > 0 && (
-                    <div className="pointer-events-none absolute left-0 right-0 flex justify-between" style={{ top: -2 }}>
-                        {ticks.map((t, i) => {
-                            const active = rMin <= t && t <= rMax
-                            return (
-                                <div
-                                    key={i}
-                                    className="h-1.5 w-1 rounded-full"
-                                    style={{ background: active ? 'var(--gradient-primary)' : '#E0E0E0' }}
-                                />
-                            )
-                        })}
+                    <div
+                        className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none"
+                        style={{ top: '-2px' }}
+                    >
+                        {ticks.map((tick, index) => (
+                            <motion.div
+                                key={index}
+                                className="w-1 h-1.5 rounded-full"
+                                animate={{
+                                    background:
+                                        animatedMin <= tick && tick <= animatedMax
+                                            ? 'var(--gradient-primary)'
+                                            : '#E0E0E0',
+                                }}
+                                transition={{
+                                    duration: 0.3,
+                                    ease: 'easeOut',
+                                }}
+                            />
+                        ))}
                     </div>
                 )}
             </div>
@@ -153,64 +233,73 @@ export const RangeSlider = memo(function RangeSlider({
     }
 
     // Single mode
-    const v = value ?? min
-    const spring = useSpring(clamp(v, min, max), { stiffness: 220, damping: 18, mass: 0.35 })
-
-    const widthPct = useTransform(spring, (x) => {
-        const n = clamp(toNumber(x), min, max)
-        return `${((n - min) / (max - min)) * 100}%`
-    })
-
-    const thumbLeft = useTransform(spring, (x) => {
-        const n = clamp(toNumber(x), min, max)
-        const pct = ((n - min) / (max - min)) * 100
-        return `calc(${pct}% - 8px)`
-    })
-
-    const handleSingle = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(Number(e.target.value)),
-        [onChange]
-    )
-
     return (
-        <div className={cn('relative', className)} style={{ height: 6 }}>
-            <div className="relative h-1.5 w-full rounded-full bg-[#E0E0E0] dark:bg-white/20">
+        <div className={cn('relative', className)} style={{ height: '6px' }}>
+            {/* Фон слайдера */}
+            <div className="w-full h-1.5 bg-[#E0E0E0] dark:bg-white/20 rounded-full relative overflow-visible">
                 <motion.div
-                    className="absolute left-0 top-0 h-full rounded-full"
-                    style={{ width: widthPct, background: 'var(--gradient-primary)' }}
+                    className="absolute top-0 left-0 h-full rounded-full"
+                    style={{
+                        width: useTransform(singleSpring, v => `${((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100}%`),
+                        background: 'var(--gradient-primary)',
+                    }}
                 />
             </div>
 
+            {/* Визуальный бегунок */}
             <motion.div
-                className="pointer-events-none absolute top-1/2 z-20 h-4 w-4 -translate-y-1/2 rounded-full shadow-lg"
-                style={{ left: thumbLeft, background: 'var(--gradient-primary)' }}
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full shadow-lg pointer-events-none z-20"
+                style={{
+                    left: useTransform(singleSpring, v => {
+                        const percentage = ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 100
+                        return `calc(${percentage}% - 8px)`
+                    }),
+                    background: 'var(--gradient-primary)',
+                }}
             />
 
+            {/* Input для управления */}
             <input
                 type="range"
                 min={min}
                 max={max}
                 step={step}
-                value={v}
-                onChange={handleSingle}
-                className="absolute left-0 top-0 z-10 h-6 w-full cursor-pointer opacity-0"
-                style={{ touchAction: 'none' }}
+                value={singleValue}
+                onChange={handleSingleChange}
+                onTouchStart={e => e.stopPropagation()}
+                onTouchMove={e => e.stopPropagation()}
+                onTouchEnd={e => e.stopPropagation()}
+                className="absolute top-1/2 -translate-y-1/2 h-10 opacity-0 cursor-pointer z-10"
+                style={{
+                    touchAction: 'none',
+                    left: '-8px',
+                    width: 'calc(100% + 16px)',
+                }}
             />
 
+            {/* Засечки */}
             {showTicks && ticks.length > 0 && (
-                <div className="pointer-events-none absolute left-0 right-0 flex justify-between" style={{ top: -2 }}>
-                    {ticks.map((t, i) => {
-                        const active = v >= t
-                        return (
-                            <div
-                                key={i}
-                                className="h-1.5 w-1 rounded-full"
-                                style={{ background: active ? 'var(--gradient-primary)' : '#E0E0E0' }}
-                            />
-                        )
-                    })}
+                <div
+                    className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none"
+                    style={{ top: '-2px' }}
+                >
+                    {ticks.map((tick, index) => (
+                        <motion.div
+                            key={index}
+                            className="w-1 h-1.5 rounded-full"
+                            animate={{
+                                background:
+                                    animatedSingleValue >= tick ? 'var(--gradient-primary)' : '#E0E0E0',
+                            }}
+                            transition={{
+                                duration: 0.3,
+                                ease: 'easeOut',
+                            }}
+                        />
+                    ))}
                 </div>
             )}
         </div>
     )
 })
+

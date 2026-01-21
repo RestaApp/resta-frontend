@@ -5,7 +5,7 @@ import { RangeSlider, DatePicker } from '@/components/ui'
 import { useUserPositions } from '@/hooks/useUserPositions'
 import { useUserSpecializations } from '@/hooks/useUserSpecializations'
 import { getSpecializationLabel } from '@/constants/labels'
-import { SelectableTagButton } from '@/pages/RoleSelector/components/SubRoles/components/SelectableTagButton'
+import { SelectableTagButton } from '@/features/roleSelector/ui/subRoles/shared/SelectableTagButton'
 import { useAdvancedFilters } from '../hooks/useAdvancedFilters'
 import { DEFAULT_PRICE_RANGE, DEFAULT_JOBS_PRICE_RANGE } from '@/utils/filters'
 

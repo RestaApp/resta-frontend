@@ -133,7 +133,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     }, [])
 
     return (
-        <Drawer open={isOpen} onOpenChange={onClose}>
+        <Drawer open={isOpen} onOpenChange={onClose} bottomOffsetPx={76}>
             <DrawerHeader className="pb-2">
                 <div className="flex items-center justify-between mb-2">
                     <DrawerTitle className="text-xl">{vacancyTitle}</DrawerTitle>

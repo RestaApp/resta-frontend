@@ -1,36 +1,15 @@
-export type UiRole =
-  | 'chef'
-  | 'waiter'
-  | 'bartender'
-  | 'barista'
-  | 'admin'
-  | 'manager'
-  | 'support'
-  | 'venue'
-  | 'supplier'
+// Реэкспорт типов ролей для обратной совместимости
+export type {
+  UiRole,
+  EmployeeRole,
+  ApiRole,
+  RoleOption,
+  EmployeeSubRole,
+  RoleOptionApi,
+  EmployeeSubRoleApi,
+} from '@/shared/types/roles.types'
 
-export type EmployeeRole =
-  | 'chef'
-  | 'waiter'
-  | 'bartender'
-  | 'barista'
-  | 'admin'
-  | 'manager'
-  | 'support'
-
-export type ApiRole = 'employee' | 'supplier' | 'restaurant' | 'unverified'
-
-export const UI_ROLE_TO_API_ROLE: Record<UiRole, ApiRole> = {
-  chef: 'employee',
-  waiter: 'employee',
-  bartender: 'employee',
-  barista: 'employee',
-  admin: 'employee',
-  manager: 'employee',
-  support: 'employee',
-  supplier: 'supplier',
-  venue: 'restaurant',
-}
+export { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 
 export type Tab =
   | 'home'
@@ -63,37 +42,4 @@ export type Screen =
 export interface NavigationHandler {
   navigate: (destination: Screen) => void
   back: () => void
-}
-
-export interface RoleOption {
-  id: UiRole
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
-  color: string
-}
-
-export interface EmployeeSubRole {
-  id: EmployeeRole
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
-  color: string
-  originalValue?: string
-}
-
-export interface RoleOptionApi {
-  id: UiRole
-  title: string
-  description: string
-  icon_name?: string
-  color: string
-}
-
-export interface EmployeeSubRoleApi {
-  id: EmployeeRole
-  title: string
-  description: string
-  icon_name?: string
-  color: string
 }
