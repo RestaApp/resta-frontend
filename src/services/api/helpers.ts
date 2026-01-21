@@ -4,10 +4,8 @@
  */
 
 import type { EndpointBuilder } from '@reduxjs/toolkit/query/react'
+import type { TagType } from '@/shared/api/rtkQuery'
 
-/**
- * Тип для CustomBaseQuery из конфигурации RTK Query
- */
 /**
  * Конфигурация для catalog endpoints (справочные данные)
  * Справочные данные кешируются дольше, так как они редко меняются
@@ -22,8 +20,7 @@ export const CATALOG_ENDPOINT_CONFIG = {
  * Используется для справочных данных (роли, позиции, специализации и т.д.)
  */
 export function createCatalogQuery<TResponse, TQueryArg = void>(
-  // используем EndpointBuilder из react-пакета — это даёт корректную типизацию endpoints
-  builder: EndpointBuilder<any, 'Catalog' | 'User' | 'Shift' | 'Vacancy' | 'Application' | 'AppliedShift' | 'Notification' | 'Profile' | 'Supplier' | 'Venue' | 'News', 'api'>,
+  builder: EndpointBuilder<any, TagType, 'api'>,
   config: {
     url: string
     method?: 'GET' | 'POST'

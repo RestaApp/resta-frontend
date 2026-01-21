@@ -5,7 +5,11 @@
 import { api } from '@/shared/api/api'
 import { buildQueryParams } from './helpers'
 
-export interface Shift {
+/**
+ * Смена из API (используется для старых endpoints)
+ * @deprecated Используйте VacancyApiItem для новых endpoints
+ */
+export interface ShiftApi {
   id: string
   title: string
   venue: string
@@ -41,9 +45,6 @@ export interface CreateShiftResponse {
 
 /**
  * Параметры запроса для получения вакансий
- */
-/**
- * Параметры запроса для получения вакансий
  * Только параметры, указанные в API документации
  */
 export interface GetVacanciesParams {
@@ -67,11 +68,12 @@ export interface RestaurantProfileApi {
   city?: string
   cuisine_types?: string[]
   format?: string
-  restaurant_format?: string 
+  restaurant_format?: string
 }
 
 /**
  * Пользователь (заведение) из API
+ * Используется в ответах API для вакансий
  */
 export interface UserApi {
   id: number
@@ -181,7 +183,7 @@ export interface CancelApplicationResponse {
 export const shiftsApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить все смены
-    getShifts: builder.query<Shift[], { status?: string; role?: string }>({
+    getShifts: builder.query<ShiftApi[], { status?: string; role?: string }>({
       query: params => ({
         url: '/api/v1/shifts',
         params,
@@ -203,7 +205,7 @@ export const shiftsApi = api.injectEndpoints({
     }),
 
     // Получить смену по ID
-    getShiftById: builder.query<Shift, string>({
+    getShiftById: builder.query<ShiftApi, string>({
       query: id => `/api/v1/shifts/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Shift', id }],
     }),
@@ -219,7 +221,7 @@ export const shiftsApi = api.injectEndpoints({
     }),
 
     // Обновить смену
-    updateShift: builder.mutation<Shift, { id: string; data: Partial<CreateShiftRequest> }>({
+    updateShift: builder.mutation<ShiftApi, { id: string; data: Partial<CreateShiftRequest> }>({
       query: ({ id, data }) => ({
         url: `/api/v1/shifts/${id}`,
         method: 'PATCH',
@@ -292,7 +294,7 @@ export const shiftsApi = api.injectEndpoints({
     }),
     
     // Получить мои смены (список смен текущего пользователя)
-    getMyShifts: builder.query<Shift[], void>({
+    getMyShifts: builder.query<ShiftApi[], void>({
       query: () => ({
         url: '/api/v1/shifts/my_shifts',
         method: 'GET',

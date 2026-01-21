@@ -14,3 +14,6 @@ export type * from './authApi'
 export type * from './shiftsApi'
 export type * from './rolesApi'
 export type * from './usersApi'
+
+// Экспортируем общие типы для переиспользования
+export type { UserApi, RestaurantProfileApi } from './shiftsApi'
