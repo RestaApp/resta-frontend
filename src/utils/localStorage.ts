@@ -5,9 +5,17 @@
 
 /**
  * Проверяет, доступен ли localStorage
+ * Результат мемоизируется для оптимизации
  */
+let localStorageAvailable: boolean | null = null
+
 const isLocalStorageAvailable = (): boolean => {
+  if (localStorageAvailable !== null) {
+    return localStorageAvailable
+  }
+
   if (typeof window === 'undefined') {
+    localStorageAvailable = false
     return false
   }
 
@@ -15,8 +23,10 @@ const isLocalStorageAvailable = (): boolean => {
     const test = '__localStorage_test__'
     localStorage.setItem(test, test)
     localStorage.removeItem(test)
+    localStorageAvailable = true
     return true
   } catch {
+    localStorageAvailable = false
     return false
   }
 }

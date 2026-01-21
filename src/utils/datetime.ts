@@ -1,121 +1,106 @@
 /**
- * Утилиты для работы с датами/временем и форматирования для отображения
+ * Утилиты для работы с датами и временем
  */
 
 /**
- * Нормализует формат даты из API в ISO 8601 для корректного парсинга
- * Преобразует "2026-01-07 09:00:00 +0100" в "2026-01-07T09:00:00+01:00"
+ * Нормализует строку даты из формата API в ISO формат
+ * "2026-01-07 09:00:00 +0100" -> "2026-01-07T09:00:00+01:00"
  */
-export const normalizeDateString = (dateString: string): string => {
-  if (!dateString) return dateString
-  if (dateString.includes('T') && (dateString.includes('+') || dateString.includes('Z') || dateString.includes('-'))) {
-    if (dateString.match(/[+-]\d{2}:\d{2}/)) {
-      return dateString
-    }
-  }
-  let normalized = dateString.trim()
-  normalized = normalized.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})/, '$1T$2')
-  normalized = normalized.replace(/([+-])(\d{2})(\d{2})(\s*)$/, '$1$2:$3$4')
-  return normalized
+export const normalizeDateString = (value: string): string => {
+  if (!value) return value
+  const v = value.trim()
+
+  return v
+    .replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})/, '$1T$2')
+    .replace(/([+-])(\d{2})(\d{2})$/, '$1$2:$3')
+}
+
+export const parseDate = (value?: string): Date | null => {
+  if (!value) return null
+  const d = new Date(normalizeDateString(value))
+  return Number.isNaN(d.getTime()) ? null : d
+}
+
+export const formatDate = (value?: string, locale: string = 'ru-RU'): string => {
+  const d = parseDate(value)
+  if (!d) return 'Дата не указана'
+  return `${d.getDate()} ${d.toLocaleDateString(locale, { month: 'long' })}`
+}
+
+export const formatTimeRange = (start?: string, end?: string, locale: string = 'ru-RU'): string => {
+  const s = parseDate(start)
+  const e = parseDate(end)
+  if (!s && !e) return 'Время не указано'
+
+  const fmt = (d: Date) => d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+
+  if (s && e) return `${fmt(s)} - ${fmt(e)}`
+  if (s) return fmt(s)
+  if (e) return fmt(e)
+  return 'Время не указано'
 }
 
 /**
- * Безопасно парсит строку даты в Date объект
+ * Форматирует время для отображения (алиас для formatTimeRange для обратной совместимости)
  */
-export const parseDate = (dateString?: string): Date | null => {
-  if (!dateString) return null
-  try {
-    const normalized = normalizeDateString(dateString)
-    const date = new Date(normalized)
-    if (!isNaN(date.getTime())) {
-      return date
-    }
-    const fallbackDate = new Date(dateString)
-    if (!isNaN(fallbackDate.getTime())) {
-      return fallbackDate
-    }
-    const match = dateString.trim().match(
-      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.(\d{3}))?(?:\s*(Z|([+-])(\d{2}):?(\d{2})))?$/
-    )
-    if (!match) {
-      return null
-    }
-    const year = Number(match[1])
-    const month = Number(match[2]) - 1
-    const day = Number(match[3])
-    const hour = Number(match[4])
-    const minute = Number(match[5])
-    const second = match[6] ? Number(match[6]) : 0
-    const ms = match[7] ? Number(match[7]) : 0
-    const timezone = match[8]
-    const sign = match[9]
-    const tzHour = match[10] ? Number(match[10]) : 0
-    const tzMin = match[11] ? Number(match[11]) : 0
-    if (timezone === 'Z') {
-      return new Date(Date.UTC(year, month, day, hour, minute, second, ms))
-    }
-    if (sign) {
-      const offsetMinutes = tzHour * 60 + tzMin
-      const utcMs = Date.UTC(year, month, day, hour, minute, second, ms)
-      const offsetMs = offsetMinutes * 60 * 1000
-      return new Date(sign === '+' ? utcMs - offsetMs : utcMs + offsetMs)
-    }
-    return new Date(year, month, day, hour, minute, second, ms)
-  } catch {
-    return null
-  }
+export const formatTime = (start?: string, end?: string, locale: string = 'ru-RU'): string => {
+  return formatTimeRange(start, end, locale)
+}
+
+export const getDurationHoursLabel = (start?: string, end?: string): string => {
+  const s = parseDate(start)
+  const e = parseDate(end)
+  if (!s || !e) return ''
+  const diffMs = e.getTime() - s.getTime()
+  if (diffMs <= 0) return ''
+
+  const hours = diffMs / (1000 * 60 * 60)
+  const rounded = Math.round(hours * 10) / 10
+  return `${rounded} ч.`
 }
 
 /**
- * Форматирует дату для отображения (например: "7 января")
+ * Преобразует строку времени (HH:mm) в количество минут
  */
-export const formatDate = (dateString?: string): string => {
-  if (!dateString) return 'Дата не указана'
-  const date = parseDate(dateString)
-  if (!date) return 'Дата не указана'
-  try {
-    const day = date.getDate()
-    const month = date.toLocaleDateString('ru-RU', { month: 'long' })
-    return `${day} ${month}`
-  } catch {
-    return 'Дата не указана'
-  }
+export const toMinutes = (value: string): number | null => {
+  if (!value) return null
+  const match = value.match(/^(\d{1,2}):(\d{2})$/)
+  if (!match) return null
+
+  const hours = Number(match[1])
+  const minutes = Number(match[2])
+
+  if (hours < 0 || hours > 23) return null
+  if (minutes < 0 || minutes > 59) return null
+
+  return hours * 60 + minutes
 }
 
 /**
- * Форматирует время для отображения (например: "09:00 - 18:00")
+ * Объединяет дату (YYYY-MM-DD) и время (HH:mm) в строку формата для API
+ * @param date - Дата в формате YYYY-MM-DD
+ * @param time - Время в формате HH:mm
+ * @returns Строка в формате "YYYY-MM-DD HH:mm:00" (без часового пояса, сервер добавит)
  */
-export const formatTime = (startTime?: string, endTime?: string): string => {
-  if (!startTime && !endTime) return 'Время не указано'
-  if (startTime && endTime) {
-    const startDate = parseDate(startTime)
-    const endDate = parseDate(endTime)
-    if (!startDate || !endDate) return 'Время не указано'
-    try {
-      const start = startDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-      const end = endDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-      return `${start} - ${end}`
-    } catch {
-      return 'Время не указано'
-    }
+export const buildDateTime = (date: string, time: string): string => {
+  if (!date || !time) {
+    throw new Error('Date and time are required')
   }
-  return startTime || endTime || 'Время не указано'
-}
 
-/**
- * Рассчитывает длительность смены в часах (возвращает строку "X ч.")
- */
-export const getDuration = (start?: string, end?: string): string => {
-  if (!start || !end) return ''
-  const startDate = parseDate(start)
-  const endDate = parseDate(end)
-  if (!startDate || !endDate) return ''
-  try {
-    const diffMs = endDate.getTime() - startDate.getTime()
-    const diffHrs = Math.round(diffMs / (1000 * 60 * 60))
-    return diffHrs > 0 ? `${diffHrs} ч.` : ''
-  } catch {
-    return ''
+  // Проверяем формат даты
+  const dateMatch = date.match(/^(\d{4}-\d{2}-\d{2})$/)
+  if (!dateMatch) {
+    throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD`)
   }
-}
 
+  // Проверяем формат времени
+  const timeMatch = time.match(/^(\d{1,2}):(\d{2})$/)
+  if (!timeMatch) {
+    throw new Error(`Invalid time format: ${time}. Expected HH:mm`)
+  }
+
+  const [, hours, minutes] = timeMatch
+  const paddedHours = hours.padStart(2, '0')
+
+  return `${date} ${paddedHours}:${minutes}:00`
+}

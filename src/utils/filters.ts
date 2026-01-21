@@ -15,17 +15,18 @@ export const isDefaultPriceRange = (priceRange: [number, number]): boolean => {
   return priceRange[0] === DEFAULT_PRICE_RANGE[0] && priceRange[1] === DEFAULT_PRICE_RANGE[1]
 }
 
+import { parseDate } from './datetime'
+
 /**
  * Форматирует дату для отображения в фильтрах
  */
 export const formatFilterDate = (dateStr: string | null | undefined): string => {
   if (!dateStr) return ''
-  try {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })
-  } catch {
-    return dateStr
-  }
+  
+  const date = parseDate(dateStr)
+  if (!date) return dateStr
+  
+  return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })
 }
 
 /**

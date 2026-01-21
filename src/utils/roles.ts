@@ -3,6 +3,11 @@ import type { ApiRole, UiRole, EmployeeRole } from '@/types'
 import { UI_ROLE_TO_API_ROLE } from '@/types'
 
 /**
+ * Список позиций сотрудников для проверки и маппинга
+ */
+const EMPLOYEE_POSITIONS = ['chef', 'waiter', 'bartender', 'barista', 'admin', 'manager', 'support'] as const
+
+/**
  * Нормализация строки роли (из API / legacy)
  */
 export const normalizeRole = (value: unknown): string =>
@@ -24,16 +29,8 @@ export const mapRoleFromApi = (roleString: unknown): ApiRole => {
 
   if (r === 'venue') return 'restaurant'
 
-  const employeePositions = new Set([
-    'chef',
-    'waiter',
-    'bartender',
-    'barista',
-    'admin',
-    'manager',
-    'support',
-  ])
-  if (employeePositions.has(r)) return 'employee'
+  const employeePositionsSet = new Set(EMPLOYEE_POSITIONS)
+  if (employeePositionsSet.has(r as (typeof EMPLOYEE_POSITIONS)[number])) return 'employee'
 
   return 'unverified'
 }
@@ -111,7 +108,7 @@ export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
   if (normalized === 'chef') return 'chef'
   
   // Позиции сотрудников (для обратной совместимости)
-  const employeePositions: Record<string, UiRole> = {
+  const employeePositionsMap: Record<string, UiRole> = {
     waiter: 'waiter',
     bartender: 'bartender',
     barista: 'barista',
@@ -120,7 +117,7 @@ export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
     support: 'support',
   }
   
-  return employeePositions[normalized] || null
+  return employeePositionsMap[normalized] || null
 }
 
 /**
@@ -128,7 +125,7 @@ export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
  */
 export const mapPositionFromApi = (positionValue: string): EmployeeRole | null => {
   const normalized = normalizeRole(positionValue)
-  const employeeRoles: Record<string, EmployeeRole> = {
+  const employeeRolesMap: Record<string, EmployeeRole> = {
     chef: 'chef',
     waiter: 'waiter',
     bartender: 'bartender',
@@ -137,5 +134,5 @@ export const mapPositionFromApi = (positionValue: string): EmployeeRole | null =
     manager: 'manager',
     support: 'support',
   }
-  return employeeRoles[normalized] || null
+  return employeeRolesMap[normalized] || null
 }
