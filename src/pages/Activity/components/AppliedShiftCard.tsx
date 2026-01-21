@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useCallback } from 'react'
-import { ShiftCard } from '@/pages/Feed/components/ShiftCard'
-import { ShiftDetailsScreen } from '@/pages/Feed/components/ShiftDetailsScreen'
+import { ShiftCard } from '@/features/feed/ui/components/ShiftCard'
+import { ShiftDetailsScreen } from '@/features/feed/ui/components/ShiftDetailsScreen'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useCancelApplicationMutation } from '@/services/api/shiftsApi'
-import { mapVacancyToCardShift } from '@/pages/Feed/utils/mapping'
+import { mapVacancyToCardShift } from '@/features/feed/model/utils/mapping'
 
 interface AppliedShiftCardProps {
     shift: VacancyApiItem

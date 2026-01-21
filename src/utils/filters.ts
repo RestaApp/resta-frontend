@@ -2,7 +2,7 @@
  * Утилиты для работы с фильтрами
  */
 
-import type { AdvancedFiltersData } from '@/pages/Feed/components/AdvancedFilters'
+import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
 
 export const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]

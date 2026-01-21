@@ -23,19 +23,20 @@ export const ProfilePage = () => {
     const { showToast } = useToast()
     const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false)
 
-    // Проверка флага для открытия drawer редактирования
+    // Проверка флага для открытия drawer редактирования (legacy поддержка)
     useEffect(() => {
         const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
         if (shouldOpenEdit === 'true') {
             setIsEditDrawerOpen(true)
             removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
         }
+    }, [])
 
-        // Слушаем событие для открытия drawer
+    // Обработка события для открытия drawer (legacy поддержка)
+    useEffect(() => {
         const handleOpenEdit = () => {
             setIsEditDrawerOpen(true)
         }
-
         window.addEventListener('openProfileEdit', handleOpenEdit)
         return () => {
             window.removeEventListener('openProfileEdit', handleOpenEdit)

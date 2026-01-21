@@ -1,7 +1,7 @@
 import { Suspense, lazy, type ComponentType } from 'react'
 import type { Tab, UiRole } from '@/types'
 
-const FeedPage = lazy(() => import('@/pages/Feed/FeedPage').then(m => ({ default: m.FeedPage })))
+const FeedPage = lazy(() => import('@/features/feed/ui/FeedPage').then(m => ({ default: m.FeedPage })))
 const ActivityPage = lazy(() => import('@/pages/Activity/ActivityPage').then(m => ({ default: m.ActivityPage })))
 const ProfilePage = lazy(() => import('@/pages/Profile/ProfilePage').then(m => ({ default: m.ProfilePage })))
 
