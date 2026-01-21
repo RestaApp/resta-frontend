@@ -7,9 +7,10 @@ import { api } from '@/shared/api/api'
 import '@/services/api'
 
 // Импорты редюсеров
-import userReducer from '@/features/telegram/model/userSlice'
-import telegramReducer from '@/features/telegram/model/telegramSlice'
-import catalogReducer from '@/features/telegram/model/catalogSlice'
+import userReducer from '@/features/navigation/model/userSlice'
+import telegramReducer from '@/features/navigation/model/telegramSlice'
+import catalogReducer from '@/features/navigation/model/catalogSlice'
+import navigationReducer from '@/features/navigation/model/navigationSlice'
 
 const createSessionStorage = () => {
   const isServer = typeof window === 'undefined'
@@ -49,6 +50,7 @@ export const store = configureStore({
     user: persistedUserReducer,
     telegram: telegramReducer,
     catalog: catalogReducer,
+    navigation: navigationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -14,9 +14,10 @@ import {
   REGISTER,
 } from 'redux-persist'
 import { api } from './api'
-import userReducer from '@/features/telegram/model/userSlice'
-import telegramReducer from '@/features/telegram/model/telegramSlice'
-import catalogReducer from '@/features/telegram/model/catalogSlice'
+import userReducer from '@/features/navigation/model/userSlice' 
+import telegramReducer from '@/features/navigation/model/telegramSlice'
+import catalogReducer from '@/features/navigation/model/catalogSlice'
+import navigationReducer from '@/features/navigation/model/navigationSlice'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api
@@ -77,6 +78,7 @@ export const store = configureStore({
     user: persistedUserReducer,
     telegram: telegramReducer,
     catalog: catalogReducer,
+    navigation: navigationReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

@@ -1,5 +1,5 @@
 import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from '@/app/store'
+import type { RootState } from '@/store/index'
 
 interface TelegramState {
   initData: string | null

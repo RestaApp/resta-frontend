@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
 import { isEmployeeRole } from '@/utils/roles'
@@ -18,7 +19,7 @@ export const BottomNav = ({
   layoutId = 'bottom-nav-active-tab',
   hasIncompleteProfile = false,
 }: BottomNavProps) => {
-  const tabs = getTabsForRole(role)
+  const tabs = useMemo(() => getTabsForRole(role), [role])
   const isEmployee = isEmployeeRole(role)
   const reduceMotion = useReducedMotion()
 
@@ -33,6 +34,7 @@ export const BottomNav = ({
       <div className="mx-auto flex max-w-2xl items-center justify-around px-4 py-2">
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = activeTab === id
+          const showProfileDot = id === 'profile' && hasIncompleteProfile
 
           return (
             <motion.button
@@ -63,16 +65,19 @@ export const BottomNav = ({
                     className="absolute -inset-2 -z-10 rounded-full"
                     style={{ background: 'var(--gradient-glow)' }}
                     transition={reduceMotion ? { duration: 0 } : undefined}
+                    aria-hidden="true"
                   />
                 )}
 
-                {/* Индикатор незаполненного профиля на вкладке профиля */}
-                {id === 'profile' && hasIncompleteProfile && (
-                  <span
-                    className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background"
-                    style={{ backgroundColor: 'var(--pink-electric)' }}
-                    aria-label="Требуется заполнить профиль"
-                  />
+                {showProfileDot && (
+                  <>
+                    <span
+                      className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background"
+                      style={{ backgroundColor: 'var(--pink-electric)' }}
+                      aria-hidden="true"
+                    />
+                    <span className="sr-only">Требуется заполнить профиль</span>
+                  </>
                 )}
               </span>
 

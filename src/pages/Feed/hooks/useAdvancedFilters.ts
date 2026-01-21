@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useAppDispatch } from '@/store/hooks'
-import { setSelectedPosition as setSelectedPositionAction } from '@/features/telegram/model/catalogSlice'
+import { setSelectedPosition as setSelectedPositionAction } from '@/features/navigation/model/catalogSlice'
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
 import { hasActiveFilters as checkHasActiveFilters } from '@/utils/filters'
 

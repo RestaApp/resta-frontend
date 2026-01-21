@@ -5,8 +5,8 @@
 
 import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { setInitData, setReady } from '@/features/telegram/model/telegramSlice'
-import { selectUserData } from '@/features/telegram/model/userSlice'
+import { setInitData, setReady } from '@/features/navigation/model/telegramSlice'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 import { getTelegramWebApp, isTelegramWebApp } from '@/utils/telegram'
 import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'

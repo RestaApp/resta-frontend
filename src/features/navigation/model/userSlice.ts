@@ -2,7 +2,7 @@ import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolki
 import type { UiRole, ApiRole } from '@/types'
 import type { UserData } from '@/services/api/authApi'
 import { mapRoleFromApi, mapApiRoleToDefaultUiRole, isVerifiedRole } from '@/utils/roles'
-import type { RootState } from '@/app/store'
+import type { RootState } from '@/store/index'
 
 interface UserState {
   userData: (UserData & { role?: ApiRole | string | null }) | null

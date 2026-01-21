@@ -4,7 +4,7 @@
  */
 
 import type { AppDispatch } from '@/store'
-import { setUserData } from '@/features/telegram/model/userSlice'
+import { setUserData } from '@/features/navigation/model/userSlice'
 import type { UserData } from '@/services/api/authApi'
 import { api } from '@/shared/api/api'
 

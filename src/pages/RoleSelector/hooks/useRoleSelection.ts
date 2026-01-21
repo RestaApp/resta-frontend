@@ -4,7 +4,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/telegram/model/userSlice'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useRoles } from '@/hooks/useRoles'
 import { useUserPositions } from '@/hooks/useUserPositions'
 import { useSupplierTypes } from '@/hooks/useSupplierTypes'

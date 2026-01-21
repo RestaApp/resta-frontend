@@ -5,8 +5,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { authService } from '@/services/auth'
 import { useAppSelector } from '@/store/hooks'
-import { clearUserData } from '@/features/telegram/model/userSlice'
-import { selectTelegramIsReady } from '@/features/telegram/model/telegramSlice'
+import { clearUserData } from '@/features/navigation/model/userSlice'
+import { selectTelegramIsReady } from '@/features/navigation/model/telegramSlice'
 import { store } from '@/store'
 
 interface AuthContextValue {

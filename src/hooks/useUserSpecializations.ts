@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useGetUserSpecializationsQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { setSpecializations, selectSpecializationsByPosition } from '@/features/telegram/model/catalogSlice'
+import { setSpecializations, selectSpecializationsByPosition } from '@/features/navigation/model/catalogSlice'
 
 interface UseUserSpecializationsOptions {
   /**

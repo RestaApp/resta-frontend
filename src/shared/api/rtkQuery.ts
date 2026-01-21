@@ -1,7 +1,7 @@
 import { fetchBaseQuery, retry, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { API_BASE_URL } from './config'
 import { authService } from '@/services/auth'
-import { clearUserData } from '@/features/telegram/model/userSlice'
+import { clearUserData } from '@/features/navigation/model/userSlice'
 import { api } from '@/shared/api/api'
 
 export const tagTypes = [
