@@ -1,6 +1,6 @@
-import { FeedHeader } from '../ui/FeedHeader'
-import { FeedHotOffersSection } from '../ui/FeedHotOffersSection'
-import { FeedBody } from '../ui/FeedBody'
+import { FeedHeader } from './components/FeedHeader'
+import { FeedHotOffersSection } from './components/FeedHotOffersSection'
+import { FeedBody } from './components/FeedBody'
 import { useFeedPageModel } from '../model/hooks/useFeedPageModel'
 
 export const FeedPage = () => {

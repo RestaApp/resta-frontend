@@ -9,7 +9,7 @@ import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/hooks/useToast'
 import { Field, TextField, TextAreaField, SelectField, MultiSelectSpecializations, TimeField, MoneyField, CheckboxField } from './fields'
-import { useAddShiftForm, type ShiftType } from '../hooks/useAddShiftForm'
+import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
 
 type AddShiftDrawerProps = {
     open: boolean
@@ -24,6 +24,11 @@ type SelectFieldOption = {
 }
 
 const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
+
+const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
+    { value: 'vacancy', label: 'Вакансия' },
+    { value: 'replacement', label: 'Замена' },
+]
 
 export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = null }: AddShiftDrawerProps) => {
     const { userProfile } = useUserProfile()
@@ -89,10 +94,6 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
     // handleSave provided by hook; when it succeeds we close the drawer
 
     // timeRangeError and isFormInvalid provided by hook
-    const shiftTypeOptions: SelectFieldOption[] = [
-        { value: 'vacancy', label: 'Вакансия' },
-        { value: 'replacement', label: 'Замена' },
-    ]
     const positionsOptions: SelectFieldOption[] = positionsForDisplay.map(item => {
         const value = item.originalValue || item.id
         return {
@@ -159,7 +160,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                         value={shiftType}
                         onChange={(value) => setShiftType(value as ShiftType)}
                         disabled={!!lockedShiftType}
-                        options={shiftTypeOptions}
+                        options={SHIFT_TYPE_OPTIONS}
                         hint={
                             lockedShiftType
                                 ? lockedShiftType === 'vacancy'

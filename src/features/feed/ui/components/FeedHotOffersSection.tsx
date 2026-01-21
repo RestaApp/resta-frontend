@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import { HotOffers, type HotOffer } from './components/HotOffers'
-import type { FeedType } from '../model/types'
+import { HotOffers, type HotOffer } from './HotOffers'
+import type { FeedType } from '../../model/types'
 
 type Props = {
     feedType: FeedType

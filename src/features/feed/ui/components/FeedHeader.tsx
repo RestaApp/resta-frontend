@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Tabs } from '@/components/ui/tabs'
-import { SearchFilters } from './components/SearchFilters'
-import type { FeedType } from '../model/types'
+import { SearchFilters } from './SearchFilters'
+import type { FeedType } from '../../model/types'
 import type { TabOption } from '@/components/ui/tabs'
 
 type Props = {

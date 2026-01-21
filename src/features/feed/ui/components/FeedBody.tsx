@@ -14,14 +14,14 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 
-import { ShiftCard } from './components/ShiftCard'
-import { EmptyState } from './components/EmptyState'
-import { InfiniteScrollTrigger } from './components/InfiniteScrollTrigger'
-import { ShiftDetailsScreen } from './components/ShiftDetailsScreen'
-import { AdvancedFilters, type AdvancedFiltersData } from './components/AdvancedFilters'
+import { ShiftCard } from './ShiftCard'
+import { EmptyState } from './EmptyState'
+import { InfiniteScrollTrigger } from './InfiniteScrollTrigger'
+import { ShiftDetailsScreen } from './ShiftDetailsScreen'
+import { AdvancedFilters, type AdvancedFiltersData } from './AdvancedFilters'
 
-import type { FeedType, Shift } from '../model/types'
-import type { UseVacanciesInfiniteListReturn } from '../model/hooks/useVacanciesInfiniteList'
+import type { FeedType, Shift } from '../../model/types'
+import type { UseVacanciesInfiniteListReturn } from '../../model/hooks/useVacanciesInfiniteList'
 
 type ProfileAlertState = {
     open: boolean

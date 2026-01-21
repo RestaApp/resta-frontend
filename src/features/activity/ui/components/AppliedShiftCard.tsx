@@ -17,10 +17,10 @@ export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showT
     const mappedShift = useMemo(() => mapVacancyToCardShift(shift), [shift])
     const applicationId = mappedShift.applicationId ?? null
 
-    const handleOpenDetails = useCallback((_id: number) => setIsOpen(true), [])
+    const handleOpenDetails = useCallback(() => setIsOpen(true), [])
     const handleCloseDetails = useCallback(() => setIsOpen(false), [])
 
-    const handleCancel = useCallback(async (appId?: number | null) => {
+    const cancel = useCallback(async (appId?: number | null) => {
         if (!appId) return
         try {
             await cancelApplication(appId).unwrap()
@@ -31,9 +31,9 @@ export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showT
     }, [cancelApplication, showToast])
 
     const handleCancelFromDetails = useCallback(async (appId: number | null | undefined) => {
-        await handleCancel(appId ?? applicationId)
+        await cancel(appId ?? applicationId)
         setIsOpen(false)
-    }, [handleCancel, applicationId])
+    }, [cancel, applicationId])
 
     const handleApplyFromDetails = useCallback(async () => {
         showToast('Отклик пока недоступен в этом экране', 'info')
@@ -49,7 +49,7 @@ export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showT
                 applicationStatus={mappedShift.applicationStatus ?? null}
                 onOpenDetails={handleOpenDetails}
                 onApply={() => { }}
-                onCancel={(appId) => handleCancel(appId ?? applicationId)}
+                onCancel={(appId) => cancel(appId ?? applicationId)}
                 isLoading={isCancelling}
                 variant="iconActions"
             />

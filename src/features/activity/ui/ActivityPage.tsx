@@ -1,0 +1,62 @@
+import AddShiftDrawer from '@/features/activity/ui/components/AddShiftDrawer'
+import { useActivityPageModel } from '../model/hooks/useActivityPageModel'
+import { ActivityHeader } from './components/ActivityHeader'
+import { ActivityListTab } from './components/ActivityListTab'
+import { ActivityCalendarTab } from './components/ActivityCalendarTab'
+
+export const ActivityPage = () => {
+  const m = useActivityPageModel()
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <ActivityHeader activeTab={m.activeTab} onChange={m.setActiveTab} />
+
+      <div className="p-4">
+        {m.activeTab === 'list' ? (
+          <div className="space-y-4">
+            <ActivityListTab
+              isLoading={m.isLoading}
+              isAppliedLoading={m.isAppliedLoading}
+              isError={m.isError}
+              shifts={m.shifts}
+              appliedShifts={m.appliedShifts}
+              isDeleting={m.isDeleting}
+              onEdit={m.handleEdit}
+              onDelete={m.handleDelete}
+              showToast={m.showToast}
+            />
+          </div>
+        ) : (
+          <ActivityCalendarTab
+            isLoading={m.isLoading}
+            isError={m.isError}
+            weekDays={m.weekDays}
+            groupedShifts={m.groupedShifts}
+            selectedDay={m.selectedDay}
+            onSelectDay={m.setSelectedDay}
+            selectedDayShifts={m.selectedDayShifts}
+            onEdit={m.handleEdit}
+            onDelete={m.handleDelete}
+            isDeleting={m.isDeleting}
+            showToast={m.showToast}
+            onFindShift={m.handleFindShift}
+          />
+        )}
+      </div>
+
+      <AddShiftDrawer
+        open={m.isDrawerOpen}
+        onOpenChange={(open) => {
+          m.setIsDrawerOpen(open)
+          if (!open) m.setEditingShift(null)
+        }}
+        initialValues={m.editingShift}
+        onSave={(res) => {
+          m.setIsDrawerOpen(false)
+          m.setEditingShift(null)
+          if (res) m.showToast('Смена сохранена', 'success')
+        }}
+      />
+    </div>
+  )
+}
