@@ -2,7 +2,7 @@ import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolki
 import type { UiRole, ApiRole } from '@/types'
 import type { UserData } from '@/services/api/authApi'
 import { mapRoleFromApi, mapApiRoleToDefaultUiRole, isVerifiedRole } from '@/utils/roles'
-import type { RootState } from './index'
+import type { RootState } from '@/app/store'
 
 interface UserState {
   userData: (UserData & { role?: ApiRole | string | null }) | null
@@ -34,7 +34,7 @@ const userSlice = createSlice({
       state.selectedRole = action.payload
     },
 
-    clearUserData: state => {
+    clearUserData: (state) => {
       state.userData = null
       state.selectedRole = null
     },
@@ -46,9 +46,7 @@ export default userSlice.reducer
 
 const selectUserState = (state: RootState) => state.user
 
-export const selectUserData = createSelector([selectUserState], user => user.userData)
-export const selectSelectedRole = createSelector([selectUserState], user => user.selectedRole)
-export const selectUserId = createSelector([selectUserData], userData => userData?.id)
-export const selectUserPosition = createSelector([selectUserData], userData =>
-  userData?.position || userData?.employee_profile?.position || null
-)
+export const selectUserData = createSelector([selectUserState], (s) => s.userData)
+export const selectSelectedRole = createSelector([selectUserState], (s) => s.selectedRole)
+export const selectUserId = createSelector([selectUserData], (u) => u?.id)
+export const selectUserPosition = createSelector([selectUserData], (u) => u?.position || u?.employee_profile?.position || null)

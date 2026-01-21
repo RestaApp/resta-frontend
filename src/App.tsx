@@ -13,7 +13,7 @@ import { useNavigation } from './hooks/useNavigation'
 import { useAuth } from './contexts/AuthContext'
 import type { Screen, UiRole } from './types'
 import { ROUTES } from './constants/routes'
-import { selectUserData } from './store/userSlice'
+import { selectUserData } from '@/features/telegram/model/userSlice'
 
 export const App = () => {
   const { isLoading } = useAuth()

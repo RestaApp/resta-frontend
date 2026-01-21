@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { updateUserDataInStore } from '@/utils/userData'
-import { selectUserData } from '@/store/userSlice'
+import { selectUserData } from '@/features/telegram/model/userSlice'
 
 interface UseUserProfileOptions {
   /**

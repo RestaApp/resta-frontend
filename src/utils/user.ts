@@ -3,7 +3,7 @@
  * Возвращает undefined, если userId недоступен
  */
 import { store } from '@/store'
-import { selectUserId } from '@/store/userSlice'
+import { selectUserId } from '@/features/telegram/model/userSlice'
 
 export function getCurrentUserId(): number | undefined {
   try {

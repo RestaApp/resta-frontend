@@ -3,21 +3,11 @@
  * Устраняют дублирование кода и обеспечивают единообразие
  */
 
-import type { EndpointBuilder, BaseQueryFn } from '@reduxjs/toolkit/query'
-import type { FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/query/react'
-import type { FetchArgs } from '@reduxjs/toolkit/query'
+import type { EndpointBuilder } from '@reduxjs/toolkit/query/react'
 
 /**
  * Тип для CustomBaseQuery из конфигурации RTK Query
  */
-type CustomBaseQuery = BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError,
-  Record<string, unknown>,
-  FetchBaseQueryMeta
->
-
 /**
  * Конфигурация для catalog endpoints (справочные данные)
  * Справочные данные кешируются дольше, так как они редко меняются
@@ -31,11 +21,9 @@ export const CATALOG_ENDPOINT_CONFIG = {
  * Создает стандартный catalog query endpoint
  * Используется для справочных данных (роли, позиции, специализации и т.д.)
  */
-export function createCatalogQuery<
-  TResponse,
-  TQueryArg = void,
->(
-  builder: EndpointBuilder<CustomBaseQuery, 'Catalog' | 'User' | 'Shift' | 'Vacancy' | 'Application' | 'AppliedShift' | 'Notification' | 'Profile' | 'Supplier' | 'Venue' | 'News', 'api'>,
+export function createCatalogQuery<TResponse, TQueryArg = void>(
+  // используем EndpointBuilder из react-пакета — это даёт корректную типизацию endpoints
+  builder: EndpointBuilder<any, 'Catalog' | 'User' | 'Shift' | 'Vacancy' | 'Application' | 'AppliedShift' | 'Notification' | 'Profile' | 'Supplier' | 'Venue' | 'News', 'api'>,
   config: {
     url: string
     method?: 'GET' | 'POST'

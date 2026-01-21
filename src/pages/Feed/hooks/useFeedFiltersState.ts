@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserPosition } from '@/store/userSlice'
+import { selectUserPosition } from '@/features/telegram/model/userSlice'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../components/AdvancedFilters'
 import type { QuickFilter } from '../utils/clientFilters'

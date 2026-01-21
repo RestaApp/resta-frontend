@@ -4,9 +4,9 @@
  */
 
 import type { AppDispatch } from '@/store'
-import { setUserData } from '@/store/userSlice'
+import { setUserData } from '@/features/telegram/model/userSlice'
 import type { UserData } from '@/services/api/authApi'
-import { api } from '@/store/api'
+import { api } from '@/shared/api/api'
 
 /**
  * Обновляет данные пользователя в Redux store

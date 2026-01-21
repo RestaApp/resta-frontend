@@ -14,9 +14,9 @@ import {
   REGISTER,
 } from 'redux-persist'
 import { api } from './api'
-import userReducer from './userSlice'
-import telegramReducer from './telegramSlice'
-import catalogReducer from './catalogSlice'
+import userReducer from '@/features/telegram/model/userSlice'
+import telegramReducer from '@/features/telegram/model/telegramSlice'
+import catalogReducer from '@/features/telegram/model/catalogSlice'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api

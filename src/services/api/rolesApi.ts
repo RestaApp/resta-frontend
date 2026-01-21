@@ -2,7 +2,7 @@
  * API для работы с ролями пользователей
  */
 
-import { api } from '@/store/api'
+import { api } from '@/shared/api/api'
 import { createCatalogQuery } from './helpers'
 
 /**

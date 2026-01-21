@@ -4,7 +4,7 @@
  * Бизнес-логика вынесена в хуки
  */
 
-import { api } from '@/store/api'
+import { api } from '@/shared/api/api'
 import type { UserData } from './authApi'
 import { createCatalogQuery } from './helpers'
 

@@ -3,7 +3,7 @@
  */
 
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { clearUserData, selectUserData, setUserData } from '@/store/userSlice'
+import { clearUserData, selectUserData, setUserData } from '@/features/telegram/model/userSlice'
 import type { UserData } from '@/services/api/authApi'
 
 export const useUser = () => {

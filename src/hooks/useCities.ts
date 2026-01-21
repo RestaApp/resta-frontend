@@ -8,7 +8,7 @@ import { useMemo, useEffect } from 'react'
 import { useGetCitiesQuery } from '@/services/api/usersApi'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectCities, setCities } from '@/store/catalogSlice'
+import { selectCities, setCities } from '@/features/telegram/model/catalogSlice'
 
 interface UseCitiesOptions {
   /**

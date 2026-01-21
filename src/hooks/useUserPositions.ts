@@ -9,7 +9,7 @@ import { useGetUserPositionsQuery } from '@/services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '@/utils/rolesMapper'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectPositions, setPositions } from '@/store/catalogSlice'
+import { selectPositions, setPositions } from '@/features/telegram/model/catalogSlice'
 
 interface UseUserPositionsOptions {
   /**

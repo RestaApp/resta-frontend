@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import type { UiRole } from '@/types'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectSelectedRole, setSelectedRole } from '@/store/userSlice'
+import { selectSelectedRole, setSelectedRole } from '@/features/telegram/model/userSlice'
 
 export const useRole = () => {
   const dispatch = useAppDispatch()
