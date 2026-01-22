@@ -19,7 +19,15 @@ type Props = {
 export const ActivityListTab = memo((props: Props) => {
   const { isLoading, isAppliedLoading, isError, shifts, appliedShifts, isDeleting, onEdit, onDelete, showToast } = props
 
-  if (isLoading || isAppliedLoading) return <ShiftSkeleton />
+  if (isLoading || isAppliedLoading) {
+    return (
+      <div className="space-y-3">
+        <ShiftSkeleton />
+        <ShiftSkeleton />
+        <ShiftSkeleton />
+      </div>
+    )
+  }
   if (isError) return <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
   if (shifts.length === 0 && appliedShifts.length === 0) return <EmptyState message="Смены не найдены" />
 

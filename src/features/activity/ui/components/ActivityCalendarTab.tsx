@@ -40,7 +40,15 @@ export const ActivityCalendarTab = memo((props: Props) => {
     onFindShift,
   } = props
 
-  if (isLoading) return <ShiftSkeleton />
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <ShiftSkeleton />
+        <ShiftSkeleton />
+        <ShiftSkeleton />
+      </div>
+    )
+  }
   if (isError) return <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
 
   return (
