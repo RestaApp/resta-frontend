@@ -1,7 +1,7 @@
 import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
-import { useProfileCompleteness } from '@/hooks/useProfileCompleteness'
+import { useProfileCompleteness } from '@/features/profile/model/utils/profileCompleteness'
 import type { UiRole, Screen } from '@/types'
 import { AppHeader } from '@/components/AppHeader'
 
@@ -15,7 +15,8 @@ interface DashboardProps {
 
 export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) => {
     const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
-    const { hasIncompleteFields } = useProfileCompleteness()
+    const profileCompleteness = useProfileCompleteness()
+    const hasIncompleteFields = !(profileCompleteness?.isFilled)
 
     return (
         <div className="min-h-screen bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>

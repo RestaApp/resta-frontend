@@ -6,6 +6,7 @@ import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
  * Список позиций сотрудников для проверки и маппинга
  */
 const EMPLOYEE_POSITIONS = ['chef', 'waiter', 'bartender', 'barista', 'admin', 'manager', 'support'] as const
+const EMPLOYEE_POSITIONS_SET = new Set(EMPLOYEE_POSITIONS)
 
 /**
  * Нормализация строки роли (из API / legacy)
@@ -29,8 +30,7 @@ export const mapRoleFromApi = (roleString: unknown): ApiRole => {
 
   if (r === 'venue') return 'restaurant'
 
-  const employeePositionsSet = new Set(EMPLOYEE_POSITIONS)
-  if (employeePositionsSet.has(r as (typeof EMPLOYEE_POSITIONS)[number])) return 'employee'
+  if (EMPLOYEE_POSITIONS_SET.has(r as (typeof EMPLOYEE_POSITIONS)[number])) return 'employee'
 
   return 'unverified'
 }
@@ -96,19 +96,14 @@ export const canViewShifts = (role: UiRole | null | undefined): boolean =>
  * Используется при отображении списка доступных ролей
  */
 export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
-  const normalized = roleValue.toLowerCase().trim()
-  
-  // Прямое соответствие
-  if (normalized === 'employee') return 'chef'
-  if (normalized === 'restaurant') return 'venue'
-  if (normalized === 'supplier') return 'supplier'
-  
-  // Legacy значения
-  if (normalized === 'venue') return 'venue'
-  if (normalized === 'chef') return 'chef'
-  
-  // Позиции сотрудников (для обратной совместимости)
-  const employeePositionsMap: Record<string, UiRole> = {
+  const r = normalizeRole(roleValue)
+
+  if (r === 'restaurant' || r === 'venue') return 'venue'
+  if (r === 'supplier') return 'supplier'
+  if (r === 'employee') return 'chef'
+
+  const map: Record<string, UiRole> = {
+    chef: 'chef',
     waiter: 'waiter',
     bartender: 'bartender',
     barista: 'barista',
@@ -116,8 +111,8 @@ export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
     manager: 'manager',
     support: 'support',
   }
-  
-  return employeePositionsMap[normalized] || null
+
+  return map[r] || null
 }
 
 /**

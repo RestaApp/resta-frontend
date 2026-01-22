@@ -294,7 +294,7 @@ export const shiftsApi = api.injectEndpoints({
     }),
     
     // Получить мои смены (список смен текущего пользователя)
-    getMyShifts: builder.query<ShiftApi[], void>({
+    getMyShifts: builder.query<VacanciesResponse, void>({
       query: () => ({
         url: '/api/v1/shifts/my_shifts',
         method: 'GET',

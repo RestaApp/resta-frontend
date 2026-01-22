@@ -3,9 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import { useDeleteShift } from '@/hooks/useShifts'
 import { useToast } from '@/hooks/useToast'
-import { parseDate } from '@/utils/datetime'
+import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 
 export type ActivityTab = 'list' | 'calendar'
 
@@ -15,20 +16,14 @@ export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: RawSh
 
 export type WeekDay = { date: string; short: string; full: string; dateObj: Date }
 
-const normalizeArrayData = (data: unknown): any[] => {
-  if (Array.isArray(data)) return data
-  if (data && typeof data === 'object' && 'data' in (data as any) && Array.isArray((data as any).data)) return (data as any).data
-  return []
-}
-
 export const useActivityPageModel = () => {
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
 
   const { data, isLoading, isError } = useGetMyShiftsQuery()
   const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery()
 
-  const shifts = useMemo(() => normalizeArrayData(data), [data])
-  const appliedShifts = useMemo(() => normalizeArrayData(appliedData), [appliedData])
+  const shifts = useMemo(() => normalizeVacanciesResponse(data), [data])
+  const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedData), [appliedData])
 
   const { deleteShift, isLoading: isDeleting } = useDeleteShift()
   const { showToast } = useToast()
@@ -103,7 +98,7 @@ export const useActivityPageModel = () => {
 
     const add = (shift: any, type: GroupedShift['type']) => {
       if (!shift?.start_time) return
-      const date = parseDate(shift.start_time)
+      const date = parseApiDateTime(shift.start_time)
       if (!date) return
       const dateKey = date.toISOString().split('T')[0]
       ;(grouped[dateKey] ||= []).push({ id: shift.id, type, data: shift })

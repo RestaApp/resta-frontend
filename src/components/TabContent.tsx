@@ -3,7 +3,7 @@ import type { Tab, UiRole } from '@/types'
 
 const FeedPage = lazy(() => import('@/features/feed/ui/FeedPage').then(m => ({ default: m.FeedPage })))
 const ActivityPage = lazy(() => import('@/features/activity/ui/ActivityPage').then(m => ({ default: m.ActivityPage })))
-const ProfilePage = lazy(() => import('@/pages/Profile/ProfilePage').then(m => ({ default: m.ProfilePage })))
+const ProfilePage = lazy(() => import('@/features/profile/ui/ProfilePage').then(m => ({ default: m.ProfilePage })))
 
 const TAB_COMPONENTS: Partial<Record<Tab, ComponentType>> = {
     feed: FeedPage,
