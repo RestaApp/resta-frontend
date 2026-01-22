@@ -20,7 +20,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   onPositionSelect,
 }: PositionSelectionScreenProps) {
   return (
-    <div className="min-h-screen bg-background flex flex-col px-6 py-12">
+    <div className=" bg-background flex flex-col px-6 py-12">
       <SectionHeader
         title="Кем вы работаете?"
         description="Выберите вашу основную позицию"

@@ -3,7 +3,7 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import { useUserSpecializations } from '@/hooks/useUserSpecializations'
+import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { getDrawerTitle } from '@/constants/drawerTitles'
 import { isPromise } from '@/utils/promise'

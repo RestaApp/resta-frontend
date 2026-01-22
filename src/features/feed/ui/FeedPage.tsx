@@ -7,7 +7,7 @@ export const FeedPage = () => {
     const m = useFeedPageModel()
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className=" bg-background">
             <FeedHeader
                 options={m.feedTypeOptions}
                 feedType={m.feedType}

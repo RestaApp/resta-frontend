@@ -3,7 +3,7 @@ import { useAppSelector } from '@/app/hooks'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { Dashboard } from '@/pages/Dashboard'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
-import { useRole } from '@/hooks/useRole'
+import { useRole } from '@/features/navigation/model/hooks/useRole'
 import { useNavigation } from '@/hooks/useNavigation'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Screen, UiRole } from '@/types'
@@ -27,7 +27,7 @@ export const App = () => {
   if (!selectedRole) return <RoleSelector onSelectRole={onSelectRole} />
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className=" bg-background">
       <Dashboard role={selectedRole} onNavigate={navigate} currentScreen={currentScreen} />
     </div>
   )

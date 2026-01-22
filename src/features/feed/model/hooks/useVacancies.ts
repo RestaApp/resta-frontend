@@ -261,3 +261,4 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
     meta: data?.meta,
   }
 }
+

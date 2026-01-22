@@ -8,7 +8,7 @@ export const ActivityPage = () => {
   const m = useActivityPageModel()
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className=" bg-background">
       <ActivityHeader activeTab={m.activeTab} onChange={m.setActiveTab} />
 
       <div className="p-4">

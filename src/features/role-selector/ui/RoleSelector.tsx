@@ -65,7 +65,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
 
   return (
     <>
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className=" bg-background flex flex-col">
         <div className="flex-1 flex flex-col px-6 py-8 overflow-y-auto">
           <SectionHeader title="Кто вы?" description="Выберите вашу роль в экосистеме" className="mb-8" />
 

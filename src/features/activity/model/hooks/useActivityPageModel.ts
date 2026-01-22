@@ -1,7 +1,7 @@
 // src/features/activity/model/hooks/useActivityPageModel.ts
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
-import { useDeleteShift } from '@/hooks/useShifts'
+import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
 import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
 import { setLocalStorageItem } from '@/utils/localStorage'

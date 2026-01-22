@@ -19,7 +19,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
     const hasIncompleteFields = !(profileCompleteness?.isFilled)
 
     return (
-        <div className="min-h-screen bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
+        <div className=" bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
             <AppHeader activeTab={activeTab} />
             <main className="mx-auto max-w-2xl">
                 <TabContent activeTab={activeTab} role={role} />
