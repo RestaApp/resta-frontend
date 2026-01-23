@@ -1,13 +1,11 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
-import { ActionButton } from '@/components/ui/action-button.tsx'
+import { ActionButton } from '@/components/ui/action-button'
 import type { Shift } from '@/features/feed/model/types'
 import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
 import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
-
-type ShiftCardVariant = 'default' | 'iconActions'
 
 interface ShiftCardOwnerActions {
     onEdit: (id: number) => void
@@ -24,7 +22,6 @@ export interface ShiftCardProps {
     onApply: (id: number) => void
     onCancel: (applicationId: number | null | undefined, shiftId: number) => void
     isLoading?: boolean
-    variant?: ShiftCardVariant
     ownerActions?: ShiftCardOwnerActions
 }
 
@@ -167,8 +164,8 @@ const ShiftCardComponent = ({
 
                         {/* Pills row */}
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                            {shift.urgent ? <UrgentPill /> : null}
-                            <StatusPill status={applicationStatus} />
+                        {shift.urgent ? <UrgentPill /> : null}
+                        {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
                         </div>
                     </div>
                 </div>
@@ -229,7 +226,7 @@ const ShiftCardComponent = ({
                         onClick={isApplied ? handleCancelClick : handleApplyClick}
                         disabled={isLoading || (!canApply && !isApplied)}
                     >
-                        {!canApply && !isApplied ? 'Уже откликнулся' : actionLabel}
+                        {actionLabel}
                     </ActionButton>
                 ) : null}
             </div>

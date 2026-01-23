@@ -1,5 +1,6 @@
 import { Field } from './Field'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
+import { Loader } from '@/components/ui/loader'
 import { getSpecializationLabel } from '@/constants/labels'
 
 interface MultiSelectSpecializationsProps {
@@ -36,7 +37,9 @@ export const MultiSelectSpecializations = ({
         <Field label={label} hint={hint}>
             <div className="space-y-3">
                 {isLoading ? (
-                    <div className="text-sm text-muted-foreground py-2">Загрузка специализаций...</div>
+                    <div className="flex items-center gap-2 py-2">
+                        <Loader size="sm" />
+                    </div>
                 ) : options.length === 0 ? (
                     <div className="text-sm text-muted-foreground py-2">
                         {placeholder || 'Нет доступных специализаций'}

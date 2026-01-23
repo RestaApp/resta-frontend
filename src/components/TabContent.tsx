@@ -1,4 +1,5 @@
 import { Suspense, lazy, type ComponentType } from 'react'
+import { Loader } from '@/components/ui/loader'
 import type { Tab, UiRole } from '@/types'
 
 const FeedPage = lazy(() => import('@/features/feed/ui/FeedPage').then(m => ({ default: m.FeedPage })))
@@ -26,7 +27,11 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
     const ComponentToRender = Component as ComponentType
 
     return (
-        <Suspense fallback={<div className="p-4 text-muted-foreground">Загрузка…</div>}>
+        <Suspense fallback={
+            <div className="flex items-center justify-center py-12">
+                <Loader size="lg" />
+            </div>
+        }>
             <ComponentToRender />
         </Suspense>
     )

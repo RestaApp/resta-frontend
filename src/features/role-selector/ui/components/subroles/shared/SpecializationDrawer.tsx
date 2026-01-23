@@ -5,6 +5,7 @@
 import { memo, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui'
+import { Loader } from '@/components/ui/loader'
 import { getSpecializationLabel } from '@/constants/labels'
 import { ExperienceField, LocationField, OpenToWorkToggle } from './index'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
@@ -64,7 +65,9 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
 
       <div className="px-4 pb-4 max-h-[50vh] overflow-y-auto">
         {isLoading ? (
-          <p className="text-muted-foreground text-sm text-center py-4">Загрузка специализаций...</p>
+          <div className="flex items-center justify-center py-8">
+            <Loader size="md" />
+          </div>
         ) : (
           <>
             {specializations.length > 0 ? (

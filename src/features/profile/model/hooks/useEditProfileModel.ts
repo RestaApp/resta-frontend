@@ -63,10 +63,19 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     }
   }, [open, userProfile, apiRole])
 
+  // Состояние для модалки подтверждения сохранения без города
+  const [showCityWarning, setShowCityWarning] = useState(false)
+
   // Обработка сохранения
   const handleSave = useCallback(async () => {
     if (!userProfile?.id) {
       showToast('Ошибка: пользователь не найден', 'error')
+      return
+    }
+
+    // Проверяем, указан ли город
+    if (!formData.city || !formData.city.trim()) {
+      setShowCityWarning(true)
       return
     }
 
@@ -102,6 +111,35 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }, [])
 
+  // Подтверждение сохранения без города
+  const handleSaveWithoutCity = useCallback(async () => {
+    setShowCityWarning(false)
+    if (!userProfile?.id) {
+      showToast('Ошибка: пользователь не найден', 'error')
+      return
+    }
+
+    try {
+      const updateData = buildUpdateUserRequest(formData, apiRole)
+      const result = await updateUser(userProfile.id, updateData)
+
+      if (result.success && result.data) {
+        showToast('Профиль успешно обновлен', 'success')
+        invalidateUserCache(dispatch)
+        setTimeout(() => {
+          refetch().catch(() => {})
+        }, 300)
+        onSuccess?.()
+      } else {
+        const errorMessage = result.errors?.join(', ') || 'Не удалось обновить профиль'
+        showToast(errorMessage, 'error')
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Не удалось обновить профиль'
+      showToast(errorMessage, 'error')
+    }
+  }, [userProfile, formData, apiRole, updateUser, showToast, refetch, onSuccess, dispatch])
+
   return {
     userProfile,
     apiRole,
@@ -111,5 +149,8 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     isLoading,
     handleSave,
     updateField,
+    showCityWarning,
+    setShowCityWarning,
+    handleSaveWithoutCity,
   }
 }

@@ -6,6 +6,7 @@ import { ProfileStats } from './components/ProfileStats'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
+import { Loader } from '@/components/ui/loader'
 
 const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
   if (specializations.length === 0) return null
@@ -67,7 +68,9 @@ export const ProfilePage = memo(() => {
   if (m.isProfileLoading) {
     return (
       <div className="pb-24 pt-6 px-4">
-        <div className="text-center py-8 text-muted-foreground">Загрузка профиля...</div>
+        <div className="flex flex-col items-center justify-center py-12 gap-4">
+          <Loader size="lg" />
+        </div>
       </div>
     )
   }

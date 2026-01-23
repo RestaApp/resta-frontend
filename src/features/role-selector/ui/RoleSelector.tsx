@@ -59,7 +59,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   }
 
   // Loading / Error / Empty
-  if (vm.isLoading || vm.isFetching) return <LoadingState message="Загрузка ролей..." />
+  if (vm.isLoading || vm.isFetching) return <LoadingState />
   if (vm.error) return <LoadingState message="Не удалось загрузить роли" />
   if (vm.mainRoles.length === 0) return <LoadingState message="Роли не найдены" />
 

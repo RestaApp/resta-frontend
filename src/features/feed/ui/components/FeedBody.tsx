@@ -118,11 +118,11 @@ export const FeedBody = memo((props: Props) => {
         <>
             <div className="space-y-4 px-4 py-4">
                 {activeList.isInitialLoading ? (
-                    <>
+                    <div className="space-y-4">
                         <ShiftSkeleton />
                         <ShiftSkeleton />
                         <ShiftSkeleton />
-                    </>
+                    </div>
                 ) : activeList.error ? (
                     <div className="py-8 text-center text-destructive">
                         Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}
@@ -141,11 +141,11 @@ export const FeedBody = memo((props: Props) => {
                         showResetButton={!!(quickFilter !== 'all' || advancedFilters)}
                     />
                 ) : filteredShifts.length === 0 && activeList.isFetching ? (
-                    <>
+                    <div className="space-y-4">
                         <ShiftSkeleton />
                         <ShiftSkeleton />
                         <ShiftSkeleton />
-                    </>
+                    </div>
                 ) : (
                     <>
                         {filteredShifts.map((shift, index) => (

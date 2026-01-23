@@ -35,7 +35,7 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
   })
 
   if (isLoading || isFetching) {
-    return <LoadingState message="Загрузка форматов ресторанов..." />
+    return <LoadingState />
   }
 
   if (!isLoading && !isFetching && (!restaurantFormats || restaurantFormats.length === 0)) {

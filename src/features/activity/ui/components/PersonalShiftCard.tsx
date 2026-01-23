@@ -60,7 +60,6 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({ shift, onE
             onApply={() => { }}
             onCancel={() => { }}
             ownerActions={{ onEdit: handleEdit, onDelete: handleDelete, isDeleting }}
-            variant="iconActions"
         />
     )
 }

@@ -35,7 +35,7 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
   })
 
   if (isLoading || isFetching) {
-    return <LoadingState message="Загрузка типов поставщиков..." />
+    return <LoadingState />
   }
 
   if (!isLoading && !isFetching && (!supplierTypes || supplierTypes.length === 0)) {

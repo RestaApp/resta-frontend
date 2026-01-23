@@ -42,7 +42,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <ShiftSkeleton />
         <ShiftSkeleton />
         <ShiftSkeleton />
@@ -83,7 +83,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
         <h4 className="mb-3 text-lg font-semibold">{weekDays.find(d => d.date === selectedDay)?.full || 'День'}</h4>
 
         {selectedDayShifts.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {selectedDayShifts.map(shift =>
               shift.type === 'resta' ? (
                 <AppliedShiftCard key={shift.id} shift={shift.data} showToast={(m, t) => showToast(m, t)} />

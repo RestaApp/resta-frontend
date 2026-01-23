@@ -4,8 +4,19 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { RangeSlider } from '@/components/ui'
+import { CitySelect } from '@/components/ui/city-select'
+import { Loader } from '@/components/ui/loader'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { formatExperienceText } from '@/utils/experience'
-import { ChevronDown } from 'lucide-react'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 
 interface EditProfileDrawerProps {
@@ -24,6 +35,9 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
     isLoading,
     handleSave,
     updateField,
+    showCityWarning,
+    setShowCityWarning,
+    handleSaveWithoutCity,
   } = useEditProfileModel(open, onSuccess)
 
   if (!userProfile) {
@@ -169,26 +183,17 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
         <div>
           <label className="block text-sm font-medium mb-2">Город</label>
           {isCitiesLoading ? (
-            <div className="text-sm text-muted-foreground py-2">Загрузка городов...</div>
-          ) : (
-            <div className="relative">
-              <select
-                value={formData.city}
-                onChange={(e) => updateField('city', e.target.value)}
-                disabled={isLoading}
-                className="w-full h-11 rounded-xl border border-border/50 px-4 pr-10 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 appearance-none"
-              >
-                <option value="">Выберите город</option>
-                {cities.map((cityName) => (
-                  <option key={cityName} value={cityName}>
-                    {cityName}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <ChevronDown className="w-4 h-4" />
-              </span>
+            <div className="flex items-center gap-2 py-2">
+              <Loader size="sm" />
             </div>
+          ) : (
+            <CitySelect
+              value={formData.city}
+              onChange={(value) => updateField('city', value)}
+              options={cities}
+              placeholder="Выберите город"
+              disabled={isLoading}
+            />
           )}
         </div>
       </div>
@@ -201,6 +206,22 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
           Отмена
         </Button>
       </DrawerFooter>
+
+      <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Город не указан</AlertDialogTitle>
+            <AlertDialogDescription>
+              Если не указать город, вы не сможете видеть релевантные вакансии и смены в вашем регионе. 
+              Рекомендуем указать город для лучшего подбора предложений.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowCityWarning(false)}>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSaveWithoutCity}>Сохранить без города</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Drawer>
   )
 })

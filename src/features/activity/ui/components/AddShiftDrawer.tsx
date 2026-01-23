@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
 import { DatePicker } from '@/components/ui/date-picker'
 import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsApi'
@@ -8,8 +8,53 @@ import { getEmployeePositionLabel } from '@/constants/labels'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/hooks/useToast'
-import { Field, TextField, TextAreaField, SelectField, MultiSelectSpecializations, TimeField, MoneyField, CheckboxField } from './fields'
+import { Field, TextField, TextAreaField, MultiSelectSpecializations, TimeField, MoneyField, CheckboxField, LocationField } from './fields'
+import { Select } from '@/components/ui/select'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
+import { getTomorrowDateISO } from '@/utils/datetime'
+
+const getLockedShiftType = (role?: string | null): ShiftType | null => {
+    if (role === 'employee') return 'replacement'
+    if (role === 'restaurant') return 'vacancy'
+    return null
+}
+
+const useResetSpecializationsOnPositionChange = (
+    open: boolean,
+    position: string,
+    specializations: string[],
+    setSpecializations: (value: string[]) => void,
+) => {
+    // Отслеживаем предыдущую позицию для определения смены
+    const prevPositionRef = useRef<string | null>(null)
+
+    // Сбрасываем refs при открытии drawer
+    useEffect(() => {
+        if (open) {
+            // При открытии drawer инициализируем ref текущей позицией
+            prevPositionRef.current = position || null
+        }
+    }, [open, position])
+
+    // Сбрасываем специализации при смене позиции
+    useEffect(() => {
+        if (!open) return // Не обрабатываем, когда drawer закрыт
+
+        const prevPosition = prevPositionRef.current
+        const currentPosition = position || null
+
+        // Если позиция изменилась (не null -> не null), сбрасываем специализации
+        if (prevPosition !== null && currentPosition !== null && prevPosition !== currentPosition) {
+            setSpecializations([])
+        } else if (currentPosition === null && specializations.length > 0) {
+            // Если позиция очищена, сбрасываем специализации
+            setSpecializations([])
+        }
+
+        // Обновляем ref для следующего рендера
+        prevPositionRef.current = currentPosition
+    }, [position, open, setSpecializations, specializations.length])
+}
 
 type AddShiftDrawerProps = {
     open: boolean
@@ -34,12 +79,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
     const { userProfile } = useUserProfile()
     const { toast, hideToast } = useToast()
     const isEmployeeRole = userProfile?.role === 'employee'
-    const isRestaurantRole = userProfile?.role === 'restaurant'
-    const lockedShiftType = useMemo<ShiftType | null>(() => {
-        if (isEmployeeRole) return 'replacement'
-        if (isRestaurantRole) return 'vacancy'
-        return null
-    }, [isEmployeeRole, isRestaurantRole])
+    const lockedShiftType = getLockedShiftType(userProfile?.role)
 
     const form = useAddShiftForm({ initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE, onSave, initialValues })
     const {
@@ -71,6 +111,8 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
         isCreating,
         isFormInvalid,
         timeRangeError,
+        dateError,
+        positionError,
         handleSave,
     } = form
 
@@ -83,11 +125,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
         enabled: open && !!formPosition,
     })
 
-    useEffect(() => {
-        if (!formPosition) {
-            setSpecializations([])
-        }
-    }, [formPosition, setSpecializations])
+    useResetSpecializationsOnPositionChange(open, formPosition, specializations, setSpecializations)
 
     const close = () => onOpenChange(false)
 
@@ -126,7 +164,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                 />
 
                 <Field label="Дата">
-                    <DatePicker value={date} onChange={setDate} className="w-full" />
+                    <DatePicker value={date} onChange={setDate} minDate={getTomorrowDateISO()} className="w-full" />
                 </Field>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -136,14 +174,17 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                 {timeRangeError && (
                     <p className="text-sm text-red-500">{timeRangeError}</p>
                 )}
+                {dateError && (
+                    <p className="text-sm text-red-500">{dateError}</p>
+                )}
 
                 <MoneyField value={pay} onChange={setPay} />
 
-                <TextField
+                <LocationField
                     label="Локация"
                     value={location}
                     onChange={setLocation}
-                    placeholder='Например: "Минск, ул. Ленина 1"'
+                    placeholder='Например: ул. Ленина 1'
                 />
 
                 <TextAreaField
@@ -155,12 +196,13 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                 />
 
                 {!isEmployeeRole && (
-                    <SelectField
+                    <Select
                         label="Тип смены"
                         value={shiftType}
                         onChange={(value) => setShiftType(value as ShiftType)}
                         disabled={!!lockedShiftType}
                         options={SHIFT_TYPE_OPTIONS}
+                        placeholder="Выберите тип смены"
                         hint={
                             lockedShiftType
                                 ? lockedShiftType === 'vacancy'
@@ -171,30 +213,41 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                     />
                 )}
 
-                <SelectField
-                    label="Позиция"
-                    value={formPosition}
-                    onChange={setFormPosition}
-                    options={positionsOptions}
-                    placeholder={isPositionsLoading ? 'Загрузка позиций...' : 'Выберите позицию'}
+                <div>
+                    <Select
+                        label="Позиция"
+                        value={formPosition || ''}
+                        onChange={setFormPosition}
+                        options={positionsOptions}
+                        placeholder="Выберите позицию"
+                        disabled={isPositionsLoading}
+                    />
+                    {positionError && (
+                        <p className="text-sm text-red-500 mt-2">{positionError}</p>
+                    )}
+                </div>
 
-                />
-
-                <MultiSelectSpecializations
-                    label="Специализация"
-                    value={specializations}
-                    onChange={setSpecializations}
-                    options={availableSpecializations}
-                    placeholder={
-                        !formPosition
-                            ? 'Сначала выберите позицию'
-                            : isSpecializationsLoading
-                                ? 'Загрузка специализаций...'
+                <div>
+                    <MultiSelectSpecializations
+                        label="Специализация"
+                        value={specializations}
+                        onChange={setSpecializations}
+                        options={availableSpecializations}
+                        placeholder={
+                            !formPosition
+                                ? 'Сначала выберите позицию'
                                 : 'Нет доступных специализаций'
-                    }
-                    disabled={!formPosition}
-                    isLoading={isSpecializationsLoading}
-                />
+                        }
+                        disabled={!formPosition}
+                        isLoading={isSpecializationsLoading}
+                    />
+                    {submitError && (
+                        submitError.toLowerCase().includes('специализац') || 
+                        submitError.toLowerCase().includes('specialization')
+                    ) && (
+                        <p className="text-sm text-red-500 mt-2">{submitError}</p>
+                    )}
+                </div>
 
                 <CheckboxField
                     id="urgent-shift"

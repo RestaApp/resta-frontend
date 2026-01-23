@@ -6,6 +6,7 @@ import { memo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
 import { AnimatedField } from './AnimatedField'
 
@@ -94,8 +95,8 @@ export const LocationField = memo(function LocationField({
                         className="absolute z-50 w-full mt-1 bg-background border border-border rounded-xl shadow-lg max-h-[200px] overflow-y-auto"
                     >
                         {isLoadingCities ? (
-                            <div className="px-4 py-3 text-sm text-muted-foreground text-center">
-                                Загрузка городов...
+                            <div className="flex items-center justify-center gap-2 px-4 py-3">
+                                <Loader size="sm" />
                             </div>
                         ) : (
                             <>

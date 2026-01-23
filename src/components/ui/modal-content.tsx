@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
 import { Button } from './button'
+import { Loader } from './loader'
 import { cn } from '@/utils/cn'
 
 export type ModalButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
@@ -22,11 +23,6 @@ interface ModalContentProps {
   className?: string
 }
 
-const mapVariantToButton = (variant?: ModalButtonVariant): React.ComponentProps<typeof Button>['variant'] => {
-  if (!variant) return 'primary'
-  return variant
-}
-
 export const ModalContent = memo(function ModalContent({
   icon,
   title,
@@ -35,6 +31,8 @@ export const ModalContent = memo(function ModalContent({
   secondaryButton,
   className,
 }: ModalContentProps) {
+  const secondaryVariant = secondaryButton?.variant ?? 'outline'
+  const primaryVariant = primaryButton?.variant ?? 'primary'
   return (
     <div className={cn('w-full rounded-3xl border border-border bg-card p-6 shadow-xl', className)}>
       {icon && (
@@ -58,13 +56,20 @@ export const ModalContent = memo(function ModalContent({
           {secondaryButton && (
             <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
               <Button
-                variant={mapVariantToButton(secondaryButton.variant ?? 'outline')}
+                variant={secondaryVariant}
                 onClick={secondaryButton.onClick}
                 disabled={secondaryButton.disabled || secondaryButton.isLoading}
                 aria-busy={secondaryButton.isLoading || undefined}
                 className="w-full rounded-xl"
               >
-                {secondaryButton.isLoading ? 'Загрузка…' : secondaryButton.label}
+                {secondaryButton.isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader size="sm" />
+                    {secondaryButton.label}
+                  </span>
+                ) : (
+                  secondaryButton.label
+                )}
               </Button>
             </motion.div>
           )}
@@ -72,13 +77,20 @@ export const ModalContent = memo(function ModalContent({
           {primaryButton && (
             <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
               <Button
-                variant={mapVariantToButton(primaryButton.variant)}
+                variant={primaryVariant}
                 onClick={primaryButton.onClick}
                 disabled={primaryButton.disabled || primaryButton.isLoading}
                 aria-busy={primaryButton.isLoading || undefined}
                 className="w-full rounded-xl"
               >
-                {primaryButton.isLoading ? 'Загрузка…' : primaryButton.label}
+                {primaryButton.isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader size="sm" />
+                    {primaryButton.label}
+                  </span>
+                ) : (
+                  primaryButton.label
+                )}
               </Button>
             </motion.div>
           )}

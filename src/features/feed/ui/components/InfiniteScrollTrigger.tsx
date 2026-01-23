@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { Loader2, RefreshCw, CheckCircle2 } from 'lucide-react'
+import { RefreshCw, CheckCircle2 } from 'lucide-react'
+import { Loader } from '@/components/ui/loader'
 
 interface InfiniteScrollProps {
     onLoadMore: () => void
@@ -43,12 +44,7 @@ export const InfiniteScrollTrigger = ({
             className="w-full py-6 flex flex-col items-center justify-center text-muted-foreground min-h-[80px]"
         >
             {/* Состояние 1: Загрузка */}
-            {isLoading && (
-                <div className="flex items-center gap-2 text-primary animate-pulse">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <span className="text-sm font-medium">Ищем лучшие смены...</span>
-                </div>
-            )}
+            {isLoading && <Loader size="md" />}
 
             {/* Состояние 2: Ошибка загрузки */}
             {!isLoading && isError && (

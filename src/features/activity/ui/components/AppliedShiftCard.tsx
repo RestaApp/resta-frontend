@@ -51,7 +51,6 @@ export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showT
                 onApply={() => { }}
                 onCancel={(appId) => cancel(appId ?? applicationId)}
                 isLoading={isCancelling}
-                variant="iconActions"
             />
 
             <ShiftDetailsScreen

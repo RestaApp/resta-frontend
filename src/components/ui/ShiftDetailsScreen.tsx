@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react'
-import type React from 'react'
+import type { ReactNode } from 'react'
 import {
     MapPin,
     Clock,
@@ -21,7 +21,7 @@ import type { Shift } from '@/features/feed/model/types'
 import { getRestaurantFormatLabel } from '@/constants/labels'
 import { useShiftDetails } from '@/features/feed/model/hooks/useShiftDetails'
 import { formatReviews } from '@/features/feed/model/utils/formatting'
-import { getCurrentUserId } from '@/utils/user'
+import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
 
 interface ShiftDetailsScreenProps {
@@ -40,18 +40,18 @@ interface DetailRowProps {
     icon: LucideIcon
     iconColor?: string
     label: string
-    value: string | React.ReactNode
-    subValue?: string | React.ReactNode
-    action?: React.ReactNode
+    value: string | ReactNode
+    subValue?: string | ReactNode
+    action?: ReactNode
 }
 
 const DetailRow = memo(({ icon: Icon, iconColor = 'text-primary', label, value, subValue, action }: DetailRowProps) => (
     <div className="flex items-start gap-3">
         <Icon className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} />
-        <div className="flex-1">
-            <div className="text-[12px] text-muted-foreground mb-1">{label}</div>
-            <div className="text-[14px] font-medium">{value}</div>
-            {subValue ? <div className="text-[12px] text-muted-foreground mt-1">{subValue}</div> : null}
+        <div className="flex-1 min-w-0">
+            <div className="text-[12px] text-muted-foreground mb-1 break-words">{label}</div>
+            <div className="text-[14px] font-medium break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{value}</div>
+            {subValue ? <div className="text-[12px] text-muted-foreground mt-1 break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{subValue}</div> : null}
             {action}
         </div>
     </div>
@@ -67,10 +67,12 @@ interface TextCardProps {
 const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => (
     <Card className="p-4">
         <div className="flex items-center gap-2 mb-3">
-            <Icon className="w-5 h-5 text-primary" />
-            <h2 className="text-[16px] font-medium">{title}</h2>
+            <Icon className="w-5 h-5 text-primary flex-shrink-0" />
+            <h2 className="text-[16px] font-medium break-words">{title}</h2>
         </div>
-        <div className="text-[14px] text-muted-foreground leading-relaxed whitespace-pre-line">{content}</div>
+        <div className="text-[14px] text-muted-foreground leading-relaxed whitespace-pre-line break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            {content}
+        </div>
     </Card>
 ))
 TextCard.displayName = 'TextCard'
@@ -91,7 +93,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     const { restaurantInfo, hourlyRate, shiftTypeLabel, vacancyTitle, positionLabel, specializationLabel, applicationsInfo } =
         useShiftDetails(shift, vacancyData)
 
-    const currentUserId = getCurrentUserId()
+    const currentUserId = useCurrentUserId()
     const isOwner = Boolean(currentUserId && shift?.ownerId && shift.ownerId === currentUserId)
 
     if (!shift) return null
@@ -135,11 +137,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     return (
         <Drawer open={isOpen} onOpenChange={onClose} bottomOffsetPx={76}>
             <DrawerHeader className="pb-2">
-                <div className="flex items-center justify-between mb-2">
-                    <DrawerTitle className="text-xl">{vacancyTitle}</DrawerTitle>
+                <div className="flex items-center justify-between mb-2 gap-2">
+                    <DrawerTitle className="text-xl break-words flex-1 min-w-0">{vacancyTitle}</DrawerTitle>
                     <button
                         onClick={onClose}
-                        className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-primary transition-colors"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-primary transition-colors flex-shrink-0"
                         aria-label="Закрыть"
                     >
                         <X className="w-5 h-5" />
@@ -172,8 +174,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                         <div className="w-16 h-16 bg-secondary/50 rounded-2xl flex items-center justify-center text-3xl border border-white/10">
                             {shift.logo}
                         </div>
-                        <div className="flex-1">
-                            <h2 className="text-lg font-semibold mb-1">{shift.restaurant}</h2>
+                        <div className="flex-1 min-w-0">
+                            <h2 className="text-lg font-semibold mb-1 break-words">{shift.restaurant}</h2>
 
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 {shift.rating > 0 ? <span>⭐ {shift.rating.toFixed(1)}</span> : null}
@@ -242,9 +244,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             <DetailRow
                                 icon={Users}
                                 iconColor="text-green-500"
-                                label="Заявок"
+                                label="Количество заявок"
                                 value={applicationsInfo.value}
-                                subValue={applicationsInfo.label}
                             />
                         ) : null}
                     </div>

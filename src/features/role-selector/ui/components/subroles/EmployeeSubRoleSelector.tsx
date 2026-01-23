@@ -55,7 +55,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   })
 
   if (isLoading || isFetching) {
-    return <LoadingState message="Загрузка позиций..." />
+    return <LoadingState />
   }
 
   if (!isLoading && !isFetching && subRoles.length === 0) {

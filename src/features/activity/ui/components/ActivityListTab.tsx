@@ -21,7 +21,7 @@ export const ActivityListTab = memo((props: Props) => {
 
   if (isLoading || isAppliedLoading) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <ShiftSkeleton />
         <ShiftSkeleton />
         <ShiftSkeleton />
@@ -32,7 +32,7 @@ export const ActivityListTab = memo((props: Props) => {
   if (shifts.length === 0 && appliedShifts.length === 0) return <EmptyState message="Смены не найдены" />
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {shifts.map((shift: any) => (
         <PersonalShiftCard key={shift.id} shift={shift} onEdit={onEdit} onDelete={onDelete} isDeleting={isDeleting} />
       ))}
@@ -40,7 +40,7 @@ export const ActivityListTab = memo((props: Props) => {
       {appliedShifts.length > 0 ? (
         <>
           {shifts.length > 0 ? <div className="text-sm text-muted-foreground mt-4 mb-2">Мои отклики</div> : null}
-          <div className="space-y-4">
+          <div className="space-y-4 mt-4">
             {appliedShifts.map((shift: any) => (
               <AppliedShiftCard key={shift.id} shift={shift} showToast={(m, t) => showToast(m, t)} />
             ))}
