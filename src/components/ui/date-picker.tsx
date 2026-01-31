@@ -32,7 +32,7 @@ export const DatePicker = ({
                 </label>
             )}
 
-            <div className="relative">
+            <div className="relative flex min-h-10 items-stretch">
                 <input
                     id={inputId}
                     type="date"
@@ -40,8 +40,9 @@ export const DatePicker = ({
                     onChange={(e) => onChange(e.target.value || null)}
                     min={minDate}
                     className={cn(
-                        'w-full rounded-xl border border-border bg-card/60 px-3 py-2 pr-10 text-foreground',
+                        'w-full rounded-xl border border-border bg-card/60 py-2 pl-3 pr-10 text-sm text-foreground',
                         'transition-all focus:outline-none focus:ring-2 focus:ring-primary/20',
+                        !value && 'text-transparent',
                         '[&::-webkit-calendar-picker-indicator]:opacity-0',
                         '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0',
                         '[&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full',
@@ -50,10 +51,16 @@ export const DatePicker = ({
                     aria-label={label ?? 'Выбор даты'}
                 />
 
-                <CalendarIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <CalendarIcon
+                    className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 shrink-0 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden
+                />
 
                 {!value && (
-                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50">
+                    <span
+                        className="pointer-events-none absolute left-3 top-1/2 inline-flex h-5 -translate-y-1/2 items-center text-sm text-muted-foreground"
+                        aria-hidden
+                    >
                         {placeholder}
                     </span>
                 )}
