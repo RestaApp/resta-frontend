@@ -19,6 +19,9 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { InfiniteScrollTrigger } from './InfiniteScrollTrigger'
 import { ShiftDetailsScreen } from '@/components/ui/ShiftDetailsScreen'
 import { AdvancedFilters, type AdvancedFiltersData } from './AdvancedFilters'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import type { ToastType } from '@/components/ui/toast'
+import type { ShiftStatus } from '@/components/ui/StatusPill'
 
 import type { FeedType, Shift } from '../../model/types'
 import type { UseVacanciesInfiniteListReturn } from '../../model/hooks/useVacanciesInfiniteList'
@@ -40,7 +43,7 @@ type Props = {
     onOpenDetails: (id: number) => void
 
     getApplicationId: (id: number) => number | undefined
-    getApplicationStatus: (id: number) => any
+    getApplicationStatus: (id: number) => ShiftStatus
     isApplied: (id: number) => boolean
 
     onApply: (id: number) => Promise<void>
@@ -51,11 +54,11 @@ type Props = {
     // details
     selectedShiftId: number | null
     selectedShift: Shift | null
-    selectedVacancy: any | null
+    selectedVacancy: VacancyApiItem | null
     onCloseDetails: () => void
 
     // toast
-    toast: { message: string; type: any; isVisible: boolean }
+    toast: { message: string; type: ToastType; isVisible: boolean }
     hideToast: () => void
 
     // empty/reset
@@ -114,6 +117,15 @@ export const FeedBody = memo((props: Props) => {
         isVacancy,
     } = props
 
+    const hasActiveFilters = quickFilter !== 'all' || !!advancedFilters
+    const isEmpty = filteredShifts.length === 0
+    const showEmptyState =
+        isEmpty && (activeList.totalCount === 0 || (!activeList.isFetching && activeList.totalCount !== -1))
+    const showLoadingAfterEmpty = isEmpty && activeList.isFetching
+
+    const emptyMessage =
+        hasActiveFilters ? 'По вашим фильтрам ничего не найдено' : feedType === 'shifts' ? 'Смены не найдены' : 'Вакансии не найдены'
+
     return (
         <>
             <div className="space-y-4 px-4 py-4">
@@ -127,20 +139,13 @@ export const FeedBody = memo((props: Props) => {
                     <div className="py-8 text-center text-destructive">
                         Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}
                     </div>
-                ) : filteredShifts.length === 0 &&
-                    (activeList.totalCount === 0 || (!activeList.isFetching && activeList.totalCount !== -1)) ? (
+                ) : showEmptyState ? (
                     <EmptyState
-                        message={
-                            quickFilter !== 'all' || advancedFilters
-                                ? 'По вашим фильтрам ничего не найдено'
-                                : feedType === 'shifts'
-                                    ? 'Смены не найдены'
-                                    : 'Вакансии не найдены'
-                        }
+                        message={emptyMessage}
                         onReset={onResetFilters}
-                        showResetButton={!!(quickFilter !== 'all' || advancedFilters)}
+                        showResetButton={hasActiveFilters}
                     />
-                ) : filteredShifts.length === 0 && activeList.isFetching ? (
+                ) : showLoadingAfterEmpty ? (
                     <div className="space-y-4">
                         <ShiftSkeleton />
                         <ShiftSkeleton />
@@ -196,19 +201,14 @@ export const FeedBody = memo((props: Props) => {
                 />
             ) : null}
 
-            <AlertDialog open={profileAlert.open} onOpenChange={(o) => (!o ? onCloseProfileAlert() : undefined)}>
+            <AlertDialog open={profileAlert.open} onOpenChange={(open) => { if (!open) onCloseProfileAlert() }}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Ошибка профиля</AlertDialogTitle>
+                        <AlertDialogTitle>Заявка не отправлена</AlertDialogTitle>
                     </AlertDialogHeader>
 
                     <AlertDialogDescription>
                         {profileAlert.message}
-                        {profileAlert.missingFields.length ? (
-                            <span className="block mt-2 text-xs text-muted-foreground">
-                                missing_fields: {profileAlert.missingFields.join(', ')}
-                            </span>
-                        ) : null}
                     </AlertDialogDescription>
 
                     <AlertDialogFooter>

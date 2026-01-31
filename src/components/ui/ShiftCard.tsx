@@ -63,13 +63,13 @@ const ShiftCardComponent = ({
 }: ShiftCardProps) => {
     const currentUserId = useCurrentUserId()
 
-    const isOwner = useMemo(() => {
-        // поддержка кастомного флага для "моих смен"
-        if ((shift as any).isMine === true) return true
-        return Boolean(shift.ownerId && shift.ownerId === currentUserId)
-    }, [shift, currentUserId])
+    const isOwner = useMemo(
+        () => shift.isMine === true || Boolean(shift.ownerId && shift.ownerId === currentUserId),
+        [shift.isMine, shift.ownerId, currentUserId]
+    )
 
     const isAccepted = applicationStatus === 'accepted'
+    const isRejected = applicationStatus === 'rejected'
 
     const positionText = useMemo(() => {
         const position = getEmployeePositionLabel(shift.position)
@@ -78,7 +78,7 @@ const ShiftCardComponent = ({
     }, [shift.position, shift.specialization])
 
     const payLabel = shift.payPeriod === 'month' ? 'за месяц' : 'за смену'
-    const canShowApply = !isOwner && !isAccepted
+    const canShowApply = !isOwner && !isAccepted && !isRejected
     const canApply = shift.canApply !== false
 
     const locationText = useMemo(() => stripMinskPrefix(shift.location) ?? '', [shift.location])
@@ -164,8 +164,8 @@ const ShiftCardComponent = ({
 
                         {/* Pills row */}
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                        {shift.urgent ? <UrgentPill /> : null}
-                        {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
+                            {shift.urgent ? <UrgentPill /> : null}
+                            {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
                         </div>
                     </div>
                 </div>

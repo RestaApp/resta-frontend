@@ -4,7 +4,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getTabsForRole } from '@/constants/tabs'
-import { SCREEN_TO_TAB_MAP } from '@/constants/navigation'
+import { SCREEN_TO_TAB_MAP, TAB_TO_SCREEN_MAP } from '@/constants/navigation'
 import type { Tab, UiRole, Screen } from '@/types'
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
@@ -39,6 +39,13 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     }
   }, [])
 
+  // Переход на вкладку «Профиль» по событию из модалки «Открыть профиль» (флаг редактирования уже выставлен в openProfileEdit)
+  useEffect(() => {
+    const handleNavigateToProfileEdit = () => setActiveTab('profile')
+    window.addEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
+    return () => window.removeEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
+  }, [])
+
   // Синхронизация внешнего currentScreen -> activeTab
   useEffect(() => {
     if (!currentScreen) return
@@ -52,13 +59,8 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setActiveTab(tab)
-      if (!onNavigate) return
-      // найти screen по табу
-      const entry = Object.entries(SCREEN_TO_TAB_MAP).find(([, mappedTab]) => mappedTab === tab)
-      if (entry) {
-        const screen = entry[0] as Screen
-        onNavigate(screen)
-      }
+      const screen = TAB_TO_SCREEN_MAP[tab]
+      if (screen && onNavigate) onNavigate(screen)
     },
     [onNavigate]
   )

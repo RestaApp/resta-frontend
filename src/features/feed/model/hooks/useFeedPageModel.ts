@@ -13,6 +13,7 @@ import { applyClientQuickFilters } from '../utils/clientFilters'
 import { useHotOffers } from '../hooks/useHotOffers'
 import { useShiftActions } from '../hooks/useShiftActions'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
+import { normalizeApiError } from '../utils/apiErrors'
 
 import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
 import { vacancyToShift } from '../utils/mapping'
@@ -99,17 +100,13 @@ export const useFeedPageModel = () => {
       try {
         await handleApply(shiftId)
       } catch (error: unknown) {
-        const data =
-          error && typeof error === 'object' && 'data' in (error as any) ? (error as any).data : null
+        const normalized = normalizeApiError(error, 'Не удалось отправить заявку. Попробуйте позже.')
 
-        if (data?.message === 'profile_incomplete') {
-          const missing: string[] = Array.isArray(data.missing_fields) ? data.missing_fields : []
+        if (normalized.kind === 'profile_incomplete') {
           setProfileAlert({
             open: true,
-            missingFields: missing,
-            message: `Профиль неполный: отсутствуют поля — ${
-              missing.length ? missing.join(', ') : 'неизвестные поля'
-            }. Пожалуйста, заполните профиль в настройках.`,
+            missingFields: normalized.missingFieldsLabels,
+            message: normalized.message,
           })
           return
         }
@@ -117,7 +114,7 @@ export const useFeedPageModel = () => {
         setProfileAlert({
           open: true,
           missingFields: [],
-          message: 'Не удалось отправить заявку. Попробуйте позже.',
+          message: normalized.message,
         })
       }
     },
@@ -216,6 +213,9 @@ export const useFeedPageModel = () => {
 
   const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
 
+  const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
+  const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])
+
   const applyAdvancedFilters = useCallback(
     (filters: AdvancedFiltersData | null) => {
       setAdvancedFilters(filters)
@@ -245,7 +245,7 @@ export const useFeedPageModel = () => {
     return hasQuick || hasAdv
   }, [advancedFilters, quickFilter])
 
-  const filteredCount = useMemo(() => (activeList.totalCount < 0 ? 0 : activeList.totalCount), [activeList.totalCount])
+  const filteredCount = useMemo(() => Math.max(0, activeList.totalCount), [activeList.totalCount])
 
   const selectedVacancy = useMemo(() => {
     if (!selectedShiftId) return null
@@ -260,6 +260,16 @@ export const useFeedPageModel = () => {
     return null
   }, [selectedShiftId, shiftsById, selectedVacancy])
 
+  const isApplied = useCallback((id: number) => appliedShiftsSet.has(id), [appliedShiftsSet])
+  const getApplicationIdStable = useCallback(
+    (id: number) => appliedApplicationsMap[id] ?? getApplicationId(id),
+    [appliedApplicationsMap, getApplicationId]
+  )
+  const getApplicationStatusStable = useCallback(
+    (id: number) => activeList.vacanciesMap.get(id)?.my_application?.status ?? null,
+    [activeList.vacanciesMap]
+  )
+
   return {
     // header
     feedType,
@@ -268,7 +278,7 @@ export const useFeedPageModel = () => {
     isFetching: activeList.isFetching,
     hasActiveAdvancedFilters,
     activeFiltersList,
-    openFilters: () => setIsFiltersOpen(true),
+    openFilters,
 
     // hot offers
     hotOffers,
@@ -292,9 +302,9 @@ export const useFeedPageModel = () => {
     handleApply,
     handleApplyWithModal,
     handleCancel,
-    isApplied: (id: number) => appliedShiftsSet.has(id),
-    getApplicationId: (id: number) => appliedApplicationsMap[id] ?? getApplicationId(id),
-    getApplicationStatus: (id: number) => activeList.vacanciesMap.get(id)?.my_application?.status ?? null,
+    isApplied,
+    getApplicationId: getApplicationIdStable,
+    getApplicationStatus: getApplicationStatusStable,
     isShiftLoading,
 
     // toast
@@ -308,7 +318,7 @@ export const useFeedPageModel = () => {
 
     // advanced filters modal
     isFiltersOpen,
-    closeFilters: () => setIsFiltersOpen(false),
+    closeFilters,
     applyAdvancedFilters,
     filteredCount,
     resetFeedFilters,

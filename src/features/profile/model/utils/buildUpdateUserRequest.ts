@@ -1,5 +1,6 @@
 import type { ApiRole } from '@/types'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
+import { toE164 } from '@/utils/phone'
 
 export interface ProfileFormData {
   name: string
@@ -29,20 +30,14 @@ export const buildUpdateUserRequest = (
       bio: formData.bio.trim() || null,
       city: formData.city.trim() || null,
       email: formData.email.trim() || null,
-      phone: formData.phone.trim() || null,
+      phone: toE164(formData.phone.trim()) || null,
       work_experience_summary: formData.workExperienceSummary.trim() || null,
       ...(apiRole === 'employee' && {
         employee_profile_attributes: {
-          ...(formData.experienceYears !== '' &&
-            typeof formData.experienceYears === 'number' && {
-              experience_years: formData.experienceYears,
-            }),
+          ...(formData.experienceYears !== '' && { experience_years: formData.experienceYears }),
           open_to_work: formData.openToWork,
           ...(formData.skills.trim() && {
-            skills: formData.skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(s => s.length > 0),
+            skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
           }),
         },
       }),

@@ -90,7 +90,24 @@ const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = asy
   return result
 }
 
-// Ретраим только сетевые/5xx и типичные временные
+const MAX_RETRIES = 2
+
+/** Не ретраить при profile_incomplete; ретраить только 408, 429, 5xx и не более MAX_RETRIES раз */
+function shouldRetry(
+  error: unknown,
+  _args: Args,
+  { attempt }: { attempt: number }
+): boolean {
+  if (attempt > MAX_RETRIES) return false
+  const err = error as FetchBaseQueryError | undefined
+  const data = err?.data as { message?: string } | undefined
+  if (data?.message === 'profile_incomplete') return false
+  const status = err?.status
+  if (status === 408 || status === 429) return true
+  if (typeof status === 'number' && status >= 500) return true
+  return false
+}
+
 export const baseQuery = retry(baseQueryWithReauth, {
-  maxRetries: 2,
+  retryCondition: shouldRetry,
 })

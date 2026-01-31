@@ -96,43 +96,43 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     const currentUserId = useCurrentUserId()
     const isOwner = Boolean(currentUserId && shift?.ownerId && shift.ownerId === currentUserId)
 
-    if (!shift) return null
-
-    const appStatus: ShiftStatus = vacancyData?.my_application?.status ?? (shift as any).applicationStatus ?? null
+    const appStatus: ShiftStatus = vacancyData?.my_application?.status ?? shift?.applicationStatus ?? null
     const isAccepted = appStatus === 'accepted'
+    const isRejected = appStatus === 'rejected'
 
     const paySuffix = useMemo(() => {
-        const base =
-            shift.payPeriod === 'month'
-                ? 'за месяц'
-                : 'за смену'
-
+        if (!shift) return 'за смену'
+        const base = shift.payPeriod === 'month' ? 'за месяц' : 'за смену'
         if (!hourlyRate) return base
         return `${base} (${hourlyRate} ${shift.currency}/час)`
-    }, [shift.payPeriod, hourlyRate, shift.currency])
+    }, [shift?.payPeriod, shift?.currency, hourlyRate])
 
     const handleApply = useCallback(async () => {
+        if (!shift) return
         try {
             await onApply(shift.id)
             onClose()
         } catch {
-            // toast/ошибка уже должны обрабатываться выше по стеку
+            // toast/ошибка уже обрабатываются выше по стеку
         }
-    }, [shift.id, onApply, onClose])
+    }, [shift, onApply, onClose])
 
     const handleCancel = useCallback(async () => {
+        if (!shift || isRejected) return
         const appId = applicationId ?? shift.applicationId ?? vacancyData?.my_application?.id ?? null
         try {
             await onCancel(appId, shift.id)
             onClose()
         } catch {
-            // toast/ошибка уже должны обрабатываться выше по стеку
+            // toast/ошибка уже обрабатываются выше по стеку
         }
-    }, [applicationId, shift.applicationId, vacancyData, shift.id, onCancel, onClose])
+    }, [shift, applicationId, vacancyData, onCancel, onClose, isRejected])
 
     const handleOpenMap = useCallback(() => {
         // TODO: открыть карту
     }, [])
+
+    if (!shift) return null
 
     return (
         <Drawer open={isOpen} onOpenChange={onClose} bottomOffsetPx={76}>
@@ -291,7 +291,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 {isOwner ? null : (
                     <div className="flex gap-3">
                         {/* Не показываем метку "подтверждена" в футере */}
-                        {isAccepted ? null : isApplied ? (
+                        {isAccepted || isRejected ? null : isApplied ? (
                             <Button
                                 onClick={handleCancel}
                                 disabled={isLoading}

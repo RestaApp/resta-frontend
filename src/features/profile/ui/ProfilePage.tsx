@@ -117,7 +117,10 @@ export const ProfilePage = memo(() => {
       <EditProfileDrawer
         open={m.isEditDrawerOpen}
         onOpenChange={m.setIsEditDrawerOpen}
-        onSuccess={() => m.refetch()}
+        onSuccess={() => {
+          m.refetch()
+          m.setIsEditDrawerOpen(false)
+        }}
       />
     </div>
   )

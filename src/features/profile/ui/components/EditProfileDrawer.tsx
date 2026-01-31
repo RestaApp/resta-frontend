@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,61 @@ import {
 } from '@/components/ui/alert-dialog'
 import { formatExperienceText } from '@/utils/experience'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
+import { getBioLabelSuffix } from '../../model/utils/profileFormLabels'
+import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
+
+const TEXTAREA_CLASS =
+  'w-full min-h-[100px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
+
+interface EmployeeFieldsSectionProps {
+  experienceYearsValue: number
+  openToWork: boolean
+  skills: string
+  updateField: <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => void
+  disabled: boolean
+}
+
+const EmployeeFieldsSection = memo(({ experienceYearsValue, openToWork, skills, updateField, disabled }: EmployeeFieldsSectionProps) => (
+  <>
+    <div>
+      <label className="block text-sm font-medium mb-2">Опыт работы (лет)</label>
+      <div className="mb-3">
+        <span className="text-lg font-semibold text-gradient">{formatExperienceText(experienceYearsValue)}</span>
+      </div>
+      <RangeSlider
+        min={0}
+        max={5}
+        step={1}
+        value={experienceYearsValue}
+        onChange={(value) => updateField('experienceYears', value)}
+        showTicks={true}
+        tickCount={5}
+      />
+    </div>
+    <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
+      <div>
+        <label className="block text-sm font-medium mb-1">Открыт к работе</label>
+        <p className="text-xs text-muted-foreground">Готов рассматривать предложения</p>
+      </div>
+      <Switch
+        checked={openToWork}
+        onCheckedChange={(checked) => updateField('openToWork', checked)}
+        disabled={disabled}
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium mb-2">Навыки</label>
+      <Input
+        value={skills}
+        onChange={(e) => updateField('skills', e.target.value)}
+        placeholder="Введите навыки через запятую"
+        disabled={disabled}
+      />
+      <p className="text-xs text-muted-foreground mt-1">Например: работа с ножом, знание HACCP</p>
+    </div>
+  </>
+))
+EmployeeFieldsSection.displayName = 'EmployeeFieldsSection'
 
 interface EditProfileDrawerProps {
   open: boolean
@@ -33,6 +88,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
     cities,
     isCitiesLoading,
     isLoading,
+    experienceYearsForSlider,
     handleSave,
     updateField,
     showCityWarning,
@@ -40,15 +96,19 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
     handleSaveWithoutCity,
   } = useEditProfileModel(open, onSuccess)
 
-  if (!userProfile) {
-    return null
-  }
+  const handleCancel = useCallback(() => onOpenChange(false), [onOpenChange])
+
+  if (!userProfile) return null
+
+  const bioSuffix = getBioLabelSuffix(apiRole)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
       <DrawerHeader>
         <DrawerTitle>Редактировать профиль</DrawerTitle>
-        <DrawerDescription>Обновите информацию о себе</DrawerDescription>
+        <DrawerDescription>
+          Поля со звёздочкой (*) обязательны для откликов на вакансии и смены.
+        </DrawerDescription>
       </DrawerHeader>
 
       <div className="px-4 space-y-4 pb-4">
@@ -65,10 +125,10 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
           />
         </div>
 
-        {/* Фамилия (только для сотрудников) */}
+        {/* Фамилия (только для сотрудников) — обязательно для откликов */}
         {apiRole === 'employee' && (
           <div>
-            <label className="block text-sm font-medium mb-2">Фамилия</label>
+            <label className="block text-sm font-medium mb-2">Фамилия *</label>
             <Input
               value={formData.lastName}
               onChange={(e) => updateField('lastName', e.target.value)}
@@ -80,17 +140,14 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
 
         {/* Описание */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Описание{' '}
-            {apiRole === 'restaurant' ? 'о заведении' : apiRole === 'supplier' ? 'о компании' : 'о себе'}
-          </label>
+          <label className="block text-sm font-medium mb-2">Описание {bioSuffix}</label>
           <textarea
             value={formData.bio}
             onChange={(e) => updateField('bio', e.target.value)}
-            placeholder={`Введите описание ${apiRole === 'restaurant' ? 'о заведении' : apiRole === 'supplier' ? 'о компании' : 'о себе'}`}
+            placeholder={`Введите описание ${bioSuffix}`}
             disabled={isLoading}
             rows={4}
-            className="w-full min-h-[100px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none"
+            className={TEXTAREA_CLASS}
           />
         </div>
 
@@ -106,82 +163,34 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
           />
         </div>
 
-        {/* Телефон */}
+        {/* Телефон — обязательно для откликов, международный формат */}
         <div>
-          <label className="block text-sm font-medium mb-2">Телефон</label>
+          <label className="block text-sm font-medium mb-2">Телефон *</label>
           <Input
             type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             value={formData.phone}
             onChange={(e) => updateField('phone', e.target.value)}
-            placeholder="Введите телефон"
+            placeholder="+375-29-123-45-67"
             disabled={isLoading}
           />
+          <p className="text-xs text-muted-foreground mt-1">Международный формат. Начните с +375 или 8</p>
         </div>
 
-        {/* Опыт работы (для сотрудников) */}
         {apiRole === 'employee' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium mb-2">Опыт работы (лет)</label>
-              <div className="mb-3">
-                <span className="text-lg font-semibold text-gradient">
-                  {formatExperienceText(typeof formData.experienceYears === 'number' ? formData.experienceYears : 0)}
-                </span>
-              </div>
-              <RangeSlider
-                min={0}
-                max={5}
-                step={1}
-                value={typeof formData.experienceYears === 'number' ? formData.experienceYears : 0}
-                onChange={(value) => updateField('experienceYears', value)}
-                showTicks={true}
-                tickCount={5}
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
-              <div>
-                <label className="block text-sm font-medium mb-1">Открыт к работе</label>
-                <p className="text-xs text-muted-foreground">Готов рассматривать предложения</p>
-              </div>
-              <Switch
-                checked={formData.openToWork}
-                onCheckedChange={(checked) => updateField('openToWork', checked)}
-                disabled={isLoading}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Навыки</label>
-              <Input
-                value={formData.skills}
-                onChange={(e) => updateField('skills', e.target.value)}
-                placeholder="Введите навыки через запятую"
-                disabled={isLoading}
-              />
-              <p className="text-xs text-muted-foreground mt-1">Например: работа с ножом, знание HACCP</p>
-            </div>
-          </>
+          <EmployeeFieldsSection
+            experienceYearsValue={experienceYearsForSlider}
+            openToWork={formData.openToWork}
+            skills={formData.skills}
+            updateField={updateField}
+            disabled={isLoading}
+          />
         )}
 
-        {/* Резюме/Опыт работы */}
+        {/* Город — обязательно для откликов */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            {apiRole === 'employee' ? 'Резюме' : 'Опыт работы'}
-          </label>
-          <textarea
-            value={formData.workExperienceSummary}
-            onChange={(e) => updateField('workExperienceSummary', e.target.value)}
-            placeholder={apiRole === 'employee' ? 'Опишите свой опыт работы' : 'Опишите опыт работы'}
-            disabled={isLoading}
-            rows={4}
-            className="w-full min-h-[100px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none"
-          />
-        </div>
-
-        {/* Город из справочника */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Город</label>
+          <label className="block text-sm font-medium mb-2">Город *</label>
           {isCitiesLoading ? (
             <div className="flex items-center gap-2 py-2">
               <Loader size="sm" />
@@ -202,7 +211,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
         <Button onClick={handleSave} disabled={isLoading || !formData.name.trim()} className="w-full" variant="primary">
           {isLoading ? 'Сохранение...' : 'Сохранить'}
         </Button>
-        <Button onClick={() => onOpenChange(false)} disabled={isLoading} variant="outline" className="w-full">
+        <Button onClick={handleCancel} disabled={isLoading} variant="outline" className="w-full">
           Отмена
         </Button>
       </DrawerFooter>
@@ -212,7 +221,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
           <AlertDialogHeader>
             <AlertDialogTitle>Город не указан</AlertDialogTitle>
             <AlertDialogDescription>
-              Если не указать город, вы не сможете видеть релевантные вакансии и смены в вашем регионе. 
+              Если не указать город, вы не сможете видеть релевантные вакансии и смены в вашем регионе.
               Рекомендуем указать город для лучшего подбора предложений.
             </AlertDialogDescription>
           </AlertDialogHeader>

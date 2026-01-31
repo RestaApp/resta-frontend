@@ -32,6 +32,7 @@ export interface UserData {
   language: string
   last_name: string
   location: string | null
+  city?: string | null
   name: string
   phone: string | null
   photo_url: string | null
