@@ -1,5 +1,6 @@
 import { memo, useCallback, useMemo } from 'react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     MapPin,
     Clock,
@@ -18,7 +19,7 @@ import { Separator } from '@/components/ui/separator'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/features/feed/model/types'
-import { getRestaurantFormatLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { useShiftDetails } from '@/features/feed/model/hooks/useShiftDetails'
 import { formatReviews } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
@@ -90,6 +91,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         isLoading = false,
     } = props
 
+    const { t } = useTranslation()
+    const { getRestaurantFormatLabel } = useLabels()
     const { restaurantInfo, hourlyRate, shiftTypeLabel, vacancyTitle, positionLabel, specializationLabel, applicationsInfo } =
         useShiftDetails(shift, vacancyData)
 
@@ -101,11 +104,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     const isRejected = appStatus === 'rejected'
 
     const paySuffix = useMemo(() => {
-        if (!shift) return 'за смену'
-        const base = shift.payPeriod === 'month' ? 'за месяц' : 'за смену'
+        if (!shift) return t('common.payPerShift')
+        const base = shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
         if (!hourlyRate) return base
         return `${base} (${hourlyRate} ${shift.currency}/час)`
-    }, [shift?.payPeriod, shift?.currency, hourlyRate])
+    }, [shift?.payPeriod, shift?.currency, hourlyRate, t])
 
     const handleApply = useCallback(async () => {
         if (!shift) return
@@ -142,7 +145,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                     <button
                         onClick={onClose}
                         className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-primary transition-colors flex-shrink-0"
-                        aria-label="Закрыть"
+                        aria-label={t('common.close')}
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -198,18 +201,18 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             <DetailRow
                                 icon={Briefcase}
                                 iconColor="text-indigo-500"
-                                label="Позиция"
+                                label={t('common.position')}
                                 value={positionLabel}
-                                subValue={specializationLabel ? `Специализация: ${specializationLabel}` : undefined}
+                                subValue={specializationLabel ? `${t('profileFields.specialization')}: ${specializationLabel}` : undefined}
                             />
                         ) : null}
 
-                        <DetailRow icon={CalendarDays} iconColor="text-purple-500" label="Дата" value={shift.date} />
+                        <DetailRow icon={CalendarDays} iconColor="text-purple-500" label={t('common.date')} value={shift.date} />
 
                         <DetailRow
                             icon={Clock}
                             iconColor="text-blue-500"
-                            label="Время работы"
+                            label={t('shift.workTime')}
                             value={shift.time}
                             subValue={shift.duration ? `Длительность: ${shift.duration}` : undefined}
                         />
@@ -218,7 +221,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             <DetailRow
                                 icon={MapPin}
                                 iconColor="text-primary"
-                                label="Место"
+                                label={t('common.location')}
                                 value={shift.location}
                                 action={
                                     <button onClick={handleOpenMap} className="text-[12px] text-primary hover:underline mt-1">
@@ -231,7 +234,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                         <DetailRow
                             icon={DollarSign}
                             iconColor="text-primary"
-                            label="Оплата"
+                            label={t('shift.pay')}
                             value={
                                 <span className="text-[18px] font-semibold text-primary">
                                     {shift.pay} {shift.currency}
@@ -244,19 +247,19 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             <DetailRow
                                 icon={Users}
                                 iconColor="text-green-500"
-                                label="Количество заявок"
+                                label={t('shift.applicationsCount')}
                                 value={applicationsInfo.value}
                             />
                         ) : null}
                     </div>
                 </Card>
 
-                {vacancyData?.description ? <TextCard icon={FileText} title="Описание" content={vacancyData.description} /> : null}
-                {vacancyData?.requirements ? <TextCard icon={FileText} title="Требования" content={vacancyData.requirements} /> : null}
+                {vacancyData?.description ? <TextCard icon={FileText} title={t('common.description')} content={vacancyData.description} /> : null}
+                {vacancyData?.requirements ? <TextCard icon={FileText} title={t('common.requirements')} content={vacancyData.requirements} /> : null}
 
                 {restaurantInfo ? (
                     <Card className="p-4">
-                        <h2 className="text-[16px] font-medium mb-3">О заведении</h2>
+                        <h2 className="text-[16px] font-medium mb-3">{t('common.aboutVenue')}</h2>
 
                         {restaurantInfo.bio ? <p className="text-[12px] text-muted-foreground mb-2">{restaurantInfo.bio}</p> : null}
 
@@ -298,7 +301,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                                 variant="outline"
                                 className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
                             >
-                                {isLoading ? 'Отмена...' : 'Отменить заявку'}
+                                {isLoading ? t('shift.cancelling') : t('shift.cancelApplication')}
                             </Button>
                         ) : (
                             <Button
@@ -306,7 +309,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                                 disabled={isLoading}
                                 className="flex-1 gradient-primary text-white disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {isLoading ? 'Отправка...' : 'Откликнуться'}
+                                {isLoading ? t('shift.sending') : t('shift.apply')}
                             </Button>
                         )}
                     </div>

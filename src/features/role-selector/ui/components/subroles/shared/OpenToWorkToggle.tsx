@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { AnimatedField } from './AnimatedField'
@@ -20,9 +21,10 @@ export const OpenToWorkToggle = memo(function OpenToWorkToggle({
     withAnimation = false,
     animationDelay = 0,
 }: OpenToWorkToggleProps) {
+    const { t } = useTranslation()
     const content = (
         <div className="flex items-center justify-between bg-muted/50 p-3 rounded-xl">
-            <span className="text-sm font-medium text-foreground">В активном поиске</span>
+            <span className="text-sm font-medium text-foreground">{t('roles.openToWork')}</span>
             <button
                 onClick={() => onChange(!value)}
                 className={cn(
@@ -34,7 +36,7 @@ export const OpenToWorkToggle = memo(function OpenToWorkToggle({
                         ? 'var(--gradient-primary)'
                         : 'var(--switch-background)',
                 }}
-                aria-label={value ? 'Отключить поиск работы' : 'Включить поиск работы'}
+                aria-label={value ? t('roles.openToWorkAriaOff') : t('roles.openToWorkAriaOn')}
             >
                 <motion.div
                     className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"

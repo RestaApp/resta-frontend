@@ -1,16 +1,17 @@
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 const APPLIED_STATUS_ORDER = ['pending', 'processing', 'accepted', 'rejected'] as const
-const APPLIED_STATUS_LABELS: Record<string, string> = {
-  pending: 'На рассмотрении',
-  processing: 'На рассмотрении',
-  accepted: 'Подтверждённые',
-  rejected: 'Отклонённые',
+/** Ключи i18n для подписей статусов откликов */
+const APPLIED_STATUS_LABEL_KEYS: Record<string, string> = {
+  pending: 'activity.statusPending',
+  processing: 'activity.statusPending',
+  accepted: 'activity.statusAccepted',
+  rejected: 'activity.statusRejected',
 }
 
 /**
  * Группирует отклики по статусу для отображения в UI.
- * Статусы 'pending' и 'processing' объединяются в 'На рассмотрении'.
+ * Возвращает label как ключ i18n — в компоненте вызывать t(label).
  */
 export function groupAppliedByStatus(shifts: VacancyApiItem[]): { status: string; label: string; items: VacancyApiItem[] }[] {
   const groups: Record<string, VacancyApiItem[]> = {}
@@ -22,7 +23,7 @@ export function groupAppliedByStatus(shifts: VacancyApiItem[]): { status: string
   }
   return APPLIED_STATUS_ORDER.filter(key => groups[key]?.length).map(key => ({
     status: key,
-    label: APPLIED_STATUS_LABELS[key] ?? key,
+    label: APPLIED_STATUS_LABEL_KEYS[key] ?? key,
     items: groups[key] ?? [],
   }))
 }

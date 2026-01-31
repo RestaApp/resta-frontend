@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useEmployeeSubRoleSelector } from '../../../model/useEmployeeSubRoleSelector'
 import { PositionSelectionScreen } from './PositionSelectionScreen'
 import { SpecializationDrawer } from './shared/SpecializationDrawer'
@@ -31,6 +32,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   isFetching = false,
   errorDialogOpen = false,
 }: EmployeeSubRoleSelectorProps) {
+  const { t } = useTranslation()
   const {
     subRoles,
     formData,
@@ -59,7 +61,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   }
 
   if (!isLoading && !isFetching && subRoles.length === 0) {
-    return <LoadingState message="Не удалось загрузить позиции" />
+    return <LoadingState message={t('roles.positionsError')} />
   }
 
   return (

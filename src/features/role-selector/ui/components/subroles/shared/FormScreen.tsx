@@ -3,6 +3,7 @@
  */
 
 import { memo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { SectionHeader } from '@/components/ui/section-header'
 import { LocationField } from './LocationField'
@@ -49,6 +50,7 @@ export const FormScreen = memo(function FormScreen({
     isLoadingLocation = false,
     continueButtonAriaLabel,
 }: FormScreenProps) {
+    const { t } = useTranslation()
     useEffect(() => {
         const cleanup = setupTelegramBackButton(() => {
             onBack()
@@ -105,7 +107,7 @@ export const FormScreen = memo(function FormScreen({
                                 label={getTypeLabel(type)}
                                 isSelected={formData.type === type}
                                 onClick={value => onFormDataUpdate({ type: value })}
-                                ariaLabel={`Выбрать: ${getTypeLabel(type)}`}
+                                ariaLabel={t('aria.selectType', { label: getTypeLabel(type) })}
                             />
                         ))}
                     </div>
@@ -135,10 +137,10 @@ export const FormScreen = memo(function FormScreen({
                     size="lg"
                     aria-label={continueButtonAriaLabel}
                 >
-                    Продолжить
+                    {t('common.continue')}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground mt-4 opacity-70">
-                    Полные данные профиля вы сможете заполнить позже в разделе «Профиль».
+                    {t('profile.fillLaterHint')}
                 </p>
             </div>
         </div>

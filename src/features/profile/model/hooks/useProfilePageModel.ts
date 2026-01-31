@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useUser } from '@/hooks/useUser'
 import { useToast } from '@/hooks/useToast'
@@ -8,11 +9,13 @@ import type { ApiRole } from '@/types'
 import { authService } from '@/services/auth'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
-import { getEmployeePositionLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { normalizeVacanciesResponse } from '../utils/normalizeShiftsResponse'
 import { getProfileCompleteness } from '../utils/profileCompleteness'
 
 export const useProfilePageModel = () => {
+  const { t } = useTranslation()
+  const { getEmployeePositionLabel } = useLabels()
   const { userProfile, isLoading: isProfileLoading, refetch } = useUserProfile()
   const { clearUserData } = useUser()
   const { showToast } = useToast()
@@ -50,20 +53,20 @@ export const useProfilePageModel = () => {
   }, [userProfile?.role])
 
   const userName = useMemo(() => {
-    if (!userProfile) return 'Пользователь'
-    return userProfile.full_name || userProfile.name || 'Пользователь'
-  }, [userProfile])
+    if (!userProfile) return t('common.user')
+    return userProfile.full_name || userProfile.name || t('common.user')
+  }, [userProfile, t])
 
   const roleLabel = useMemo(() => {
-    if (!userProfile) return 'Пользователь'
+    if (!userProfile) return t('common.user')
     if (apiRole === 'employee') {
       const position = userProfile.position || userProfile.employee_profile?.position
-      return position ? getEmployeePositionLabel(position) : 'Сотрудник HoReCa'
+      return position ? getEmployeePositionLabel(position) : t('profile.subtitle.employee')
     }
-    if (apiRole === 'restaurant') return 'Ресторатор'
-    if (apiRole === 'supplier') return 'Поставщик'
-    return 'Пользователь'
-  }, [apiRole, userProfile])
+    if (apiRole === 'restaurant') return t('profile.subtitle.venue')
+    if (apiRole === 'supplier') return t('profile.subtitle.supplier')
+    return t('common.user')
+  }, [apiRole, userProfile, getEmployeePositionLabel, t])
 
   const specializations = useMemo(() => {
     if (apiRole !== 'employee') return []
@@ -93,9 +96,9 @@ export const useProfilePageModel = () => {
     authService.logout()
     clearUserData()
     window.dispatchEvent(new CustomEvent('auth:logout'))
-    showToast('Вы вышли из аккаунта', 'success')
+    showToast(t('auth.loggedOut'), 'success')
     window.location.reload()
-  }, [clearUserData, showToast])
+  }, [clearUserData, showToast, t])
   const openEditDrawer = useCallback(() => {
     setIsEditDrawerOpen(true)
   }, [])
@@ -111,17 +114,17 @@ export const useProfilePageModel = () => {
   const restaurantInfo = useMemo(() => {
     if (apiRole !== 'restaurant') return null
     return {
-      name: userProfile?.full_name || userProfile?.name || 'Заведение',
+      name: userProfile?.full_name || userProfile?.name || t('venue'),
       format: null,
     }
-  }, [apiRole, userProfile])
+  }, [apiRole, userProfile, t])
 
   const supplierInfo = useMemo(() => {
     if (apiRole !== 'supplier') return null
     return {
-      name: userProfile?.full_name || userProfile?.name || 'Компания',
+      name: userProfile?.full_name || userProfile?.name || t('company'),
     }
-  }, [apiRole, userProfile])
+  }, [apiRole, userProfile, t])
 
   return {
     userProfile,

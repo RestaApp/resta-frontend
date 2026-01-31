@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
@@ -25,11 +26,6 @@ import type { TabOption } from '@/components/ui/tabs'
 import type { HotOffer } from '../../ui/components/HotOffers'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 
-const FEED_TYPE_OPTIONS: TabOption<FeedType>[] = [
-  { id: 'jobs', label: 'Вакансии', icon: Briefcase },
-  { id: 'shifts', label: 'Смены', icon: Flame },
-]
-
 type ProfileAlertState = {
   open: boolean
   message: string
@@ -37,10 +33,19 @@ type ProfileAlertState = {
 }
 
 export const useFeedPageModel = () => {
+  const { t } = useTranslation()
   useUserProfile()
 
   const { toast, hideToast } = useToast()
   const haptics = useHaptics()
+
+  const feedTypeOptions = useMemo<TabOption<FeedType>[]>(
+    () => [
+      { id: 'jobs', label: t('tabs.feed.jobs'), icon: Briefcase },
+      { id: 'shifts', label: t('tabs.feed.shifts'), icon: Flame },
+    ],
+    [t]
+  )
 
   const {
     feedType,
@@ -101,7 +106,7 @@ export const useFeedPageModel = () => {
       try {
         await handleApply(shiftId)
       } catch (error: unknown) {
-        const normalized = normalizeApiError(error, 'Не удалось отправить заявку. Попробуйте позже.')
+        const normalized = normalizeApiError(error, t('errors.applyError'), t)
 
         if (normalized.kind === 'profile_incomplete') {
           setProfileAlert({
@@ -119,7 +124,7 @@ export const useFeedPageModel = () => {
         })
       }
     },
-    [handleApply]
+    [handleApply, t]
   )
 
   const shiftsBaseQuery = useMemo(
@@ -275,7 +280,7 @@ export const useFeedPageModel = () => {
     // header
     feedType,
     setFeedType,
-    feedTypeOptions: FEED_TYPE_OPTIONS,
+    feedTypeOptions,
     isFetching: activeList.isFetching,
     hasActiveAdvancedFilters,
     activeFiltersList,

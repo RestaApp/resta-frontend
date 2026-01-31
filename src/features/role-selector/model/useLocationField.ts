@@ -3,6 +3,7 @@
  */
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCities } from '@/hooks/useCities'
 
 interface UseLocationFieldProps {
@@ -26,6 +27,7 @@ export const useLocationField = ({
     loadMoreThreshold = 0.8,
     loadMoreStep = 10,
 }: UseLocationFieldProps) => {
+    const { t } = useTranslation()
     const [isFocused, setIsFocused] = useState(false)
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [visibleCount, setVisibleCount] = useState(initialVisibleCount)
@@ -140,16 +142,16 @@ export const useLocationField = ({
         if (allFilteredCities.length > 0) {
             return {
                 isValid: false,
-                errorMessage: 'Выберите город из списка',
+                errorMessage: t('selectCityFromList'),
             }
         }
 
         // Если нет вариантов вообще
         return {
             isValid: false,
-            errorMessage: 'Город не найден. Выберите из списка',
+            errorMessage: t('cityNotFound'),
         }
-    }, [cities, allFilteredCities, onChange])
+    }, [cities, allFilteredCities, onChange, t])
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value

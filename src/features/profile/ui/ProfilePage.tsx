@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getSpecializationLabel } from '@/constants/labels'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileHeader } from './components/ProfileHeader'
@@ -9,11 +10,12 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { Loader } from '@/components/ui/loader'
 
 const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
+  const { t } = useTranslation()
   if (specializations.length === 0) return null
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Специализация</h3>
+      <h3 className="text-lg font-semibold mb-4">{t('profile.specializationSection')}</h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
           <span key={spec} className="px-4 py-2 rounded-full text-white text-sm gradient-primary">
@@ -27,17 +29,18 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
 SpecializationsSection.displayName = 'SpecializationsSection'
 
 const RestaurantInfoCard = memo(({ restaurantInfo }: { restaurantInfo: { name: string; format: string | null } }) => {
+  const { t } = useTranslation()
   return (
     <div className="p-4 border border-border rounded-xl">
-      <h4 className="font-semibold mb-3">Информация о заведении</h4>
+      <h4 className="font-semibold mb-3">{t('roles.venueInfoTitle')}</h4>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Название</span>
+          <span className="text-muted-foreground">{t('profile.venueName')}</span>
           <span>{restaurantInfo.name}</span>
         </div>
         {restaurantInfo.format && (
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Тип</span>
+            <span className="text-muted-foreground">{t('profile.venueType')}</span>
             <span>{restaurantInfo.format}</span>
           </div>
         )}
@@ -48,12 +51,13 @@ const RestaurantInfoCard = memo(({ restaurantInfo }: { restaurantInfo: { name: s
 RestaurantInfoCard.displayName = 'RestaurantInfoCard'
 
 const SupplierInfoCard = memo(({ supplierInfo }: { supplierInfo: { name: string } }) => {
+  const { t } = useTranslation()
   return (
     <div className="p-4 border border-border rounded-xl">
-      <h4 className="font-semibold mb-3">Информация о компании</h4>
+      <h4 className="font-semibold mb-3">{t('roles.supplierInfoTitle')}</h4>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Компания</span>
+          <span className="text-muted-foreground">{t('profile.companyName')}</span>
           <span>{supplierInfo.name}</span>
         </div>
       </div>
@@ -63,6 +67,7 @@ const SupplierInfoCard = memo(({ supplierInfo }: { supplierInfo: { name: string 
 SupplierInfoCard.displayName = 'SupplierInfoCard'
 
 export const ProfilePage = memo(() => {
+  const { t } = useTranslation()
   const m = useProfilePageModel()
 
   if (m.isProfileLoading) {
@@ -78,7 +83,7 @@ export const ProfilePage = memo(() => {
   if (!m.userProfile) {
     return (
       <div className="pb-24 pt-6 px-4">
-        <div className="text-center py-8 text-destructive">Ошибка загрузки профиля</div>
+        <div className="text-center py-8 text-destructive">{t('profile.loadError')}</div>
       </div>
     )
   }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -13,17 +14,15 @@ interface AppHeaderProps {
     activeTab?: Tab
 }
 
-const getFirstName = (value: unknown): string => {
-    const name = typeof value === 'string' ? value.trim() : ''
-    if (!name) return 'Пользователь'
-    return name.split(/\s+/)[0] ?? 'Пользователь'
-}
-
 export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProps) => {
+    const { t } = useTranslation()
     const { userProfile } = useUserProfile()
     const [drawerOpen, setDrawerOpen] = useState(false)
 
-    const name = getFirstName(greetingName ?? userProfile?.full_name ?? userProfile?.name)
+    const rawName = greetingName ?? userProfile?.full_name ?? userProfile?.name
+    const name = typeof rawName === 'string' && rawName.trim()
+        ? rawName.trim().split(/\s+/)[0] ?? t('common.user')
+        : t('common.user')
 
     const isActivity = activeTab === 'activity'
     const isDrawerVisible = isActivity && drawerOpen
@@ -62,7 +61,7 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
                             )}
                         </Avatar>
 
-                        <p className="text-muted-foreground">Привет, {name}</p>
+                        <p className="text-muted-foreground">{t('greeting.hello', { name })}</p>
                     </div>
 
                     <div className="flex items-center gap-2">

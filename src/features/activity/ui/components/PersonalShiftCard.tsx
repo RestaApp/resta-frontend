@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { ShiftCard } from '@/components/ui/ShiftCard'
 import type { Shift } from '@/features/feed/model/types'
@@ -12,6 +13,7 @@ interface PersonalShiftCardProps {
 }
 
 export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({ shift, onEdit, onDelete, isDeleting }) => {
+    const { t } = useTranslation()
     const handleEdit = useCallback((id: number) => onEdit(id), [onEdit])
     const handleDelete = useCallback((id: number) => onDelete(id), [onDelete])
 
@@ -30,7 +32,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({ shift, onE
     const mappedShift: Shift = useMemo(() => ({
         id: shift.id,
         logo: shift.title?.[0] ?? '🧾',
-        restaurant: shift.title || 'Моя смена',
+        restaurant: shift.title || t('common.myShift'),
         rating: 0,
 
         position: shift.position ?? 'chef',

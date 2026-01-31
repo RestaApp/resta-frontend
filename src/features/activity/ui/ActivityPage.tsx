@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import AddShiftDrawer from '@/features/activity/ui/components/AddShiftDrawer'
 import { useActivityPageModel } from '../model/hooks/useActivityPageModel'
 import { ActivityHeader } from './components/ActivityHeader'
@@ -5,6 +6,7 @@ import { ActivityListTab } from './components/ActivityListTab'
 import { ActivityCalendarTab } from './components/ActivityCalendarTab'
 
 export const ActivityPage = () => {
+  const { t } = useTranslation()
   const m = useActivityPageModel()
 
   return (
@@ -54,7 +56,7 @@ export const ActivityPage = () => {
         onSave={(res) => {
           m.setIsDrawerOpen(false)
           m.setEditingShift(null)
-          if (res) m.showToast('Смена сохранена', 'success')
+          if (res) m.showToast(t('shift.saved'), 'success')
         }}
       />
     </div>

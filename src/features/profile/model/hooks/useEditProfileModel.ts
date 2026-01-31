@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
@@ -11,6 +12,7 @@ import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpda
 import { formatPhoneInput, validatePhone } from '@/utils/phone'
 
 export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
+  const { t } = useTranslation()
   const { userProfile, refetch } = useUserProfile()
   const { updateUser, isLoading } = useUpdateUser()
   const { showToast } = useToast()
@@ -60,29 +62,29 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
   const performSave = useCallback(async () => {
     if (!userProfile?.id) {
-      showToast('Ошибка: пользователь не найден', 'error')
+      showToast(t('errors.userNotFound'), 'error')
       return
     }
     const phoneValidation = validatePhone(formData.phone)
     if (!phoneValidation.valid) {
-      showToast(phoneValidation.message ?? 'Неверный формат телефона', 'error')
+      showToast(phoneValidation.message ?? t('phone.invalidFormat'), 'error')
       return
     }
     try {
       const updateData = buildUpdateUserRequest(formData, apiRole)
       const result = await updateUser(userProfile.id, updateData)
       if (result.success && result.data) {
-        showToast('Профиль успешно обновлен', 'success')
+        showToast(t('errors.profileUpdateSuccess'), 'success')
         invalidateUserCache(dispatch)
         setTimeout(() => refetch().catch(() => {}), 300)
         onSuccess?.()
       } else {
-        showToast(result.errors?.join(', ') || 'Не удалось обновить профиль', 'error')
+        showToast(result.errors?.join(', ') || t('errors.profileUpdateError'), 'error')
       }
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Не удалось обновить профиль', 'error')
+      showToast(error instanceof Error ? error.message : t('errors.profileUpdateError'), 'error')
     }
-  }, [userProfile, formData, apiRole, updateUser, showToast, refetch, onSuccess, dispatch])
+  }, [userProfile, formData, apiRole, updateUser, showToast, refetch, onSuccess, dispatch, t])
 
   const handleSave = useCallback(async () => {
     if (!formData.city?.trim()) {

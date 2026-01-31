@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Calendar, Search } from 'lucide-react'
 import { motion } from 'motion/react'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
@@ -25,6 +26,7 @@ type Props = {
 }
 
 export const ActivityCalendarTab = memo((props: Props) => {
+  const { t } = useTranslation()
   const {
     isLoading,
     isError,
@@ -49,7 +51,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
       </div>
     )
   }
-  if (isError) return <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
+  if (isError) return <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
 
   return (
     <div className="space-y-4">
@@ -80,13 +82,13 @@ export const ActivityCalendarTab = memo((props: Props) => {
       </div>
 
       <div>
-        <h4 className="mb-3 text-lg font-semibold">{weekDays.find(d => d.date === selectedDay)?.full || 'День'}</h4>
+        <h4 className="mb-3 text-lg font-semibold">{weekDays.find(d => d.date === selectedDay)?.full || t('activity.day')}</h4>
 
         {selectedDayShifts.length > 0 ? (
           <div className="space-y-4">
             {selectedDayShifts.map(shift =>
               shift.type === 'resta' ? (
-                <AppliedShiftCard key={shift.id} shift={shift.data} showToast={(m, t) => showToast(m, t)} />
+                <AppliedShiftCard key={shift.id} shift={shift.data} showToast={(m, type) => showToast(m, type)} />
               ) : (
                 <PersonalShiftCard
                   key={shift.id}

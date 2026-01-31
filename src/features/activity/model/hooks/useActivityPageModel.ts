@@ -1,5 +1,6 @@
 // src/features/activity/model/hooks/useActivityPageModel.ts
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
@@ -16,8 +17,12 @@ export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: RawSh
 
 export type WeekDay = { date: string; short: string; full: string; dateObj: Date }
 
+const getDateLocale = (lang: string) => (lang === 'en' ? 'en-US' : 'ru-RU')
+
 export const useActivityPageModel = () => {
+  const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
+  const dateLocale = getDateLocale(i18n.language)
 
   const { data, isLoading, isError } = useGetMyShiftsQuery()
   const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery()
@@ -44,12 +49,12 @@ export const useActivityPageModel = () => {
     async (id: number) => {
       try {
         await deleteShift(String(id))
-        showToast('Смена удалена', 'success')
+        showToast(t('shift.deleted'), 'success')
       } catch {
-        showToast('Не удалось удалить смену', 'error')
+        showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, showToast]
+    [deleteShift, showToast, t]
   )
 
   // Calendar state
@@ -69,8 +74,8 @@ export const useActivityPageModel = () => {
       date.setDate(monday.getDate() + i)
 
       const dayNum = date.getDate()
-      const shortDay = date.toLocaleDateString('ru-RU', { weekday: 'short' })
-      const fullDay = date.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })
+      const shortDay = date.toLocaleDateString(dateLocale, { weekday: 'short' })
+      const fullDay = date.toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long' })
 
       days.push({
         date: String(dayNum).padStart(2, '0'),
@@ -81,7 +86,7 @@ export const useActivityPageModel = () => {
     }
 
     return days
-  }, [])
+  }, [dateLocale])
 
   useEffect(() => {
     if (selectedDay || weekDays.length === 0) return

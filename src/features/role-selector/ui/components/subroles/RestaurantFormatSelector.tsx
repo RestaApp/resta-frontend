@@ -3,10 +3,11 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FormScreen } from './shared/FormScreen'
 import { useFormSelector } from '../../../model/useFormSelector'
 import { LoadingState } from './shared/LoadingState'
-import { getRestaurantFormatLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import type { FormData } from '../../../model/useFormSelector'
 
 interface RestaurantFormatSelectorProps {
@@ -24,6 +25,8 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
   isLoading = false,
   isFetching = false,
 }: RestaurantFormatSelectorProps) {
+  const { t } = useTranslation()
+  const { getRestaurantFormatLabel } = useLabels()
   const {
     formData,
     isLoadingLocation,
@@ -39,16 +42,16 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
   }
 
   if (!isLoading && !isFetching && (!restaurantFormats || restaurantFormats.length === 0)) {
-    return <LoadingState message="Не удалось загрузить форматы ресторанов" />
+    return <LoadingState message={t('roles.restaurantFormatsError')} />
   }
 
   return (
     <FormScreen
-      title="Информация о ресторане"
-      description="Заполните данные о вашем заведении"
-      nameLabel="Название ресторана"
-      namePlaceholder="Введите название"
-      typeLabel="Тип заведения"
+      title={t('roles.venueInfoTitle')}
+      description={t('roles.venueInfoDescription')}
+      nameLabel={t('roles.venueNameLabel')}
+      namePlaceholder={t('roles.venueNamePlaceholder')}
+      typeLabel={t('roles.venueTypeLabel')}
       types={restaurantFormats || []}
       getTypeLabel={getRestaurantFormatLabel}
       formData={formData}
@@ -57,7 +60,7 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
       onContinue={handleContinue}
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
-      continueButtonAriaLabel="Продолжить заполнение формы ресторана"
+      continueButtonAriaLabel={t('common.continueFormVenue')}
     />
   )
 })

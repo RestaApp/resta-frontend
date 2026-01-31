@@ -3,10 +3,11 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FormScreen } from './shared/FormScreen'
 import { useFormSelector } from '../../../model/useFormSelector'
 import { LoadingState } from './shared/LoadingState'
-import { getSupplierTypeLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import type { FormData } from '../../../model/useFormSelector'
 
 interface SupplierTypeSelectorProps {
@@ -24,6 +25,8 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
   isLoading = false,
   isFetching = false,
 }: SupplierTypeSelectorProps) {
+  const { t } = useTranslation()
+  const { getSupplierTypeLabel } = useLabels()
   const {
     formData,
     isLoadingLocation,
@@ -39,16 +42,16 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
   }
 
   if (!isLoading && !isFetching && (!supplierTypes || supplierTypes.length === 0)) {
-    return <LoadingState message="Не удалось загрузить типы поставщиков" />
+    return <LoadingState message={t('roles.supplierTypesError')} />
   }
 
   return (
     <FormScreen
-      title="Информация о поставщике"
-      description="Заполните данные о вашей компании"
-      nameLabel="Название компании"
-      namePlaceholder="Введите название компании"
-      typeLabel="Категория товаров"
+      title={t('roles.supplierInfoTitle')}
+      description={t('roles.supplierInfoDescription')}
+      nameLabel={t('roles.supplierNameLabel')}
+      namePlaceholder={t('roles.supplierNamePlaceholder')}
+      typeLabel={t('roles.supplierTypeLabel')}
       types={supplierTypes || []}
       getTypeLabel={getSupplierTypeLabel}
       formData={formData}
@@ -57,7 +60,7 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
       onContinue={handleContinue}
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
-      continueButtonAriaLabel="Продолжить заполнение формы поставщика"
+      continueButtonAriaLabel={t('common.continueFormSupplier')}
     />
   )
 })

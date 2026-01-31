@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CalendarDays, List } from 'lucide-react'
 import { Tabs } from '@/components/ui/tabs'
 import type { TabOption } from '@/components/ui/tabs'
@@ -6,16 +7,17 @@ import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
 
 type Props = {
   activeTab: ActivityTab
-  onChange: (t: ActivityTab) => void
+  onChange: (tab: ActivityTab) => void
 }
 
 export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
+  const { t } = useTranslation()
   const tabOptions = useMemo<TabOption<ActivityTab>[]>(
     () => [
-      { id: 'list', label: 'Список', icon: List },
-      { id: 'calendar', label: 'Календарь', icon: CalendarDays },
+      { id: 'list', label: t('tabs.activity.list'), icon: List },
+      { id: 'calendar', label: t('tabs.activity.calendar'), icon: CalendarDays },
     ],
-    []
+    [t]
   )
 
   return (

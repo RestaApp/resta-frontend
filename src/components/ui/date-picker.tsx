@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
@@ -15,14 +16,16 @@ interface DatePickerProps {
 export const DatePicker = ({
     value,
     onChange,
-    placeholder = 'ДД.ММ.ГГГГ',
+    placeholder,
     minDate,
     className,
     label,
     id,
 }: DatePickerProps) => {
+    const { t } = useTranslation()
     const autoId = useId()
     const inputId = id ?? autoId
+    const displayPlaceholder = placeholder ?? t('datePicker.placeholder')
 
     return (
         <div className={cn('relative', className)}>
@@ -48,7 +51,7 @@ export const DatePicker = ({
                         '[&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full',
                         '[&::-webkit-calendar-picker-indicator]:cursor-pointer'
                     )}
-                    aria-label={label ?? 'Выбор даты'}
+                    aria-label={label ?? t('datePicker.ariaLabel')}
                 />
 
                 <CalendarIcon
@@ -61,7 +64,7 @@ export const DatePicker = ({
                         className="pointer-events-none absolute left-3 top-1/2 inline-flex h-5 -translate-y-1/2 items-center text-sm text-muted-foreground"
                         aria-hidden
                     >
-                        {placeholder}
+                        {displayPlaceholder}
                     </span>
                 )}
             </div>

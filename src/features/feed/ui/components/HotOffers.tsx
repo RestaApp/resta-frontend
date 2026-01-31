@@ -1,5 +1,6 @@
 import { memo, useMemo, useCallback } from 'react'
-import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { useTranslation } from 'react-i18next'
+import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney } from '../../model/utils/formatting'
 
 export interface HotOffer {
@@ -26,13 +27,14 @@ interface HotOfferCardProps {
 }
 
 const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
+    const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
     const handleClick = useCallback(() => onClick(item), [item, onClick])
 
     const positionText = useMemo(() => {
         const position = getEmployeePositionLabel(item.position)
         const specialization = item.specialization ? ` • ${getSpecializationLabel(item.specialization)}` : ''
         return `${position}${specialization}`
-    }, [item.position, item.specialization])
+    }, [item.position, item.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
     const paymentText = useMemo(() => {
         if (!Number.isFinite(item.payment) || item.payment <= 0) return null
@@ -70,6 +72,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
 HotOfferCard.displayName = 'HotOfferCard'
 
 export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: HotOffersProps) => {
+    const { t } = useTranslation()
     const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
     const hasMore = useMemo(
@@ -81,7 +84,7 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
         <div className="py-2">
             <div className="px-4 mb-3 flex items-center justify-between">
                 <h3 className="font-bold text-lg flex items-center gap-2">
-                    <span className="text-xl">🔥</span> Горящие смены
+                    <span className="text-xl">🔥</span> {t('feed.hotOffers')}
                     {totalCount !== undefined ? (
                         <span className="text-sm font-normal text-muted-foreground">({totalCount})</span>
                     ) : null}
@@ -93,7 +96,7 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
                         onClick={onShowAll}
                         className="text-xs text-primary font-medium hover:underline"
                     >
-                        Все
+                        {t('common.all')}
                     </button>
                 ) : null}
             </div>

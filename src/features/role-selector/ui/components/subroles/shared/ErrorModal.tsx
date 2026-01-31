@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Modal } from '@/components/ui/modal'
 import { ModalContent } from '@/components/ui/modal-content'
 import { AlertTriangle } from 'lucide-react'
@@ -18,14 +19,15 @@ export const ErrorModal = memo(function ErrorModal({
     onClose,
     message,
 }: ErrorModalProps) {
+    const { t } = useTranslation()
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalContent
                 icon={<AlertTriangle className="w-8 h-8 text-destructive" />}
-                title="Ошибка сохранения"
-                description={message || 'Произошла ошибка при сохранении данных'}
+                title={t('errors.saveError')}
+                description={message || t('errors.saveErrorDescription')}
                 primaryButton={{
-                    label: 'Понятно',
+                    label: t('common.understand'),
                     onClick: onClose,
                 }}
             />

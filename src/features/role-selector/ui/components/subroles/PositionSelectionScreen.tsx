@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CardSelect } from '@/components/ui/card-select'
 import { SectionHeader } from '@/components/ui/section-header'
 import { POSITION_EMOJI_MAP } from '@/constants/roles'
@@ -19,11 +20,12 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   selectedSubRole,
   onPositionSelect,
 }: PositionSelectionScreenProps) {
+  const { t } = useTranslation()
   return (
     <div className=" bg-background flex flex-col px-6 py-12">
       <SectionHeader
-        title="Кем вы работаете?"
-        description="Выберите вашу основную позицию"
+        title={t('roles.positionScreenTitle')}
+        description={t('roles.positionScreenDescription')}
         className="mb-8"
       />
 
@@ -48,7 +50,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
                   onPositionSelect(role.id, role.originalValue || role.id)
                 }
               }}
-              ariaLabel={`Выбрать: ${subRole.title}`}
+              ariaLabel={t('aria.selectType', { label: subRole.title })}
             />
           )
         })}

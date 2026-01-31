@@ -3,10 +3,11 @@
  */
 
 import { memo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui'
 import { Loader } from '@/components/ui/loader'
-import { getSpecializationLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { ExperienceField, LocationField, OpenToWorkToggle } from './index'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import type { EmployeeFormData } from '../../../../model/useEmployeeSubRoleSelector'
@@ -42,6 +43,8 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
   onDone,
   errorDialogOpen = false,
 }: SpecializationDrawerProps) {
+  const { t } = useTranslation()
+  const { getSpecializationLabel } = useLabels()
   const handleOpenChange = useCallback(
     (next: boolean) => {
       if (!next && errorDialogOpen) return
@@ -57,8 +60,8 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         {specializations.length > 0 && (
           <DrawerDescription>
             {specializations.length === 1
-              ? 'Выберите специализацию'
-              : 'Выберите одну или несколько специализаций'}
+              ? t('shift.selectSpecialization')
+              : t('shift.selectSpecializations')}
           </DrawerDescription>
         )}
       </DrawerHeader>
@@ -79,7 +82,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                     label={getSpecializationLabel(spec)}
                     isSelected={selectedSpecializations.includes(spec)}
                     onClick={onSpecializationToggle}
-                    ariaLabel={`Выбрать специализацию: ${getSpecializationLabel(spec)}`}
+                    ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(spec) })}
                   />
                 ))}
               </div>
@@ -106,10 +109,10 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
           disabled={specializations.length > 0 && selectedSpecializations.length === 0}
           className="w-full py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed gradient-primary"
         >
-          Готово
+          {t('common.done')}
         </motion.button>
         <p className="text-center text-xs text-muted-foreground mt-4 opacity-70">
-          Полные данные профиля вы сможете заполнить позже в разделе «Профиль».
+          {t('profile.fillLaterHint')}
         </p>
       </DrawerFooter>
     </Drawer>

@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/utils/cn'
 
 interface SkeletonProps {
@@ -14,7 +15,7 @@ const VARIANT_CLASSES: Record<NonNullable<SkeletonProps['variant']>, string> = {
 }
 
 export const Skeleton = memo(function Skeleton({ className, variant = 'default' }: SkeletonProps) {
-
+  const { t } = useTranslation()
   return (
     <div
       className={cn(
@@ -22,7 +23,7 @@ export const Skeleton = memo(function Skeleton({ className, variant = 'default' 
         VARIANT_CLASSES[variant],
         className
       )}
-      aria-label="Загрузка"
+      aria-label={t('common.loading')}
       role="status"
     />
   )

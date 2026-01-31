@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { getCurrentUserId } from '@/utils/user'
 import { logger } from '@/utils/logger'
@@ -26,9 +27,12 @@ interface UseUserUpdateResult {
 }
 
 export const useUserUpdate = (): UseUserUpdateResult => {
+  const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
   const { updateUser } = useUpdateUser()
   const isSubmittingRef = useRef(false)
+  const saveErrorFallback = t('errors.saveErrorDescription')
+  const saveErrorRetry = t('saveErrorRetry')
 
   /**
    * Обновляет роль пользователя
@@ -60,7 +64,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
 
         // если updateUser возвращает success/errors — проверяем
         if (result && typeof result === 'object' && 'success' in result && result.success === false) {
-          const msg = (result.errors || ['Произошла ошибка при сохранении данных']).join('\n')
+          const msg = (result.errors || [saveErrorFallback]).join('\n')
           onError?.(msg)
           return false
         }
@@ -68,12 +72,12 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         onSelectRole(role)
         return true
       } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Произошла ошибка при сохранении данных'
+        const msg = error instanceof Error ? error.message : saveErrorFallback
         onError?.(msg)
         return false
       }
     },
-    [isAuthenticated, updateUser]
+    [isAuthenticated, updateUser, saveErrorFallback]
   )
 
   /**
@@ -105,13 +109,13 @@ export const useUserUpdate = (): UseUserUpdateResult => {
 
       try {
         if (!updateUser) {
-          throw new Error('updateUser функция не определена')
+          throw new Error(saveErrorFallback)
         }
 
         const result = await updateUser(userId, updateData)
 
         if (!result.success) {
-          const errors = result.errors || ['Произошла ошибка при сохранении данных']
+          const errors = result.errors || [saveErrorFallback]
           const errorMessage = errors.join('\n')
           if (onError) {
             onError(errorMessage)
@@ -127,7 +131,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         const errorMessage =
           error instanceof Error
             ? error.message
-            : 'Произошла ошибка при сохранении данных. Попробуйте еще раз.'
+            : saveErrorRetry
         if (onError) {
           onError(errorMessage)
         }
@@ -136,7 +140,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         isSubmittingRef.current = false
       }
     },
-    [isAuthenticated, updateUser]
+    [isAuthenticated, updateUser, saveErrorFallback, saveErrorRetry]
   )
 
   return {

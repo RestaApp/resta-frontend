@@ -1,4 +1,5 @@
 import { memo, useMemo, useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CitySelect } from '@/components/ui/city-select'
 import { Input } from '@/components/ui/input'
 import { Field } from './Field'
@@ -40,9 +41,11 @@ export const LocationField = memo(function LocationField({
     label,
     value,
     onChange,
-    placeholder = 'Например: ул. Ленина 1',
+    placeholder,
 }: LocationFieldProps) {
+    const { t } = useTranslation()
     const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
+    const displayPlaceholder = placeholder ?? t('shift.locationPlaceholder')
 
     // Улучшенный парсинг: если значение без запятой совпадает с городом - считаем его городом
     const parsedLocation = useMemo(() => {
@@ -84,14 +87,14 @@ export const LocationField = memo(function LocationField({
         const prevCity = prevCityRef.current
         setCity(newCity)
         prevCityRef.current = newCity
-        
+
         // Если адрес совпадает со старым городом или пустой - очищаем его
         let newAddress = address
         if (address === prevCity || !address.trim()) {
             newAddress = ''
             setAddress('')
         }
-        
+
         const combined = combineLocation(newCity, newAddress)
         onChange(combined)
     }
@@ -110,7 +113,7 @@ export const LocationField = memo(function LocationField({
                         value={city}
                         onChange={handleCityChange}
                         options={cities}
-                        placeholder="Город"
+                        placeholder={t('profile.city')}
                         disabled={isCitiesLoading}
                     />
                 </div>
@@ -118,7 +121,7 @@ export const LocationField = memo(function LocationField({
                     <Input
                         value={address}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddressChange(e.target.value)}
-                        placeholder={placeholder}
+                        placeholder={displayPlaceholder}
                     />
                 </div>
             </div>

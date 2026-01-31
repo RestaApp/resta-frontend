@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTheme } from '@/hooks/useTheme'
 
 export const ThemeToggleCompact = () => {
+    const { t } = useTranslation()
     const { theme, setTheme } = useTheme()
 
     const containerRef = useRef<HTMLDivElement>(null)
@@ -42,7 +44,7 @@ export const ThemeToggleCompact = () => {
                 className="relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors"
                 style={{ color: theme === 'light' ? 'white' : 'var(--muted-foreground)' }}
                 aria-pressed={theme === 'light'}
-                aria-label="Выбрать светлую тему"
+                aria-label={t('aria.lightTheme')}
             >
                 <Sun className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -54,7 +56,7 @@ export const ThemeToggleCompact = () => {
                 className="relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors"
                 style={{ color: theme === 'dark' ? 'white' : 'var(--muted-foreground)' }}
                 aria-pressed={theme === 'dark'}
-                aria-label="Выбрать тёмную тему"
+                aria-label={t('aria.darkTheme')}
             >
                 <Moon className="h-4 w-4" aria-hidden="true" />
             </button>

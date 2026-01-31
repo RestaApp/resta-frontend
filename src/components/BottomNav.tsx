@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
 import { isEmployeeRole } from '@/utils/roles'
@@ -19,13 +20,14 @@ export const BottomNav = ({
   layoutId = 'bottom-nav-active-tab',
   hasIncompleteProfile = false,
 }: BottomNavProps) => {
+  const { t } = useTranslation()
   const tabs = useMemo(() => getTabsForRole(role), [role])
   const isEmployee = isEmployeeRole(role)
   const reduceMotion = useReducedMotion()
 
   return (
     <nav
-      aria-label="Нижняя навигация"
+      aria-label={t('nav.bottomNav')}
       className={[
         'fixed bottom-0 left-0 right-0 z-50 border-t border-border safe-area-bottom',
         isEmployee ? 'bg-background/80 backdrop-blur-xl' : 'bg-background',
@@ -35,12 +37,13 @@ export const BottomNav = ({
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = activeTab === id
           const showProfileDot = id === 'profile' && hasIncompleteProfile
+          const labelText = t(label)
 
           return (
             <motion.button
               key={id}
               type="button"
-              aria-label={label}
+              aria-label={labelText}
               aria-current={isActive ? 'page' : undefined}
               whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
@@ -76,7 +79,7 @@ export const BottomNav = ({
                       style={{ backgroundColor: 'var(--pink-electric)' }}
                       aria-hidden="true"
                     />
-                    <span className="sr-only">Требуется заполнить профиль</span>
+                    <span className="sr-only">{t('nav.fillProfileRequired')}</span>
                   </>
                 )}
               </span>
@@ -87,7 +90,7 @@ export const BottomNav = ({
                   isActive ? 'text-[var(--pink-electric)]' : 'text-muted-foreground',
                 ].join(' ')}
               >
-                {label}
+                {labelText}
               </span>
             </motion.button>
           )

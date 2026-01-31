@@ -1,4 +1,5 @@
 import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, Check, Search } from 'lucide-react'
 import { cn } from '@/utils/cn'
@@ -24,13 +25,15 @@ export const Select = memo(function Select({
   value,
   onChange,
   options,
-  placeholder = 'Выберите значение',
+  placeholder,
   disabled = false,
   className,
   label,
   hint,
   allowCustomValue = false,
 }: SelectProps) {
+  const { t } = useTranslation()
+  const displayPlaceholder = placeholder ?? t('common.selectValue')
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -40,7 +43,7 @@ export const Select = memo(function Select({
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   const selectedOption = options.find((opt) => opt.value === value)
-  const displayValue = isOpen && allowCustomValue ? searchQuery : selectedOption?.label || value || placeholder
+  const displayValue = isOpen && allowCustomValue ? searchQuery : selectedOption?.label || value || displayPlaceholder
 
   // Фильтрация опций по поисковому запросу
   const filteredOptions = useMemo(() => {
@@ -268,7 +271,7 @@ export const Select = memo(function Select({
         onKeyDown={handleInputKeyDown}
         onFocus={() => setIsOpen(true)}
         disabled={disabled}
-        placeholder={placeholder}
+        placeholder={displayPlaceholder}
         className={cn(
           'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base transition-all',
           'placeholder:text-muted-foreground',
@@ -355,7 +358,7 @@ export const Select = memo(function Select({
                         }
                       }}
                       onKeyDown={handleInputKeyDown}
-                      placeholder={placeholder}
+                      placeholder={displayPlaceholder}
                       className={cn(
                         'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm',
                         'placeholder:text-muted-foreground',
@@ -374,7 +377,7 @@ export const Select = memo(function Select({
                   <div className="p-2">
                     {filteredOptions.length === 0 ? (
                       <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                        {searchQuery.trim() ? 'Ничего не найдено' : 'Нет доступных вариантов'}
+                        {searchQuery.trim() ? t('common.nothingFound') : t('common.noOptions')}
                       </div>
                     ) : (
                       <>

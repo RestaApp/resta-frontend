@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { RangeSlider } from '@/components/ui'
 import { formatExperienceText } from '@/utils/experience'
 import { AnimatedField } from './AnimatedField'
@@ -20,10 +21,11 @@ export const ExperienceField = memo(function ExperienceField({
     withAnimation = false,
     animationDelay = 0,
 }: ExperienceFieldProps) {
+    const { t } = useTranslation()
     const content = (
         <div>
             <label className="block mb-1 text-muted-foreground text-sm font-medium">
-                Ваш стаж
+                {t('roles.yourExperience')}
             </label>
             <div className="mb-3">
                 <span className="text-lg font-semibold text-gradient">

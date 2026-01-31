@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal, Loader2 } from 'lucide-react'
 
 interface SearchFiltersProps {
@@ -14,10 +15,10 @@ function SearchFiltersComponent({
     hasActiveFilters = false,
     activeFiltersList,
 }: SearchFiltersProps) {
+    const { t } = useTranslation()
     return (
         <div className="px-4 py-2 bg-card border-b border-border">
             <div className="flex gap-2 items-center">
-                {/* Активные фильтры слева */}
                 {activeFiltersList.length > 0 && (
                     <div className="flex-1 flex gap-1.5 items-center overflow-x-auto scrollbar-hide">
                         {activeFiltersList.map((filter, index) => (
@@ -35,7 +36,7 @@ function SearchFiltersComponent({
                 {onOpenFilters && (
                     <button
                         onClick={onOpenFilters}
-                        aria-label="Открыть фильтры"
+                        aria-label={t('feed.openFilters')}
                         className="relative p-2 bg-card/60 rounded-xl hover:bg-card transition-colors border border-border flex-shrink-0 ml-auto"
                     >
                         <div className="relative">

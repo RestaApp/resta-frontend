@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import { cn } from '@/utils/cn'
@@ -27,6 +28,7 @@ export const LocationField = memo(function LocationField({
     animationDelay = 0,
     isLoading = false,
 }: LocationFieldProps) {
+    const { t } = useTranslation()
     const {
         isValid,
         errorMessage,
@@ -49,7 +51,7 @@ export const LocationField = memo(function LocationField({
     const content = (
         <div ref={containerRef} className="relative">
             <label className="block mb-2 text-muted-foreground text-sm font-medium">
-                Город
+                {t('profile.city')}
             </label>
             <div className="relative">
                 <input
@@ -59,7 +61,7 @@ export const LocationField = memo(function LocationField({
                     onChange={handleInputChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
-                    placeholder="Минск"
+                    placeholder={t('citySelect.placeholderExample')}
                     className={cn(
                         'w-full px-4 py-3 pr-12 rounded-2xl border bg-input-background focus:outline-none focus:ring-1 transition-all text-sm text-foreground',
                         isValid
@@ -72,7 +74,7 @@ export const LocationField = memo(function LocationField({
                     onClick={onLocationRequest}
                     disabled={isLoading}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Определить местоположение"
+                    aria-label={t('aria.determineLocation')}
                     type="button"
                 >
                     {isLoading ? (
@@ -115,7 +117,7 @@ export const LocationField = memo(function LocationField({
                                 </ul>
                                 {hasMore && (
                                     <div className="px-4 py-2 text-xs text-muted-foreground text-center border-t border-border">
-                                        Прокрутите вниз для загрузки еще городов
+                                        {t('citySelect.loadMoreHint')}
                                     </div>
                                 )}
                             </>

@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTheme } from '@/hooks/useTheme'
@@ -8,6 +9,7 @@ interface ThemeToggleProps {
 }
 
 export const ThemeToggle = ({ size = 20 }: ThemeToggleProps) => {
+    const { t } = useTranslation()
     const { theme, toggleTheme } = useTheme()
 
     const handleToggle = useCallback(() => {
@@ -18,7 +20,7 @@ export const ThemeToggle = ({ size = 20 }: ThemeToggleProps) => {
         <button
             type="button"
             onClick={handleToggle}
-            aria-label="Переключить тему"
+            aria-label={t('aria.toggleTheme')}
             className="rounded-full p-2 transition-colors hover:bg-muted/50"
         >
             <motion.div

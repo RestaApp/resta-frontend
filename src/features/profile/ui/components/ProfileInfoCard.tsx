@@ -1,4 +1,5 @@
 import { memo, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { Card } from '@/components/ui/card'
@@ -8,7 +9,7 @@ import type { ApiRole } from '@/types'
 import type { UserData, EmployeeProfile } from '@/services/api/authApi'
 import { formatExperienceText } from '@/utils/experience'
 import { getProfileCompleteness } from '../../model/utils/profileCompleteness'
-import { getWorkSummaryLabel } from '../../model/utils/profileFormLabels'
+import { useProfileFormLabels } from '@/shared/i18n/hooks'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
 
@@ -45,6 +46,7 @@ interface ProfileInfoEmployeeSectionProps {
 }
 
 const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmployeeSectionProps) => {
+  const { t } = useTranslation()
   if (!employeeProfile) return null
   const { experience_years, open_to_work, skills } = employeeProfile
   const hasExperience = experience_years !== undefined
@@ -56,16 +58,16 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
   return (
     <>
       {hasExperience && (
-        <InfoRow label="Опыт работы">
+        <InfoRow label={t('profile.experience')}>
           {formatExperienceText(experience_years)}
         </InfoRow>
       )}
       {hasOpenToWork && (
-        <InfoRow label="Открыт к работе">{open_to_work ? 'Да' : 'Нет'}</InfoRow>
+        <InfoRow label={t('profile.openToWork')}>{open_to_work ? t('common.yes') : t('common.no')}</InfoRow>
       )}
       {hasSkills ? (
         <div className="pt-3 mt-3 border-t border-border/50">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-2">Навыки</span>
+          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-2">{t('profile.skills')}</span>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill) => (
               <span
@@ -92,6 +94,8 @@ interface ProfileInfoCardProps {
 }
 
 export const ProfileInfoCard = memo(({ userProfile, apiRole, completeness, onFill }: ProfileInfoCardProps) => {
+  const { t } = useTranslation()
+  const { getWorkSummaryLabel } = useProfileFormLabels()
   const isFilled = completeness?.isFilled ?? false
   const cityOrLocation = userProfile.city ?? userProfile.location
   const workSummaryLabel = getWorkSummaryLabel(apiRole)
@@ -99,11 +103,11 @@ export const ProfileInfoCard = memo(({ userProfile, apiRole, completeness, onFil
   return (
     <Card className="p-5 shadow-sm">
       <div className="flex items-center justify-between gap-3 mb-4">
-        <h4 className="text-base font-semibold text-foreground">Личная информация</h4>
+        <h4 className="text-base font-semibold text-foreground">{t('profile.personalInfo')}</h4>
         {isFilled ? (
           <Badge variant="success" className="flex items-center gap-1.5 shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-0">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            Заполнено
+            {t('common.filled')}
           </Badge>
         ) : (
           <button
@@ -112,7 +116,7 @@ export const ProfileInfoCard = memo(({ userProfile, apiRole, completeness, onFil
             className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <AlertCircle className="w-3.5 h-3.5" />
-            Нужно заполнить
+            {t('common.needToFill')}
           </button>
         )}
       </div>
@@ -120,40 +124,40 @@ export const ProfileInfoCard = memo(({ userProfile, apiRole, completeness, onFil
         {!isFilled ? (
           <div className="text-center py-6 px-2">
             <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-              Для того, чтобы откликаться на вакансии или смены, необходимо заполнить обязательные поля.
+              {t('profile.fillToApply')}
             </p>
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={onFill}
               className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
             >
-              Заполнить
+              {t('common.fill')}
             </motion.button>
           </div>
         ) : (
           <>
             {userProfile.bio && (
               <div className="pb-3 border-b border-border/50">
-                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-1.5">Описание</span>
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-1.5">{t('common.description')}</span>
                 <p className="text-foreground leading-relaxed">{userProfile.bio}</p>
               </div>
             )}
             <div className="divide-y divide-border/50 [&>div:first-child]:pt-0">
               {cityOrLocation && (
-                <InfoRow label="Город" valueClassName={`${VALUE_CLASS} truncate`}>
+                <InfoRow label={t('profile.city')} valueClassName={`${VALUE_CLASS} truncate`}>
                   {cityOrLocation}
                 </InfoRow>
               )}
               {apiRole === 'employee' && userProfile.last_name && (
-                <InfoRow label="Фамилия">{userProfile.last_name}</InfoRow>
+                <InfoRow label={t('profile.surname')}>{userProfile.last_name}</InfoRow>
               )}
               {userProfile.email && (
-                <InfoRow label="Email" href={`mailto:${userProfile.email}`} valueClassName={VALUE_LINK_CLASS}>
+                <InfoRow label={t('profile.email')} href={`mailto:${userProfile.email}`} valueClassName={VALUE_LINK_CLASS}>
                   {userProfile.email}
                 </InfoRow>
               )}
               {userProfile.phone && (
-                <InfoRow label="Телефон" href={`tel:${userProfile.phone}`}>
+                <InfoRow label={t('profile.phone')} href={`tel:${userProfile.phone}`}>
                   {userProfile.phone}
                 </InfoRow>
               )}

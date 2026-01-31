@@ -13,13 +13,36 @@ export interface TabItem {
 }
 
 /**
- * Получает список табов для роли сотрудника
+ * Ключи переводов для табов (i18n)
+ */
+export const TAB_LABEL_KEYS = {
+  employee: {
+    feed: 'tabs.employee.feed',
+    activity: 'tabs.employee.activity',
+    profile: 'tabs.employee.profile',
+  },
+  venue: {
+    home: 'tabs.venue.home',
+    staff: 'tabs.venue.staff',
+    suppliers: 'tabs.venue.suppliers',
+    profile: 'tabs.venue.profile',
+  },
+  supplier: {
+    home: 'tabs.supplier.home',
+    requests: 'tabs.supplier.requests',
+    showcase: 'tabs.supplier.showcase',
+    profile: 'tabs.supplier.profile',
+  },
+} as const
+
+/**
+ * Получает список табов для роли сотрудника (label — ключ i18n)
  */
 export const getEmployeeTabs = (): TabItem[] => {
   return [
-    { id: 'feed', label: 'Поиск', icon: Search },
-    { id: 'activity', label: 'Активность', icon: Zap },
-    { id: 'profile', label: 'Профиль', icon: User },
+    { id: 'feed', label: TAB_LABEL_KEYS.employee.feed, icon: Search },
+    { id: 'activity', label: TAB_LABEL_KEYS.employee.activity, icon: Zap },
+    { id: 'profile', label: TAB_LABEL_KEYS.employee.profile, icon: User },
   ]
 }
 
@@ -28,10 +51,10 @@ export const getEmployeeTabs = (): TabItem[] => {
  */
 export const getVenueTabs = (): TabItem[] => {
   return [
-    { id: 'home', label: 'Главная', icon: Home },
-    { id: 'staff', label: 'Кадры', icon: Users },
-    { id: 'suppliers', label: 'Поставщики', icon: Package },
-    { id: 'profile', label: 'Профиль', icon: User },
+    { id: 'home', label: TAB_LABEL_KEYS.venue.home, icon: Home },
+    { id: 'staff', label: TAB_LABEL_KEYS.venue.staff, icon: Users },
+    { id: 'suppliers', label: TAB_LABEL_KEYS.venue.suppliers, icon: Package },
+    { id: 'profile', label: TAB_LABEL_KEYS.venue.profile, icon: User },
   ]
 }
 
@@ -40,10 +63,10 @@ export const getVenueTabs = (): TabItem[] => {
  */
 export const getSupplierTabs = (): TabItem[] => {
   return [
-    { id: 'home', label: 'Дашборд', icon: Home },
-    { id: 'requests', label: 'Запросы', icon: Zap },
-    { id: 'showcase', label: 'Витрина', icon: Store },
-    { id: 'profile', label: 'Профиль', icon: User },
+    { id: 'home', label: TAB_LABEL_KEYS.supplier.home, icon: Home },
+    { id: 'requests', label: TAB_LABEL_KEYS.supplier.requests, icon: Zap },
+    { id: 'showcase', label: TAB_LABEL_KEYS.supplier.showcase, icon: Store },
+    { id: 'profile', label: TAB_LABEL_KEYS.supplier.profile, icon: User },
   ]
 }
 

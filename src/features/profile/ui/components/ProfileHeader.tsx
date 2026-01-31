@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { User, Edit2 } from 'lucide-react'
 
@@ -10,6 +11,7 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader = memo(({ userProfile, userName, roleLabel, onEdit }: ProfileHeaderProps) => {
+  const { t } = useTranslation()
   const photoUrl = userProfile?.profile_photo_url || userProfile?.photo_url || null
 
   return (
@@ -18,7 +20,7 @@ export const ProfileHeader = memo(({ userProfile, userName, roleLabel, onEdit }:
         whileTap={{ scale: 0.95 }}
         onClick={onEdit}
         className="absolute top-0 right-0 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-        aria-label="Редактировать профиль"
+        aria-label={t('aria.editProfile')}
       >
         <Edit2 className="w-5 h-5" />
       </motion.button>

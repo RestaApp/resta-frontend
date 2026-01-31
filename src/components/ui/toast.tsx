@@ -1,4 +1,5 @@
 import { memo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 import { cn } from '@/utils/cn'
@@ -36,6 +37,7 @@ export const Toast = memo(function Toast({
     duration = 2500,
     className,
 }: ToastProps) {
+    const { t } = useTranslation()
     const Icon = TOAST_ICONS[type]
     const colorClass = TOAST_COLORS[type]
 
@@ -72,7 +74,7 @@ export const Toast = memo(function Toast({
                             type="button"
                             onClick={onClose}
                             className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-                            aria-label="Закрыть уведомление"
+                            aria-label={t('aria.closeNotification')}
                         >
                             <X className="h-4 w-4" />
                         </button>

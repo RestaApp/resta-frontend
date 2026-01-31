@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     useCreateShiftMutation,
     useUpdateShiftMutation,
@@ -19,6 +20,7 @@ type UseAddShiftFormOptions = {
 }
 
 export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialValues = null }: UseAddShiftFormOptions = {}) => {
+    const { t } = useTranslation()
     const { showToast } = useToast()
     const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
     const [updateShiftMutation] = useUpdateShiftMutation()
@@ -48,9 +50,9 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         const startMinutes = toMinutes(startTime)
         const endMinutes = toMinutes(endTime)
         if (startMinutes === null || endMinutes === null) return null
-        if (endMinutes <= startMinutes) return 'Время окончания должно быть позже начала.'
+        if (endMinutes <= startMinutes) return t('validation.timeEndAfterStart')
         return null
-    }, [startTime, endTime])
+    }, [startTime, endTime, t])
 
     const dateError = useMemo(() => {
         if (!date) return null
@@ -61,7 +63,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         
         // Проверяем, что дата не в прошлом
         if (selectedDate < today) {
-            return 'Дата смены должна быть в будущем.'
+            return t('validation.dateInFuture')
         }
         
         // Если выбрана сегодняшняя дата, проверяем время
@@ -71,13 +73,13 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
                 const selectedDateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0)
                 
                 if (selectedDateTime <= now) {
-                    return 'Время начала смены должно быть в будущем.'
+                    return t('validation.timeInFuture')
                 }
             }
         }
         
         return null
-    }, [date, startTime])
+    }, [date, startTime, t])
 
     // Валидация: проверка на существующую смену с такой же позицией
     const positionError = useMemo(() => {
@@ -118,39 +120,31 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         })
         
         if (hasActiveShiftWithSamePosition) {
-            return 'У вас уже есть активная смена с такой позицией.'
+            return t('validation.duplicatePosition')
         }
         
         return null
-    }, [position, existingShifts, initialValues?.id])
+    }, [position, existingShifts, initialValues?.id, t])
 
     const isFormInvalid = !title || !date || !startTime || !endTime || !position || !!timeRangeError || !!dateError || !!positionError
 
-    // Функция для перевода ошибок на русский
     const translateError = useCallback((error: string): string => {
         const lowerError = error.toLowerCase()
-        
-        // Ошибки специализации
-        if (lowerError.includes("specialization can't be blank") || 
+        if (lowerError.includes("specialization can't be blank") ||
             lowerError.includes("specialization is required") ||
             lowerError.includes("специализация обязательна")) {
-            return 'Необходимо выбрать хотя бы одну специализацию.'
+            return t('validation.specializationRequired')
         }
-        
-        // Ошибки позиции
-        if (lowerError.includes('active shift') || 
+        if (lowerError.includes('active shift') ||
             lowerError.includes('позицией') ||
             lowerError.includes('position')) {
-            return 'У вас уже есть активная смена с такой позицией.'
+            return t('validation.duplicatePosition')
         }
-        
-        // Другие распространенные ошибки
         if (lowerError.includes("can't be blank") || lowerError.includes("is required")) {
-            return 'Заполните все обязательные поля.'
+            return t('validation.fillRequired')
         }
-        
         return error
-    }, [])
+    }, [t])
 
     const resetForm = useCallback(() => {
         setTitle('')
@@ -203,7 +197,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
                     showToast?.(msg, 'error')
                     return false
                 }
-                showToast?.('Смена успешно обновлена', 'success')
+                showToast?.(t('shift.updated'), 'success')
                 response = null
             } else {
                 try {
@@ -218,10 +212,10 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
                         return false
                     }
                     response = createResult
-                    showToast?.('Смена успешно создана', 'success')
+                    showToast?.(t('shift.created'), 'success')
                 } catch (error: any) {
                     // Обработка ошибок от сервера
-                    let errorMessage = 'Не удалось создать смену. Попробуйте еще раз.'
+                    let errorMessage = t('shift.createError')
                     
                     if (error?.data) {
                         // Проверяем разные форматы ошибок
@@ -247,8 +241,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
             resetForm()
             return true
         } catch (error: any) {
-            // Обработка ошибок при обновлении
-            let errorMessage = 'Не удалось обновить смену. Попробуйте еще раз.'
+            let errorMessage = t('shift.updateError')
             
             if (error?.data) {
                 if (error.data.errors && Array.isArray(error.data.errors)) {
@@ -290,6 +283,7 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
         initialValues,
         updateShiftMutation,
         translateError,
+        t,
     ])
 
     useEffect(() => {

@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next'
 import { Field } from './Field'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { Loader } from '@/components/ui/loader'
-import { getSpecializationLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 
 interface MultiSelectSpecializationsProps {
     label: string
@@ -24,6 +25,8 @@ export const MultiSelectSpecializations = ({
     hint,
     isLoading = false,
 }: MultiSelectSpecializationsProps) => {
+    const { t } = useTranslation()
+    const { getSpecializationLabel } = useLabels()
     const handleToggle = (spec: string) => {
         if (disabled) return
         if (value.includes(spec)) {
@@ -42,7 +45,7 @@ export const MultiSelectSpecializations = ({
                     </div>
                 ) : options.length === 0 ? (
                     <div className="text-sm text-muted-foreground py-2">
-                        {placeholder || 'Нет доступных специализаций'}
+                        {placeholder || t('shift.noSpecializations')}
                     </div>
                 ) : (
                     <div className="flex flex-wrap gap-2">
@@ -54,14 +57,14 @@ export const MultiSelectSpecializations = ({
                                 isSelected={value.includes(spec)}
                                 onClick={handleToggle}
                                 disabled={disabled}
-                                ariaLabel={`Выбрать специализацию: ${getSpecializationLabel(spec)}`}
+                                ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(spec) })}
                             />
                         ))}
                     </div>
                 )}
                 {value.length > 0 && (
                     <div className="text-xs text-muted-foreground">
-                        Выбрано: {value.length} {value.length === 1 ? 'специализация' : value.length < 5 ? 'специализации' : 'специализаций'}
+                        {t('shift.specializationCount', { count: value.length })}
                     </div>
                 )}
             </div>

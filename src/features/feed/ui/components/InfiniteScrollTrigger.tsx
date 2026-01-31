@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { RefreshCw, CheckCircle2 } from 'lucide-react'
 import { Loader } from '@/components/ui/loader'
 
@@ -15,6 +16,7 @@ export const InfiniteScrollTrigger = ({
     isLoading,
     isError,
 }: InfiniteScrollProps) => {
+    const { t } = useTranslation()
     const observerTarget = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -53,17 +55,16 @@ export const InfiniteScrollTrigger = ({
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive text-sm font-medium hover:bg-destructive/20 transition-colors"
                 >
                     <RefreshCw className="w-4 h-4" />
-                    Ошибка сети. Нажмите, чтобы повторить
+                    {t('feed.networkError')}
                 </button>
             )}
 
-            {/* Состояние 3: Конец списка */}
             {!isLoading && !hasMore && !isError && (
                 <div className="flex flex-col items-center gap-1 opacity-60">
                     <div className="w-12 h-1 bg-border rounded-full mb-2" />
                     <div className="flex items-center gap-2 text-sm">
                         <CheckCircle2 className="w-4 h-4 text-green-500" />
-                        <span>Вы посмотрели все предложения</span>
+                        <span>{t('feed.sawAll')}</span>
                     </div>
                 </div>
             )}

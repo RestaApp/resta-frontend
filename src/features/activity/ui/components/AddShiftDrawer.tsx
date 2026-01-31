@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
 import { DatePicker } from '@/components/ui/date-picker'
 import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsApi'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
-import { getEmployeePositionLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/hooks/useToast'
@@ -70,16 +71,18 @@ type SelectFieldOption = {
 
 const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
 
-const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
-    { value: 'vacancy', label: 'Вакансия' },
-    { value: 'replacement', label: 'Замена' },
-]
-
 export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = null }: AddShiftDrawerProps) => {
+    const { t } = useTranslation()
+    const { getEmployeePositionLabel } = useLabels()
     const { userProfile } = useUserProfile()
     const { toast, hideToast } = useToast()
     const isEmployeeRole = userProfile?.role === 'employee'
     const lockedShiftType = getLockedShiftType(userProfile?.role)
+
+    const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
+        { value: 'vacancy', label: t('common.vacancy') },
+        { value: 'replacement', label: t('common.replacement') },
+    ]
 
     const form = useAddShiftForm({ initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE, onSave, initialValues })
     const {
@@ -143,33 +146,33 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
     return (
         <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
             <DrawerHeader>
-                <DrawerTitle>Добавить смену</DrawerTitle>
-                <DrawerDescription>Найдите себе замену.</DrawerDescription>
+                <DrawerTitle>{t('shift.addTitle')}</DrawerTitle>
+                <DrawerDescription>{t('shift.addDescription')}</DrawerDescription>
             </DrawerHeader>
 
             <div className="space-y-5 p-4">
                 <TextField
-                    label="Название смены"
+                    label={t('shift.shiftTitle')}
                     value={title}
                     onChange={setTitle}
-                    placeholder='Например: "Основная работа", "Банкет"'
+                    placeholder={t('shift.shiftTitlePlaceholder')}
                 />
 
                 <TextAreaField
-                    label="Описание"
+                    label={t('common.description')}
                     value={description}
                     onChange={setDescription}
-                    placeholder="Коротко опишите смену и обязанности"
+                    placeholder={t('shift.descriptionPlaceholder')}
                     minHeight="96px"
                 />
 
-                <Field label="Дата">
+                <Field label={t('common.date')}>
                     <DatePicker value={date} onChange={setDate} minDate={getTomorrowDateISO()} className="w-full" />
                 </Field>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <TimeField label="Начало" value={startTime} onChange={setStartTime} />
-                    <TimeField label="Конец" value={endTime} onChange={setEndTime} />
+                    <TimeField label={t('shift.start')} value={startTime} onChange={setStartTime} />
+                    <TimeField label={t('shift.end')} value={endTime} onChange={setEndTime} />
                 </div>
                 {timeRangeError && (
                     <p className="text-sm text-red-500">{timeRangeError}</p>
@@ -181,33 +184,33 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                 <MoneyField value={pay} onChange={setPay} />
 
                 <LocationField
-                    label="Локация"
+                    label={t('common.location')}
                     value={location}
                     onChange={setLocation}
-                    placeholder='Например: ул. Ленина 1'
+                    placeholder={t('shift.locationPlaceholder')}
                 />
 
                 <TextAreaField
-                    label="Требования"
+                    label={t('common.requirements')}
                     value={requirements}
                     onChange={setRequirements}
-                    placeholder="Опыт, навыки, наличие мед. книжки и т.д."
+                    placeholder={t('shift.requirementsPlaceholder')}
                     minHeight="80px"
                 />
 
                 {!isEmployeeRole && (
                     <Select
-                        label="Тип смены"
+                        label={t('shift.shiftType')}
                         value={shiftType}
                         onChange={(value) => setShiftType(value as ShiftType)}
                         disabled={!!lockedShiftType}
                         options={SHIFT_TYPE_OPTIONS}
-                        placeholder="Выберите тип смены"
+                        placeholder={t('shift.selectShiftType')}
                         hint={
                             lockedShiftType
                                 ? lockedShiftType === 'vacancy'
-                                    ? 'Заведения создают только вакансии.'
-                                    : 'Сотрудники создают только замены.'
+                                    ? t('shift.venueCreatesVacancy')
+                                    : t('shift.employeeCreatesReplacement')
                                 : undefined
                         }
                     />
@@ -215,11 +218,11 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
 
                 <div>
                     <Select
-                        label="Позиция"
+                        label={t('common.position')}
                         value={formPosition || ''}
                         onChange={setFormPosition}
                         options={positionsOptions}
-                        placeholder="Выберите позицию"
+                        placeholder={t('shift.selectPosition')}
                         disabled={isPositionsLoading}
                     />
                     {positionError && (
@@ -229,29 +232,26 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
 
                 <div>
                     <MultiSelectSpecializations
-                        label="Специализация"
+                        label={t('shift.specialization')}
                         value={specializations}
                         onChange={setSpecializations}
                         options={availableSpecializations}
                         placeholder={
                             !formPosition
-                                ? 'Сначала выберите позицию'
-                                : 'Нет доступных специализаций'
+                                ? t('shift.selectPositionFirst')
+                                : t('shift.noSpecializations')
                         }
                         disabled={!formPosition}
                         isLoading={isSpecializationsLoading}
                     />
-                    {submitError && (
-                        submitError.toLowerCase().includes('специализац') || 
-                        submitError.toLowerCase().includes('specialization')
-                    ) && (
+                    {submitError && (submitError.toLowerCase().includes('специализац') || submitError.toLowerCase().includes('specialization')) && (
                         <p className="text-sm text-red-500 mt-2">{submitError}</p>
                     )}
                 </div>
 
                 <CheckboxField
                     id="urgent-shift"
-                    label="Срочная смена"
+                    label={t('shift.urgent')}
                     checked={urgent}
                     onChange={setUrgent}
                 />
@@ -264,7 +264,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
             <DrawerFooter>
                 <div className="grid grid-cols-2 gap-3 w-full">
                     <button onClick={close} className="py-3 rounded-xl border-2" style={{ borderColor: 'var(--border)' }}>
-                        Отмена
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={async () => {
@@ -275,7 +275,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
                         style={{ background: 'var(--gradient-primary)' }}
                         className="py-3 rounded-xl text-white disabled:opacity-50"
                     >
-                        {isCreating ? 'Сохраняем...' : 'Сохранить'}
+                        {isCreating ? t('common.saving') : t('common.save')}
                     </button>
                 </div>
             </DrawerFooter>

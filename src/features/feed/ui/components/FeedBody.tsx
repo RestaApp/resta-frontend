@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 
 import { Toast } from '@/components/ui/toast'
@@ -117,14 +118,18 @@ export const FeedBody = memo((props: Props) => {
         isVacancy,
     } = props
 
+    const { t } = useTranslation()
     const hasActiveFilters = quickFilter !== 'all' || !!advancedFilters
     const isEmpty = filteredShifts.length === 0
     const showEmptyState =
         isEmpty && (activeList.totalCount === 0 || (!activeList.isFetching && activeList.totalCount !== -1))
     const showLoadingAfterEmpty = isEmpty && activeList.isFetching
 
-    const emptyMessage =
-        hasActiveFilters ? 'По вашим фильтрам ничего не найдено' : feedType === 'shifts' ? 'Смены не найдены' : 'Вакансии не найдены'
+    const emptyMessage = hasActiveFilters
+        ? t('feed.emptyByFilters')
+        : feedType === 'shifts'
+            ? t('feed.noShifts')
+            : t('feed.noVacancies')
 
     return (
         <>
@@ -137,7 +142,7 @@ export const FeedBody = memo((props: Props) => {
                     </div>
                 ) : activeList.error ? (
                     <div className="py-8 text-center text-destructive">
-                        Ошибка загрузки {feedType === 'shifts' ? 'смен' : 'вакансий'}
+                        {feedType === 'shifts' ? t('feed.loadErrorShifts') : t('feed.loadErrorVacancies')}
                     </div>
                 ) : showEmptyState ? (
                     <EmptyState
@@ -204,7 +209,7 @@ export const FeedBody = memo((props: Props) => {
             <AlertDialog open={profileAlert.open} onOpenChange={(open) => { if (!open) onCloseProfileAlert() }}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Заявка не отправлена</AlertDialogTitle>
+                        <AlertDialogTitle>{t('feed.applicationNotSent')}</AlertDialogTitle>
                     </AlertDialogHeader>
 
                     <AlertDialogDescription>
@@ -212,8 +217,8 @@ export const FeedBody = memo((props: Props) => {
                     </AlertDialogDescription>
 
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={onCloseProfileAlert}>Закрыть</AlertDialogCancel>
-                        <AlertDialogAction onClick={onOpenProfileEdit}>Открыть профиль</AlertDialogAction>
+                        <AlertDialogCancel onClick={onCloseProfileAlert}>{t('common.close')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={onOpenProfileEdit}>{t('common.openProfile')}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

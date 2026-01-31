@@ -1,8 +1,9 @@
 import React, { memo, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
 import { ActionButton } from '@/components/ui/action-button'
 import type { Shift } from '@/features/feed/model/types'
-import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
@@ -61,6 +62,8 @@ const ShiftCardComponent = ({
     isLoading = false,
     ownerActions,
 }: ShiftCardProps) => {
+    const { t } = useTranslation()
+    const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
     const currentUserId = useCurrentUserId()
 
     const isOwner = useMemo(
@@ -75,9 +78,9 @@ const ShiftCardComponent = ({
         const position = getEmployeePositionLabel(shift.position)
         const specialization = shift.specialization ? ` • ${getSpecializationLabel(shift.specialization)}` : ''
         return `${position}${specialization}`
-    }, [shift.position, shift.specialization])
+    }, [shift.position, shift.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
-    const payLabel = shift.payPeriod === 'month' ? 'за месяц' : 'за смену'
+    const payLabel = shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
     const canShowApply = !isOwner && !isAccepted && !isRejected
     const canApply = shift.canApply !== false
 
@@ -130,9 +133,9 @@ const ShiftCardComponent = ({
     )
 
     const actionLabel = useMemo(() => {
-        if (isLoading) return isApplied ? 'Отмена…' : 'Отправка…'
-        return isApplied ? 'Отменить заявку' : 'Откликнуться'
-    }, [isLoading, isApplied])
+        if (isLoading) return isApplied ? t('shift.cancelling') : t('shift.sending')
+        return isApplied ? t('shift.cancelApplication') : t('shift.apply')
+    }, [isLoading, isApplied, t])
 
     return (
         <div
@@ -209,10 +212,10 @@ const ShiftCardComponent = ({
                 {/* Owner actions */}
                 {isOwner && ownerActions ? (
                     <div className="flex items-center gap-2">
-                        <IconAction title="Изменить" onClick={handleEdit} disabled={ownerActions.isDeleting}>
+                        <IconAction title={t('common.edit')} onClick={handleEdit} disabled={ownerActions.isDeleting}>
                             <Edit2 className="w-4 h-4" />
                         </IconAction>
-                        <IconAction title="Удалить" onClick={handleDelete} disabled={ownerActions.isDeleting}>
+                        <IconAction title={t('common.delete')} onClick={handleDelete} disabled={ownerActions.isDeleting}>
                             <Trash2 className="w-4 h-4" />
                         </IconAction>
                     </div>

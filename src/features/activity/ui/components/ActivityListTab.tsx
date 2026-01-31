@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Briefcase, Send } from 'lucide-react'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -33,6 +34,7 @@ const SectionHeader = memo(({ icon: Icon, title, count }: { icon: typeof Briefca
 SectionHeader.displayName = 'SectionHeader'
 
 export const ActivityListTab = memo((props: Props) => {
+  const { t } = useTranslation()
   const { isLoading, isAppliedLoading, isError, shifts, appliedShifts, isDeleting, onEdit, onDelete, showToast } = props
 
   const appliedByStatus = useMemo(() => groupAppliedByStatus(appliedShifts), [appliedShifts])
@@ -59,18 +61,18 @@ export const ActivityListTab = memo((props: Props) => {
   }
 
   if (isError) {
-    return <div className="text-center py-8 text-destructive">Ошибка загрузки смен</div>
+    return <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
   }
 
   if (shifts.length === 0 && appliedShifts.length === 0) {
-    return <EmptyState message="Здесь появятся ваши смены и отклики" />
+    return <EmptyState message={t('activity.emptyList')} />
   }
 
   return (
     <div className="space-y-10">
       {/* Мои смены */}
       <section>
-        <SectionHeader icon={Briefcase} title="Мои смены" count={shifts.length} />
+        <SectionHeader icon={Briefcase} title={t('activity.myShifts')} count={shifts.length} />
         {shifts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-8 px-4 text-center">
             <p className="text-sm text-muted-foreground">Вы ещё не создавали смен</p>
@@ -87,7 +89,7 @@ export const ActivityListTab = memo((props: Props) => {
 
       {/* Мои отклики */}
       <section>
-        <SectionHeader icon={Send} title="Мои отклики" count={appliedShifts.length} />
+        <SectionHeader icon={Send} title={t('activity.myApplications')} count={appliedShifts.length} />
         {appliedShifts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-8 px-4 text-center">
             <p className="text-sm text-muted-foreground">У вас пока нет откликов</p>
@@ -97,7 +99,7 @@ export const ActivityListTab = memo((props: Props) => {
           <div className="space-y-6">
             {appliedByStatus.map(({ status, label, items }) => (
               <div key={status}>
-                <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">{label}</h3>
+                <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">{t(label)}</h3>
                 <div className="space-y-4">
                   {items.map((shift) => (
                     <AppliedShiftCard key={shift.id} shift={shift} showToast={showToast} />

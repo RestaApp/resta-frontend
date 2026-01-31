@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { SectionHeader } from '@/components/ui'
 import { RoleCard } from './components/RoleCard'
 import { ErrorModal } from './components/subroles/shared/ErrorModal'
@@ -16,6 +17,7 @@ interface RoleSelectorProps {
 }
 
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
+  const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
 
   // Sub-flows
@@ -60,14 +62,14 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
 
   // Loading / Error / Empty
   if (vm.isLoading || vm.isFetching) return <LoadingState />
-  if (vm.error) return <LoadingState message="Не удалось загрузить роли" />
-  if (vm.mainRoles.length === 0) return <LoadingState message="Роли не найдены" />
+  if (vm.error) return <LoadingState message={t('roles.loadRolesError')} />
+  if (vm.mainRoles.length === 0) return <LoadingState message={t('roles.noRoles')} />
 
   return (
     <>
       <div className=" bg-background flex flex-col">
         <div className="flex-1 flex flex-col px-6 py-8 overflow-y-auto">
-          <SectionHeader title="Кто вы?" description="Выберите вашу роль в экосистеме" className="mb-8" />
+          <SectionHeader title={t('roles.whoAreYou')} description={t('roles.chooseRole')} className="mb-8" />
 
           <div className="flex-1 flex flex-col gap-4 max-w-md mx-auto w-full">
             {vm.mainRoles.map((role: RoleOption, index: number) => (

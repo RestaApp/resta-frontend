@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CardSelect } from '@/components/ui/card-select'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
 
@@ -10,6 +11,7 @@ interface RoleCardProps {
 }
 
 export const RoleCard = memo(function RoleCard({ role, isSelected, index, onSelect }: RoleCardProps) {
+  const { t } = useTranslation()
   const Icon = role.icon
 
   return (
@@ -23,7 +25,7 @@ export const RoleCard = memo(function RoleCard({ role, isSelected, index, onSele
       index={index}
       layout="horizontal"
       onSelect={onSelect}
-      ariaLabel={`Выбрать роль: ${role.title}`}
+      ariaLabel={t('aria.selectRole', { label: role.title })}
     />
   )
 })

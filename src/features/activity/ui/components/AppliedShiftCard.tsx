@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { mapVacancyToCardShift } from '@/features/feed/model/utils/mapping'
@@ -11,6 +12,7 @@ interface AppliedShiftCardProps {
 }
 
 export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showToast }) => {
+    const { t } = useTranslation()
     const [cancelApplication, { isLoading: isCancelling }] = useCancelApplicationMutation()
     const [isOpen, setIsOpen] = useState(false)
 
@@ -24,11 +26,11 @@ export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showT
         if (!appId) return
         try {
             await cancelApplication(appId).unwrap()
-            showToast('Заявка отменена', 'success')
+            showToast(t('shift.applicationCancelled'), 'success')
         } catch {
-            showToast('Не удалось отменить заявку', 'error')
+            showToast(t('shift.cancelApplicationError'), 'error')
         }
-    }, [cancelApplication, showToast])
+    }, [cancelApplication, showToast, t])
 
     const handleCancelFromDetails = useCallback(async (appId: number | null | undefined) => {
         await cancel(appId ?? applicationId)
@@ -36,9 +38,9 @@ export const AppliedShiftCard: React.FC<AppliedShiftCardProps> = ({ shift, showT
     }, [cancel, applicationId])
 
     const handleApplyFromDetails = useCallback(async () => {
-        showToast('Отклик пока недоступен в этом экране', 'info')
+        showToast(t('shift.applyNotAvailable'), 'info')
         setIsOpen(false)
-    }, [showToast])
+    }, [showToast, t])
 
     return (
         <>

@@ -1,4 +1,5 @@
 import { memo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -18,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { formatExperienceText } from '@/utils/experience'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
-import { getBioLabelSuffix } from '../../model/utils/profileFormLabels'
+import { useProfileFormLabels } from '@/shared/i18n/hooks'
 import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
 
 const TEXTAREA_CLASS =
@@ -32,46 +33,49 @@ interface EmployeeFieldsSectionProps {
   disabled: boolean
 }
 
-const EmployeeFieldsSection = memo(({ experienceYearsValue, openToWork, skills, updateField, disabled }: EmployeeFieldsSectionProps) => (
-  <>
-    <div>
-      <label className="block text-sm font-medium mb-2">Опыт работы (лет)</label>
-      <div className="mb-3">
-        <span className="text-lg font-semibold text-gradient">{formatExperienceText(experienceYearsValue)}</span>
-      </div>
-      <RangeSlider
-        min={0}
-        max={5}
-        step={1}
-        value={experienceYearsValue}
-        onChange={(value) => updateField('experienceYears', value)}
-        showTicks={true}
-        tickCount={5}
-      />
-    </div>
-    <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
+const EmployeeFieldsSection = memo(({ experienceYearsValue, openToWork, skills, updateField, disabled }: EmployeeFieldsSectionProps) => {
+  const { t } = useTranslation()
+  return (
+    <>
       <div>
-        <label className="block text-sm font-medium mb-1">Открыт к работе</label>
-        <p className="text-xs text-muted-foreground">Готов рассматривать предложения</p>
+        <label className="block text-sm font-medium mb-2">{t('profile.experienceYearsLabel')}</label>
+        <div className="mb-3">
+          <span className="text-lg font-semibold text-gradient">{formatExperienceText(experienceYearsValue)}</span>
+        </div>
+        <RangeSlider
+          min={0}
+          max={5}
+          step={1}
+          value={experienceYearsValue}
+          onChange={(value) => updateField('experienceYears', value)}
+          showTicks={true}
+          tickCount={5}
+        />
       </div>
-      <Switch
-        checked={openToWork}
-        onCheckedChange={(checked) => updateField('openToWork', checked)}
-        disabled={disabled}
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium mb-2">Навыки</label>
-      <Input
-        value={skills}
-        onChange={(e) => updateField('skills', e.target.value)}
-        placeholder="Введите навыки через запятую"
-        disabled={disabled}
-      />
-      <p className="text-xs text-muted-foreground mt-1">Например: работа с ножом, знание HACCP</p>
-    </div>
-  </>
-))
+      <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
+        <div>
+          <label className="block text-sm font-medium mb-1">{t('profile.openToWork')}</label>
+          <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
+        </div>
+        <Switch
+          checked={openToWork}
+          onCheckedChange={(checked) => updateField('openToWork', checked)}
+          disabled={disabled}
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-2">{t('profile.skills')}</label>
+        <Input
+          value={skills}
+          onChange={(e) => updateField('skills', e.target.value)}
+          placeholder={t('profile.form.skillsPlaceholder')}
+          disabled={disabled}
+        />
+        <p className="text-xs text-muted-foreground mt-1">{t('profile.skillsExample')}</p>
+      </div>
+    </>
+  )
+})
 EmployeeFieldsSection.displayName = 'EmployeeFieldsSection'
 
 interface EditProfileDrawerProps {
@@ -81,6 +85,8 @@ interface EditProfileDrawerProps {
 }
 
 export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditProfileDrawerProps) => {
+  const { t } = useTranslation()
+  const { getBioLabelSuffix } = useProfileFormLabels()
   const {
     userProfile,
     apiRole,
@@ -105,67 +111,62 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
   return (
     <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
       <DrawerHeader>
-        <DrawerTitle>Редактировать профиль</DrawerTitle>
+        <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
         <DrawerDescription>
-          Поля со звёздочкой (*) обязательны для откликов на вакансии и смены.
+          {t('profile.editProfileDescription')}
         </DrawerDescription>
       </DrawerHeader>
 
       <div className="px-4 space-y-4 pb-4">
-        {/* Имя */}
         <div>
           <label className="block text-sm font-medium mb-2">
-            Имя {apiRole === 'restaurant' || apiRole === 'supplier' ? '/ Название' : ''} *
+            {t('profile.nameLabel')} {apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''} *
           </label>
           <Input
             value={formData.name}
             onChange={(e) => updateField('name', e.target.value)}
-            placeholder="Введите имя"
+            placeholder={t('profile.form.namePlaceholder')}
             disabled={isLoading}
           />
         </div>
 
-        {/* Фамилия (только для сотрудников) — обязательно для откликов */}
         {apiRole === 'employee' && (
           <div>
-            <label className="block text-sm font-medium mb-2">Фамилия *</label>
+            <label className="block text-sm font-medium mb-2">{t('profile.surnameRequired')}</label>
             <Input
               value={formData.lastName}
               onChange={(e) => updateField('lastName', e.target.value)}
-              placeholder="Введите фамилию"
+              placeholder={t('profile.form.surnamePlaceholder')}
               disabled={isLoading}
             />
           </div>
         )}
 
-        {/* Описание */}
         <div>
-          <label className="block text-sm font-medium mb-2">Описание {bioSuffix}</label>
+          <label className="block text-sm font-medium mb-2">{t('common.description')} {bioSuffix}</label>
           <textarea
             value={formData.bio}
             onChange={(e) => updateField('bio', e.target.value)}
-            placeholder={`Введите описание ${bioSuffix}`}
+            placeholder={t('profile.bioPlaceholder', { suffix: bioSuffix })}
             disabled={isLoading}
             rows={4}
             className={TEXTAREA_CLASS}
           />
         </div>
 
-        {/* Email */}
         <div>
-          <label className="block text-sm font-medium mb-2">Email</label>
+          <label className="block text-sm font-medium mb-2">{t('profile.email')}</label>
           <Input
             type="email"
             value={formData.email}
             onChange={(e) => updateField('email', e.target.value)}
-            placeholder="Введите email"
+            placeholder={t('profile.form.emailPlaceholder')}
             disabled={isLoading}
           />
         </div>
 
-        {/* Телефон — обязательно для откликов, международный формат */}
         <div>
-          <label className="block text-sm font-medium mb-2">Телефон *</label>
+          <label className="block text-sm font-medium mb-2">{t('profile.phoneRequired')}</label>
           <Input
             type="tel"
             inputMode="tel"
@@ -175,7 +176,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
             placeholder="+375-29-123-45-67"
             disabled={isLoading}
           />
-          <p className="text-xs text-muted-foreground mt-1">Международный формат. Начните с +375 или 8</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('profile.phoneHint')}</p>
         </div>
 
         {apiRole === 'employee' && (
@@ -188,9 +189,8 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
           />
         )}
 
-        {/* Город — обязательно для откликов */}
         <div>
-          <label className="block text-sm font-medium mb-2">Город *</label>
+          <label className="block text-sm font-medium mb-2">{t('profile.cityRequired')}</label>
           {isCitiesLoading ? (
             <div className="flex items-center gap-2 py-2">
               <Loader size="sm" />
@@ -200,7 +200,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
               value={formData.city}
               onChange={(value) => updateField('city', value)}
               options={cities}
-              placeholder="Выберите город"
+              placeholder={t('profile.form.cityPlaceholder')}
               disabled={isLoading}
             />
           )}
@@ -209,25 +209,24 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
 
       <DrawerFooter>
         <Button onClick={handleSave} disabled={isLoading || !formData.name.trim()} className="w-full" variant="primary">
-          {isLoading ? 'Сохранение...' : 'Сохранить'}
+          {isLoading ? t('common.saving') : t('common.save')}
         </Button>
         <Button onClick={handleCancel} disabled={isLoading} variant="outline" className="w-full">
-          Отмена
+          {t('common.cancel')}
         </Button>
       </DrawerFooter>
 
       <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Город не указан</AlertDialogTitle>
+            <AlertDialogTitle>{t('profile.cityNotSet')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Если не указать город, вы не сможете видеть релевантные вакансии и смены в вашем регионе.
-              Рекомендуем указать город для лучшего подбора предложений.
+              {t('profile.cityWarningDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowCityWarning(false)}>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSaveWithoutCity}>Сохранить без города</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowCityWarning(false)}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSaveWithoutCity}>{t('profile.saveWithoutCity')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

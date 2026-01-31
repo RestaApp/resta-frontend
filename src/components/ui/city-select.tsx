@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Select, type SelectOption } from './select'
 
 interface CitySelectProps {
@@ -14,10 +15,12 @@ export const CitySelect = memo(function CitySelect({
   value,
   onChange,
   options,
-  placeholder = 'Выберите город',
+  placeholder,
   disabled = false,
   className,
 }: CitySelectProps) {
+  const { t } = useTranslation()
+  const displayPlaceholder = placeholder ?? t('citySelect.placeholder')
   const selectOptions: SelectOption[] = useMemo(
     () => options.map((city) => ({ value: city, label: city })),
     [options]
@@ -28,7 +31,7 @@ export const CitySelect = memo(function CitySelect({
       value={value}
       onChange={onChange}
       options={selectOptions}
-      placeholder={placeholder}
+      placeholder={displayPlaceholder}
       disabled={disabled}
       className={className}
     />

@@ -1,10 +1,11 @@
 import { X, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
-import { getSpecializationLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { useAdvancedFilters } from '../../model/hooks/useAdvancedFilters'
 import { DEFAULT_PRICE_RANGE, DEFAULT_JOBS_PRICE_RANGE } from '@/utils/filters'
@@ -39,7 +40,8 @@ export const AdvancedFilters = ({
     onReset,
     isVacancy = false,
 }: AdvancedFiltersProps) => {
-    // Используем кастомный хук для управления логикой фильтров
+    const { t } = useTranslation()
+    const { getSpecializationLabel } = useLabels()
     const {
         priceRange,
         selectedPosition,
@@ -175,21 +177,21 @@ export const AdvancedFilters = ({
 
                         {/* Header - фиксированный */}
                         <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-card sticky top-0 z-10">
-                            <h2 className="text-xl font-bold">Фильтры</h2>
+                            <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
                             <div className="flex items-center gap-2">
                                 {hasActiveFilters && (
                                     <button
                                         onClick={handleReset}
                                         className="px-3 py-1.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
-                                        aria-label="Сбросить фильтры"
+                                        aria-label={t('feed.resetFiltersAria')}
                                     >
-                                        Сбросить
+                                        {t('common.reset')}
                                     </button>
                                 )}
                                 <button
                                     onClick={onClose}
                                     className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                                    aria-label="Закрыть"
+                                    aria-label={t('common.close')}
                                 >
                                     <X size={24} />
                                 </button>
@@ -205,7 +207,7 @@ export const AdvancedFilters = ({
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <h3 className="font-semibold text-base">
-                                        {isVacancy ? 'Ставка за вакансию' : 'Ставка за смену'}
+                                        {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
                                     </h3>
                                     <span className="text-primary font-bold text-sm">
                                         {displayPriceRange[0]} - {displayPriceRange[1]} BYN
@@ -227,19 +229,19 @@ export const AdvancedFilters = ({
                             {/* 2. Даты (только для смен, не для вакансий) */}
                             {!isVacancy && (
                                 <div className="space-y-3">
-                                    <h3 className="font-semibold text-base">Период</h3>
+                                    <h3 className="font-semibold text-base">{t('feed.period')}</h3>
                                     <div className="grid grid-cols-2 gap-3">
                                         <DatePicker
                                             value={startDate}
                                             onChange={setStartDate}
                                             minDate={getMinStartDate()}
-                                            label="От"
+                                            label={t('common.from')}
                                         />
                                         <DatePicker
                                             value={endDate}
                                             onChange={setEndDate}
                                             minDate={getMinEndDate()}
-                                            label="До"
+                                            label={t('common.to')}
                                         />
                                     </div>
                                 </div>
@@ -248,7 +250,7 @@ export const AdvancedFilters = ({
                             {/* 3. Позиция */}
                             {positionsForDisplay.length > 0 && (
                                 <div className="space-y-3">
-                                    <h3 className="font-semibold text-base">Позиция</h3>
+                                    <h3 className="font-semibold text-base">{t('common.position')}</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {positionsForDisplay.map((position: { id: string; originalValue?: string; title: string }) => {
                                             const positionValue = position.originalValue || position.id
@@ -259,7 +261,7 @@ export const AdvancedFilters = ({
                                                     label={position.title}
                                                     isSelected={selectedPosition === positionValue}
                                                     onClick={() => handlePositionSelect(positionValue)}
-                                                    ariaLabel={`Выбрать позицию: ${position.title}`}
+                                                    ariaLabel={t('aria.selectPosition', { label: position.title })}
                                                 />
                                             )
                                         })}
@@ -279,7 +281,7 @@ export const AdvancedFilters = ({
                                         layout
                                         className="space-y-3 overflow-hidden relative"
                                     >
-                                        <h3 className="font-semibold text-base">Специализация</h3>
+                                        <h3 className="font-semibold text-base">{t('shift.specialization')}</h3>
                                         <div className="flex flex-wrap gap-2 relative">
                                             {/* Индикатор загрузки на фоне */}
                                             {isSpecializationsLoading && (
@@ -295,7 +297,7 @@ export const AdvancedFilters = ({
                                                     label={getSpecializationLabel(specialization)}
                                                     isSelected={selectedSpecializations.includes(specialization)}
                                                     onClick={() => toggleSpecialization(specialization)}
-                                                    ariaLabel={`Выбрать специализацию: ${getSpecializationLabel(specialization)}`}
+                                                    ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(specialization) })}
                                                     disabled={isSpecializationsLoading}
                                                 />
                                             ))}
@@ -309,7 +311,7 @@ export const AdvancedFilters = ({
                         {/* Информация о количестве найденных смен/вакансий */}
                         {previewCount !== undefined && (
                             <div className="px-5 py-4 text-center text-sm text-muted-foreground border-t border-border/50 bg-card/50">
-                                Найдено {isVacancy ? 'вакансий' : 'смен'}: <span className="font-semibold text-foreground">{previewCount}</span>
+                                {isVacancy ? t('feed.foundVacanciesCount', { count: previewCount }) : t('feed.foundShiftsCount', { count: previewCount })}
                             </div>
                         )}
                     </motion.div>
