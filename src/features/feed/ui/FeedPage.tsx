@@ -19,7 +19,6 @@ export const FeedPage = () => {
             />
 
             <FeedHotOffersSection
-                feedType={m.feedType}
                 hotOffers={m.hotOffers}
                 totalCount={m.hotOffersTotalCount}
                 onShowAll={m.showAllHotShifts}

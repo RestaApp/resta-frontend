@@ -5,7 +5,7 @@ import { cn } from '@/utils/cn'
 export type TabOption<T extends string> = {
   id: T
   label: string
-  icon?: React.ComponentType<{ className?: string }>
+  icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>
 }
 
 interface TabsProps<T extends string> {
@@ -127,7 +127,7 @@ export const Tabs = <T extends string>({
               isActive ? 'text-white' : 'text-foreground'
             )}
           >
-            {Icon ? <Icon className="h-4 w-4" aria-hidden="true" /> : null}
+            {Icon ? <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" /> : null}
             <span className="text-sm font-medium">{option.label}</span>
           </button>
         )

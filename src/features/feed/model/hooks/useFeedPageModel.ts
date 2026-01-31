@@ -18,6 +18,7 @@ import { normalizeApiError } from '../utils/apiErrors'
 import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
 import { vacancyToShift } from '../utils/mapping'
 
+import { Briefcase, Flame } from 'lucide-react'
 import type { FeedType } from '../types'
 import type { Shift } from '../types'
 import type { TabOption } from '@/components/ui/tabs'
@@ -25,8 +26,8 @@ import type { HotOffer } from '../../ui/components/HotOffers'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 
 const FEED_TYPE_OPTIONS: TabOption<FeedType>[] = [
-  { id: 'jobs', label: '💼 Вакансии' },
-  { id: 'shifts', label: '🔥 Смены' },
+  { id: 'jobs', label: 'Вакансии', icon: Briefcase },
+  { id: 'shifts', label: 'Смены', icon: Flame },
 ]
 
 type ProfileAlertState = {
@@ -160,7 +161,7 @@ export const useFeedPageModel = () => {
   const { hotOffers, hotVacancies, hotOffersTotalCount } = useHotOffers({
     feedType,
     advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
-    addVacanciesToMap: shiftsList.addVacanciesToMap,
+    addVacanciesToMap: feedType === 'shifts' ? shiftsList.addVacanciesToMap : jobsList.addVacanciesToMap,
   })
 
   // Клиентские quick filters — только для отображения списка
@@ -199,11 +200,11 @@ export const useFeedPageModel = () => {
 
       const fromHot = hotVacancies.find(v => v.id === item.id)
       if (fromHot) {
-        shiftsList.addVacanciesToMap([fromHot])
+        activeList.addVacanciesToMap([fromHot])
         openShiftDetails(item.id)
       }
     },
-    [haptics, shiftsById, activeList.vacanciesMap, hotVacancies, shiftsList, openShiftDetails]
+    [haptics, shiftsById, activeList, hotVacancies, openShiftDetails]
   )
 
   const showAllHotShifts = useCallback(() => {

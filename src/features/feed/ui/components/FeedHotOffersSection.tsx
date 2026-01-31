@@ -1,9 +1,7 @@
 import { memo } from 'react'
 import { HotOffers, type HotOffer } from './HotOffers'
-import type { FeedType } from '../../model/types'
 
 type Props = {
-    feedType: FeedType
     hotOffers: HotOffer[]
     totalCount?: number
     onShowAll: () => void
@@ -11,9 +9,9 @@ type Props = {
 }
 
 export const FeedHotOffersSection = memo((props: Props) => {
-    const { feedType, hotOffers, totalCount, onShowAll, onItemClick } = props
+    const { hotOffers, totalCount, onShowAll, onItemClick } = props
 
-    if (feedType !== 'shifts' || hotOffers.length === 0) return null
+    if (hotOffers.length === 0) return null
 
     const hasMore = Boolean(totalCount && hotOffers.length < totalCount)
 

@@ -19,28 +19,28 @@ interface UseHotOffersReturn {
 }
 
 export const useHotOffers = ({ feedType, advancedFilters, addVacanciesToMap }: UseHotOffersParams): UseHotOffersReturn => {
+  const shiftType = feedType === 'shifts' ? 'replacement' : 'vacancy'
+
   const params = useMemo(
     () =>
       buildVacanciesQueryParams({
-        shiftType: 'replacement',
+        shiftType,
         page: 1,
         perPage: 4,
         urgent: true,
         advanced: advancedFilters,
       }),
-    [advancedFilters]
+    [shiftType, advancedFilters]
   )
 
   const { data: resp } = useGetVacanciesQuery(params, {
     refetchOnMountOrArgChange: false,
-    skip: feedType !== 'shifts',
   })
 
   useEffect(() => {
-    if (feedType !== 'shifts') return
     if (!resp?.data?.length) return
     addVacanciesToMap(resp.data)
-  }, [resp, feedType, addVacanciesToMap])
+  }, [resp, addVacanciesToMap])
 
   const hotVacancies = useMemo(() => (resp?.data?.length ? resp.data : []), [resp])
 
