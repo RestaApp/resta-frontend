@@ -104,7 +104,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
           <Card>
             <div className="text-center py-8 px-4">
               <Calendar className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-              <p className="text-muted-foreground mb-4">Свободный день!</p>
+              <p className="text-muted-foreground mb-4">{t('activity.freeDay')}</p>
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 className="px-6 py-2 rounded-xl border-2 flex items-center gap-2 mx-auto"
@@ -112,7 +112,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
                 onClick={onFindShift}
               >
                 <Search className="w-4 h-4" />
-                Найти смену
+                {t('activity.findShift')}
               </motion.button>
             </div>
           </Card>

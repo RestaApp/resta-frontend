@@ -9,4 +9,6 @@ export const STORAGE_KEYS = {
   REFRESH_TOKEN: 'refresh_token',
   NAVIGATE_TO_FEED_SHIFTS: 'navigate_to_feed_shifts',
   NAVIGATE_TO_PROFILE_EDIT: 'navigate_to_profile_edit',
+  /** Выбранный язык приложения (ru | en) */
+  LOCALE: 'resta_locale',
 } as const

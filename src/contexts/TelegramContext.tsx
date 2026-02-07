@@ -7,12 +7,14 @@ import { createContext, useContext, useEffect, useState, useRef, type ReactNode 
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setInitData, setReady } from '@/features/navigation/model/telegramSlice'
 import { selectUserData } from '@/features/navigation/model/userSlice'
-import { getTelegramWebApp, isTelegramWebApp } from '@/utils/telegram'
+import { getTelegramWebApp, isTelegramWebApp, getTelegramLanguageCode } from '@/utils/telegram'
 import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'
 import { useAuthActions } from '@/hooks/useAuth'
 import { updateUserDataInStore } from '@/utils/userData'
 import type { UserData } from '@/services/api/authApi'
+import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
+import { STORAGE_KEYS } from '@/constants/storage'
 
 interface TelegramContextValue {
   isReady: boolean
@@ -58,6 +60,28 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     return null
   }
 
+  /** Применяет язык. Приоритет: сохранённый в localStorage → профиль пользователя → язык устройства Telegram */
+  const applyLanguage = (userData: UserData | null) => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.LOCALE)
+      if (saved === 'ru' || saved === 'en') {
+        i18n.changeLanguage(saved)
+        return
+      }
+    } catch {
+      // ignore
+    }
+    const userLang = userData?.language
+    const localeFromUser = userLang === 'ru' || userLang === 'en' ? (userLang as Locale) : null
+    if (localeFromUser) {
+      i18n.changeLanguage(localeFromUser)
+      return
+    }
+    const telegramCode = getTelegramLanguageCode()
+    const localeFromDevice = telegramCodeToLocale(telegramCode)
+    i18n.changeLanguage(localeFromDevice)
+  }
+
   // Функция для загрузки пользователя по id (через RTK Query)
   const loadUserById = async (userId: number): Promise<void> => {
     // dispatch(usersApi.endpoints.getUser.initiate(...)) возвращает объект-подписку (promise-like) с unsubscribe
@@ -68,7 +92,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
       // RTK Query возвращает объект с полем data при успешном ответе
       if (result && 'data' in result && result.data) {
-        updateUserDataInStore(dispatch, result.data as UserData)
+        const data = result.data as UserData
+        updateUserDataInStore(dispatch, data)
+        applyLanguage(data)
         return
       }
 
@@ -157,6 +183,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
     // Если токен валиден и есть данные пользователя, пропускаем авторизацию
     if (authService.isTokenValid() && userDataFromStore?.id) {
+      applyLanguage(userDataFromStore)
       setIsReady(true)
       dispatch(setReady(true))
       return
@@ -212,6 +239,19 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
+
+  // Без авторизации: язык по устройству Telegram, если ещё не сохранён
+  useEffect(() => {
+    if (!isReady || userDataFromStore?.id) return
+    try {
+      if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
+        const code = getTelegramLanguageCode()
+        i18n.changeLanguage(telegramCodeToLocale(code))
+      }
+    } catch {
+      // ignore
+    }
+  }, [isReady, userDataFromStore?.id])
 
   const value: TelegramContextValue = {
     isReady,

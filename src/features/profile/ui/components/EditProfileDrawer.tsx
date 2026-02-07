@@ -173,7 +173,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
             autoComplete="tel"
             value={formData.phone}
             onChange={(e) => updateField('phone', e.target.value)}
-            placeholder="+375-29-123-45-67"
+            placeholder={t('phone.placeholderExample')}
             disabled={isLoading}
           />
           <p className="text-xs text-muted-foreground mt-1">{t('profile.phoneHint')}</p>

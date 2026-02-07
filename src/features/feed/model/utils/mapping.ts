@@ -8,6 +8,7 @@ import {
   stripMinskPrefix,
 } from '../utils/formatting'
 import type { HotOffer } from '../../ui/components/HotOffers'
+import i18n from '@/shared/i18n/config'
 
 const toNumber = (v?: string | number | null): number => {
   if (v === null || v === undefined) return 0
@@ -87,7 +88,7 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
 }
 
 export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
-  const restaurant = v.user?.name || v.user?.full_name || v.title || 'Ресторан'
+  const restaurant = v.user?.name || v.user?.full_name || v.title || i18n.t('feedFallback.venue')
   const applicationId = v.my_application?.id ?? null
   const applicationStatus = v.my_application?.status ?? v.status ?? null
 

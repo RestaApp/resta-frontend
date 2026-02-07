@@ -3,7 +3,6 @@
  */
 
 import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
-import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
 
 export const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
 export const DEFAULT_JOBS_PRICE_RANGE: [number, number] = [0, 5000]
@@ -16,17 +15,17 @@ export const isDefaultPriceRange = (priceRange: [number, number]): boolean => {
 }
 
 import { parseDate } from './datetime'
+import i18n from '@/shared/i18n/config'
 
 /**
  * Форматирует дату для отображения в фильтрах
  */
 export const formatFilterDate = (dateStr: string | null | undefined): string => {
   if (!dateStr) return ''
-  
   const date = parseDate(dateStr)
   if (!date) return dateStr
-  
-  return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })
+  const locale = i18n.language === 'en' ? 'en-US' : 'ru-RU'
+  return date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' })
 }
 
 /**
@@ -40,10 +39,10 @@ export const formatDateRange = (
     return `${formatFilterDate(startDate)}-${formatFilterDate(endDate)}`
   }
   if (startDate) {
-    return `От ${formatFilterDate(startDate)}`
+    return i18n.t('filters.fromDate', { date: formatFilterDate(startDate) })
   }
   if (endDate) {
-    return `До ${formatFilterDate(endDate)}`
+    return i18n.t('filters.toDate', { date: formatFilterDate(endDate) })
   }
   return null
 }
@@ -52,13 +51,16 @@ export const formatDateRange = (
  * Форматирует специализации для отображения
  * Показывает первые 2, остальные как "+N"
  */
+const getSpecializationLabel = (spec: string): string =>
+  i18n.t(`labels.specialization.${spec}`) || spec
+const getEmployeePositionLabel = (value: string): string =>
+  i18n.t(`labels.position.${value}`) || i18n.t(`labels.position.${value.toLowerCase()}`) || value
+
 export const formatSpecializations = (specializations: string[]): string[] => {
   if (specializations.length === 0) return []
-  
   if (specializations.length <= 2) {
     return specializations.map(spec => getSpecializationLabel(spec))
   }
-  
   return [
     ...specializations.slice(0, 2).map(spec => getSpecializationLabel(spec)),
     `+${specializations.length - 2}`

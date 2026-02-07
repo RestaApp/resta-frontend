@@ -214,7 +214,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             iconColor="text-blue-500"
                             label={t('shift.workTime')}
                             value={shift.time}
-                            subValue={shift.duration ? `Длительность: ${shift.duration}` : undefined}
+                            subValue={shift.duration ? t('activity.durationWithValue', { value: shift.duration }) : undefined}
                         />
 
                         {shift.location ? (
@@ -225,7 +225,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                                 value={shift.location}
                                 action={
                                     <button onClick={handleOpenMap} className="text-[12px] text-primary hover:underline mt-1">
-                                        Посмотреть на карте
+                                        {t('aria.viewOnMap')}
                                     </button>
                                 }
                             />

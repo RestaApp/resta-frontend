@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/utils/cn'
 import { Flame } from 'lucide-react'
 
@@ -14,7 +15,7 @@ const basePill =
     'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold leading-none border'
 
 export const UrgentPill = ({ className }: { className?: string }) => {
-    // Срочно = бренд, чтобы не конфликтовало с rejected (destructive)
+    const { t } = useTranslation()
     return (
         <span
             className={cn(
@@ -24,16 +25,16 @@ export const UrgentPill = ({ className }: { className?: string }) => {
             )}
         >
             <Flame className="w-3 h-3 mr-1" />
-            Срочно
+            {t('activity.urgent')}
         </span>
     )
 }
 
-const statusToLabel = (status: ShiftStatus): string => {
+const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string => {
     if (!status) return ''
-    if (status === 'accepted') return 'Подтверждена'
-    if (status === 'rejected') return 'Отклонена'
-    if (status === 'pending' || status === 'processing') return 'В обработке'
+    if (status === 'accepted') return t('activity.statusAcceptedPill')
+    if (status === 'rejected') return t('activity.statusRejectedPill')
+    if (status === 'pending' || status === 'processing') return t('activity.statusPendingPill')
     return String(status)
 }
 
@@ -58,7 +59,8 @@ export const StatusPill = ({
     status: ShiftStatus
     className?: string
 }) => {
-    const label = statusToLabel(status)
+    const { t } = useTranslation()
+    const label = getStatusLabel(status, t)
     if (!label) return null
     return <span className={cn(basePill, statusToClasses(status), className)}>{label}</span>
 }

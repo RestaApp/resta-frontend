@@ -6,6 +6,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useGetVacanciesQuery, type GetVacanciesParams } from '@/services/api/shiftsApi'
 import { useMemo } from 'react'
+import i18n from '@/shared/i18n/config'
 
 interface UseReplacementShiftsOptions {
   /**
@@ -117,20 +118,17 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
       }
 
       // Форматируем дату и время
-      let date = 'Не указано'
-      let time = 'Не указано'
+      let date = i18n.t('feedFallback.notSpecified')
+      let time = i18n.t('feedFallback.notSpecified')
       if (vacancy.start_time && vacancy.end_time) {
         try {
-          // Парсим UTC время и конвертируем в локальное
           const startDate = new Date(vacancy.start_time)
           const endDate = new Date(vacancy.end_time)
 
-          // Проверяем валидность дат
           if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
             throw new Error('Invalid date')
           }
 
-          // Проверяем, сегодня ли это
           const today = new Date()
           today.setHours(0, 0, 0, 0)
           const shiftDate = new Date(startDate)
@@ -138,7 +136,7 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
           const isToday = shiftDate.getTime() === today.getTime()
 
           if (isToday) {
-            date = 'Сегодня'
+            date = i18n.t('common.today')
           } else {
             // Форматируем дату в локальном времени
             date = startDate.toLocaleDateString('ru-RU', {
@@ -168,10 +166,10 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
         vacancy.target_roles && vacancy.target_roles.length > 0 ? vacancy.target_roles[0] : 'chef'
 
       // Получаем название заведения из user
-      const restaurant = vacancy.user?.name || vacancy.user?.full_name || 'Не указано'
+      const restaurant = vacancy.user?.name || vacancy.user?.full_name || i18n.t('feedFallback.notSpecified')
 
       // Получаем местоположение
-      const shiftLocation = vacancy.location || vacancy.user?.location || 'Не указано'
+      const shiftLocation = vacancy.location || vacancy.user?.location || i18n.t('feedFallback.notSpecified')
 
       return {
         id: String(vacancy.id),
@@ -189,7 +187,7 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
         applicationsCount: vacancy.applications_count,
       }
     })
-  }, [data])
+  }, [data, i18n.language])
 
   return {
     shifts,

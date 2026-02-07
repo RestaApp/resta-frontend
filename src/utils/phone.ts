@@ -98,41 +98,40 @@ export interface PhoneValidation {
 /**
  * Валидация: международный формат, от 10 до 15 цифр (E.164).
  */
+import i18n from '@/shared/i18n/config'
+
 export function validatePhone(value: string): PhoneValidation {
   const trimmed = value.trim()
   if (!trimmed) {
-    return { valid: false, message: 'Введите номер телефона' }
+    return { valid: false, message: i18n.t('phone.required') }
   }
 
   const digits = parsePhoneDigits(trimmed)
 
-  // Только цифры и допустимые символы в начале
   if (!/^\+?[\d\s\-()]*$/.test(trimmed)) {
-    return { valid: false, message: 'Допустимы только цифры и символ + в начале' }
+    return { valid: false, message: i18n.t('phone.digitsOnly') }
   }
 
   if (digits.length < 10) {
-    return { valid: false, message: 'Номер слишком короткий. Пример: +375-29-123-45-67' }
+    return { valid: false, message: i18n.t('phone.tooShort') }
   }
 
   if (digits.length > 15) {
-    return { valid: false, message: 'Номер слишком длинный' }
+    return { valid: false, message: i18n.t('phone.tooLong') }
   }
 
-  // Беларусь: 375 + 9 цифр
   if (digits.startsWith('375')) {
     if (digits.length !== 12) {
-      return { valid: false, message: 'Для Беларуси: +375 и 9 цифр. Пример: +375-29-123-45-67' }
+      return { valid: false, message: i18n.t('phone.byFormat') }
     }
     const mobileCode = digits.slice(3, 5)
     if (!BELARUS_MOBILE_CODES.includes(mobileCode as (typeof BELARUS_MOBILE_CODES)[number])) {
-      return { valid: false, message: 'Неверный код оператора. Допустимы: 29, 33, 44, 25' }
+      return { valid: false, message: i18n.t('phone.invalidOperator') }
     }
   }
 
-  // Россия: 7 + 10 цифр
   if (digits.startsWith('7') && digits.length !== 11) {
-    return { valid: false, message: 'Для России: +7 и 10 цифр' }
+    return { valid: false, message: i18n.t('phone.ruFormat') }
   }
 
   return { valid: true }

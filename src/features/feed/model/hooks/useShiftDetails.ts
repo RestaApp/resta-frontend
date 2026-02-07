@@ -7,7 +7,7 @@ import {
   formatShiftType,
   getVacancyTitle,
 } from '../utils/formatting'
-import { getEmployeePositionLabel, getSpecializationLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 
 interface RestaurantInfo {
   rating: number | null
@@ -32,6 +32,8 @@ export interface UseShiftDetailsReturn {
 }
 
 export const useShiftDetails = (shift: Shift | null, vacancyData?: VacancyApiItem | null): UseShiftDetailsReturn => {
+  const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
+
   const restaurantInfo = useMemo<RestaurantInfo | null>(() => {
     const user = vacancyData?.user
     if (!user) return null
@@ -57,12 +59,12 @@ export const useShiftDetails = (shift: Shift | null, vacancyData?: VacancyApiIte
   const positionLabel = useMemo(() => {
     if (!vacancyData?.position) return null
     return getEmployeePositionLabel(vacancyData.position)
-  }, [vacancyData])
+  }, [vacancyData, getEmployeePositionLabel])
 
   const specializationLabel = useMemo(() => {
     if (!vacancyData?.specialization) return null
     return getSpecializationLabel(vacancyData.specialization)
-  }, [vacancyData])
+  }, [vacancyData, getSpecializationLabel])
 
   const applicationsInfo = useMemo(() => {
     if (vacancyData?.applications_count === undefined) return null

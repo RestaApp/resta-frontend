@@ -17,6 +17,7 @@ export type { UserData } from './authApi'
  */
 export interface UpdateUserRequest {
   user: {
+    language?: string
     role?: string
     name?: string
     last_name?: string

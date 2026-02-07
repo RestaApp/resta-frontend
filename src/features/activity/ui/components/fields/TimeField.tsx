@@ -1,4 +1,5 @@
 import { Clock } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { useRef } from 'react'
 import type { KeyboardEvent } from 'react'
@@ -10,6 +11,7 @@ type TimeFieldProps = {
 }
 
 export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
+    const { t } = useTranslation()
     const inputRef = useRef<HTMLInputElement | null>(null)
 
     const openPicker = () => {
@@ -32,7 +34,7 @@ export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
                     type="button"
                     onClick={openPicker}
                     onKeyDown={onIconKey}
-                    aria-label={`Открыть выбор времени для ${label}`}
+                    aria-label={t('shiftDetails.openTimeAria', { label })}
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground flex items-center justify-center"
                 >
                     <Clock className="w-5 h-5" />

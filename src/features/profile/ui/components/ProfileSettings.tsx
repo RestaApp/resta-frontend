@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Settings, HelpCircle, LogOut, Moon, Languages } from 'lucide-react'
@@ -6,18 +6,31 @@ import { Card } from '@/components/ui/card'
 import { ThemeToggleCompact } from '@/components/ui/theme-toggle-compact'
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n/config'
 import i18n from '@/shared/i18n/config'
+import { useUpdateUser } from '@/hooks/useUsers'
+import { getCurrentUserId } from '@/utils/user'
 
 interface ProfileSettingsProps {
   onLogout: () => void
 }
 
-const LOCALE_LABELS: Record<Locale, string> = {
-  ru: 'Русский',
-  en: 'English',
-}
-
 export const ProfileSettings = memo(({ onLogout }: ProfileSettingsProps) => {
   const { t, i18n: i18nInstance } = useTranslation()
+  const { updateUser } = useUpdateUser()
+
+  const handleLanguageChange = useCallback(
+    async (locale: Locale) => {
+      i18n.changeLanguage(locale)
+      const userId = getCurrentUserId()
+      if (userId) {
+        try {
+          await updateUser(userId, { user: { language: locale } })
+        } catch {
+          // язык в UI уже обновлён, бэкенд обновим при следующем изменении
+        }
+      }
+    },
+    [updateUser]
+  )
 
   return (
     <div>
@@ -50,13 +63,13 @@ export const ProfileSettings = memo(({ onLogout }: ProfileSettingsProps) => {
                 <button
                   key={locale}
                   type="button"
-                  onClick={() => i18n.changeLanguage(locale)}
+                  onClick={() => handleLanguageChange(locale)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${i18nInstance.language === locale
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     }`}
                 >
-                  {LOCALE_LABELS[locale]}
+                  {t(locale === 'ru' ? 'localeRu' : 'localeEn')}
                 </button>
               ))}
             </div>

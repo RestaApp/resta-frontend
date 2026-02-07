@@ -5,7 +5,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useGeolocation } from '@/hooks/useGeolocation'
-import { getDrawerTitle } from '@/constants/drawerTitles'
+import { useDrawerTitle } from '@/shared/i18n/hooks'
 import { isPromise } from '@/utils/promise'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import { mapEmployeeSubRolesFromApi } from '../utils/mappers'
@@ -60,10 +60,10 @@ export const useEmployeeSubRoleSelector = ({
       enabled: showSpecializationDrawer && !!selectedPositionValueLocal,
     })
 
-  // Получаем заголовок для drawer на основе позиции
+  const getDrawerTitleFromI18n = useDrawerTitle()
   const drawerTitle = useMemo(() => {
-    return getDrawerTitle(selectedPositionValueLocal, drawerSpecializations.length > 0)
-  }, [selectedPositionValueLocal, drawerSpecializations.length])
+    return getDrawerTitleFromI18n(selectedPositionValueLocal, drawerSpecializations.length > 0)
+  }, [getDrawerTitleFromI18n, selectedPositionValueLocal, drawerSpecializations.length])
 
   useEffect(() => {
     const cleanup = setupTelegramBackButton(() => {

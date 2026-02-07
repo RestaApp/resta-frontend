@@ -14,9 +14,9 @@ import { useProfileFormLabels } from '@/shared/i18n/hooks'
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
 
 const ROW_CLASS = 'flex justify-between items-baseline gap-3 py-2.5'
-const LABEL_CLASS = 'text-muted-foreground shrink-0'
-const VALUE_CLASS = 'font-medium text-foreground text-right'
-const VALUE_LINK_CLASS = 'font-medium text-primary text-right truncate hover:underline'
+const LABEL_CLASS = 'text-muted-foreground shrink-0 min-w-[8rem]'
+const VALUE_CLASS = 'font-medium text-foreground text-right min-w-0'
+const VALUE_LINK_CLASS = 'font-medium text-primary text-right truncate hover:underline min-w-0'
 
 interface InfoRowProps {
   label: string
@@ -66,7 +66,7 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
         <InfoRow label={t('profile.openToWork')}>{open_to_work ? t('common.yes') : t('common.no')}</InfoRow>
       )}
       {hasSkills ? (
-        <div className="pt-3 mt-3 border-t border-border/50">
+        <div className="pt-3">
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-2">{t('profile.skills')}</span>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill) => (
@@ -139,10 +139,10 @@ export const ProfileInfoCard = memo(({ userProfile, apiRole, completeness, onFil
             {userProfile.bio && (
               <div className="pb-3 border-b border-border/50">
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-1.5">{t('common.description')}</span>
-                <p className="text-foreground leading-relaxed">{userProfile.bio}</p>
+                <p className="text-foreground leading-relaxed break-words">{userProfile.bio}</p>
               </div>
             )}
-            <div className="divide-y divide-border/50 [&>div:first-child]:pt-0">
+            <div className="divide-y divide-border/50">
               {cityOrLocation && (
                 <InfoRow label={t('profile.city')} valueClassName={`${VALUE_CLASS} truncate`}>
                   {cityOrLocation}

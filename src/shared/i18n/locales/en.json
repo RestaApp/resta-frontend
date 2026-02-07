@@ -1,4 +1,24 @@
 {
+  "feedFallback": {
+    "venue": "Restaurant",
+    "notSpecified": "Not specified",
+    "permanent": "Permanent",
+    "oneTime": "One-time",
+    "vacancy": "Vacancy",
+    "fromRate": "from {{value}} BYN/hr",
+    "durationHours": "Duration: {{value}} h",
+    "noApplications": "No applications yet",
+    "application": "application",
+    "applications2": "applications",
+    "applications5": "applications",
+    "review": "review",
+    "reviews2": "reviews",
+    "reviews5": "reviews"
+  },
+  "filters": {
+    "fromDate": "From {{date}}",
+    "toDate": "To {{date}}"
+  },
   "common": {
     "user": "User",
     "yes": "Yes",
@@ -217,11 +237,22 @@
     "emptyList": "Your shifts and applications will appear here",
     "myShifts": "My shifts",
     "myApplications": "My applications",
+    "noShiftsYet": "You haven't created any shifts yet",
+    "shiftsWillAppearHere": "Created shifts will appear here",
+    "noApplicationsYet": "You have no applications yet",
+    "applicationsWillAppearHere": "Applied shifts will appear here",
     "statusPending": "Pending",
     "statusAccepted": "Accepted",
     "statusRejected": "Rejected",
+    "statusAcceptedPill": "Accepted",
+    "statusRejectedPill": "Rejected",
+    "statusPendingPill": "In progress",
     "day": "Day",
-    "duration": "Duration"
+    "duration": "Duration",
+    "durationWithValue": "Duration: {{value}}",
+    "urgent": "Urgent",
+    "freeDay": "Free day!",
+    "findShift": "Find shift"
   },
   "validation": {
     "timeEndAfterStart": "End time must be after start time.",
@@ -312,6 +343,7 @@
     "years5": "years"
   },
   "phone": {
+    "placeholderExample": "+375-29-123-45-67",
     "required": "Enter phone number",
     "digitsOnly": "Only digits and leading + allowed",
     "tooShort": "Number too short. Example: +1-234-567-8900",
@@ -326,6 +358,9 @@
   },
   "loadingPage": {
     "subtitle": "HoReCa ecosystem in your pocket"
+  },
+  "shiftDetails": {
+    "openTimeAria": "Open time picker for {{label}}"
   },
   "aria": {
     "editProfile": "Edit profile",

@@ -3,6 +3,7 @@
  */
 
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 
@@ -23,6 +24,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
     ariaLabel,
     disabled = false,
 }: SelectableTagButtonProps) {
+    const { t } = useTranslation()
     return (
         <motion.button
             whileTap={disabled ? undefined : { scale: 0.95 }}
@@ -37,7 +39,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
                 disabled ? '' : 'hover:bg-secondary'
             )}
             aria-pressed={isSelected}
-            aria-label={ariaLabel || `Выбрать: ${label}`}
+            aria-label={ariaLabel || t('aria.selectType', { label })}
             aria-disabled={disabled}
         >
             {label}

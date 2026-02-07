@@ -6,6 +6,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useGetVacanciesQuery, type GetVacanciesParams } from '@/services/api/shiftsApi'
 import { useMemo } from 'react'
+import i18n from '@/shared/i18n/config'
 
 interface UseVacanciesOptions {
   /**
@@ -108,13 +109,13 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
       .map(vacancy => {
         // Определяем тип занятости на основе shift_type
         // replacement обычно одноразовая, vacancy может быть постоянной
-        let vacancyType = 'Постоянная'
+        let vacancyType = i18n.t('feedFallback.permanent')
         if (vacancy.shift_type === 'replacement' || vacancy.start_time) {
-          vacancyType = 'Одноразовая'
+          vacancyType = i18n.t('feedFallback.oneTime')
         }
 
         // Форматируем оплату
-        let salary = 'Не указано'
+        let salary = i18n.t('feedFallback.notSpecified')
         if (vacancy.payment) {
           const paymentValue =
             typeof vacancy.payment === 'string' ? parseFloat(vacancy.payment) : vacancy.payment
@@ -137,12 +138,12 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
               ? parseFloat(vacancy.hourly_rate)
               : vacancy.hourly_rate
           if (!isNaN(hourlyValue)) {
-            salary = `от ${hourlyValue} BYN/час`
+            salary = i18n.t('feedFallback.fromRate', { value: hourlyValue })
           }
         }
 
         // Форматируем график из start_time и end_time
-        let schedule = 'Не указано'
+        let schedule = i18n.t('feedFallback.notSpecified')
         if (vacancy.start_time && vacancy.end_time) {
           try {
             const startDate = new Date(vacancy.start_time)
@@ -194,7 +195,7 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
           // Если есть только duration, показываем его
           const durationValue = parseFloat(vacancy.duration)
           if (!isNaN(durationValue)) {
-            schedule = `Длительность: ${durationValue} ч.`
+            schedule = i18n.t('feedFallback.durationHours', { value: durationValue })
           }
         }
 
@@ -203,14 +204,14 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
           vacancy.target_roles && vacancy.target_roles.length > 0 ? vacancy.target_roles[0] : 'chef'
 
         // Получаем название заведения из user
-        const venueName = vacancy.user?.name || vacancy.user?.full_name || 'Не указано'
+        const venueName = vacancy.user?.name || vacancy.user?.full_name || i18n.t('feedFallback.notSpecified')
 
         // Получаем местоположение
-        const location = vacancy.location || vacancy.user?.location || 'Не указано'
+        const location = vacancy.location || vacancy.user?.location || i18n.t('feedFallback.notSpecified')
 
         return {
           id: String(vacancy.id),
-          title: vacancy.title || 'Вакансия',
+          title: vacancy.title || i18n.t('feedFallback.vacancy'),
           venueName,
           location,
           schedule,
@@ -239,18 +240,15 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
         }
       })
       .filter(vacancy => {
-        // Фильтруем по типу занятости, если указан
         if (type && type !== 'all') {
-          if (type === 'permanent' && vacancy.type !== 'Постоянная') {
-            return false
-          }
-          if (type === 'one-time' && vacancy.type !== 'Одноразовая') {
-            return false
-          }
+          const permanentLabel = i18n.t('feedFallback.permanent')
+          const oneTimeLabel = i18n.t('feedFallback.oneTime')
+          if (type === 'permanent' && vacancy.type !== permanentLabel) return false
+          if (type === 'one-time' && vacancy.type !== oneTimeLabel) return false
         }
         return true
       })
-  }, [data, type])
+  }, [data, type, i18n.language])
 
   return {
     vacancies,

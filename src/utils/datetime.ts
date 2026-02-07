@@ -2,6 +2,8 @@
  * Утилиты для работы с датами и временем
  */
 
+import i18n from '@/shared/i18n/config'
+
 /**
  * Нормализует строку даты из формата API в ISO формат
  * "2026-01-07 09:00:00 +0100" -> "2026-01-07T09:00:00+01:00"
@@ -21,29 +23,31 @@ export const parseDate = (value?: string): Date | null => {
   return Number.isNaN(d.getTime()) ? null : d
 }
 
-export const formatDate = (value?: string, locale: string = 'ru-RU'): string => {
+export const formatDate = (value?: string, locale?: string): string => {
   const d = parseDate(value)
-  if (!d) return 'Дата не указана'
-  return `${d.getDate()} ${d.toLocaleDateString(locale, { month: 'long' })}`
+  if (!d) return i18n.t('datetime.dateNotSet')
+  const loc = locale || (i18n.language === 'en' ? 'en-US' : 'ru-RU')
+  return `${d.getDate()} ${d.toLocaleDateString(loc, { month: 'long' })}`
 }
 
-export const formatTimeRange = (start?: string, end?: string, locale: string = 'ru-RU'): string => {
+export const formatTimeRange = (start?: string, end?: string, locale?: string): string => {
   const s = parseDate(start)
   const e = parseDate(end)
-  if (!s && !e) return 'Время не указано'
+  if (!s && !e) return i18n.t('datetime.timeNotSet')
 
-  const fmt = (d: Date) => d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+  const loc = locale || (i18n.language === 'en' ? 'en-US' : 'ru-RU')
+  const fmt = (d: Date) => d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
 
   if (s && e) return `${fmt(s)} - ${fmt(e)}`
   if (s) return fmt(s)
   if (e) return fmt(e)
-  return 'Время не указано'
+  return i18n.t('datetime.timeNotSet')
 }
 
 /**
  * Форматирует время для отображения (алиас для formatTimeRange для обратной совместимости)
  */
-export const formatTime = (start?: string, end?: string, locale: string = 'ru-RU'): string => {
+export const formatTime = (start?: string, end?: string, locale?: string): string => {
   return formatTimeRange(start, end, locale)
 }
 

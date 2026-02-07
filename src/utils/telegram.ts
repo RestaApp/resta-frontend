@@ -10,6 +10,8 @@ interface TelegramWebApp {
       first_name?: string
       last_name?: string
       username?: string
+      /** Код языка интерфейса Telegram у пользователя (например ru, en) */
+      language_code?: string
     }
   }
   BackButton: {
@@ -67,6 +69,17 @@ export const getTelegramInitData = (): string | null => {
 export const getTelegramUser = () => {
   const webApp = getTelegramWebApp()
   return webApp?.initDataUnsafe?.user ?? null
+}
+
+/**
+ * Возвращает код языка устройства из Telegram (например 'ru', 'en').
+ * В режиме разработки или без Telegram возвращает null.
+ */
+export const getTelegramLanguageCode = (): string | null => {
+  const user = getTelegramUser()
+  const code = user?.language_code
+  if (typeof code === 'string' && code.length >= 2) return code.toLowerCase().slice(0, 2)
+  return null
 }
 
 export const setupTelegramBackButton = (onBack: () => void) => {

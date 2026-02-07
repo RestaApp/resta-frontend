@@ -1,11 +1,13 @@
+import i18n from '@/shared/i18n/config'
+
 export const formatReviews = (count: number): string => {
     const n = Math.abs(count)
     const last = n % 10
     const last2 = n % 100
-    if (last2 >= 11 && last2 <= 14) return 'отзывов'
-    if (last === 1) return 'отзыв'
-    if (last >= 2 && last <= 4) return 'отзыва'
-    return 'отзывов'
+    if (last2 >= 11 && last2 <= 14) return i18n.t('feedFallback.reviews5')
+    if (last === 1) return i18n.t('feedFallback.review')
+    if (last >= 2 && last <= 4) return i18n.t('feedFallback.reviews2')
+    return i18n.t('feedFallback.reviews5')
   }
   
   export const formatMoney = (value: number): string => {
@@ -57,20 +59,20 @@ export const formatReviews = (count: number): string => {
   
   export const formatShiftType = (shiftType?: 'vacancy' | 'replacement' | null): string | null => {
     if (!shiftType) return null
-    return shiftType === 'replacement' ? 'Замена' : 'Вакансия'
+    return shiftType === 'replacement' ? i18n.t('common.replacement') : i18n.t('common.vacancy')
   }
   
   export const formatApplicationsCount = (count: number): { value: string; label: string } => {
-    if (count <= 0) return { value: '0', label: 'Пока нет заявок' }
+    if (count <= 0) return { value: '0', label: i18n.t('feedFallback.noApplications') }
     const last = count % 10
     const last2 = count % 100
-    if (last2 >= 11 && last2 <= 14) return { value: String(count), label: 'заявок' }
-    if (last === 1) return { value: String(count), label: 'заявка' }
-    if (last >= 2 && last <= 4) return { value: String(count), label: 'заявки' }
-    return { value: String(count), label: 'заявок' }
+    if (last2 >= 11 && last2 <= 14) return { value: String(count), label: i18n.t('feedFallback.applications5') }
+    if (last === 1) return { value: String(count), label: i18n.t('feedFallback.application') }
+    if (last >= 2 && last <= 4) return { value: String(count), label: i18n.t('feedFallback.applications2') }
+    return { value: String(count), label: i18n.t('feedFallback.applications5') }
   }
   
   export const getVacancyTitle = (title?: string | null, position?: string | null): string => {
-    return title || position || 'Вакансия'
+    return title || position || i18n.t('feedFallback.vacancy')
   }
   

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getSpecializationLabel } from '@/constants/labels'
+import { useLabels } from '@/shared/i18n/hooks'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileHeader } from './components/ProfileHeader'
 import { ProfileStats } from './components/ProfileStats'
@@ -11,6 +11,7 @@ import { Loader } from '@/components/ui/loader'
 
 const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
   const { t } = useTranslation()
+  const { getSpecializationLabel } = useLabels()
   if (specializations.length === 0) return null
 
   return (

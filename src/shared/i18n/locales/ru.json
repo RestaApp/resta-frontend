@@ -1,4 +1,24 @@
 {
+  "feedFallback": {
+    "venue": "Ресторан",
+    "notSpecified": "Не указано",
+    "permanent": "Постоянная",
+    "oneTime": "Одноразовая",
+    "vacancy": "Вакансия",
+    "fromRate": "от {{value}} BYN/час",
+    "durationHours": "Длительность: {{value}} ч.",
+    "noApplications": "Пока нет заявок",
+    "application": "заявка",
+    "applications2": "заявки",
+    "applications5": "заявок",
+    "review": "отзыв",
+    "reviews2": "отзыва",
+    "reviews5": "отзывов"
+  },
+  "filters": {
+    "fromDate": "От {{date}}",
+    "toDate": "До {{date}}"
+  },
   "common": {
     "user": "Пользователь",
     "yes": "Да",
@@ -217,11 +237,22 @@
     "emptyList": "Здесь появятся ваши смены и отклики",
     "myShifts": "Мои смены",
     "myApplications": "Мои отклики",
+    "noShiftsYet": "Вы ещё не создавали смен",
+    "shiftsWillAppearHere": "Созданные смены появятся здесь",
+    "noApplicationsYet": "У вас пока нет откликов",
+    "applicationsWillAppearHere": "Откликнувшиеся смены появятся здесь",
     "statusPending": "На рассмотрении",
     "statusAccepted": "Подтверждённые",
     "statusRejected": "Отклонённые",
+    "statusAcceptedPill": "Подтверждена",
+    "statusRejectedPill": "Отклонена",
+    "statusPendingPill": "В обработке",
     "day": "День",
-    "duration": "Длительность"
+    "duration": "Длительность",
+    "durationWithValue": "Длительность: {{value}}",
+    "urgent": "Срочно",
+    "freeDay": "Свободный день!",
+    "findShift": "Найти смену"
   },
   "validation": {
     "timeEndAfterStart": "Время окончания должно быть позже начала.",
@@ -312,6 +343,7 @@
     "years5": "лет"
   },
   "phone": {
+    "placeholderExample": "+375-29-123-45-67",
     "required": "Введите номер телефона",
     "digitsOnly": "Допустимы только цифры и символ + в начале",
     "tooShort": "Номер слишком короткий. Пример: +375-29-123-45-67",
@@ -326,6 +358,9 @@
   },
   "loadingPage": {
     "subtitle": "Экосистема HoReCa в твоем кармане"
+  },
+  "shiftDetails": {
+    "openTimeAria": "Открыть выбор времени для {{label}}"
   },
   "aria": {
     "editProfile": "Редактировать профиль",

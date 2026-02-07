@@ -75,8 +75,8 @@ export const ActivityListTab = memo((props: Props) => {
         <SectionHeader icon={Briefcase} title={t('activity.myShifts')} count={shifts.length} />
         {shifts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-8 px-4 text-center">
-            <p className="text-sm text-muted-foreground">Вы ещё не создавали смен</p>
-            <p className="text-xs text-muted-foreground/80 mt-1">Созданные смены появятся здесь</p>
+            <p className="text-sm text-muted-foreground">{t('activity.noShiftsYet')}</p>
+            <p className="text-xs text-muted-foreground/80 mt-1">{t('activity.shiftsWillAppearHere')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -92,8 +92,8 @@ export const ActivityListTab = memo((props: Props) => {
         <SectionHeader icon={Send} title={t('activity.myApplications')} count={appliedShifts.length} />
         {appliedShifts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-8 px-4 text-center">
-            <p className="text-sm text-muted-foreground">У вас пока нет откликов</p>
-            <p className="text-xs text-muted-foreground/80 mt-1">Откликнувшиеся смены появятся здесь</p>
+            <p className="text-sm text-muted-foreground">{t('activity.noApplicationsYet')}</p>
+            <p className="text-xs text-muted-foreground/80 mt-1">{t('activity.applicationsWillAppearHere')}</p>
           </div>
         ) : (
           <div className="space-y-6">
