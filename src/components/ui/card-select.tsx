@@ -45,6 +45,7 @@ const CardSelectInner = <TId extends string>({
       className={cn(
         'w-full rounded-2xl border p-4 text-left transition-all',
         isSelected ? 'border-transparent shadow-lg' : 'border-border',
+        layout === 'vertical' ? 'bg-card shadow-md shadow-black/5' : '',
         layout === 'horizontal' ? 'flex items-center gap-4' : 'flex flex-col items-center gap-3',
         className
       )}
@@ -55,12 +56,16 @@ const CardSelectInner = <TId extends string>({
           className={cn(
             'shrink-0 flex items-center justify-center rounded-2xl',
             layout === 'horizontal' ? 'h-12 w-12' : 'h-14 w-14',
-            isSelected ? 'bg-white/20' : 'bg-muted/50'
+            imageType === 'emoji'
+              ? 'bg-transparent'
+              : isSelected
+                ? 'bg-white/20'
+                : 'gradient-primary'
           )}
           aria-hidden="true"
         >
           {typeof image === 'string' && imageType === 'emoji' ? (
-            <span className="text-2xl leading-none">{image}</span>
+            <span className="text-3xl leading-none">{image}</span>
           ) : (
             image
           )}
@@ -81,7 +86,4 @@ const CardSelectInner = <TId extends string>({
   )
 }
 
-/**
- * Важно: memo не ломает generic, если экспортировать так
- */
 export const CardSelect = memo(CardSelectInner) as typeof CardSelectInner
