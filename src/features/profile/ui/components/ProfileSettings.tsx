@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Settings, HelpCircle, LogOut, Moon, Languages } from 'lucide-react'
@@ -8,6 +8,7 @@ import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n/config'
 import i18n from '@/shared/i18n/config'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { getCurrentUserId } from '@/utils/user'
+import { SupportFormModal } from './SupportFormModal'
 
 interface ProfileSettingsProps {
   onLogout: () => void
@@ -17,6 +18,7 @@ interface ProfileSettingsProps {
 export const ProfileSettings = memo(({ onLogout, onNotificationSettingsClick }: ProfileSettingsProps) => {
   const { t, i18n: i18nInstance } = useTranslation()
   const { updateUser } = useUpdateUser()
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false)
 
   const handleLanguageChange = useCallback(
     async (locale: Locale) => {
@@ -88,12 +90,19 @@ export const ProfileSettings = memo(({ onLogout, onNotificationSettingsClick }: 
         </motion.button>
 
         <motion.button
+          type="button"
           whileTap={{ scale: 0.98 }}
           className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 hover:bg-muted/50 transition-colors"
+          onClick={() => setIsSupportModalOpen(true)}
         >
           <HelpCircle className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
           <span>{t('profile.support')}</span>
         </motion.button>
+
+        <SupportFormModal
+          isOpen={isSupportModalOpen}
+          onClose={() => setIsSupportModalOpen(false)}
+        />
 
         <motion.button
           whileTap={{ scale: 0.98 }}

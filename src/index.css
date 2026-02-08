@@ -26,7 +26,7 @@
   --secondary-foreground: #18181b;
 
   --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted-foreground: #52525b;
 
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
@@ -93,7 +93,7 @@
   --secondary-foreground: #fafafa;
 
   --muted: #27272a;
-  --muted-foreground: #a1a1aa;
+  --muted-foreground: #d4d4d8;
 
   --accent: #27272a;
   --accent-foreground: #fafafa;
@@ -311,6 +311,107 @@
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+@keyframes boil-bob {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes squash-pop-spin {
+  0% {
+    transform: translateY(0) scale(1, 1) rotate(0deg);
+  }
+
+  18% {
+    transform: translateY(0) scale(1.05, 0.92) rotate(0deg);
+  }
+
+  38% {
+    transform: translateY(-10px) scale(0.96, 1.04) rotate(0deg);
+  }
+
+  62% {
+    transform: translateY(-24px) scale(1, 1) rotate(360deg);
+  }
+
+  80% {
+    transform: translateY(-6px) scale(1.02, 0.98) rotate(360deg);
+  }
+
+  100% {
+    transform: translateY(0) scale(1, 1) rotate(360deg);
+  }
+}
+
+@keyframes steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+
+  20% {
+    opacity: 0.45;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-26px) scale(1.15);
+  }
+}
+
+@layer utilities {
+  .loading-pot {
+    animation: boil-bob 2.2s ease-in-out infinite;
+  }
+
+  .loading-hat {
+    transform-origin: 50% 80%;
+    animation: squash-pop-spin 3.6s cubic-bezier(0.22, 0.7, 0.3, 1.1) infinite;
+  }
+
+  .loading-steam {
+    position: absolute;
+    top: 10px;
+    width: 16px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    opacity: 0;
+    filter: blur(0.2px);
+    animation: steam-rise 2.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .loading-steam-1 {
+    left: 22px;
+  }
+
+  .loading-steam-2 {
+    left: 40px;
+    animation-delay: 0.6s;
+  }
+
+  .loading-steam-3 {
+    left: 58px;
+    animation-delay: 1.2s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .loading-pot,
+  .loading-hat,
+  .loading-steam {
+    animation: none;
+  }
 }
 
 /* Range Slider */

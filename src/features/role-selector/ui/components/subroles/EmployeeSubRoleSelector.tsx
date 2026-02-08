@@ -43,6 +43,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
     drawerTitle,
     isLoadingLocation,
     handlePositionSelect,
+    openSpecializationDrawer,
     handleSpecializationToggle,
     handleLocationRequest,
     handleSpecializationDone,
@@ -70,6 +71,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
         subRoles={subRoles}
         selectedSubRole={selectedSubRole}
         onPositionSelect={handlePositionSelect}
+        onContinue={openSpecializationDrawer}
       />
 
       <SpecializationDrawer

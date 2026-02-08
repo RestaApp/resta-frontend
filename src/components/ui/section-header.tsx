@@ -5,12 +5,15 @@ import { cn } from '@/utils/cn'
 interface SectionHeaderProps {
   title: string
   description?: string
+  /** Дополнительная подсказка (мелкий текст под description) */
+  hint?: string
   className?: string
 }
 
 export const SectionHeader = memo(function SectionHeader({
   title,
   description,
+  hint,
   className,
 }: SectionHeaderProps) {
   return (
@@ -24,6 +27,9 @@ export const SectionHeader = memo(function SectionHeader({
 
       {description ? (
         <p className="text-muted-foreground">{description}</p>
+      ) : null}
+      {hint ? (
+        <p className="mt-1.5 text-sm text-muted-foreground/90">{hint}</p>
       ) : null}
     </motion.div>
   )

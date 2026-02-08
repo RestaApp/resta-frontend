@@ -77,10 +77,13 @@ export const useEmployeeSubRoleSelector = ({
       onSelectSubRole(role, positionValue)
       setSelectedPositionValueLocal(positionValue)
       setSelectedSpecializations([])
-      setShowSpecializationDrawer(true)
     },
     [onSelectSubRole]
   )
+
+  const openSpecializationDrawer = useCallback(() => {
+    setShowSpecializationDrawer(true)
+  }, [])
 
   const handleSpecializationToggle = useCallback((spec: string) => {
     setSelectedSpecializations(prev =>
@@ -150,6 +153,7 @@ export const useEmployeeSubRoleSelector = ({
     drawerTitle,
     isLoadingLocation,
     handlePositionSelect,
+    openSpecializationDrawer,
     handleSpecializationToggle,
     handleLocationRequest,
     handleSpecializationDone,

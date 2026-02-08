@@ -130,6 +130,11 @@ export const FeedBody = memo((props: Props) => {
         : feedType === 'shifts'
             ? t('feed.noShifts')
             : t('feed.noVacancies')
+    const emptyDescription = hasActiveFilters
+        ? t('feed.emptyByFiltersDescription')
+        : feedType === 'shifts'
+            ? t('feed.noShiftsDescription')
+            : t('feed.noVacanciesDescription')
 
     return (
         <>
@@ -147,6 +152,7 @@ export const FeedBody = memo((props: Props) => {
                 ) : showEmptyState ? (
                     <EmptyState
                         message={emptyMessage}
+                        description={emptyDescription}
                         onReset={onResetFilters}
                         showResetButton={hasActiveFilters}
                     />

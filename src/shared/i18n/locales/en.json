@@ -137,6 +137,27 @@
       "replacementDescription": "Replacement shift notifications"
     },
     "support": "Resta support",
+    "supportForm": {
+      "title": "Contact support",
+      "description": "Describe your issue — we'll get back to you as soon as we can.",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief summary of your request",
+      "categoryLabel": "Category",
+      "category": {
+        "technical_issue": "Technical issue / bug",
+        "account_issue": "Account issue",
+        "feature_request": "Feature request",
+        "general_inquiry": "General question",
+        "onboarding_issue": "Onboarding / registration issue"
+      },
+      "message": "Message",
+      "messagePlaceholder": "Describe your issue or question",
+      "contactInfo": "Contact (phone or email)",
+      "contactInfoPlaceholder": "Optional",
+      "submit": "Send",
+      "successTitle": "Ticket created",
+      "successDescription": "We'll get back to you as soon as we can."
+    },
     "logout": "Log out",
     "editProfileDescription": "Fields marked with (*) are required to apply for jobs and shifts.",
     "nameLabel": "First name",
@@ -182,8 +203,11 @@
     "applicationSentSuccess": "Application sent. You will be notified if approved.",
     "openFilters": "Open filters",
     "emptyByFilters": "Nothing found for your filters",
+    "emptyByFiltersDescription": "Change filters or date range to see matching shifts",
     "noShifts": "No shifts found",
+    "noShiftsDescription": "Shifts you can apply to will show here. Check back later or adjust filters",
     "noVacancies": "No vacancies found",
+    "noVacanciesDescription": "Vacancies from venues will appear here. Try changing filters or come back later",
     "loadErrorShifts": "Error loading shifts",
     "loadErrorVacancies": "Error loading vacancies",
     "hotOffers": "Hot shifts",
@@ -251,7 +275,8 @@
     "addShiftAria": "Add shift"
   },
   "activity": {
-    "emptyList": "Your shifts and applications will appear here",
+    "emptyList": "Nothing here yet",
+    "emptyListDescription": "Your applications and created shifts will appear here",
     "myShifts": "My shifts",
     "myApplications": "My applications",
     "noShiftsYet": "You haven't created any shifts yet",
@@ -282,6 +307,8 @@
   "roles": {
     "whoAreYou": "Who are you?",
     "chooseRole": "Choose your role in the ecosystem",
+    "roleChoiceHint": "This helps us match you with the right jobs and shifts",
+    "mostPopularBadge": "Most popular",
     "loadRolesError": "Failed to load roles",
     "noRoles": "No roles found",
     "positionsError": "Failed to load positions",
@@ -300,9 +327,20 @@
     "supplierNamePlaceholder": "Enter company name",
     "supplierTypeLabel": "Product category",
     "openToWork": "Open to work",
+    "openToWorkHint": "Turn on so employers can contact you directly",
     "openToWorkAriaOn": "Enable job search",
     "openToWorkAriaOff": "Disable job search",
-    "yourExperience": "Your experience"
+    "yourExperience": "Your experience",
+    "positionSearchPlaceholder": "Search professions",
+    "continuePosition": "Continue",
+    "specializationsMain": "Main",
+    "specializationsMore": "Additional"
+  },
+  "onboarding": {
+    "stepOf": "Step {{current}} of {{total}}",
+    "doneTitle": "All set",
+    "doneEmoji": "🎉",
+    "doneTip": "We recommend applying to at least 3 vacancies"
   },
   "drawer": {
     "chef": "What kind of chef are you?",

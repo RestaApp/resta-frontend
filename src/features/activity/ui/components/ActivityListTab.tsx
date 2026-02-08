@@ -82,7 +82,12 @@ export const ActivityListTab = memo((props: Props) => {
   }
 
   if (shifts.length === 0 && appliedShifts.length === 0) {
-    return <EmptyState message={t('activity.emptyList')} />
+    return (
+      <EmptyState
+        message={t('activity.emptyList')}
+        description={t('activity.emptyListDescription')}
+      />
+    )
   }
 
   return (

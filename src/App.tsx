@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useAppSelector } from '@/app/hooks'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
+import { OnboardingCompleteScreen } from '@/features/role-selector/ui/components/OnboardingCompleteScreen'
 import { Dashboard } from '@/pages/Dashboard'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { useRole } from '@/features/navigation/model/hooks/useRole'
@@ -16,18 +17,30 @@ export const App = () => {
   const userData = useAppSelector(selectUserData)
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(ROUTES.HOME)
+  const [showOnboardingComplete, setShowOnboardingComplete] = useState(false)
   const { navigate } = useNavigation({ setCurrentScreen })
 
-  const onSelectRole = (role: UiRole) => {
-    handleRoleSelect(role)
+  const onSelectRole = useCallback(
+    (role: UiRole) => {
+      handleRoleSelect(role)
+      setShowOnboardingComplete(true)
+    },
+    [handleRoleSelect]
+  )
+
+  const onOnboardingComplete = useCallback(() => {
+    setShowOnboardingComplete(false)
     setCurrentScreen(ROUTES.HOME)
-  }
+  }, [])
 
   if (isLoading && !userData) return <LoadingPage />
+  if (showOnboardingComplete) {
+    return <OnboardingCompleteScreen onComplete={onOnboardingComplete} />
+  }
   if (!selectedRole) return <RoleSelector onSelectRole={onSelectRole} />
 
   return (
-    <div className=" bg-background">
+    <div className="bg-background">
       <Dashboard role={selectedRole} onNavigate={navigate} currentScreen={currentScreen} />
     </div>
   )

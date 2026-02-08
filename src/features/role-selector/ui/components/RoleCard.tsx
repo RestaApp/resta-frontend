@@ -8,9 +8,17 @@ interface RoleCardProps {
   isSelected: boolean
   index: number
   onSelect: (roleId: UiRole) => void
+  /** Показать бейдж «Чаще всего выбирают» */
+  showPopularBadge?: boolean
 }
 
-export const RoleCard = memo(function RoleCard({ role, isSelected, index, onSelect }: RoleCardProps) {
+export const RoleCard = memo(function RoleCard({
+  role,
+  isSelected,
+  index,
+  onSelect,
+  showPopularBadge = false,
+}: RoleCardProps) {
   const { t } = useTranslation()
   const Icon = role.icon
 
@@ -26,6 +34,7 @@ export const RoleCard = memo(function RoleCard({ role, isSelected, index, onSele
       layout="horizontal"
       onSelect={onSelect}
       ariaLabel={t('aria.selectRole', { label: role.title })}
+      badge={showPopularBadge ? t('roles.mostPopularBadge') : undefined}
     />
   )
 })

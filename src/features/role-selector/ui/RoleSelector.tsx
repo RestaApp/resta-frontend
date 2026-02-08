@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SectionHeader } from '@/components/ui'
 import { RoleCard } from './components/RoleCard'
+import { OnboardingProgress } from './components/OnboardingProgress'
 import { ErrorModal } from './components/subroles/shared/ErrorModal'
 
 import { EmployeeSubRoleSelector } from './components/subroles/EmployeeSubRoleSelector'
@@ -68,10 +69,16 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   return (
     <>
       <div className=" bg-background flex flex-col">
-        <div className="flex-1 flex flex-col px-6 py-8 overflow-y-auto">
-          <SectionHeader title={t('roles.whoAreYou')} description={t('roles.chooseRole')} className="mb-8" />
+        <div className="flex-1 flex flex-col px-6 py-6 overflow-y-auto">
+          <OnboardingProgress current={1} total={3} className="mb-6" />
+          <SectionHeader
+            title={t('roles.whoAreYou')}
+            description={t('roles.chooseRole')}
+            hint={t('roles.roleChoiceHint')}
+            className="mb-6"
+          />
 
-          <div className="flex-1 flex flex-col gap-4 max-w-md mx-auto w-full">
+          <div className="flex-1 flex flex-col gap-3 max-w-md mx-auto w-full">
             {vm.mainRoles.map((role: RoleOption, index: number) => (
               <RoleCard
                 key={role.id}
@@ -79,6 +86,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
                 isSelected={vm.selectedRole === role.id}
                 index={index}
                 onSelect={vm.handleRoleSelect}
+                showPopularBadge={role.id === 'chef'}
               />
             ))}
           </div>
