@@ -46,6 +46,13 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     return () => window.removeEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
   }, [])
 
+  // Переход на вкладку Activity (мои отклики) по клику на карточку «Активные заявки» в профиле
+  useEffect(() => {
+    const handleNavigateToActivityMyApplications = () => setActiveTab('activity')
+    window.addEventListener('navigateToActivityMyApplications', handleNavigateToActivityMyApplications)
+    return () => window.removeEventListener('navigateToActivityMyApplications', handleNavigateToActivityMyApplications)
+  }, [])
+
   // Синхронизация внешнего currentScreen -> activeTab
   useEffect(() => {
     if (!currentScreen) return

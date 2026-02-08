@@ -3,8 +3,16 @@
  * Устраняют дублирование кода и обеспечивают единообразие
  */
 
+import type { BaseQueryFn } from '@reduxjs/toolkit/query'
 import type { EndpointBuilder } from '@reduxjs/toolkit/query/react'
+import type { FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import type { TagType } from '@/shared/api/rtkQuery'
+
+type ApiEndpointBuilder = EndpointBuilder<
+  BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>,
+  TagType,
+  'api'
+>
 
 /**
  * Конфигурация для catalog endpoints (справочные данные)
@@ -20,7 +28,7 @@ export const CATALOG_ENDPOINT_CONFIG = {
  * Используется для справочных данных (роли, позиции, специализации и т.д.)
  */
 export function createCatalogQuery<TResponse, TQueryArg = void>(
-  builder: EndpointBuilder<any, TagType, 'api'>,
+  builder: ApiEndpointBuilder,
   config: {
     url: string
     method?: 'GET' | 'POST'
@@ -35,39 +43,65 @@ export function createCatalogQuery<TResponse, TQueryArg = void>(
   })
 }
 
+type Primitive = string | number | boolean | null | undefined | Date
+type QueryValue = Primitive | Primitive[]
+
+type ArrayFormat = 'brackets' | 'repeat'
+
+export interface BuildQueryParamsOptions {
+  arrayFormat?: ArrayFormat
+}
+
 /**
- * Утилита для построения query параметров из объекта
- * Обрабатывает массивы, булевы значения и опциональные параметры
+ * Утилита для построения query параметров из объекта.
+ * Поддержка массивов (brackets или repeat), Date (toISOString), примитивов.
+ * Принимает любой объект (в т.ч. GetVacanciesParams) без каста на месте вызова.
  */
-export function buildQueryParams(params: Record<string, unknown>): string {
-  const searchParams = new URLSearchParams()
+export function buildQueryParams(
+  params: object,
+  opts: BuildQueryParamsOptions = {}
+): string {
+  const { arrayFormat = 'brackets' } = opts
+  const sp = new URLSearchParams()
 
-  Object.entries(params).forEach(([key, value]) => {
-    // Пропускаем undefined и null значения
-    if (value === undefined || value === null) {
-      return
-    }
+  const append = (k: string, v: Primitive) => {
+    if (v === undefined || v === null) return
+    if (v instanceof Date) sp.append(k, v.toISOString())
+    else sp.append(k, String(v))
+  }
 
-    // Обрабатываем массивы
+  for (const [key, raw] of Object.entries(params)) {
+    const value = raw as QueryValue | undefined
+    if (value === undefined || value === null) continue
+
     if (Array.isArray(value)) {
-      if (value.length > 0) {
-        value.forEach(item => {
-          searchParams.append(`${key}[]`, String(item))
-        })
+      if (!value.length) continue
+      for (const v of value) {
+        append(arrayFormat === 'brackets' ? `${key}[]` : key, v)
       }
-      return
+      continue
     }
 
-    // Обрабатываем булевы значения
-    if (typeof value === 'boolean') {
-      searchParams.append(key, String(value))
-      return
-    }
+    append(key, value)
+  }
 
-    // Обрабатываем остальные типы
-    searchParams.append(key, String(value))
-  })
+  return sp.toString()
+}
 
-  return searchParams.toString()
+/**
+ * Теги для списков RTK Query: LIST + по одному тегу на элемент по id.
+ * Точечная инвалидация вместо рефетча всего при любом изменении.
+ */
+export function provideListTags<T extends { id: number | string }>(
+  type: 'Shift' | 'AppliedShift',
+  result?: { data?: T[] } | T[]
+) {
+  const items = Array.isArray(result) ? result : result?.data
+  return items?.length
+    ? [
+        { type, id: 'LIST' as const },
+        ...items.map(i => ({ type, id: i.id })),
+      ]
+    : [{ type, id: 'LIST' as const }]
 }
 

@@ -21,6 +21,7 @@ export const useProfilePageModel = () => {
   const { showToast } = useToast()
 
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false)
+  const [isNotificationPrefsDrawerOpen, setIsNotificationPrefsDrawerOpen] = useState(false)
 
   // legacy: open drawer by localStorage flag
   useEffect(() => {
@@ -41,9 +42,6 @@ export const useProfilePageModel = () => {
   const { data: myShiftsData } = useGetMyShiftsQuery()
   const { data: appliedShiftsData } = useGetAppliedShiftsQuery()
 
-  // ВАЖНО: тут нужно договориться о типе API.
-  // Сейчас useGetMyShiftsQuery типизирован как ShiftApi[], но UI использует start_time.
-  // В рамках "без риска" — нормализуем как unknown -> VacancyApiItem[] через helper (как делали ранее).
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
   const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedShiftsData), [appliedShiftsData])
 
@@ -74,15 +72,18 @@ export const useProfilePageModel = () => {
   }, [apiRole, userProfile])
 
   const employeeStats = useMemo(() => {
-    const completedShifts = myShifts.filter(s => {
-      if (!s.start_time) return false
-      return new Date(s.start_time) < new Date()
-    }).length
+    const now = Date.now()
 
-    const activeApplications = appliedShifts.filter(s => {
+    const completedShifts = myShifts.reduce((acc, s) => {
+      if (!s.start_time) return acc
+      return Date.parse(s.start_time) < now ? acc + 1 : acc
+    }, 0)
+
+    const activeApplications = appliedShifts.reduce((acc, s) => {
       const a = s.my_application
-      return a && a.status !== 'rejected' && a.status !== 'cancelled'
-    }).length
+      if (!a) return acc
+      return a.status !== 'rejected' && a.status !== 'cancelled' ? acc + 1 : acc
+    }, 0)
 
     return { completedShifts, activeApplications }
   }, [myShifts, appliedShifts])
@@ -151,6 +152,9 @@ export const useProfilePageModel = () => {
     handleEditSuccess,
     // exposed setter for compatibility with minimal safe cut
     setIsEditDrawerOpen,
+
+    isNotificationPrefsDrawerOpen,
+    setIsNotificationPrefsDrawerOpen,
 
     restaurantInfo,
     supplierInfo,

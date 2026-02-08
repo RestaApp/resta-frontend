@@ -3,7 +3,7 @@
  */
 
 import { api } from '@/shared/api/api'
-import { buildQueryParams } from './helpers'
+import { buildQueryParams, provideListTags } from './helpers'
 
 /**
  * Смена из API (используется для старых endpoints)
@@ -35,6 +35,12 @@ export interface CreateShiftBody {
 
 export interface CreateShiftRequest {
   shift: CreateShiftBody
+}
+
+/** Аргументы обновления смены: id и тело без обёртки { shift } */
+export interface UpdateShiftArgs {
+  id: string
+  body: Partial<CreateShiftBody>
 }
 
 export interface CreateShiftResponse {
@@ -168,6 +174,7 @@ export interface ApplyToShiftResponse {
   success: boolean
   message?: string
   data?: {
+    id?: number
     application_id?: number
   }
 }
@@ -188,20 +195,20 @@ export const shiftsApi = api.injectEndpoints({
         url: '/api/v1/shifts',
         params,
       }),
-      providesTags: ['Shift'],
+      providesTags: result => provideListTags('Shift', result),
     }),
 
     // Получить вакансии (смены с shift_type=vacancy)
     getVacancies: builder.query<VacanciesResponse, GetVacanciesParams>({
       query: params => {
-        const queryString = buildQueryParams(params as unknown as Record<string, unknown>)
+        const queryString = buildQueryParams(params)
         return {
           url: `/api/v1/shifts${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
         }
       },
-      providesTags: ['Shift'],
-      keepUnusedDataFor: 30, // Кэшировать данные 30 секунд для предотвращения потери данных при refetch
+      providesTags: result => provideListTags('Shift', result),
+      keepUnusedDataFor: 30,
     }),
 
     // Получить смену по ID
@@ -217,17 +224,17 @@ export const shiftsApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Shift'],
+      invalidatesTags: [{ type: 'Shift', id: 'LIST' }],
     }),
 
-    // Обновить смену
-    updateShift: builder.mutation<ShiftApi, { id: string; data: Partial<CreateShiftRequest> }>({
-      query: ({ id, data }) => ({
+    // Обновить смену (body — поля без обёртки, обёртка { shift } формируется здесь)
+    updateShift: builder.mutation<ShiftApi, UpdateShiftArgs>({
+      query: ({ id, body }) => ({
         url: `/api/v1/shifts/${id}`,
         method: 'PATCH',
-        body: data,
+        body: { shift: body },
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Shift', id }, 'Shift'],
+      invalidatesTags: (_r, _e, { id }) => [{ type: 'Shift', id }, { type: 'Shift', id: 'LIST' }],
     }),
 
     // Удалить смену
@@ -236,33 +243,32 @@ export const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shifts/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Shift'],
+      invalidatesTags: (_r, _e, id) => [{ type: 'Shift', id }, { type: 'Shift', id: 'LIST' }],
     }),
 
-    // Откликнуться на смену (новый endpoint: создаём ресурс shift_application)
-    // Входной формат сохраняет прежнюю сигнатуру { id, data } для обратной совместимости,
-    // но отправляет тело { shift_id, ...data } на `/api/v1/shift_applications`.
+    // Откликнуться на смену
     applyToShift: builder.mutation<ApplyToShiftResponse, { id: number; data?: ApplyToShiftRequest }>({
       query: ({ id, data }) => ({
         url: `/api/v1/shift_applications`,
         method: 'POST',
         body: Object.assign({ shift_id: id }, data || {}),
       }),
-      // Инвалидируем список поданных заявок и список смен (чтобы обновился статус в Feed)
-      invalidatesTags: ['AppliedShift', 'Shift'],
+      invalidatesTags: [
+        { type: 'AppliedShift', id: 'LIST' },
+        { type: 'Shift', id: 'LIST' },
+      ],
     }),
 
-    // Отменить заявку на смену (новый endpoint: удаляем ресурс shift_application по id)
-    // Параметр — id заявки (application id). Для обратной совместимости клиенты могут передавать
-    // прежний shift id, но это повлечёт ошибку на сервере, поэтому убедитесь, что вызывающие хуки
-    // используют application_id из ответа applyToShift.
+    // Отменить заявку на смену (id — application id)
     cancelApplication: builder.mutation<CancelApplicationResponse, number>({
       query: id => ({
         url: `/api/v1/shift_applications/${id}`,
         method: 'DELETE',
       }),
-      // Инвалидируем список поданных заявок и список смен (чтобы обновился статус в Feed)
-      invalidatesTags: ['AppliedShift', 'Shift'],
+      invalidatesTags: [
+        { type: 'AppliedShift', id: 'LIST' },
+        { type: 'Shift', id: 'LIST' },
+      ],
     }),
 
     // Принять заявку (только для владельца смены / ресторана)
@@ -271,7 +277,10 @@ export const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shift_applications/${id}/accept`,
         method: 'POST',
       }),
-      invalidatesTags: ['AppliedShift', 'Shift'],
+      invalidatesTags: [
+        { type: 'AppliedShift', id: 'LIST' },
+        { type: 'Shift', id: 'LIST' },
+      ],
     }),
 
     // Отклонить заявку (только для владельца смены / ресторана)
@@ -280,7 +289,10 @@ export const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shift_applications/${id}/reject`,
         method: 'POST',
       }),
-      invalidatesTags: ['AppliedShift', 'Shift'],
+      invalidatesTags: [
+        { type: 'AppliedShift', id: 'LIST' },
+        { type: 'Shift', id: 'LIST' },
+      ],
     }),
 
     // Получить смены, на которые поданы заявки
@@ -289,17 +301,17 @@ export const shiftsApi = api.injectEndpoints({
         url: '/api/v1/shifts/applied_shifts',
         method: 'GET',
       }),
-      providesTags: ['AppliedShift'],
-      keepUnusedDataFor: 60, // Кэшируем на 60 секунд
+      providesTags: result => provideListTags('AppliedShift', result),
+      keepUnusedDataFor: 60,
     }),
-    
+
     // Получить мои смены (список смен текущего пользователя)
     getMyShifts: builder.query<VacanciesResponse, void>({
       query: () => ({
         url: '/api/v1/shifts/my_shifts',
         method: 'GET',
       }),
-      providesTags: ['Shift'],
+      providesTags: result => provideListTags('Shift', result),
       keepUnusedDataFor: 60,
     }),
   }),

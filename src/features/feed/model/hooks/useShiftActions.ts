@@ -6,7 +6,7 @@ interface UseShiftActionsReturn {
   appliedShiftsSet: Set<number>
   appliedApplicationsMap: Record<number, number | undefined>
   getApplicationId: (id: number) => number | undefined
-  handleApply: (shiftId: number) => Promise<void>
+  handleApply: (shiftId: number, message?: string) => Promise<void>
   handleCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (shiftId: number) => boolean
 }
@@ -28,11 +28,11 @@ export const useShiftActions = (): UseShiftActionsReturn => {
   }, [])
 
   const handleApply = useCallback(
-    async (shiftId: number) => {
+    async (shiftId: number, message?: string) => {
       setLoading(shiftId, true)
       try {
-        const res = await apply(shiftId)
-        const appId = res?.data?.application_id
+        const res = await apply(shiftId, message)
+        const appId = res?.data?.application_id ?? res?.data?.id
         markApplied(shiftId, appId)
       } finally {
         setLoading(shiftId, false)

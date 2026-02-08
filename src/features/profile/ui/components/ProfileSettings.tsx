@@ -11,9 +11,10 @@ import { getCurrentUserId } from '@/utils/user'
 
 interface ProfileSettingsProps {
   onLogout: () => void
+  onNotificationSettingsClick?: () => void
 }
 
-export const ProfileSettings = memo(({ onLogout }: ProfileSettingsProps) => {
+export const ProfileSettings = memo(({ onLogout, onNotificationSettingsClick }: ProfileSettingsProps) => {
   const { t, i18n: i18nInstance } = useTranslation()
   const { updateUser } = useUpdateUser()
 
@@ -77,8 +78,10 @@ export const ProfileSettings = memo(({ onLogout }: ProfileSettingsProps) => {
         </Card>
 
         <motion.button
+          type="button"
           whileTap={{ scale: 0.98 }}
           className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 hover:bg-muted/50 transition-colors"
+          onClick={onNotificationSettingsClick}
         >
           <Settings className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
           <span>{t('profile.notificationSettings')}</span>

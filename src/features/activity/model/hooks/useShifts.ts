@@ -11,6 +11,7 @@ import {
   useDeleteShiftMutation,
   type CreateShiftRequest,
   type CreateShiftResponse,
+  type CreateShiftBody,
   type ShiftApi,
 } from '@/services/api/shiftsApi'
 
@@ -69,8 +70,8 @@ export const useCreateShift = () => {
 export const useUpdateShift = () => {
   const [updateShiftMutation, { isLoading, error }] = useUpdateShiftMutation()
 
-  const updateShift = async (id: string, data: Partial<CreateShiftRequest>): Promise<ShiftApi> => {
-    return await updateShiftMutation({ id, data }).unwrap()
+  const updateShift = async (id: string, body: Partial<CreateShiftBody>): Promise<ShiftApi> => {
+    return await updateShiftMutation({ id, body }).unwrap()
   }
 
   return {

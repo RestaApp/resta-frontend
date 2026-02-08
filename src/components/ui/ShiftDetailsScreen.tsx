@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -31,7 +31,7 @@ interface ShiftDetailsScreenProps {
     applicationId?: number | null
     isOpen: boolean
     onClose: () => void
-    onApply: (id: number) => Promise<void>
+    onApply: (id: number, message?: string) => Promise<void>
     isApplied: boolean
     onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
     isLoading?: boolean
@@ -99,6 +99,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     const currentUserId = useCurrentUserId()
     const isOwner = Boolean(currentUserId && shift?.ownerId && shift.ownerId === currentUserId)
 
+    const [coverMessage, setCoverMessage] = useState('')
+
     const appStatus: ShiftStatus = vacancyData?.my_application?.status ?? shift?.applicationStatus ?? null
     const isAccepted = appStatus === 'accepted'
     const isRejected = appStatus === 'rejected'
@@ -110,26 +112,31 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         return `${base} (${hourlyRate} ${shift.currency}/час)`
     }, [shift?.payPeriod, shift?.currency, hourlyRate, t])
 
+    const handleClose = useCallback(() => {
+        setCoverMessage('')
+        onClose()
+    }, [onClose])
+
     const handleApply = useCallback(async () => {
         if (!shift) return
         try {
-            await onApply(shift.id)
-            onClose()
+            await onApply(shift.id, coverMessage.trim() || undefined)
+            handleClose()
         } catch {
             // toast/ошибка уже обрабатываются выше по стеку
         }
-    }, [shift, onApply, onClose])
+    }, [shift, coverMessage, onApply, handleClose])
 
     const handleCancel = useCallback(async () => {
         if (!shift || isRejected) return
         const appId = applicationId ?? shift.applicationId ?? vacancyData?.my_application?.id ?? null
         try {
             await onCancel(appId, shift.id)
-            onClose()
+            handleClose()
         } catch {
             // toast/ошибка уже обрабатываются выше по стеку
         }
-    }, [shift, applicationId, vacancyData, onCancel, onClose, isRejected])
+    }, [shift, applicationId, vacancyData, onCancel, handleClose, isRejected])
 
     const handleOpenMap = useCallback(() => {
         // TODO: открыть карту
@@ -138,7 +145,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     if (!shift) return null
 
     return (
-        <Drawer open={isOpen} onOpenChange={onClose} bottomOffsetPx={76}>
+        <Drawer open={isOpen} onOpenChange={open => { if (!open) handleClose(); }} bottomOffsetPx={76}>
             <DrawerHeader className="pb-2">
                 <div className="flex items-center justify-between mb-2 gap-2">
                     <DrawerTitle className="text-xl break-words flex-1 min-w-0">{vacancyTitle}</DrawerTitle>
@@ -286,6 +293,22 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                                 ) : null}
                             </div>
                         ) : null}
+                    </Card>
+                ) : null}
+
+                {!isOwner && !isApplied && !isAccepted && !isRejected ? (
+                    <Card className="p-4">
+                        <label className="text-[12px] text-muted-foreground mb-2 block" htmlFor="shift-cover-message">
+                            {t('shift.coverMessage')}
+                        </label>
+                        <textarea
+                            id="shift-cover-message"
+                            value={coverMessage}
+                            onChange={e => setCoverMessage(e.target.value)}
+                            placeholder={t('shift.coverMessagePlaceholder')}
+                            className="w-full min-h-[88px] px-3 py-2 text-[14px] rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+                            maxLength={2000}
+                        />
                     </Card>
                 ) : null}
             </div>

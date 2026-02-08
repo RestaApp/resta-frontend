@@ -7,6 +7,7 @@ import { ProfileStats } from './components/ProfileStats'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
+import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { Loader } from '@/components/ui/loader'
 
 const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
@@ -118,7 +119,10 @@ export const ProfilePage = memo(() => {
 
       {m.apiRole === 'supplier' && m.supplierInfo && <SupplierInfoCard supplierInfo={m.supplierInfo} />}
 
-      <ProfileSettings onLogout={m.handleLogout} />
+      <ProfileSettings
+        onLogout={m.handleLogout}
+        onNotificationSettingsClick={() => m.setIsNotificationPrefsDrawerOpen(true)}
+      />
 
       <EditProfileDrawer
         open={m.isEditDrawerOpen}
@@ -127,6 +131,11 @@ export const ProfilePage = memo(() => {
           m.refetch()
           m.setIsEditDrawerOpen(false)
         }}
+      />
+
+      <NotificationPreferencesDrawer
+        open={m.isNotificationPrefsDrawerOpen}
+        onOpenChange={m.setIsNotificationPrefsDrawerOpen}
       />
     </div>
   )

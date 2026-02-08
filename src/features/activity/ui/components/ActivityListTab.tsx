@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Briefcase, Send } from 'lucide-react'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
@@ -7,6 +7,8 @@ import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShi
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 import { groupAppliedByStatus } from '@/features/activity/model/utils/groupAppliedShifts'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/constants/storage'
 
 type Props = {
   isLoading: boolean
@@ -36,6 +38,21 @@ SectionHeader.displayName = 'SectionHeader'
 export const ActivityListTab = memo((props: Props) => {
   const { t } = useTranslation()
   const { isLoading, isAppliedLoading, isError, shifts, appliedShifts, isDeleting, onEdit, onDelete, showToast } = props
+
+  const myApplicationsRef = useRef<HTMLElement | null>(null)
+
+  // Скролл к разделу "Мои отклики", если пришёл соответствующий флаг в localStorage
+  useEffect(() => {
+    const flag = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS)
+    if (flag && myApplicationsRef.current) {
+      // Небольшая задержка, чтобы гарантировать рендер контента
+      setTimeout(() => {
+        myApplicationsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS)
+      }, 100)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const appliedByStatus = useMemo(() => groupAppliedByStatus(appliedShifts), [appliedShifts])
 
@@ -88,7 +105,7 @@ export const ActivityListTab = memo((props: Props) => {
       </section>
 
       {/* Мои отклики */}
-      <section>
+      <section ref={myApplicationsRef as any}>
         <SectionHeader icon={Send} title={t('activity.myApplications')} count={appliedShifts.length} />
         {appliedShifts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-8 px-4 text-center">

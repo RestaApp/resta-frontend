@@ -186,7 +186,10 @@ export const useAddShiftForm = ({ initialShiftType = 'vacancy', onSave, initialV
 
             if (initialValues?.id) {
                 // update existing shift
-                const updateResult = await updateShiftMutation({ id: String(initialValues.id), data: payload }).unwrap()
+                const updateResult = await updateShiftMutation({
+                  id: String(initialValues.id),
+                  body: payload.shift,
+                }).unwrap()
                 // сервер может вернуть { success: false, errors: [...] } even with 200
                 if ((updateResult as any)?.success === false || (updateResult as any)?.errors) {
                     const errs = (updateResult as any).errors ?? ((updateResult as any).message ? [(updateResult as any).message] : [])

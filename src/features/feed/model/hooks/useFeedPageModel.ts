@@ -102,9 +102,9 @@ export const useFeedPageModel = () => {
   }, [closeProfileAlert])
 
   const handleApplyWithModal = useCallback(
-    async (shiftId: number) => {
+    async (shiftId: number, message?: string) => {
       try {
-        await handleApply(shiftId)
+        await handleApply(shiftId, message)
       } catch (error: unknown) {
         const normalized = normalizeApiError(error, t('errors.applyError'), t)
 
