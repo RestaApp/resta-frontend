@@ -33,7 +33,7 @@ export const useUserSpecializations = (options: UseUserSpecializationsOptions) =
   const dispatch = useAppDispatch()
 
   // Нормализуем позицию к lowercase для консистентности
-  const normalizedPosition = useMemo(() => (position || '').toLowerCase(), [position])
+  const normalizedPosition = useMemo(() => (position || '').trim().toLowerCase(), [position])
   
   // КРИТИЧНО: Отслеживаем позицию, для которой был сделан запрос
   // Это предотвращает сохранение данных от предыдущего запроса под неправильным ключом
@@ -134,4 +134,3 @@ export const useUserSpecializations = (options: UseUserSpecializationsOptions) =
     refetch,
   }
 }
-

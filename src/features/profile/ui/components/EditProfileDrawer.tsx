@@ -109,7 +109,7 @@ export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditPr
   const bioSuffix = getBioLabelSuffix(apiRole)
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerHeader>
         <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
         <DrawerDescription>

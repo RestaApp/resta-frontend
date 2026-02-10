@@ -28,7 +28,7 @@ export const OnboardingCompleteScreen = memo(function OnboardingCompleteScreen({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background px-6 text-center"
+      className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-background px-6 text-center"
     >
       <span className="text-5xl mb-4" role="img" aria-hidden>
         {t('onboarding.doneEmoji')}

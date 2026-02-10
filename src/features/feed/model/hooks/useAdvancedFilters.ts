@@ -1,6 +1,4 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-import { useAppDispatch } from '@/store/hooks'
-import { setSelectedPosition as setSelectedPositionAction } from '@/features/navigation/model/catalogSlice'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 import { hasActiveFilters as checkHasActiveFilters } from '@/utils/filters'
 
@@ -15,8 +13,6 @@ export const useAdvancedFilters = ({
   isOpen,
   onApply,
 }: UseAdvancedFiltersOptions) => {
-  const dispatch = useAppDispatch()
-
   // draft state (редактируем в модалке)
   const [priceRange, setPriceRange] = useState<[number, number] | null>(null)
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null)
@@ -48,14 +44,12 @@ export const useAdvancedFilters = ({
       if (selectedPosition === position) {
         setSelectedPosition(null)
         setSelectedSpecializations([])
-        dispatch(setSelectedPositionAction(null))
       } else {
         setSelectedPosition(position)
         setSelectedSpecializations([])
-        dispatch(setSelectedPositionAction(position))
       }
     },
-    [selectedPosition, dispatch]
+    [selectedPosition]
   )
 
   const toggleSpecialization = useCallback((specialization: string) => {
@@ -95,8 +89,7 @@ export const useAdvancedFilters = ({
     setSelectedSpecializations([])
     setStartDate(null)
     setEndDate(null)
-    dispatch(setSelectedPositionAction(null))
-  }, [dispatch])
+  }, [])
 
   // НОВОЕ: явное применение по кнопке
   const handleApply = useCallback(() => {

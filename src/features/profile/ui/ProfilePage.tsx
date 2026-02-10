@@ -128,7 +128,6 @@ export const ProfilePage = memo(() => {
         open={m.isEditDrawerOpen}
         onOpenChange={m.setIsEditDrawerOpen}
         onSuccess={() => {
-          m.refetch()
           m.setIsEditDrawerOpen(false)
         }}
       />
