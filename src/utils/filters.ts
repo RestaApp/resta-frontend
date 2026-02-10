@@ -3,6 +3,7 @@
  */
 
 import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
+import type { QuickFilter } from '@/features/feed/model/utils/clientFilters'
 
 export const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
 export const DEFAULT_JOBS_PRICE_RANGE: [number, number] = [0, 5000]
@@ -63,17 +64,39 @@ export const formatSpecializations = (specializations: string[]): string[] => {
   }
   return [
     ...specializations.slice(0, 2).map(spec => getSpecializationLabel(spec)),
-    `+${specializations.length - 2}`
+    `+${specializations.length - 2}`,
   ]
+}
+
+const QUICK_FILTER_LABELS: Record<Exclude<QuickFilter, 'all'>, { ru: string; en: string }> = {
+  urgent: { ru: '🔥 Срочные', en: '🔥 Urgent' },
+  high_pay: { ru: '💰 Высокая оплата', en: '💰 High pay' },
+  nearby: { ru: '📍 Рядом', en: '📍 Nearby' },
+  my_role: { ru: '🧑‍🍳 Моя роль', en: '🧑‍🍳 My role' },
+}
+
+const getQuickFilterLabel = (value: QuickFilter): string | null => {
+  if (value === 'all') return null
+  const label = QUICK_FILTER_LABELS[value]
+  if (!label) return value
+  return i18n.language === 'en' ? label.en : label.ru
 }
 
 /**
  * Преобразует фильтры в список строк для отображения
  */
-export const formatFiltersForDisplay = (filters: AdvancedFiltersData | null): string[] => {
-  if (!filters) return []
-
+export const formatFiltersForDisplay = (
+  filters: AdvancedFiltersData | null,
+  quickFilter?: QuickFilter
+): string[] => {
   const result: string[] = []
+
+  if (quickFilter) {
+    const quickLabel = getQuickFilterLabel(quickFilter)
+    if (quickLabel) result.push(quickLabel)
+  }
+
+  if (!filters) return result
 
   // Позиция
   if (filters.selectedPosition) {
@@ -112,4 +135,3 @@ export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean =
 
   return hasNonDefaultPrice || hasPosition || hasSpecializations || hasDates
 }
-

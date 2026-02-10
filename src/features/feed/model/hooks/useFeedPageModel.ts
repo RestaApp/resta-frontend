@@ -243,13 +243,39 @@ export const useFeedPageModel = () => {
     ]
   )
 
-  const activeFiltersList = useMemo(() => formatFiltersForDisplay(advancedFilters), [advancedFilters])
+  const hasActiveQuick = useMemo(() => quickFilter !== 'all', [quickFilter])
+  const hasActiveAdvanced = useMemo(
+    () => (advancedFilters ? hasActiveFilters(advancedFilters) : false),
+    [advancedFilters]
+  )
+  const hasActiveAny = useMemo(() => hasActiveQuick || hasActiveAdvanced, [
+    hasActiveQuick,
+    hasActiveAdvanced,
+  ])
 
-  const hasActiveAdvancedFilters = useMemo(() => {
-    const hasQuick = quickFilter !== 'all'
-    const hasAdv = advancedFilters ? hasActiveFilters(advancedFilters) : false
-    return hasQuick || hasAdv
-  }, [advancedFilters, quickFilter])
+  const activeFiltersList = useMemo(
+    () => formatFiltersForDisplay(advancedFilters, quickFilter),
+    [advancedFilters, quickFilter]
+  )
+
+  const emptyMessage = useMemo(
+    () =>
+      hasActiveAny
+        ? t('feed.emptyByFilters')
+        : feedType === 'shifts'
+          ? t('feed.noShifts')
+          : t('feed.noVacancies'),
+    [hasActiveAny, feedType, t]
+  )
+  const emptyDescription = useMemo(
+    () =>
+      hasActiveAny
+        ? t('feed.emptyByFiltersDescription')
+        : feedType === 'shifts'
+          ? t('feed.noShiftsDescription')
+          : t('feed.noVacanciesDescription'),
+    [hasActiveAny, feedType, t]
+  )
 
   const filteredCount = useMemo(() => Math.max(0, activeList.totalCount), [activeList.totalCount])
 
@@ -282,7 +308,11 @@ export const useFeedPageModel = () => {
     setFeedType,
     feedTypeOptions,
     isFetching: activeList.isFetching,
-    hasActiveAdvancedFilters,
+    isRefreshing: activeList.isRefreshing,
+    hasActiveAdvancedFilters: hasActiveAdvanced,
+    hasActiveFilters: hasActiveAny,
+    emptyMessage,
+    emptyDescription,
     activeFiltersList,
     openFilters,
 

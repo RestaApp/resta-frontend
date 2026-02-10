@@ -22,7 +22,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
         <div className=" bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
             <AppHeader activeTab={activeTab} />
             <main className="mx-auto max-w-2xl">
-                <TabContent activeTab={activeTab} role={role} />
+                <TabContent activeTab={activeTab} />
             </main>
 
             <BottomNav

@@ -18,6 +18,7 @@ export interface UseVacanciesInfiniteListReturn {
   vacanciesMap: Map<number, VacancyApiItem>
   hasMore: boolean
   isInitialLoading: boolean
+  isRefreshing: boolean
   isFetching: boolean
   error: unknown
   totalCount: number
@@ -151,17 +152,18 @@ export const useVacanciesInfiniteList = (options: UseVacanciesInfiniteListOption
 
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false
-    // если менялись параметры — считаем “начальной загрузкой”, но UI данные сохраняем до ответа
-    if (pendingReplace) return true
     // обычная первая загрузка
     return page === 1 && items.length === 0 && (isLoading || isFetching || !response)
-  }, [enabled, pendingReplace, page, items.length, isLoading, isFetching, response])
+  }, [enabled, page, items.length, isLoading, isFetching, response])
+
+  const isRefreshing = useMemo(() => pendingReplace && isFetching, [pendingReplace, isFetching])
 
   return {
     items,
     vacanciesMap,
     hasMore,
     isInitialLoading,
+    isRefreshing,
     isFetching,
     error: isError ? error : null,
     totalCount,

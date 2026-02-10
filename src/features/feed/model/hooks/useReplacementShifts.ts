@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useGetVacanciesQuery, type GetVacanciesParams } from '@/services/api/shiftsApi'
 import { useMemo } from 'react'
 import i18n from '@/shared/i18n/config'
+import { parseApiDateTime } from '../utils/formatting'
 
 interface UseReplacementShiftsOptions {
   /**
@@ -122,10 +123,9 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
       let time = i18n.t('feedFallback.notSpecified')
       if (vacancy.start_time && vacancy.end_time) {
         try {
-          const startDate = new Date(vacancy.start_time)
-          const endDate = new Date(vacancy.end_time)
-
-          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          const startDate = parseApiDateTime(vacancy.start_time ?? undefined)
+          const endDate = parseApiDateTime(vacancy.end_time ?? undefined)
+          if (!startDate || !endDate) {
             throw new Error('Invalid date')
           }
 
@@ -198,4 +198,3 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
     meta: data?.meta,
   }
 }
-

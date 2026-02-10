@@ -23,6 +23,13 @@ export const parseDate = (value?: string): Date | null => {
   return Number.isNaN(d.getTime()) ? null : d
 }
 
+export const toLocalISODateKey = (d: Date): string => {
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
 export const formatDate = (value?: string, locale?: string): string => {
   const d = parseDate(value)
   if (!d) return i18n.t('datetime.dateNotSet')

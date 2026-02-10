@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useGetVacanciesQuery, type GetVacanciesParams } from '@/services/api/shiftsApi'
 import { useMemo } from 'react'
 import i18n from '@/shared/i18n/config'
+import { parseApiDateTime } from '../utils/formatting'
 
 interface UseVacanciesOptions {
   /**
@@ -146,8 +147,12 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
         let schedule = i18n.t('feedFallback.notSpecified')
         if (vacancy.start_time && vacancy.end_time) {
           try {
-            const startDate = new Date(vacancy.start_time)
-            const endDate = new Date(vacancy.end_time)
+            const startDate = parseApiDateTime(vacancy.start_time ?? undefined)
+            const endDate = parseApiDateTime(vacancy.end_time ?? undefined)
+
+            if (!startDate || !endDate) {
+              throw new Error('Invalid date')
+            }
 
             // Проверяем, один ли это день
             const isSameDay = startDate.toDateString() === endDate.toDateString()
@@ -259,4 +264,3 @@ export const useVacancies = (options: UseVacanciesOptions = {}) => {
     meta: data?.meta,
   }
 }
-

@@ -25,7 +25,6 @@ interface AdvancedFiltersProps {
     onApply: (filters: AdvancedFiltersData | null) => void
     initialFilters?: AdvancedFiltersData
     filteredCount?: number
-    onReset?: () => void
     searchQuery?: string
     activeFilter?: string
     isVacancy?: boolean // Флаг для вакансий (скрыть период, изменить текст)
@@ -37,7 +36,6 @@ export const AdvancedFilters = ({
     onApply,
     initialFilters,
     filteredCount,
-    onReset,
     isVacancy = false,
 }: AdvancedFiltersProps) => {
     const { t } = useTranslation()
@@ -54,12 +52,12 @@ export const AdvancedFilters = ({
         handlePositionSelect,
         toggleSpecialization,
         handleReset,
+        handleApply,
         hasActiveFilters,
     } = useAdvancedFilters({
         initialFilters: initialFilters || null,
         isOpen,
         onApply,
-        onReset,
     })
 
     // Дефолтный диапазон для отображения (не применяется автоматически)
@@ -73,11 +71,18 @@ export const AdvancedFilters = ({
     const cachedSpecializationsRef = useRef<Map<string, string[]>>(new Map())
 
     // Получаем минимальную дату для начальной даты (сегодня)
+    const formatLocalDateKey = useCallback((date: Date): string => {
+        const yyyy = date.getFullYear()
+        const mm = String(date.getMonth() + 1).padStart(2, '0')
+        const dd = String(date.getDate()).padStart(2, '0')
+        return `${yyyy}-${mm}-${dd}`
+    }, [])
+
     const getMinStartDate = useCallback((): string => {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
-        return today.toISOString().split('T')[0]
-    }, [])
+        return formatLocalDateKey(today)
+    }, [formatLocalDateKey])
 
     // Получаем минимальную дату для конечной даты (сегодня или startDate)
     const getMinEndDate = useCallback((): string => {
@@ -86,8 +91,8 @@ export const AdvancedFilters = ({
         }
         const today = new Date()
         today.setHours(0, 0, 0, 0)
-        return today.toISOString().split('T')[0]
-    }, [startDate])
+        return formatLocalDateKey(today)
+    }, [startDate, formatLocalDateKey])
 
     // Загружаем позиции (хук сам использует Redux кеш и сохраняет данные)
     const { positions: positionsForDisplay } = useUserPositions({ enabled: isOpen })
@@ -153,7 +158,7 @@ export const AdvancedFilters = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50"
+                        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px]"
                     />
 
                     {/* Bottom Sheet */}
@@ -168,7 +173,7 @@ export const AdvancedFilters = ({
                             stiffness: 300,
                             layout: { duration: 0.25, ease: 'easeInOut' },
                         }}
-                        className="fixed bottom-19 left-0 right-0 bg-card rounded-t-[24px] z-50 flex flex-col max-h-[calc(100vh-4.75rem)]"
+                        className="fixed bottom-0 left-0 right-0 z-[60] bg-card rounded-t-[24px] flex flex-col max-h-[85vh]"
                     >
                         {/* Drag Handle */}
                         <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0" onClick={onClose}>
@@ -308,12 +313,31 @@ export const AdvancedFilters = ({
 
                         </motion.div>
 
-                        {/* Информация о количестве найденных смен/вакансий */}
-                        {previewCount !== undefined && (
-                            <div className="px-5 py-4 text-center text-sm text-muted-foreground border-t border-border/50 bg-card/50">
-                                {isVacancy ? t('feed.foundVacanciesCount', { count: previewCount }) : t('feed.foundShiftsCount', { count: previewCount })}
-                            </div>
-                        )}
+                        <div className="px-5 py-4 border-t border-border/50 bg-card flex gap-3">
+                            <button
+                                type="button"
+                                onClick={handleReset}
+                                className="flex-1 py-3 rounded-xl border-2"
+                                style={{ borderColor: 'var(--border)' }}
+                                disabled={!hasActiveFilters}
+                            >
+                                {t('common.reset')}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleApply()
+                                    onClose()
+                                }}
+                                className="flex-1 py-3 rounded-xl text-white disabled:opacity-50"
+                                style={{ background: 'var(--gradient-primary)' }}
+                            >
+                                {isVacancy
+                                    ? t('feed.showVacanciesCount', { count: previewCount })
+                                    : t('feed.showShiftsCount', { count: previewCount })}
+                            </button>
+                        </div>
                     </motion.div>
                 </>
             )}

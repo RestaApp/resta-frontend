@@ -64,22 +64,13 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
   // Обновляем фильтры один раз, когда позиция пользователя стала известна после загрузки
   const initializedPositionRef = useRef(false)
   useEffect(() => {
-    // Если уже инициализировали — выходим
     if (initializedPositionRef.current) return
+    if (!userPosition) return
 
-    // Если при инициализации уже есть фильтры с позицией — считаем инициализированным
-    if (shiftsAdvancedFilters?.selectedPosition || jobsAdvancedFilters?.selectedPosition) {
-      initializedPositionRef.current = true
-      return
-    }
-
-    // Если позиция загрузилась позже и фильтры пустые — задаём стартовые фильтры один раз
-    if (userPosition && !shiftsAdvancedFilters && !jobsAdvancedFilters) {
-      setShiftsAdvancedFilters(createInitialFilters(userPosition))
-      setJobsAdvancedFilters(createInitialFilters(userPosition))
-      initializedPositionRef.current = true
-    }
-  }, [userPosition, shiftsAdvancedFilters, jobsAdvancedFilters])
+    setShiftsAdvancedFilters(prev => prev ?? createInitialFilters(userPosition))
+    setJobsAdvancedFilters(prev => prev ?? createInitialFilters(userPosition))
+    initializedPositionRef.current = true
+  }, [userPosition])
 
   // Синхронизация позиций и специализаций выполняется через утилиту syncFiltersPositionAndSpecializations
   // Это позволяет сохранять отдельные значения для цены и дат между сменами и вакансиями

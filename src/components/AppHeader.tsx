@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { AddShiftButton } from '@/features/activity/ui/components/AddShiftButton'
-import AddShiftDrawer from '@/features/activity/ui/components/AddShiftDrawer'
+import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
 import type { Tab } from '@/types'
 import { ThemeToggleCompact } from '@/components/ui/theme-toggle-compact'
 

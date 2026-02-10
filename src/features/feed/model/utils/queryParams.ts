@@ -27,7 +27,7 @@ export const buildVacanciesBaseParams = (
     if (adv.selectedPosition) params.position = adv.selectedPosition
 
     if (adv.selectedSpecializations?.length) {
-      params.specialization = adv.selectedSpecializations[0]
+      params.specialization = adv.selectedSpecializations.join(',')
     }
 
     // даты — только для смен

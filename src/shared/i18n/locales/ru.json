@@ -218,6 +218,8 @@
     "period": "Период",
     "foundShiftsCount": "Найдено смен: {{count}}",
     "foundVacanciesCount": "Найдено вакансий: {{count}}",
+    "showShiftsCount": "Показать результаты",
+    "showVacanciesCount": "Показать результаты",
     "ratePerShift": "Ставка за смену",
     "ratePerVacancy": "Ставка за вакансию",
     "resetFilters": "Сбросить фильтры",

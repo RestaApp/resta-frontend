@@ -10,24 +10,38 @@ export const formatReviews = (count: number): string => {
     return i18n.t('feedFallback.reviews5')
   }
   
-  export const formatMoney = (value: number): string => {
-    if (!Number.isFinite(value)) return '0'
-    return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(value)
-  }
+export const formatMoney = (value: number): string => {
+  const v = Number.isFinite(value) ? value : 0
+  return new Intl.NumberFormat(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
+    maximumFractionDigits: 0,
+  }).format(v)
+}
   
   /**
    * API: "2026-01-11 08:00:00 +0100"
    * -> ISO: "2026-01-11T08:00:00+01:00"
    */
-  export const parseApiDateTime = (value?: string | null): Date | null => {
-    if (!value) return null
-    const m = value.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) ([+-]\d{2})(\d{2})$/)
-    if (!m) return null
-    const [, d, t, oh, om] = m
-    const iso = `${d}T${t}${oh}:${om}`
-    const date = new Date(iso)
-    return Number.isNaN(date.getTime()) ? null : date
+export const parseApiDateTime = (value?: string | null): Date | null => {
+  if (!value) return null
+
+  // 1) Если уже ISO — пробуем сразу
+  // примеры: 2026-01-11T08:00:00+01:00, 2026-01-11T08:00:00Z
+  if (value.includes('T')) {
+    const d = new Date(value)
+    return Number.isNaN(d.getTime()) ? null : d
   }
+
+  // 2) Формат: "YYYY-MM-DD HH:MM:SS +0100" или "+01:00"
+  const m = value.match(
+    /^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})\s+([+-]\d{2}):?(\d{2})$/
+  )
+  if (!m) return null
+
+  const [, datePart, timePart, oh, om] = m
+  const iso = `${datePart}T${timePart}${oh}:${om}`
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? null : d
+}
   
   export const formatDateRU = (d: Date): string => {
     return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(d)

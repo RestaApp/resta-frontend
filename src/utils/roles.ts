@@ -131,3 +131,11 @@ export const mapPositionFromApi = (positionValue: string): EmployeeRole | null =
   }
   return employeeRolesMap[normalized] || null
 }
+
+/**
+ * Нормализатор позиции сотрудника из API -> ключ UI
+ * Возвращает нормализованный ключ EmployeeRole или null
+ */
+export const normalizeEmployeePosition = (value: string): EmployeeRole | null => {
+  return mapPositionFromApi(value)
+}

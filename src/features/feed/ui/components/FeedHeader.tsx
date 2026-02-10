@@ -11,7 +11,7 @@ type Props = {
 
     onOpenFilters: () => void
     isLoading: boolean
-    hasActiveFilters: boolean
+    hasActiveAdvancedFilters: boolean
     activeFiltersList: string[]
 }
 
@@ -22,12 +22,12 @@ export const FeedHeader = memo((props: Props) => {
         onChangeFeedType,
         onOpenFilters,
         isLoading,
-        hasActiveFilters,
+        hasActiveAdvancedFilters,
         activeFiltersList,
     } = props
 
     return (
-        <div className="top-0 z-10 border-border/50 bg-background/95 pt-2 backdrop-blur-sm transition-all">
+        <div className="sticky top-0 z-10 border-border/50 bg-background/95 pt-2 backdrop-blur-sm transition-all">
             <div className="px-4 pb-2">
                 <Tabs options={options} activeId={feedType} onChange={onChangeFeedType} />
             </div>
@@ -35,7 +35,7 @@ export const FeedHeader = memo((props: Props) => {
             <SearchFilters
                 onOpenFilters={onOpenFilters}
                 isLoading={isLoading}
-                hasActiveFilters={hasActiveFilters}
+                hasActiveAdvancedFilters={hasActiveAdvancedFilters}
                 activeFiltersList={activeFiltersList}
             />
         </div>
