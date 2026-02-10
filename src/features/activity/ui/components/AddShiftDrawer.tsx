@@ -54,7 +54,7 @@ const useResetSpecializationsOnPositionChange = (
 
         // Обновляем ref для следующего рендера
         prevPositionRef.current = currentPosition
-    }, [position, open, setSpecializations, specializations.length])
+    }, [position, open, setSpecializations, specializations])
 }
 
 type AddShiftDrawerProps = {
@@ -135,7 +135,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
     // handleSave provided by hook; when it succeeds we close the drawer
 
     // timeRangeError and isFormInvalid provided by hook
-    const positionsOptions: SelectFieldOption[] = positionsForDisplay.map(item => {
+    const positionsOptions: SelectFieldOption[] = (positionsForDisplay ?? []).map(item => {
         const value = item.originalValue || item.id
         return {
             value,
@@ -144,7 +144,7 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
     })
 
     return (
-        <Drawer open={open} onOpenChange={onOpenChange} bottomOffsetPx={76}>
+        <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerHeader>
                 <DrawerTitle>{t('shift.addTitle')}</DrawerTitle>
                 <DrawerDescription>{t('shift.addDescription')}</DrawerDescription>
@@ -283,5 +283,3 @@ export const AddShiftDrawer = ({ open, onOpenChange, onSave, initialValues = nul
         </Drawer>
     )
 }
-
-export default AddShiftDrawer

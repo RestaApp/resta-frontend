@@ -14,7 +14,6 @@ const SIZE_CLASSES: Record<NonNullable<LoaderProps['size']>, string> = {
 }
 
 export const Loader = memo(function Loader({ size = 'md', className }: LoaderProps) {
-
   return (
     <div className={cn('flex items-center justify-center', className)}>
       <motion.div
@@ -26,9 +25,9 @@ export const Loader = memo(function Loader({ size = 'md', className }: LoaderPro
           ease: 'linear',
         }}
       >
-        <div className="absolute inset-0 rounded-full border-2 border-purple-200/30 dark:border-purple-900/30" />
+        <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
         <motion.div
-          className="absolute inset-0 rounded-full border-2 border-transparent border-t-purple-600 dark:border-t-purple-400"
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary"
           animate={{ rotate: 360 }}
           transition={{
             duration: 0.8,
@@ -37,7 +36,7 @@ export const Loader = memo(function Loader({ size = 'md', className }: LoaderPro
           }}
         />
         <motion.div
-          className="absolute inset-[2px] rounded-full border-2 border-transparent border-r-pink-500 dark:border-r-pink-400"
+          className="absolute inset-[2px] rounded-full border-2 border-transparent border-r-primary"
           animate={{ rotate: -360 }}
           transition={{
             duration: 1.2,

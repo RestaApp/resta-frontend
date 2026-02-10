@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Search } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -6,17 +6,15 @@ import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { Card } from '@/components/ui/card'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
-
-type WeekDay = { date: string; short: string; full: string; dateObj: Date }
-type GroupedShift = { id: number; type: 'resta' | 'personal'; data: any }
+import type { GroupedShift, WeekDay } from '@/features/activity/model/hooks/useActivityPageModel'
 
 type Props = {
   isLoading: boolean
   isError: boolean
   weekDays: WeekDay[]
   groupedShifts: Record<string, GroupedShift[]>
-  selectedDay: string
-  onSelectDay: (day: string) => void
+  selectedDayKey: string
+  onSelectDay: (dayKey: string) => void
   selectedDayShifts: GroupedShift[]
   onEdit: (id: number) => void
   onDelete: (id: number) => void
@@ -32,7 +30,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
     isError,
     weekDays,
     groupedShifts,
-    selectedDay,
+    selectedDayKey,
     onSelectDay,
     selectedDayShifts,
     onEdit,
@@ -41,6 +39,10 @@ export const ActivityCalendarTab = memo((props: Props) => {
     showToast,
     onFindShift,
   } = props
+  const selectedDayMeta = useMemo(
+    () => weekDays.find(d => d.key === selectedDayKey),
+    [weekDays, selectedDayKey]
+  )
 
   if (isLoading) {
     return (
@@ -57,14 +59,13 @@ export const ActivityCalendarTab = memo((props: Props) => {
     <div className="space-y-4">
       <div className="flex gap-2 overflow-x-auto pb-2">
         {weekDays.map(day => {
-          const dateKey = day.dateObj.toISOString().split('T')[0]
-          const hasShifts = (groupedShifts[dateKey]?.length ?? 0) > 0
-          const isSelected = selectedDay === day.date
+          const hasShifts = (groupedShifts[day.key]?.length ?? 0) > 0
+          const isSelected = selectedDayKey === day.key
 
           return (
             <button
-              key={day.date}
-              onClick={() => onSelectDay(day.date)}
+              key={day.key}
+              onClick={() => onSelectDay(day.key)}
               className="flex-shrink-0 flex flex-col items-center p-3 rounded-xl min-w-[60px] transition-all relative"
               style={{
                 background: isSelected ? 'var(--gradient-primary)' : 'var(--muted)',
@@ -72,7 +73,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
               }}
             >
               <span className="text-xs mb-1">{day.short}</span>
-              <span className="text-lg font-medium">{day.date}</span>
+              <span className="text-lg font-medium">{day.dayNum}</span>
               {hasShifts && !isSelected ? (
                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: 'var(--primary)' }} />
               ) : null}
@@ -82,7 +83,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
       </div>
 
       <div>
-        <h4 className="mb-3 text-lg font-semibold">{weekDays.find(d => d.date === selectedDay)?.full || t('activity.day')}</h4>
+        <h4 className="mb-3 text-lg font-semibold">{selectedDayMeta?.full || t('activity.day')}</h4>
 
         {selectedDayShifts.length > 0 ? (
           <div className="space-y-4">

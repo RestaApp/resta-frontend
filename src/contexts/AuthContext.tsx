@@ -1,13 +1,8 @@
-/**
- * Контекст для глобального состояния авторизации
- */
-
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { authService } from '@/services/auth'
-import { useAppSelector } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { clearUserData } from '@/features/navigation/model/userSlice'
 import { selectTelegramIsReady } from '@/features/navigation/model/telegramSlice'
-import { store } from '@/store'
 
 interface AuthContextValue {
   isLoading: boolean
@@ -22,79 +17,83 @@ interface AuthProviderProps {
   children: ReactNode
 }
 
-/**
- * Провайдер для глобального состояния авторизации
- * Должен быть обернут вокруг всего приложения
- */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const dispatch = useAppDispatch()
+  const telegramReady = useAppSelector(selectTelegramIsReady)
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => authService.isAuthenticated())
   const [isError, setIsError] = useState(false)
   const [error, setError] = useState<unknown>(null)
-  const telegramReady = useAppSelector(selectTelegramIsReady)
 
-  // Отслеживаем изменения авторизации
+  const checkAuth = () => {
+    const next = authService.isAuthenticated()
+    setIsAuthenticated((prev) => (prev === next ? prev : next))
+  }
+
   useEffect(() => {
-    const checkAuth = () => {
-      setIsAuthenticated(authService.isAuthenticated())
-    }
-
-    // Проверяем при монтировании
+    // initial
     checkAuth()
 
-    // Слушаем события авторизации
-    const handleAuthChange = () => checkAuth()
-    const handleLogout = () => {
-      checkAuth()
-      // Очищаем данные пользователя из Redux
-      store.dispatch(clearUserData())
+    const onUnauthorized = () => {
+      setIsAuthenticated(false)
+      setIsError(true)
+      setError(new Error('Unauthorized'))
     }
 
-    window.addEventListener('auth:unauthorized', handleAuthChange)
-    window.addEventListener('auth:authorized', handleAuthChange)
-    window.addEventListener('auth:logout', handleLogout)
+    const onAuthorized = () => {
+      checkAuth()
+      setIsError(false)
+      setError(null)
+    }
 
-    // Также проверяем при фокусе окна (на случай, если токен был сохранен в другой вкладке)
-    window.addEventListener('focus', checkAuth)
+    const onLogout = () => {
+      setIsAuthenticated(false)
+      setIsError(false)
+      setError(null)
+      dispatch(clearUserData())
+    }
+
+    const onFocus = () => checkAuth()
+
+    window.addEventListener('auth:unauthorized', onUnauthorized)
+    window.addEventListener('auth:authorized', onAuthorized)
+    window.addEventListener('auth:logout', onLogout)
+    window.addEventListener('focus', onFocus)
 
     return () => {
-      window.removeEventListener('auth:unauthorized', handleAuthChange)
-      window.removeEventListener('auth:authorized', handleAuthChange)
-      window.removeEventListener('auth:logout', handleLogout)
-      window.removeEventListener('focus', checkAuth)
+      window.removeEventListener('auth:unauthorized', onUnauthorized)
+      window.removeEventListener('auth:authorized', onAuthorized)
+      window.removeEventListener('auth:logout', onLogout)
+      window.removeEventListener('focus', onFocus)
     }
-  }, [])
+  }, [dispatch])
 
-  // Отслеживаем готовность Telegram и авторизацию
+  // когда Telegram “готов”, можно уточнить auth и сбросить ошибку, если всё ок
   useEffect(() => {
-    // Проверяем авторизацию при изменении готовности Telegram
-    if (telegramReady) {
-      const isAuth = authService.isAuthenticated()
-      setIsAuthenticated(isAuth)
-      if (isAuth) {
-        setIsError(false)
-        setError(null)
-      }
+    if (!telegramReady) return
+    const next = authService.isAuthenticated()
+    setIsAuthenticated(next)
+    if (next) {
+      setIsError(false)
+      setError(null)
     }
   }, [telegramReady])
 
-  const value: AuthContextValue = {
-    isLoading: !telegramReady,
-    isError,
-    error,
-    isAuthenticated,
-  }
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      isLoading: !telegramReady,
+      isError,
+      error,
+      isAuthenticated,
+    }),
+    [telegramReady, isError, error, isAuthenticated]
+  )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-/**
- * Хук для использования состояния авторизации
- * Использует глобальный контекст, предотвращая дублирование запросов
- */
 export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth должен использоваться внутри AuthProvider')
-  }
-  return context
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth должен использоваться внутри AuthProvider')
+  return ctx
 }

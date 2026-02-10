@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import AddShiftDrawer from '@/features/activity/ui/components/AddShiftDrawer'
+import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
 import { useActivityPageModel } from '../model/hooks/useActivityPageModel'
 import { ActivityHeader } from './components/ActivityHeader'
 import { ActivityListTab } from './components/ActivityListTab'
@@ -10,7 +10,7 @@ export const ActivityPage = () => {
   const m = useActivityPageModel()
 
   return (
-    <div className=" bg-background">
+    <div className="bg-background">
       <ActivityHeader activeTab={m.activeTab} onChange={m.setActiveTab} />
 
       <div className="p-4">
@@ -34,8 +34,8 @@ export const ActivityPage = () => {
             isError={m.isError}
             weekDays={m.weekDays}
             groupedShifts={m.groupedShifts}
-            selectedDay={m.selectedDay}
-            onSelectDay={m.setSelectedDay}
+            selectedDayKey={m.selectedDayKey}
+            onSelectDay={m.setSelectedDayKey}
             selectedDayShifts={m.selectedDayShifts}
             onEdit={m.handleEdit}
             onDelete={m.handleDelete}
@@ -53,10 +53,10 @@ export const ActivityPage = () => {
           if (!open) m.setEditingShift(null)
         }}
         initialValues={m.editingShift}
-        onSave={(res) => {
+        onSave={() => {
           m.setIsDrawerOpen(false)
           m.setEditingShift(null)
-          if (res) m.showToast(t('shift.saved'), 'success')
+          m.showToast(t('shift.saved'), 'success')
         }}
       />
     </div>

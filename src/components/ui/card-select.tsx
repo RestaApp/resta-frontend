@@ -54,13 +54,14 @@ const CardSelectInner = <TId extends string>({
         aria-pressed={isSelected}
         className={cn(
           'w-full rounded-xl border p-4 text-left transition-all',
-          isSelected ? 'border-primary ring-2 ring-primary/30 shadow-lg' : 'border-border',
+          isSelected
+            ? 'gradient-primary border-transparent text-white shadow-lg ring-2 ring-primary/30'
+            : 'border-border',
           layout === 'vertical' ? 'bg-card shadow-md shadow-black/5' : '',
           layout === 'horizontal' ? 'flex items-center gap-4' : 'flex flex-col items-center gap-3',
           badge ? 'pt-5' : '',
           className
         )}
-        style={isSelected ? { background: 'var(--gradient-primary)', color: 'white', borderColor: 'transparent' } : undefined}
       >
         {image ? (
           <div

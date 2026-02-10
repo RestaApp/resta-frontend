@@ -1,13 +1,8 @@
-/**
- * Контекст для инициализации Telegram Web App
- * Выполняет авторизацию и настройку Telegram на верхнем уровне
- */
-
-import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setInitData, setReady } from '@/features/navigation/model/telegramSlice'
 import { selectUserData } from '@/features/navigation/model/userSlice'
-import { getTelegramWebApp, isTelegramWebApp, getTelegramLanguageCode } from '@/utils/telegram'
+import { getTelegramWebApp, getTelegramLanguageCode, isTelegramWebApp } from '@/utils/telegram'
 import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'
 import { useAuthActions } from '@/hooks/useAuth'
@@ -16,9 +11,11 @@ import type { UserData } from '@/services/api/authApi'
 import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/constants/storage'
 
+type TelegramWebApp = ReturnType<typeof getTelegramWebApp>
+
 interface TelegramContextValue {
   isReady: boolean
-  telegram: ReturnType<typeof getTelegramWebApp>
+  telegram: TelegramWebApp | null
 }
 
 const TelegramContext = createContext<TelegramContextValue | undefined>(undefined)
@@ -28,246 +25,217 @@ interface TelegramProviderProps {
 }
 
 /**
- * Провайдер для инициализации Telegram Web App
- * Должен быть обернут вокруг всего приложения на верхнем уровне
+ * In-flight guard (защита от StrictMode/двойных маунтов и параллельных вызовов)
  */
-// Глобальный флаг для предотвращения дублирования запросов авторизации
-// Используется вне компонента, чтобы работать даже в StrictMode
-let globalAuthAttempted = false
+let loginPromise: Promise<TelegramWebApp | null> | null = null
 
 export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const dispatch = useAppDispatch()
   const userDataFromStore = useAppSelector(selectUserData)
   const { authTelegram } = useAuthActions()
+
   const [isReady, setIsReady] = useState(false)
-  const [telegram, setTelegram] = useState<ReturnType<typeof getTelegramWebApp>>(null)
-  const hasAttemptedAuth = useRef(false)
-  // Сохраняем стабильную ссылку на authTelegram, чтобы избежать повторных вызовов
+  const [telegram, setTelegram] = useState<TelegramWebApp | null>(null)
+
+  // держим актуальную ссылку на authTelegram
   const authTelegramRef = useRef(authTelegram)
   authTelegramRef.current = authTelegram
 
-  // Функция для получения initData
-  const getInitData = async (): Promise<string | null> => {
-    const webApp = getTelegramWebApp()
-    if (webApp?.initData) {
-      return webApp.initData
-    }
-    // В режиме разработки используем моковые данные
-    if (import.meta.env.DEV) {
-      const { MOCK_INIT_DATA } = await import('@/config/telegram')
-      return MOCK_INIT_DATA
-    }
-    return null
-  }
-
-  /** Применяет язык. Приоритет: сохранённый в localStorage → профиль пользователя → язык устройства Telegram */
-  const applyLanguage = (userData: UserData | null) => {
+  const applyLanguage = async (userData: UserData | null) => {
+    // 1) localStorage
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.LOCALE)
       if (saved === 'ru' || saved === 'en') {
-        i18n.changeLanguage(saved)
+        await i18n.changeLanguage(saved)
         return
       }
     } catch {
       // ignore
     }
+
+    // 2) user profile
     const userLang = userData?.language
-    const localeFromUser = userLang === 'ru' || userLang === 'en' ? (userLang as Locale) : null
+    const localeFromUser: Locale | null = userLang === 'ru' || userLang === 'en' ? (userLang as Locale) : null
     if (localeFromUser) {
-      i18n.changeLanguage(localeFromUser)
+      await i18n.changeLanguage(localeFromUser)
       return
     }
+
+    // 3) device telegram
     const telegramCode = getTelegramLanguageCode()
-    const localeFromDevice = telegramCodeToLocale(telegramCode)
-    i18n.changeLanguage(localeFromDevice)
+    await i18n.changeLanguage(telegramCodeToLocale(telegramCode))
   }
 
-  // Функция для загрузки пользователя по id (через RTK Query)
-  const loadUserById = async (userId: number): Promise<void> => {
-    // dispatch(usersApi.endpoints.getUser.initiate(...)) возвращает объект-подписку (promise-like) с unsubscribe
-    let subscription: any
+  const getInitData = async (): Promise<string | null> => {
+    const webApp = getTelegramWebApp()
+    if (webApp?.initData) return webApp.initData
+
+    if (import.meta.env.DEV) {
+      const { MOCK_INIT_DATA } = await import('@/config/telegram')
+      return MOCK_INIT_DATA
+    }
+
+    return null
+  }
+
+  const loadUserById = async (userId: number): Promise<UserData> => {
+    const sub = dispatch(usersApi.endpoints.getUser.initiate(userId))
     try {
-      subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
-      const result = await subscription
-
-      // RTK Query возвращает объект с полем data при успешном ответе
-      if (result && 'data' in result && result.data) {
-        const data = result.data as UserData
-        updateUserDataInStore(dispatch, data)
-        applyLanguage(data)
-        return
-      }
-
-      throw new Error('Failed to load user')
-    } catch (error) {
-      // Пробрасываем ошибку, чтобы performLogin сделал fallback на sign_in
-      throw error
+      const result = await sub.unwrap()
+      return result.data
     } finally {
-      // Отписываемся, чтобы не держать постоянную подписку в store
-      if (subscription?.unsubscribe) {
-        try {
-          subscription.unsubscribe()
-        } catch {
-          // ignore unsubscribe errors
-        }
+      // не держим подписку
+      try {
+        sub.unsubscribe()
+      } catch {
+        // ignore
       }
     }
   }
 
-  // Функция для выполнения авторизации
-  const performLogin = async () => {
+  const configureTelegram = (webApp: TelegramWebApp | null) => {
+    if (!webApp) return
+    try {
+      webApp.ready()
+      webApp.expand()
+    } catch {
+      // в проде тихо, в деве можно логировать
+      // if (import.meta.env.DEV) console.debug('Telegram configure failed')
+    }
+  }
+
+  const performLogin = async (): Promise<TelegramWebApp | null> => {
     const webApp = getTelegramWebApp()
-    if (!webApp && !import.meta.env.DEV) {
+
+    // В проде — только в Telegram, в DEV — разрешаем мок
+    if (!import.meta.env.DEV && !webApp) {
       throw new Error('Telegram WebApp not found')
     }
 
-    // Проверяем, валиден ли токен
+    // 1) Если токен валиден — пробуем подтянуть пользователя
     const token = authService.getToken()
-    const isTokenValid = authService.isTokenValid()
-
-    // Если токен валиден, пытаемся загрузить пользователя по id
-    if (isTokenValid && token) {
-      // Получаем id из токена или из store
+    if (token && authService.isTokenValid()) {
       const userIdFromToken = authService.getUserIdFromToken(token)
       const userId = userIdFromToken ?? userDataFromStore?.id
 
       if (userId) {
         try {
-          await loadUserById(userId)
+          const data = await loadUserById(userId)
+          updateUserDataInStore(dispatch, data)
+          await applyLanguage(data)
           return webApp
         } catch {
-          // Если загрузка не удалась, продолжаем с sign_in
+          // fallback на sign_in ниже
         }
       }
     }
 
-    // Получаем initData
+    // 2) sign_in через initData
     const initData = await getInitData()
-    if (!initData) {
-      throw new Error('initData not found')
-    }
+    if (!initData) throw new Error('initData not found')
 
-    // Сохраняем initData в Redux
     dispatch(setInitData(initData))
-
-    // Выполняем авторизацию (sign_in)
-    // Используем ref для гарантии, что используем актуальную функцию
     await authTelegramRef.current({ initData })
 
     return webApp
   }
 
-  // Функция для настройки Telegram Web App
-  const configureTelegram = (webApp: ReturnType<typeof getTelegramWebApp>) => {
-    if (!webApp) return
-
-    try {
-      // Инициализация Telegram Web App
-      webApp.ready()
-      webApp.expand()
-
-      // Не устанавливаем инлайн-переменную --background из Telegram,
-      // чтобы не перекрывать тему приложения. Telegram цвета можно использовать
-      // как подсказку, но не применяем их напрямую.
-    } catch (error) {
-      // Ошибка при настройке Telegram Web App
+  const loginOnce = async (): Promise<TelegramWebApp | null> => {
+    if (!loginPromise) {
+      loginPromise = performLogin().finally(() => {
+        loginPromise = null
+      })
     }
+    return loginPromise
   }
 
-  // Инициализация Telegram и авторизация
+  /**
+   * Fast-path: если уже есть валидный токен и есть userData → считаем готовыми (без sign_in)
+   */
   useEffect(() => {
-    // Предотвращаем повторные попытки авторизации (защита от StrictMode и множественных вызовов)
-    if (hasAttemptedAuth.current || globalAuthAttempted) {
-      return
-    }
+    if (isReady) return
+    if (!authService.isTokenValid() || !userDataFromStore?.id) return
 
-    // Если токен валиден и есть данные пользователя, пропускаем авторизацию
-    if (authService.isTokenValid() && userDataFromStore?.id) {
-      applyLanguage(userDataFromStore)
-      setIsReady(true)
-      dispatch(setReady(true))
-      return
-    }
+      ; (async () => {
+        await applyLanguage(userDataFromStore as UserData)
+        setIsReady(true)
+        dispatch(setReady(true))
+      })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, userDataFromStore?.id, isReady])
+
+  /**
+   * Init/login один раз
+   */
+  useEffect(() => {
+    if (isReady) return
 
     let mounted = true
 
-    const initTelegram = async () => {
+    const init = async () => {
       try {
-        // В режиме разработки пропускаем проверку Telegram Web App
+        // не Telegram (prod) → просто помечаем ready (чтобы приложение жило в браузере)
         if (!import.meta.env.DEV && !isTelegramWebApp()) {
+          if (!mounted) return
           setIsReady(true)
           dispatch(setReady(true))
           return
         }
 
-        // Помечаем, что попытка авторизации была сделана (локально и глобально)
-        hasAttemptedAuth.current = true
-        globalAuthAttempted = true
-
-        // Выполняем авторизацию
-        const webApp = await performLogin()
-
+        const webApp = await loginOnce()
         if (!mounted) return
 
-        // Настраиваем Telegram Web App
-        if (webApp) {
-          configureTelegram(webApp)
-          setTelegram(webApp)
-        }
+        configureTelegram(webApp)
+        setTelegram(webApp ?? null)
 
-        dispatch(setReady(true))
         setIsReady(true)
-      } catch (error) {
-        // Сбрасываем флаги при ошибке, чтобы можно было повторить попытку
-        hasAttemptedAuth.current = false
-        globalAuthAttempted = false
-
-        if (mounted) {
-          // В режиме разработки все равно помечаем как готово
-          if (import.meta.env.DEV) {
-            setIsReady(true)
-            dispatch(setReady(true))
-          }
+        dispatch(setReady(true))
+      } catch {
+        // В DEV всё равно даем приложению подняться
+        if (!mounted) return
+        if (import.meta.env.DEV) {
+          setIsReady(true)
+          dispatch(setReady(true))
         }
       }
     }
 
-    initTelegram()
+    init()
 
     return () => {
       mounted = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch])
+  }, [dispatch, isReady])
 
-  // Без авторизации: язык по устройству Telegram, если ещё не сохранён
+  /**
+   * Если нет userData (не авторизован) — выставляем язык по устройству Telegram, если не зафиксирован в storage
+   */
   useEffect(() => {
-    if (!isReady || userDataFromStore?.id) return
-    try {
-      if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
-        const code = getTelegramLanguageCode()
-        i18n.changeLanguage(telegramCodeToLocale(code))
-      }
-    } catch {
-      // ignore
-    }
+    if (!isReady) return
+    if (userDataFromStore?.id) return
+
+      ; (async () => {
+        try {
+          if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
+            const code = getTelegramLanguageCode()
+            await i18n.changeLanguage(telegramCodeToLocale(code))
+          }
+        } catch {
+          // ignore
+        }
+      })()
   }, [isReady, userDataFromStore?.id])
 
-  const value: TelegramContextValue = {
-    isReady,
-    telegram,
-  }
+  const value = useMemo<TelegramContextValue>(
+    () => ({ isReady, telegram }),
+    [isReady, telegram]
+  )
 
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>
 }
 
-/**
- * Хук для использования Telegram контекста
- */
 export const useTelegram = (): TelegramContextValue => {
-  const context = useContext(TelegramContext)
-  if (context === undefined) {
-    throw new Error('useTelegram должен использоваться внутри TelegramProvider')
-  }
-  return context
+  const ctx = useContext(TelegramContext)
+  if (!ctx) throw new Error('useTelegram должен использоваться внутри TelegramProvider')
+  return ctx
 }

@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
-import { ActionButton } from '@/components/ui/action-button'
+import { Button } from '@/components/ui/button'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
@@ -86,6 +86,11 @@ const ShiftCardComponent = ({
 
     const locationText = useMemo(() => stripMinskPrefix(shift.location) ?? '', [shift.location])
 
+    const cardAriaLabel = useMemo(
+        () => [shift.restaurant, positionText, locationText].filter(Boolean).join(', '),
+        [shift.restaurant, positionText, locationText]
+    )
+
     const handleOpen = useCallback(() => onOpenDetails(shift.id), [onOpenDetails, shift.id])
 
     const handleKeyDown = useCallback(
@@ -141,6 +146,7 @@ const ShiftCardComponent = ({
         <div
             role="button"
             tabIndex={0}
+            aria-label={cardAriaLabel}
             onKeyDown={handleKeyDown}
             onClick={handleOpen}
             className="group relative rounded-[20px] p-4 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] backdrop-blur-xl bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -189,11 +195,11 @@ const ShiftCardComponent = ({
             {/* Date / time */}
             <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="flex items-center gap-2 text-sm text-foreground/80 bg-secondary/30 p-2 rounded-xl">
-                    <CalendarDays className="w-4 h-4 text-purple-500" />
+                    <CalendarDays className="w-4 h-4 text-primary" />
                     <span className="font-medium truncate">{shift.date}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-foreground/80 bg-secondary/30 p-2 rounded-xl">
-                    <Clock className="w-4 h-4 text-blue-500" />
+                    <Clock className="w-4 h-4 text-muted-foreground" />
                     <span className="font-medium truncate">{shift.time}</span>
                 </div>
             </div>
@@ -223,14 +229,15 @@ const ShiftCardComponent = ({
 
                 {/* Apply / Cancel */}
                 {!isOwner && canShowApply ? (
-                    <ActionButton
-                        isLoading={isLoading}
-                        active={isApplied}
+                    <Button
+                        variant="gradient"
+                        pressed={isApplied}
+                        loading={isLoading}
                         onClick={isApplied ? handleCancelClick : handleApplyClick}
                         disabled={isLoading || (!canApply && !isApplied)}
                     >
                         {actionLabel}
-                    </ActionButton>
+                    </Button>
                 ) : null}
             </div>
         </div>

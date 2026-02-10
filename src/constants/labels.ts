@@ -3,30 +3,37 @@
  * Используются для единообразного отображения текстов в разных местах приложения
  */
 
-/**
- * Названия типов поставщиков
- */
-export const SUPPLIER_TYPE_LABELS: Record<string, string> = {
+import type { ApiRole, EmployeeRole } from '@/types'
+import { normalizeEmployeePosition } from '@/utils/roles'
+
+export type SupplierType = 'products' | 'equipment' | 'services' | 'logistics'
+export const SUPPLIER_TYPE_LABELS = {
   products: 'Товары',
   equipment: 'Оборудование',
   services: 'Услуги',
   logistics: 'Логистика',
-} as const
+} as const satisfies Record<SupplierType, string>
 
-/**
- * Описания типов поставщиков
- */
-export const SUPPLIER_TYPE_DESCRIPTIONS: Record<string, string> = {
+export const SUPPLIER_TYPE_DESCRIPTIONS = {
   products: 'Поставка продуктов питания и товаров',
   equipment: 'Поставка оборудования для заведений',
   services: 'Предоставление услуг для ресторанов',
   logistics: 'Логистические и транспортные услуги',
-} as const
+} as const satisfies Record<SupplierType, string>
 
-/**
- * Названия форматов ресторанов
- */
-export const RESTAURANT_FORMAT_LABELS: Record<string, string> = {
+export type RestaurantFormat =
+  | 'full_service'
+  | 'cafe'
+  | 'sushi_bar'
+  | 'bistro'
+  | 'fast_food'
+  | 'bar'
+  | 'pizzeria'
+  | 'bakery'
+  | 'food_truck'
+  | 'catering'
+
+export const RESTAURANT_FORMAT_LABELS = {
   full_service: 'Полный сервис',
   cafe: 'Кафе',
   sushi_bar: 'Суши-бар',
@@ -37,12 +44,9 @@ export const RESTAURANT_FORMAT_LABELS: Record<string, string> = {
   bakery: 'Пекарня',
   food_truck: 'Фудтрак',
   catering: 'Кейтеринг',
-} as const
+} as const satisfies Record<RestaurantFormat, string>
 
-/**
- * Описания форматов ресторанов
- */
-export const RESTAURANT_FORMAT_DESCRIPTIONS: Record<string, string> = {
+export const RESTAURANT_FORMAT_DESCRIPTIONS = {
   full_service: 'Ресторан с полным обслуживанием',
   cafe: 'Кафе с легкими закусками и напитками',
   sushi_bar: 'Суши-бар с японской кухней',
@@ -53,52 +57,41 @@ export const RESTAURANT_FORMAT_DESCRIPTIONS: Record<string, string> = {
   bakery: 'Пекарня со свежей выпечкой',
   food_truck: 'Фудтрак с мобильным обслуживанием',
   catering: 'Кейтеринг для мероприятий',
-} as const
+} as const satisfies Record<RestaurantFormat, string>
 
-/**
- * Названия позиций сотрудников (из API)
- */
-export const EMPLOYEE_POSITION_LABELS: Record<string, string> = {
-  Chef: 'Повар',
-  Waiter: 'Официант',
-  Bartender: 'Бармен',
-  Barista: 'Бариста',
-  Manager: 'Менеджер',
-  Support: 'Поддержка',
-  // Также поддерживаем lowercase варианты
+export const EMPLOYEE_POSITION_LABELS = {
   chef: 'Повар',
   waiter: 'Официант',
   bartender: 'Бармен',
   barista: 'Бариста',
   manager: 'Менеджер',
   support: 'Поддержка',
-} as const
+  admin: 'Администратор',
+} as const satisfies Record<EmployeeRole, string>
 
 /**
  * Описания позиций сотрудников
  */
-export const EMPLOYEE_POSITION_DESCRIPTIONS: Record<string, string> = {
+export const EMPLOYEE_POSITION_DESCRIPTIONS: Record<EmployeeRole, string> = {
   chef: 'Готовлю блюда и управляю кухней',
   waiter: 'Обслуживаю гостей в зале',
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
   manager: 'Управляю заведением и персоналом',
   support: 'Оказываю техническую поддержку',
+  admin: 'Управляю заведением и персоналом',
 } as const
 
-/**
- * Названия основных ролей (из API)
- */
-export const USER_ROLE_LABELS: Record<string, string> = {
+export const USER_ROLE_LABELS = {
   employee: 'Сотрудник',
   restaurant: 'Заведение',
   supplier: 'Поставщик',
-} as const
+} as const satisfies Record<Exclude<ApiRole, 'unverified'>, string>
 
 /**
  * Названия специализаций сотрудников
  */
-export const SPECIALIZATION_LABELS: Record<string, string> = {
+export const SPECIALIZATION_LABELS = {
   // Manager специализации
   general_manager: 'Генеральный менеджер',
   restaurant_manager: 'Менеджер ресторана',
@@ -146,6 +139,8 @@ export const SPECIALIZATION_LABELS: Record<string, string> = {
   steward: 'Стюард',
 } as const
 
+export type SpecializationKey = keyof typeof SPECIALIZATION_LABELS
+
 /**
  * Утилитарные функции для получения названий
  */
@@ -154,54 +149,56 @@ export const SPECIALIZATION_LABELS: Record<string, string> = {
  * Получить название типа поставщика
  */
 export const getSupplierTypeLabel = (value: string): string => {
-  return SUPPLIER_TYPE_LABELS[value] || value
+  return SUPPLIER_TYPE_LABELS[value as SupplierType] || value
 }
 
 /**
  * Получить описание типа поставщика
  */
 export const getSupplierTypeDescription = (value: string): string => {
-  return SUPPLIER_TYPE_DESCRIPTIONS[value] || ''
+  return SUPPLIER_TYPE_DESCRIPTIONS[value as SupplierType] || ''
 }
 
 /**
  * Получить название формата ресторана
  */
 export const getRestaurantFormatLabel = (value: string): string => {
-  return RESTAURANT_FORMAT_LABELS[value] || value
+  return RESTAURANT_FORMAT_LABELS[value as RestaurantFormat] || value
 }
 
 /**
  * Получить описание формата ресторана
  */
 export const getRestaurantFormatDescription = (value: string): string => {
-  return RESTAURANT_FORMAT_DESCRIPTIONS[value] || ''
+  return RESTAURANT_FORMAT_DESCRIPTIONS[value as RestaurantFormat] || ''
 }
 
 /**
  * Получить название позиции сотрудника
  */
 export const getEmployeePositionLabel = (value: string): string => {
-  return EMPLOYEE_POSITION_LABELS[value] || value
+  const key = normalizeEmployeePosition(value)
+  return key ? EMPLOYEE_POSITION_LABELS[key] : value
 }
 
 /**
  * Получить описание позиции сотрудника
  */
 export const getEmployeePositionDescription = (value: string): string => {
-  return EMPLOYEE_POSITION_DESCRIPTIONS[value.toLowerCase()] || ''
+  const key = normalizeEmployeePosition(value)
+  return key ? EMPLOYEE_POSITION_DESCRIPTIONS[key] : ''
 }
 
 /**
  * Получить название роли пользователя
  */
 export const getUiRoleLabel = (value: string): string => {
-  return USER_ROLE_LABELS[value] || value
+  return USER_ROLE_LABELS[value as Exclude<ApiRole, 'unverified'>] || value
 }
 
 /**
  * Получить название специализации
  */
 export const getSpecializationLabel = (value: string): string => {
-  return SPECIALIZATION_LABELS[value] || value
+  return SPECIALIZATION_LABELS[value as SpecializationKey] || value
 }

@@ -1,18 +1,57 @@
-import { memo } from 'react'
+import { memo, useId, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Button } from './button'
 import { Loader } from './loader'
 import { cn } from '@/utils/cn'
+import { useModalA11y } from './modal'
+import type { ButtonProps } from './button'
 
-export type ModalButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
-
-export interface ModalButton {
+export type ModalButton = {
   label: string
   onClick: () => void
-  variant?: ModalButtonVariant
-  isLoading?: boolean
+  variant?: ButtonProps['variant']
+  loading?: boolean
   disabled?: boolean
 }
+
+interface ModalActionButtonProps {
+  label: string
+  onClick: () => void
+  variant?: ButtonProps['variant']
+  loading?: boolean
+  disabled?: boolean
+  className?: string
+}
+
+const ModalActionButton = memo(function ModalActionButton({
+  label,
+  onClick,
+  variant = 'primary',
+  loading,
+  disabled,
+  className,
+}: ModalActionButtonProps) {
+  return (
+    <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
+      <Button
+        variant={variant}
+        onClick={onClick}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
+        className={cn('w-full rounded-xl', className)}
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <Loader size="sm" />
+            {label}
+          </span>
+        ) : (
+          label
+        )}
+      </Button>
+    </motion.div>
+  )
+})
 
 interface ModalContentProps {
   icon?: React.ReactNode
@@ -31,8 +70,16 @@ export const ModalContent = memo(function ModalContent({
   secondaryButton,
   className,
 }: ModalContentProps) {
-  const secondaryVariant = secondaryButton?.variant ?? 'outline'
-  const primaryVariant = primaryButton?.variant ?? 'primary'
+  const a11y = useModalA11y()
+  const fallbackTitleId = useId()
+  const fallbackDescId = useId()
+  const titleId = a11y?.titleId ?? fallbackTitleId
+  const descriptionId = a11y?.descriptionId ?? fallbackDescId
+
+  useEffect(() => {
+    a11y?.setHasDescription(!!description)
+  }, [a11y, description])
+
   return (
     <div className={cn('w-full rounded-3xl border border-border bg-card p-6 shadow-xl', className)}>
       {icon && (
@@ -43,57 +90,36 @@ export const ModalContent = memo(function ModalContent({
         </div>
       )}
 
-      <h2 className="mb-2 text-center text-xl font-semibold text-foreground">{title}</h2>
+      <h2 id={titleId} className="mb-2 text-center text-xl font-semibold text-foreground">
+        {title}
+      </h2>
 
-      {description && (
-        <p className="mb-6 whitespace-pre-line text-center text-sm text-muted-foreground">
+      {description ? (
+        <p id={descriptionId} className="mb-6 whitespace-pre-line text-center text-sm text-muted-foreground">
           {description}
         </p>
-      )}
+      ) : null}
 
       {(primaryButton || secondaryButton) && (
         <div className="flex gap-3">
-          {secondaryButton && (
-            <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
-              <Button
-                variant={secondaryVariant}
-                onClick={secondaryButton.onClick}
-                disabled={secondaryButton.disabled || secondaryButton.isLoading}
-                aria-busy={secondaryButton.isLoading || undefined}
-                className="w-full rounded-xl"
-              >
-                {secondaryButton.isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <Loader size="sm" />
-                    {secondaryButton.label}
-                  </span>
-                ) : (
-                  secondaryButton.label
-                )}
-              </Button>
-            </motion.div>
-          )}
-
-          {primaryButton && (
-            <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
-              <Button
-                variant={primaryVariant}
-                onClick={primaryButton.onClick}
-                disabled={primaryButton.disabled || primaryButton.isLoading}
-                aria-busy={primaryButton.isLoading || undefined}
-                className="w-full rounded-xl"
-              >
-                {primaryButton.isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <Loader size="sm" />
-                    {primaryButton.label}
-                  </span>
-                ) : (
-                  primaryButton.label
-                )}
-              </Button>
-            </motion.div>
-          )}
+          {secondaryButton ? (
+            <ModalActionButton
+              label={secondaryButton.label}
+              onClick={secondaryButton.onClick}
+              variant={secondaryButton.variant ?? 'outline'}
+              loading={secondaryButton.loading}
+              disabled={secondaryButton.disabled}
+            />
+          ) : null}
+          {primaryButton ? (
+            <ModalActionButton
+              label={primaryButton.label}
+              onClick={primaryButton.onClick}
+              variant={primaryButton.variant ?? 'primary'}
+              loading={primaryButton.loading}
+              disabled={primaryButton.disabled}
+            />
+          ) : null}
         </div>
       )}
     </div>

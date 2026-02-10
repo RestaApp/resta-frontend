@@ -74,19 +74,14 @@ export const getSupplierTabs = (): TabItem[] => {
  * Получает список табов на основе роли пользователя
  */
 export const getTabsForRole = (role: UiRole): TabItem[] => {
-  if (isEmployeeRole(role)) {
-    return getEmployeeTabs()
+  switch (true) {
+    case isEmployeeRole(role):
+      return getEmployeeTabs()
+    case role === 'venue':
+      return getVenueTabs()
+    case role === 'supplier':
+      return getSupplierTabs()
+    default:
+      return getEmployeeTabs()
   }
-
-  if (role === 'venue') {
-    return getVenueTabs()
-  }
-
-  if (role === 'supplier') {
-    return getSupplierTabs()
-  }
-
-  // По умолчанию возвращаем табы для сотрудника
-  return getEmployeeTabs()
 }
-

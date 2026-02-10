@@ -2,14 +2,9 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/utils/cn'
 import { Flame } from 'lucide-react'
 
-export type ShiftStatus =
-    | 'pending'
-    | 'processing'
-    | 'accepted'
-    | 'rejected'
-    | string
-    | null
-    | undefined
+export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
+
+export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 
 const basePill =
     'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold leading-none border'

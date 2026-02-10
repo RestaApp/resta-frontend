@@ -1,47 +1,21 @@
-import { useState, useCallback } from 'react'
-import { useAppSelector } from '@/app/hooks'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { OnboardingCompleteScreen } from '@/features/role-selector/ui/components/OnboardingCompleteScreen'
 import { Dashboard } from '@/pages/Dashboard'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
-import { useRole } from '@/features/navigation/model/hooks/useRole'
-import { useNavigation } from '@/hooks/useNavigation'
-import { useAuth } from '@/contexts/AuthContext'
-import type { Screen, UiRole } from '@/types'
-import { ROUTES } from '@/constants/routes'
-import { selectUserData } from '@/features/navigation/model/userSlice'
+import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 
 export const App = () => {
-  const { isLoading } = useAuth()
-  const { selectedRole, handleRoleSelect } = useRole()
-  const userData = useAppSelector(selectUserData)
+  const { screen, role, currentScreen, navigate, onSelectRole, onOnboardingComplete } = useAppBootstrap()
 
-  const [currentScreen, setCurrentScreen] = useState<Screen>(ROUTES.HOME)
-  const [showOnboardingComplete, setShowOnboardingComplete] = useState(false)
-  const { navigate } = useNavigation({ setCurrentScreen })
-
-  const onSelectRole = useCallback(
-    (role: UiRole) => {
-      handleRoleSelect(role)
-      setShowOnboardingComplete(true)
-    },
-    [handleRoleSelect]
-  )
-
-  const onOnboardingComplete = useCallback(() => {
-    setShowOnboardingComplete(false)
-    setCurrentScreen(ROUTES.HOME)
-  }, [])
-
-  if (isLoading && !userData) return <LoadingPage />
-  if (showOnboardingComplete) {
+  if (screen === 'loading') return <LoadingPage />
+  if (screen === 'onboarding_done') {
     return <OnboardingCompleteScreen onComplete={onOnboardingComplete} />
   }
-  if (!selectedRole) return <RoleSelector onSelectRole={onSelectRole} />
+  if (screen === 'role') return <RoleSelector onSelectRole={onSelectRole} />
 
   return (
     <div className="bg-background">
-      <Dashboard role={selectedRole} onNavigate={navigate} currentScreen={currentScreen} />
+      <Dashboard role={role!} onNavigate={navigate} currentScreen={currentScreen} />
     </div>
   )
 }

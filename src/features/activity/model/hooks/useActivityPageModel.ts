@@ -1,10 +1,8 @@
-// src/features/activity/model/hooks/useActivityPageModel.ts
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
-import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
@@ -15,16 +13,30 @@ type RawShift = any
 
 export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: RawShift }
 
-export type WeekDay = { date: string; short: string; full: string; dateObj: Date }
+export type WeekDay = { key: string; short: string; full: string; dayNum: string; dateObj: Date }
 
 const getDateLocale = (lang: string) => (lang === 'en' ? 'en-US' : 'ru-RU')
+const toLocalISODateKey = (d: Date) => {
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+const getStartOfWeekMonday = (base: Date) => {
+  const d = new Date(base)
+  const day = d.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  d.setDate(d.getDate() + diff)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
 
 export const useActivityPageModel = () => {
   const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
   const dateLocale = getDateLocale(i18n.language)
 
-  const { data, isLoading, isError } = useGetMyShiftsQuery()
+  const { data, isLoading, isError, refetch: refetchMyShifts } = useGetMyShiftsQuery()
   const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery()
 
   const shifts = useMemo(() => normalizeVacanciesResponse(data), [data])
@@ -49,38 +61,37 @@ export const useActivityPageModel = () => {
     async (id: number) => {
       try {
         await deleteShift(String(id))
+        refetchMyShifts()
         showToast(t('shift.deleted'), 'success')
       } catch {
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, showToast, t]
+    [deleteShift, refetchMyShifts, showToast, t]
   )
 
   // Calendar state
-  const [selectedDay, setSelectedDay] = useState<string>('')
+  const [selectedDayKey, setSelectedDayKey] = useState<string>('')
 
   const weekDays = useMemo<WeekDay[]>(() => {
     const today = new Date()
     const days: WeekDay[] = []
 
-    const dayOfWeek = today.getDay()
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
-    const monday = new Date(today)
-    monday.setDate(today.getDate() + diff)
+    const monday = getStartOfWeekMonday(today)
 
     for (let i = 0; i < 7; i++) {
       const date = new Date(monday)
       date.setDate(monday.getDate() + i)
 
-      const dayNum = date.getDate()
+      const dayNum = String(date.getDate()).padStart(2, '0')
       const shortDay = date.toLocaleDateString(dateLocale, { weekday: 'short' })
       const fullDay = date.toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long' })
 
       days.push({
-        date: String(dayNum).padStart(2, '0'),
+        key: toLocalISODateKey(date),
         short: shortDay.charAt(0).toUpperCase() + shortDay.slice(1),
         full: fullDay,
+        dayNum,
         dateObj: date,
       })
     }
@@ -89,23 +100,22 @@ export const useActivityPageModel = () => {
   }, [dateLocale])
 
   useEffect(() => {
-    if (selectedDay || weekDays.length === 0) return
+    if (selectedDayKey || weekDays.length === 0) return
 
-    const today = new Date()
-    const todayDay = String(today.getDate()).padStart(2, '0')
-    const todayInWeek = weekDays.find(d => d.date === todayDay)
+    const todayKey = toLocalISODateKey(new Date())
+    const todayInWeek = weekDays.find(d => d.key === todayKey)
 
-    setSelectedDay(todayInWeek ? todayDay : weekDays[0].date)
-  }, [selectedDay, weekDays])
+    setSelectedDayKey(todayInWeek ? todayKey : weekDays[0].key)
+  }, [selectedDayKey, weekDays])
 
   const groupedShifts = useMemo<Record<string, GroupedShift[]>>(() => {
     const grouped: Record<string, GroupedShift[]> = {}
 
     const add = (shift: any, type: GroupedShift['type']) => {
       if (!shift?.start_time) return
-      const date = parseApiDateTime(shift.start_time)
-      if (!date) return
-      const dateKey = date.toISOString().split('T')[0]
+      const date = new Date(shift.start_time)
+      if (Number.isNaN(date.getTime())) return
+      const dateKey = toLocalISODateKey(date)
       ;(grouped[dateKey] ||= []).push({ id: shift.id, type, data: shift })
     }
 
@@ -116,11 +126,9 @@ export const useActivityPageModel = () => {
   }, [shifts, appliedShifts])
 
   const selectedDayShifts = useMemo<GroupedShift[]>(() => {
-    const selectedDayObj = weekDays.find(d => d.date === selectedDay)
-    if (!selectedDayObj) return []
-    const dateKey = selectedDayObj.dateObj.toISOString().split('T')[0]
-    return groupedShifts[dateKey] || []
-  }, [selectedDay, weekDays, groupedShifts])
+    if (!selectedDayKey) return []
+    return groupedShifts[selectedDayKey] || []
+  }, [selectedDayKey, groupedShifts])
 
   const handleFindShift = useCallback(() => {
     // Поведение оставляем 1-в-1: localStorage + event
@@ -166,8 +174,8 @@ export const useActivityPageModel = () => {
     // calendar
     weekDays,
     groupedShifts,
-    selectedDay,
-    setSelectedDay,
+    selectedDayKey,
+    setSelectedDayKey,
     selectedDayShifts,
     handleFindShift,
   }

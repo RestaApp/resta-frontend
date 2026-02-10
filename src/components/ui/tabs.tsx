@@ -97,8 +97,7 @@ export const Tabs = <T extends string>({
     >
       <motion.div
         aria-hidden="true"
-        className="absolute bottom-1 top-1 rounded-lg"
-        style={{ background: 'var(--gradient-primary)' }}
+        className={cn('absolute bottom-1 top-1 rounded-lg gradient-primary')}
         initial={false}
         animate={{ left: indicator.left, width: indicator.width }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}

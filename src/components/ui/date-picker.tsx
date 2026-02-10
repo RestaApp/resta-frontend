@@ -3,14 +3,19 @@ import { useTranslation } from 'react-i18next'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
+/** Формат даты для <input type="date">: YYYY-MM-DD */
+export type DateIso = string
+
 interface DatePickerProps {
-    value: string | null
-    onChange: (date: string | null) => void
+    /** Дата в формате YYYY-MM-DD */
+    value: DateIso | null
+    onChange: (date: DateIso | null) => void
     placeholder?: string
-    minDate?: string
+    minDate?: DateIso
     className?: string
     label?: string
     id?: string
+    error?: string
 }
 
 export const DatePicker = ({
@@ -21,6 +26,7 @@ export const DatePicker = ({
     className,
     label,
     id,
+    error,
 }: DatePickerProps) => {
     const { t } = useTranslation()
     const autoId = useId()
@@ -46,12 +52,14 @@ export const DatePicker = ({
                         'w-full rounded-xl border border-border bg-card/60 py-2 pl-3 pr-10 text-sm text-foreground',
                         'transition-all focus:outline-none focus:ring-2 focus:ring-primary/20',
                         !value && 'text-transparent',
+                        !!error && 'border-destructive ring-2 ring-destructive/20',
                         '[&::-webkit-calendar-picker-indicator]:opacity-0',
                         '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0',
                         '[&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full',
                         '[&::-webkit-calendar-picker-indicator]:cursor-pointer'
                     )}
                     aria-label={label ?? t('datePicker.ariaLabel')}
+                    aria-invalid={!!error}
                 />
 
                 <CalendarIcon
@@ -68,6 +76,11 @@ export const DatePicker = ({
                     </span>
                 )}
             </div>
+            {error ? (
+                <p className="mt-1.5 text-sm text-destructive" role="alert">
+                    {error}
+                </p>
+            ) : null}
         </div>
     )
 }

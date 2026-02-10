@@ -23,10 +23,10 @@ const TOAST_ICONS = {
 } as const
 
 const TOAST_COLORS = {
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-    info: 'bg-blue-500',
-    warning: 'bg-orange-500',
+    success: 'bg-chart-2',
+    error: 'bg-destructive',
+    info: 'bg-primary',
+    warning: 'bg-chart-5',
 } as const
 
 export const Toast = memo(function Toast({
@@ -58,7 +58,7 @@ export const Toast = memo(function Toast({
                     exit={{ opacity: 0, y: -20, scale: 0.96 }}
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                     className={cn(
-                        'fixed left-1/2 top-4 z-50 -translate-x-1/2',
+                        'fixed left-1/2 top-4 z-[60] -translate-x-1/2',
                         'min-w-[280px] max-w-[90vw] rounded-2xl border border-border bg-card p-4 shadow-xl',
                         className
                     )}

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { ChefHat } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface EmptyStateProps {
     message?: string
@@ -30,12 +31,9 @@ export const EmptyState = ({
                 <p className="mb-4" />
             )}
             {showResetButton && onReset && (
-                <button
-                    onClick={onReset}
-                    className="px-6 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-secondary transition-colors"
-                >
+                <Button variant="outline" onClick={onReset}>
                     {t('feed.resetFilters')}
-                </button>
+                </Button>
             )}
         </div>
     )

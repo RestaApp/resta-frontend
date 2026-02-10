@@ -10,11 +10,11 @@ import { ROUTES } from './routes'
  */
 export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
   [ROUTES.HOME]: 'feed',
-  [ROUTES.SHIFTS]: 'shifts',
-  [ROUTES.VACANCIES]: 'vacancies',
-  [ROUTES.NOTIFICATIONS]: 'notifications',
+  [ROUTES.SHIFTS]: null,
+  [ROUTES.VACANCIES]: null,
+  [ROUTES.NOTIFICATIONS]: null,
   [ROUTES.PROFILE]: 'profile',
-  [ROUTES.SETTINGS]: 'profile', // Settings открывается из профиля
+  [ROUTES.SETTINGS]: 'profile', 
   [ROUTES.CREATE_SHIFT]: null,
   [ROUTES.SUPPLIERS]: null,
   [ROUTES.FIND_REPLACEMENT]: null,

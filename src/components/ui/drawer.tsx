@@ -1,6 +1,8 @@
 import { memo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import { createPortal } from 'react-dom'
 import { cn } from '@/utils/cn'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
 export type DrawerProps = {
   open: boolean
@@ -16,7 +18,7 @@ export type DrawerProps = {
 
 type OverlayProps = {
   className?: string
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
 const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
@@ -25,8 +27,8 @@ const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
     transition={{ duration: 0.18 }}
-    className={cn('fixed inset-0 z-50 bg-black/50', className)}
-    onPointerDown={onClick}
+    className={cn('fixed inset-0 bg-black/50', className)}
+    onClick={onClick}
     aria-hidden="true"
   />
 ))
@@ -49,12 +51,16 @@ const DrawerContent = memo(function DrawerContent({
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
 
-  const handleOverlayClick = useCallback(() => {
-    if (!preventClose) onOpenChange(false)
-  }, [preventClose, onOpenChange])
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return
+      if (!preventClose) onOpenChange(false)
+    },
+    [preventClose, onOpenChange]
+  )
 
   return (
-    <>
+    <div className="fixed inset-0 z-[60]">
       <DrawerOverlay onClick={handleOverlayClick} />
       <motion.div
         initial={{ y: '100%' }}
@@ -62,22 +68,23 @@ const DrawerContent = memo(function DrawerContent({
         exit={{ y: '100%' }}
         transition={reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }}
         className={cn(
-          'fixed inset-x-0 z-50 flex max-h-[85vh] flex-col overflow-y-auto overscroll-contain',
+          'fixed inset-x-0 z-10 flex flex-col overflow-y-auto overscroll-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-xl',
           className
         )}
-        style={{ bottom: bottomOffsetPx }}
+        style={{
+          bottom: bottomOffsetPx,
+          maxHeight: `min(85vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
+        }}
         role="dialog"
         aria-modal="true"
       >
         <div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
         {children}
       </motion.div>
-    </>
+    </div>
   )
 })
-
-let openDrawerCount = 0
 
 export const Drawer = ({
   open,
@@ -88,34 +95,18 @@ export const Drawer = ({
 }: DrawerProps) => {
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
 
+  useBodyScrollLock(open)
+
   useEffect(() => {
-    if (!open || typeof document === 'undefined') return
-
-    const { body } = document
-
-    if (openDrawerCount === 0) {
-      body.dataset.drawerOverflow = body.style.overflow
-      body.style.overflow = 'hidden'
-    }
-    openDrawerCount += 1
-
+    if (!open) return
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !preventClose) onOpenChange(false)
     }
     window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open, preventClose, onOpenChange])
 
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      openDrawerCount = Math.max(0, openDrawerCount - 1)
-
-      if (openDrawerCount === 0) {
-        body.style.overflow = body.dataset.drawerOverflow ?? ''
-        delete body.dataset.drawerOverflow
-      }
-    }
-  }, [open, onOpenChange, preventClose])
-
-  return (
+  const node = (
     <AnimatePresence>
       {open && (
         <DrawerContent
@@ -128,6 +119,8 @@ export const Drawer = ({
       )}
     </AnimatePresence>
   )
+
+  return typeof document !== 'undefined' ? createPortal(node, document.body) : node
 }
 
 // ----- Subcomponents (чтобы импорты не ломались) -----

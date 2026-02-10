@@ -1,6 +1,6 @@
 import { Suspense, lazy, type ComponentType } from 'react'
 import { Loader } from '@/components/ui/loader'
-import type { Tab, UiRole } from '@/types'
+import type { Tab } from '@/types'
 
 const FeedPage = lazy(() => import('@/features/feed/ui/FeedPage').then(m => ({ default: m.FeedPage })))
 const ActivityPage = lazy(() => import('@/features/activity/ui/ActivityPage').then(m => ({ default: m.ActivityPage })))
@@ -14,17 +14,11 @@ const TAB_COMPONENTS: Partial<Record<Tab, ComponentType>> = {
 
 interface TabContentProps {
     activeTab: Tab
-    role: UiRole
 }
 
 export const TabContent = ({ activeTab }: TabContentProps) => {
     const Component = TAB_COMPONENTS[activeTab]
-
-    if (!Component) {
-        return null
-    }
-
-    const ComponentToRender = Component as ComponentType
+    if (!Component) return null
 
     return (
         <Suspense fallback={
@@ -32,7 +26,7 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
                 <Loader size="lg" />
             </div>
         }>
-            <ComponentToRender />
+            <Component />
         </Suspense>
     )
 }

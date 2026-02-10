@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
+import { cn } from '@/utils/cn'
 import { useTheme } from '@/hooks/useTheme'
 
 export const ThemeToggleCompact = () => {
@@ -30,8 +31,7 @@ export const ThemeToggleCompact = () => {
     return (
         <div ref={containerRef} className="relative inline-flex rounded-full border border-border bg-muted p-1">
             <motion.div
-                className="absolute bottom-1 top-1 rounded-full"
-                style={{ background: 'var(--gradient-primary)' }}
+                className="absolute bottom-1 top-1 rounded-full gradient-primary"
                 initial={false}
                 animate={{ left: indicator.left, width: indicator.width }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -41,8 +41,7 @@ export const ThemeToggleCompact = () => {
                 ref={lightButtonRef}
                 type="button"
                 onClick={setLight}
-                className="relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors"
-                style={{ color: theme === 'light' ? 'white' : 'var(--muted-foreground)' }}
+                className={cn('relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors', theme === 'light' ? 'text-primary-foreground' : 'text-muted-foreground')}
                 aria-pressed={theme === 'light'}
                 aria-label={t('aria.lightTheme')}
             >
@@ -53,8 +52,7 @@ export const ThemeToggleCompact = () => {
                 ref={darkButtonRef}
                 type="button"
                 onClick={setDark}
-                className="relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors"
-                style={{ color: theme === 'dark' ? 'white' : 'var(--muted-foreground)' }}
+                className={cn('relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors', theme === 'dark' ? 'text-primary-foreground' : 'text-muted-foreground')}
                 aria-pressed={theme === 'dark'}
                 aria-label={t('aria.darkTheme')}
             >

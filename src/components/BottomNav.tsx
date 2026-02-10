@@ -38,25 +38,26 @@ export const BottomNav = ({
           const isActive = activeTab === id
           const showProfileDot = id === 'profile' && hasIncompleteProfile
           const labelText = t(label)
+          const ariaLabel = showProfileDot ? `${labelText}. ${t('nav.fillProfileRequired')}` : labelText
 
           return (
             <motion.button
               key={id}
               type="button"
-              aria-label={labelText}
+              aria-label={ariaLabel}
               aria-current={isActive ? 'page' : undefined}
               whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
               className={[
                 'relative flex min-h-[44px] min-w-[72px] flex-col items-center justify-center rounded-xl px-3 py-2',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pink-electric)] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               ].join(' ')}
             >
               <span className="relative">
                 <Icon
                   className={[
                     'h-6 w-6 transition-colors',
-                    isActive ? 'text-[var(--pink-electric)]' : 'text-muted-foreground',
+                    isActive ? 'text-primary' : 'text-muted-foreground',
                   ].join(' ')}
                   strokeWidth={isActive ? 2.5 : 2}
                   aria-hidden="true"
@@ -73,21 +74,17 @@ export const BottomNav = ({
                 )}
 
                 {showProfileDot && (
-                  <>
-                    <span
-                      className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background"
-                      style={{ backgroundColor: 'var(--pink-electric)' }}
-                      aria-hidden="true"
-                    />
-                    <span className="sr-only">{t('nav.fillProfileRequired')}</span>
-                  </>
+                  <span
+                    className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-primary"
+                    aria-hidden="true"
+                  />
                 )}
               </span>
 
               <span
                 className={[
                   'mt-1 text-xs transition-colors',
-                  isActive ? 'text-[var(--pink-electric)]' : 'text-muted-foreground',
+                  isActive ? 'text-primary' : 'text-muted-foreground',
                 ].join(' ')}
               >
                 {labelText}

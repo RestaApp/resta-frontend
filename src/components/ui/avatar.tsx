@@ -28,6 +28,8 @@ export const AvatarImage = ({
     <img
       src={src}
       alt={alt}
+      loading="lazy"
+      decoding="async"
       className={cn('h-full w-full object-cover', className)}
       onError={() => {
         setImgError(true)

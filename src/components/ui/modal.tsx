@@ -1,6 +1,18 @@
-import { useEffect, useRef, memo } from 'react'
+import { useEffect, useRef, memo, useId, useState, useMemo, createContext, useContext } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/utils/cn'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+
+const ModalA11yContext = createContext<{
+  titleId: string
+  descriptionId: string
+  setHasDescription: (value: boolean) => void
+} | null>(null)
+
+export function useModalA11y() {
+  return useContext(ModalA11yContext)
+}
 
 interface ModalProps {
   isOpen: boolean
@@ -9,27 +21,7 @@ interface ModalProps {
   className?: string
   closeOnBackdrop?: boolean
   closeOnEsc?: boolean
-  initialFocusSelector?: string // например: '[data-autofocus]'
-}
-
-let openModalCount = 0
-
-const lockBodyScroll = () => {
-  const { body } = document
-  if (openModalCount === 0) {
-    body.dataset.prevOverflow = body.style.overflow
-    body.style.overflow = 'hidden'
-  }
-  openModalCount += 1
-}
-
-const unlockBodyScroll = () => {
-  const { body } = document
-  openModalCount = Math.max(0, openModalCount - 1)
-  if (openModalCount === 0) {
-    body.style.overflow = body.dataset.prevOverflow ?? ''
-    delete body.dataset.prevOverflow
-  }
+  initialFocusSelector?: string
 }
 
 const getFocusable = (root: HTMLElement) =>
@@ -37,7 +29,12 @@ const getFocusable = (root: HTMLElement) =>
     root.querySelectorAll<HTMLElement>(
       'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
     )
-  ).filter(el => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true')
+  ).filter(
+    (el) =>
+      !el.hasAttribute('disabled') &&
+      el.getAttribute('aria-hidden') !== 'true' &&
+      el.offsetParent != null
+  )
 
 export const Modal = memo(function Modal({
   isOpen,
@@ -49,15 +46,21 @@ export const Modal = memo(function Modal({
   initialFocusSelector,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null)
+  const titleId = useId()
+  const descriptionId = useId()
+  const [hasDescription, setHasDescription] = useState(false)
+
+  useBodyScrollLock(isOpen)
+
+  useEffect(() => {
+    if (isOpen) setHasDescription(false)
+  }, [isOpen])
 
   useEffect(() => {
     if (!isOpen || typeof document === 'undefined') return
 
-    lockBodyScroll()
-
     const prevActive = document.activeElement as HTMLElement | null
 
-    // Фокус внутрь
     queueMicrotask(() => {
       const root = dialogRef.current
       if (!root) return
@@ -110,52 +113,56 @@ export const Modal = memo(function Modal({
     window.addEventListener('keydown', onKeyDown)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
-      unlockBodyScroll()
       prevActive?.focus?.()
     }
   }, [isOpen, onClose, closeOnEsc, initialFocusSelector])
 
-  const handleOverlayMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!closeOnBackdrop) return
     if (e.target === e.currentTarget) onClose()
   }
 
-  return (
+  const a11yValue = useMemo(
+    () => ({ titleId, descriptionId, setHasDescription }),
+    [titleId, descriptionId]
+  )
+
+  const node = (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onMouseDown={handleOverlayMouseDown}
-          aria-hidden={false}
-        >
-          {/* Backdrop */}
+        <ModalA11yContext.Provider value={a11yValue}>
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-          />
-
-          {/* Dialog */}
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            tabIndex={-1}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className={cn('relative z-[61] w-full max-w-md outline-none', className)}
-            onMouseDown={(e) => e.stopPropagation()}
           >
-            {children}
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              aria-hidden
+              onPointerDown={handleBackdropPointerDown}
+            />
+
+            <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              aria-describedby={hasDescription ? descriptionId : undefined}
+              tabIndex={-1}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className={cn('relative z-[61] w-full max-w-md outline-none', className)}
+            >
+              {children}
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </ModalA11yContext.Provider>
       )}
     </AnimatePresence>
   )
+
+  return typeof document !== 'undefined' ? createPortal(node, document.body) : node
 })

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, Check, Search } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
 export interface SelectOption {
   value: string
@@ -18,7 +19,9 @@ interface SelectProps {
   className?: string
   label?: string
   hint?: string
-  allowCustomValue?: boolean // Разрешить ввод произвольного значения
+  allowCustomValue?: boolean
+  /** Отступ снизу (например высота BottomNav) для расчёта позиции дропдауна */
+  bottomOffsetPx?: number
 }
 
 export const Select = memo(function Select({
@@ -31,6 +34,7 @@ export const Select = memo(function Select({
   label,
   hint,
   allowCustomValue = false,
+  bottomOffsetPx = 88,
 }: SelectProps) {
   const { t } = useTranslation()
   const displayPlaceholder = placeholder ?? t('common.selectValue')
@@ -41,6 +45,8 @@ export const Select = memo(function Select({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const triggerInputRef = useRef<HTMLInputElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  useBodyScrollLock(isOpen)
 
   const selectedOption = options.find((opt) => opt.value === value)
   const displayValue = isOpen && allowCustomValue ? searchQuery : selectedOption?.label || value || displayPlaceholder
@@ -76,9 +82,7 @@ export const Select = memo(function Select({
         const viewportHeight = window.innerHeight
         const viewportWidth = window.innerWidth
 
-        // Высота нижней навигации (64px + safe area, обычно около 88px)
-        const bottomNavHeight = 88
-        const spaceBelow = viewportHeight - rect.bottom - bottomNavHeight
+        const spaceBelow = viewportHeight - rect.bottom - bottomOffsetPx
         const spaceAbove = rect.top
         const estimatedDropdownHeight = 320 // примерная высота дропдауна
 
@@ -104,7 +108,7 @@ export const Select = memo(function Select({
         if (opensUp) {
           top = rect.top - Math.min(availableSpace, 320) - 8
         } else {
-          const maxTop = viewportHeight - bottomNavHeight - Math.min(availableSpace, 320) - 8
+          const maxTop = viewportHeight - bottomOffsetPx - Math.min(availableSpace, 320) - 8
           top = Math.min(rect.bottom + 8, maxTop)
         }
 
@@ -136,7 +140,7 @@ export const Select = memo(function Select({
         if (rafId !== null) cancelAnimationFrame(rafId)
       }
     }
-  }, [isOpen])
+  }, [isOpen, bottomOffsetPx])
 
   // Фокус на input при открытии
   useEffect(() => {
@@ -170,36 +174,6 @@ export const Select = memo(function Select({
       return () => container.removeEventListener('scroll', checkScroll)
     }
   }, [isOpen, options])
-
-  // Закрытие при клике вне компонента
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node) &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen])
-
-  // Предотвращение скролла при открытом дропдауне
-  // NOTE: keeping simple body scroll lock for now; consider replacing with shared util
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      return () => {
-        document.body.style.overflow = ''
-      }
-    }
-  }, [isOpen])
 
   const handleSelect = useCallback(
     (optionValue: string) => {
@@ -275,9 +249,9 @@ export const Select = memo(function Select({
         className={cn(
           'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base transition-all',
           'placeholder:text-muted-foreground',
-          'border-border/50 focus-visible:outline-none focus-visible:border-purple-500/50 focus-visible:ring-4 focus-visible:ring-purple-500/10',
+          'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
           'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-          'border-purple-500/50 ring-4 ring-purple-500/10'
+          isOpen && 'border-primary ring-2 ring-primary/20'
         )}
       />
       <ChevronDown
@@ -292,9 +266,9 @@ export const Select = memo(function Select({
       className={cn(
         'flex h-11 w-full min-w-0 items-center justify-between rounded-xl border bg-input-background px-4 py-3 text-base transition-all',
         'placeholder:text-muted-foreground',
-        'border-border/50 focus-visible:outline-none focus-visible:border-purple-500/50 focus-visible:ring-4 focus-visible:ring-purple-500/10',
+        'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
         'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-        isOpen && 'border-purple-500/50 ring-4 ring-purple-500/10',
+        isOpen && 'border-primary ring-2 ring-primary/20',
         !value && 'text-muted-foreground'
       )}
     >
@@ -322,8 +296,10 @@ export const Select = memo(function Select({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="fixed inset-0 z-40 bg-black/20"
-                onClick={() => setIsOpen(false)}
+                className="fixed inset-0 z-[60] bg-black/20"
+                onPointerDown={(e) => {
+                  if (e.target === e.currentTarget) setIsOpen(false)
+                }}
               />
 
               {/* Dropdown Content */}
@@ -333,7 +309,7 @@ export const Select = memo(function Select({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: dropdownPosition.opensUp ? 8 : -8, scale: 0.98 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed z-50 overflow-hidden rounded-xl border border-border/30 bg-card shadow-lg backdrop-blur-sm"
+                className="fixed z-[61] overflow-hidden rounded-xl border border-border/30 bg-card shadow-lg backdrop-blur-sm"
                 style={{
                   maxHeight: `${maxHeight}px`,
                   left: `${dropdownPosition.left}px`,
@@ -362,7 +338,7 @@ export const Select = memo(function Select({
                       className={cn(
                         'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm',
                         'placeholder:text-muted-foreground',
-                        'focus-visible:outline-none focus-visible:border-purple-500/50 focus-visible:ring-2 focus-visible:ring-purple-500/10'
+                        'focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20'
                       )}
                     />
                   </div>
@@ -371,6 +347,8 @@ export const Select = memo(function Select({
                 {/* Scrollable Options Container */}
                 <div
                   ref={scrollContainerRef}
+                  role="listbox"
+                  aria-label={label ?? displayPlaceholder}
                   className="overflow-y-auto overscroll-contain"
                   style={{ maxHeight: `${maxHeight - 88}px` }}
                 >
@@ -387,15 +365,17 @@ export const Select = memo(function Select({
                             <button
                               key={option.value}
                               type="button"
+                              role="option"
+                              aria-selected={isSelected}
                               onClick={() => handleSelect(option.value)}
                               className={cn(
                                 'relative flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm transition-colors',
-                                'hover:bg-purple-500/10 focus:bg-purple-500/10 focus:outline-none',
-                                isSelected && 'bg-purple-500/10 font-medium'
+                                'hover:bg-primary/10 focus:bg-primary/10 focus:outline-none',
+                                isSelected && 'bg-primary/10 font-medium'
                               )}
                             >
                               {isSelected && (
-                                <Check className="h-4 w-4 shrink-0 text-purple-600 dark:text-purple-400" />
+                                <Check className="h-4 w-4 shrink-0 text-primary" />
                               )}
                               {!isSelected && <div className="h-4 w-4 shrink-0" />}
                               <span className={cn('flex-1 min-w-0 truncate', isSelected && 'font-semibold')}>{option.label}</span>

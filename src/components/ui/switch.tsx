@@ -46,10 +46,10 @@ export const Switch = memo(function Switch({
         'relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-        checked ? 'focus-visible:ring-purple-500/50' : 'focus-visible:ring-muted-foreground/50',
+        checked ? 'focus-visible:ring-primary' : 'focus-visible:ring-muted-foreground/50',
+        checked ? 'gradient-primary' : 'bg-[var(--switch-background)]',
         className
       )}
-      style={{ background: checked ? 'var(--gradient-primary)' : 'var(--switch-background)' }}
     >
       <motion.div
         className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"

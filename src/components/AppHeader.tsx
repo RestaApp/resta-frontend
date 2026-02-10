@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -20,18 +20,21 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
     const [drawerOpen, setDrawerOpen] = useState(false)
 
     const rawName = greetingName ?? userProfile?.full_name ?? userProfile?.name
-    const name = typeof rawName === 'string' && rawName.trim()
-        ? rawName.trim().split(/\s+/)[0] ?? t('common.user')
-        : t('common.user')
+    const firstName = (typeof rawName === 'string' ? rawName.trim().split(/\s+/)[0] : '') || t('common.user')
 
     const isActivity = activeTab === 'activity'
+
+    useEffect(() => {
+        if (!isActivity) setDrawerOpen(false)
+    }, [isActivity, setDrawerOpen])
+
     const isDrawerVisible = isActivity && drawerOpen
 
-    const openDrawer = () => {
+    const openDrawer = useCallback(() => {
         if (!isActivity) return
         setDrawerOpen(true)
         onAddShift?.()
-    }
+    }, [isActivity, onAddShift])
 
     const onDrawerOpenChange = (open: boolean) => {
         // если ушли с activity — drawer не может быть открыт
@@ -53,15 +56,15 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
                     <div className="flex items-center gap-3">
                         <Avatar>
                             {userProfile?.photo_url ? (
-                                <AvatarImage src={userProfile.photo_url} alt={name} />
+                                <AvatarImage src={userProfile.photo_url} alt={firstName} />
                             ) : (
                                 <AvatarFallback className="gradient-primary text-white">
-                                    {name[0] ?? ''}
+                                    {firstName.charAt(0)}
                                 </AvatarFallback>
                             )}
                         </Avatar>
 
-                        <p className="text-muted-foreground">{t('greeting.hello', { name })}</p>
+                        <p className="text-muted-foreground">{t('greeting.hello', { name: firstName })}</p>
                     </div>
 
                     <div className="flex items-center gap-2">
