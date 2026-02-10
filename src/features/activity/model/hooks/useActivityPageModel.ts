@@ -4,6 +4,7 @@ import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/sh
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
 import { setLocalStorageItem } from '@/utils/localStorage'
+import { toLocalISODateKey } from '@/utils/datetime'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 
@@ -16,12 +17,6 @@ export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: RawSh
 export type WeekDay = { key: string; short: string; full: string; dayNum: string; dateObj: Date }
 
 const getDateLocale = (lang: string) => (lang === 'en' ? 'en-US' : 'ru-RU')
-const toLocalISODateKey = (d: Date) => {
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-}
 const getStartOfWeekMonday = (base: Date) => {
   const d = new Date(base)
   const day = d.getDay()

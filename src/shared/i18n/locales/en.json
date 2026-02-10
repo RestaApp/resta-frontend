@@ -452,6 +452,7 @@
       "logistics": "Logistics and transport"
     },
     "restaurantFormat": {
+      "restaurant": "Restaurant",
       "full_service": "Full service",
       "cafe": "Cafe",
       "sushi_bar": "Sushi bar",

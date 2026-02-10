@@ -452,6 +452,7 @@
       "logistics": "Логистические и транспортные услуги"
     },
     "restaurantFormat": {
+      "restaurant": "Ресторан",
       "full_service": "Полный сервис",
       "cafe": "Кафе",
       "sushi_bar": "Суши-бар",
