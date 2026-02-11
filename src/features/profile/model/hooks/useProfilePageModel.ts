@@ -20,14 +20,16 @@ export const useProfilePageModel = () => {
   const { clearUserData } = useUser()
   const { showToast } = useToast()
 
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false)
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(() => {
+    const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
+    return shouldOpenEdit === 'true'
+  })
   const [isNotificationPrefsDrawerOpen, setIsNotificationPrefsDrawerOpen] = useState(false)
 
   // legacy: open drawer by localStorage flag
   useEffect(() => {
     const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
     if (shouldOpenEdit === 'true') {
-      setIsEditDrawerOpen(true)
       removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
     }
   }, [])
@@ -43,11 +45,15 @@ export const useProfilePageModel = () => {
   const { data: appliedShiftsData } = useGetAppliedShiftsQuery()
 
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
-  const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedShiftsData), [appliedShiftsData])
+  const appliedShifts = useMemo(
+    () => normalizeVacanciesResponse(appliedShiftsData),
+    [appliedShiftsData]
+  )
 
   const apiRole = useMemo<ApiRole | null>(() => {
-    if (!userProfile?.role) return null
-    return mapRoleFromApi(userProfile.role)
+    const roleValue = userProfile?.role
+    if (!roleValue) return null
+    return mapRoleFromApi(roleValue)
   }, [userProfile?.role])
 
   const userName = useMemo(() => {
@@ -72,11 +78,8 @@ export const useProfilePageModel = () => {
   }, [apiRole, userProfile])
 
   const employeeStats = useMemo(() => {
-    const now = Date.now()
-
     const completedShifts = myShifts.reduce((acc, s) => {
-      if (!s.start_time) return acc
-      return Date.parse(s.start_time) < now ? acc + 1 : acc
+      return s.status === 'completed' ? acc + 1 : acc
     }, 0)
 
     const activeApplications = appliedShifts.reduce((acc, s) => {
@@ -90,7 +93,7 @@ export const useProfilePageModel = () => {
 
   const profileCompleteness = useMemo(() => {
     if (!userProfile) return null
-    return getProfileCompleteness(userProfile as any, apiRole)
+    return getProfileCompleteness(userProfile, apiRole)
   }, [userProfile, apiRole])
 
   const handleLogout = useCallback(() => {

@@ -57,10 +57,7 @@ export interface BuildQueryParamsOptions {
  * Поддержка массивов (brackets или repeat), Date (toISOString), примитивов.
  * Принимает любой объект (в т.ч. GetVacanciesParams) без каста на месте вызова.
  */
-export function buildQueryParams(
-  params: object,
-  opts: BuildQueryParamsOptions = {}
-): string {
+export function buildQueryParams(params: object, opts: BuildQueryParamsOptions = {}): string {
   const { arrayFormat = 'brackets' } = opts
   const sp = new URLSearchParams()
 
@@ -98,10 +95,6 @@ export function provideListTags<T extends { id: number | string }>(
 ) {
   const items = Array.isArray(result) ? result : result?.data
   return items?.length
-    ? [
-        { type, id: 'LIST' as const },
-        ...items.map(i => ({ type, id: i.id })),
-      ]
+    ? [{ type, id: 'LIST' as const }, ...items.map(i => ({ type, id: i.id }))]
     : [{ type, id: 'LIST' as const }]
 }
-

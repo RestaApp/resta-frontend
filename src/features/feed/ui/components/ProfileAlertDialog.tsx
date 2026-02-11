@@ -21,7 +21,12 @@ export function ProfileAlertDialog({ state, onClose, onOpenProfileEdit }: Profil
   const { t } = useTranslation()
 
   return (
-    <AlertDialog open={state.open} onOpenChange={(open) => { if (!open) onClose() }}>
+    <AlertDialog
+      open={state.open}
+      onOpenChange={open => {
+        if (!open) onClose()
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t('feed.applicationNotSent')}</AlertDialogTitle>
@@ -29,7 +34,9 @@ export function ProfileAlertDialog({ state, onClose, onOpenProfileEdit }: Profil
         <AlertDialogDescription>{state.message}</AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>{t('common.close')}</AlertDialogCancel>
-          <AlertDialogAction onClick={onOpenProfileEdit}>{t('common.openProfile')}</AlertDialogAction>
+          <AlertDialogAction onClick={onOpenProfileEdit}>
+            {t('common.openProfile')}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -53,7 +53,7 @@ export function SupportTicketForm({
         </label>
         <Input
           value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          onChange={e => setSubject(e.target.value)}
           placeholder={t('profile.supportForm.subjectPlaceholder')}
           required
           maxLength={200}
@@ -67,7 +67,7 @@ export function SupportTicketForm({
         </label>
         <Select
           value={category}
-          onChange={(v) => setCategory(v as SupportTicketCategory)}
+          onChange={v => setCategory(v as SupportTicketCategory)}
           options={categoryOptions}
           label={undefined}
         />
@@ -80,7 +80,7 @@ export function SupportTicketForm({
         <textarea
           className={TEXTAREA_CLASS}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={e => setMessage(e.target.value)}
           placeholder={t('profile.supportForm.messagePlaceholder')}
           required
           maxLength={maxMessageLength}
@@ -97,15 +97,13 @@ export function SupportTicketForm({
         </label>
         <Input
           value={contactInfo}
-          onChange={(e) => setContactInfo(e.target.value)}
+          onChange={e => setContactInfo(e.target.value)}
           placeholder={t('profile.supportForm.contactInfoPlaceholder')}
           type="text"
         />
       </div>
 
-      {errorMessage ? (
-        <p className="text-sm text-destructive">{errorMessage}</p>
-      ) : null}
+      {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
 
       <div className="flex gap-3 pt-2">
         <motion.div whileTap={{ scale: 0.98 }} className="flex-1">

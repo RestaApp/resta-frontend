@@ -1,10 +1,14 @@
+import { useMemo } from 'react'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import { mapRoleFromApi } from '@/utils/roles'
 import type { ApiRole } from '@/types'
 
 type UserProfileLike = {
   phone?: string | null
   location?: string | null
+  city?: string | null
   last_name?: string | null
-} & Record<string, any>
+}
 
 export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: ApiRole | null) => {
   const hasPhone = !!userProfile.phone
@@ -26,10 +30,6 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
   }
 }
 
-import { useMemo } from 'react'
-import { useUserProfile } from '@/hooks/useUserProfile'
-import { mapRoleFromApi } from '@/utils/roles'
-
 export const useProfileCompleteness = () => {
   const { userProfile } = useUserProfile()
 
@@ -45,6 +45,6 @@ export const useProfileCompleteness = () => {
     }
 
     const apiRole = userProfile.role ? mapRoleFromApi(userProfile.role) : null
-    return getProfileCompleteness(userProfile as any, apiRole)
+    return getProfileCompleteness(userProfile as UserProfileLike, apiRole)
   }, [userProfile])
 }

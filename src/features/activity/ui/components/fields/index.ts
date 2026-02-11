@@ -7,5 +7,3 @@ export { TimeField } from './TimeField'
 export { MoneyField } from './MoneyField'
 export { CheckboxField } from './CheckboxField'
 export { LocationField } from './LocationField'
-
-

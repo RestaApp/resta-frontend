@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { updateUserDataInStore } from '@/utils/userData'

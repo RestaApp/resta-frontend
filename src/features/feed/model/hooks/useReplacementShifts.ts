@@ -3,10 +3,10 @@
  * Инкапсулирует логику работы с заменами из API
  */
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 import { useGetVacanciesQuery, type GetVacanciesParams } from '@/services/api/shiftsApi'
 import { useMemo } from 'react'
-import i18n from '@/shared/i18n/config'
+import { useTranslation } from 'react-i18next'
 import { parseApiDateTime } from '../utils/formatting'
 
 interface UseReplacementShiftsOptions {
@@ -61,6 +61,7 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
     skip = false,
   } = options
   const { isAuthenticated } = useAuth()
+  const { t } = useTranslation()
 
   // Преобразуем категорию в target_roles
   const targetRoles = useMemo(() => {
@@ -119,8 +120,8 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
       }
 
       // Форматируем дату и время
-      let date = i18n.t('feedFallback.notSpecified')
-      let time = i18n.t('feedFallback.notSpecified')
+      let date = t('feedFallback.notSpecified')
+      let time = t('feedFallback.notSpecified')
       if (vacancy.start_time && vacancy.end_time) {
         try {
           const startDate = parseApiDateTime(vacancy.start_time ?? undefined)
@@ -136,7 +137,7 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
           const isToday = shiftDate.getTime() === today.getTime()
 
           if (isToday) {
-            date = i18n.t('common.today')
+            date = t('common.today')
           } else {
             // Форматируем дату в локальном времени
             date = startDate.toLocaleDateString('ru-RU', {
@@ -155,7 +156,7 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
             minute: '2-digit',
           })
           time = `${startTime} - ${endTime}`
-        } catch (error) {
+        } catch {
           // Если не удалось распарсить дату, используем исходные значения
           time = `${vacancy.start_time} - ${vacancy.end_time}`
         }
@@ -166,10 +167,12 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
         vacancy.target_roles && vacancy.target_roles.length > 0 ? vacancy.target_roles[0] : 'chef'
 
       // Получаем название заведения из user
-      const restaurant = vacancy.user?.name || vacancy.user?.full_name || i18n.t('feedFallback.notSpecified')
+      const restaurant =
+        vacancy.user?.name || vacancy.user?.full_name || t('feedFallback.notSpecified')
 
       // Получаем местоположение
-      const shiftLocation = vacancy.location || vacancy.user?.location || i18n.t('feedFallback.notSpecified')
+      const shiftLocation =
+        vacancy.location || vacancy.user?.location || t('feedFallback.notSpecified')
 
       return {
         id: String(vacancy.id),
@@ -187,7 +190,7 @@ export const useReplacementShifts = (options: UseReplacementShiftsOptions = {}) 
         applicationsCount: vacancy.applications_count,
       }
     })
-  }, [data, i18n.language])
+  }, [data, t])
 
   return {
     shifts,

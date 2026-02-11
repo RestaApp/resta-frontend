@@ -55,10 +55,7 @@ export function ProfileSettings({ onLogout, onNotificationSettingsClick }: Profi
             </div>
 
             {/* ✅ currentLocale берём из i18n напрямую */}
-            <LanguageToggle
-              currentLocale={i18n.language}
-              onLocaleChange={handleLanguageChange}
-            />
+            <LanguageToggle currentLocale={i18n.language} onLocaleChange={handleLanguageChange} />
           </div>
         </Card>
 

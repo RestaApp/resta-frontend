@@ -15,9 +15,14 @@ import {
   getEmployeePositionDescription,
   getUiRoleLabel,
 } from '@/constants/labels'
-import { mapApiRoleStringToUiRole, mapPositionFromApi as mapPositionToEmployeeRole } from '@/utils/roles'
+import {
+  mapApiRoleStringToUiRole,
+  mapPositionFromApi as mapPositionToEmployeeRole,
+} from '@/utils/roles'
 
-const POSITION_ICON_MAP: Partial<Record<EmployeeRole, React.ComponentType<{ className?: string }>>> = {
+const POSITION_ICON_MAP: Partial<
+  Record<EmployeeRole, React.ComponentType<{ className?: string }>>
+> = {
   manager: Briefcase,
   support: Headphones,
 }

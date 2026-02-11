@@ -9,7 +9,8 @@ const normalize = (value: unknown): Json => {
     typeof value === 'boolean' ||
     typeof value === 'number' ||
     typeof value === 'string'
-  ) return value
+  )
+    return value
 
   if (Array.isArray(value)) return value.map(normalize)
 

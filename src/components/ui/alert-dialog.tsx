@@ -12,7 +12,9 @@ interface AlertDialogProps {
   preventClose?: boolean
 }
 
-const AlertDialogA11yContext = createContext<{ titleId: string; descriptionId: string } | null>(null)
+const AlertDialogA11yContext = createContext<{ titleId: string; descriptionId: string } | null>(
+  null
+)
 const AlertDialogRefContext = createContext<React.RefObject<HTMLDivElement | null> | null>(null)
 
 function useAlertDialogA11y() {
@@ -47,7 +49,7 @@ export const AlertDialog = memo(function AlertDialog({
           'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
         )
         const list = Array.from(focusables).filter(
-          (el) =>
+          el =>
             !el.hasAttribute('disabled') &&
             el.getAttribute('aria-hidden') !== 'true' &&
             el.offsetParent != null
@@ -89,11 +91,7 @@ export const AlertDialog = memo(function AlertDialog({
   const node = (
     <AlertDialogRefContext.Provider value={contentRef}>
       <div className="fixed inset-0 z-[60] flex items-center justify-center" role="presentation">
-        <div
-          className="fixed inset-0 bg-black/50"
-          onClick={onOverlayClick}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 bg-black/50" onClick={onOverlayClick} aria-hidden="true" />
         {children}
       </div>
     </AlertDialogRefContext.Provider>
@@ -129,7 +127,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({
           'bg-card border border-border shadow-lg rounded-3xl p-6 w-full max-w-md max-w-[90vw]',
           className
         )}
-        onPointerDown={(e) => e.stopPropagation()}
+        onPointerDown={e => e.stopPropagation()}
       >
         {children}
       </div>

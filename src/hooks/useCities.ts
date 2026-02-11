@@ -6,7 +6,7 @@
 
 import { useMemo, useEffect } from 'react'
 import { useGetCitiesQuery } from '@/services/api/usersApi'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { selectCities, setCities } from '@/features/navigation/model/catalogSlice'
 
@@ -65,4 +65,3 @@ export const useCities = (options: UseCitiesOptions = {}) => {
     refetch,
   }
 }
-

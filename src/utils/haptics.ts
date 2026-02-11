@@ -20,7 +20,7 @@ const HAPTIC_DURATION_MAP: Record<'light' | 'medium' | 'heavy', number> = {
 export const triggerHapticFeedback = (style: 'light' | 'medium' | 'heavy' = 'light'): void => {
   const webApp = getTelegramWebApp()
   const duration = HAPTIC_DURATION_MAP[style]
-  
+
   if (webApp?.HapticFeedback) {
     try {
       webApp.HapticFeedback.impactOccurred(style)
@@ -29,7 +29,7 @@ export const triggerHapticFeedback = (style: 'light' | 'medium' | 'heavy' = 'lig
       // Fallback на нативный API при ошибке Telegram API
     }
   }
-  
+
   // Fallback на нативный API вибрации
   if (navigator.vibrate) {
     navigator.vibrate(duration)
@@ -45,4 +45,3 @@ export const useHaptics = () => {
     trigger: triggerHapticFeedback,
   }
 }
-

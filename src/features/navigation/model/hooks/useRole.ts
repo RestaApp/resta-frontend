@@ -7,9 +7,12 @@ export const useRole = () => {
   const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(selectSelectedRole)
 
-  const handleRoleSelect = useCallback((role: UiRole) => {
-    dispatch(setSelectedRole(role))
-  }, [dispatch])
+  const handleRoleSelect = useCallback(
+    (role: UiRole) => {
+      dispatch(setSelectedRole(role))
+    },
+    [dispatch]
+  )
 
   const handleRoleReset = useCallback(() => {
     dispatch(setSelectedRole(null))

@@ -34,7 +34,10 @@ interface SkeletonTextProps {
   className?: string
 }
 
-export const SkeletonText = memo(function SkeletonText({ lines = 3, className }: SkeletonTextProps) {
+export const SkeletonText = memo(function SkeletonText({
+  lines = 3,
+  className,
+}: SkeletonTextProps) {
   return (
     <div className={cn('space-y-2', className)}>
       {Array.from({ length: lines }).map((_, i) => (

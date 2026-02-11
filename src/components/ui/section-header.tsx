@@ -38,7 +38,9 @@ export const SectionHeader = memo(function SectionHeader({
         </div>
         <h2 className="text-base font-semibold text-foreground">{title}</h2>
         {count != null && count > 0 ? (
-          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{count}</span>
+          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {count}
+          </span>
         ) : null}
       </motion.div>
     )

@@ -54,12 +54,9 @@ export interface ApiErrorResponse {
 }
 
 export const supportTicketsApi = api.injectEndpoints({
-  endpoints: (builder) => ({
-    createSupportTicket: builder.mutation<
-      CreateSupportTicketResponse,
-      CreateSupportTicketRequest
-    >({
-      query: (body) => ({
+  endpoints: builder => ({
+    createSupportTicket: builder.mutation<CreateSupportTicketResponse, CreateSupportTicketRequest>({
+      query: body => ({
         url: '/api/v1/support_tickets',
         method: 'POST',
         body,

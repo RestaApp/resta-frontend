@@ -6,7 +6,11 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getTabsForRole } from '@/constants/tabs'
 import { SCREEN_TO_TAB_MAP, TAB_TO_SCREEN_MAP } from '@/constants/navigation'
 import type { Tab, UiRole, Screen } from '@/types'
-import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
+import {
+  getLocalStorageItem,
+  removeLocalStorageItem,
+  setLocalStorageItem,
+} from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 
 interface UseDashboardProps {
@@ -49,8 +53,15 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
   // Переход на вкладку Activity (мои отклики) по клику на карточку «Активные заявки» в профиле
   useEffect(() => {
     const handleNavigateToActivityMyApplications = () => setActiveTab('activity')
-    window.addEventListener('navigateToActivityMyApplications', handleNavigateToActivityMyApplications)
-    return () => window.removeEventListener('navigateToActivityMyApplications', handleNavigateToActivityMyApplications)
+    window.addEventListener(
+      'navigateToActivityMyApplications',
+      handleNavigateToActivityMyApplications
+    )
+    return () =>
+      window.removeEventListener(
+        'navigateToActivityMyApplications',
+        handleNavigateToActivityMyApplications
+      )
   }, [])
 
   // Синхронизация внешнего currentScreen -> activeTab
@@ -79,4 +90,3 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     setActiveTab,
   }
 }
-

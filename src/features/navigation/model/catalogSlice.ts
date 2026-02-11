@@ -24,7 +24,10 @@ const catalogSlice = createSlice({
     setPositions: (state, action: PayloadAction<string[]>) => {
       state.positions = action.payload
     },
-    setSpecializations: (state, action: PayloadAction<{ position: string; specializations: string[] }>) => {
+    setSpecializations: (
+      state,
+      action: PayloadAction<{ position: string; specializations: string[] }>
+    ) => {
       state.specializations[normalizeKey(action.payload.position)] = action.payload.specializations
     },
     setSelectedPosition: (state, action: PayloadAction<string | null>) => {
@@ -39,8 +42,13 @@ const catalogSlice = createSlice({
   },
 })
 
-export const { setPositions, setSpecializations, setSelectedPosition, clearSpecializations, setCities } =
-  catalogSlice.actions
+export const {
+  setPositions,
+  setSpecializations,
+  setSelectedPosition,
+  clearSpecializations,
+  setCities,
+} = catalogSlice.actions
 export default catalogSlice.reducer
 
 const EMPTY_SPECIALIZATIONS: string[] = []

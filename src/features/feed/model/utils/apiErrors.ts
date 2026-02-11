@@ -12,15 +12,12 @@ export type ProfileIncompleteError = {
   message: string
 }
 
-export type NormalizedApiError =
-  | ProfileIncompleteError
-  | { kind: 'generic'; message: string }
+export type NormalizedApiError = ProfileIncompleteError | { kind: 'generic'; message: string }
 
-const isObject = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null
+const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 
 export const mapMissingFieldsToLabels = (fields: string[], t: TFunction): string[] =>
-  fields.map((f) => t(`profileFields.${f}`) || f)
+  fields.map(f => t(`profileFields.${f}`) || f)
 
 const isNormalizedApiError = (v: unknown): v is NormalizedApiError =>
   isObject(v) && 'kind' in v && typeof v.kind === 'string'
@@ -38,7 +35,9 @@ export const normalizeApiError = (
     if (data.message === 'profile_incomplete') {
       const missingFields = Array.isArray(data.missing_fields) ? data.missing_fields : []
       const missingFieldsLabels = mapMissingFieldsToLabels(missingFields, t)
-      const fieldsText = missingFieldsLabels.length ? missingFieldsLabels.join(', ') : t('common.unknownFields')
+      const fieldsText = missingFieldsLabels.length
+        ? missingFieldsLabels.join(', ')
+        : t('common.unknownFields')
 
       return {
         kind: 'profile_incomplete',

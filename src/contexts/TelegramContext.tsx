@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setInitData, setReady } from '@/features/navigation/model/telegramSlice'
 import { selectUserData } from '@/features/navigation/model/userSlice'
@@ -41,7 +49,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const authTelegramRef = useRef(authTelegram)
   authTelegramRef.current = authTelegram
 
-  const applyLanguage = async (userData: UserData | null) => {
+  const applyLanguage = useCallback(async (userData: UserData | null) => {
     // 1) localStorage
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.LOCALE)
@@ -55,7 +63,8 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
     // 2) user profile
     const userLang = userData?.language
-    const localeFromUser: Locale | null = userLang === 'ru' || userLang === 'en' ? (userLang as Locale) : null
+    const localeFromUser: Locale | null =
+      userLang === 'ru' || userLang === 'en' ? (userLang as Locale) : null
     if (localeFromUser) {
       await i18n.changeLanguage(localeFromUser)
       return
@@ -64,9 +73,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     // 3) device telegram
     const telegramCode = getTelegramLanguageCode()
     await i18n.changeLanguage(telegramCodeToLocale(telegramCode))
-  }
+  }, [])
 
-  const getInitData = async (): Promise<string | null> => {
+  const getInitData = useCallback(async (): Promise<string | null> => {
     const webApp = getTelegramWebApp()
     if (webApp?.initData) return webApp.initData
 
@@ -76,24 +85,26 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     }
 
     return null
-  }
+  }, [])
 
-  const loadUserById = async (userId: number): Promise<UserData> => {
-    const sub = dispatch(usersApi.endpoints.getUser.initiate(userId))
-    try {
-      const result = await sub.unwrap()
-      return result.data
-    } finally {
-      // не держим подписку
+  const loadUserById = useCallback(
+    async (userId: number): Promise<UserData> => {
+      const sub = dispatch(usersApi.endpoints.getUser.initiate(userId))
       try {
-        sub.unsubscribe()
-      } catch {
-        // ignore
+        const result = await sub.unwrap()
+        return result.data
+      } finally {
+        try {
+          sub.unsubscribe()
+        } catch {
+          // ignore
+        }
       }
-    }
-  }
+    },
+    [dispatch]
+  )
 
-  const configureTelegram = (webApp: TelegramWebApp | null) => {
+  const configureTelegram = useCallback((webApp: TelegramWebApp | null) => {
     if (!webApp) return
     try {
       webApp.ready()
@@ -102,9 +113,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       // в проде тихо, в деве можно логировать
       // if (import.meta.env.DEV) console.debug('Telegram configure failed')
     }
-  }
+  }, [])
 
-  const performLogin = async (): Promise<TelegramWebApp | null> => {
+  const performLogin = useCallback(async (): Promise<TelegramWebApp | null> => {
     const webApp = getTelegramWebApp()
 
     // В проде — только в Telegram, в DEV — разрешаем мок
@@ -138,16 +149,16 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     await authTelegramRef.current({ initData })
 
     return webApp
-  }
+  }, [applyLanguage, dispatch, getInitData, loadUserById, userDataFromStore?.id])
 
-  const loginOnce = async (): Promise<TelegramWebApp | null> => {
+  const loginOnce = useCallback(async (): Promise<TelegramWebApp | null> => {
     if (!loginPromise) {
       loginPromise = performLogin().finally(() => {
         loginPromise = null
       })
     }
     return loginPromise
-  }
+  }, [performLogin])
 
   /**
    * Fast-path: если уже есть валидный токен и есть userData → считаем готовыми (без sign_in)
@@ -155,14 +166,12 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (isReady) return
     if (!authService.isTokenValid() || !userDataFromStore?.id) return
-
-      ; (async () => {
-        await applyLanguage(userDataFromStore as UserData)
-        setIsReady(true)
-        dispatch(setReady(true))
-      })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, userDataFromStore?.id, isReady])
+    ;(async () => {
+      await applyLanguage(userDataFromStore as UserData)
+      setIsReady(true)
+      dispatch(setReady(true))
+    })()
+  }, [applyLanguage, dispatch, isReady, userDataFromStore])
 
   /**
    * Init/login один раз
@@ -205,7 +214,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     return () => {
       mounted = false
     }
-  }, [dispatch, isReady])
+  }, [configureTelegram, dispatch, isReady, loginOnce])
 
   /**
    * Если нет userData (не авторизован) — выставляем язык по устройству Telegram, если не зафиксирован в storage
@@ -213,29 +222,19 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (!isReady) return
     if (userDataFromStore?.id) return
-
-      ; (async () => {
-        try {
-          if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
-            const code = getTelegramLanguageCode()
-            await i18n.changeLanguage(telegramCodeToLocale(code))
-          }
-        } catch {
-          // ignore
+    ;(async () => {
+      try {
+        if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
+          const code = getTelegramLanguageCode()
+          await i18n.changeLanguage(telegramCodeToLocale(code))
         }
-      })()
+      } catch {
+        // ignore
+      }
+    })()
   }, [isReady, userDataFromStore?.id])
 
-  const value = useMemo<TelegramContextValue>(
-    () => ({ isReady, telegram }),
-    [isReady, telegram]
-  )
+  const value = useMemo<TelegramContextValue>(() => ({ isReady, telegram }), [isReady, telegram])
 
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>
-}
-
-export const useTelegram = (): TelegramContextValue => {
-  const ctx = useContext(TelegramContext)
-  if (!ctx) throw new Error('useTelegram должен использоваться внутри TelegramProvider')
-  return ctx
 }

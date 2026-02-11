@@ -2,13 +2,15 @@
  * Хук для управления состоянием фильтров и фида
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserPosition } from '@/features/navigation/model/userSlice'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 import type { QuickFilter } from '../utils/clientFilters'
 import { createInitialFilters } from '../utils/filterSync'
+import { getLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/constants/storage'
 
 export interface UseFeedFiltersStateReturn {
   feedType: FeedType
@@ -31,7 +33,10 @@ export interface UseFeedFiltersStateReturn {
 }
 
 export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
-  const [feedType, setFeedType] = useState<FeedType>('jobs')
+  const [feedType, setFeedType] = useState<FeedType>(() => {
+    const shouldShowShifts = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
+    return shouldShowShifts === 'true' ? 'shifts' : 'jobs'
+  })
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all')
   const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
@@ -40,12 +45,18 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
   const userPosition = useAppSelector(selectUserPosition)
 
   // Отдельные фильтры для смен и вакансий
-  const [shiftsAdvancedFilters, setShiftsAdvancedFilters] = useState<AdvancedFiltersData | null>(() => 
-    createInitialFilters(userPosition)
-  )
-  const [jobsAdvancedFilters, setJobsAdvancedFilters] = useState<AdvancedFiltersData | null>(() => 
-    createInitialFilters(userPosition)
-  )
+  const derivedInitialFilters = useMemo(() => createInitialFilters(userPosition), [userPosition])
+  const [shiftsAdvancedFiltersState, setShiftsAdvancedFiltersState] = useState<
+    AdvancedFiltersData | null | undefined
+  >(undefined)
+  const [jobsAdvancedFiltersState, setJobsAdvancedFiltersState] = useState<
+    AdvancedFiltersData | null | undefined
+  >(undefined)
+
+  const shiftsAdvancedFilters =
+    shiftsAdvancedFiltersState === undefined ? derivedInitialFilters : shiftsAdvancedFiltersState
+  const jobsAdvancedFilters =
+    jobsAdvancedFiltersState === undefined ? derivedInitialFilters : jobsAdvancedFiltersState
 
   // Активные фильтры для текущего типа фида (вычисляемое значение)
   const advancedFilters = useMemo(() => {
@@ -53,24 +64,16 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
   }, [feedType, shiftsAdvancedFilters, jobsAdvancedFilters])
 
   // Сеттер для активных фильтров - обновляет соответствующий набор
-  const setAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
-    if (feedType === 'shifts') {
-      setShiftsAdvancedFilters(filters)
-    } else {
-      setJobsAdvancedFilters(filters)
-    }
-  }, [feedType])
-
-  // Обновляем фильтры один раз, когда позиция пользователя стала известна после загрузки
-  const initializedPositionRef = useRef(false)
-  useEffect(() => {
-    if (initializedPositionRef.current) return
-    if (!userPosition) return
-
-    setShiftsAdvancedFilters(prev => prev ?? createInitialFilters(userPosition))
-    setJobsAdvancedFilters(prev => prev ?? createInitialFilters(userPosition))
-    initializedPositionRef.current = true
-  }, [userPosition])
+  const setAdvancedFilters = useCallback(
+    (filters: AdvancedFiltersData | null) => {
+      if (feedType === 'shifts') {
+        setShiftsAdvancedFiltersState(filters)
+      } else {
+        setJobsAdvancedFiltersState(filters)
+      }
+    },
+    [feedType]
+  )
 
   // Синхронизация позиций и специализаций выполняется через утилиту syncFiltersPositionAndSpecializations
   // Это позволяет сохранять отдельные значения для цены и дат между сменами и вакансиями
@@ -79,9 +82,17 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
 
   const resetFilters = useCallback(() => {
     setQuickFilter('all')
-    setShiftsAdvancedFilters(null)
-    setJobsAdvancedFilters(null)
+    setShiftsAdvancedFiltersState(null)
+    setJobsAdvancedFiltersState(null)
     setSelectedShiftId(null)
+  }, [])
+
+  const setShiftsAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
+    setShiftsAdvancedFiltersState(filters)
+  }, [])
+
+  const setJobsAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
+    setJobsAdvancedFiltersState(filters)
   }, [])
 
   return {

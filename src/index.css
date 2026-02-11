@@ -3,7 +3,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-
   --bottom-nav-h: calc(64px + env(safe-area-inset-bottom));
 
   --font-size: 16px;
@@ -19,7 +18,7 @@
   --popover-foreground: oklch(0.145 0 0);
 
   /* BRAND: Фиолетовый бренд везде! */
-  --primary: #6B21A8;
+  --primary: #6b21a8;
   --primary-foreground: #ffffff;
 
   --secondary: #f4f4f5;
@@ -41,7 +40,7 @@
   --input-background: #f4f4f5;
   --switch-background: #e4e4e7;
 
-  --ring: #6B21A8;
+  --ring: #6b21a8;
 
   --radius: 0.75rem;
   /* 12px */
@@ -56,19 +55,23 @@
   /* Sidebar */
   --sidebar: #f8fafc;
   --sidebar-foreground: #0f172a;
-  --sidebar-primary: #6B21A8;
+  --sidebar-primary: #6b21a8;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f1f5f9;
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #6B21A8;
+  --sidebar-ring: #6b21a8;
 
   /* Resta Premium Colors (Light) */
-  --purple-deep: #6B21A8;
-  --pink-electric: #EC4899;
-  --blue-cyber: #06B6D4;
-  --gradient-primary: linear-gradient(135deg, #6B21A8 0%, #EC4899 100%);
-  --gradient-glow: linear-gradient(135deg, rgba(107, 33, 168, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+  --purple-deep: #6b21a8;
+  --pink-electric: #ec4899;
+  --blue-cyber: #06b6d4;
+  --gradient-primary: linear-gradient(135deg, #6b21a8 0%, #ec4899 100%);
+  --gradient-glow: linear-gradient(
+    135deg,
+    rgba(107, 33, 168, 0.1) 0%,
+    rgba(236, 72, 153, 0.1) 100%
+  );
 }
 
 .dark {
@@ -88,7 +91,7 @@
   --popover-foreground: #fdfdfd;
 
   /* FIX: Возвращаем фиолетовый бренд в темную тему (чуть светлее для контраста) */
-  --primary: #9333EA;
+  --primary: #9333ea;
   --primary-foreground: #ffffff;
 
   --secondary: #27272a;
@@ -111,7 +114,7 @@
   /* Под цвет карточки */
   --switch-background: #27272a;
 
-  --ring: #A855F7;
+  --ring: #a855f7;
 
   /* Charts Dark */
   --chart-1: oklch(0.488 0.243 264.376);
@@ -121,12 +124,16 @@
   --chart-5: oklch(0.645 0.246 16.439);
 
   /* Resta Premium Colors (Dark - Neon/Pastel) */
-  --purple-deep: #9333EA;
-  --pink-electric: #F472B6;
-  --blue-cyber: #22D3EE;
-  --gradient-primary: linear-gradient(135deg, #9333EA 0%, #F472B6 100%);
+  --purple-deep: #9333ea;
+  --pink-electric: #f472b6;
+  --blue-cyber: #22d3ee;
+  --gradient-primary: linear-gradient(135deg, #9333ea 0%, #f472b6 100%);
   /* Свечение чуть ярче в темноте */
-  --gradient-glow: linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(244, 114, 182, 0.25) 100%);
+  --gradient-glow: linear-gradient(
+    135deg,
+    rgba(147, 51, 234, 0.25) 0%,
+    rgba(244, 114, 182, 0.25) 100%
+  );
 }
 
 @theme inline {
@@ -194,7 +201,9 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
     /* FIX: Убрали глобальную анимацию. 
        Анимируем только фон и цвет текста, чтобы не лагали кнопки.
     */
@@ -319,7 +328,6 @@
 }
 
 @keyframes boil-bob {
-
   0%,
   100% {
     transform: translateY(0);
@@ -411,7 +419,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .loading-pot,
   .loading-hat,
   .loading-steam {
@@ -420,15 +427,15 @@
 }
 
 /* Range Slider */
-input[type="range"] {
+input[type='range'] {
   @apply h-2 bg-secondary rounded-lg appearance-none cursor-pointer;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   @apply w-5 h-5 bg-white dark:bg-card border-2 border-primary rounded-full appearance-none shadow-sm transition-transform;
 }
 
-input[type="range"]:active::-webkit-slider-thumb {
+input[type='range']:active::-webkit-slider-thumb {
   @apply scale-110;
 }
 
@@ -450,12 +457,12 @@ input[type="range"]:active::-webkit-slider-thumb {
 }
 
 /* Hide native time input picker indicator but keep input clickable */
-input[type="time"]::-webkit-calendar-picker-indicator {
+input[type='time']::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
 }
 
-input[type="time"]::-ms-clear,
-input[type="time"]::-ms-expand {
+input[type='time']::-ms-clear,
+input[type='time']::-ms-expand {
   display: none;
 }

@@ -25,17 +25,18 @@ const navigationSlice = createSlice({
     navigateToTab: (state, action: PayloadAction<Tab>) => {
       state.command = { type: 'NAVIGATE_TAB', tab: action.payload }
     },
-    resetHome: (state) => {
+    resetHome: state => {
       state.command = { type: 'RESET_HOME' }
     },
-    consumeCommand: (state) => {
+    consumeCommand: state => {
       state.command = null
     },
   },
 })
 
-export const { navigateToScreen, navigateToTab, resetHome, consumeCommand } = navigationSlice.actions
+export const { navigateToScreen, navigateToTab, resetHome, consumeCommand } =
+  navigationSlice.actions
 export default navigationSlice.reducer
 
 const selectNav = (state: RootState) => state.navigation
-export const selectNavigationCommand = createSelector([selectNav], (s) => s.command)
+export const selectNavigationCommand = createSelector([selectNav], s => s.command)

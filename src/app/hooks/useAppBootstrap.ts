@@ -3,10 +3,14 @@
  * Один источник истины: userData + selectedRole из Redux.
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectUserData, selectSelectedRole, setSelectedRole } from '@/features/navigation/model/userSlice'
-import { useAuth } from '@/contexts/AuthContext'
+import {
+  selectUserData,
+  selectSelectedRole,
+  setSelectedRole,
+} from '@/features/navigation/model/userSlice'
+import { useAuth } from '@/contexts/auth'
 import { ROUTES } from '@/constants/routes'
 import type { Screen, UiRole } from '@/types'
 import { useUserUpdate } from '@/features/role-selector/model/useUserUpdate'
@@ -25,31 +29,25 @@ export function useAppBootstrap() {
   const [showOnboardingComplete, setShowOnboardingComplete] = useState(false)
   const [pendingRole, setPendingRole] = useState<UiRole | null>(null)
 
-  // Сброс онбординга при logout / смене аккаунта (userData пропал)
-  useEffect(() => {
-    if (!userData) setShowOnboardingComplete(false)
-  }, [userData])
-
-  useEffect(() => {
-    if (!selectedRole) setShowOnboardingComplete(false)
-  }, [selectedRole])
-
   const screen: AppScreen =
     isLoading && !userData
       ? 'loading'
-      : showOnboardingComplete
-        ? 'onboarding_done'
-        : !selectedRole
-          ? 'role'
+      : !selectedRole
+        ? 'role'
+        : showOnboardingComplete
+          ? 'onboarding_done'
           : 'dashboard'
 
   const navigate = useCallback((s: Screen) => setCurrentScreen(s), [])
 
-  const onSelectRole = useCallback((role: UiRole) => {
-    dispatch(setSelectedRole(role))
-    setPendingRole(role)
-    setShowOnboardingComplete(true)
-  }, [dispatch])
+  const onSelectRole = useCallback(
+    (role: UiRole) => {
+      dispatch(setSelectedRole(role))
+      setPendingRole(role)
+      setShowOnboardingComplete(true)
+    },
+    [dispatch]
+  )
 
   const onOnboardingComplete = useCallback(async () => {
     if (pendingRole) {

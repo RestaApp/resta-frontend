@@ -11,7 +11,7 @@ import { logger } from '@/utils/logger'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UiRole } from '@/shared/types/roles.types'
 import { mapUiRoleToApiRole } from '@/utils/roles'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 
 interface UseUserUpdateResult {
   updateUiRole: (
@@ -63,7 +63,12 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         const result = await updateUser(userId, updateData)
 
         // если updateUser возвращает success/errors — проверяем
-        if (result && typeof result === 'object' && 'success' in result && result.success === false) {
+        if (
+          result &&
+          typeof result === 'object' &&
+          'success' in result &&
+          result.success === false
+        ) {
           const msg = (result.errors || [saveErrorFallback]).join('\n')
           onError?.(msg)
           return false
@@ -128,10 +133,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         return true
       } catch (error) {
         logger.error('Ошибка обновления данных пользователя:', error)
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : saveErrorRetry
+        const errorMessage = error instanceof Error ? error.message : saveErrorRetry
         if (onError) {
           onError(errorMessage)
         }

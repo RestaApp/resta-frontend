@@ -234,7 +234,10 @@ export const shiftsApi = api.injectEndpoints({
         method: 'PATCH',
         body: { shift: body },
       }),
-      invalidatesTags: (_r, _e, { id }) => [{ type: 'Shift', id }, { type: 'Shift', id: 'LIST' }],
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'Shift', id },
+        { type: 'Shift', id: 'LIST' },
+      ],
     }),
 
     // Удалить смену
@@ -243,11 +246,17 @@ export const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shifts/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_r, _e, id) => [{ type: 'Shift', id }, { type: 'Shift', id: 'LIST' }],
+      invalidatesTags: (_r, _e, id) => [
+        { type: 'Shift', id },
+        { type: 'Shift', id: 'LIST' },
+      ],
     }),
 
     // Откликнуться на смену
-    applyToShift: builder.mutation<ApplyToShiftResponse, { id: number; data?: ApplyToShiftRequest }>({
+    applyToShift: builder.mutation<
+      ApplyToShiftResponse,
+      { id: number; data?: ApplyToShiftRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/api/v1/shift_applications`,
         method: 'POST',

@@ -51,7 +51,10 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
       />
 
       <div className="relative mb-4 max-w-md mx-auto w-full">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" aria-hidden />
+        <Search
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
+          aria-hidden
+        />
         <Input
           type="search"
           placeholder={t('roles.positionSearchPlaceholder')}

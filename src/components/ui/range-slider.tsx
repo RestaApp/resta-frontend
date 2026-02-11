@@ -50,8 +50,8 @@ export const RangeSlider = memo(function RangeSlider({
 
   const [animatedMin, setAnimatedMin] = useState(rangeMin)
   const [animatedMax, setAnimatedMax] = useState(rangeMax)
-  useMotionValueEvent(minSpring, 'change', (latest) => setAnimatedMin(latest))
-  useMotionValueEvent(maxSpring, 'change', (latest) => setAnimatedMax(latest))
+  useMotionValueEvent(minSpring, 'change', latest => setAnimatedMin(latest))
+  useMotionValueEvent(maxSpring, 'change', latest => setAnimatedMax(latest))
 
   useEffect(() => {
     minSpring.set(rangeMin)
@@ -61,23 +61,32 @@ export const RangeSlider = memo(function RangeSlider({
   const span = Math.max(1, max - min)
   const toPct = (v: number) => `${((clamp(v, min, max) - min) / span) * 100}%`
   const singleWidth = useTransform(singleSpring, toPct)
-  const singleThumbLeft = useTransform(singleSpring, (v) => `calc(${((clamp(v, min, max) - min) / span) * 100}% - 8px)`)
+  const singleThumbLeft = useTransform(
+    singleSpring,
+    v => `calc(${((clamp(v, min, max) - min) / span) * 100}% - 8px)`
+  )
 
   const rangeLeft = useTransform(minSpring, toPct)
-  const rangeWidth = useTransform(
-    [minSpring, maxSpring],
-    ([a, b]: number[]) => {
-      const minPct = (clamp(a, min, max) - min) / span
-      const maxPct = (clamp(b, min, max) - min) / span
-      return `${(maxPct - minPct) * 100}%`
-    }
+  const rangeWidth = useTransform([minSpring, maxSpring], ([a, b]: number[]) => {
+    const minPct = (clamp(a, min, max) - min) / span
+    const maxPct = (clamp(b, min, max) - min) / span
+    return `${(maxPct - minPct) * 100}%`
+  })
+  const minThumbLeft = useTransform(
+    minSpring,
+    v => `calc(${((clamp(v, min, max) - min) / span) * 100}% - 8px)`
   )
-  const minThumbLeft = useTransform(minSpring, (v) => `calc(${((clamp(v, min, max) - min) / span) * 100}% - 8px)`)
-  const maxThumbLeft = useTransform(maxSpring, (v) => `calc(${((clamp(v, min, max) - min) / span) * 100}% - 8px)`)
+  const maxThumbLeft = useTransform(
+    maxSpring,
+    v => `calc(${((clamp(v, min, max) - min) / span) * 100}% - 8px)`
+  )
 
   const effectiveTickCount = Math.min(tickCount ?? DEFAULT_TICK_COUNT, MAX_TICK_COUNT)
   const ticks = showTicks
-    ? Array.from({ length: effectiveTickCount + 1 }, (_, i) => min + (i * (max - min)) / effectiveTickCount)
+    ? Array.from(
+        { length: effectiveTickCount + 1 },
+        (_, i) => min + (i * (max - min)) / effectiveTickCount
+      )
     : []
 
   const handleSingleChange = useCallback(
@@ -145,7 +154,10 @@ export const RangeSlider = memo(function RangeSlider({
         />
 
         {showTicks && ticks.length > 0 && (
-          <div className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none" style={{ top: '-2px' }}>
+          <div
+            className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none"
+            style={{ top: '-2px' }}
+          >
             {ticks.map((tick, index) => (
               <div
                 key={index}
@@ -182,15 +194,18 @@ export const RangeSlider = memo(function RangeSlider({
         step={step}
         value={singleValue}
         onChange={handleSingleChange}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-        onTouchEnd={(e) => e.stopPropagation()}
+        onTouchStart={e => e.stopPropagation()}
+        onTouchMove={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
         className="absolute top-1/2 -translate-y-1/2 h-10 opacity-0 cursor-pointer z-10"
         style={{ touchAction: 'none', left: '-8px', width: 'calc(100% + 16px)' }}
       />
 
       {showTicks && ticks.length > 0 && (
-        <div className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none" style={{ top: '-2px' }}>
+        <div
+          className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none"
+          style={{ top: '-2px' }}
+        >
           {ticks.map((tick, index) => (
             <div
               key={index}

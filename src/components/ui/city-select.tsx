@@ -22,7 +22,7 @@ export const CitySelect = memo(function CitySelect({
   const { t } = useTranslation()
   const displayPlaceholder = placeholder ?? t('citySelect.placeholder')
   const selectOptions: SelectOption[] = useMemo(
-    () => options.map((city) => ({ value: city, label: city })),
+    () => options.map(city => ({ value: city, label: city })),
     [options]
   )
 

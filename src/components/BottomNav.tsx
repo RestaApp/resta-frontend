@@ -38,7 +38,9 @@ export const BottomNav = ({
           const isActive = activeTab === id
           const showProfileDot = id === 'profile' && hasIncompleteProfile
           const labelText = t(label)
-          const ariaLabel = showProfileDot ? `${labelText}. ${t('nav.fillProfileRequired')}` : labelText
+          const ariaLabel = showProfileDot
+            ? `${labelText}. ${t('nav.fillProfileRequired')}`
+            : labelText
 
           return (
             <motion.button

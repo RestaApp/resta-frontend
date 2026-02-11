@@ -1,17 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { authService } from '@/services/auth'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { clearUserData } from '@/features/navigation/model/userSlice'
 import { selectTelegramIsReady } from '@/features/navigation/model/telegramSlice'
-
-interface AuthContextValue {
-  isLoading: boolean
-  isError: boolean
-  error: unknown
-  isAuthenticated: boolean
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+import { AuthContext, type AuthContextValue } from './auth'
 
 interface AuthProviderProps {
   children: ReactNode
@@ -27,13 +19,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const checkAuth = () => {
     const next = authService.isAuthenticated()
-    setIsAuthenticated((prev) => (prev === next ? prev : next))
+    setIsAuthenticated(prev => (prev === next ? prev : next))
   }
 
   useEffect(() => {
-    // initial
-    checkAuth()
-
     const onUnauthorized = () => {
       setIsAuthenticated(false)
       setIsError(true)
@@ -68,17 +57,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [dispatch])
 
-  // когда Telegram “готов”, можно уточнить auth и сбросить ошибку, если всё ок
-  useEffect(() => {
-    if (!telegramReady) return
-    const next = authService.isAuthenticated()
-    setIsAuthenticated(next)
-    if (next) {
-      setIsError(false)
-      setError(null)
-    }
-  }, [telegramReady])
-
   const value = useMemo<AuthContextValue>(
     () => ({
       isLoading: !telegramReady,
@@ -90,10 +68,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export const useAuth = (): AuthContextValue => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth должен использоваться внутри AuthProvider')
-  return ctx
 }

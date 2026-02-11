@@ -48,26 +48,36 @@ export const Select = memo(function Select({
 
   useBodyScrollLock(isOpen)
 
-  const selectedOption = options.find((opt) => opt.value === value)
-  const displayValue = isOpen && allowCustomValue ? searchQuery : selectedOption?.label || value || displayPlaceholder
+  const selectedOption = options.find(opt => opt.value === value)
+  const displayValue =
+    isOpen && allowCustomValue ? searchQuery : selectedOption?.label || value || displayPlaceholder
 
   // Фильтрация опций по поисковому запросу
   const filteredOptions = useMemo(() => {
     if (!searchQuery.trim()) return options
 
     const query = searchQuery.toLowerCase().trim()
-    return options.filter((opt) => opt.label.toLowerCase().includes(query) || opt.value.toLowerCase().includes(query))
+    return options.filter(
+      opt => opt.label.toLowerCase().includes(query) || opt.value.toLowerCase().includes(query)
+    )
   }, [options, searchQuery])
 
   // Проверка, есть ли точное совпадение
   const hasExactMatch = useMemo(() => {
     if (!searchQuery.trim()) return false
     const query = searchQuery.toLowerCase().trim()
-    return options.some((opt) => opt.label.toLowerCase() === query || opt.value.toLowerCase() === query)
+    return options.some(
+      opt => opt.label.toLowerCase() === query || opt.value.toLowerCase() === query
+    )
   }, [options, searchQuery])
 
   // Позиция и размеры дропдауна
-  const [dropdownPosition, setDropdownPosition] = useState({ left: 0, top: 0, width: 0, opensUp: false })
+  const [dropdownPosition, setDropdownPosition] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    opensUp: false,
+  })
   const [maxHeight, setMaxHeight] = useState(280)
 
   // Расчет позиции и максимальной высоты дропдауна
@@ -165,7 +175,8 @@ export const Select = memo(function Select({
       const checkScroll = () => {
         const hasScroll = container.scrollHeight > container.clientHeight
         setNeedsScroll(hasScroll)
-        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 5
+        const isAtBottom =
+          container.scrollHeight - container.scrollTop <= container.clientHeight + 5
         setIsScrolledToBottom(isAtBottom)
       }
 
@@ -187,7 +198,7 @@ export const Select = memo(function Select({
   const handleToggle = useCallback(() => {
     if (disabled) return
     setSearchQuery('')
-    setIsOpen((prev) => !prev)
+    setIsOpen(prev => !prev)
   }, [disabled])
 
   const handleInputChange = useCallback(
@@ -227,7 +238,7 @@ export const Select = memo(function Select({
         if (filteredOptions.length > 0 && scrollContainerRef.current) {
           const firstOption = scrollContainerRef.current.querySelector('button')
           if (firstOption) {
-            ; (firstOption as HTMLButtonElement).focus()
+            ;(firstOption as HTMLButtonElement).focus()
           }
         }
       }
@@ -235,49 +246,51 @@ export const Select = memo(function Select({
     [allowCustomValue, searchQuery, hasExactMatch, filteredOptions, handleSelect, onChange]
   )
 
-  const trigger = allowCustomValue && isOpen ? (
-    <div className="relative">
-      <input
-        ref={triggerInputRef}
-        type="text"
-        value={searchQuery}
-        onChange={handleInputChange}
-        onKeyDown={handleInputKeyDown}
-        onFocus={() => setIsOpen(true)}
+  const trigger =
+    allowCustomValue && isOpen ? (
+      <div className="relative">
+        <input
+          ref={triggerInputRef}
+          type="text"
+          value={searchQuery}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          onFocus={() => setIsOpen(true)}
+          disabled={disabled}
+          placeholder={displayPlaceholder}
+          className={cn(
+            'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base transition-all',
+            'placeholder:text-muted-foreground',
+            'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
+            'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+            isOpen && 'border-primary ring-2 ring-primary/20'
+          )}
+        />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 shrink-0 text-muted-foreground transition-transform rotate-180 pointer-events-none" />
+      </div>
+    ) : (
+      <button
+        type="button"
+        onClick={handleToggle}
         disabled={disabled}
-        placeholder={displayPlaceholder}
         className={cn(
-          'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base transition-all',
+          'flex h-11 w-full min-w-0 items-center justify-between rounded-xl border bg-input-background px-4 py-3 text-base transition-all',
           'placeholder:text-muted-foreground',
           'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
           'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-          isOpen && 'border-primary ring-2 ring-primary/20'
+          isOpen && 'border-primary ring-2 ring-primary/20',
+          !value && 'text-muted-foreground'
         )}
-      />
-      <ChevronDown
-        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 shrink-0 text-muted-foreground transition-transform rotate-180 pointer-events-none"
-      />
-    </div>
-  ) : (
-    <button
-      type="button"
-      onClick={handleToggle}
-      disabled={disabled}
-      className={cn(
-        'flex h-11 w-full min-w-0 items-center justify-between rounded-xl border bg-input-background px-4 py-3 text-base transition-all',
-        'placeholder:text-muted-foreground',
-        'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
-        'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-        isOpen && 'border-primary ring-2 ring-primary/20',
-        !value && 'text-muted-foreground'
-      )}
-    >
-      <span className="truncate text-left">{displayValue}</span>
-      <ChevronDown
-        className={cn('ml-2 h-4 w-4 shrink-0 text-muted-foreground transition-transform', isOpen && 'rotate-180')}
-      />
-    </button>
-  )
+      >
+        <span className="truncate text-left">{displayValue}</span>
+        <ChevronDown
+          className={cn(
+            'ml-2 h-4 w-4 shrink-0 text-muted-foreground transition-transform',
+            isOpen && 'rotate-180'
+          )}
+        />
+      </button>
+    )
 
   return (
     <div className={cn('w-full', className)} ref={containerRef}>
@@ -297,7 +310,7 @@ export const Select = memo(function Select({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
                 className="fixed inset-0 z-[60] bg-black/20"
-                onPointerDown={(e) => {
+                onPointerDown={e => {
                   if (e.target === e.currentTarget) setIsOpen(false)
                 }}
               />
@@ -326,7 +339,7 @@ export const Select = memo(function Select({
                       ref={searchInputRef}
                       type="text"
                       value={searchQuery}
-                      onChange={(e) => {
+                      onChange={e => {
                         const newValue = e.target.value
                         setSearchQuery(newValue)
                         if (allowCustomValue) {
@@ -359,7 +372,7 @@ export const Select = memo(function Select({
                       </div>
                     ) : (
                       <>
-                        {filteredOptions.map((option) => {
+                        {filteredOptions.map(option => {
                           const isSelected = value === option.value
                           return (
                             <button
@@ -374,11 +387,16 @@ export const Select = memo(function Select({
                                 isSelected && 'bg-primary/10 font-medium'
                               )}
                             >
-                              {isSelected && (
-                                <Check className="h-4 w-4 shrink-0 text-primary" />
-                              )}
+                              {isSelected && <Check className="h-4 w-4 shrink-0 text-primary" />}
                               {!isSelected && <div className="h-4 w-4 shrink-0" />}
-                              <span className={cn('flex-1 min-w-0 truncate', isSelected && 'font-semibold')}>{option.label}</span>
+                              <span
+                                className={cn(
+                                  'flex-1 min-w-0 truncate',
+                                  isSelected && 'font-semibold'
+                                )}
+                              >
+                                {option.label}
+                              </span>
                             </button>
                           )
                         })}

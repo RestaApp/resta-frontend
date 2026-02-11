@@ -90,5 +90,3 @@ export const clearLocalStorage = (): void => {
     // Игнорируем ошибки очистки
   }
 }
-
-

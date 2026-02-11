@@ -1,6 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { HelpCircle } from 'lucide-react'
-import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { useSupportTicketForm } from '@/features/profile/model/hooks/useSupportTicketForm'
 import { SupportTicketForm } from './SupportTicketForm'

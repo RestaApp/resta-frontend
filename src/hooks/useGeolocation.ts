@@ -43,13 +43,15 @@ function extractCityFromNominatimResponse(data: unknown): string | null {
   const displayName = (data as { display_name?: string }).display_name
   if (displayName) {
     const parts = displayName.split(',')
-    const foundCity = parts.find(
-      (part: string) =>
-        part.trim().length > 0 &&
-        !part.includes('область') &&
-        !part.includes('район') &&
-        !part.includes('улица')
-    )?.trim()
+    const foundCity = parts
+      .find(
+        (part: string) =>
+          part.trim().length > 0 &&
+          !part.includes('область') &&
+          !part.includes('район') &&
+          !part.includes('улица')
+      )
+      ?.trim()
 
     return foundCity || parts[0]?.trim() || null
   }
@@ -168,5 +170,3 @@ export const useGeolocation = (): UseGeolocationReturn => {
     isLoading,
   }
 }
-
-

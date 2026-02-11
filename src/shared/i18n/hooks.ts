@@ -25,17 +25,15 @@ export function useLabels() {
     [t]
   )
   const getEmployeePositionLabel = useCallback(
-    (value: string) => t(`labels.position.${value}`) || t(`labels.position.${value.toLowerCase()}`) || value,
+    (value: string) =>
+      t(`labels.position.${value}`) || t(`labels.position.${value.toLowerCase()}`) || value,
     [t]
   )
   const getEmployeePositionDescription = useCallback(
     (value: string) => t(`labels.positionDesc.${value.toLowerCase()}`) || '',
     [t]
   )
-  const getUiRoleLabel = useCallback(
-    (value: string) => t(`labels.userRole.${value}`) || value,
-    [t]
-  )
+  const getUiRoleLabel = useCallback((value: string) => t(`labels.userRole.${value}`) || value, [t])
   const getSpecializationLabel = useCallback(
     (value: string) => t(`labels.specialization.${value}`) || value,
     [t]
@@ -79,7 +77,9 @@ export function useProfileFormLabels() {
 
   const getWorkSummaryLabel = useCallback(
     (apiRole: string | null) => {
-      return apiRole === 'employee' ? t('profile.workSummaryResume') : t('profile.workSummaryExperience')
+      return apiRole === 'employee'
+        ? t('profile.workSummaryResume')
+        : t('profile.workSummaryExperience')
     },
     [t]
   )

@@ -1,6 +1,12 @@
 import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Drawer, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -33,49 +39,61 @@ interface EmployeeFieldsSectionProps {
   disabled: boolean
 }
 
-const EmployeeFieldsSection = memo(({ experienceYearsValue, openToWork, skills, updateField, disabled }: EmployeeFieldsSectionProps) => {
-  const { t } = useTranslation()
-  return (
-    <>
-      <div>
-        <label className="block text-sm font-medium mb-2">{t('profile.experienceYearsLabel')}</label>
-        <div className="mb-3">
-          <span className="text-lg font-semibold text-gradient">{formatExperienceText(experienceYearsValue)}</span>
-        </div>
-        <RangeSlider
-          min={0}
-          max={5}
-          step={1}
-          value={experienceYearsValue}
-          onChange={(value) => updateField('experienceYears', value)}
-          showTicks={true}
-          tickCount={5}
-        />
-      </div>
-      <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
+const EmployeeFieldsSection = memo(
+  ({
+    experienceYearsValue,
+    openToWork,
+    skills,
+    updateField,
+    disabled,
+  }: EmployeeFieldsSectionProps) => {
+    const { t } = useTranslation()
+    return (
+      <>
         <div>
-          <label className="block text-sm font-medium mb-1">{t('profile.openToWork')}</label>
-          <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
+          <label className="block text-sm font-medium mb-2">
+            {t('profile.experienceYearsLabel')}
+          </label>
+          <div className="mb-3">
+            <span className="text-lg font-semibold text-gradient">
+              {formatExperienceText(experienceYearsValue)}
+            </span>
+          </div>
+          <RangeSlider
+            min={0}
+            max={5}
+            step={1}
+            value={experienceYearsValue}
+            onChange={value => updateField('experienceYears', value)}
+            showTicks={true}
+            tickCount={5}
+          />
         </div>
-        <Switch
-          checked={openToWork}
-          onCheckedChange={(checked) => updateField('openToWork', checked)}
-          disabled={disabled}
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-2">{t('profile.skills')}</label>
-        <Input
-          value={skills}
-          onChange={(e) => updateField('skills', e.target.value)}
-          placeholder={t('profile.form.skillsPlaceholder')}
-          disabled={disabled}
-        />
-        <p className="text-xs text-muted-foreground mt-1">{t('profile.skillsExample')}</p>
-      </div>
-    </>
-  )
-})
+        <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
+          <div>
+            <label className="block text-sm font-medium mb-1">{t('profile.openToWork')}</label>
+            <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
+          </div>
+          <Switch
+            checked={openToWork}
+            onCheckedChange={checked => updateField('openToWork', checked)}
+            disabled={disabled}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">{t('profile.skills')}</label>
+          <Input
+            value={skills}
+            onChange={e => updateField('skills', e.target.value)}
+            placeholder={t('profile.form.skillsPlaceholder')}
+            disabled={disabled}
+          />
+          <p className="text-xs text-muted-foreground mt-1">{t('profile.skillsExample')}</p>
+        </div>
+      </>
+    )
+  }
+)
 EmployeeFieldsSection.displayName = 'EmployeeFieldsSection'
 
 interface EditProfileDrawerProps {
@@ -84,153 +102,174 @@ interface EditProfileDrawerProps {
   onSuccess?: () => void
 }
 
-export const EditProfileDrawer = memo(({ open, onOpenChange, onSuccess }: EditProfileDrawerProps) => {
-  const { t } = useTranslation()
-  const { getBioLabelSuffix } = useProfileFormLabels()
-  const {
-    userProfile,
-    apiRole,
-    formData,
-    cities,
-    isCitiesLoading,
-    isLoading,
-    experienceYearsForSlider,
-    handleSave,
-    updateField,
-    showCityWarning,
-    setShowCityWarning,
-    handleSaveWithoutCity,
-  } = useEditProfileModel(open, onSuccess)
+export const EditProfileDrawer = memo(
+  ({ open, onOpenChange, onSuccess }: EditProfileDrawerProps) => {
+    const { t } = useTranslation()
+    const { getBioLabelSuffix } = useProfileFormLabels()
+    const {
+      userProfile,
+      apiRole,
+      formData,
+      cities,
+      isCitiesLoading,
+      isLoading,
+      experienceYearsForSlider,
+      handleSave,
+      updateField,
+      showCityWarning,
+      setShowCityWarning,
+      handleSaveWithoutCity,
+      resetForm,
+    } = useEditProfileModel(open, onSuccess)
 
-  const handleCancel = useCallback(() => onOpenChange(false), [onOpenChange])
+    const handleDrawerOpenChange = useCallback(
+      (next: boolean) => {
+        if (!next) resetForm()
+        onOpenChange(next)
+      },
+      [onOpenChange, resetForm]
+    )
 
-  if (!userProfile) return null
+    const handleCancel = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
 
-  const bioSuffix = getBioLabelSuffix(apiRole)
+    if (!userProfile) return null
 
-  return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerHeader>
-        <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
-        <DrawerDescription>
-          {t('profile.editProfileDescription')}
-        </DrawerDescription>
-      </DrawerHeader>
+    const bioSuffix = getBioLabelSuffix(apiRole)
 
-      <div className="px-4 space-y-4 pb-4">
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            {t('profile.nameLabel')} {apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''} *
-          </label>
-          <Input
-            value={formData.name}
-            onChange={(e) => updateField('name', e.target.value)}
-            placeholder={t('profile.form.namePlaceholder')}
-            disabled={isLoading}
-          />
-        </div>
+    return (
+      <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
+        <DrawerHeader>
+          <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
+          <DrawerDescription>{t('profile.editProfileDescription')}</DrawerDescription>
+        </DrawerHeader>
 
-        {apiRole === 'employee' && (
+        <div className="px-4 space-y-4 pb-4">
           <div>
-            <label className="block text-sm font-medium mb-2">{t('profile.surnameRequired')}</label>
+            <label className="block text-sm font-medium mb-2">
+              {t('profile.nameLabel')}{' '}
+              {apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''} *
+            </label>
             <Input
-              value={formData.lastName}
-              onChange={(e) => updateField('lastName', e.target.value)}
-              placeholder={t('profile.form.surnamePlaceholder')}
+              value={formData.name}
+              onChange={e => updateField('name', e.target.value)}
+              placeholder={t('profile.form.namePlaceholder')}
               disabled={isLoading}
             />
           </div>
-        )}
 
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('common.description')} {bioSuffix}</label>
-          <textarea
-            value={formData.bio}
-            onChange={(e) => updateField('bio', e.target.value)}
-            placeholder={t('profile.bioPlaceholder', { suffix: bioSuffix })}
-            disabled={isLoading}
-            rows={4}
-            className={TEXTAREA_CLASS}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('profile.email')}</label>
-          <Input
-            type="email"
-            value={formData.email}
-            onChange={(e) => updateField('email', e.target.value)}
-            placeholder={t('profile.form.emailPlaceholder')}
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('profile.phoneRequired')}</label>
-          <Input
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            value={formData.phone}
-            onChange={(e) => updateField('phone', e.target.value)}
-            placeholder={t('phone.placeholderExample')}
-            disabled={isLoading}
-          />
-          <p className="text-xs text-muted-foreground mt-1">{t('profile.phoneHint')}</p>
-        </div>
-
-        {apiRole === 'employee' && (
-          <EmployeeFieldsSection
-            experienceYearsValue={experienceYearsForSlider}
-            openToWork={formData.openToWork}
-            skills={formData.skills}
-            updateField={updateField}
-            disabled={isLoading}
-          />
-        )}
-
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('profile.cityRequired')}</label>
-          {isCitiesLoading ? (
-            <div className="flex items-center gap-2 py-2">
-              <Loader size="sm" />
+          {apiRole === 'employee' && (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                {t('profile.surnameRequired')}
+              </label>
+              <Input
+                value={formData.lastName}
+                onChange={e => updateField('lastName', e.target.value)}
+                placeholder={t('profile.form.surnamePlaceholder')}
+                disabled={isLoading}
+              />
             </div>
-          ) : (
-            <CitySelect
-              value={formData.city}
-              onChange={(value) => updateField('city', value)}
-              options={cities}
-              placeholder={t('profile.form.cityPlaceholder')}
+          )}
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {t('common.description')} {bioSuffix}
+            </label>
+            <textarea
+              value={formData.bio}
+              onChange={e => updateField('bio', e.target.value)}
+              placeholder={t('profile.bioPlaceholder', { suffix: bioSuffix })}
+              disabled={isLoading}
+              rows={4}
+              className={TEXTAREA_CLASS}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">{t('profile.email')}</label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={e => updateField('email', e.target.value)}
+              placeholder={t('profile.form.emailPlaceholder')}
+              disabled={isLoading}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">{t('profile.phoneRequired')}</label>
+            <Input
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              value={formData.phone}
+              onChange={e => updateField('phone', e.target.value)}
+              placeholder={t('phone.placeholderExample')}
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground mt-1">{t('profile.phoneHint')}</p>
+          </div>
+
+          {apiRole === 'employee' && (
+            <EmployeeFieldsSection
+              experienceYearsValue={experienceYearsForSlider}
+              openToWork={formData.openToWork}
+              skills={formData.skills}
+              updateField={updateField}
               disabled={isLoading}
             />
           )}
+
+          <div>
+            <label className="block text-sm font-medium mb-2">{t('profile.cityRequired')}</label>
+            {isCitiesLoading ? (
+              <div className="flex items-center gap-2 py-2">
+                <Loader size="sm" />
+              </div>
+            ) : (
+              <CitySelect
+                value={formData.city}
+                onChange={value => updateField('city', value)}
+                options={cities}
+                placeholder={t('profile.form.cityPlaceholder')}
+                disabled={isLoading}
+              />
+            )}
+          </div>
         </div>
-      </div>
 
-      <DrawerFooter>
-        <Button onClick={handleSave} disabled={isLoading || !formData.name.trim()} className="w-full" variant="primary">
-          {isLoading ? t('common.saving') : t('common.save')}
-        </Button>
-        <Button onClick={handleCancel} disabled={isLoading} variant="outline" className="w-full">
-          {t('common.cancel')}
-        </Button>
-      </DrawerFooter>
+        <DrawerFooter>
+          <Button
+            onClick={handleSave}
+            disabled={isLoading || !formData.name.trim()}
+            className="w-full"
+            variant="primary"
+          >
+            {isLoading ? t('common.saving') : t('common.save')}
+          </Button>
+          <Button onClick={handleCancel} disabled={isLoading} variant="outline" className="w-full">
+            {t('common.cancel')}
+          </Button>
+        </DrawerFooter>
 
-      <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('profile.cityNotSet')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('profile.cityWarningDescription')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowCityWarning(false)}>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSaveWithoutCity}>{t('profile.saveWithoutCity')}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </Drawer>
-  )
-})
+        <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('profile.cityNotSet')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('profile.cityWarningDescription')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowCityWarning(false)}>
+                {t('common.cancel')}
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleSaveWithoutCity}>
+                {t('profile.saveWithoutCity')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </Drawer>
+    )
+  }
+)
 EditProfileDrawer.displayName = 'EditProfileDrawer'

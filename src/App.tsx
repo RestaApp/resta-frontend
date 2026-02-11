@@ -5,7 +5,8 @@ import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 
 export const App = () => {
-  const { screen, role, currentScreen, navigate, onSelectRole, onOnboardingComplete } = useAppBootstrap()
+  const { screen, role, currentScreen, navigate, onSelectRole, onOnboardingComplete } =
+    useAppBootstrap()
 
   if (screen === 'loading') return <LoadingPage />
   if (screen === 'onboarding_done') {

@@ -29,7 +29,7 @@ export function useSupportTicketForm(onClose: () => void) {
 
   const categoryOptions: SelectOption[] = useMemo(
     () =>
-      SUPPORT_TICKET_CATEGORIES.map((value) => ({
+      SUPPORT_TICKET_CATEGORIES.map(value => ({
         value,
         label: `${CATEGORY_EMOJI[value]} ${t(`profile.supportForm.category.${value}`)}`,
       })),

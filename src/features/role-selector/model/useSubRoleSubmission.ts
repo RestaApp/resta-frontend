@@ -70,7 +70,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
       const success = await updateUserWithData(
         updateData,
         () => onSelectRole(mapApiRoleToDefaultUiRole('employee') ?? 'chef'),
-        (error) => {
+        error => {
           setErrorMessage(error)
           setErrorDialogOpen(true)
           onError(error)
@@ -114,7 +114,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
       const success = await updateUserWithData(
         updateData,
         () => onSelectRole('supplier'),
-        (error) => {
+        error => {
           setErrorMessage(error)
           setErrorDialogOpen(true)
           onError(error)
@@ -158,7 +158,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
       const success = await updateUserWithData(
         updateData,
         () => onSelectRole('venue'),
-        (error) => {
+        error => {
           setErrorMessage(error)
           setErrorDialogOpen(true)
           onError(error)

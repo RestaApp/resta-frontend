@@ -1,9 +1,8 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
 import type { ShiftType } from '../utils/queryParams'
-import { stableSerialize } from '../utils/stableSerialize'
 import { vacancyToShift } from '../utils/mapping'
 
 export interface UseVacanciesInfiniteListOptions {
@@ -24,84 +23,48 @@ export interface UseVacanciesInfiniteListReturn {
   totalCount: number
   loadMore: () => void
   reset: () => void
-  addVacanciesToMap: (vacancies: VacancyApiItem[]) => void
 }
 
-export const useVacanciesInfiniteList = (options: UseVacanciesInfiniteListOptions): UseVacanciesInfiniteListReturn => {
+export const useVacanciesInfiniteList = (
+  options: UseVacanciesInfiniteListOptions
+): UseVacanciesInfiniteListReturn => {
   const { shiftType, baseQuery, enabled, perPage = 5 } = options
 
-  const [page, setPage] = useState(1)
-  const [items, setItems] = useState<Shift[]>([])
-  const [vacanciesMap, setVacanciesMap] = useState<Map<number, VacancyApiItem>>(new Map())
-
-  // ключ параметров без page/perPage — чтобы корректно понять смену фильтра
-  const baseKey = useMemo(() => stableSerialize({ shiftType, baseQuery }), [shiftType, baseQuery])
-  const prevBaseKeyRef = useRef<string | null>(null)
-
-  // флаг: ждём новую страницу 1 по новым параметрам (не чистим сразу UI)
-  const [pendingReplace, setPendingReplace] = useState(false)
-
-  useEffect(() => {
-    if (!enabled) return
-    if (prevBaseKeyRef.current === null) {
-      prevBaseKeyRef.current = baseKey
-      return
-    }
-    if (prevBaseKeyRef.current !== baseKey) {
-      prevBaseKeyRef.current = baseKey
-      setPage(1)
-      setPendingReplace(true)
-    }
-  }, [baseKey, enabled])
+  const [visibleCount, setVisibleCount] = useState(perPage)
 
   const queryParams = useMemo<GetVacanciesParams>(() => {
     return {
       ...baseQuery,
       shift_type: shiftType,
-      page,
-      per_page: perPage,
+      page: 1,
+      per_page: visibleCount,
     }
-  }, [baseQuery, shiftType, page, perPage])
+  }, [baseQuery, shiftType, visibleCount])
 
-  const { data: response, isLoading, isFetching, isError, error } = useGetVacanciesQuery(queryParams, {
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+  } = useGetVacanciesQuery(queryParams, {
     refetchOnMountOrArgChange: false,
     skip: !enabled,
   })
 
-  useEffect(() => {
-    if (!enabled) return
-    if (!response) return
+  const items = useMemo<Shift[]>(() => {
+    const apiItems = response?.data
+    if (!apiItems?.length) return []
+    return apiItems.map(vacancyToShift)
+  }, [response])
 
-    const pagination = response.pagination || response.meta
-    const responsePage = pagination?.current_page ?? page
-
-    const apiItems = Array.isArray(response.data) ? response.data : []
-    const mapped = apiItems.map(vacancyToShift)
-
-    // page 1: заменяем (если пришёл ответ)
-    if (responsePage === 1) {
-      setItems(mapped)
-      const newMap = new Map<number, VacancyApiItem>()
-      for (const v of apiItems) newMap.set(v.id, v)
-      setVacanciesMap(newMap)
-      setPendingReplace(false)
-      return
-    }
-
-    // page > 1: дополняем уникальными
-    if (mapped.length) {
-      setItems(prev => {
-        const existing = new Set(prev.map(x => x.id))
-        const next = mapped.filter(x => !existing.has(x.id))
-        return next.length ? [...prev, ...next] : prev
-      })
-      setVacanciesMap(prev => {
-        const next = new Map(prev)
-        for (const v of apiItems) if (!next.has(v.id)) next.set(v.id, v)
-        return next
-      })
-    }
-  }, [enabled, response, page])
+  const vacanciesMap = useMemo(() => {
+    const apiItems = response?.data
+    const map = new Map<number, VacancyApiItem>()
+    if (!apiItems?.length) return map
+    for (const v of apiItems) map.set(v.id, v)
+    return map
+  }, [response])
 
   const totalCount = useMemo(() => {
     const pagination = response?.pagination || response?.meta
@@ -131,32 +94,22 @@ export const useVacanciesInfiniteList = (options: UseVacanciesInfiniteListOption
     if (!enabled) return
     if (isLoading || isFetching) return
     if (!hasMore) return
-    setPage(p => p + 1)
-  }, [enabled, hasMore, isLoading, isFetching])
+    setVisibleCount(c => c + perPage)
+  }, [enabled, hasMore, isLoading, isFetching, perPage])
 
   const reset = useCallback(() => {
-    setPage(1)
-    setItems([])
-    setVacanciesMap(new Map())
-    setPendingReplace(false)
-    prevBaseKeyRef.current = null
-  }, [])
-
-  const addVacanciesToMap = useCallback((vacancies: VacancyApiItem[]) => {
-    setVacanciesMap(prev => {
-      const next = new Map(prev)
-      for (const v of vacancies) if (!next.has(v.id)) next.set(v.id, v)
-      return next
-    })
-  }, [])
+    setVisibleCount(perPage)
+  }, [perPage])
 
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false
-    // обычная первая загрузка
-    return page === 1 && items.length === 0 && (isLoading || isFetching || !response)
-  }, [enabled, page, items.length, isLoading, isFetching, response])
+    return items.length === 0 && (isLoading || isFetching || !response)
+  }, [enabled, items.length, isLoading, isFetching, response])
 
-  const isRefreshing = useMemo(() => pendingReplace && isFetching, [pendingReplace, isFetching])
+  const isRefreshing = useMemo(
+    () => enabled && isFetching && items.length > 0,
+    [enabled, isFetching, items.length]
+  )
 
   return {
     items,
@@ -169,6 +122,5 @@ export const useVacanciesInfiniteList = (options: UseVacanciesInfiniteListOption
     totalCount,
     loadMore,
     reset,
-    addVacanciesToMap,
   }
 }

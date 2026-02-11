@@ -116,7 +116,7 @@ export const Tabs = <T extends string>({
             aria-selected={isActive}
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(option.id)}
-            ref={(el) => {
+            ref={el => {
               if (el) tabRefs.current.set(option.id, el)
               else tabRefs.current.delete(option.id)
             }}

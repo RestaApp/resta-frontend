@@ -34,8 +34,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverified })
 
   // Загружаем позиции только если выбрана роль employee (chef) И роль пользователя unverified
-  const shouldLoadPositions =
-    (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverified
+  const shouldLoadPositions = (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverified
 
   const {
     positionsApi: employeeSubRoles,
@@ -101,7 +100,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const handleBack = useCallback(() => {
     // Сбрасываем выбранную роль при возврате
     setDraftSelectedRole(null)
-    
+
     if (showEmployeeSubRoles) {
       setShowEmployeeSubRoles(false)
     } else if (showSupplierTypes) {

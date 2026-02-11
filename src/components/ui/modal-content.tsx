@@ -1,9 +1,9 @@
-import { memo, useId, useEffect } from 'react'
+import { memo, useId } from 'react'
 import { motion } from 'motion/react'
 import { Button } from './button'
 import { Loader } from './loader'
 import { cn } from '@/utils/cn'
-import { useModalA11y } from './modal'
+import { useModalA11y } from './modal-a11y'
 import type { ButtonProps } from './button'
 
 export type ModalButton = {
@@ -76,10 +76,6 @@ export const ModalContent = memo(function ModalContent({
   const titleId = a11y?.titleId ?? fallbackTitleId
   const descriptionId = a11y?.descriptionId ?? fallbackDescId
 
-  useEffect(() => {
-    a11y?.setHasDescription(!!description)
-  }, [a11y, description])
-
   return (
     <div className={cn('w-full rounded-3xl border border-border bg-card p-6 shadow-xl', className)}>
       {icon && (
@@ -95,10 +91,15 @@ export const ModalContent = memo(function ModalContent({
       </h2>
 
       {description ? (
-        <p id={descriptionId} className="mb-6 whitespace-pre-line text-center text-sm text-muted-foreground">
+        <p
+          id={descriptionId}
+          className="mb-6 whitespace-pre-line text-center text-sm text-muted-foreground"
+        >
           {description}
         </p>
-      ) : null}
+      ) : (
+        <span id={descriptionId} className="sr-only" />
+      )}
 
       {(primaryButton || secondaryButton) && (
         <div className="flex gap-3">

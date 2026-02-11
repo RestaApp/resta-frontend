@@ -13,7 +13,9 @@ const APPLIED_STATUS_LABEL_KEYS: Record<string, string> = {
  * Группирует отклики по статусу для отображения в UI.
  * Возвращает label как ключ i18n — в компоненте вызывать t(label).
  */
-export function groupAppliedByStatus(shifts: VacancyApiItem[]): { status: string; label: string; items: VacancyApiItem[] }[] {
+export function groupAppliedByStatus(
+  shifts: VacancyApiItem[]
+): { status: string; label: string; items: VacancyApiItem[] }[] {
   const groups: Record<string, VacancyApiItem[]> = {}
   for (const s of shifts) {
     const status = s.my_application?.status ?? 'pending'

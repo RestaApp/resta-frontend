@@ -48,7 +48,7 @@ export const ActivityPage = () => {
 
       <AddShiftDrawer
         open={m.isDrawerOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           m.setIsDrawerOpen(open)
           if (!open) m.setEditingShift(null)
         }}

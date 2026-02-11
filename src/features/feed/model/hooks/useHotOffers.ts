@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
@@ -9,7 +9,6 @@ import { vacancyToHotOffer } from '../utils/mapping'
 interface UseHotOffersParams {
   feedType: FeedType
   advancedFilters: AdvancedFiltersData | null
-  addVacanciesToMap: (vacancies: VacancyApiItem[]) => void
 }
 
 interface UseHotOffersReturn {
@@ -18,7 +17,10 @@ interface UseHotOffersReturn {
   hotOffersTotalCount?: number
 }
 
-export const useHotOffers = ({ feedType, advancedFilters, addVacanciesToMap }: UseHotOffersParams): UseHotOffersReturn => {
+export const useHotOffers = ({
+  feedType,
+  advancedFilters,
+}: UseHotOffersParams): UseHotOffersReturn => {
   const shiftType = feedType === 'shifts' ? 'replacement' : 'vacancy'
 
   const params = useMemo(
@@ -36,11 +38,6 @@ export const useHotOffers = ({ feedType, advancedFilters, addVacanciesToMap }: U
   const { data: resp } = useGetVacanciesQuery(params, {
     refetchOnMountOrArgChange: false,
   })
-
-  useEffect(() => {
-    if (!resp?.data?.length) return
-    addVacanciesToMap(resp.data)
-  }, [resp, addVacanciesToMap])
 
   const hotVacancies = useMemo(() => (resp?.data?.length ? resp.data : []), [resp])
 

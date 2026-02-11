@@ -34,7 +34,7 @@ const userSlice = createSlice({
       state.selectedRole = action.payload
     },
 
-    clearUserData: (state) => {
+    clearUserData: state => {
       state.userData = null
       state.selectedRole = null
     },
@@ -46,7 +46,10 @@ export default userSlice.reducer
 
 const selectUserState = (state: RootState) => state.user
 
-export const selectUserData = createSelector([selectUserState], (s) => s.userData)
-export const selectSelectedRole = createSelector([selectUserState], (s) => s.selectedRole)
-export const selectUserId = createSelector([selectUserData], (u) => u?.id)
-export const selectUserPosition = createSelector([selectUserData], (u) => u?.position || u?.employee_profile?.position || null)
+export const selectUserData = createSelector([selectUserState], s => s.userData)
+export const selectSelectedRole = createSelector([selectUserState], s => s.selectedRole)
+export const selectUserId = createSelector([selectUserData], u => u?.id)
+export const selectUserPosition = createSelector(
+  [selectUserData],
+  u => u?.position || u?.employee_profile?.position || null
+)

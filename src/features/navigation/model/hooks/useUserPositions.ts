@@ -7,7 +7,7 @@
 import { useEffect } from 'react'
 import { useGetUserPositionsQuery } from '@/services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '@/features/role-selector/utils/mappers'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { selectPositions, setPositions } from '@/features/navigation/model/catalogSlice'
 
@@ -28,7 +28,7 @@ export const useUserPositions = (options: UseUserPositionsOptions = {}) => {
   const { enabled = false } = options
   const { isAuthenticated } = useAuth()
   const dispatch = useAppDispatch()
-  
+
   // Получаем позиции из Redux кеша
   const cachedPositions = useAppSelector(selectPositions)
   const hasCachedData = cachedPositions.length > 0
@@ -60,4 +60,3 @@ export const useUserPositions = (options: UseUserPositionsOptions = {}) => {
     refetch,
   }
 }
-

@@ -14,7 +14,8 @@ export function FeedBody({ vm }: FeedBodyProps) {
   const isEmpty = vm.filteredShifts.length === 0
   const showEmptyState =
     isEmpty &&
-    (vm.activeList.totalCount === 0 || (!vm.activeList.isFetching && vm.activeList.totalCount !== -1))
+    (vm.activeList.totalCount === 0 ||
+      (!vm.activeList.isFetching && vm.activeList.totalCount !== -1))
   const showLoadingAfterEmpty = isEmpty && vm.activeList.isFetching
 
   return (

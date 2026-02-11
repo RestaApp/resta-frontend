@@ -14,7 +14,7 @@ export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
   [ROUTES.VACANCIES]: null,
   [ROUTES.NOTIFICATIONS]: null,
   [ROUTES.PROFILE]: 'profile',
-  [ROUTES.SETTINGS]: 'profile', 
+  [ROUTES.SETTINGS]: 'profile',
   [ROUTES.CREATE_SHIFT]: null,
   [ROUTES.SUPPLIERS]: null,
   [ROUTES.FIND_REPLACEMENT]: null,

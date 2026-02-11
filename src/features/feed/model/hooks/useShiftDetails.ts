@@ -31,17 +31,22 @@ export interface UseShiftDetailsReturn {
   applicationsInfo: { value: string; label: string } | null
 }
 
-export const useShiftDetails = (shift: Shift | null, vacancyData?: VacancyApiItem | null): UseShiftDetailsReturn => {
+export const useShiftDetails = (
+  shift: Shift | null,
+  vacancyData?: VacancyApiItem | null
+): UseShiftDetailsReturn => {
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
 
   const restaurantInfo = useMemo<RestaurantInfo | null>(() => {
     const user = vacancyData?.user
     if (!user) return null
 
-    const ratingRaw = typeof user.average_rating === 'number' ? user.average_rating : Number(user.average_rating)
+    const ratingRaw =
+      typeof user.average_rating === 'number' ? user.average_rating : Number(user.average_rating)
     const rating = Number.isFinite(ratingRaw) && ratingRaw > 0 ? ratingRaw : null
 
-    const reviews = typeof user.total_reviews === 'number' && user.total_reviews > 0 ? user.total_reviews : null
+    const reviews =
+      typeof user.total_reviews === 'number' && user.total_reviews > 0 ? user.total_reviews : null
 
     return {
       rating,
@@ -51,10 +56,19 @@ export const useShiftDetails = (shift: Shift | null, vacancyData?: VacancyApiIte
     }
   }, [vacancyData])
 
-  const hourlyRate = useMemo(() => formatHourlyRate(vacancyData?.hourly_rate ?? null), [vacancyData])
-  const shiftTypeLabel = useMemo(() => formatShiftType(vacancyData?.shift_type ?? null), [vacancyData])
+  const hourlyRate = useMemo(
+    () => formatHourlyRate(vacancyData?.hourly_rate ?? null),
+    [vacancyData]
+  )
+  const shiftTypeLabel = useMemo(
+    () => formatShiftType(vacancyData?.shift_type ?? null),
+    [vacancyData]
+  )
 
-  const vacancyTitle = useMemo(() => getVacancyTitle(vacancyData?.title ?? null, shift?.position ?? null), [vacancyData, shift])
+  const vacancyTitle = useMemo(
+    () => getVacancyTitle(vacancyData?.title ?? null, shift?.position ?? null),
+    [vacancyData, shift]
+  )
 
   const positionLabel = useMemo(() => {
     if (!vacancyData?.position) return null

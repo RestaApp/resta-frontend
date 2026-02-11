@@ -25,4 +25,3 @@ export const formatExperienceText = (value: number): string => {
   if (value === 5) return i18n.t('experience.years5Plus')
   return `${value} ${getYearsLabel(value)}`
 }
-

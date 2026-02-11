@@ -1,4 +1,5 @@
 import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '@/config/telegram'
+import { logger } from '@/utils/logger'
 
 interface TelegramWebApp {
   ready: () => void
@@ -54,8 +55,7 @@ export const initTelegramWebApp = () => {
       // ignore expand failure
     }
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('Failed to init Telegram WebApp', err)
+    logger.warn('Failed to init Telegram WebApp', err)
   }
 }
 

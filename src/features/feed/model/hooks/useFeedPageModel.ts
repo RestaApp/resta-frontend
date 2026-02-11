@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { useHaptics } from '@/utils/haptics'
-import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
+import {
+  getLocalStorageItem,
+  removeLocalStorageItem,
+  setLocalStorageItem,
+} from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 
 import { useFeedFiltersState } from '../hooks/useFeedFiltersState'
@@ -69,11 +73,10 @@ export const useFeedPageModel = () => {
   // Переключение на таб "Смены" из внешнего флага (поведение сохраняем)
   useEffect(() => {
     const shouldShowShifts = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
-    if (shouldShowShifts === 'true' && feedType !== 'shifts') {
-      setFeedType('shifts')
+    if (shouldShowShifts === 'true') {
       removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     }
-  }, [feedType, setFeedType])
+  }, [])
 
   const {
     appliedShiftsSet,
@@ -166,8 +169,13 @@ export const useFeedPageModel = () => {
   const { hotOffers, hotVacancies, hotOffersTotalCount } = useHotOffers({
     feedType,
     advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
-    addVacanciesToMap: feedType === 'shifts' ? shiftsList.addVacanciesToMap : jobsList.addVacanciesToMap,
   })
+
+  const hotVacanciesById = useMemo(() => {
+    const m = new Map<number, (typeof hotVacancies)[number]>()
+    for (const v of hotVacancies) m.set(v.id, v)
+    return m
+  }, [hotVacancies])
 
   // Клиентские quick filters — только для отображения списка
   const filteredShifts = useMemo(() => {
@@ -203,13 +211,9 @@ export const useFeedPageModel = () => {
         return
       }
 
-      const fromHot = hotVacancies.find(v => v.id === item.id)
-      if (fromHot) {
-        activeList.addVacanciesToMap([fromHot])
-        openShiftDetails(item.id)
-      }
+      if (hotVacanciesById.has(item.id)) openShiftDetails(item.id)
     },
-    [haptics, shiftsById, activeList, hotVacancies, openShiftDetails]
+    [haptics, shiftsById, activeList.vacanciesMap, hotVacanciesById, openShiftDetails]
   )
 
   const showAllHotShifts = useCallback(() => {
@@ -230,7 +234,9 @@ export const useFeedPageModel = () => {
       if (feedType === 'shifts') {
         setJobsAdvancedFilters(syncFiltersPositionAndSpecializations(filters, jobsAdvancedFilters))
       } else {
-        setShiftsAdvancedFilters(syncFiltersPositionAndSpecializations(filters, shiftsAdvancedFilters))
+        setShiftsAdvancedFilters(
+          syncFiltersPositionAndSpecializations(filters, shiftsAdvancedFilters)
+        )
       }
     },
     [
@@ -248,10 +254,10 @@ export const useFeedPageModel = () => {
     () => (advancedFilters ? hasActiveFilters(advancedFilters) : false),
     [advancedFilters]
   )
-  const hasActiveAny = useMemo(() => hasActiveQuick || hasActiveAdvanced, [
-    hasActiveQuick,
-    hasActiveAdvanced,
-  ])
+  const hasActiveAny = useMemo(
+    () => hasActiveQuick || hasActiveAdvanced,
+    [hasActiveQuick, hasActiveAdvanced]
+  )
 
   const activeFiltersList = useMemo(
     () => formatFiltersForDisplay(advancedFilters, quickFilter),
@@ -281,8 +287,10 @@ export const useFeedPageModel = () => {
 
   const selectedVacancy = useMemo(() => {
     if (!selectedShiftId) return null
-    return activeList.vacanciesMap.get(selectedShiftId) || null
-  }, [selectedShiftId, activeList.vacanciesMap])
+    return (
+      activeList.vacanciesMap.get(selectedShiftId) || hotVacanciesById.get(selectedShiftId) || null
+    )
+  }, [selectedShiftId, activeList.vacanciesMap, hotVacanciesById])
 
   const selectedShift = useMemo(() => {
     if (!selectedShiftId) return null
@@ -298,8 +306,11 @@ export const useFeedPageModel = () => {
     [appliedApplicationsMap, getApplicationId]
   )
   const getApplicationStatusStable = useCallback(
-    (id: number) => activeList.vacanciesMap.get(id)?.my_application?.status ?? null,
-    [activeList.vacanciesMap]
+    (id: number) =>
+      activeList.vacanciesMap.get(id)?.my_application?.status ??
+      hotVacanciesById.get(id)?.my_application?.status ??
+      null,
+    [activeList.vacanciesMap, hotVacanciesById]
   )
 
   return {

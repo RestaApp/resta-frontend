@@ -3,7 +3,7 @@
  * Инкапсулирует логику работы с форматами ресторанов
  */
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 import { useGetRestaurantFormatsQuery } from '@/services/api/rolesApi'
 
 interface UseRestaurantFormatsOptions {

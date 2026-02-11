@@ -14,7 +14,7 @@ import {
   REGISTER,
 } from 'redux-persist'
 import { api } from './api'
-import userReducer from '@/features/navigation/model/userSlice' 
+import userReducer from '@/features/navigation/model/userSlice'
 import telegramReducer from '@/features/navigation/model/telegramSlice'
 import catalogReducer from '@/features/navigation/model/catalogSlice'
 import navigationReducer from '@/features/navigation/model/navigationSlice'

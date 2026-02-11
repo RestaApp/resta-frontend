@@ -3,7 +3,7 @@
  * Инкапсулирует логику работы с типами поставщиков
  */
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth'
 import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
 
 interface UseSupplierTypesOptions {

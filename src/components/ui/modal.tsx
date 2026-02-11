@@ -1,18 +1,9 @@
-import { useEffect, useRef, memo, useId, useState, useMemo, createContext, useContext } from 'react'
+import { useEffect, useRef, memo, useId, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
-
-const ModalA11yContext = createContext<{
-  titleId: string
-  descriptionId: string
-  setHasDescription: (value: boolean) => void
-} | null>(null)
-
-export function useModalA11y() {
-  return useContext(ModalA11yContext)
-}
+import { ModalA11yContext } from './modal-a11y'
 
 interface ModalProps {
   isOpen: boolean
@@ -30,7 +21,7 @@ const getFocusable = (root: HTMLElement) =>
       'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
     )
   ).filter(
-    (el) =>
+    el =>
       !el.hasAttribute('disabled') &&
       el.getAttribute('aria-hidden') !== 'true' &&
       el.offsetParent != null
@@ -48,13 +39,8 @@ export const Modal = memo(function Modal({
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const titleId = useId()
   const descriptionId = useId()
-  const [hasDescription, setHasDescription] = useState(false)
 
   useBodyScrollLock(isOpen)
-
-  useEffect(() => {
-    if (isOpen) setHasDescription(false)
-  }, [isOpen])
 
   useEffect(() => {
     if (!isOpen || typeof document === 'undefined') return
@@ -122,10 +108,7 @@ export const Modal = memo(function Modal({
     if (e.target === e.currentTarget) onClose()
   }
 
-  const a11yValue = useMemo(
-    () => ({ titleId, descriptionId, setHasDescription }),
-    [titleId, descriptionId]
-  )
+  const a11yValue = useMemo(() => ({ titleId, descriptionId }), [titleId, descriptionId])
 
   const node = (
     <AnimatePresence>
@@ -148,7 +131,7 @@ export const Modal = memo(function Modal({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              aria-describedby={hasDescription ? descriptionId : undefined}
+              aria-describedby={descriptionId}
               tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

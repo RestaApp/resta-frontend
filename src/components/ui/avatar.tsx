@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { cn } from '@/utils/cn'
 
-export const Avatar = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>{children}</div>
+export const Avatar = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) => (
+  <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>
+    {children}
+  </div>
 )
 
 export const AvatarImage = ({
@@ -16,13 +24,10 @@ export const AvatarImage = ({
   className?: string
   onError?: () => void
 }) => {
-  const [imgError, setImgError] = useState(false)
+  const [errorSrc, setErrorSrc] = useState<string | null>(null)
+  const hasError = !!src && errorSrc === src
 
-  useEffect(() => {
-    setImgError(false)
-  }, [src])
-
-  if (!src || imgError) return null
+  if (!src || hasError) return null
 
   return (
     <img
@@ -32,13 +37,21 @@ export const AvatarImage = ({
       decoding="async"
       className={cn('h-full w-full object-cover', className)}
       onError={() => {
-        setImgError(true)
+        setErrorSrc(src)
         onError?.()
       }}
     />
   )
 }
 
-export const AvatarFallback = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <div className={cn('flex h-full w-full items-center justify-center rounded-full', className)}>{children}</div>
+export const AvatarFallback = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) => (
+  <div className={cn('flex h-full w-full items-center justify-center rounded-full', className)}>
+    {children}
+  </div>
 )

@@ -29,5 +29,5 @@ export default telegramSlice.reducer
 
 const selectTelegramState = (state: RootState) => state.telegram
 
-export const selectTelegramInitData = createSelector([selectTelegramState], (s) => s.initData)
-export const selectTelegramIsReady = createSelector([selectTelegramState], (s) => s.isReady)
+export const selectTelegramInitData = createSelector([selectTelegramState], s => s.initData)
+export const selectTelegramIsReady = createSelector([selectTelegramState], s => s.isReady)

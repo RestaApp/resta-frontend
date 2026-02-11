@@ -53,7 +53,8 @@ export const ActivityCalendarTab = memo((props: Props) => {
       </div>
     )
   }
-  if (isError) return <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
+  if (isError)
+    return <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
 
   return (
     <div className="space-y-4">
@@ -75,7 +76,10 @@ export const ActivityCalendarTab = memo((props: Props) => {
               <span className="text-xs mb-1">{day.short}</span>
               <span className="text-lg font-medium">{day.dayNum}</span>
               {hasShifts && !isSelected ? (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: 'var(--primary)' }} />
+                <span
+                  className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                  style={{ background: 'var(--primary)' }}
+                />
               ) : null}
             </button>
           )
@@ -89,7 +93,11 @@ export const ActivityCalendarTab = memo((props: Props) => {
           <div className="space-y-4">
             {selectedDayShifts.map(shift =>
               shift.type === 'resta' ? (
-                <AppliedShiftCard key={shift.id} shift={shift.data} showToast={(m, type) => showToast(m, type)} />
+                <AppliedShiftCard
+                  key={shift.id}
+                  shift={shift.data}
+                  showToast={(m, type) => showToast(m, type)}
+                />
               ) : (
                 <PersonalShiftCard
                   key={shift.id}

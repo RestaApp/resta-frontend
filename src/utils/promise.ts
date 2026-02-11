@@ -17,4 +17,3 @@ export const isPromise = <T = unknown>(value: unknown): value is Promise<T> => {
     typeof (value as Promise<T>).then === 'function'
   )
 }
-

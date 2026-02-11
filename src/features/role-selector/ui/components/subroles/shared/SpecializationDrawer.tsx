@@ -86,16 +86,20 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
             {specializations.length > 0 ? (
               <div className="space-y-4 mb-6">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">{t('roles.specializationsMain')}</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    {t('roles.specializationsMain')}
+                  </p>
                   <div className="flex flex-wrap gap-2">
-                    {mainSpecs.map((spec) => (
+                    {mainSpecs.map(spec => (
                       <SelectableTagButton
                         key={spec}
                         value={spec}
                         label={getSpecializationLabel(spec)}
                         isSelected={selectedSpecializations.includes(spec)}
                         onClick={onSpecializationToggle}
-                        ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(spec) })}
+                        ariaLabel={t('aria.selectSpecialization', {
+                          label: getSpecializationLabel(spec),
+                        })}
                       />
                     ))}
                   </div>
@@ -104,14 +108,18 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                   <div>
                     <button
                       type="button"
-                      onClick={() => setAdditionalExpanded((v) => !v)}
+                      onClick={() => setAdditionalExpanded(v => !v)}
                       className={cn(
                         'flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors'
                       )}
                       aria-expanded={additionalExpanded}
                     >
                       {t('roles.specializationsMore')}
-                      {additionalExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                      {additionalExpanded ? (
+                        <ChevronUp className="h-3.5 w-3.5" />
+                      ) : (
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      )}
                     </button>
                     <AnimatePresence initial={false}>
                       {additionalExpanded ? (
@@ -123,14 +131,16 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                           className="overflow-hidden"
                         >
                           <div className="flex flex-wrap gap-2 pt-2">
-                            {additionalSpecs.map((spec) => (
+                            {additionalSpecs.map(spec => (
                               <SelectableTagButton
                                 key={spec}
                                 value={spec}
                                 label={getSpecializationLabel(spec)}
                                 isSelected={selectedSpecializations.includes(spec)}
                                 onClick={onSpecializationToggle}
-                                ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(spec) })}
+                                ariaLabel={t('aria.selectSpecialization', {
+                                  label: getSpecializationLabel(spec),
+                                })}
                               />
                             ))}
                           </div>
@@ -142,9 +152,17 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
               </div>
             ) : null}
 
-            <div className={`space-y-5 ${specializations.length > 0 ? 'pt-4 border-t border-border' : ''}`}>
-              <ExperienceField value={formData.experienceYears} onChange={(v: number) => onFormDataUpdate({ experienceYears: v })} />
-              <OpenToWorkToggle value={formData.openToWork} onChange={(v: boolean) => onFormDataUpdate({ openToWork: v })} />
+            <div
+              className={`space-y-5 ${specializations.length > 0 ? 'pt-4 border-t border-border' : ''}`}
+            >
+              <ExperienceField
+                value={formData.experienceYears}
+                onChange={(v: number) => onFormDataUpdate({ experienceYears: v })}
+              />
+              <OpenToWorkToggle
+                value={formData.openToWork}
+                onChange={(v: boolean) => onFormDataUpdate({ openToWork: v })}
+              />
               <LocationField
                 value={formData.location}
                 onChange={(v: string) => onFormDataUpdate({ location: v })}
@@ -172,5 +190,3 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
     </Drawer>
   )
 })
-
-

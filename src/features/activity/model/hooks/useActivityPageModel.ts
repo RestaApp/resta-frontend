@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
 import { setLocalStorageItem } from '@/utils/localStorage'
@@ -10,9 +11,7 @@ import { normalizeVacanciesResponse } from '@/features/profile/model/utils/norma
 
 export type ActivityTab = 'list' | 'calendar'
 
-type RawShift = any
-
-export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: RawShift }
+export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: VacancyApiItem }
 
 export type WeekDay = { key: string; short: string; full: string; dayNum: string; dateObj: Date }
 
@@ -41,11 +40,11 @@ export const useActivityPageModel = () => {
   const { showToast } = useToast()
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [editingShift, setEditingShift] = useState<any | null>(null)
+  const [editingShift, setEditingShift] = useState<VacancyApiItem | null>(null)
 
   const handleEdit = useCallback(
     (id: number) => {
-      const found = shifts.find((s: any) => s.id === id) || null
+      const found = shifts.find(s => s.id === id) || null
       setEditingShift(found)
       setIsDrawerOpen(true)
     },
@@ -66,7 +65,7 @@ export const useActivityPageModel = () => {
   )
 
   // Calendar state
-  const [selectedDayKey, setSelectedDayKey] = useState<string>('')
+  const [selectedDayKey, setSelectedDayKey] = useState<string>(() => toLocalISODateKey(new Date()))
 
   const weekDays = useMemo<WeekDay[]>(() => {
     const today = new Date()
@@ -80,7 +79,11 @@ export const useActivityPageModel = () => {
 
       const dayNum = String(date.getDate()).padStart(2, '0')
       const shortDay = date.toLocaleDateString(dateLocale, { weekday: 'short' })
-      const fullDay = date.toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long' })
+      const fullDay = date.toLocaleDateString(dateLocale, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      })
 
       days.push({
         key: toLocalISODateKey(date),
@@ -94,24 +97,16 @@ export const useActivityPageModel = () => {
     return days
   }, [dateLocale])
 
-  useEffect(() => {
-    if (selectedDayKey || weekDays.length === 0) return
-
-    const todayKey = toLocalISODateKey(new Date())
-    const todayInWeek = weekDays.find(d => d.key === todayKey)
-
-    setSelectedDayKey(todayInWeek ? todayKey : weekDays[0].key)
-  }, [selectedDayKey, weekDays])
-
   const groupedShifts = useMemo<Record<string, GroupedShift[]>>(() => {
     const grouped: Record<string, GroupedShift[]> = {}
 
-    const add = (shift: any, type: GroupedShift['type']) => {
+    const add = (shift: VacancyApiItem, type: GroupedShift['type']) => {
       if (!shift?.start_time) return
       const date = new Date(shift.start_time)
       if (Number.isNaN(date.getTime())) return
       const dateKey = toLocalISODateKey(date)
-      ;(grouped[dateKey] ||= []).push({ id: shift.id, type, data: shift })
+      if (!grouped[dateKey]) grouped[dateKey] = []
+      grouped[dateKey].push({ id: shift.id, type, data: shift })
     }
 
     shifts.forEach(s => add(s, 'personal'))

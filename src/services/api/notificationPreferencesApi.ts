@@ -29,7 +29,7 @@ export interface UpdateNotificationPreferenceRequest {
 }
 
 export const notificationPreferencesApi = api.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getNotificationPreferences: builder.query<NotificationPreferencesResponse, void>({
       query: () => ({
         url: '/api/v1/notification_preferences',
@@ -42,7 +42,7 @@ export const notificationPreferencesApi = api.injectEndpoints({
       NotificationPreferencesResponse,
       UpdateNotificationPreferenceRequest
     >({
-      query: (body) => ({
+      query: body => ({
         url: '/api/v1/notification_preferences',
         method: 'PATCH',
         body,
@@ -52,7 +52,5 @@ export const notificationPreferencesApi = api.injectEndpoints({
   }),
 })
 
-export const {
-  useGetNotificationPreferencesQuery,
-  useUpdateNotificationPreferencesMutation,
-} = notificationPreferencesApi
+export const { useGetNotificationPreferencesQuery, useUpdateNotificationPreferencesMutation } =
+  notificationPreferencesApi

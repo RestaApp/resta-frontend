@@ -12,7 +12,8 @@ interface UseShiftActionsReturn {
 }
 
 export const useShiftActions = (): UseShiftActionsReturn => {
-  const { appliedShiftsSet, appliedApplicationsMap, markApplied, unmarkApplied, getApplicationId } = useAppliedShifts()
+  const { appliedShiftsSet, appliedApplicationsMap, markApplied, unmarkApplied, getApplicationId } =
+    useAppliedShifts()
 
   const { apply, cancel } = useShiftApplication()
 

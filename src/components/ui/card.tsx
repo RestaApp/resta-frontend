@@ -1,8 +1,7 @@
 import { forwardRef } from 'react'
 import { cn } from '@/utils/cn'
 
-const BASE_CARD =
-  'rounded-3xl border border-border bg-card backdrop-blur-xl transition-all'
+const BASE_CARD = 'rounded-3xl border border-border bg-card backdrop-blur-xl transition-all'
 
 type CardProps = {
   children?: React.ReactNode

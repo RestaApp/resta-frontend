@@ -5,7 +5,15 @@ import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 /**
  * Список позиций сотрудников для проверки и маппинга
  */
-const EMPLOYEE_POSITIONS = ['chef', 'waiter', 'bartender', 'barista', 'admin', 'manager', 'support'] as const
+const EMPLOYEE_POSITIONS = [
+  'chef',
+  'waiter',
+  'bartender',
+  'barista',
+  'admin',
+  'manager',
+  'support',
+] as const
 const EMPLOYEE_POSITIONS_SET = new Set(EMPLOYEE_POSITIONS)
 
 /**
@@ -63,8 +71,7 @@ export const mapUiRoleToApiRole = (uiRole: UiRole): ApiRole => UI_ROLE_TO_API_RO
 export const isUnverifiedRole = (role: ApiRole | null | undefined): boolean =>
   !role || role === 'unverified'
 
-export const isVerifiedRole = (role: ApiRole | null | undefined): boolean =>
-  !isUnverifiedRole(role)
+export const isVerifiedRole = (role: ApiRole | null | undefined): boolean => !isUnverifiedRole(role)
 
 /**
  * ===== Backward-compatible helpers =====

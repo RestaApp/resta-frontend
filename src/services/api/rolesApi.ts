@@ -31,12 +31,9 @@ export const rolesApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить список доступных ролей для страницы выбора роли
     // Используется только в компоненте RoleSelector
-    getAvailableUiRoles: createCatalogQuery<AvailableUiRolesResponse, void>(
-      builder,
-      {
-        url: '/api/v1/catalogs/roles',
-      }
-    ),
+    getAvailableUiRoles: createCatalogQuery<AvailableUiRolesResponse, void>(builder, {
+      url: '/api/v1/catalogs/roles',
+    }),
 
     // Получить список типов поставщиков
     getSupplierTypes: createCatalogQuery<SupplierTypesResponse, void>(builder, {
@@ -44,12 +41,9 @@ export const rolesApi = api.injectEndpoints({
     }),
 
     // Получить список форматов ресторанов
-    getRestaurantFormats: createCatalogQuery<RestaurantFormatsResponse, void>(
-      builder,
-      {
-        url: '/api/v1/catalogs/restaurant_formats',
-      }
-    ),
+    getRestaurantFormats: createCatalogQuery<RestaurantFormatsResponse, void>(builder, {
+      url: '/api/v1/catalogs/restaurant_formats',
+    }),
   }),
 })
 

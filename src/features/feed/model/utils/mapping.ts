@@ -35,9 +35,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const duration = formatDuration(item.duration)
 
   const time =
-    start && end
-      ? `${formatTimeRangeRU(start, end)}${duration ? ` (${duration})` : ''}`
-      : ''
+    start && end ? `${formatTimeRangeRU(start, end)}${duration ? ` (${duration})` : ''}` : ''
 
   const payPeriod: PayPeriod = item.shift_type === 'vacancy' ? 'month' : 'shift'
 
@@ -99,7 +97,8 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   const end = parseApiDateTime(v.end_time ?? undefined)
 
   const date = start ? formatDateRU(start) : ''
-  const time = start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
+  const time =
+    start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
 
   return {
     id: v.id,

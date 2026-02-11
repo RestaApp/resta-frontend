@@ -20,8 +20,7 @@ const VARIANT_CLASSES = {
   outline: 'border border-border bg-transparent hover:bg-muted',
   ghost: 'bg-transparent hover:bg-muted',
   destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-  gradient:
-    'gradient-primary text-white hover:opacity-90 shadow-md border-0 border-transparent',
+  gradient: 'gradient-primary text-white hover:opacity-90 shadow-md border-0 border-transparent',
   gradientPressed:
     'bg-secondary text-foreground/70 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
 } as const
@@ -49,8 +48,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const effectiveVariant =
-      variant === 'gradient' && pressed ? 'gradientPressed' : variant
+    const effectiveVariant = variant === 'gradient' && pressed ? 'gradientPressed' : variant
     const isDisabled = disabled || loading
 
     return (

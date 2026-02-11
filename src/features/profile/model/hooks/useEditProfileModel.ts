@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUpdateUser } from '@/hooks/useUsers'
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -21,29 +21,29 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
   // Определяем роль
   const apiRole = useMemo<ApiRole | null>(() => {
-    if (!userProfile?.role) return null
-    return mapRoleFromApi(userProfile.role)
+    const roleValue = userProfile?.role
+    if (!roleValue) return null
+    return mapRoleFromApi(roleValue)
   }, [userProfile?.role])
 
-  // Состояние формы
-  const [formData, setFormData] = useState<ProfileFormData>({
-    name: '',
-    lastName: '',
-    bio: '',
-    city: '',
-    email: '',
-    phone: '',
-    workExperienceSummary: '',
-    experienceYears: '',
-    openToWork: false,
-    skills: '',
-  })
+  const baseFormData = useMemo<ProfileFormData>(() => {
+    if (!userProfile) {
+      return {
+        name: '',
+        lastName: '',
+        bio: '',
+        city: '',
+        email: '',
+        phone: '',
+        workExperienceSummary: '',
+        experienceYears: '',
+        openToWork: false,
+        skills: '',
+      }
+    }
 
-  // Инициализация формы при открытии
-  useEffect(() => {
-    if (!open || !userProfile) return
     const ep = userProfile.employee_profile
-    setFormData({
+    return {
       name: userProfile.name || '',
       lastName: userProfile.last_name || '',
       bio: userProfile.bio || '',
@@ -51,11 +51,19 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
       email: userProfile.email || '',
       phone: formatPhoneInput(userProfile.phone || '') || userProfile.phone || '',
       workExperienceSummary: userProfile.work_experience_summary || '',
-      experienceYears: apiRole === 'employee' && ep ? (typeof ep.experience_years === 'number' ? ep.experience_years : '') : '',
+      experienceYears:
+        apiRole === 'employee' && ep
+          ? typeof ep.experience_years === 'number'
+            ? ep.experience_years
+            : ''
+          : '',
       openToWork: apiRole === 'employee' && ep ? ep.open_to_work || false : false,
       skills: apiRole === 'employee' && ep?.skills ? ep.skills.join(', ') : '',
-    })
-  }, [open, userProfile, apiRole])
+    }
+  }, [apiRole, userProfile])
+
+  const [draftFormData, setDraftFormData] = useState<ProfileFormData | null>(null)
+  const formData = draftFormData ?? baseFormData
 
   // Состояние для модалки подтверждения сохранения без города
   const [showCityWarning, setShowCityWarning] = useState(false)
@@ -94,18 +102,19 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     await performSave()
   }, [formData.city, performSave])
 
-  const updateField = useCallback(<K extends keyof ProfileFormData>(
-    field: K,
-    value: ProfileFormData[K]
-  ) => {
-    setFormData(prev => {
-      const next = { ...prev, [field]: value }
-      if (field === 'phone' && typeof value === 'string') {
-        next.phone = formatPhoneInput(value)
-      }
-      return next
-    })
-  }, [])
+  const updateField = useCallback(
+    <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => {
+      setDraftFormData(prev => {
+        const base = prev ?? baseFormData
+        const next: ProfileFormData = { ...base, [field]: value }
+        if (field === 'phone' && typeof value === 'string') {
+          next.phone = formatPhoneInput(value)
+        }
+        return next
+      })
+    },
+    [baseFormData]
+  )
 
   const handleSaveWithoutCity = useCallback(async () => {
     setShowCityWarning(false)
@@ -114,6 +123,11 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
   const experienceYearsForSlider =
     typeof formData.experienceYears === 'number' ? formData.experienceYears : 0
+
+  const resetForm = useCallback(() => {
+    setDraftFormData(null)
+    setShowCityWarning(false)
+  }, [])
 
   return {
     userProfile,
@@ -128,5 +142,6 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     showCityWarning,
     setShowCityWarning,
     handleSaveWithoutCity,
+    resetForm,
   }
 }

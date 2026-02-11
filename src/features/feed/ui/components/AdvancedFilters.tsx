@@ -1,7 +1,7 @@
 import { X, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
@@ -10,337 +10,346 @@ import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { useAdvancedFilters } from '../../model/hooks/useAdvancedFilters'
 import { DEFAULT_PRICE_RANGE, DEFAULT_JOBS_PRICE_RANGE } from '@/utils/filters'
 
-
 export interface AdvancedFiltersData {
-    priceRange: [number, number] | null
-    selectedPosition?: string | null
-    selectedSpecializations?: string[]
-    startDate?: string | null // YYYY-MM-DD
-    endDate?: string | null // YYYY-MM-DD
+  priceRange: [number, number] | null
+  selectedPosition?: string | null
+  selectedSpecializations?: string[]
+  startDate?: string | null // YYYY-MM-DD
+  endDate?: string | null // YYYY-MM-DD
 }
 
 interface AdvancedFiltersProps {
-    isOpen: boolean
-    onClose: () => void
-    onApply: (filters: AdvancedFiltersData | null) => void
-    initialFilters?: AdvancedFiltersData
-    filteredCount?: number
-    searchQuery?: string
-    activeFilter?: string
-    isVacancy?: boolean // Флаг для вакансий (скрыть период, изменить текст)
+  isOpen: boolean
+  onClose: () => void
+  onApply: (filters: AdvancedFiltersData | null) => void
+  initialFilters?: AdvancedFiltersData
+  filteredCount?: number
+  searchQuery?: string
+  activeFilter?: string
+  isVacancy?: boolean // Флаг для вакансий (скрыть период, изменить текст)
 }
 
 export const AdvancedFilters = ({
-    isOpen,
-    onClose,
-    onApply,
-    initialFilters,
-    filteredCount,
-    isVacancy = false,
+  isOpen,
+  onClose,
+  onApply,
+  initialFilters,
+  filteredCount,
+  isVacancy = false,
 }: AdvancedFiltersProps) => {
-    const { t } = useTranslation()
-    const { getSpecializationLabel } = useLabels()
-    const {
-        priceRange,
-        selectedPosition,
-        selectedSpecializations,
-        startDate,
-        endDate,
-        setPriceRange,
-        setStartDate,
-        setEndDate,
-        handlePositionSelect,
-        toggleSpecialization,
-        handleReset,
-        handleApply,
-        hasActiveFilters,
-    } = useAdvancedFilters({
-        initialFilters: initialFilters || null,
-        isOpen,
-        onApply,
-    })
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <AdvancedFiltersSheet
+          onClose={onClose}
+          onApply={onApply}
+          initialFilters={initialFilters}
+          filteredCount={filteredCount}
+          isVacancy={isVacancy}
+        />
+      )}
+    </AnimatePresence>
+  )
+}
 
-    // Дефолтный диапазон для отображения (не применяется автоматически)
-    const displayPriceRange = useMemo(() => {
-        return priceRange || (isVacancy ? DEFAULT_JOBS_PRICE_RANGE : DEFAULT_PRICE_RANGE)
-    }, [priceRange, isVacancy])
+const AdvancedFiltersSheet = ({
+  onClose,
+  onApply,
+  initialFilters,
+  filteredCount,
+  isVacancy,
+}: Omit<AdvancedFiltersProps, 'isOpen'>) => {
+  const { t } = useTranslation()
+  const { getSpecializationLabel } = useLabels()
+  const {
+    priceRange,
+    selectedPosition,
+    selectedSpecializations,
+    startDate,
+    endDate,
+    setPriceRange,
+    setStartDate,
+    setEndDate,
+    handlePositionSelect,
+    toggleSpecialization,
+    handleReset,
+    handleApply,
+    hasActiveFilters,
+  } = useAdvancedFilters({
+    initialFilters: initialFilters || null,
+    onApply,
+  })
 
-    // Сохраняем предыдущие специализации для отображения во время загрузки
-    const [previousSpecializations, setPreviousSpecializations] = useState<string[]>([])
-    const prevPositionRef = useRef<string | null>(null)
-    const cachedSpecializationsRef = useRef<Map<string, string[]>>(new Map())
+  // Дефолтный диапазон для отображения (не применяется автоматически)
+  const displayPriceRange = useMemo(() => {
+    return priceRange || (isVacancy ? DEFAULT_JOBS_PRICE_RANGE : DEFAULT_PRICE_RANGE)
+  }, [priceRange, isVacancy])
 
-    // Получаем минимальную дату для начальной даты (сегодня)
-    const formatLocalDateKey = useCallback((date: Date): string => {
-        const yyyy = date.getFullYear()
-        const mm = String(date.getMonth() + 1).padStart(2, '0')
-        const dd = String(date.getDate()).padStart(2, '0')
-        return `${yyyy}-${mm}-${dd}`
-    }, [])
+  // Предыдущие специализации (показываем во время загрузки при смене позиции)
+  const [previousSpecializations, setPreviousSpecializations] = useState<string[]>([])
 
-    const getMinStartDate = useCallback((): string => {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        return formatLocalDateKey(today)
-    }, [formatLocalDateKey])
+  // Получаем минимальную дату для начальной даты (сегодня)
+  const formatLocalDateKey = useCallback((date: Date): string => {
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }, [])
 
-    // Получаем минимальную дату для конечной даты (сегодня или startDate)
-    const getMinEndDate = useCallback((): string => {
-        if (startDate) {
-            return startDate
-        }
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        return formatLocalDateKey(today)
-    }, [startDate, formatLocalDateKey])
+  const getMinStartDate = useCallback((): string => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return formatLocalDateKey(today)
+  }, [formatLocalDateKey])
 
-    // Загружаем позиции (хук сам использует Redux кеш и сохраняет данные)
-    const { positions: positionsForDisplay } = useUserPositions({ enabled: isOpen })
+  // Получаем минимальную дату для конечной даты (сегодня или startDate)
+  const getMinEndDate = useCallback((): string => {
+    if (startDate) {
+      return startDate
+    }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return formatLocalDateKey(today)
+  }, [startDate, formatLocalDateKey])
 
-    // Загружаем специализации при выборе позиции (хук сам использует Redux кеш и сохраняет данные)
-    const {
-        specializations: availableSpecializations,
-        isLoading: isLoadingSpecializations,
-        isFetching: isFetchingSpecializations
-    } = useUserSpecializations({
-        position: selectedPosition,
-        enabled: isOpen && !!selectedPosition,
-    })
+  // Загружаем позиции (хук сам использует Redux кеш и сохраняет данные)
+  const { positions: positionsForDisplay } = useUserPositions({ enabled: true })
 
-    // Сохраняем специализации в кеш, когда они загрузились
-    useEffect(() => {
-        if (!isLoadingSpecializations && !isFetchingSpecializations && availableSpecializations.length > 0 && selectedPosition) {
-            cachedSpecializationsRef.current.set(selectedPosition, availableSpecializations)
-        }
-    }, [isLoadingSpecializations, isFetchingSpecializations, availableSpecializations, selectedPosition])
+  // Загружаем специализации при выборе позиции (хук сам использует Redux кеш и сохраняет данные)
+  const {
+    specializations: availableSpecializations,
+    isLoading: isLoadingSpecializations,
+    isFetching: isFetchingSpecializations,
+  } = useUserSpecializations({
+    position: selectedPosition,
+    enabled: !!selectedPosition,
+  })
 
-    // Сохраняем предыдущие специализации при смене позиции
-    useEffect(() => {
-        // Если позиция изменилась - сохраняем специализации предыдущей позиции из кеша
-        if (prevPositionRef.current !== null && prevPositionRef.current !== selectedPosition) {
-            const prevSpecs = cachedSpecializationsRef.current.get(prevPositionRef.current)
-            if (prevSpecs && prevSpecs.length > 0) {
-                setPreviousSpecializations(prevSpecs)
-            }
-        }
+  const handlePositionClick = useCallback(
+    (positionValue: string) => {
+      const isChanging = selectedPosition !== positionValue
+      if (isChanging && availableSpecializations.length > 0) {
+        setPreviousSpecializations(availableSpecializations)
+      }
+      if (!isChanging) {
+        setPreviousSpecializations([])
+      }
+      handlePositionSelect(positionValue)
+    },
+    [availableSpecializations, handlePositionSelect, selectedPosition]
+  )
 
-        // Обновляем ref текущей позиции
-        prevPositionRef.current = selectedPosition
-    }, [selectedPosition])
+  // Определяем, какие специализации показывать (предыдущие во время загрузки или новые)
+  const isLoading = isLoadingSpecializations || isFetchingSpecializations
+  const shouldShowPrevious = isLoading && previousSpecializations.length > 0
+  const displaySpecializations = shouldShowPrevious
+    ? previousSpecializations
+    : availableSpecializations
+  const isSpecializationsLoading = shouldShowPrevious
 
-    // Очищаем предыдущие специализации, когда новые загрузились
-    useEffect(() => {
-        if (!isLoadingSpecializations && !isFetchingSpecializations && availableSpecializations.length > 0) {
-            setPreviousSpecializations([])
-        }
-    }, [isLoadingSpecializations, isFetchingSpecializations, availableSpecializations.length])
+  // Используем filteredCount из пропсов (из основного запроса в FeedPage)
+  const previewCount = filteredCount ?? 0
 
-    // Определяем, какие специализации показывать (предыдущие во время загрузки или новые)
-    const isLoading = isLoadingSpecializations || isFetchingSpecializations
-    const shouldShowPrevious = isLoading && previousSpecializations.length > 0
-    const displaySpecializations = shouldShowPrevious ? previousSpecializations : availableSpecializations
-    const isSpecializationsLoading = shouldShowPrevious
+  const handleRangeChange = useCallback(
+    (range: [number, number]) => {
+      setPriceRange(range)
+    },
+    [setPriceRange]
+  )
 
-    // Используем filteredCount из пропсов (из основного запроса в FeedPage)
-    const previewCount = filteredCount ?? 0
+  return (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px]"
+      />
 
-    const handleRangeChange = useCallback((range: [number, number]) => {
-        setPriceRange(range)
-    }, [setPriceRange])
+      {/* Bottom Sheet */}
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        layout
+        transition={{
+          type: 'spring',
+          damping: 25,
+          stiffness: 300,
+          layout: { duration: 0.25, ease: 'easeInOut' },
+        }}
+        className="fixed bottom-0 left-0 right-0 z-[60] bg-card rounded-t-[24px] flex flex-col max-h-[85vh]"
+      >
+        {/* Drag Handle */}
+        <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0" onClick={onClose}>
+          <div className="w-12 h-1.5 bg-muted rounded-full" />
+        </div>
 
-    return (
-        <AnimatePresence>
-            {isOpen && (
-                <>
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px]"
-                    />
-
-                    {/* Bottom Sheet */}
-                    <motion.div
-                        initial={{ y: '100%' }}
-                        animate={{ y: 0 }}
-                        exit={{ y: '100%' }}
-                        layout
-                        transition={{
-                            type: 'spring',
-                            damping: 25,
-                            stiffness: 300,
-                            layout: { duration: 0.25, ease: 'easeInOut' },
-                        }}
-                        className="fixed bottom-0 left-0 right-0 z-[60] bg-card rounded-t-[24px] flex flex-col max-h-[85vh]"
-                    >
-                        {/* Drag Handle */}
-                        <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0" onClick={onClose}>
-                            <div className="w-12 h-1.5 bg-muted rounded-full" />
-                        </div>
-
-                        {/* Header - фиксированный */}
-                        <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-card sticky top-0 z-10">
-                            <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
-                            <div className="flex items-center gap-2">
-                                {hasActiveFilters && (
-                                    <button
-                                        onClick={handleReset}
-                                        className="px-3 py-1.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
-                                        aria-label={t('feed.resetFiltersAria')}
-                                    >
-                                        {t('common.reset')}
-                                    </button>
-                                )}
-                                <button
-                                    onClick={onClose}
-                                    className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                                    aria-label={t('common.close')}
-                                >
-                                    <X size={24} />
-                                </button>
-                            </div>
-                        </div>
-
-                        <motion.div
-                            layout
-                            transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
-                            className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
-                        >
-                            {/* 1. Бюджет (Range Slider) */}
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-semibold text-base">
-                                        {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
-                                    </h3>
-                                    <span className="text-primary font-bold text-sm">
-                                        {displayPriceRange[0]} - {displayPriceRange[1]} BYN
-                                    </span>
-                                </div>
-                                <RangeSlider
-                                    min={0}
-                                    max={isVacancy ? 5000 : 1000}
-                                    step={isVacancy ? 50 : 10}
-                                    range={displayPriceRange}
-                                    onRangeChange={handleRangeChange}
-                                />
-                                <div className="flex justify-between text-xs text-muted-foreground">
-                                    <span>0 BYN</span>
-                                    <span>{isVacancy ? '5000+' : '1000+'} BYN</span>
-                                </div>
-                            </div>
-
-                            {/* 2. Даты (только для смен, не для вакансий) */}
-                            {!isVacancy && (
-                                <div className="space-y-3">
-                                    <h3 className="font-semibold text-base">{t('feed.period')}</h3>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <DatePicker
-                                            value={startDate}
-                                            onChange={setStartDate}
-                                            minDate={getMinStartDate()}
-                                            label={t('common.from')}
-                                        />
-                                        <DatePicker
-                                            value={endDate}
-                                            onChange={setEndDate}
-                                            minDate={getMinEndDate()}
-                                            label={t('common.to')}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* 3. Позиция */}
-                            {positionsForDisplay.length > 0 && (
-                                <div className="space-y-3">
-                                    <h3 className="font-semibold text-base">{t('common.position')}</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {positionsForDisplay.map((position: { id: string; originalValue?: string; title: string }) => {
-                                            const positionValue = position.originalValue || position.id
-                                            return (
-                                                <SelectableTagButton
-                                                    key={positionValue}
-                                                    value={positionValue}
-                                                    label={position.title}
-                                                    isSelected={selectedPosition === positionValue}
-                                                    onClick={() => handlePositionSelect(positionValue)}
-                                                    ariaLabel={t('aria.selectPosition', { label: position.title })}
-                                                />
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* 4. Специализация (показываем только если выбрана позиция) */}
-                            <AnimatePresence initial={false}>
-                                {selectedPosition && (displaySpecializations.length > 0 || isSpecializationsLoading) && (
-                                    <motion.div
-                                        key={`specializations-${selectedPosition}`}
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                                        layout
-                                        className="space-y-3 overflow-hidden relative"
-                                    >
-                                        <h3 className="font-semibold text-base">{t('shift.specialization')}</h3>
-                                        <div className="flex flex-wrap gap-2 relative">
-                                            {/* Индикатор загрузки на фоне */}
-                                            {isSpecializationsLoading && (
-                                                <div className="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
-                                                    <Loader2 className="w-5 h-5 text-primary animate-spin" />
-                                                </div>
-                                            )}
-
-                                            {displaySpecializations.map((specialization) => (
-                                                <SelectableTagButton
-                                                    key={specialization}
-                                                    value={specialization}
-                                                    label={getSpecializationLabel(specialization)}
-                                                    isSelected={selectedSpecializations.includes(specialization)}
-                                                    onClick={() => toggleSpecialization(specialization)}
-                                                    ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(specialization) })}
-                                                    disabled={isSpecializationsLoading}
-                                                />
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                        </motion.div>
-
-                        <div className="px-5 py-4 border-t border-border/50 bg-card flex gap-3">
-                            <button
-                                type="button"
-                                onClick={handleReset}
-                                className="flex-1 py-3 rounded-xl border-2"
-                                style={{ borderColor: 'var(--border)' }}
-                                disabled={!hasActiveFilters}
-                            >
-                                {t('common.reset')}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    handleApply()
-                                    onClose()
-                                }}
-                                className="flex-1 py-3 rounded-xl text-white disabled:opacity-50"
-                                style={{ background: 'var(--gradient-primary)' }}
-                            >
-                                {isVacancy
-                                    ? t('feed.showVacanciesCount', { count: previewCount })
-                                    : t('feed.showShiftsCount', { count: previewCount })}
-                            </button>
-                        </div>
-                    </motion.div>
-                </>
+        {/* Header - фиксированный */}
+        <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-card sticky top-0 z-10">
+          <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
+          <div className="flex items-center gap-2">
+            {hasActiveFilters && (
+              <button
+                onClick={handleReset}
+                className="px-3 py-1.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                aria-label={t('feed.resetFiltersAria')}
+              >
+                {t('common.reset')}
+              </button>
             )}
-        </AnimatePresence>
-    )
+            <button
+              onClick={onClose}
+              className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+              aria-label={t('common.close')}
+            >
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+
+        <motion.div
+          layout
+          transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
+          className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
+        >
+          {/* 1. Бюджет (Range Slider) */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold text-base">
+                {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
+              </h3>
+              <span className="text-primary font-bold text-sm">
+                {displayPriceRange[0]} - {displayPriceRange[1]} BYN
+              </span>
+            </div>
+            <RangeSlider
+              min={0}
+              max={isVacancy ? 5000 : 1000}
+              step={isVacancy ? 50 : 10}
+              range={displayPriceRange}
+              onRangeChange={handleRangeChange}
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>0 BYN</span>
+              <span>{isVacancy ? '5000+' : '1000+'} BYN</span>
+            </div>
+          </div>
+
+          {/* 2. Даты (только для смен, не для вакансий) */}
+          {!isVacancy && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-base">{t('feed.period')}</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <DatePicker
+                  value={startDate}
+                  onChange={setStartDate}
+                  minDate={getMinStartDate()}
+                  label={t('common.from')}
+                />
+                <DatePicker
+                  value={endDate}
+                  onChange={setEndDate}
+                  minDate={getMinEndDate()}
+                  label={t('common.to')}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* 3. Позиция */}
+          {positionsForDisplay.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-base">{t('common.position')}</h3>
+              <div className="flex flex-wrap gap-2">
+                {positionsForDisplay.map(
+                  (position: { id: string; originalValue?: string; title: string }) => {
+                    const positionValue = position.originalValue || position.id
+                    return (
+                      <SelectableTagButton
+                        key={positionValue}
+                        value={positionValue}
+                        label={position.title}
+                        isSelected={selectedPosition === positionValue}
+                        onClick={() => handlePositionClick(positionValue)}
+                        ariaLabel={t('aria.selectPosition', { label: position.title })}
+                      />
+                    )
+                  }
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 4. Специализация (показываем только если выбрана позиция) */}
+          <AnimatePresence initial={false}>
+            {selectedPosition &&
+              (displaySpecializations.length > 0 || isSpecializationsLoading) && (
+                <motion.div
+                  key={`specializations-${selectedPosition}`}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  layout
+                  className="space-y-3 overflow-hidden relative"
+                >
+                  <h3 className="font-semibold text-base">{t('shift.specialization')}</h3>
+                  <div className="flex flex-wrap gap-2 relative">
+                    {/* Индикатор загрузки на фоне */}
+                    {isSpecializationsLoading && (
+                      <div className="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+                        <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                      </div>
+                    )}
+
+                    {displaySpecializations.map(specialization => (
+                      <SelectableTagButton
+                        key={specialization}
+                        value={specialization}
+                        label={getSpecializationLabel(specialization)}
+                        isSelected={selectedSpecializations.includes(specialization)}
+                        onClick={() => toggleSpecialization(specialization)}
+                        ariaLabel={t('aria.selectSpecialization', {
+                          label: getSpecializationLabel(specialization),
+                        })}
+                        disabled={isSpecializationsLoading}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="px-5 py-4 border-t border-border/50 bg-card flex gap-3">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="flex-1 py-3 rounded-xl border-2"
+            style={{ borderColor: 'var(--border)' }}
+            disabled={!hasActiveFilters}
+          >
+            {t('common.reset')}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              handleApply()
+              onClose()
+            }}
+            className="flex-1 py-3 rounded-xl text-white disabled:opacity-50"
+            style={{ background: 'var(--gradient-primary)' }}
+          >
+            {isVacancy
+              ? t('feed.showVacanciesCount', { count: previewCount })
+              : t('feed.showShiftsCount', { count: previewCount })}
+          </button>
+        </div>
+      </motion.div>
+    </>
+  )
 }

@@ -66,7 +66,9 @@ const DrawerContent = memo(function DrawerContent({
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
-        transition={reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }}
+        transition={
+          reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }
+        }
         className={cn(
           'fixed inset-x-0 z-10 flex flex-col overflow-y-auto overscroll-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-xl',

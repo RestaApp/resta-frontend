@@ -1,43 +1,47 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 import { hasActiveFilters as checkHasActiveFilters } from '@/utils/filters'
 
 interface UseAdvancedFiltersOptions {
   initialFilters?: AdvancedFiltersData | null
-  isOpen: boolean
   onApply: (filters: AdvancedFiltersData | null) => void
 }
 
 export const useAdvancedFilters = ({
   initialFilters = null,
-  isOpen,
   onApply,
 }: UseAdvancedFiltersOptions) => {
   // draft state (редактируем в модалке)
-  const [priceRange, setPriceRange] = useState<[number, number] | null>(null)
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null)
-  const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>([])
-  const [startDate, setStartDate] = useState<string | null>(null)
-  const [endDate, setEndDate] = useState<string | null>(null)
+  const [priceRange, setPriceRange] = useState<[number, number] | null>(
+    () => initialFilters?.priceRange ?? null
+  )
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(
+    () => initialFilters?.selectedPosition ?? null
+  )
+  const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>(
+    () => initialFilters?.selectedSpecializations ?? []
+  )
+  const [startDate, setStartDate] = useState<string | null>(() => initialFilters?.startDate ?? null)
+  const [endDate, setEndDate] = useState<string | null>(() => initialFilters?.endDate ?? null)
 
-  const prevIsOpenRef = useRef(false)
+  const handleStartDateChange = useCallback((value: string | null) => {
+    setStartDate(value)
+    setEndDate(prev => {
+      if (value && prev && prev < value) return null
+      return prev
+    })
+  }, [])
 
-  // при открытии — заливаем initialFilters в draft
-  useEffect(() => {
-    if (isOpen && !prevIsOpenRef.current) {
-      setPriceRange(initialFilters?.priceRange ?? null)
-      setSelectedPosition(initialFilters?.selectedPosition ?? null)
-      setSelectedSpecializations(initialFilters?.selectedSpecializations ?? [])
-      setStartDate(initialFilters?.startDate ?? null)
-      setEndDate(initialFilters?.endDate ?? null)
-    }
-    prevIsOpenRef.current = isOpen
-  }, [isOpen, initialFilters])
-
-  // endDate не может быть меньше startDate (для строк YYYY-MM-DD)
-  useEffect(() => {
-    if (startDate && endDate && endDate < startDate) setEndDate(null)
-  }, [startDate, endDate])
+  const handleEndDateChange = useCallback(
+    (value: string | null) => {
+      if (value && startDate && value < startDate) {
+        setEndDate(null)
+        return
+      }
+      setEndDate(value)
+    },
+    [startDate]
+  )
 
   const handlePositionSelect = useCallback(
     (position: string) => {
@@ -78,18 +82,15 @@ export const useAdvancedFilters = ({
     }
   }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate])
 
-  const hasActiveFilters = useMemo(
-    () => checkHasActiveFilters(currentFilters),
-    [currentFilters]
-  )
+  const hasActiveFilters = useMemo(() => checkHasActiveFilters(currentFilters), [currentFilters])
 
   const handleReset = useCallback(() => {
     setPriceRange(null)
     setSelectedPosition(null)
     setSelectedSpecializations([])
-    setStartDate(null)
-    setEndDate(null)
-  }, [])
+    handleStartDateChange(null)
+    handleEndDateChange(null)
+  }, [handleEndDateChange, handleStartDateChange])
 
   // НОВОЕ: явное применение по кнопке
   const handleApply = useCallback(() => {
@@ -106,8 +107,8 @@ export const useAdvancedFilters = ({
 
     // setters
     setPriceRange,
-    setStartDate,
-    setEndDate,
+    setStartDate: handleStartDateChange,
+    setEndDate: handleEndDateChange,
     handlePositionSelect,
     toggleSpecialization,
 

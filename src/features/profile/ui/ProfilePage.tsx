@@ -30,26 +30,28 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
 })
 SpecializationsSection.displayName = 'SpecializationsSection'
 
-const RestaurantInfoCard = memo(({ restaurantInfo }: { restaurantInfo: { name: string; format: string | null } }) => {
-  const { t } = useTranslation()
-  return (
-    <div className="p-4 border border-border rounded-xl">
-      <h4 className="font-semibold mb-3">{t('roles.venueInfoTitle')}</h4>
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{t('profile.venueName')}</span>
-          <span>{restaurantInfo.name}</span>
-        </div>
-        {restaurantInfo.format && (
+const RestaurantInfoCard = memo(
+  ({ restaurantInfo }: { restaurantInfo: { name: string; format: string | null } }) => {
+    const { t } = useTranslation()
+    return (
+      <div className="p-4 border border-border rounded-xl">
+        <h4 className="font-semibold mb-3">{t('roles.venueInfoTitle')}</h4>
+        <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">{t('profile.venueType')}</span>
-            <span>{restaurantInfo.format}</span>
+            <span className="text-muted-foreground">{t('profile.venueName')}</span>
+            <span>{restaurantInfo.name}</span>
           </div>
-        )}
+          {restaurantInfo.format && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('profile.venueType')}</span>
+              <span>{restaurantInfo.format}</span>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 RestaurantInfoCard.displayName = 'RestaurantInfoCard'
 
 const SupplierInfoCard = memo(({ supplierInfo }: { supplierInfo: { name: string } }) => {
@@ -115,9 +117,13 @@ export const ProfilePage = memo(() => {
         onFill={() => m.setIsEditDrawerOpen(true)}
       />
 
-      {m.apiRole === 'restaurant' && m.restaurantInfo && <RestaurantInfoCard restaurantInfo={m.restaurantInfo} />}
+      {m.apiRole === 'restaurant' && m.restaurantInfo && (
+        <RestaurantInfoCard restaurantInfo={m.restaurantInfo} />
+      )}
 
-      {m.apiRole === 'supplier' && m.supplierInfo && <SupplierInfoCard supplierInfo={m.supplierInfo} />}
+      {m.apiRole === 'supplier' && m.supplierInfo && (
+        <SupplierInfoCard supplierInfo={m.supplierInfo} />
+      )}
 
       <ProfileSettings
         onLogout={m.handleLogout}

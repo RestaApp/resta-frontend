@@ -24,7 +24,11 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     if (roleSelection.showSupplierTypes) return 'supplier'
     if (roleSelection.showRestaurantFormats) return 'restaurant'
     return 'main'
-  }, [roleSelection.showEmployeeSubRoles, roleSelection.showSupplierTypes, roleSelection.showRestaurantFormats])
+  }, [
+    roleSelection.showEmployeeSubRoles,
+    roleSelection.showSupplierTypes,
+    roleSelection.showRestaurantFormats,
+  ])
 
   const handleBack = useCallback(() => {
     roleSelection.handleBack()

@@ -29,7 +29,7 @@ export function formatPhoneInput(raw: string): string {
     digits.length >= 2 &&
     digits.length <= 9 &&
     !digits.startsWith('375') &&
-    BELARUS_MOBILE_CODES.some((code) => digits === code || digits.startsWith(code))
+    BELARUS_MOBILE_CODES.some(code => digits === code || digits.startsWith(code))
   ) {
     // Начинает с кода оператора Беларуси (29, 33, 44, 25) — подставляем +375
     normalized = '375' + digits

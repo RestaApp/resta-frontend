@@ -26,7 +26,8 @@ export const buildUpdateUserRequest = (
   return {
     user: {
       name: formData.name.trim() || undefined,
-      ...(apiRole === 'employee' && formData.lastName.trim() && { last_name: formData.lastName.trim() }),
+      ...(apiRole === 'employee' &&
+        formData.lastName.trim() && { last_name: formData.lastName.trim() }),
       bio: formData.bio.trim() || null,
       city: formData.city.trim() || null,
       email: formData.email.trim() || null,
@@ -37,7 +38,10 @@ export const buildUpdateUserRequest = (
           ...(formData.experienceYears !== '' && { experience_years: formData.experienceYears }),
           open_to_work: formData.openToWork,
           ...(formData.skills.trim() && {
-            skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
+            skills: formData.skills
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean),
           }),
         },
       }),

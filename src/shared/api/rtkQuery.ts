@@ -1,4 +1,10 @@
-import { fetchBaseQuery, retry, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from '@reduxjs/toolkit/query'
+import {
+  fetchBaseQuery,
+  retry,
+  type BaseQueryFn,
+  type FetchArgs,
+  type FetchBaseQueryError,
+} from '@reduxjs/toolkit/query'
 import { API_BASE_URL } from './config'
 import { authService } from '@/services/auth'
 import { clearUserData } from '@/features/navigation/model/userSlice'
@@ -32,7 +38,7 @@ type Args = string | FetchArgs
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: rtkQueryConfig.baseUrl,
-  prepareHeaders: (headers) => {
+  prepareHeaders: headers => {
     const token = authService.getToken()
     if (token) headers.set('authorization', `Bearer ${token}`)
 
@@ -67,7 +73,11 @@ const refreshToken = async (): Promise<boolean> => {
   }
 }
 
-const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = async (args, apiCtx, extraOptions) => {
+const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = async (
+  args,
+  apiCtx,
+  extraOptions
+) => {
   const result = await rawBaseQuery(args, apiCtx, extraOptions)
   if (result.error?.status !== 401) return result
 
@@ -93,11 +103,7 @@ const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = asy
 const MAX_RETRIES = 2
 
 /** Не ретраить при profile_incomplete; ретраить только 408, 429, 5xx и не более MAX_RETRIES раз */
-function shouldRetry(
-  error: unknown,
-  _args: Args,
-  { attempt }: { attempt: number }
-): boolean {
+function shouldRetry(error: unknown, _args: Args, { attempt }: { attempt: number }): boolean {
   if (attempt > MAX_RETRIES) return false
   const err = error as FetchBaseQueryError | undefined
   const data = err?.data as { message?: string } | undefined

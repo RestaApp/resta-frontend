@@ -124,12 +124,19 @@ export const DropdownMenuSeparator = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Separator ref={ref} className={cn('-mx-1 my-1 h-px bg-border', className)} {...props} />
+  <DropdownMenuPrimitive.Separator
+    ref={ref}
+    className={cn('-mx-1 my-1 h-px bg-border', className)}
+    {...props}
+  />
 ))
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
 export const DropdownMenuShortcut = ({ className, ...props }: React.ComponentProps<'span'>) => (
-  <span className={cn('ml-auto text-xs tracking-widest text-muted-foreground', className)} {...props} />
+  <span
+    className={cn('ml-auto text-xs tracking-widest text-muted-foreground', className)}
+    {...props}
+  />
 )
 
 export const DropdownMenuSubTrigger = React.forwardRef<

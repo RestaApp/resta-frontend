@@ -11,15 +11,16 @@ export function LanguageToggle({ currentLocale, onLocaleChange }: LanguageToggle
 
   return (
     <div className="flex gap-2">
-      {SUPPORTED_LOCALES.map((locale) => (
+      {SUPPORTED_LOCALES.map(locale => (
         <button
           key={locale}
           type="button"
           onClick={() => onLocaleChange(locale)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentLocale === locale
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            currentLocale === locale
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
+          }`}
         >
           {t(locale === 'ru' ? 'localeRu' : 'localeEn')}
         </button>

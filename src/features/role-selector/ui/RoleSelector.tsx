@@ -93,7 +93,11 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         </div>
       </div>
 
-      <ErrorModal isOpen={vm.errorDialogOpen} onClose={vm.closeErrorDialog} message={vm.errorMessage} />
+      <ErrorModal
+        isOpen={vm.errorDialogOpen}
+        onClose={vm.closeErrorDialog}
+        message={vm.errorMessage}
+      />
     </>
   )
 })

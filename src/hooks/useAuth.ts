@@ -18,6 +18,7 @@ import { usersApi } from '@/services/api/usersApi'
 import { authService } from '@/services/auth'
 import { updateUserDataInStore, dispatchAuthEvent } from '@/utils/userData'
 import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
+import { logger } from '@/utils/logger'
 
 /**
  * Создает минимальный объект UserData из данных sign_in ответа
@@ -66,66 +67,55 @@ export const useAuthActions = () => {
    */
   const authTelegram = useCallback(
     async (request: TelegramAuthRequest) => {
-      try {
-        const result = await authTelegramMutation(request).unwrap()
+      const result = await authTelegramMutation(request).unwrap()
 
-        // Сохраняем токен при успешной авторизации
-        if (result.success && result.meta.token) {
-          // ВАЖНО: Сохраняем токен СРАЗУ и СИНХРОННО перед любыми другими операциями
-          authService.setToken(result.meta.token)
+      // Сохраняем токен при успешной авторизации
+      if (result.success && result.meta.token) {
+        // ВАЖНО: Сохраняем токен СРАЗУ и СИНХРОННО перед любыми другими операциями
+        authService.setToken(result.meta.token)
 
-          // При sign_in получаем только id и role, полные данные пользователя
-          // будут загружены отдельным запросом (например, через useUserProfile)
-          // Сохраняем минимальные данные (id и role) для возможности загрузки полного профиля
-          if (result.data) {
-            const minimalUserData = createMinimalUserData(result.data)
-            updateUserDataInStore(dispatch, minimalUserData)
+        // При sign_in получаем только id и role, полные данные пользователя
+        // будут загружены отдельным запросом (например, через useUserProfile)
+        // Сохраняем минимальные данные (id и role) для возможности загрузки полного профиля
+        if (result.data) {
+          const minimalUserData = createMinimalUserData(result.data)
+          updateUserDataInStore(dispatch, minimalUserData)
 
-            // Проверяем роль из ответа sign_in
-            // Если роль не unverified - загружаем полные данные пользователя
-            // Если роль unverified - не загружаем, переходим на RoleSelector
-            const apiRole = mapRoleFromApi(result.data.role)
-            if (isVerifiedRole(apiRole)) {
-              // Роль выбрана (не unverified) - загружаем полные данные пользователя
-              // Это должно происходить перед загрузкой каких-либо других данных
-              const userId = result.data.id
-              if (userId) {
-                let subscription: any
-                try {
-                  subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
-                  const userResult = await subscription
+          // Проверяем роль из ответа sign_in
+          // Если роль не unverified - загружаем полные данные пользователя
+          // Если роль unverified - не загружаем, переходим на RoleSelector
+          const apiRole = mapRoleFromApi(result.data.role)
+          if (isVerifiedRole(apiRole)) {
+            // Роль выбрана (не unverified) - загружаем полные данные пользователя
+            // Это должно происходить перед загрузкой каких-либо других данных
+            const userId = result.data.id
+            if (userId) {
+              const subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
+              try {
+                const userResult = await subscription
 
-                  // RTK Query возвращает объект с полем data при успешном ответе
-                  if (userResult && 'data' in userResult && userResult.data?.data) {
-                    updateUserDataInStore(dispatch, userResult.data.data)
-                  }
-                } catch (error) {
-                  // Игнорируем ошибки загрузки пользователя, минимальные данные уже сохранены
-                  console.error('Ошибка загрузки данных пользователя:', error)
-                } finally {
-                  // Отписываемся, чтобы не держать постоянную подписку в store
-                  if (subscription?.unsubscribe) {
-                    try {
-                      subscription.unsubscribe()
-                    } catch {
-                      // ignore unsubscribe errors
-                    }
-                  }
+                // RTK Query возвращает объект с полем data при успешном ответе
+                if (userResult && 'data' in userResult && userResult.data?.data) {
+                  updateUserDataInStore(dispatch, userResult.data.data)
                 }
+              } catch (error) {
+                // Игнорируем ошибки загрузки пользователя, минимальные данные уже сохранены
+                logger.error('Ошибка загрузки данных пользователя:', error)
+              } finally {
+                // Отписываемся, чтобы не держать постоянную подписку в store
+                subscription.unsubscribe()
               }
             }
-            // Если роль unverified - не загружаем user/, просто сохраняем минимальные данные
-            // и показываем RoleSelector (логика в App.tsx)
           }
-
-          // Отправляем событие об успешной авторизации
-          dispatchAuthEvent()
+          // Если роль unverified - не загружаем user/, просто сохраняем минимальные данные
+          // и показываем RoleSelector (логика в App.tsx)
         }
 
-        return result
-      } catch (error) {
-        throw error
+        // Отправляем событие об успешной авторизации
+        dispatchAuthEvent()
       }
+
+      return result
     },
     [authTelegramMutation, dispatch]
   )
@@ -153,18 +143,14 @@ export const useAuthActions = () => {
    */
   const updateRole = useCallback(
     async (request: UpdateRoleRequest) => {
-      try {
-        const result = await updateRoleMutation(request).unwrap()
+      const result = await updateRoleMutation(request).unwrap()
 
-        // Обновляем данные пользователя в Redux после успешного обновления роли
-        if (result.success && result.data) {
-          updateUserDataInStore(dispatch, result.data)
-        }
-
-        return result
-      } catch (error) {
-        throw error
+      // Обновляем данные пользователя в Redux после успешного обновления роли
+      if (result.success && result.data) {
+        updateUserDataInStore(dispatch, result.data)
       }
+
+      return result
     },
     [updateRoleMutation, dispatch]
   )

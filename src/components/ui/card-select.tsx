@@ -89,7 +89,9 @@ const CardSelectInner = <TId extends string>({
             {title}
           </div>
           {description ? (
-            <div className={cn('mt-1 text-sm', isSelected ? 'text-white/80' : 'text-muted-foreground')}>
+            <div
+              className={cn('mt-1 text-sm', isSelected ? 'text-white/80' : 'text-muted-foreground')}
+            >
               {description}
             </div>
           ) : null}
