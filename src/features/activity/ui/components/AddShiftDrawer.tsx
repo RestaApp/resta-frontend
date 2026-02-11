@@ -26,6 +26,7 @@ import {
   LocationField,
 } from './fields'
 import { Select } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
 import { getTomorrowDateISO } from '@/utils/datetime'
 
@@ -268,24 +269,21 @@ const AddShiftDrawerKeyed = ({
 
       <DrawerFooter>
         <div className="grid grid-cols-2 gap-3 w-full">
-          <button
-            onClick={close}
-            className="py-3 rounded-xl border-2"
-            style={{ borderColor: 'var(--border)' }}
-          >
+          <Button variant="outline" size="md" onClick={close}>
             {t('common.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="gradient"
+            size="md"
             onClick={async () => {
               const ok = await handleSave()
               if (ok) close()
             }}
-            disabled={isFormInvalid || isCreating}
-            style={{ background: 'var(--gradient-primary)' }}
-            className="py-3 rounded-xl text-white disabled:opacity-50"
+            disabled={isFormInvalid}
+            loading={isCreating}
           >
-            {isCreating ? t('common.saving') : t('common.save')}
-          </button>
+            {t('common.save')}
+          </Button>
         </div>
       </DrawerFooter>
       <Toast

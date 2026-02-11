@@ -79,13 +79,9 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
           </span>
           <div className="flex flex-wrap gap-2">
             {skills.map(skill => (
-              <span
-                key={skill}
-                title={skill}
-                className="inline-flex items-start max-w-full px-3 py-1.5 rounded-xl text-xs font-medium leading-snug break-words bg-primary/10 text-primary border border-primary/20 sm:max-w-[18rem]"
-              >
+              <Badge key={skill} variant="outline" className="text-xs">
                 {skill}
-              </span>
+              </Badge>
             ))}
           </div>
         </div>
