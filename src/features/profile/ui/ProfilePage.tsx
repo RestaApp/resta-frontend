@@ -127,7 +127,7 @@ export const ProfilePage = memo(() => {
   }
 
   return (
-    <div className="pb-24 pt-6 px-4 space-y-6">
+    <div className="pb-4 pt-6 px-4 space-y-6">
       <ProfileHero
         userProfile={m.userProfile}
         userName={m.userName}
