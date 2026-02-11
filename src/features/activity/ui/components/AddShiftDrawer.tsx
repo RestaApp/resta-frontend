@@ -113,6 +113,9 @@ const AddShiftDrawerKeyed = ({
     resetForm,
   } = form
 
+  const se = submitError?.toLowerCase() || ''
+  const isSpecializationError = se.includes('специализац') || se.includes('specialization')
+
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open,
   })
@@ -250,9 +253,7 @@ const AddShiftDrawerKeyed = ({
             disabled={!formPosition}
             isLoading={isSpecializationsLoading}
           />
-          {submitError &&
-            (submitError.toLowerCase().includes('специализац') ||
-              submitError.toLowerCase().includes('specialization')) && (
+          {submitError && isSpecializationError && (
               <p className="text-sm text-red-500 mt-2">{submitError}</p>
             )}
         </div>
@@ -264,7 +265,9 @@ const AddShiftDrawerKeyed = ({
           onChange={setUrgent}
         />
 
-        {submitError && <p className="text-sm text-red-500">{submitError}</p>}
+        {submitError && !isSpecializationError && (
+          <p className="text-sm text-red-500">{submitError}</p>
+        )}
       </div>
 
       <DrawerFooter>
