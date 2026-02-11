@@ -119,19 +119,16 @@ export const ProfileInfoCard = memo(
           className="w-full flex items-center justify-between gap-3"
         >
           <h4 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <Briefcase className="w-5 h-5" style={{ color: 'var(--blue-cyber)' }} />
+            <Briefcase className="w-5 h-5 text-primary" />
             {t('profile.personalInfo')}
           </h4>
           <div className="flex items-center gap-2">
             {isFilled ? (
-              <Badge
-                variant="success"
-                className="flex items-center gap-1.5 shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-0"
-              >
+              <Badge variant="success" className="gap-1.5 shrink-0">
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </Badge>
             ) : (
-              <Badge className="flex items-center gap-1.5 shrink-0 text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/25">
+              <Badge variant="outline" className="gap-1.5 shrink-0">
                 <AlertCircle className="w-3.5 h-3.5" />
               </Badge>
             )}

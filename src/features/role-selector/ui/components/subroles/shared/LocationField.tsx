@@ -6,7 +6,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import { Input } from '@/components/ui/input'
 import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
 import { AnimatedField } from './AnimatedField'
@@ -54,21 +54,16 @@ export const LocationField = memo(function LocationField({
         {t('profile.city')}
       </label>
       <div className="relative">
-        <input
+        <Input
           ref={inputRef}
-          type="text"
           value={value}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={t('citySelect.placeholderExample')}
-          className={cn(
-            'w-full px-4 py-3 pr-12 rounded-2xl border bg-input-background focus:outline-none focus:ring-1 transition-all text-sm text-foreground',
-            isValid
-              ? 'border-[#E0E0E0] focus:ring-primary/30 focus:border-primary/50'
-              : 'border-red-500 focus:ring-red-500/30 focus:border-red-500'
-          )}
+          className="pr-12"
           autoComplete="off"
+          aria-invalid={!isValid}
         />
         <button
           onClick={onLocationRequest}

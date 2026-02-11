@@ -5,36 +5,13 @@ import { Input } from '@/components/ui/input'
 import { Field } from './Field'
 import { useCities } from '@/hooks/useCities'
 import { cn } from '@/utils/cn'
+import { parseLocation, combineLocation } from '@/shared/utils/location'
 
 interface LocationFieldProps {
   label: string
   value: string
   onChange: (value: string) => void
   placeholder?: string
-}
-
-// Парсит строку локации на город и адрес
-const parseLocation = (location: string): { city: string; address: string } => {
-  if (!location.trim()) return { city: '', address: '' }
-
-  // Ищем запятую как разделитель
-  const commaIndex = location.indexOf(',')
-  if (commaIndex === -1) {
-    // Если запятой нет, считаем всю строку адресом
-    return { city: '', address: location.trim() }
-  }
-
-  const city = location.substring(0, commaIndex).trim()
-  const address = location.substring(commaIndex + 1).trim()
-  return { city, address }
-}
-
-// Объединяет город и адрес в строку локации
-const combineLocation = (city: string, address: string): string => {
-  if (!city && !address) return ''
-  if (!city) return address
-  if (!address) return city
-  return `${city}, ${address}`
 }
 
 export const LocationField = memo(function LocationField({
