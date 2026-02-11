@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Calendar, TrendingUp, User } from 'lucide-react'
-import { Card } from '@/components/ui/card'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import type { ApiRole } from '@/types'
@@ -24,90 +23,61 @@ export const ProfileStats = memo(
     if (!apiRole) return null
 
     return (
-      <div>
-        <h3 className="text-lg font-semibold mb-4">{t('profile.stats')}</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {apiRole === 'employee' && employeeStats && (
-            <>
-              <Card className="p-4">
-                <div className="text-center py-2">
-                  <Calendar
-                    className="w-8 h-8 mx-auto mb-2"
-                    style={{ color: 'var(--purple-deep)' }}
-                  />
-                  <div className="text-sm mb-1">{t('profile.completedShifts')}</div>
-                  <p className="text-lg font-semibold">{employeeStats.completedShifts}</p>
-                </div>
-              </Card>
-              <button
-                type="button"
-                className="w-full text-left"
-                onClick={() => {
-                  setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
-                  window.dispatchEvent(new CustomEvent('navigateToActivityMyApplications'))
-                }}
-              >
-                <Card className="p-4 cursor-pointer active:opacity-90 transition-opacity">
-                  <div className="text-center py-2">
-                    <TrendingUp
-                      className="w-8 h-8 mx-auto mb-2"
-                      style={{ color: 'var(--pink-electric)' }}
-                    />
-                    <div className="text-sm mb-1">{t('profile.activeApplications')}</div>
-                    <p className="text-lg font-semibold">{employeeStats.activeApplications}</p>
-                  </div>
-                </Card>
-              </button>
-            </>
-          )}
+      <div className="flex items-center gap-3 text-sm flex-wrap">
+        {apiRole === 'employee' && employeeStats ? (
+          <>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
+              <span className="font-bold">{employeeStats.completedShifts}</span>
+              <span className="text-muted-foreground">{t('profile.completedShifts')}</span>
+            </div>
+            <span className="text-border">·</span>
+            <button
+              type="button"
+              className="flex items-center gap-2 hover:underline"
+              onClick={() => {
+                setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
+                window.dispatchEvent(new CustomEvent('navigateToActivityMyApplications'))
+              }}
+            >
+              <TrendingUp className="w-4 h-4 text-green-500" />
+              <span className="font-bold">{employeeStats.activeApplications}</span>
+              <span className="text-muted-foreground">{t('profile.activeApplications')}</span>
+            </button>
+          </>
+        ) : null}
 
-          {apiRole === 'restaurant' && (
-            <>
-              <Card className="p-4">
-                <div className="text-center py-2">
-                  <User className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--purple-deep)' }} />
-                  <div className="text-sm mb-1">{t('profile.shiftsCreated')}</div>
-                  <p className="text-lg font-semibold">{myShiftsCount}</p>
-                </div>
-              </Card>
-              <Card className="p-4">
-                <div className="text-center py-2">
-                  <TrendingUp
-                    className="w-8 h-8 mx-auto mb-2"
-                    style={{ color: 'var(--pink-electric)' }}
-                  />
-                  <div className="text-sm mb-1">{t('profile.activeRequests')}</div>
-                  <p className="text-lg font-semibold">{appliedShiftsCount}</p>
-                </div>
-              </Card>
-            </>
-          )}
+        {apiRole === 'restaurant' ? (
+          <>
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
+              <span className="font-bold">{myShiftsCount}</span>
+              <span className="text-muted-foreground">{t('profile.shiftsCreated')}</span>
+            </div>
+            <span className="text-border">·</span>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" style={{ color: 'var(--pink-electric)' }} />
+              <span className="font-bold">{appliedShiftsCount}</span>
+              <span className="text-muted-foreground">{t('profile.activeRequests')}</span>
+            </div>
+          </>
+        ) : null}
 
-          {apiRole === 'supplier' && (
-            <>
-              <Card className="p-4">
-                <div className="text-center py-2">
-                  <TrendingUp
-                    className="w-8 h-8 mx-auto mb-2"
-                    style={{ color: 'var(--purple-deep)' }}
-                  />
-                  <div className="text-sm mb-1">{t('profile.views')}</div>
-                  <p className="text-lg font-semibold">—</p>
-                </div>
-              </Card>
-              <Card className="p-4">
-                <div className="text-center py-2">
-                  <User
-                    className="w-8 h-8 mx-auto mb-2"
-                    style={{ color: 'var(--pink-electric)' }}
-                  />
-                  <div className="text-sm mb-1">{t('profile.activeClients')}</div>
-                  <p className="text-lg font-semibold">—</p>
-                </div>
-              </Card>
-            </>
-          )}
-        </div>
+        {apiRole === 'supplier' ? (
+          <>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
+              <span className="font-bold">—</span>
+              <span className="text-muted-foreground">{t('profile.views')}</span>
+            </div>
+            <span className="text-border">·</span>
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4" style={{ color: 'var(--pink-electric)' }} />
+              <span className="font-bold">—</span>
+              <span className="text-muted-foreground">{t('profile.activeClients')}</span>
+            </div>
+          </>
+        ) : null}
       </div>
     )
   }

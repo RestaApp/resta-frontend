@@ -100,6 +100,11 @@
     "hello": "Hello, {{name}}"
   },
   "profile": {
+    "about": "About",
+    "aboutCompany": "About the company",
+    "readMore": "Read more...",
+    "collapse": "Collapse",
+    "achievements": "Achievements",
     "personalInfo": "Personal info",
     "fillToApply": "To apply for jobs or shifts, please fill in the required fields.",
     "city": "City",
