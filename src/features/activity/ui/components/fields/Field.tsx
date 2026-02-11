@@ -6,7 +6,7 @@ type FieldProps = {
 
 export const Field = ({ label, hint, children }: FieldProps) => (
   <div>
-    <label className="block mb-2 text-sm text-muted-foreground">{label}</label>
+    <label className="block mb-2 text-sm font-medium text-muted-foreground">{label}</label>
     {children}
     {hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
   </div>

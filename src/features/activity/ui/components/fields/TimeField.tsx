@@ -1,6 +1,7 @@
 import { Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
+import { Field } from './Field'
 import { useRef } from 'react'
 import type { KeyboardEvent } from 'react'
 
@@ -34,8 +35,7 @@ export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
   }
 
   return (
-    <div>
-      <label className="block mb-2 text-sm text-muted-foreground">{label}</label>
+    <Field label={label}>
       <div className="relative">
         <button
           type="button"
@@ -54,7 +54,7 @@ export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
           className="pl-11"
         />
       </div>
-    </div>
+    </Field>
   )
 }
 

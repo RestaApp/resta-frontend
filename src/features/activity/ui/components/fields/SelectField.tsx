@@ -1,6 +1,5 @@
 import { Field } from './Field'
-import { SELECT_BASE_CLASS } from './constants'
-import { ChevronDown } from 'lucide-react'
+import { Select, type SelectOption } from '@/components/ui/select'
 
 type SelectFieldProps = {
   label: string
@@ -28,28 +27,14 @@ export const SelectField = ({
   className,
 }: SelectFieldProps) => (
   <Field label={label} hint={hint}>
-    <div className="relative">
-      <select
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        disabled={disabled}
-        className={`${SELECT_BASE_CLASS} ${disabled ? 'opacity-60' : ''} ${className ?? ''}`}
-      >
-        {placeholder && (
-          <option value="" disabled>
-            {placeholder}
-          </option>
-        )}
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-        <ChevronDown className="w-4 h-4" />
-      </span>
-    </div>
+    <Select
+      value={value}
+      onChange={onChange}
+      options={options.map<SelectOption>(o => ({ value: o.value, label: o.label }))}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={className}
+    />
   </Field>
 )
 
