@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
@@ -38,16 +39,17 @@ const IconAction = memo(function IconAction({
   children: React.ReactNode
 }) {
   return (
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="sm"
       title={title}
       aria-label={title}
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-border bg-card/60 hover:bg-card transition-colors disabled:opacity-50 disabled:pointer-events-none"
+      className="w-10 h-10 p-0"
     >
       {children}
-    </button>
+    </Button>
   )
 })
 
@@ -188,9 +190,9 @@ const ShiftCardComponent = ({
             <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
           </div>
 
-          <div className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-md inline-block">
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
             {payLabel}
-          </div>
+          </Badge>
         </div>
       </div>
 

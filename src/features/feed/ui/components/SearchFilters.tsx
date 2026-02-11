@@ -1,6 +1,8 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 interface SearchFiltersProps {
   onOpenFilters?: () => void
@@ -22,38 +24,34 @@ function SearchFiltersComponent({
         {activeFiltersList.length > 0 && (
           <div className="flex-1 flex gap-1.5 items-center overflow-x-auto scrollbar-hide">
             {activeFiltersList.map((filter, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-lg whitespace-nowrap flex-shrink-0"
-              >
+              <Badge key={index} variant="outline" className="text-xs whitespace-nowrap flex-shrink-0">
                 {filter}
-              </span>
+              </Badge>
             ))}
           </div>
         )}
 
         {/* Кнопка фильтра справа */}
         {onOpenFilters && (
-          <button
-            onClick={onOpenFilters}
-            aria-label={t('feed.openFilters')}
-            className="relative p-2 bg-card/60 rounded-xl hover:bg-card transition-colors border border-border flex-shrink-0 ml-auto"
-          >
-            <div className="relative">
+          <div className="relative ml-auto flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenFilters}
+              aria-label={t('feed.openFilters')}
+              className="w-10 h-10 p-0"
+            >
               <SlidersHorizontal
                 className={`w-5 h-5 ${hasActiveAdvancedFilters ? 'text-primary' : 'text-muted-foreground'}`}
               />
-              {hasActiveAdvancedFilters && !isLoading && (
-                <span
-                  className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full border-2 border-background shadow-lg"
-                  style={{ zIndex: 10 }}
-                />
-              )}
-              {isLoading && (
-                <Loader2 className="absolute -top-1 -right-1 w-4 h-4 text-primary animate-spin" />
-              )}
-            </div>
-          </button>
+            </Button>
+            {hasActiveAdvancedFilters && !isLoading && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 gradient-primary rounded-full border-2 border-background shadow-lg" />
+            )}
+            {isLoading && (
+              <Loader2 className="absolute -top-1 -right-1 w-4 h-4 text-primary animate-spin" />
+            )}
+          </div>
         )}
       </div>
     </div>

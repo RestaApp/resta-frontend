@@ -1,12 +1,13 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Send } from 'lucide-react'
-import { SectionHeaderWithIcon } from '@/components/ui/section-header-with-icon'
+import { SectionHeader } from '@/components/ui/section-header'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 import { groupAppliedByStatus } from '@/features/activity/model/utils/groupAppliedShifts'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]
@@ -34,18 +35,12 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
 
   return (
     <section ref={sectionRef}>
-      <SectionHeaderWithIcon
-        icon={Send}
-        title={t('activity.myApplications')}
-        count={appliedShifts.length}
-      />
+      <SectionHeader icon={Send} title={t('activity.myApplications')} count={appliedShifts.length} />
       {appliedShifts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-8 px-4 text-center">
-          <p className="text-sm text-muted-foreground">{t('activity.noApplicationsYet')}</p>
-          <p className="text-xs text-muted-foreground/80 mt-1">
-            {t('activity.applicationsWillAppearHere')}
-          </p>
-        </div>
+        <EmptyState
+          message={t('activity.noApplicationsYet')}
+          description={t('activity.applicationsWillAppearHere')}
+        />
       ) : (
         <div className="space-y-6">
           {appliedByStatus.map(({ status, label, items }) => (
