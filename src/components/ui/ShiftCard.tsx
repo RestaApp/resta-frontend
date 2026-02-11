@@ -152,7 +152,7 @@ const ShiftCardComponent = ({
             className="group relative rounded-[20px] p-4 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] backdrop-blur-xl bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
             {/* Header */}
-            <div className="flex justify-between items-start mb-4 gap-3">
+            <div className="flex justify-between items-start mb-2 gap-3">
                 <div className="flex gap-3 min-w-0">
                     <div className="flex-shrink-0 w-12 h-12 bg-secondary/50 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-white/10">
                         {shift.logo}
@@ -193,7 +193,7 @@ const ShiftCardComponent = ({
             </div>
 
             {/* Date / time */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="grid grid-cols-2 gap-2 mb-2">
                 <div className="flex items-center gap-2 text-sm text-foreground/80 bg-secondary/30 p-2 rounded-xl">
                     <CalendarDays className="w-4 h-4 text-primary" />
                     <span className="font-medium truncate">{shift.date}</span>

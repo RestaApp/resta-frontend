@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react'
 import { useUserUpdate } from './useUserUpdate'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UiRole, EmployeeRole } from '@/shared/types/roles.types'
+import { mapApiRoleToDefaultUiRole } from '@/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
 import type { FormData } from './useFormSelector'
 
@@ -68,7 +69,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       const success = await updateUserWithData(
         updateData,
-        () => onSelectRole(selectedSubRole),
+        () => onSelectRole(mapApiRoleToDefaultUiRole('employee') ?? 'chef'),
         (error) => {
           setErrorMessage(error)
           setErrorDialogOpen(true)

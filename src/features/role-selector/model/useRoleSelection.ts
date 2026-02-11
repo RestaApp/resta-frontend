@@ -11,7 +11,6 @@ import { useSupplierTypes } from './hooks/useSupplierTypes'
 import { useRestaurantFormats } from './hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../utils/mappers'
 import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
-import { useUserUpdate } from './useUserUpdate'
 import type { UiRole } from '@/shared/types/roles.types'
 
 interface UseRoleSelectionProps {
@@ -25,8 +24,6 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
 
   const userData = useAppSelector(selectUserData)
-  const { updateUiRole } = useUserUpdate()
-
   // Проверяем, что роль пользователя равна 'unverified'
   const isUnverified = useMemo(() => {
     const apiRole = mapRoleFromApi(userData?.role)
@@ -75,7 +72,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   }, [roles])
 
   const handleRoleSelect = useCallback(
-    async (roleId: UiRole) => {
+    (roleId: UiRole) => {
       setDraftSelectedRole(roleId)
 
       // Если выбрали сотрудника, показываем экран подролей
@@ -96,10 +93,9 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
         return
       }
 
-      // Для остальных ролей отправляем на сервер
-      await updateUiRole(roleId, onSelectRole)
+      onSelectRole(roleId)
     },
-    [onSelectRole, updateUiRole]
+    [onSelectRole]
   )
 
   const handleBack = useCallback(() => {

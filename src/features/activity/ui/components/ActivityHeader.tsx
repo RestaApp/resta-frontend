@@ -21,8 +21,8 @@ export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
   )
 
   return (
-    <div className="top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 transition-all border-border/50">
-      <div className="px-4 pb-2">
+    <div className="top-0 z-10 bg-background/95 backdrop-blur-sm transition-all border-border/50">
+      <div className="px-4">
         <Tabs options={tabOptions} activeId={activeTab} onChange={onChange} />
       </div>
     </div>

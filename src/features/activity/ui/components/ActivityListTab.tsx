@@ -70,7 +70,7 @@ export function ActivityListTab({
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <MyShiftsSection
         shifts={shifts}
         onEdit={onEdit}

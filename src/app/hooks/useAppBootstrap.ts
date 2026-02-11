@@ -9,6 +9,8 @@ import { selectUserData, selectSelectedRole, setSelectedRole } from '@/features/
 import { useAuth } from '@/contexts/AuthContext'
 import { ROUTES } from '@/constants/routes'
 import type { Screen, UiRole } from '@/types'
+import { useUserUpdate } from '@/features/role-selector/model/useUserUpdate'
+import { mapRoleFromApi, mapUiRoleToApiRole } from '@/utils/roles'
 
 export type AppScreen = 'loading' | 'role' | 'onboarding_done' | 'dashboard'
 
@@ -17,9 +19,11 @@ export function useAppBootstrap() {
   const userData = useAppSelector(selectUserData)
   const selectedRole = useAppSelector(selectSelectedRole)
   const dispatch = useAppDispatch()
+  const { updateUiRole } = useUserUpdate()
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(ROUTES.HOME)
   const [showOnboardingComplete, setShowOnboardingComplete] = useState(false)
+  const [pendingRole, setPendingRole] = useState<UiRole | null>(null)
 
   // Сброс онбординга при logout / смене аккаунта (userData пропал)
   useEffect(() => {
@@ -43,13 +47,22 @@ export function useAppBootstrap() {
 
   const onSelectRole = useCallback((role: UiRole) => {
     dispatch(setSelectedRole(role))
+    setPendingRole(role)
     setShowOnboardingComplete(true)
   }, [dispatch])
 
-  const onOnboardingComplete = useCallback(() => {
+  const onOnboardingComplete = useCallback(async () => {
+    if (pendingRole) {
+      const currentApiRole = mapRoleFromApi(userData?.role)
+      const desiredApiRole = mapUiRoleToApiRole(pendingRole)
+      if (currentApiRole !== desiredApiRole) {
+        await updateUiRole(pendingRole, () => {})
+      }
+      setPendingRole(null)
+    }
     setShowOnboardingComplete(false)
     setCurrentScreen(ROUTES.HOME)
-  }, [])
+  }, [pendingRole, updateUiRole, userData?.role])
 
   return {
     screen,
