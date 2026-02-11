@@ -2,6 +2,8 @@ import { memo, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney } from '../../model/utils/formatting'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 export interface HotOffer {
   id: number
@@ -52,9 +54,9 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       <span className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-colors" />
 
       {paymentText ? (
-        <span className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-bl-lg">
+        <Badge variant="primary" className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5">
           {paymentText}
-        </span>
+        </Badge>
       ) : null}
 
       <span className="mt-2 text-3xl drop-shadow-sm transform group-hover:scale-110 transition-transform duration-300 z-10">
@@ -95,13 +97,9 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
         </h3>
 
         {hasMore && onShowAll ? (
-          <button
-            type="button"
-            onClick={onShowAll}
-            className="text-xs text-primary font-medium hover:underline"
-          >
+          <Button variant="ghost" size="sm" onClick={onShowAll} className="text-xs text-primary hover:underline">
             {t('common.all')}
-          </button>
+          </Button>
         ) : null}
       </div>
 

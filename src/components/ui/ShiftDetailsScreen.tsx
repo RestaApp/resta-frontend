@@ -179,13 +179,15 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       <DrawerHeader className="pb-2">
         <div className="flex items-center justify-between mb-2 gap-2">
           <DrawerTitle className="text-xl break-words flex-1 min-w-0">{vacancyTitle}</DrawerTitle>
-          <button
+          <Button
             onClick={onClose}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-primary transition-colors flex-shrink-0"
+            variant="ghost"
+            size="sm"
             aria-label={t('common.close')}
+            className="min-w-[44px] min-h-[44px] p-2 hover:text-primary flex-shrink-0"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -274,12 +276,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 label={t('common.location')}
                 value={shift.location}
                 action={
-                  <button
+                  <Button
                     onClick={handleOpenMap}
-                    className="text-[12px] text-primary hover:underline mt-1"
+                    variant="ghost"
+                    size="sm"
+                    className="text-[12px] text-primary hover:underline mt-1 px-0"
                   >
                     {t('aria.viewOnMap')}
-                  </button>
+                  </Button>
                 }
               />
             ) : null}

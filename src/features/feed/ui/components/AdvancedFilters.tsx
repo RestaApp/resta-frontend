@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { useCallback, useMemo, useState } from 'react'
 import { RangeSlider, DatePicker } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -192,21 +193,24 @@ const AdvancedFiltersSheet = ({
           <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
           <div className="flex items-center gap-2">
             {hasActiveFilters && (
-              <button
+              <Button
                 onClick={handleReset}
-                className="px-3 py-1.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                variant="secondary"
+                size="sm"
                 aria-label={t('feed.resetFiltersAria')}
               >
                 {t('common.reset')}
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               onClick={onClose}
-              className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+              variant="ghost"
+              size="sm"
               aria-label={t('common.close')}
+              className="-mr-2 min-w-[40px] p-2"
             >
-              <X size={24} />
-            </button>
+              <X className="w-5 h-5" />
+            </Button>
           </div>
         </div>
 
@@ -325,29 +329,31 @@ const AdvancedFiltersSheet = ({
         </motion.div>
 
         <div className="px-5 py-4 border-t border-border/50 bg-card flex gap-3">
-          <button
+          <Button
             type="button"
             onClick={handleReset}
-            className="flex-1 py-3 rounded-xl border-2"
-            style={{ borderColor: 'var(--border)' }}
+            variant="outline"
+            size="md"
+            className="flex-1"
             disabled={!hasActiveFilters}
           >
             {t('common.reset')}
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
             onClick={() => {
               handleApply()
               onClose()
             }}
-            className="flex-1 py-3 rounded-xl text-white disabled:opacity-50"
-            style={{ background: 'var(--gradient-primary)' }}
+            variant="gradient"
+            size="md"
+            className="flex-1"
           >
             {isVacancy
               ? t('feed.showVacanciesCount', { count: previewCount })
               : t('feed.showShiftsCount', { count: previewCount })}
-          </button>
+          </Button>
         </div>
       </motion.div>
     </>

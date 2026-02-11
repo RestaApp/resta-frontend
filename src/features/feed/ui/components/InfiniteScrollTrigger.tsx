@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, CheckCircle2 } from 'lucide-react'
 import { Loader } from '@/components/ui/loader'
+import { Button } from '@/components/ui/button'
 
 interface InfiniteScrollProps {
   onLoadMore: () => void
@@ -50,13 +51,15 @@ export const InfiniteScrollTrigger = ({
 
       {/* Состояние 2: Ошибка загрузки */}
       {!isLoading && isError && (
-        <button
+        <Button
           onClick={onLoadMore}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive text-sm font-medium hover:bg-destructive/20 transition-colors"
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2 rounded-full text-destructive border-destructive"
         >
           <RefreshCw className="w-4 h-4" />
           {t('feed.networkError')}
-        </button>
+        </Button>
       )}
 
       {!isLoading && !hasMore && !isError && (

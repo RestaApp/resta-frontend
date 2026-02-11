@@ -4,6 +4,7 @@ import { Calendar, Search } from 'lucide-react'
 import { motion } from 'motion/react'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 import type { GroupedShift, WeekDay } from '@/features/activity/model/hooks/useActivityPageModel'
@@ -64,24 +65,22 @@ export const ActivityCalendarTab = memo((props: Props) => {
           const isSelected = selectedDayKey === day.key
 
           return (
-            <button
+            <Button
               key={day.key}
               onClick={() => onSelectDay(day.key)}
-              className="flex-shrink-0 flex flex-col items-center p-3 rounded-xl min-w-[60px] transition-all relative"
-              style={{
-                background: isSelected ? 'var(--gradient-primary)' : 'var(--muted)',
-                color: isSelected ? 'white' : 'inherit',
-              }}
+              variant={isSelected ? 'gradient' : 'outline'}
+              size="sm"
+              className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl min-w-[60px] transition-all relative ${
+                isSelected ? 'text-white' : 'bg-muted'
+              }`}
+              aria-pressed={isSelected}
             >
               <span className="text-xs mb-1">{day.short}</span>
               <span className="text-lg font-medium">{day.dayNum}</span>
               {hasShifts && !isSelected ? (
-                <span
-                  className="absolute top-1 right-1 w-2 h-2 rounded-full"
-                  style={{ background: 'var(--primary)' }}
-                />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary" />
               ) : null}
-            </button>
+            </Button>
           )
         })}
       </div>
@@ -114,15 +113,12 @@ export const ActivityCalendarTab = memo((props: Props) => {
             <div className="text-center py-8 px-4">
               <Calendar className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
               <p className="text-muted-foreground mb-4">{t('activity.freeDay')}</p>
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                className="px-6 py-2 rounded-xl border-2 flex items-center gap-2 mx-auto"
-                style={{ borderColor: 'var(--border)' }}
-                onClick={onFindShift}
-              >
-                <Search className="w-4 h-4" />
-                {t('activity.findShift')}
-              </motion.button>
+              <motion.div whileTap={{ scale: 0.98 }}>
+                <Button variant="outline" size="md" className="mx-auto" onClick={onFindShift}>
+                  <Search className="w-4 h-4" />
+                  {t('activity.findShift')}
+                </Button>
+              </motion.div>
             </div>
           </Card>
         )}

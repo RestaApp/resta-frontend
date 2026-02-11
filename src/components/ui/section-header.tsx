@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { motion } from 'motion/react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { Badge } from '@/components/ui/badge'
 
 export interface SectionHeaderProps {
   title: string
@@ -37,11 +38,7 @@ export const SectionHeader = memo(function SectionHeader({
           <Icon className="w-4 h-4" />
         </div>
         <h2 className="text-base font-semibold text-foreground">{title}</h2>
-        {count != null && count > 0 ? (
-          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-            {count}
-          </span>
-        ) : null}
+        {count != null && count > 0 ? <Badge variant="outline">{count}</Badge> : null}
       </motion.div>
     )
   }
