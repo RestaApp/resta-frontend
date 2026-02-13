@@ -105,15 +105,27 @@ export const buildDateTime = (date: string, time: string): string => {
   }
 
   // Проверяем формат времени
-  const timeMatch = time.match(/^(\d{1,2}):(\d{2})$/)
+  const timeMatch = time.match(/^(\d{1,2}):(\d{1,2})$/)
   if (!timeMatch) {
     throw new Error(`Invalid time format: ${time}. Expected HH:mm`)
   }
 
   const [, hours, minutes] = timeMatch
-  const paddedHours = hours.padStart(2, '0')
+  const hoursNumber = Number(hours)
+  const minutesNumber = Number(minutes)
+  if (Number.isNaN(hoursNumber) || Number.isNaN(minutesNumber)) {
+    throw new Error(`Invalid time value: ${time}. Expected HH:mm`)
+  }
+  if (hoursNumber < 0 || hoursNumber > 23) {
+    throw new Error(`Invalid hours value: ${time}. Expected 00-23`)
+  }
+  if (minutesNumber < 0 || minutesNumber > 59) {
+    throw new Error(`Invalid minutes value: ${time}. Expected 00-59`)
+  }
+  const paddedHours = String(hoursNumber).padStart(2, '0')
+  const paddedMinutes = String(minutesNumber).padStart(2, '0')
 
-  return `${date} ${paddedHours}:${minutes}:00`
+  return `${date} ${paddedHours}:${paddedMinutes}:00`
 }
 
 export const getTodayDateISO = (): string => {

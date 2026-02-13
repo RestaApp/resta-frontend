@@ -21,6 +21,7 @@ interface HotOffersProps {
   onItemClick?: (item: HotOffer) => void
   totalCount?: number
   onShowAll?: () => void
+  isVacancy?: boolean
 }
 
 interface HotOfferCardProps {
@@ -80,7 +81,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
 })
 HotOfferCard.displayName = 'HotOfferCard'
 
-export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: HotOffersProps) => {
+export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVacancy }: HotOffersProps) => {
   const { t } = useTranslation()
   const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
@@ -89,11 +90,18 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
     [totalCount, items.length]
   )
 
+  const title = useMemo(() => {
+    // Приоритет — раздельные ключи; fallback на старый
+    if (isVacancy === true) return t('feed.hotVacancies') || t('feed.hotOffers')
+    if (isVacancy === false) return t('feed.hotShifts') || t('feed.hotOffers')
+    return t('feed.hotOffers')
+  }, [isVacancy, t])
+
   return (
     <div className="py-2">
       <div className="px-4 mb-3 flex items-center justify-between">
         <h3 className="font-bold text-lg flex items-center gap-2">
-          <span className="text-xl">🔥</span> {t('feed.hotOffers')}
+          <span className="text-xl">🔥</span> {title}
           {totalCount !== undefined ? (
             <span className="text-sm font-normal text-muted-foreground">({totalCount})</span>
           ) : null}

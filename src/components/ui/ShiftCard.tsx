@@ -1,12 +1,14 @@
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
+import { Clock, CalendarDays } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 
 interface ShiftCardOwnerActions {
   onEdit: (id: number) => void
@@ -26,32 +28,6 @@ export interface ShiftCardProps {
   ownerActions?: ShiftCardOwnerActions
 }
 
-const IconAction = memo(function IconAction({
-  title,
-  onClick,
-  disabled,
-  children,
-}: {
-  title: string
-  onClick: (e: React.MouseEvent) => void
-  disabled?: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      title={title}
-      aria-label={title}
-      onClick={onClick}
-      disabled={disabled}
-      className="w-10 h-10 p-0"
-    >
-      {children}
-    </Button>
-  )
-})
-
 const ShiftCardComponent = ({
   shift,
   isApplied = false,
@@ -66,6 +42,7 @@ const ShiftCardComponent = ({
   const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const currentUserId = useCurrentUserId()
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const isOwner = useMemo(
     () => shift.isMine === true || Boolean(shift.ownerId && shift.ownerId === currentUserId),
@@ -135,10 +112,15 @@ const ShiftCardComponent = ({
   const handleDelete = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      ownerActions?.onDelete(shift.id)
+      setConfirmOpen(true)
     },
     [ownerActions, shift.id]
   )
+
+  const confirmDelete = useCallback(() => {
+    ownerActions?.onDelete(shift.id)
+    setConfirmOpen(false)
+  }, [ownerActions, shift.id])
 
   const actionLabel = useMemo(() => {
     if (isLoading) return isApplied ? t('shift.cancelling') : t('shift.sending')
@@ -209,22 +191,13 @@ const ShiftCardComponent = ({
 
         {/* Owner actions */}
         {isOwner && ownerActions ? (
-          <div className="flex items-center gap-2">
-            <IconAction
-              title={t('common.edit')}
-              onClick={handleEdit}
-              disabled={ownerActions.isDeleting}
-            >
-              <Edit2 className="w-4 h-4" />
-            </IconAction>
-            <IconAction
-              title={t('common.delete')}
-              onClick={handleDelete}
-              disabled={ownerActions.isDeleting}
-            >
-              <Trash2 className="w-4 h-4" />
-            </IconAction>
-          </div>
+          <ShiftOwnerActions
+            editLabel={t('common.edit')}
+            deleteLabel={t('common.delete')}
+            isDeleting={ownerActions.isDeleting}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ) : null}
 
         {/* Apply / Cancel */}
@@ -239,6 +212,15 @@ const ShiftCardComponent = ({
           </Button>
         ) : null}
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title={t('shift.deleteConfirmTitle')}
+        description={t('shift.deleteConfirmDesc')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('common.delete')}
+        onConfirm={confirmDelete}
+      />
     </div>
   )
 }

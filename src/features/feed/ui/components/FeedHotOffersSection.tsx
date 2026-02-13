@@ -8,10 +8,11 @@ type Props = {
   onShowAll: () => void
   onItemClick: (item: HotOffer) => void
   isLoading: boolean
+  isVacancy?: boolean
 }
 
 export const FeedHotOffersSection = memo((props: Props) => {
-  const { hotOffers, totalCount, onShowAll, onItemClick, isLoading } = props
+  const { hotOffers, totalCount, onShowAll, onItemClick, isLoading, isVacancy } = props
 
   if (isLoading && hotOffers.length === 0) {
     return (
@@ -40,6 +41,7 @@ export const FeedHotOffersSection = memo((props: Props) => {
       totalCount={totalCount}
       onShowAll={hasMore ? onShowAll : undefined}
       onItemClick={onItemClick}
+      isVacancy={isVacancy}
     />
   )
 })

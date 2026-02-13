@@ -86,12 +86,18 @@ export const useAddShiftForm = ({
       : []
   })
   const [submitError, setSubmitError] = useState<string | null>(null)
+  type FieldErrors = Partial<Record<'location' | 'requirements' | 'description' | 'specializations', string>>
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const clearSubmitError = useCallback(() => {
+    setSubmitError(null)
+    setFieldErrors({})
+  }, [])
 
   const timeRangeError = useMemo(() => {
     if (!startTime || !endTime) return null
     const startMinutes = toMinutes(startTime)
     const endMinutes = toMinutes(endTime)
-    if (startMinutes === null || endMinutes === null) return null
+    if (startMinutes === null || endMinutes === null) return t('validation.invalidTime')
     if (endMinutes <= startMinutes) return t('validation.timeEndAfterStart')
     return null
   }, [startTime, endTime, t])
@@ -181,13 +187,14 @@ export const useAddShiftForm = ({
     !date ||
     !startTime ||
     !endTime ||
+    !location ||
+    !description ||
+    !requirements ||
     !position ||
+    specializations.length === 0 ||
     !!timeRangeError ||
     !!dateError ||
     !!positionError
-
-  type FieldErrors = Partial<Record<'location' | 'requirements', string>>
-  const fieldErrors = useMemo<FieldErrors>(() => ({}), [])
 
   const translateError = useCallback(
     (error: string): string => {
@@ -198,6 +205,19 @@ export const useAddShiftForm = ({
         lowerError.includes('специализация обязательна')
       ) {
         return t('validation.specializationRequired')
+      }
+      if (lowerError.includes("description can't be blank") || lowerError.includes('описание')) {
+        return t('validation.requiredField')
+      }
+      if (
+        lowerError.includes("requirements can't be blank") ||
+        lowerError.includes('требования') ||
+        lowerError.includes('requirements')
+      ) {
+        return t('validation.requiredField')
+      }
+      if (lowerError.includes("location can't be blank") || lowerError.includes('локац')) {
+        return t('validation.requiredField')
       }
       if (
         lowerError.includes('active shift') ||
@@ -228,26 +248,65 @@ export const useAddShiftForm = ({
     setPosition('')
     setSpecializations([])
     setSubmitError(null)
+    setFieldErrors({})
   }, [initialShiftType])
+
+  const applyServerErrors = useCallback(
+    (errors: string[]) => {
+      const nextFieldErrors: FieldErrors = {}
+      const generalMessages: string[] = []
+
+      for (const raw of errors) {
+        const msg = String(raw || '').trim()
+        if (!msg) continue
+        const lower = msg.toLowerCase()
+
+        if (lower.includes('specialization')) {
+          nextFieldErrors.specializations = t('validation.specializationRequired')
+          continue
+        }
+        if (lower.includes('description')) {
+          nextFieldErrors.description = t('validation.requiredField')
+          continue
+        }
+        if (lower.includes('requirements')) {
+          nextFieldErrors.requirements = t('validation.requiredField')
+          continue
+        }
+        if (lower.includes('location')) {
+          nextFieldErrors.location = t('validation.requiredField')
+          continue
+        }
+
+        generalMessages.push(translateError(msg))
+      }
+
+      setFieldErrors(nextFieldErrors)
+      const uniqueGeneral = Array.from(new Set(generalMessages)).filter(Boolean)
+      const joined = uniqueGeneral.join('; ')
+      setSubmitError(joined || null)
+      return { hasFieldErrors: Object.keys(nextFieldErrors).length > 0, message: joined }
+    },
+    [t, translateError]
+  )
 
   const handleSave = useCallback(async (): Promise<boolean> => {
     setSubmitError(null)
+    setFieldErrors({})
     if (
       !title ||
       !date ||
       !startTime ||
       !endTime ||
+      !location ||
+      !description ||
+      !requirements ||
       !position ||
       specializations.length === 0 ||
       timeRangeError ||
       dateError ||
       positionError
     ) {
-      setSubmitError(
-        specializations.length === 0
-          ? t('validation.specializationRequired')
-          : t('validation.fillRequired')
-      )
       return false
     }
 
@@ -256,12 +315,12 @@ export const useAddShiftForm = ({
       const payload = {
         shift: {
           title,
-          description: description || undefined,
+          description,
           start_time: buildDateTime(date!, startTime),
           end_time: buildDateTime(date!, endTime),
           payment: pay ? Number(pay) : undefined,
-          location: location || undefined,
-          requirements: requirements || undefined,
+          location,
+          requirements,
           shift_type: shiftType,
           urgent,
           position,
@@ -283,10 +342,9 @@ export const useAddShiftForm = ({
           if (hasErrors) {
             const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
             const errorMessages = Array.isArray(errs) ? errs.map(String) : [String(errs)]
-            const translatedMessages = errorMessages.map(translateError)
-            const msg = translatedMessages.join('; ')
-            setSubmitError(msg)
-            showToast?.(msg, 'error')
+            const { hasFieldErrors, message } = applyServerErrors(errorMessages)
+            if (message) showToast?.(message, 'error')
+            if (hasFieldErrors) return false
             return false
           }
         }
@@ -302,10 +360,9 @@ export const useAddShiftForm = ({
             if (hasErrors) {
               const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
               const errorMessages = Array.isArray(errs) ? errs.map(String) : [String(errs)]
-              const translatedMessages = errorMessages.map(translateError)
-              const msg = translatedMessages.join('; ')
-              setSubmitError(msg)
-              showToast?.(msg, 'error')
+              const { hasFieldErrors, message } = applyServerErrors(errorMessages)
+              if (message) showToast?.(message, 'error')
+              if (hasFieldErrors) return false
               return false
             }
           }
@@ -325,8 +382,10 @@ export const useAddShiftForm = ({
               const messageAlt = dataObj.error
 
               if (Array.isArray(errors)) {
-                const translatedErrors = errors.map(e => translateError(String(e)))
-                errorMessage = translatedErrors.join('; ')
+                const errorMessages = errors.map(e => String(e))
+                const { message } = applyServerErrors(errorMessages)
+                if (message) showToast?.(message, 'error')
+                return false
               } else if (typeof message === 'string') {
                 errorMessage = translateError(message)
               } else if (typeof messageAlt === 'string') {
@@ -358,8 +417,10 @@ export const useAddShiftForm = ({
           const messageAlt = dataObj.error
 
           if (Array.isArray(errors)) {
-            const translatedErrors = errors.map(e => translateError(String(e)))
-            errorMessage = translatedErrors.join('; ')
+            const errorMessages = errors.map(e => String(e))
+            const { message } = applyServerErrors(errorMessages)
+            if (message) showToast?.(message, 'error')
+            return false
           } else if (typeof message === 'string') {
             errorMessage = translateError(message)
           } else if (typeof messageAlt === 'string') {
@@ -396,6 +457,7 @@ export const useAddShiftForm = ({
     positionError,
     initialValues,
     updateShiftMutation,
+    applyServerErrors,
     translateError,
     t,
   ])
@@ -426,6 +488,7 @@ export const useAddShiftForm = ({
     specializations,
     setSpecializations,
     submitError,
+    clearSubmitError,
     isCreating,
     isFormInvalid,
     timeRangeError,

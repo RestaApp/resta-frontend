@@ -39,6 +39,8 @@ export const Select = memo(function Select({
   bottomOffsetPx = 88,
 }: SelectProps) {
   const { t } = useTranslation()
+  const errorText = error?.trim() ? error : undefined
+  const hintText = !errorText ? hint : undefined
   const displayPlaceholder = placeholder ?? t('common.selectValue')
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -240,7 +242,7 @@ export const Select = memo(function Select({
         if (filteredOptions.length > 0 && scrollContainerRef.current) {
           const firstOption = scrollContainerRef.current.querySelector('button')
           if (firstOption) {
-            ;(firstOption as HTMLButtonElement).focus()
+            ; (firstOption as HTMLButtonElement).focus()
           }
         }
       }
@@ -301,13 +303,16 @@ export const Select = memo(function Select({
   return (
     <div className={cn('w-full', className)} ref={containerRef}>
       {label && <label className="block text-sm font-medium mb-2">{label}</label>}
-      {error ? (
-        <p className="text-xs text-destructive mb-2" role="alert">
-          {error}
-        </p>
-      ) : hint ? (
-        <p className="text-xs text-muted-foreground mb-2">{hint}</p>
-      ) : null}
+      <p
+        className={cn(
+          'text-xs mb-2 min-h-[16px]',
+          errorText ? 'text-destructive' : 'text-muted-foreground'
+        )}
+        role={errorText ? 'alert' : undefined}
+        aria-hidden={!errorText && !hintText}
+      >
+        {errorText ?? hintText ?? '\u00A0'}
+      </p>
       <div className="relative">
         {trigger}
 

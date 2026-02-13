@@ -76,6 +76,7 @@ const AddShiftDrawerKeyed = ({
   const locationRef = useRef<HTMLDivElement | null>(null)
   const positionRef = useRef<HTMLDivElement | null>(null)
   const specializationRef = useRef<HTMLDivElement | null>(null)
+  const descriptionRef = useRef<HTMLDivElement | null>(null)
   const requirementsRef = useRef<HTMLDivElement | null>(null)
   const [step, setStep] = useState<StepIndex>(0)
   const [attemptedSteps, setAttemptedSteps] = useState<[boolean, boolean, boolean]>([
@@ -122,6 +123,7 @@ const AddShiftDrawerKeyed = ({
     specializations,
     setSpecializations,
     submitError,
+    clearSubmitError,
     isCreating,
     timeRangeError,
     dateError,
@@ -131,37 +133,141 @@ const AddShiftDrawerKeyed = ({
     resetForm,
   } = form
 
-  const showErrors = didAttemptSubmit || !!submitError
+  const showErrors = didAttemptSubmit || !!submitError || Object.keys(fieldErrors).length > 0
   const showStep0Errors = showErrors || attemptedSteps[0]
   const showStep1Errors = showErrors || attemptedSteps[1]
   const showStep2Errors = showErrors || attemptedSteps[2]
   const requiredFieldError = t('validation.requiredField')
-  const titleError = showStep0Errors && !title.trim() ? requiredFieldError : undefined
-  const dateFieldError = dateError ?? (showStep0Errors && !date ? requiredFieldError : undefined)
-  const startTimeError = showStep0Errors && !startTime ? requiredFieldError : undefined
+  const requiredMarker = ' '
+  const normalizeRequiredText = (err?: string) => (err === requiredFieldError ? requiredMarker : err)
+
+  const titleError = showStep0Errors && !title.trim() ? requiredMarker : undefined
+  const dateFieldError = dateError ?? (showStep0Errors && !date ? requiredMarker : undefined)
+  const startTimeError = showStep0Errors && !startTime ? requiredMarker : undefined
   const endTimeError =
-    timeRangeError ?? (showStep0Errors && !endTime ? requiredFieldError : undefined)
+    timeRangeError ?? (showStep0Errors && !endTime ? requiredMarker : undefined)
   const locationFieldError =
-    fieldErrors.location ?? (showStep1Errors && !location.trim() ? requiredFieldError : undefined)
+    normalizeRequiredText(fieldErrors.location) ??
+    (showStep1Errors && !location.trim() ? requiredMarker : undefined)
   const positionFieldError =
-    positionError ?? (showStep1Errors && !formPosition ? requiredFieldError : undefined)
+    positionError ?? (showStep1Errors && !formPosition ? requiredMarker : undefined)
 
-  const se = submitError?.toLowerCase() || ''
-  const isSpecializationError = se.includes('специализац') || se.includes('specialization')
   const canValidateSpecializations = !!formPosition && !positionError
-  const showSpecializationError =
-    canValidateSpecializations &&
-    (isSpecializationError || (showStep1Errors && specializations.length === 0))
-  const specializationFieldError = showSpecializationError
-    ? isSpecializationError && submitError
-      ? submitError
-      : t('validation.specializationRequired')
-    : undefined
+  const specializationFieldError =
+    (fieldErrors.specializations ? requiredMarker : undefined) ??
+    (canValidateSpecializations && showStep1Errors && specializations.length === 0
+      ? requiredMarker
+      : undefined)
+  const descriptionFieldError =
+    normalizeRequiredText(fieldErrors.description) ??
+    (showStep2Errors && !description.trim() ? requiredMarker : undefined)
   const requirementsFieldError =
-    fieldErrors.requirements ??
-    (showStep2Errors && !requirements.trim() ? requiredFieldError : undefined)
+    normalizeRequiredText(fieldErrors.requirements) ??
+    (showStep2Errors && !requirements.trim() ? requiredMarker : undefined)
 
-  const genericSubmitError = submitError && !isSpecializationError ? submitError : null
+  const genericSubmitError = submitError ? submitError : null
+  const hasMissingRequiredInStep =
+    step === 0
+      ? !title.trim() || !date || !startTime || !endTime
+      : step === 1
+        ? !location.trim() || !formPosition || specializations.length === 0
+        : !description.trim() || !requirements.trim()
+  const bannerError = genericSubmitError ?? (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
+  const clearAllErrorsAfterChange = useCallback(() => {
+    clearSubmitError()
+    if (didAttemptSubmit) setDidAttemptSubmit(false)
+    if (attemptedSteps[0] || attemptedSteps[1] || attemptedSteps[2]) {
+      setAttemptedSteps([false, false, false])
+    }
+  }, [attemptedSteps, clearSubmitError, didAttemptSubmit])
+
+  const handleTitleChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setTitle(next)
+    },
+    [clearAllErrorsAfterChange, setTitle]
+  )
+
+  const handleDateChange = useCallback(
+    (next: string | null) => {
+      clearAllErrorsAfterChange()
+      setDate(next)
+    },
+    [clearAllErrorsAfterChange, setDate]
+  )
+
+  const handleStartTimeChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setStartTime(next)
+    },
+    [clearAllErrorsAfterChange, setStartTime]
+  )
+
+  const handleEndTimeChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setEndTime(next)
+    },
+    [clearAllErrorsAfterChange, setEndTime]
+  )
+
+  const handlePayChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setPay(next)
+    },
+    [clearAllErrorsAfterChange, setPay]
+  )
+
+  const handleLocationChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setLocation(next)
+    },
+    [clearAllErrorsAfterChange, setLocation]
+  )
+
+  const handleShiftTypeChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setShiftType(next as ShiftType)
+    },
+    [clearAllErrorsAfterChange, setShiftType]
+  )
+
+  const handleDescriptionChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setDescription(next)
+    },
+    [clearAllErrorsAfterChange, setDescription]
+  )
+
+  const handleRequirementsChange = useCallback(
+    (next: string) => {
+      clearAllErrorsAfterChange()
+      setRequirements(next)
+    },
+    [clearAllErrorsAfterChange, setRequirements]
+  )
+
+  const handleUrgentChange = useCallback(
+    (next: boolean) => {
+      clearAllErrorsAfterChange()
+      setUrgent(next)
+    },
+    [clearAllErrorsAfterChange, setUrgent]
+  )
+
+  const handleSpecializationsChange = useCallback(
+    (next: string[]) => {
+      clearAllErrorsAfterChange()
+      setSpecializations(next)
+    },
+    [clearAllErrorsAfterChange, setSpecializations]
+  )
 
   const scrollToFirstInvalidInStep = useCallback(
     (targetStep: StepIndex) => {
@@ -179,12 +285,14 @@ const AddShiftDrawerKeyed = ({
         if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
       }
       if (targetStep === 2) {
+        if (!description.trim()) return scrollTo(descriptionRef)
         if (!requirements.trim()) return scrollTo(requirementsRef)
       }
     },
     [
       date,
       dateError,
+      description,
       endTime,
       formPosition,
       location,
@@ -204,11 +312,13 @@ const AddShiftDrawerKeyed = ({
     if (!location.trim()) return 1
     if (!formPosition || positionError) return 1
     if (formPosition && specializations.length === 0) return 1
+    if (!description.trim()) return 2
     if (!requirements.trim()) return 2
     return 2
   }, [
     date,
     dateError,
+    description,
     endTime,
     formPosition,
     location,
@@ -232,6 +342,7 @@ const AddShiftDrawerKeyed = ({
         return true
       }
       if (targetStep === 2) {
+        if (!description.trim()) return false
         if (!requirements.trim()) return false
         return true
       }
@@ -240,6 +351,7 @@ const AddShiftDrawerKeyed = ({
     [
       date,
       dateError,
+      description,
       endTime,
       formPosition,
       location,
@@ -291,8 +403,9 @@ const AddShiftDrawerKeyed = ({
       close()
       return
     }
+    clearAllErrorsAfterChange()
     setStep(prev => (prev > 0 ? ((prev - 1) as StepIndex) : prev))
-  }, [close, step])
+  }, [clearAllErrorsAfterChange, close, step])
 
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open,
@@ -305,11 +418,12 @@ const AddShiftDrawerKeyed = ({
 
   const handlePositionChange = useCallback(
     (next: string) => {
+      clearAllErrorsAfterChange()
       if (next !== formPosition && specializations.length > 0) setSpecializations([])
       if (!next && specializations.length > 0) setSpecializations([])
       setFormPosition(next)
     },
-    [formPosition, setFormPosition, setSpecializations, specializations.length]
+    [clearAllErrorsAfterChange, formPosition, setFormPosition, setSpecializations, specializations.length]
   )
 
   // handleSave provided by hook; when it succeeds we close the drawer
@@ -370,7 +484,7 @@ const AddShiftDrawerKeyed = ({
               <TextField
                 label={t('shift.shiftTitle')}
                 value={title}
-                onChange={setTitle}
+                onChange={handleTitleChange}
                 placeholder={t('shift.shiftTitlePlaceholder')}
                 error={titleError}
               />
@@ -380,7 +494,7 @@ const AddShiftDrawerKeyed = ({
               <Field label={t('common.date')}>
                 <DatePicker
                   value={date}
-                  onChange={setDate}
+                  onChange={handleDateChange}
                   minDate={getTodayDateISO()}
                   className="w-full"
                   error={dateFieldError ?? undefined}
@@ -393,7 +507,7 @@ const AddShiftDrawerKeyed = ({
                 <TimeField
                   label={t('shift.start')}
                   value={startTime}
-                  onChange={setStartTime}
+                  onChange={handleStartTimeChange}
                   error={startTimeError}
                 />
               </div>
@@ -401,13 +515,13 @@ const AddShiftDrawerKeyed = ({
                 <TimeField
                   label={t('shift.end')}
                   value={endTime}
-                  onChange={setEndTime}
+                  onChange={handleEndTimeChange}
                   error={endTimeError}
                 />
               </div>
             </div>
 
-            <MoneyField value={pay} onChange={setPay} />
+            <MoneyField value={pay} onChange={handlePayChange} />
           </>
         ) : null}
 
@@ -417,7 +531,7 @@ const AddShiftDrawerKeyed = ({
               <LocationField
                 label={t('common.location')}
                 value={location}
-                onChange={setLocation}
+                onChange={handleLocationChange}
                 placeholder={t('shift.locationPlaceholder')}
                 error={locationFieldError}
               />
@@ -427,7 +541,7 @@ const AddShiftDrawerKeyed = ({
               <Select
                 label={t('shift.shiftType')}
                 value={shiftType}
-                onChange={value => setShiftType(value as ShiftType)}
+                onChange={handleShiftTypeChange}
                 disabled={!!lockedShiftType}
                 options={SHIFT_TYPE_OPTIONS}
                 placeholder={t('shift.selectShiftType')}
@@ -457,7 +571,7 @@ const AddShiftDrawerKeyed = ({
               <MultiSelectSpecializations
                 label={t('shift.specialization')}
                 value={specializations}
-                onChange={setSpecializations}
+                onChange={handleSpecializationsChange}
                 options={availableSpecializations}
                 placeholder={
                   !formPosition ? t('shift.selectPositionFirst') : t('shift.noSpecializations')
@@ -472,19 +586,22 @@ const AddShiftDrawerKeyed = ({
 
         {!isSuccessOpen && step === 2 ? (
           <>
-            <TextAreaField
-              label={t('common.description')}
-              value={description}
-              onChange={setDescription}
-              placeholder={t('shift.descriptionPlaceholder')}
-              minHeight="96px"
-            />
+            <div ref={descriptionRef}>
+              <TextAreaField
+                label={t('common.description')}
+                value={description}
+                onChange={handleDescriptionChange}
+                placeholder={t('shift.descriptionPlaceholder')}
+                minHeight="96px"
+                error={descriptionFieldError}
+              />
+            </div>
 
             <div ref={requirementsRef}>
               <TextAreaField
                 label={t('common.requirements')}
                 value={requirements}
-                onChange={setRequirements}
+                onChange={handleRequirementsChange}
                 placeholder={t('shift.requirementsPlaceholder')}
                 minHeight="80px"
                 error={requirementsFieldError}
@@ -495,13 +612,15 @@ const AddShiftDrawerKeyed = ({
               id="urgent-shift"
               label={t('shift.urgent')}
               checked={urgent}
-              onChange={setUrgent}
+              onChange={handleUrgentChange}
             />
           </>
         ) : null}
 
-        {!isSuccessOpen && genericSubmitError ? (
-          <p className="text-sm text-red-500">{genericSubmitError}</p>
+        {!isSuccessOpen ? (
+          <div className="min-h-[20px]">
+            {bannerError ? <p className="text-sm text-destructive">{bannerError}</p> : null}
+          </div>
         ) : null}
       </div>
 

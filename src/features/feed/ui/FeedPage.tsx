@@ -26,6 +26,7 @@ export const FeedPage = () => {
         totalCount={m.hotOffersTotalCount}
         onShowAll={m.showAllHotShifts}
         onItemClick={m.onHotOfferClick}
+        isVacancy={m.isVacancy}
       />
 
       <FeedBody vm={vm} />

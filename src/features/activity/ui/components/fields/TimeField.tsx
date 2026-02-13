@@ -12,6 +12,24 @@ type TimeFieldProps = {
   error?: string
 }
 
+const normalizeTimeInput = (raw: string): string | null => {
+  if (raw === '') return ''
+  const match = raw.match(/^(\d{1,2}):(\d{1,2})$/)
+  if (!match) return null
+
+  const hours = Number(match[1])
+  const minutes = Number(match[2])
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null
+
+  let totalMinutes = hours * 60 + minutes
+  if (totalMinutes < 0) totalMinutes = 0
+  if (totalMinutes > 23 * 60 + 59) totalMinutes = 23 * 60 + 59
+
+  const normalizedHours = Math.floor(totalMinutes / 60)
+  const normalizedMinutes = totalMinutes % 60
+  return `${String(normalizedHours).padStart(2, '0')}:${String(normalizedMinutes).padStart(2, '0')}`
+}
+
 export const TimeField = ({ label, value, onChange, error }: TimeFieldProps) => {
   const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -51,7 +69,11 @@ export const TimeField = ({ label, value, onChange, error }: TimeFieldProps) => 
           ref={inputRef}
           type="time"
           value={value}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            const normalized = normalizeTimeInput(e.target.value)
+            if (normalized === null) return
+            onChange(normalized)
+          }}
           className="pl-11 py-0 leading-none text-[16px] [appearance:none] [-webkit-appearance:none]"
           aria-invalid={!!error}
         />
