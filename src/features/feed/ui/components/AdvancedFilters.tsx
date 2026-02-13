@@ -1,7 +1,7 @@
 import { X, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence, useDragControls } from 'motion/react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
+import { useCallback, useMemo, useState } from 'react'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { Button } from '@/components/ui/button'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
@@ -10,7 +10,6 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { useAdvancedFilters } from '../../model/hooks/useAdvancedFilters'
 import { DEFAULT_PRICE_RANGE, DEFAULT_JOBS_PRICE_RANGE } from '@/utils/filters'
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
 export interface AdvancedFiltersData {
   priceRange: [number, number] | null
@@ -63,25 +62,6 @@ const AdvancedFiltersSheet = ({
 }: Omit<AdvancedFiltersProps, 'isOpen'>) => {
   const { t } = useTranslation()
   const { getSpecializationLabel } = useLabels()
-  const dragControls = useDragControls()
-
-  useBodyScrollLock(true)
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-    const el = document.documentElement
-    const raw = el.dataset.drawerOpenCount
-    const count = Number.parseInt(raw ?? '0', 10)
-    el.dataset.drawerOpenCount = String(Number.isFinite(count) ? count + 1 : 1)
-    return () => {
-      const rawNext = el.dataset.drawerOpenCount
-      const current = Number.parseInt(rawNext ?? '0', 10)
-      const next = Number.isFinite(current) ? Math.max(0, current - 1) : 0
-      if (next === 0) delete el.dataset.drawerOpenCount
-      else el.dataset.drawerOpenCount = String(next)
-    }
-  }, [])
-
   const {
     priceRange,
     selectedPosition,
@@ -178,15 +158,6 @@ const AdvancedFiltersSheet = ({
     [setPriceRange]
   )
 
-  const handleDragEnd = useCallback(
-    (_: unknown, info: { offset: { y: number }; velocity: { y: number } }) => {
-      const offsetY = info?.offset?.y ?? 0
-      const velocityY = info?.velocity?.y ?? 0
-      if (offsetY > 90 || velocityY > 900) onClose()
-    },
-    [onClose]
-  )
-
   return (
     <>
       {/* Backdrop */}
@@ -210,22 +181,10 @@ const AdvancedFiltersSheet = ({
           stiffness: 300,
           layout: { duration: 0.25, ease: 'easeInOut' },
         }}
-        drag="y"
-        dragControls={dragControls}
-        dragListener={false}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.12}
-        onDragEnd={handleDragEnd}
-        className="fixed bottom-0 left-0 right-0 z-[60] bg-card rounded-t-[24px] flex flex-col max-h-[85vh] overscroll-contain"
-        role="dialog"
-        aria-modal="true"
+        className="fixed bottom-0 left-0 right-0 z-[60] bg-card rounded-t-[24px] flex flex-col max-h-[85vh]"
       >
         {/* Drag Handle */}
-        <div
-          className="w-full flex justify-center pt-3 pb-1 flex-shrink-0"
-          onClick={onClose}
-          onPointerDown={e => dragControls.start(e)}
-        >
+        <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0" onClick={onClose}>
           <div className="w-12 h-1.5 bg-muted rounded-full" />
         </div>
 
@@ -259,7 +218,7 @@ const AdvancedFiltersSheet = ({
         <motion.div
           layout
           transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
-          className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0 overscroll-contain"
+          className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
         >
           {/* 1. Бюджет (Range Slider) */}
           <div className="space-y-4">

@@ -152,7 +152,7 @@ const ShiftCardComponent = ({
       aria-label={cardAriaLabel}
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
-      className="group relative rounded-[20px] p-4 shadow-sm border border-border/50 hover:shadow-md cursor-pointer active:scale-[0.98] backdrop-blur-xl bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring !transition-[transform,box-shadow] !duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100"
+      className="group relative rounded-[20px] p-4 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] backdrop-blur-xl bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-2 gap-3">

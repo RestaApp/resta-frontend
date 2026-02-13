@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'motion/react'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -50,7 +50,6 @@ const DrawerContent = memo(function DrawerContent({
   bottomOffsetPx,
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
-  const dragControls = useDragControls()
 
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -60,16 +59,6 @@ const DrawerContent = memo(function DrawerContent({
     [preventClose, onOpenChange]
   )
 
-  const handleDragEnd = useCallback(
-    (_: unknown, info: { offset: { y: number }; velocity: { y: number } }) => {
-      if (preventClose) return
-      const offsetY = info?.offset?.y ?? 0
-      const velocityY = info?.velocity?.y ?? 0
-      if (offsetY > 90 || velocityY > 900) onOpenChange(false)
-    },
-    [onOpenChange, preventClose]
-  )
-
   return (
     <div className="fixed inset-0 z-[60]">
       <DrawerOverlay onClick={handleOverlayClick} />
@@ -77,12 +66,6 @@ const DrawerContent = memo(function DrawerContent({
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
-        drag="y"
-        dragControls={dragControls}
-        dragListener={false}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.12}
-        onDragEnd={handleDragEnd}
         transition={
           reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }
         }
@@ -98,12 +81,7 @@ const DrawerContent = memo(function DrawerContent({
         role="dialog"
         aria-modal="true"
       >
-        <div
-          className="w-full flex justify-center pt-4 pb-2 flex-shrink-0"
-          onPointerDown={e => dragControls.start(e)}
-        >
-          <div className="h-2 w-[100px] rounded-full bg-muted" />
-        </div>
+        <div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
         {children}
       </motion.div>
     </div>
@@ -120,22 +98,6 @@ export const Drawer = ({
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
 
   useBodyScrollLock(open)
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-    if (!open) return
-    const el = document.documentElement
-    const raw = el.dataset.drawerOpenCount
-    const count = Number.parseInt(raw ?? '0', 10)
-    el.dataset.drawerOpenCount = String(Number.isFinite(count) ? count + 1 : 1)
-    return () => {
-      const rawNext = el.dataset.drawerOpenCount
-      const current = Number.parseInt(rawNext ?? '0', 10)
-      const next = Number.isFinite(current) ? Math.max(0, current - 1) : 0
-      if (next === 0) delete el.dataset.drawerOpenCount
-      else el.dataset.drawerOpenCount = String(next)
-    }
-  }, [open])
 
   useEffect(() => {
     if (!open) return

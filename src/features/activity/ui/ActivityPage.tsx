@@ -4,15 +4,13 @@ import { useActivityPageModel } from '../model/hooks/useActivityPageModel'
 import { ActivityHeader } from './components/ActivityHeader'
 import { ActivityListTab } from './components/ActivityListTab'
 import { ActivityCalendarTab } from './components/ActivityCalendarTab'
-import { PullToRefresh } from '@/components/ui/pull-to-refresh'
 
 export const ActivityPage = () => {
   const { t } = useTranslation()
   const m = useActivityPageModel()
 
   return (
-    <PullToRefresh onRefresh={m.refreshActivity} isRefreshing={m.isRefreshing}>
-      <div className="bg-background">
+    <div className="bg-background">
       <ActivityHeader activeTab={m.activeTab} onChange={m.setActiveTab} />
 
       <div className="p-4">
@@ -61,7 +59,6 @@ export const ActivityPage = () => {
           m.showToast(t('shift.saved'), 'success')
         }}
       />
-      </div>
-    </PullToRefresh>
+    </div>
   )
 }

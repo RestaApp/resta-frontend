@@ -30,19 +30,8 @@ export const useActivityPageModel = () => {
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
   const dateLocale = getDateLocale(i18n.language)
 
-  const {
-    data,
-    isLoading,
-    isFetching: isMyShiftsFetching,
-    isError,
-    refetch: refetchMyShifts,
-  } = useGetMyShiftsQuery()
-  const {
-    data: appliedData,
-    isLoading: isAppliedLoading,
-    isFetching: isAppliedFetching,
-    refetch: refetchAppliedShifts,
-  } = useGetAppliedShiftsQuery()
+  const { data, isLoading, isError, refetch: refetchMyShifts } = useGetMyShiftsQuery()
+  const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery()
 
   const shifts = useMemo(() => normalizeVacanciesResponse(data), [data])
   const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedData), [appliedData])
@@ -146,13 +135,6 @@ export const useActivityPageModel = () => {
     setIsDrawerOpen(true)
   }, [])
 
-  const refreshActivity = useCallback(() => {
-    refetchMyShifts()
-    refetchAppliedShifts()
-  }, [refetchAppliedShifts, refetchMyShifts])
-
-  const isRefreshing = isMyShiftsFetching || isAppliedFetching
-
   return {
     // tabs
     activeTab,
@@ -164,8 +146,6 @@ export const useActivityPageModel = () => {
     isError,
     shifts,
     appliedShifts,
-    isRefreshing,
-    refreshActivity,
 
     // actions
     handleEdit,

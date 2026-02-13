@@ -8,7 +8,6 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]
@@ -45,7 +44,6 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
         <EmptyState
           message={t('activity.noApplicationsYet')}
           description={t('activity.applicationsWillAppearHere')}
-          illustration={<EmptyInboxIllustration className="h-24 w-24" />}
         />
       ) : (
         <div className="space-y-6">
