@@ -29,7 +29,7 @@ import {
 import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
-import { getTomorrowDateISO } from '@/utils/datetime'
+import { getTodayDateISO } from '@/utils/datetime'
 
 const getLockedShiftType = (role?: string | null): ShiftType | null => {
   if (role === 'employee') return 'replacement'
@@ -381,7 +381,7 @@ const AddShiftDrawerKeyed = ({
                 <DatePicker
                   value={date}
                   onChange={setDate}
-                  minDate={getTomorrowDateISO()}
+                  minDate={getTodayDateISO()}
                   className="w-full"
                   error={dateFieldError ?? undefined}
                 />

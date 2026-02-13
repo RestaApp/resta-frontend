@@ -116,6 +116,14 @@ export const buildDateTime = (date: string, time: string): string => {
   return `${date} ${paddedHours}:${minutes}:00`
 }
 
+export const getTodayDateISO = (): string => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 /**
  * Возвращает строку даты завтрашнего дня в формате YYYY-MM-DD.
  * Подходит для использования в полях ввода даты (например, minDate).
