@@ -3,6 +3,7 @@ export type UiRole =
   | 'waiter'
   | 'bartender'
   | 'barista'
+  | 'delivery'
   | 'admin'
   | 'manager'
   | 'support'
@@ -14,6 +15,7 @@ export type EmployeeRole =
   | 'waiter'
   | 'bartender'
   | 'barista'
+  | 'delivery'
   | 'admin'
   | 'manager'
   | 'support'
@@ -25,6 +27,7 @@ export const UI_ROLE_TO_API_ROLE: Record<UiRole, ApiRole> = {
   waiter: 'employee',
   bartender: 'employee',
   barista: 'employee',
+  delivery: 'employee',
   admin: 'employee',
   manager: 'employee',
   support: 'employee',

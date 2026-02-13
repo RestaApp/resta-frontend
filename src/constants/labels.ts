@@ -64,6 +64,7 @@ export const EMPLOYEE_POSITION_LABELS = {
   waiter: 'Официант',
   bartender: 'Бармен',
   barista: 'Бариста',
+  delivery: 'Доставка',
   manager: 'Менеджер',
   support: 'Поддержка',
   admin: 'Администратор',
@@ -77,6 +78,7 @@ export const EMPLOYEE_POSITION_DESCRIPTIONS: Record<EmployeeRole, string> = {
   waiter: 'Обслуживаю гостей в зале',
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
+  delivery: 'Доставляю заказы гостям',
   manager: 'Управляю заведением и персоналом',
   support: 'Оказываю техническую поддержку',
   admin: 'Управляю заведением и персоналом',
@@ -110,16 +112,18 @@ export const SPECIALIZATION_LABELS = {
   sous_chef: 'Су-шеф',
   chef_de_partie: 'Шеф де парти',
   line_cook: 'Повар линии',
-  prep_cook: 'Повар подготовки',
-  sushi_chef: 'Суши-повар',
+  prep_cook: 'Заготовщик',
+  sushi_chef: 'Сушист',
   pastry_chef: 'Кондитер',
   baker: 'Пекарь',
   butcher: 'Мясник',
-  fish_cook: 'Рыбный повар',
+  fish_cook: 'Повар рыбного цеха',
   grill_cook: 'Повар гриля',
   cold_station_cook: 'Повар холодного цеха',
   hot_station_cook: 'Повар горячего цеха',
   pizza_maker: 'Пиццайоло',
+  shawarma_cook: 'Шаурмист',
+  universal_cook: 'Повар-универсал',
 
   // Waiter специализации
   head_waiter: 'Старший официант',
@@ -131,12 +135,17 @@ export const SPECIALIZATION_LABELS = {
   head_barista: 'Старший бариста',
   latte_artist: 'Латте-артист',
   roaster: 'Обжарщик',
+  tea_master: 'Чайный мастер',
 
   // Dishwasher специализации
   dishwasher: 'Мойщик посуды',
   cleaner: 'Уборщик',
   janitor: 'Дворник',
   steward: 'Стюард',
+  // Bartender дополнительные специализации
+  hookah_master: 'Кальянный мастер',
+  // Delivery специализации
+  courier: 'Курьер',
 } as const
 
 export type SpecializationKey = keyof typeof SPECIALIZATION_LABELS
