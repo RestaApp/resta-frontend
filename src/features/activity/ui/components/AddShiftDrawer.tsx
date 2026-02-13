@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -49,6 +49,8 @@ type SelectFieldOption = {
 }
 
 const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
+const TOTAL_STEPS = 3 as const
+type StepIndex = 0 | 1 | 2
 
 export const AddShiftDrawer = (props: AddShiftDrawerProps) => {
   const keyedId = props.open ? String(props.initialValues?.id ?? 'new') : 'closed'
@@ -72,6 +74,12 @@ const AddShiftDrawerKeyed = ({
   const timeRef = useRef<HTMLDivElement | null>(null)
   const positionRef = useRef<HTMLDivElement | null>(null)
   const specializationRef = useRef<HTMLDivElement | null>(null)
+  const [step, setStep] = useState<StepIndex>(0)
+  const [attemptedSteps, setAttemptedSteps] = useState<[boolean, boolean, boolean]>([
+    false,
+    false,
+    false,
+  ])
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
 
   const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
@@ -119,18 +127,21 @@ const AddShiftDrawerKeyed = ({
   } = form
 
   const showErrors = didAttemptSubmit || !!submitError
+  const showStep0Errors = showErrors || attemptedSteps[0]
+  const showStep1Errors = showErrors || attemptedSteps[1]
   const requiredFieldError = t('validation.requiredField')
-  const titleError = showErrors && !title.trim() ? requiredFieldError : undefined
-  const dateFieldError = dateError ?? (showErrors && !date ? requiredFieldError : undefined)
-  const startTimeError = showErrors && !startTime ? requiredFieldError : undefined
-  const endTimeError = timeRangeError ?? (showErrors && !endTime ? requiredFieldError : undefined)
+  const titleError = showStep0Errors && !title.trim() ? requiredFieldError : undefined
+  const dateFieldError = dateError ?? (showStep0Errors && !date ? requiredFieldError : undefined)
+  const startTimeError = showStep0Errors && !startTime ? requiredFieldError : undefined
+  const endTimeError =
+    timeRangeError ?? (showStep0Errors && !endTime ? requiredFieldError : undefined)
   const positionFieldError =
-    positionError ?? (showErrors && !formPosition ? requiredFieldError : undefined)
+    positionError ?? (showStep1Errors && !formPosition ? requiredFieldError : undefined)
 
   const se = submitError?.toLowerCase() || ''
   const isSpecializationError = se.includes('специализац') || se.includes('specialization')
   const specializationFieldError =
-    formPosition && (isSpecializationError || (showErrors && specializations.length === 0))
+    formPosition && (isSpecializationError || (showStep1Errors && specializations.length === 0))
       ? isSpecializationError && submitError
         ? submitError
         : t('validation.specializationRequired')
@@ -138,25 +149,111 @@ const AddShiftDrawerKeyed = ({
 
   const genericSubmitError = submitError && !isSpecializationError ? submitError : null
 
-  const scrollToFirstInvalid = useCallback(() => {
-    const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-    if (!title.trim()) return scrollTo(titleRef)
-    if (!date) return scrollTo(dateRef)
-    if (!startTime || !endTime || timeRangeError) return scrollTo(timeRef)
-    if (!formPosition || positionError) return scrollTo(positionRef)
-    if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
+  const scrollToFirstInvalidInStep = useCallback(
+    (targetStep: StepIndex) => {
+      const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      if (targetStep === 0) {
+        if (!title.trim()) return scrollTo(titleRef)
+        if (!date || dateError) return scrollTo(dateRef)
+        if (!startTime || !endTime || timeRangeError) return scrollTo(timeRef)
+      }
+      if (targetStep === 1) {
+        if (!formPosition || positionError) return scrollTo(positionRef)
+        if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
+      }
+    },
+    [
+      date,
+      dateError,
+      endTime,
+      formPosition,
+      positionError,
+      specializations.length,
+      startTime,
+      timeRangeError,
+      title,
+    ]
+  )
+
+  const findFirstInvalidStep = useCallback((): StepIndex => {
+    if (!title.trim()) return 0
+    if (!date || dateError) return 0
+    if (!startTime || !endTime || timeRangeError) return 0
+    if (!formPosition || positionError) return 1
+    if (formPosition && specializations.length === 0) return 1
+    return 2
   }, [
     date,
+    dateError,
+    endTime,
     formPosition,
     positionError,
     specializations.length,
     startTime,
-    endTime,
     timeRangeError,
     title,
   ])
+
+  const isStepValid = useCallback(
+    (targetStep: StepIndex): boolean => {
+      if (targetStep === 0) {
+        return !!title.trim() && !!date && !!startTime && !!endTime && !timeRangeError && !dateError
+      }
+      if (targetStep === 1) {
+        if (!formPosition || !!positionError) return false
+        if (specializations.length === 0) return false
+        return true
+      }
+      return true
+    },
+    [
+      date,
+      dateError,
+      endTime,
+      formPosition,
+      positionError,
+      specializations.length,
+      startTime,
+      timeRangeError,
+      title,
+    ]
+  )
+
+  const handleDrawerOpenChange = useCallback(
+    (next: boolean) => {
+      if (!next) {
+        setStep(0)
+        setAttemptedSteps([false, false, false])
+        setDidAttemptSubmit(false)
+        resetForm()
+      }
+      onOpenChange(next)
+    },
+    [onOpenChange, resetForm]
+  )
+
+  const close = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
+
+  const handleContinue = useCallback(() => {
+    setAttemptedSteps(prev => {
+      const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean]
+      next[step] = true
+      return next
+    })
+
+    if (isStepValid(step)) setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
+    else scrollToFirstInvalidInStep(step)
+  }, [isStepValid, scrollToFirstInvalidInStep, step])
+
+  const handleBackOrCancel = useCallback(() => {
+    if (step === 0) {
+      close()
+      return
+    }
+    setStep(prev => (prev > 0 ? ((prev - 1) as StepIndex) : prev))
+  }, [close, step])
 
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open,
@@ -176,19 +273,6 @@ const AddShiftDrawerKeyed = ({
     [formPosition, setFormPosition, setSpecializations, specializations.length]
   )
 
-  const handleDrawerOpenChange = useCallback(
-    (next: boolean) => {
-      if (!next) {
-        setDidAttemptSubmit(false)
-        resetForm()
-      }
-      onOpenChange(next)
-    },
-    [onOpenChange, resetForm]
-  )
-
-  const close = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
-
   // handleSave provided by hook; when it succeeds we close the drawer
 
   // timeRangeError and isFormInvalid provided by hook
@@ -200,6 +284,12 @@ const AddShiftDrawerKeyed = ({
     }
   })
 
+  const stepTitle = useMemo(() => {
+    if (step === 0) return t('shift.addStep1Title')
+    if (step === 1) return t('shift.addStep2Title')
+    return t('shift.addStep3Title')
+  }, [step, t])
+
   return (
     <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
       <DrawerHeader>
@@ -208,141 +298,179 @@ const AddShiftDrawerKeyed = ({
       </DrawerHeader>
 
       <div className="space-y-5 p-4">
-        <div ref={titleRef}>
-          <TextField
-            label={t('shift.shiftTitle')}
-            value={title}
-            onChange={setTitle}
-            placeholder={t('shift.shiftTitlePlaceholder')}
-            error={titleError}
-          />
-        </div>
-
-        <TextAreaField
-          label={t('common.description')}
-          value={description}
-          onChange={setDescription}
-          placeholder={t('shift.descriptionPlaceholder')}
-          minHeight="96px"
-        />
-
-        <div ref={dateRef}>
-          <Field label={t('common.date')}>
-            <DatePicker
-              value={date}
-              onChange={setDate}
-              minDate={getTomorrowDateISO()}
-              className="w-full"
-              error={dateFieldError ?? undefined}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
+              {t('shift.addStepLabel', { current: step + 1, total: TOTAL_STEPS })}
+            </p>
+            <p className="text-sm font-medium">{stepTitle}</p>
+          </div>
+          <div className="h-1 w-full rounded-full bg-muted">
+            <div
+              className="h-1 rounded-full bg-primary transition-[width]"
+              style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
             />
-          </Field>
+          </div>
         </div>
 
-        <div ref={timeRef} className="grid grid-cols-2 gap-4">
-          <TimeField
-            label={t('shift.start')}
-            value={startTime}
-            onChange={setStartTime}
-            error={startTimeError}
-          />
-          <TimeField
-            label={t('shift.end')}
-            value={endTime}
-            onChange={setEndTime}
-            error={endTimeError}
-          />
-        </div>
+        {step === 0 ? (
+          <>
+            <div ref={titleRef}>
+              <TextField
+                label={t('shift.shiftTitle')}
+                value={title}
+                onChange={setTitle}
+                placeholder={t('shift.shiftTitlePlaceholder')}
+                error={titleError}
+              />
+            </div>
 
-        <MoneyField value={pay} onChange={setPay} />
+            <div ref={dateRef}>
+              <Field label={t('common.date')}>
+                <DatePicker
+                  value={date}
+                  onChange={setDate}
+                  minDate={getTomorrowDateISO()}
+                  className="w-full"
+                  error={dateFieldError ?? undefined}
+                />
+              </Field>
+            </div>
 
-        <LocationField
-          label={t('common.location')}
-          value={location}
-          onChange={setLocation}
-          placeholder={t('shift.locationPlaceholder')}
-        />
+            <div ref={timeRef} className="grid grid-cols-2 gap-4">
+              <TimeField
+                label={t('shift.start')}
+                value={startTime}
+                onChange={setStartTime}
+                error={startTimeError}
+              />
+              <TimeField
+                label={t('shift.end')}
+                value={endTime}
+                onChange={setEndTime}
+                error={endTimeError}
+              />
+            </div>
 
-        <TextAreaField
-          label={t('common.requirements')}
-          value={requirements}
-          onChange={setRequirements}
-          placeholder={t('shift.requirementsPlaceholder')}
-          minHeight="80px"
-        />
+            <MoneyField value={pay} onChange={setPay} />
+          </>
+        ) : null}
 
-        {!isEmployeeRole && (
-          <Select
-            label={t('shift.shiftType')}
-            value={shiftType}
-            onChange={value => setShiftType(value as ShiftType)}
-            disabled={!!lockedShiftType}
-            options={SHIFT_TYPE_OPTIONS}
-            placeholder={t('shift.selectShiftType')}
-            hint={
-              lockedShiftType
-                ? lockedShiftType === 'vacancy'
-                  ? t('shift.venueCreatesVacancy')
-                  : t('shift.employeeCreatesReplacement')
-                : undefined
-            }
-          />
-        )}
+        {step === 1 ? (
+          <>
+            <LocationField
+              label={t('common.location')}
+              value={location}
+              onChange={setLocation}
+              placeholder={t('shift.locationPlaceholder')}
+            />
 
-        <div ref={positionRef}>
-          <Select
-            label={t('common.position')}
-            value={formPosition || ''}
-            onChange={handlePositionChange}
-            options={positionsOptions}
-            placeholder={t('shift.selectPosition')}
-            disabled={isPositionsLoading}
-            error={positionFieldError}
-          />
-        </div>
+            {!isEmployeeRole ? (
+              <Select
+                label={t('shift.shiftType')}
+                value={shiftType}
+                onChange={value => setShiftType(value as ShiftType)}
+                disabled={!!lockedShiftType}
+                options={SHIFT_TYPE_OPTIONS}
+                placeholder={t('shift.selectShiftType')}
+                hint={
+                  lockedShiftType
+                    ? lockedShiftType === 'vacancy'
+                      ? t('shift.venueCreatesVacancy')
+                      : t('shift.employeeCreatesReplacement')
+                    : undefined
+                }
+              />
+            ) : null}
 
-        <div ref={specializationRef}>
-          <MultiSelectSpecializations
-            label={t('shift.specialization')}
-            value={specializations}
-            onChange={setSpecializations}
-            options={availableSpecializations}
-            placeholder={
-              !formPosition ? t('shift.selectPositionFirst') : t('shift.noSpecializations')
-            }
-            disabled={!formPosition}
-            isLoading={isSpecializationsLoading}
-            error={specializationFieldError}
-          />
-        </div>
+            <div ref={positionRef}>
+              <Select
+                label={t('common.position')}
+                value={formPosition || ''}
+                onChange={handlePositionChange}
+                options={positionsOptions}
+                placeholder={t('shift.selectPosition')}
+                disabled={isPositionsLoading}
+                error={positionFieldError}
+              />
+            </div>
 
-        <CheckboxField
-          id="urgent-shift"
-          label={t('shift.urgent')}
-          checked={urgent}
-          onChange={setUrgent}
-        />
+            <div ref={specializationRef}>
+              <MultiSelectSpecializations
+                label={t('shift.specialization')}
+                value={specializations}
+                onChange={setSpecializations}
+                options={availableSpecializations}
+                placeholder={
+                  !formPosition ? t('shift.selectPositionFirst') : t('shift.noSpecializations')
+                }
+                disabled={!formPosition}
+                isLoading={isSpecializationsLoading}
+                error={specializationFieldError}
+              />
+            </div>
+          </>
+        ) : null}
+
+        {step === 2 ? (
+          <>
+            <TextAreaField
+              label={t('common.description')}
+              value={description}
+              onChange={setDescription}
+              placeholder={t('shift.descriptionPlaceholder')}
+              minHeight="96px"
+            />
+
+            <TextAreaField
+              label={t('common.requirements')}
+              value={requirements}
+              onChange={setRequirements}
+              placeholder={t('shift.requirementsPlaceholder')}
+              minHeight="80px"
+            />
+
+            <CheckboxField
+              id="urgent-shift"
+              label={t('shift.urgent')}
+              checked={urgent}
+              onChange={setUrgent}
+            />
+          </>
+        ) : null}
 
         {genericSubmitError ? <p className="text-sm text-red-500">{genericSubmitError}</p> : null}
       </div>
 
       <DrawerFooter>
         <div className="grid grid-cols-2 gap-3 w-full">
-          <Button variant="outline" size="md" onClick={close}>
-            {t('common.cancel')}
+          <Button variant="outline" size="md" onClick={handleBackOrCancel}>
+            {step === 0 ? t('common.cancel') : t('common.back')}
           </Button>
-          <Button
-            variant="gradient"
-            size="md"
-            onClick={async () => {
-              setDidAttemptSubmit(true)
-              const ok = await handleSave()
-              if (ok) close()
-              else scrollToFirstInvalid()
-            }}
-            loading={isCreating}
-          >
-            {t('common.save')}
-          </Button>
+          {step === 2 ? (
+            <Button
+              variant="gradient"
+              size="md"
+              onClick={async () => {
+                setDidAttemptSubmit(true)
+                const ok = await handleSave()
+                if (ok) close()
+                else {
+                  const invalidStep = findFirstInvalidStep()
+                  setStep(invalidStep)
+                  setAttemptedSteps([true, true, true])
+                  setTimeout(() => scrollToFirstInvalidInStep(invalidStep), 0)
+                }
+              }}
+              loading={isCreating}
+            >
+              {t('common.save')}
+            </Button>
+          ) : (
+            <Button variant="gradient" size="md" onClick={handleContinue}>
+              {t('common.continue')}
+            </Button>
+          )}
         </div>
       </DrawerFooter>
       <Toast

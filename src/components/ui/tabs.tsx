@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/utils/cn'
 
 export type TabOption<T extends string> = {
@@ -23,6 +24,7 @@ export const Tabs = <T extends string>({
   ariaLabel = 'Tabs',
 }: TabsProps<T>) => {
   const tabRefs = useRef(new Map<T, HTMLButtonElement>())
+  const reduceMotion = useReducedMotion()
 
   const ids = useMemo(() => options.map(o => o.id), [options])
 
@@ -64,7 +66,7 @@ export const Tabs = <T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       onKeyDown={onKeyDown}
-      className={cn('relative flex gap-2 rounded-xl border border-border p-1', className)}
+      className={cn('relative flex rounded-xl border border-border p-1', className)}
     >
       {options.map(option => {
         const isActive = option.id === activeId
@@ -84,15 +86,26 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative z-10 flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
+              'relative flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-300',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
               isActive
-                ? 'bg-muted font-semibold text-foreground'
+                ? 'font-semibold text-white'
                 : 'text-muted-foreground hover:bg-muted/60'
             )}
           >
-            {Icon ? <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" /> : null}
-            <span className={isActive ? 'font-semibold' : 'font-medium'}>{option.label}</span>
+            {isActive ? (
+              <motion.span
+                layoutId="tabs-active-indicator"
+                className="absolute inset-0 rounded-lg gradient-primary shadow-sm"
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
+                aria-hidden="true"
+              />
+            ) : null}
+
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {Icon ? <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" /> : null}
+              <span className={isActive ? 'font-semibold' : 'font-medium'}>{option.label}</span>
+            </span>
           </button>
         )
       })}

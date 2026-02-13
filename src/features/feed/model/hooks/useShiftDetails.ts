@@ -21,8 +21,17 @@ interface RestaurantInfo {
   } | null
 }
 
+interface AboutVenueInfo {
+  canShow: boolean
+  bio: string
+  city: string
+  formatKey: string | null
+  cuisineTypes: string[]
+}
+
 export interface UseShiftDetailsReturn {
   restaurantInfo: RestaurantInfo | null
+  aboutVenue: AboutVenueInfo | null
   hourlyRate: string | null
   shiftTypeLabel: string | null
   vacancyTitle: string
@@ -56,6 +65,24 @@ export const useShiftDetails = (
     }
   }, [vacancyData])
 
+  const aboutVenue = useMemo<AboutVenueInfo | null>(() => {
+    const isRestaurantRole = vacancyData?.user?.role === 'restaurant'
+    if (!isRestaurantRole || !restaurantInfo) return null
+
+    const bio = (restaurantInfo.bio ?? '').trim()
+    const city = (restaurantInfo.profile?.city ?? '').trim()
+    const formatKey =
+      [restaurantInfo.profile?.restaurant_format, restaurantInfo.profile?.format]
+        .map(v => (typeof v === 'string' ? v.trim() : ''))
+        .find(Boolean) ?? null
+    const cuisineTypes = (restaurantInfo.profile?.cuisine_types ?? [])
+      .map(v => (typeof v === 'string' ? v.trim() : ''))
+      .filter(Boolean)
+
+    const canShow = Boolean(bio || city || formatKey || cuisineTypes.length > 0)
+    return canShow ? { canShow, bio, city, formatKey, cuisineTypes } : null
+  }, [vacancyData, restaurantInfo])
+
   const hourlyRate = useMemo(
     () => formatHourlyRate(vacancyData?.hourly_rate ?? null),
     [vacancyData]
@@ -87,6 +114,7 @@ export const useShiftDetails = (
 
   return {
     restaurantInfo,
+    aboutVenue,
     hourlyRate,
     shiftTypeLabel,
     vacancyTitle,

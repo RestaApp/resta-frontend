@@ -232,17 +232,18 @@ export const ProfilePage = memo(() => {
           <Award className="w-5 h-5" style={{ color: 'var(--pink-electric)' }} />
           {t('profile.achievements')}
         </h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x pb-1">
           {achievements.map((a, index) => (
             <motion.div
               key={a.id}
+              className="flex-shrink-0 snap-center"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
             >
-              <Card className="p-4 text-center">
+              <Card className="p-4 text-center w-[170px]">
                 <div className="text-3xl mb-2">{a.emoji}</div>
                 <div className="text-sm font-medium mb-1">{a.title}</div>
                 <p className="text-xs text-muted-foreground">{a.value}</p>

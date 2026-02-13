@@ -112,6 +112,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const { getRestaurantFormatLabel } = useLabels()
   const {
     restaurantInfo,
+    aboutVenue,
     hourlyRate,
     shiftTypeLabel,
     vacancyTitle,
@@ -124,6 +125,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const isOwner = Boolean(currentUserId && shift?.ownerId && shift.ownerId === currentUserId)
 
   const [coverMessage, setCoverMessage] = useState('')
+
+  const description = vacancyData?.description?.trim() ?? ''
+  const requirements = vacancyData?.requirements?.trim() ?? ''
+  const location = shift?.location?.trim() ?? ''
+
+  const showVenueBadges = Boolean(
+    aboutVenue && (aboutVenue.city || aboutVenue.formatKey || aboutVenue.cuisineTypes.length > 0)
+  )
 
   const appStatus: ShiftStatus =
     vacancyData?.my_application?.status ?? shift?.applicationStatus ?? null
@@ -269,12 +278,12 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
               }
             />
 
-            {shift.location ? (
+            {location ? (
               <DetailRow
                 icon={MapPin}
                 iconColor="text-primary"
                 label={t('common.location')}
-                value={shift.location}
+                value={location}
                 action={
                   <Button
                     onClick={handleOpenMap}
@@ -311,52 +320,42 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           </div>
         </Card>
 
-        {vacancyData?.description ? (
-          <TextCard
-            icon={FileText}
-            title={t('common.description')}
-            content={vacancyData.description}
-          />
+        {description ? (
+          <TextCard icon={FileText} title={t('common.description')} content={description} />
         ) : null}
-        {vacancyData?.requirements ? (
-          <TextCard
-            icon={FileText}
-            title={t('common.requirements')}
-            content={vacancyData.requirements}
-          />
+        {requirements ? (
+          <TextCard icon={FileText} title={t('common.requirements')} content={requirements} />
         ) : null}
 
-        {restaurantInfo ? (
+        {aboutVenue ? (
           <Card className="p-4">
             <h2 className="text-[16px] font-medium mb-3">{t('common.aboutVenue')}</h2>
 
-            {restaurantInfo.bio ? (
-              <p className="text-[12px] text-muted-foreground mb-2">{restaurantInfo.bio}</p>
+            {aboutVenue.bio ? (
+              <p className="text-[12px] text-muted-foreground mb-2">{aboutVenue.bio}</p>
             ) : null}
 
-            {restaurantInfo.profile ? (
+            {showVenueBadges ? (
               <div className="flex flex-wrap gap-2 mt-2">
-                {restaurantInfo.profile.city ? (
+                {aboutVenue.city ? (
                   <Badge variant="outline" className="text-[11px]">
-                    {restaurantInfo.profile.city}
+                    {aboutVenue.city}
                   </Badge>
                 ) : null}
 
-                {restaurantInfo.profile.restaurant_format || restaurantInfo.profile.format ? (
+                {aboutVenue.formatKey ? (
                   <Badge variant="outline" className="text-[11px]">
-                    {getRestaurantFormatLabel(
-                      restaurantInfo.profile.restaurant_format ||
-                        restaurantInfo.profile.format ||
-                        ''
-                    )}
+                    {getRestaurantFormatLabel(aboutVenue.formatKey)}
                   </Badge>
                 ) : null}
 
-                {restaurantInfo.profile.cuisine_types?.length ? (
-                  <Badge variant="outline" className="text-[11px]">
-                    {restaurantInfo.profile.cuisine_types.join(', ')}
-                  </Badge>
-                ) : null}
+                {aboutVenue.cuisineTypes.length
+                  ? aboutVenue.cuisineTypes.map(type => (
+                    <Badge key={type} variant="outline" className="text-[11px]">
+                      {type}
+                    </Badge>
+                  ))
+                  : null}
               </div>
             ) : null}
           </Card>
@@ -391,7 +390,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 onClick={handleCancel}
                 disabled={isLoading}
                 variant="outline"
-                className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
+                className="flex-1"
               >
                 {isLoading ? t('shift.cancelling') : t('shift.cancelApplication')}
               </Button>

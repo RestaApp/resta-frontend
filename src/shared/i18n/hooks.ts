@@ -8,35 +8,64 @@ import { useTranslation } from 'react-i18next'
 export function useLabels() {
   const { t } = useTranslation()
 
-  const getSupplierTypeLabel = useCallback(
-    (value: string) => t(`labels.supplierType.${value}`) || value,
+  const resolve = useCallback(
+    (key: string, fallback: string) => {
+      const res = t(key)
+      return res === key ? fallback : res
+    },
     [t]
   )
+
+  const getSupplierTypeLabel = useCallback(
+    (value: string) => resolve(`labels.supplierType.${value}`, value),
+    [resolve]
+  )
   const getSupplierTypeDescription = useCallback(
-    (value: string) => t(`labels.supplierTypeDesc.${value}`) || '',
+    (value: string) => {
+      const key = `labels.supplierTypeDesc.${value}`
+      const res = t(key)
+      return res === key ? '' : res
+    },
     [t]
   )
   const getRestaurantFormatLabel = useCallback(
-    (value: string) => t(`labels.restaurantFormat.${value}`) || value,
-    [t]
+    (value: string) => resolve(`labels.restaurantFormat.${value}`, value),
+    [resolve]
   )
   const getRestaurantFormatDescription = useCallback(
-    (value: string) => t(`labels.restaurantFormatDesc.${value}`) || '',
+    (value: string) => {
+      const key = `labels.restaurantFormatDesc.${value}`
+      const res = t(key)
+      return res === key ? '' : res
+    },
     [t]
   )
   const getEmployeePositionLabel = useCallback(
-    (value: string) =>
-      t(`labels.position.${value}`) || t(`labels.position.${value.toLowerCase()}`) || value,
+    (value: string) => {
+      const key1 = `labels.position.${value}`
+      const key2 = `labels.position.${value.toLowerCase()}`
+      const r1 = t(key1)
+      if (r1 !== key1) return r1
+      const r2 = t(key2)
+      return r2 !== key2 ? r2 : value
+    },
     [t]
   )
   const getEmployeePositionDescription = useCallback(
-    (value: string) => t(`labels.positionDesc.${value.toLowerCase()}`) || '',
+    (value: string) => {
+      const key = `labels.positionDesc.${value.toLowerCase()}`
+      const res = t(key)
+      return res === key ? '' : res
+    },
     [t]
   )
-  const getUiRoleLabel = useCallback((value: string) => t(`labels.userRole.${value}`) || value, [t])
+  const getUiRoleLabel = useCallback(
+    (value: string) => resolve(`labels.userRole.${value}`, value),
+    [resolve]
+  )
   const getSpecializationLabel = useCallback(
-    (value: string) => t(`labels.specialization.${value}`) || value,
-    [t]
+    (value: string) => resolve(`labels.specialization.${value}`, value),
+    [resolve]
   )
 
   return {

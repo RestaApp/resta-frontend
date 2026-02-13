@@ -26,6 +26,7 @@
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
+    "back": "Back",
     "close": "Close",
     "reset": "Reset",
     "loading": "Loading",
@@ -235,6 +236,10 @@
   "shift": {
     "addTitle": "Add shift",
     "addDescription": "Find a replacement.",
+    "addStepLabel": "Step {{current}} of {{total}}",
+    "addStep1Title": "Date & time",
+    "addStep2Title": "Location & position",
+    "addStep3Title": "Description & requirements",
     "cancelApplication": "Cancel application",
     "cancelling": "Cancelling...",
     "apply": "Apply",

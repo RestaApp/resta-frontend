@@ -230,8 +230,7 @@ const ShiftCardComponent = ({
         {/* Apply / Cancel */}
         {!isOwner && canShowApply ? (
           <Button
-            variant="gradient"
-            pressed={isApplied}
+            variant={isApplied ? 'outline' : 'gradient'}
             loading={isLoading}
             onClick={isApplied ? handleCancelClick : handleApplyClick}
             disabled={isLoading || (!canApply && !isApplied)}

@@ -26,6 +26,7 @@
     "save": "Сохранить",
     "saving": "Сохранение...",
     "cancel": "Отмена",
+    "back": "Назад",
     "close": "Закрыть",
     "reset": "Сбросить",
     "loading": "Загрузка",
@@ -235,6 +236,10 @@
   "shift": {
     "addTitle": "Добавить смену",
     "addDescription": "Найдите себе замену.",
+    "addStepLabel": "Шаг {{current}} из {{total}}",
+    "addStep1Title": "Дата и время",
+    "addStep2Title": "Локация и позиция",
+    "addStep3Title": "Описание и требования",
     "cancelApplication": "Отменить заявку",
     "cancelling": "Отмена...",
     "apply": "Откликнуться",
