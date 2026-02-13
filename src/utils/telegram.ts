@@ -2,8 +2,16 @@ import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '@/config/telegram'
 import { logger } from '@/utils/logger'
 
 interface TelegramWebApp {
+  version?: string
   ready: () => void
   expand: () => void
+  enableClosingConfirmation?: () => void
+  disableVerticalSwipes?: () => void
+  requestFullscreen?: () => void
+  setBackgroundColor?: (color: string) => void
+  setHeaderColor?: (color: string) => void
+  lockOrientation?: () => void
+  unlockOrientation?: () => void
   initData?: string
   initDataUnsafe?: {
     user?: {

@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react'
+import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -11,9 +11,7 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
-import { cn } from '@/utils/cn'
 import { Award } from 'lucide-react'
-import { getProfileAboutText, getProfileAboutTitle } from './utils/profileAbout'
 import { buildProfileAchievements } from './utils/profileAchievements'
 
 const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
@@ -79,12 +77,7 @@ SupplierInfoCard.displayName = 'SupplierInfoCard'
 export const ProfilePage = memo(() => {
   const { t } = useTranslation()
   const m = useProfilePageModel()
-  const [showFullBio, setShowFullBio] = useState(false)
 
-  const aboutTitle = useMemo(() => getProfileAboutTitle(t, m.apiRole), [m.apiRole, t])
-  const aboutText = useMemo(() => getProfileAboutText(m.userProfile), [m.userProfile])
-
-  const showReadMore = !showFullBio && aboutText.length > 220
 
   const achievements = useMemo(() => {
     return buildProfileAchievements({
@@ -95,6 +88,7 @@ export const ProfilePage = memo(() => {
       myShiftsCount: m.myShiftsCount,
       appliedShiftsCount: m.appliedShiftsCount,
       isProfileFilled: m.profileCompleteness?.isFilled ?? false,
+      infoPercent: m.profileCompleteness?.infoPercent ?? 0,
       specializationsCount: m.specializations.length,
     })
   }, [
@@ -104,6 +98,7 @@ export const ProfilePage = memo(() => {
     m.myShiftsCount,
     m.appliedShiftsCount,
     m.profileCompleteness?.isFilled,
+    m.profileCompleteness?.infoPercent,
     m.specializations.length,
     t,
   ])
@@ -144,73 +139,11 @@ export const ProfilePage = memo(() => {
         appliedShiftsCount={m.appliedShiftsCount}
       />
 
-      <Card className="p-5">
-        <h3 className="text-lg font-semibold mb-3">{aboutTitle}</h3>
-        {aboutText ? (
-          <>
-            <p
-              className={cn(
-                'text-sm leading-relaxed text-muted-foreground',
-                !showFullBio ? 'line-clamp-3' : ''
-              )}
-            >
-              {aboutText}
-            </p>
-            {showReadMore ? (
-              <button
-                type="button"
-                onClick={() => setShowFullBio(true)}
-                className="text-sm mt-2 font-medium"
-                style={{ color: 'var(--purple-deep)' }}
-              >
-                {t('profile.readMore')}
-              </button>
-            ) : null}
-            {showFullBio ? (
-              <button
-                type="button"
-                onClick={() => setShowFullBio(false)}
-                className="text-sm mt-2 font-medium"
-                style={{ color: 'var(--purple-deep)' }}
-              >
-                {t('profile.collapse')}
-              </button>
-            ) : null}
-          </>
-        ) : (
-          <div className="text-sm text-muted-foreground">
-            <p className="leading-relaxed mb-4">{t('profile.fillToApply')}</p>
-            <div className="flex justify-center">
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={() => m.setIsEditDrawerOpen(true)}
-                className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
-              >
-                {t('profile.editProfile')}
-              </motion.button>
-            </div>
-          </div>
-        )}
-      </Card>
+
 
       {m.apiRole === 'employee' && <SpecializationsSection specializations={m.specializations} />}
 
-      {m.apiRole === 'employee' && m.userProfile.employee_profile?.skills?.length ? (
-        <Card className="p-5">
-          <h3 className="text-lg font-semibold mb-4">{t('profile.skills')}</h3>
-          <div className="flex flex-wrap gap-2">
-            {m.userProfile.employee_profile.skills.map(skill => (
-              <span
-                key={skill}
-                className="px-4 py-2 rounded-full text-sm border border-border bg-muted/40 text-foreground"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </Card>
-      ) : null}
+
 
       <ProfileInfoCard
         apiRole={m.apiRole}

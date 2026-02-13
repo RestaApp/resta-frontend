@@ -198,6 +198,7 @@ const AdvancedFiltersSheet = ({
                 variant="secondary"
                 size="sm"
                 aria-label={t('feed.resetFiltersAria')}
+                className="rounded-full px-3 py-1.5"
               >
                 {t('common.reset')}
               </Button>
@@ -246,19 +247,23 @@ const AdvancedFiltersSheet = ({
           {!isVacancy && (
             <div className="space-y-3">
               <h3 className="font-semibold text-base">{t('feed.period')}</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <DatePicker
-                  value={startDate}
-                  onChange={setStartDate}
-                  minDate={getMinStartDate()}
-                  label={t('common.from')}
-                />
-                <DatePicker
-                  value={endDate}
-                  onChange={setEndDate}
-                  minDate={getMinEndDate()}
-                  label={t('common.to')}
-                />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <DatePicker
+                    value={startDate}
+                    onChange={setStartDate}
+                    minDate={getMinStartDate()}
+                    label={t('common.from')}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <DatePicker
+                    value={endDate}
+                    onChange={setEndDate}
+                    minDate={getMinEndDate()}
+                    label={t('common.to')}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -328,18 +333,7 @@ const AdvancedFiltersSheet = ({
           </AnimatePresence>
         </motion.div>
 
-        <div className="px-5 py-4 border-t border-border/50 bg-card flex gap-3">
-          <Button
-            type="button"
-            onClick={handleReset}
-            variant="outline"
-            size="md"
-            className="flex-1"
-            disabled={!hasActiveFilters}
-          >
-            {t('common.reset')}
-          </Button>
-
+        <div className="px-5 py-4 border-t border-border/50 bg-card">
           <Button
             type="button"
             onClick={() => {
@@ -348,7 +342,7 @@ const AdvancedFiltersSheet = ({
             }}
             variant="gradient"
             size="md"
-            className="flex-1"
+            className="w-full"
           >
             {isVacancy
               ? t('feed.showVacanciesCount', { count: previewCount })

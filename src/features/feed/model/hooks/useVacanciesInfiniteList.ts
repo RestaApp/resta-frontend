@@ -23,6 +23,7 @@ export interface UseVacanciesInfiniteListReturn {
   totalCount: number
   loadMore: () => void
   reset: () => void
+  refresh: () => void
 }
 
 export const useVacanciesInfiniteList = (
@@ -47,6 +48,7 @@ export const useVacanciesInfiniteList = (
     isFetching,
     isError,
     error,
+    refetch,
   } = useGetVacanciesQuery(queryParams, {
     refetchOnMountOrArgChange: false,
     skip: !enabled,
@@ -101,6 +103,12 @@ export const useVacanciesInfiniteList = (
     setVisibleCount(perPage)
   }, [perPage])
 
+  const refresh = useCallback(() => {
+    if (!enabled) return
+    setVisibleCount(perPage)
+    refetch()
+  }, [enabled, perPage, refetch])
+
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false
     return items.length === 0 && (isLoading || isFetching || !response)
@@ -122,5 +130,6 @@ export const useVacanciesInfiniteList = (
     totalCount,
     loadMore,
     reset,
+    refresh,
   }
 }

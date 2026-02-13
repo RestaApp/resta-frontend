@@ -240,8 +240,18 @@ export const useAddShiftForm = ({
       dateError ||
       positionError
     ) {
+      const canShowSpecializationError =
+        !!title &&
+        !!date &&
+        !!startTime &&
+        !!endTime &&
+        !!position &&
+        !timeRangeError &&
+        !dateError &&
+        !positionError
+
       setSubmitError(
-        specializations.length === 0
+        specializations.length === 0 && canShowSpecializationError
           ? t('validation.specializationRequired')
           : t('validation.fillRequired')
       )

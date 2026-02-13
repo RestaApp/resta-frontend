@@ -49,7 +49,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
     <button
       type="button"
       onClick={handleClick}
-      className="snap-center flex-shrink-0 w-[110px] h-[135px] relative overflow-hidden rounded-2xl bg-card border border-border p-3 flex flex-col items-center justify-between shadow-sm cursor-pointer group active:scale-95 transition-transform text-left"
+      className="snap-center flex-shrink-0 w-[110px] h-[135px] relative overflow-hidden rounded-2xl bg-card border border-border p-3 flex flex-col items-center justify-between shadow-sm cursor-pointer group active:scale-95 !transition-transform !duration-150 text-left motion-reduce:!transition-none motion-reduce:active:scale-100"
     >
       <span className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-colors" />
 

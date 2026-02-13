@@ -55,12 +55,10 @@ interface ProfileInfoEmployeeSectionProps {
 const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmployeeSectionProps) => {
   const { t } = useTranslation()
   if (!employeeProfile) return null
-  const { experience_years, open_to_work, skills } = employeeProfile
+  const { experience_years, open_to_work } = employeeProfile
   const hasExperience = experience_years !== undefined
   const hasOpenToWork = open_to_work !== undefined
-  const hasSkills = skills?.length
-
-  if (!hasExperience && !hasOpenToWork && !hasSkills) return null
+  if (!hasExperience && !hasOpenToWork) return null
 
   return (
     <>
@@ -72,20 +70,7 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
           {open_to_work ? t('common.yes') : t('common.no')}
         </InfoRow>
       )}
-      {hasSkills ? (
-        <div className="pt-3">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-2">
-            {t('profile.skills')}
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {skills.map(skill => (
-              <Badge key={skill} variant="outline" className="text-xs">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      ) : null}
+
     </>
   )
 })

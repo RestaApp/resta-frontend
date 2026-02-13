@@ -67,11 +67,9 @@
   --pink-electric: #ec4899;
   --blue-cyber: #06b6d4;
   --gradient-primary: linear-gradient(135deg, #6b21a8 0%, #ec4899 100%);
-  --gradient-glow: linear-gradient(
-    135deg,
-    rgba(107, 33, 168, 0.1) 0%,
-    rgba(236, 72, 153, 0.1) 100%
-  );
+  --gradient-glow: linear-gradient(135deg,
+      rgba(107, 33, 168, 0.1) 0%,
+      rgba(236, 72, 153, 0.1) 100%);
 }
 
 .dark {
@@ -129,11 +127,9 @@
   --blue-cyber: #22d3ee;
   --gradient-primary: linear-gradient(135deg, #9333ea 0%, #f472b6 100%);
   /* Свечение чуть ярче в темноте */
-  --gradient-glow: linear-gradient(
-    135deg,
-    rgba(147, 51, 234, 0.25) 0%,
-    rgba(244, 114, 182, 0.25) 100%
-  );
+  --gradient-glow: linear-gradient(135deg,
+      rgba(147, 51, 234, 0.25) 0%,
+      rgba(244, 114, 182, 0.25) 100%);
 }
 
 @theme inline {
@@ -197,10 +193,16 @@
   html {
     font-size: var(--font-size);
     -webkit-tap-highlight-color: transparent;
+    height: 100%;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground;
+    min-height: var(--tg-viewport-stable-height, 100dvh);
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
@@ -208,6 +210,12 @@
        Анимируем только фон и цвет текста, чтобы не лагали кнопки.
     */
     transition: background-color 0.3s ease;
+  }
+
+  #root {
+    min-height: var(--tg-viewport-stable-height, 100dvh);
+    height: 100%;
+    width: 100%;
   }
 
   /* Keep background and borders smooth to avoid blinking; everything else is instant. */
@@ -328,6 +336,7 @@
 }
 
 @keyframes boil-bob {
+
   0%,
   100% {
     transform: translateY(0);
@@ -419,6 +428,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .loading-pot,
   .loading-hat,
   .loading-steam {

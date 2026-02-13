@@ -4,6 +4,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { MyShiftsSection } from '@/features/activity/ui/components/MyShiftsSection'
 import { MyApplicationsSection } from '@/features/activity/ui/components/MyApplicationsSection'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 
 function ActivityListSkeleton() {
   return (
@@ -65,6 +66,7 @@ export function ActivityListTab({
       <EmptyState
         message={t('activity.emptyList')}
         description={t('activity.emptyListDescription')}
+        illustration={<EmptyInboxIllustration className="h-24 w-24" />}
       />
     )
   }

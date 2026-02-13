@@ -14,10 +14,12 @@ import { getTelegramWebApp, getTelegramLanguageCode, isTelegramWebApp } from '@/
 import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'
 import { useAuthActions } from '@/hooks/useAuth'
+import { useLockPortrait } from '@/hooks/useLockPortrait'
 import { updateUserDataInStore } from '@/utils/userData'
 import type { UserData } from '@/services/api/authApi'
 import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { THEME_CHANGE_EVENT } from '@/utils/theme'
 
 type TelegramWebApp = ReturnType<typeof getTelegramWebApp>
 
@@ -104,16 +106,51 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     [dispatch]
   )
 
-  const configureTelegram = useCallback((webApp: TelegramWebApp | null) => {
+  const applyTelegramColors = useCallback((webApp: TelegramWebApp | null) => {
     if (!webApp) return
+    if (typeof document === 'undefined') return
+
+    const style = getComputedStyle(document.documentElement)
+    const bg = style.getPropertyValue('--background').trim() || '#ffffff'
+    const header = style.getPropertyValue('--card').trim() || bg
+
     try {
-      webApp.ready()
-      webApp.expand()
-    } catch {
-      // в проде тихо, в деве можно логировать
-      // if (import.meta.env.DEV) console.debug('Telegram configure failed')
+      webApp.setBackgroundColor?.(bg)
+    } catch (err) {
+      void err
+    }
+
+    try {
+      webApp.setHeaderColor?.(header)
+    } catch (err) {
+      void err
     }
   }, [])
+
+  const configureTelegram = useCallback(
+    (webApp: TelegramWebApp | null) => {
+      if (!webApp) return
+      const safe = (fn?: (() => void) | null) => {
+        try {
+          fn?.()
+        } catch (err) {
+          void err
+        }
+      }
+
+      safe(() => webApp.enableClosingConfirmation?.())
+      safe(() => webApp.disableVerticalSwipes?.())
+      safe(() => webApp.expand())
+
+      if (/iP(hone|ad|od)/i.test(navigator.userAgent)) {
+        safe(() => webApp.requestFullscreen?.())
+      }
+
+      applyTelegramColors(webApp)
+      safe(() => webApp.ready())
+    },
+    [applyTelegramColors]
+  )
 
   const performLogin = useCallback(async (): Promise<TelegramWebApp | null> => {
     const webApp = getTelegramWebApp()
@@ -166,11 +203,14 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (isReady) return
     if (!authService.isTokenValid() || !userDataFromStore?.id) return
-    ;(async () => {
+
+    const run = async () => {
       await applyLanguage(userDataFromStore as UserData)
       setIsReady(true)
       dispatch(setReady(true))
-    })()
+    }
+
+    void run()
   }, [applyLanguage, dispatch, isReady, userDataFromStore])
 
   /**
@@ -222,7 +262,8 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (!isReady) return
     if (userDataFromStore?.id) return
-    ;(async () => {
+
+    const run = async () => {
       try {
         if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
           const code = getTelegramLanguageCode()
@@ -231,8 +272,26 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       } catch {
         // ignore
       }
-    })()
+    }
+
+    void run()
   }, [isReady, userDataFromStore?.id])
+
+  useEffect(() => {
+    if (!telegram) return
+
+    const onThemeChange = () => {
+      applyTelegramColors(telegram)
+    }
+
+    onThemeChange()
+    window.addEventListener(THEME_CHANGE_EVENT, onThemeChange)
+    return () => {
+      window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange)
+    }
+  }, [applyTelegramColors, telegram])
+
+  useLockPortrait(telegram)
 
   const value = useMemo<TelegramContextValue>(() => ({ isReady, telegram }), [isReady, telegram])
 

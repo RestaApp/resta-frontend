@@ -16,6 +16,7 @@ export function buildProfileAchievements(params: {
   myShiftsCount: number
   appliedShiftsCount: number
   isProfileFilled: boolean
+  infoPercent: number
   specializationsCount: number
 }): ProfileAchievement[] {
   const {
@@ -25,11 +26,11 @@ export function buildProfileAchievements(params: {
     activeApplications,
     myShiftsCount,
     appliedShiftsCount,
-    isProfileFilled,
+    infoPercent,
     specializationsCount,
   } = params
 
-  const filledValue = isProfileFilled ? '100%' : '—'
+  const filledValue = `${Math.max(0, Math.min(100, Math.round(infoPercent)))}%`
 
   if (apiRole === 'employee') {
     return [

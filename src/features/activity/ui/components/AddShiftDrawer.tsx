@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CheckCircle2 } from 'lucide-react'
 import {
   Drawer,
   DrawerHeader,
@@ -81,6 +82,7 @@ const AddShiftDrawerKeyed = ({
     false,
   ])
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false)
 
   const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
     { value: 'vacancy', label: t('common.vacancy') },
@@ -140,8 +142,10 @@ const AddShiftDrawerKeyed = ({
 
   const se = submitError?.toLowerCase() || ''
   const isSpecializationError = se.includes('специализац') || se.includes('specialization')
+  const canValidateSpecializations = !!formPosition && !positionError
   const specializationFieldError =
-    formPosition && (isSpecializationError || (showStep1Errors && specializations.length === 0))
+    canValidateSpecializations &&
+      (isSpecializationError || (showStep1Errors && specializations.length === 0))
       ? isSpecializationError && submitError
         ? submitError
         : t('validation.specializationRequired')
@@ -227,6 +231,7 @@ const AddShiftDrawerKeyed = ({
         setStep(0)
         setAttemptedSteps([false, false, false])
         setDidAttemptSubmit(false)
+        setIsSuccessOpen(false)
         resetForm()
       }
       onOpenChange(next)
@@ -235,6 +240,13 @@ const AddShiftDrawerKeyed = ({
   )
 
   const close = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
+
+  useEffect(() => {
+    if (!open) return
+    if (!isSuccessOpen) return
+    const id = window.setTimeout(() => close(), 3000)
+    return () => window.clearTimeout(id)
+  }, [close, isSuccessOpen, open])
 
   const handleContinue = useCallback(() => {
     setAttemptedSteps(prev => {
@@ -298,22 +310,34 @@ const AddShiftDrawerKeyed = ({
       </DrawerHeader>
 
       <div className="space-y-5 p-4">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              {t('shift.addStepLabel', { current: step + 1, total: TOTAL_STEPS })}
+        {isSuccessOpen ? (
+          <div className="flex flex-col items-center justify-center py-10 px-2 animate-fade-in">
+            <div className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mb-3">
+              <CheckCircle2 className="w-9 h-9 text-success" strokeWidth={1.6} />
+            </div>
+            <p className="text-foreground font-semibold text-center mb-1">{t('shift.created')}</p>
+            <p className="text-muted-foreground text-sm text-center max-w-[320px]">
+              {t('shift.createdConfirmation')}
             </p>
-            <p className="text-sm font-medium">{stepTitle}</p>
           </div>
-          <div className="h-1 w-full rounded-full bg-muted">
-            <div
-              className="h-1 rounded-full bg-primary transition-[width]"
-              style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
-            />
+        ) : (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground">
+                {t('shift.addStepLabel', { current: step + 1, total: TOTAL_STEPS })}
+              </p>
+              <p className="text-sm font-medium">{stepTitle}</p>
+            </div>
+            <div className="h-1 w-full rounded-full bg-muted">
+              <div
+                className="h-1 rounded-full bg-primary transition-[width]"
+                style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
-        {step === 0 ? (
+        {!isSuccessOpen && step === 0 ? (
           <>
             <div ref={titleRef}>
               <TextField
@@ -337,26 +361,30 @@ const AddShiftDrawerKeyed = ({
               </Field>
             </div>
 
-            <div ref={timeRef} className="grid grid-cols-2 gap-4">
-              <TimeField
-                label={t('shift.start')}
-                value={startTime}
-                onChange={setStartTime}
-                error={startTimeError}
-              />
-              <TimeField
-                label={t('shift.end')}
-                value={endTime}
-                onChange={setEndTime}
-                error={endTimeError}
-              />
+            <div ref={timeRef} className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+              <div className="min-w-0">
+                <TimeField
+                  label={t('shift.start')}
+                  value={startTime}
+                  onChange={setStartTime}
+                  error={startTimeError}
+                />
+              </div>
+              <div className="min-w-0">
+                <TimeField
+                  label={t('shift.end')}
+                  value={endTime}
+                  onChange={setEndTime}
+                  error={endTimeError}
+                />
+              </div>
             </div>
 
             <MoneyField value={pay} onChange={setPay} />
           </>
         ) : null}
 
-        {step === 1 ? (
+        {!isSuccessOpen && step === 1 ? (
           <>
             <LocationField
               label={t('common.location')}
@@ -412,7 +440,7 @@ const AddShiftDrawerKeyed = ({
           </>
         ) : null}
 
-        {step === 2 ? (
+        {!isSuccessOpen && step === 2 ? (
           <>
             <TextAreaField
               label={t('common.description')}
@@ -439,39 +467,63 @@ const AddShiftDrawerKeyed = ({
           </>
         ) : null}
 
-        {genericSubmitError ? <p className="text-sm text-red-500">{genericSubmitError}</p> : null}
+        {!isSuccessOpen && genericSubmitError ? (
+          <p className="text-sm text-red-500">{genericSubmitError}</p>
+        ) : null}
       </div>
 
       <DrawerFooter>
-        <div className="grid grid-cols-2 gap-3 w-full">
-          <Button variant="outline" size="md" onClick={handleBackOrCancel}>
-            {step === 0 ? t('common.cancel') : t('common.back')}
-          </Button>
-          {step === 2 ? (
+        {isSuccessOpen ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
             <Button
-              variant="gradient"
+              variant="outline"
               size="md"
-              onClick={async () => {
-                setDidAttemptSubmit(true)
-                const ok = await handleSave()
-                if (ok) close()
-                else {
-                  const invalidStep = findFirstInvalidStep()
-                  setStep(invalidStep)
-                  setAttemptedSteps([true, true, true])
-                  setTimeout(() => scrollToFirstInvalidInStep(invalidStep), 0)
-                }
+              onClick={() => {
+                setIsSuccessOpen(false)
+                setStep(0)
+                setAttemptedSteps([false, false, false])
+                setDidAttemptSubmit(false)
               }}
-              loading={isCreating}
             >
-              {t('common.save')}
+              {t('shift.createAnother')}
             </Button>
-          ) : (
-            <Button variant="gradient" size="md" onClick={handleContinue}>
-              {t('common.continue')}
+            <Button variant="gradient" size="md" onClick={close}>
+              {t('common.close')}
             </Button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+            <Button variant="outline" size="md" onClick={handleBackOrCancel}>
+              {step === 0 ? t('common.cancel') : t('common.back')}
+            </Button>
+            {step === 2 ? (
+              <Button
+                variant="gradient"
+                size="md"
+                onClick={async () => {
+                  setDidAttemptSubmit(true)
+                  const ok = await handleSave()
+                  if (ok) {
+                    if (initialValues?.id) close()
+                    else setIsSuccessOpen(true)
+                  } else {
+                    const invalidStep = findFirstInvalidStep()
+                    setStep(invalidStep)
+                    setAttemptedSteps([true, true, true])
+                    setTimeout(() => scrollToFirstInvalidInStep(invalidStep), 0)
+                  }
+                }}
+                loading={isCreating}
+              >
+                {t('common.save')}
+              </Button>
+            ) : (
+              <Button variant="gradient" size="md" onClick={handleContinue}>
+                {t('common.continue')}
+              </Button>
+            )}
+          </div>
+        )}
       </DrawerFooter>
       <Toast
         message={toast.message}

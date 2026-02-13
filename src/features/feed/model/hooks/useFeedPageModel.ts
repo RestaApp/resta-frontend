@@ -166,7 +166,13 @@ export const useFeedPageModel = () => {
 
   const activeList = feedType === 'shifts' ? shiftsList : jobsList
 
-  const { hotOffers, hotVacancies, hotOffersTotalCount } = useHotOffers({
+  const {
+    hotOffers,
+    hotVacancies,
+    hotOffersTotalCount,
+    isFetching: isHotOffersFetching,
+    refetch: refetchHotOffers,
+  } = useHotOffers({
     feedType,
     advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
   })
@@ -222,6 +228,11 @@ export const useFeedPageModel = () => {
   }, [setQuickFilter])
 
   const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
+
+  const refreshFeed = useCallback(() => {
+    activeList.refresh()
+    refetchHotOffers()
+  }, [activeList, refetchHotOffers])
 
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
   const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])
@@ -330,6 +341,7 @@ export const useFeedPageModel = () => {
     // hot offers
     hotOffers,
     hotOffersTotalCount,
+    isHotOffersFetching,
     showAllHotShifts,
     onHotOfferClick: handleHotOfferClick,
 
@@ -339,6 +351,7 @@ export const useFeedPageModel = () => {
     quickFilter,
     advancedFilters,
     resetFilters,
+    refreshFeed,
     openShiftDetails,
 
     // details / actions

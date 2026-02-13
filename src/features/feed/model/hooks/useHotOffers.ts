@@ -15,6 +15,9 @@ interface UseHotOffersReturn {
   hotOffers: HotOffer[]
   hotVacancies: VacancyApiItem[]
   hotOffersTotalCount?: number
+  isLoading: boolean
+  isFetching: boolean
+  refetch: () => void
 }
 
 export const useHotOffers = ({
@@ -35,7 +38,7 @@ export const useHotOffers = ({
     [shiftType, advancedFilters]
   )
 
-  const { data: resp } = useGetVacanciesQuery(params, {
+  const { data: resp, isLoading, isFetching, refetch } = useGetVacanciesQuery(params, {
     refetchOnMountOrArgChange: false,
   })
 
@@ -51,5 +54,5 @@ export const useHotOffers = ({
     return p?.total_count ?? undefined
   }, [resp])
 
-  return { hotOffers, hotVacancies, hotOffersTotalCount }
+  return { hotOffers, hotVacancies, hotOffersTotalCount, isLoading, isFetching, refetch }
 }

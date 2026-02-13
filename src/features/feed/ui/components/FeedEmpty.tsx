@@ -2,12 +2,14 @@ import { useTranslation } from 'react-i18next'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { FeedType } from '@/features/feed/model/types'
+import { EmptyFiltersIllustration, EmptySearchIllustration } from '@/components/ui/empty-illustrations'
 
 interface FeedEmptyProps {
   emptyMessage: string
   emptyDescription: string
   onReset: () => void
   showResetButton: boolean
+  hasActiveFilters: boolean
 }
 
 export function FeedEmpty({
@@ -15,11 +17,19 @@ export function FeedEmpty({
   emptyDescription,
   onReset,
   showResetButton,
+  hasActiveFilters,
 }: FeedEmptyProps) {
   return (
     <EmptyState
       message={emptyMessage}
       description={emptyDescription}
+      illustration={
+        hasActiveFilters ? (
+          <EmptyFiltersIllustration className="h-24 w-24" />
+        ) : (
+          <EmptySearchIllustration className="h-24 w-24" />
+        )
+      }
       onReset={onReset}
       showResetButton={showResetButton}
     />
@@ -79,6 +89,7 @@ export function FeedListArea({
         emptyDescription={emptyDescription}
         onReset={onResetFilters}
         showResetButton={hasActiveFilters}
+        hasActiveFilters={hasActiveFilters}
       />
     )
   }

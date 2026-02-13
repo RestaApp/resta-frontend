@@ -4,6 +4,7 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { EmptyBriefcaseIllustration } from '@/components/ui/empty-illustrations'
 
 interface MyShiftsSectionProps {
   shifts: VacancyApiItem[]
@@ -22,6 +23,7 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
         <EmptyState
           message={t('activity.noShiftsYet')}
           description={t('activity.shiftsWillAppearHere')}
+          illustration={<EmptyBriefcaseIllustration className="h-24 w-24" />}
         />
       ) : (
         <div className="space-y-4">
