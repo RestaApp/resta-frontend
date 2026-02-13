@@ -149,13 +149,14 @@ const AddShiftDrawerKeyed = ({
   const se = submitError?.toLowerCase() || ''
   const isSpecializationError = se.includes('специализац') || se.includes('specialization')
   const canValidateSpecializations = !!formPosition && !positionError
-  const specializationFieldError =
+  const showSpecializationError =
     canValidateSpecializations &&
     (isSpecializationError || (showStep1Errors && specializations.length === 0))
-      ? isSpecializationError && submitError
-        ? submitError
-        : t('validation.specializationRequired')
-      : undefined
+  const specializationFieldError = showSpecializationError
+    ? isSpecializationError && submitError
+      ? submitError
+      : t('validation.specializationRequired')
+    : undefined
   const requirementsFieldError =
     fieldErrors.requirements ??
     (showStep2Errors && !requirements.trim() ? requiredFieldError : undefined)
@@ -387,7 +388,7 @@ const AddShiftDrawerKeyed = ({
               </Field>
             </div>
 
-            <div ref={timeRef} className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+            <div ref={timeRef} className="grid grid-cols-2 gap-3 w-full">
               <div className="min-w-0">
                 <TimeField
                   label={t('shift.start')}
@@ -506,10 +507,11 @@ const AddShiftDrawerKeyed = ({
 
       <DrawerFooter>
         {isSuccessOpen ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+          <div className="grid grid-cols-2 gap-3 w-full">
             <Button
               variant="outline"
               size="md"
+              className="w-full"
               onClick={() => {
                 setIsSuccessOpen(false)
                 setStep(0)
@@ -519,19 +521,20 @@ const AddShiftDrawerKeyed = ({
             >
               {t('shift.createAnother')}
             </Button>
-            <Button variant="gradient" size="md" onClick={close}>
+            <Button variant="gradient" size="md" className="w-full" onClick={close}>
               {t('common.close')}
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-            <Button variant="outline" size="md" onClick={handleBackOrCancel}>
+          <div className="grid grid-cols-2 gap-3 w-full">
+            <Button variant="outline" size="md" className="w-full" onClick={handleBackOrCancel}>
               {step === 0 ? t('common.cancel') : t('common.back')}
             </Button>
             {step === 2 ? (
               <Button
                 variant="gradient"
                 size="md"
+                className="w-full"
                 onClick={async () => {
                   setDidAttemptSubmit(true)
                   const ok = await handleSave()
@@ -550,7 +553,7 @@ const AddShiftDrawerKeyed = ({
                 {t('common.save')}
               </Button>
             ) : (
-              <Button variant="gradient" size="md" onClick={handleContinue}>
+              <Button variant="gradient" size="md" className="w-full" onClick={handleContinue}>
                 {t('common.continue')}
               </Button>
             )}
