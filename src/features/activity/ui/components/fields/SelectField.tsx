@@ -10,6 +10,7 @@ type SelectFieldProps = {
   disabled?: boolean
   hint?: string
   className?: string
+  error?: string
 }
 type SelectFieldOption = {
   value: string
@@ -25,8 +26,9 @@ export const SelectField = ({
   disabled,
   hint,
   className,
+  error,
 }: SelectFieldProps) => (
-  <Field label={label} hint={hint}>
+  <Field label={label} hint={hint} error={error}>
     <Select
       value={value}
       onChange={onChange}
@@ -34,6 +36,7 @@ export const SelectField = ({
       placeholder={placeholder}
       disabled={disabled}
       className={className}
+      error={error}
     />
   </Field>
 )

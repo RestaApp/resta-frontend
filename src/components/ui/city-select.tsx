@@ -9,6 +9,7 @@ interface CitySelectProps {
   placeholder?: string
   disabled?: boolean
   className?: string
+  error?: string
 }
 
 export const CitySelect = memo(function CitySelect({
@@ -18,6 +19,7 @@ export const CitySelect = memo(function CitySelect({
   placeholder,
   disabled = false,
   className,
+  error,
 }: CitySelectProps) {
   const { t } = useTranslation()
   const displayPlaceholder = placeholder ?? t('citySelect.placeholder')
@@ -34,6 +36,7 @@ export const CitySelect = memo(function CitySelect({
       placeholder={displayPlaceholder}
       disabled={disabled}
       className={className}
+      error={error}
     />
   )
 })

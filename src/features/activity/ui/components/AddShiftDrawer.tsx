@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -67,6 +67,12 @@ const AddShiftDrawerKeyed = ({
   const { toast, hideToast } = useToast()
   const isEmployeeRole = userProfile?.role === 'employee'
   const lockedShiftType = getLockedShiftType(userProfile?.role)
+  const titleRef = useRef<HTMLDivElement | null>(null)
+  const dateRef = useRef<HTMLDivElement | null>(null)
+  const timeRef = useRef<HTMLDivElement | null>(null)
+  const positionRef = useRef<HTMLDivElement | null>(null)
+  const specializationRef = useRef<HTMLDivElement | null>(null)
+  const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
 
   const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
     { value: 'vacancy', label: t('common.vacancy') },
@@ -105,7 +111,6 @@ const AddShiftDrawerKeyed = ({
     setSpecializations,
     submitError,
     isCreating,
-    isFormInvalid,
     timeRangeError,
     dateError,
     positionError,
@@ -113,8 +118,39 @@ const AddShiftDrawerKeyed = ({
     resetForm,
   } = form
 
+  useEffect(() => {
+    if (submitError) setDidAttemptSubmit(true)
+  }, [submitError])
+
+  const requiredFieldError = t('validation.requiredField')
+  const titleError = didAttemptSubmit && !title.trim() ? requiredFieldError : undefined
+  const dateFieldError = dateError ?? (didAttemptSubmit && !date ? requiredFieldError : undefined)
+  const startTimeError = didAttemptSubmit && !startTime ? requiredFieldError : undefined
+  const endTimeError = timeRangeError ?? (didAttemptSubmit && !endTime ? requiredFieldError : undefined)
+  const positionFieldError =
+    positionError ?? (didAttemptSubmit && !formPosition ? requiredFieldError : undefined)
+
   const se = submitError?.toLowerCase() || ''
   const isSpecializationError = se.includes('специализац') || se.includes('specialization')
+  const specializationFieldError =
+    formPosition && (isSpecializationError || (didAttemptSubmit && specializations.length === 0))
+      ? isSpecializationError && submitError
+        ? submitError
+        : t('validation.specializationRequired')
+      : undefined
+
+  const genericSubmitError = submitError && !isSpecializationError ? submitError : null
+
+  const scrollToFirstInvalid = useCallback(() => {
+    const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    if (!title.trim()) return scrollTo(titleRef)
+    if (!date) return scrollTo(dateRef)
+    if (!startTime || !endTime || timeRangeError) return scrollTo(timeRef)
+    if (!formPosition || positionError) return scrollTo(positionRef)
+    if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
+  }, [date, formPosition, positionError, specializations.length, startTime, endTime, timeRangeError, title])
 
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open,
@@ -136,7 +172,10 @@ const AddShiftDrawerKeyed = ({
 
   const handleDrawerOpenChange = useCallback(
     (next: boolean) => {
-      if (!next) resetForm()
+      if (!next) {
+        setDidAttemptSubmit(false)
+        resetForm()
+      }
       onOpenChange(next)
     },
     [onOpenChange, resetForm]
@@ -163,12 +202,15 @@ const AddShiftDrawerKeyed = ({
       </DrawerHeader>
 
       <div className="space-y-5 p-4">
-        <TextField
-          label={t('shift.shiftTitle')}
-          value={title}
-          onChange={setTitle}
-          placeholder={t('shift.shiftTitlePlaceholder')}
-        />
+        <div ref={titleRef}>
+          <TextField
+            label={t('shift.shiftTitle')}
+            value={title}
+            onChange={setTitle}
+            placeholder={t('shift.shiftTitlePlaceholder')}
+            error={titleError}
+          />
+        </div>
 
         <TextAreaField
           label={t('common.description')}
@@ -178,21 +220,32 @@ const AddShiftDrawerKeyed = ({
           minHeight="96px"
         />
 
-        <Field label={t('common.date')}>
-          <DatePicker
-            value={date}
-            onChange={setDate}
-            minDate={getTomorrowDateISO()}
-            className="w-full"
-          />
-        </Field>
-
-        <div className="grid grid-cols-2 gap-4">
-          <TimeField label={t('shift.start')} value={startTime} onChange={setStartTime} />
-          <TimeField label={t('shift.end')} value={endTime} onChange={setEndTime} />
+        <div ref={dateRef}>
+          <Field label={t('common.date')}>
+            <DatePicker
+              value={date}
+              onChange={setDate}
+              minDate={getTomorrowDateISO()}
+              className="w-full"
+              error={dateFieldError ?? undefined}
+            />
+          </Field>
         </div>
-        {timeRangeError && <p className="text-sm text-red-500">{timeRangeError}</p>}
-        {dateError && <p className="text-sm text-red-500">{dateError}</p>}
+
+        <div ref={timeRef} className="grid grid-cols-2 gap-4">
+          <TimeField
+            label={t('shift.start')}
+            value={startTime}
+            onChange={setStartTime}
+            error={startTimeError}
+          />
+          <TimeField
+            label={t('shift.end')}
+            value={endTime}
+            onChange={setEndTime}
+            error={endTimeError}
+          />
+        </div>
 
         <MoneyField value={pay} onChange={setPay} />
 
@@ -229,7 +282,7 @@ const AddShiftDrawerKeyed = ({
           />
         )}
 
-        <div>
+        <div ref={positionRef}>
           <Select
             label={t('common.position')}
             value={formPosition || ''}
@@ -237,11 +290,11 @@ const AddShiftDrawerKeyed = ({
             options={positionsOptions}
             placeholder={t('shift.selectPosition')}
             disabled={isPositionsLoading}
+            error={positionFieldError}
           />
-          {positionError && <p className="text-sm text-red-500 mt-2">{positionError}</p>}
         </div>
 
-        <div>
+        <div ref={specializationRef}>
           <MultiSelectSpecializations
             label={t('shift.specialization')}
             value={specializations}
@@ -252,10 +305,8 @@ const AddShiftDrawerKeyed = ({
             }
             disabled={!formPosition}
             isLoading={isSpecializationsLoading}
+            error={specializationFieldError}
           />
-          {submitError && isSpecializationError && (
-              <p className="text-sm text-red-500 mt-2">{submitError}</p>
-            )}
         </div>
 
         <CheckboxField
@@ -265,9 +316,7 @@ const AddShiftDrawerKeyed = ({
           onChange={setUrgent}
         />
 
-        {submitError && !isSpecializationError && (
-          <p className="text-sm text-red-500">{submitError}</p>
-        )}
+        {genericSubmitError ? <p className="text-sm text-red-500">{genericSubmitError}</p> : null}
       </div>
 
       <DrawerFooter>
@@ -279,10 +328,11 @@ const AddShiftDrawerKeyed = ({
             variant="gradient"
             size="md"
             onClick={async () => {
+              setDidAttemptSubmit(true)
               const ok = await handleSave()
               if (ok) close()
+              else scrollToFirstInvalid()
             }}
-            disabled={isFormInvalid}
             loading={isCreating}
           >
             {t('common.save')}

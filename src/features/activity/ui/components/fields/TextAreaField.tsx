@@ -7,6 +7,7 @@ type TextAreaFieldProps = {
   onChange: (value: string) => void
   placeholder?: string
   minHeight?: string
+  error?: string
 }
 
 export const TextAreaField = ({
@@ -15,14 +16,16 @@ export const TextAreaField = ({
   onChange,
   placeholder,
   minHeight,
+  error,
 }: TextAreaFieldProps) => (
-  <Field label={label}>
+  <Field label={label} error={error}>
     <textarea
       value={value}
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
       placeholder={placeholder}
       className={TEXTAREA_BASE_CLASS}
       style={minHeight ? { minHeight } : undefined}
+      aria-invalid={!!error}
     />
   </Field>
 )

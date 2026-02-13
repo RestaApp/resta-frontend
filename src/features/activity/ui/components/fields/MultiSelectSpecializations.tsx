@@ -3,6 +3,7 @@ import { Field } from './Field'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { Loader } from '@/components/ui/loader'
 import { useLabels } from '@/shared/i18n/hooks'
+import { cn } from '@/utils/cn'
 
 interface MultiSelectSpecializationsProps {
   label: string
@@ -13,6 +14,7 @@ interface MultiSelectSpecializationsProps {
   disabled?: boolean
   hint?: string
   isLoading?: boolean
+  error?: string
 }
 
 export const MultiSelectSpecializations = ({
@@ -24,6 +26,7 @@ export const MultiSelectSpecializations = ({
   disabled = false,
   hint,
   isLoading = false,
+  error,
 }: MultiSelectSpecializationsProps) => {
   const { t } = useTranslation()
   const { getSpecializationLabel } = useLabels()
@@ -37,7 +40,7 @@ export const MultiSelectSpecializations = ({
   }
 
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} error={error}>
       <div className="space-y-3">
         {isLoading ? (
           <div className="flex items-center gap-2 py-2">
@@ -48,7 +51,12 @@ export const MultiSelectSpecializations = ({
             {placeholder || t('shift.noSpecializations')}
           </div>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div
+            className={cn(
+              'flex flex-wrap gap-2',
+              error && 'rounded-xl ring-2 ring-destructive/20 p-2 -m-2'
+            )}
+          >
             {options.map(spec => (
               <SelectableTagButton
                 key={spec}

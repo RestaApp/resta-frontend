@@ -12,6 +12,7 @@ interface LocationFieldProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
+  error?: string
 }
 
 export const LocationField = memo(function LocationField({
@@ -19,6 +20,7 @@ export const LocationField = memo(function LocationField({
   value,
   onChange,
   placeholder,
+  error,
 }: LocationFieldProps) {
   const { t } = useTranslation()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
@@ -58,7 +60,7 @@ export const LocationField = memo(function LocationField({
   }
 
   return (
-    <Field label={label}>
+    <Field label={label} error={error}>
       <div className={cn('flex gap-2 items-stretch')}>
         <div className="flex-shrink-0 w-[180px] sm:w-[140px]">
           <CitySelect
@@ -67,6 +69,7 @@ export const LocationField = memo(function LocationField({
             options={cities}
             placeholder={t('profile.city')}
             disabled={isCitiesLoading}
+            error={error}
           />
         </div>
         <div className="flex-1 min-w-0">
@@ -76,6 +79,7 @@ export const LocationField = memo(function LocationField({
               handleAddressChange(e.target.value)
             }
             placeholder={displayPlaceholder}
+            aria-invalid={!!error}
           />
         </div>
       </div>

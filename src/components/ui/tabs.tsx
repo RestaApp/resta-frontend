@@ -1,5 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { motion } from 'motion/react'
+import { useCallback, useMemo, useRef } from 'react'
 import { cn } from '@/utils/cn'
 
 export type TabOption<T extends string> = {
@@ -23,36 +22,9 @@ export const Tabs = <T extends string>({
   className,
   ariaLabel = 'Tabs',
 }: TabsProps<T>) => {
-  const containerRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef(new Map<T, HTMLButtonElement>())
-  const [indicator, setIndicator] = useState({ left: 0, width: 0 })
 
   const ids = useMemo(() => options.map(o => o.id), [options])
-
-  const updateIndicator = useCallback(() => {
-    const el = tabRefs.current.get(activeId)
-    const container = containerRef.current
-    if (!el || !container) return
-
-    const c = container.getBoundingClientRect()
-    const r = el.getBoundingClientRect()
-
-    setIndicator({ left: r.left - c.left, width: r.width })
-  }, [activeId])
-
-  useLayoutEffect(() => {
-    updateIndicator()
-    const container = containerRef.current
-    if (!container) return
-
-    const ro = new ResizeObserver(updateIndicator)
-    ro.observe(container)
-
-    const activeEl = tabRefs.current.get(activeId)
-    if (activeEl) ro.observe(activeEl)
-
-    return () => ro.disconnect()
-  }, [activeId, updateIndicator])
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -89,20 +61,11 @@ export const Tabs = <T extends string>({
 
   return (
     <div
-      ref={containerRef}
       role="tablist"
       aria-label={ariaLabel}
       onKeyDown={onKeyDown}
       className={cn('relative flex gap-2 rounded-xl border border-border p-1', className)}
     >
-      <motion.div
-        aria-hidden="true"
-        className={cn('absolute bottom-1 top-1 rounded-lg gradient-primary')}
-        initial={false}
-        animate={{ left: indicator.left, width: indicator.width }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      />
-
       {options.map(option => {
         const isActive = option.id === activeId
         const Icon = option.icon
@@ -121,13 +84,15 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative z-10 flex flex-1 items-center justify-center gap-2 rounded-lg py-2',
+              'relative z-10 flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
-              isActive ? 'text-white' : 'text-foreground'
+              isActive
+                ? 'bg-muted font-semibold text-foreground'
+                : 'text-muted-foreground hover:bg-muted/60'
             )}
           >
             {Icon ? <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" /> : null}
-            <span className="text-sm font-medium">{option.label}</span>
+            <span className={isActive ? 'font-semibold' : 'font-medium'}>{option.label}</span>
           </button>
         )
       })}

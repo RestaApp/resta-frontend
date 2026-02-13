@@ -309,6 +309,7 @@
     "timeInFuture": "Start time must be in the future.",
     "duplicatePosition": "You already have an active shift with this position.",
     "specializationRequired": "Select at least one specialization.",
+    "requiredField": "Required field.",
     "fillRequired": "Fill in all required fields."
   },
   "roles": {

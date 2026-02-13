@@ -9,9 +9,10 @@ type TimeFieldProps = {
   label: string
   value: string
   onChange: (value: string) => void
+  error?: string
 }
 
-export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
+export const TimeField = ({ label, value, onChange, error }: TimeFieldProps) => {
   const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -35,7 +36,7 @@ export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
   }
 
   return (
-    <Field label={label}>
+    <Field label={label} error={error}>
       <div className="relative">
         <button
           type="button"
@@ -52,6 +53,7 @@ export const TimeField = ({ label, value, onChange }: TimeFieldProps) => {
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
           className="pl-11"
+          aria-invalid={!!error}
         />
       </div>
     </Field>

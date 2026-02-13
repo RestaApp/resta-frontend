@@ -19,6 +19,7 @@ interface SelectProps {
   className?: string
   label?: string
   hint?: string
+  error?: string
   allowCustomValue?: boolean
   /** Отступ снизу (например высота BottomNav) для расчёта позиции дропдауна */
   bottomOffsetPx?: number
@@ -33,6 +34,7 @@ export const Select = memo(function Select({
   className,
   label,
   hint,
+  error,
   allowCustomValue = false,
   bottomOffsetPx = 88,
 }: SelectProps) {
@@ -257,11 +259,13 @@ export const Select = memo(function Select({
           onKeyDown={handleInputKeyDown}
           onFocus={() => setIsOpen(true)}
           disabled={disabled}
+          aria-invalid={!!error}
           placeholder={displayPlaceholder}
           className={cn(
             'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base transition-all',
             'placeholder:text-muted-foreground',
             'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
+            'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
             'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
             isOpen && 'border-primary ring-2 ring-primary/20'
           )}
@@ -273,10 +277,12 @@ export const Select = memo(function Select({
         type="button"
         onClick={handleToggle}
         disabled={disabled}
+        aria-invalid={!!error}
         className={cn(
           'flex h-11 w-full min-w-0 items-center justify-between rounded-xl border bg-input-background px-4 py-3 text-base transition-all',
           'placeholder:text-muted-foreground',
           'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
+          'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
           'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
           isOpen && 'border-primary ring-2 ring-primary/20',
           !value && 'text-muted-foreground'
@@ -295,7 +301,13 @@ export const Select = memo(function Select({
   return (
     <div className={cn('w-full', className)} ref={containerRef}>
       {label && <label className="block text-sm font-medium mb-2">{label}</label>}
-      {hint && <p className="text-xs text-muted-foreground mb-2">{hint}</p>}
+      {error ? (
+        <p className="text-xs text-destructive mb-2" role="alert">
+          {error}
+        </p>
+      ) : hint ? (
+        <p className="text-xs text-muted-foreground mb-2">{hint}</p>
+      ) : null}
       <div className="relative">
         {trigger}
 

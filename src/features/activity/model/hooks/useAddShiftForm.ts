@@ -228,18 +228,24 @@ export const useAddShiftForm = ({
   }, [initialShiftType])
 
   const handleSave = useCallback(async (): Promise<boolean> => {
+    setSubmitError(null)
     if (
       !title ||
       !date ||
       !startTime ||
       !endTime ||
       !position ||
+      specializations.length === 0 ||
       timeRangeError ||
       dateError ||
       positionError
     )
+      {
+        setSubmitError(
+          specializations.length === 0 ? t('validation.specializationRequired') : t('validation.fillRequired')
+        )
       return false
-    setSubmitError(null)
+    }
 
     try {
       let response: CreateShiftResponse | null = null
