@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'motion/react'
-import { AlertCircle, CheckCircle2, Edit2, MapPin } from 'lucide-react'
+import { AlertCircle, Briefcase, CheckCircle2, MapPin } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { ApiRole } from '@/types'
@@ -22,11 +21,10 @@ interface ProfileHeroProps {
   roleLabel: string
   apiRole: ApiRole | null
   isProfileFilled: boolean
-  onEdit: () => void
 }
 
 export const ProfileHero = memo(
-  ({ userProfile, userName, roleLabel, apiRole, isProfileFilled, onEdit }: ProfileHeroProps) => {
+  ({ userProfile, userName, roleLabel, apiRole, isProfileFilled }: ProfileHeroProps) => {
     const { t } = useTranslation()
     const photoUrl = userProfile.profile_photo_url || userProfile.photo_url || null
     const cityOrLocation = userProfile.city || userProfile.location
@@ -34,8 +32,20 @@ export const ProfileHero = memo(
       apiRole === 'employee' ? userProfile.employee_profile?.open_to_work : undefined
 
     return (
-      <Card className="p-5">
-        <div className="flex items-start justify-between gap-3">
+      <Card className="relative p-5">
+        {openToWork ? (
+          <span
+            className="absolute top-4 right-4"
+            title={t('profile.openToWork')}
+            aria-label={t('profile.openToWork')}
+          >
+            <Badge variant="success" className="h-9 w-9 px-0 py-0 justify-center">
+              <Briefcase className="w-4 h-4" />
+            </Badge>
+          </span>
+        ) : null}
+
+        <div className="flex items-start gap-3">
           <div className="flex items-center gap-4 min-w-0">
             <div className="w-16 h-16 rounded-full flex items-center justify-center gradient-primary shrink-0 overflow-hidden">
               {photoUrl ? (
@@ -64,29 +74,16 @@ export const ProfileHero = memo(
               ) : null}
             </div>
           </div>
-
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={onEdit}
-            className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors shrink-0"
-            aria-label={t('aria.editProfile')}
-            type="button"
-          >
-            <Edit2 className="w-5 h-5" />
-          </motion.button>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {openToWork ? <Badge variant="success">{t('profile.openToWork')}</Badge> : null}
-          {isProfileFilled ? (
-            <Badge variant="success">{t('common.filled')}</Badge>
-          ) : (
+        {!isProfileFilled ? (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
             <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/25">
               <AlertCircle className="w-3.5 h-3.5 mr-1" />
               {t('common.needToFill')}
             </Badge>
-          )}
-        </div>
+          </div>
+        ) : null}
       </Card>
     )
   }

@@ -128,7 +128,6 @@ export const ProfilePage = memo(() => {
         roleLabel={m.roleLabel}
         apiRole={m.apiRole}
         isProfileFilled={m.profileCompleteness?.isFilled ?? false}
-        onEdit={() => m.setIsEditDrawerOpen(true)}
       />
 
       <ProfileStats

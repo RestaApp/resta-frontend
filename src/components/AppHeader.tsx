@@ -1,60 +1,100 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { useUserProfile } from '@/hooks/useUserProfile'
 import { useTelegram } from '@/contexts/TelegramContext'
 import { cn } from '@/utils/cn'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { AddShiftButton } from '@/features/activity/ui/components/AddShiftButton'
-import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
+import { Button } from '@/components/ui/button'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
+import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab } from '@/types'
 
 interface AppHeaderProps {
-  greetingName?: string
   onAddShift?: () => void
   activeTab?: Tab
 }
 
-export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProps) => {
+type HeaderAction = {
+  ariaLabel: string
+  Icon: typeof Edit2
+  onClick: () => void
+}
+
+const HEADER_ACTION_BUTTON_CLASS =
+  'min-w-[44px] min-h-[44px] p-0 rounded-full flex-shrink-0'
+
+const getHeaderTitle = (activeTab: Tab | undefined, t: (key: string, options?: any) => string) => {
+  if (activeTab === 'feed') return t('tabs.employee.feed', { defaultValue: 'Поиск' })
+  if (activeTab === 'activity') return t('tabs.employee.activity', { defaultValue: 'Активность' })
+  if (activeTab === 'profile') return t('tabs.employee.profile', { defaultValue: 'Профиль' })
+  if (!activeTab) return ''
+
+  const candidates = [`tabs.employee.${activeTab}`, `tabs.venue.${activeTab}`, `tabs.supplier.${activeTab}`]
+  for (const key of candidates) {
+    const v = t(key, { defaultValue: '' })
+    if (v) return v
+  }
+  return ''
+}
+
+const getHeaderAction = (params: {
+  activeTab: Tab | undefined
+  t: (key: string, options?: any) => string
+  onAddShift?: () => void
+}): HeaderAction | null => {
+  const { activeTab, t, onAddShift } = params
+
+  if (activeTab === 'feed') {
+    return {
+      ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
+      Icon: SlidersHorizontal,
+      onClick: () => window.dispatchEvent(new CustomEvent('openFeedFilters')),
+    }
+  }
+
+  if (activeTab === 'activity') {
+    return {
+      ariaLabel: t('shift.addShiftAria'),
+      Icon: Plus,
+      onClick: () => {
+        onAddShift?.()
+        window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+      },
+    }
+  }
+
+  if (activeTab === 'profile') {
+    return {
+      ariaLabel: t('aria.editProfile'),
+      Icon: Edit2,
+      onClick: () => window.dispatchEvent(new CustomEvent('openProfileEdit')),
+    }
+  }
+
+  return null
+}
+
+export const AppHeader = ({ onAddShift, activeTab }: AppHeaderProps) => {
   const { t } = useTranslation()
   const { isFullscreen } = useTelegram()
-  const { userProfile } = useUserProfile()
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
-  const addShiftButtonRef = useRef<HTMLButtonElement | null>(null)
-
-  const rawName = greetingName ?? userProfile?.full_name ?? userProfile?.name
-  const firstName =
-    (typeof rawName === 'string' ? rawName.trim().split(/\s+/)[0] : '') || t('common.user')
+  const actionButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const isActivity = activeTab === 'activity'
 
-  const isDrawerVisible = isActivity && drawerOpen
-
-  const openDrawer = useCallback(() => {
-    if (!isActivity) return
-    setDrawerOpen(true)
-    onAddShift?.()
-  }, [isActivity, onAddShift])
+  const title = useMemo(() => getHeaderTitle(activeTab, t), [activeTab, t])
+  const action = useMemo(
+    () => getHeaderAction({ activeTab, t, onAddShift }),
+    [activeTab, onAddShift, t]
+  )
 
   const dismissAddShiftOnboarding = useCallback(() => {
     setShowAddShiftOnboarding(false)
   }, [])
 
-  const handleProxyAddShiftClick = useCallback(() => {
+  const handleProxyActionClick = useCallback(() => {
     dismissAddShiftOnboarding()
-    addShiftButtonRef.current?.click()
+    actionButtonRef.current?.click()
   }, [dismissAddShiftOnboarding])
-
-  const onDrawerOpenChange = (open: boolean) => {
-    // если ушли с activity — drawer не может быть открыт
-    if (!isActivity) {
-      setDrawerOpen(false)
-      return
-    }
-    setDrawerOpen(open)
-  }
 
   useEffect(() => {
     const handler = () => setShowAddShiftOnboarding(true)
@@ -67,9 +107,9 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
       {isActivity && showAddShiftOnboarding ? (
         <AddShiftOnboardingOverlay
           visible
-          targetRef={addShiftButtonRef}
+          targetRef={actionButtonRef}
           onClose={dismissAddShiftOnboarding}
-          onProxyClick={handleProxyAddShiftClick}
+          onProxyClick={handleProxyActionClick}
         />
       ) : null}
 
@@ -78,31 +118,27 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
         animate={{ y: 0, opacity: 1 }}
         className={cn(
           isFullscreen ? 'mt-[65px]' : 'mt-0',
-          'flex h-[72px] items-center bg-card px-4 shadow-sm'
+          'flex items-center bg-card px-4 py-3',
+          'border-b border-[rgba(255,255,255,0.06)]'
         )}
       >
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              {userProfile?.photo_url ? (
-                <AvatarImage src={userProfile.photo_url} alt={firstName} />
-              ) : (
-                <AvatarFallback className="gradient-primary text-white">
-                  {firstName.charAt(0)}
-                </AvatarFallback>
-              )}
-            </Avatar>
+        <div className="flex w-full items-center justify-between gap-3">
+          <h1 className="text-[22px] font-semibold leading-tight truncate">{title}</h1>
 
-            <p className="text-muted-foreground">{t('greeting.hello', { name: firstName })}</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isActivity && <AddShiftButton ref={addShiftButtonRef} onClick={openDrawer} />}
-          </div>
+          {action ? (
+            <Button
+              ref={actionButtonRef}
+              variant="gradient"
+              size="sm"
+              onClick={action.onClick}
+              aria-label={action.ariaLabel}
+              className={HEADER_ACTION_BUTTON_CLASS}
+            >
+              <action.Icon className="w-[22px] h-[22px]" />
+            </Button>
+          ) : null}
         </div>
       </motion.header>
-
-      {isActivity && <AddShiftDrawer open={isDrawerVisible} onOpenChange={onDrawerOpenChange} />}
     </>
   )
 }

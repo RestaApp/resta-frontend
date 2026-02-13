@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n/config'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/utils/cn'
 
 interface LanguageToggleProps {
   currentLocale: string
@@ -12,18 +14,19 @@ export function LanguageToggle({ currentLocale, onLocaleChange }: LanguageToggle
   return (
     <div className="flex gap-2">
       {SUPPORTED_LOCALES.map(locale => (
-        <button
+        <Button
           key={locale}
           type="button"
           onClick={() => onLocaleChange(locale)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            currentLocale === locale
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-          }`}
+          variant={currentLocale === locale ? 'gradient' : 'ghost'}
+          size="sm"
+          className={cn(
+            'px-3 py-1.5 rounded-lg',
+            currentLocale !== locale && 'bg-muted text-muted-foreground hover:bg-muted/80'
+          )}
         >
           {t(locale === 'ru' ? 'localeRu' : 'localeEn')}
-        </button>
+        </Button>
       ))}
     </div>
   )

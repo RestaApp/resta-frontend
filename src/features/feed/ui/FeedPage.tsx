@@ -14,9 +14,6 @@ export const FeedPage = () => {
         options={m.feedTypeOptions}
         feedType={m.feedType}
         onChangeFeedType={m.setFeedType}
-        onOpenFilters={m.openFilters}
-        isLoading={m.isRefreshing}
-        hasActiveAdvancedFilters={m.hasActiveAdvancedFilters}
         activeFiltersList={m.activeFiltersList}
       />
 

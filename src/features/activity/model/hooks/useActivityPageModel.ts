@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
@@ -134,6 +134,12 @@ export const useActivityPageModel = () => {
   const openDrawer = useCallback(() => {
     setIsDrawerOpen(true)
   }, [])
+
+  useEffect(() => {
+    const handleOpen = () => openDrawer()
+    window.addEventListener('openActivityAddShift', handleOpen)
+    return () => window.removeEventListener('openActivityAddShift', handleOpen)
+  }, [openDrawer])
 
   return {
     // tabs

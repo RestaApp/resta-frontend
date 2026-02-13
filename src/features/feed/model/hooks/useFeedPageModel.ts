@@ -226,6 +226,12 @@ export const useFeedPageModel = () => {
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
   const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])
 
+  useEffect(() => {
+    const handleOpen = () => openFilters()
+    window.addEventListener('openFeedFilters', handleOpen)
+    return () => window.removeEventListener('openFeedFilters', handleOpen)
+  }, [openFilters])
+
   const applyAdvancedFilters = useCallback(
     (filters: AdvancedFiltersData | null) => {
       setAdvancedFilters(filters)
