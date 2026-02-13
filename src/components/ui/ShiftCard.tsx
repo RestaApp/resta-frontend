@@ -1,8 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapPin, Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
+import { Clock, CalendarDays, Edit2, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
@@ -84,7 +83,7 @@ const ShiftCardComponent = ({
     return `${position}${specialization}`
   }, [shift.position, shift.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
-  const payLabel = shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
+  // simplified card: period label moved to details modal
   const canShowApply = !isOwner && !isAccepted && !isRejected
   const canApply = shift.canApply !== false
 
@@ -189,10 +188,6 @@ const ShiftCardComponent = ({
             {formatMoney(shift.pay)}{' '}
             <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
           </div>
-
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
-            {payLabel}
-          </Badge>
         </div>
       </div>
 
@@ -210,14 +205,7 @@ const ShiftCardComponent = ({
 
       {/* Bottom */}
       <div className="flex items-center justify-between gap-2">
-        {locationText ? (
-          <div className="flex items-center gap-1.5 text-muted-foreground flex-1 min-w-0">
-            <MapPin className="w-4 h-4 flex-shrink-0 text-foreground/40" />
-            <span className="text-xs truncate font-medium">{locationText}</span>
-          </div>
-        ) : (
-          <div className="flex-1" />
-        )}
+        <div className="flex-1" />
 
         {/* Owner actions */}
         {isOwner && ownerActions ? (

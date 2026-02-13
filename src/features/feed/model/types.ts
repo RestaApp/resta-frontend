@@ -8,6 +8,7 @@ export interface Shift {
   rating: number
   position: string
   specialization?: string | null
+  cuisineTypes?: string[]
   date: string
   time: string
   pay: number

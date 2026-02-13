@@ -41,6 +41,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
   const locationRaw = item.location ?? getCityFromUser(item)
   const location = stripMinskPrefix(locationRaw)
+  const cuisineTypes = item.user?.restaurant_profile?.cuisine_types ?? undefined
 
   return {
     id: item.id,
@@ -50,6 +51,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
     position: item.position ?? 'chef',
     specialization: item.specialization ?? null,
+    cuisineTypes,
 
     date,
     time,
@@ -89,6 +91,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   const restaurant = v.user?.name || v.user?.full_name || v.title || i18n.t('feedFallback.venue')
   const applicationId = v.my_application?.id ?? null
   const applicationStatus = v.my_application?.status ?? v.status ?? null
+  const cuisineTypes = v.user?.restaurant_profile?.cuisine_types ?? undefined
 
   const pay = v.payment ?? 0
 
@@ -108,6 +111,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
 
     position: v.position ?? 'chef',
     specialization: v.specialization ?? null,
+    cuisineTypes,
 
     date,
     time,
