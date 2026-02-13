@@ -52,7 +52,7 @@ export const TimeField = ({ label, value, onChange, error }: TimeFieldProps) => 
           type="time"
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-          className="pl-11"
+          className="pl-11 py-0 leading-none text-[16px] [appearance:none] [-webkit-appearance:none]"
           aria-invalid={!!error}
         />
       </div>

@@ -138,11 +138,20 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
         }
       }
 
+      const isVersionAtLeast = (min: string) => {
+        if (typeof webApp.isVersionAtLeast === 'function') return webApp.isVersionAtLeast(min)
+        const [a1, b1] = String(webApp.version ?? '')
+          .split('.')
+          .map(Number)
+        const [a2, b2] = min.split('.').map(Number)
+        return (a1 || 0) > (a2 || 0) || ((a1 || 0) === (a2 || 0) && (b1 || 0) >= (b2 || 0))
+      }
+
       safe(() => webApp.enableClosingConfirmation?.())
       safe(() => webApp.disableVerticalSwipes?.())
       safe(() => webApp.expand())
 
-      if (/iP(hone|ad|od)/i.test(navigator.userAgent)) {
+      if (typeof webApp.requestFullscreen === 'function' && isVersionAtLeast('8.0')) {
         safe(() => webApp.requestFullscreen?.())
       }
 
