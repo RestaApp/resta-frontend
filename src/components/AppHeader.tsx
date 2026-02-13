@@ -119,7 +119,7 @@ export const AppHeader = ({ onAddShift, activeTab }: AppHeaderProps) => {
         className={cn(
           isFullscreen ? 'mt-[65px]' : 'mt-0',
           'flex items-center bg-card px-4 py-3',
-          'border-b border-[rgba(255,255,255,0.06)]'
+          'border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]'
         )}
       >
         <div className="flex w-full items-center justify-between gap-3">
