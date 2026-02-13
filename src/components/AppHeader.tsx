@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { AddShiftButton } from '@/features/activity/ui/components/AddShiftButton'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
+import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
 import type { Tab } from '@/types'
 
 interface AppHeaderProps {
@@ -17,6 +18,8 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
   const { t } = useTranslation()
   const { userProfile } = useUserProfile()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
+  const addShiftButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const rawName = greetingName ?? userProfile?.full_name ?? userProfile?.name
   const firstName =
@@ -32,6 +35,15 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
     onAddShift?.()
   }, [isActivity, onAddShift])
 
+  const dismissAddShiftOnboarding = useCallback(() => {
+    setShowAddShiftOnboarding(false)
+  }, [])
+
+  const handleProxyAddShiftClick = useCallback(() => {
+    dismissAddShiftOnboarding()
+    addShiftButtonRef.current?.click()
+  }, [dismissAddShiftOnboarding])
+
   const onDrawerOpenChange = (open: boolean) => {
     // если ушли с activity — drawer не может быть открыт
     if (!isActivity) {
@@ -41,8 +53,27 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
     setDrawerOpen(open)
   }
 
+  useEffect(() => {
+    const handler = () => setShowAddShiftOnboarding(true)
+    window.addEventListener('showActivityAddShiftOnboarding', handler)
+    return () => window.removeEventListener('showActivityAddShiftOnboarding', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!isActivity) return
+  }, [isActivity])
+
   return (
     <>
+      {isActivity && showAddShiftOnboarding ? (
+        <AddShiftOnboardingOverlay
+          visible
+          targetRef={addShiftButtonRef}
+          onClose={dismissAddShiftOnboarding}
+          onProxyClick={handleProxyAddShiftClick}
+        />
+      ) : null}
+
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -64,7 +95,7 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
           </div>
 
           <div className="flex items-center gap-2">
-            {isActivity && <AddShiftButton onClick={openDrawer} />}
+            {isActivity && <AddShiftButton ref={addShiftButtonRef} onClick={openDrawer} />}
           </div>
         </div>
       </motion.header>

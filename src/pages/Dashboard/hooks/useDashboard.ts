@@ -12,6 +12,7 @@ import {
   setLocalStorageItem,
 } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { isEmployeeRole } from '@/utils/roles'
 
 interface UseDashboardProps {
   role: UiRole
@@ -79,8 +80,16 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
       setActiveTab(tab)
       const screen = TAB_TO_SCREEN_MAP[tab]
       if (screen && onNavigate) onNavigate(screen)
+
+      if (tab === 'activity' && isEmployeeRole(role) && typeof window !== 'undefined') {
+        const shown = getLocalStorageItem(STORAGE_KEYS.ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN)
+        if (!shown) {
+          setLocalStorageItem(STORAGE_KEYS.ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN, '1')
+          window.dispatchEvent(new Event('showActivityAddShiftOnboarding'))
+        }
+      }
     },
-    [onNavigate]
+    [onNavigate, role]
   )
 
   return {

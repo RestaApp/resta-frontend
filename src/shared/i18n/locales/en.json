@@ -284,6 +284,7 @@
   "activity": {
     "emptyList": "Nothing here yet",
     "emptyListDescription": "Your applications and created shifts will appear here",
+    "addShiftOnboardingText": "Tap “+” to create a free shift for replacement.",
     "myShifts": "My shifts",
     "myApplications": "My applications",
     "noShiftsYet": "You haven't created any shifts yet",
