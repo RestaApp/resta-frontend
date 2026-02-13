@@ -27,8 +27,8 @@ export const FeedHeader = memo((props: Props) => {
   } = props
 
   return (
-    <div className="sticky top-[var(--app-header-h)] z-10 border-border/50 bg-background/95 backdrop-blur-sm transition-all">
-      <div className="px-4 pb-2">
+    <div className="sticky top-0 z-10 border-border/50 bg-background/95 backdrop-blur-sm transition-all">
+      <div className="px-4 py-2">
         <Tabs options={options} activeId={feedType} onChange={onChangeFeedType} />
       </div>
 
