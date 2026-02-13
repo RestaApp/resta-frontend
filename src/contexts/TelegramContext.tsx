@@ -114,6 +114,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     if (!webApp) return
     try {
       webApp.ready()
+      webApp.disableVerticalSwipes?.()
       webApp.expand()
       if (!fullscreenRequestedRef.current) {
         fullscreenRequestedRef.current = true
