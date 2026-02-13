@@ -126,7 +126,7 @@ export const NotificationPreferencesDrawer = memo(
     )
 
     return (
-      <Drawer open={open} onOpenChange={handleClose}>
+      <Drawer enableContentDragToClose open={open} onOpenChange={handleClose}>
         <DrawerHeader>
           <DrawerTitle>{t('profile.notificationSettings')}</DrawerTitle>
           <DrawerDescription>{t('profile.notificationsDescription')}</DrawerDescription>

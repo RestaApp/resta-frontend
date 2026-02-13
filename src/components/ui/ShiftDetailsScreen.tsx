@@ -184,6 +184,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       onOpenChange={open => {
         if (!open) handleClose()
       }}
+    enableContentDragToClose
     >
       <DrawerHeader className="pb-2">
         <div className="flex items-center justify-between mb-2 gap-2">

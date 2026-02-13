@@ -167,7 +167,7 @@ export const EditProfileDrawer = memo(
     const bioSuffix = getBioLabelSuffix(apiRole)
 
     return (
-      <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
+      <Drawer enableContentDragToClose open={open} onOpenChange={handleDrawerOpenChange}>
         <DrawerHeader>
           <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
           <DrawerDescription>{t('profile.editProfileDescription')}</DrawerDescription>
