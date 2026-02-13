@@ -117,7 +117,7 @@ export const AppHeader = ({ onAddShift, activeTab }: AppHeaderProps) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className={cn(
-          isFullscreen ? 'mt-[65px]' : 'mt-0',
+          isFullscreen ? 'mt-[80px]' : 'mt-0',
           'flex items-center bg-card px-4 py-3',
           'border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]'
         )}
