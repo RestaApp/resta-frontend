@@ -5,7 +5,9 @@ interface TelegramWebApp {
   version?: string
   isVersionAtLeast?: (version: string) => boolean
   isActive?: boolean
+  isVerticalSwipesEnabled?: boolean
   isFullscreen?: boolean
+  isOrientationLocked?: boolean
   safeAreaInset?: { top: number; bottom: number; left: number; right: number }
   contentSafeAreaInset?: { top: number; bottom: number; left: number; right: number }
   onEvent?: (

@@ -14,18 +14,20 @@ import { getTelegramWebApp, getTelegramLanguageCode, isTelegramWebApp } from '@/
 import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'
 import { useAuthActions } from '@/hooks/useAuth'
-import { useLockPortrait } from '@/hooks/useLockPortrait'
 import { updateUserDataInStore } from '@/utils/userData'
 import type { UserData } from '@/services/api/authApi'
 import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/constants/storage'
-import { THEME_CHANGE_EVENT } from '@/utils/theme'
 
 type TelegramWebApp = ReturnType<typeof getTelegramWebApp>
 
 interface TelegramContextValue {
   isReady: boolean
   telegram: TelegramWebApp | null
+  isVerticalSwipesEnabled: boolean
+  isFullscreen: boolean
+  isOrientationLocked: boolean
+  requestFullscreen: () => void
 }
 
 const TelegramContext = createContext<TelegramContextValue | undefined>(undefined)
@@ -46,6 +48,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
   const [isReady, setIsReady] = useState(false)
   const [telegram, setTelegram] = useState<TelegramWebApp | null>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   // держим актуальную ссылку на authTelegram
   const authTelegramRef = useRef(authTelegram)
@@ -106,83 +109,16 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     [dispatch]
   )
 
-  const applyTelegramColors = useCallback((webApp: TelegramWebApp | null) => {
+  const configureTelegram = useCallback((webApp: TelegramWebApp | null) => {
     if (!webApp) return
-    if (typeof document === 'undefined') return
-
-    const style = getComputedStyle(document.documentElement)
-    const bg = style.getPropertyValue('--background').trim() || '#ffffff'
-    const header = style.getPropertyValue('--card').trim() || bg
-
     try {
-      webApp.setBackgroundColor?.(bg)
-    } catch (err) {
-      void err
-    }
-
-    try {
-      webApp.setHeaderColor?.(header)
-    } catch (err) {
-      void err
+      webApp.ready()
+      webApp.expand()
+    } catch {
+      // в проде тихо, в деве можно логировать
+      // if (import.meta.env.DEV) console.debug('Telegram configure failed')
     }
   }, [])
-
-  const applyTelegramInsets = useCallback((webApp: TelegramWebApp | null) => {
-    if (!webApp) return
-    if (typeof document === 'undefined') return
-
-    const safe = webApp.safeAreaInset
-    const contentSafe = webApp.contentSafeAreaInset
-
-    const setPx = (name: string, value: number | undefined) => {
-      const v = Number.isFinite(value) ? Math.max(0, Number(value)) : 0
-      document.documentElement.style.setProperty(name, `${v}px`)
-    }
-
-    setPx('--tg-safe-area-inset-top', safe?.top)
-    setPx('--tg-safe-area-inset-right', safe?.right)
-    setPx('--tg-safe-area-inset-bottom', safe?.bottom)
-    setPx('--tg-safe-area-inset-left', safe?.left)
-
-    setPx('--tg-content-safe-area-inset-top', contentSafe?.top)
-    setPx('--tg-content-safe-area-inset-right', contentSafe?.right)
-    setPx('--tg-content-safe-area-inset-bottom', contentSafe?.bottom)
-    setPx('--tg-content-safe-area-inset-left', contentSafe?.left)
-  }, [])
-
-  const configureTelegram = useCallback(
-    (webApp: TelegramWebApp | null) => {
-      if (!webApp) return
-      const safe = (fn?: (() => void) | null) => {
-        try {
-          fn?.()
-        } catch (err) {
-          void err
-        }
-      }
-
-      const isVersionAtLeast = (min: string) => {
-        const [a1, b1] = String(webApp.version ?? '')
-          .split('.')
-          .map(Number)
-        const [a2, b2] = min.split('.').map(Number)
-        return (a1 || 0) > (a2 || 0) || ((a1 || 0) === (a2 || 0) && (b1 || 0) >= (b2 || 0))
-      }
-
-      safe(() => webApp.enableClosingConfirmation?.())
-      safe(() => webApp.disableVerticalSwipes?.())
-      safe(() => webApp.expand())
-
-      if (typeof webApp.requestFullscreen === 'function' && isVersionAtLeast('8.0')) {
-        safe(() => webApp.requestFullscreen?.())
-      }
-
-      applyTelegramInsets(webApp)
-      applyTelegramColors(webApp)
-      safe(() => webApp.ready())
-    },
-    [applyTelegramColors, applyTelegramInsets]
-  )
 
   const performLogin = useCallback(async (): Promise<TelegramWebApp | null> => {
     const webApp = getTelegramWebApp()
@@ -235,14 +171,11 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (isReady) return
     if (!authService.isTokenValid() || !userDataFromStore?.id) return
-
-    const run = async () => {
-      await applyLanguage(userDataFromStore as UserData)
-      setIsReady(true)
-      dispatch(setReady(true))
-    }
-
-    void run()
+      ; (async () => {
+        await applyLanguage(userDataFromStore as UserData)
+        setIsReady(true)
+        dispatch(setReady(true))
+      })()
   }, [applyLanguage, dispatch, isReady, userDataFromStore])
 
   /**
@@ -294,64 +227,68 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (!isReady) return
     if (userDataFromStore?.id) return
-
-    const run = async () => {
-      try {
-        if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
-          const code = getTelegramLanguageCode()
-          await i18n.changeLanguage(telegramCodeToLocale(code))
+      ; (async () => {
+        try {
+          if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
+            const code = getTelegramLanguageCode()
+            await i18n.changeLanguage(telegramCodeToLocale(code))
+          }
+        } catch {
+          // ignore
         }
-      } catch {
-        // ignore
-      }
-    }
-
-    void run()
+      })()
   }, [isReady, userDataFromStore?.id])
 
   useEffect(() => {
-    if (!telegram) return
-
-    const onThemeChange = () => {
-      applyTelegramColors(telegram)
-    }
-
-    onThemeChange()
-    window.addEventListener(THEME_CHANGE_EVENT, onThemeChange)
-    return () => {
-      window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange)
-    }
-  }, [applyTelegramColors, telegram])
+    setIsFullscreen(telegram?.isFullscreen ?? false)
+  }, [telegram])
 
   useEffect(() => {
-    if (!telegram) return
-    if (typeof telegram.onEvent !== 'function') {
-      applyTelegramInsets(telegram)
+    if (!telegram?.onEvent) return
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(telegram.isFullscreen ?? false)
+    }
+
+    try {
+      telegram.onEvent('fullscreenChanged', handleFullscreenChange)
+      telegram.onEvent('fullscreenFailed', handleFullscreenChange)
+    } catch {
       return
     }
 
-    const onSafeAreaChanged = () => applyTelegramInsets(telegram)
-    const onContentSafeAreaChanged = () => applyTelegramInsets(telegram)
-    const onFullscreenChanged = () => applyTelegramInsets(telegram)
-    const onFullscreenFailed = () => applyTelegramInsets(telegram)
-
-    applyTelegramInsets(telegram)
-    telegram.onEvent('safeAreaChanged', onSafeAreaChanged)
-    telegram.onEvent('contentSafeAreaChanged', onContentSafeAreaChanged)
-    telegram.onEvent('fullscreenChanged', onFullscreenChanged)
-    telegram.onEvent('fullscreenFailed', onFullscreenFailed)
-
     return () => {
-      telegram.offEvent?.('safeAreaChanged', onSafeAreaChanged)
-      telegram.offEvent?.('contentSafeAreaChanged', onContentSafeAreaChanged)
-      telegram.offEvent?.('fullscreenChanged', onFullscreenChanged)
-      telegram.offEvent?.('fullscreenFailed', onFullscreenFailed)
+      try {
+        telegram.offEvent?.('fullscreenChanged', handleFullscreenChange)
+        telegram.offEvent?.('fullscreenFailed', handleFullscreenChange)
+      } catch {
+      }
     }
-  }, [applyTelegramInsets, telegram])
+  }, [telegram])
 
-  useLockPortrait(telegram)
+  const requestFullscreen = useCallback(() => {
+    const webApp = telegram ?? getTelegramWebApp()
+    if (!webApp) return
+    try {
+      webApp.requestFullscreen?.()
+    } catch {
+    }
+  }, [telegram])
 
-  const value = useMemo<TelegramContextValue>(() => ({ isReady, telegram }), [isReady, telegram])
+  const isVerticalSwipesEnabled = telegram?.isVerticalSwipesEnabled ?? true
+  const isOrientationLocked = telegram?.isOrientationLocked ?? false
+
+  const value = useMemo<TelegramContextValue>(
+    () => ({
+      isReady,
+      telegram,
+      isVerticalSwipesEnabled,
+      isFullscreen,
+      isOrientationLocked,
+      requestFullscreen,
+    }),
+    [isReady, isFullscreen, isOrientationLocked, isVerticalSwipesEnabled, requestFullscreen, telegram]
+  )
 
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>
 }
