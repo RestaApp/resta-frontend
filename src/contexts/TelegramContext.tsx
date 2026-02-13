@@ -49,6 +49,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const [isReady, setIsReady] = useState(false)
   const [telegram, setTelegram] = useState<TelegramWebApp | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const fullscreenRequestedRef = useRef(false)
 
   // держим актуальную ссылку на authTelegram
   const authTelegramRef = useRef(authTelegram)
@@ -114,6 +115,12 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     try {
       webApp.ready()
       webApp.expand()
+      if (!fullscreenRequestedRef.current) {
+        fullscreenRequestedRef.current = true
+        if (!webApp.isFullscreen) {
+          webApp.requestFullscreen?.()
+        }
+      }
     } catch {
       // в проде тихо, в деве можно логировать
       // if (import.meta.env.DEV) console.debug('Telegram configure failed')
@@ -171,11 +178,12 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (isReady) return
     if (!authService.isTokenValid() || !userDataFromStore?.id) return
-      ; (async () => {
-        await applyLanguage(userDataFromStore as UserData)
-        setIsReady(true)
-        dispatch(setReady(true))
-      })()
+
+    void (async () => {
+      await applyLanguage(userDataFromStore as UserData)
+      setIsReady(true)
+      dispatch(setReady(true))
+    })()
   }, [applyLanguage, dispatch, isReady, userDataFromStore])
 
   /**
@@ -227,16 +235,17 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   useEffect(() => {
     if (!isReady) return
     if (userDataFromStore?.id) return
-      ; (async () => {
-        try {
-          if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
-            const code = getTelegramLanguageCode()
-            await i18n.changeLanguage(telegramCodeToLocale(code))
-          }
-        } catch {
-          // ignore
+
+    void (async () => {
+      try {
+        if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
+          const code = getTelegramLanguageCode()
+          await i18n.changeLanguage(telegramCodeToLocale(code))
         }
-      })()
+      } catch {
+        // ignore
+      }
+    })()
   }, [isReady, userDataFromStore?.id])
 
   useEffect(() => {
@@ -262,6 +271,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
         telegram.offEvent?.('fullscreenChanged', handleFullscreenChange)
         telegram.offEvent?.('fullscreenFailed', handleFullscreenChange)
       } catch {
+        void 0
       }
     }
   }, [telegram])
@@ -272,6 +282,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     try {
       webApp.requestFullscreen?.()
     } catch {
+      void 0
     }
   }, [telegram])
 
@@ -287,7 +298,14 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       isOrientationLocked,
       requestFullscreen,
     }),
-    [isReady, isFullscreen, isOrientationLocked, isVerticalSwipesEnabled, requestFullscreen, telegram]
+    [
+      isReady,
+      isFullscreen,
+      isOrientationLocked,
+      isVerticalSwipesEnabled,
+      requestFullscreen,
+      telegram,
+    ]
   )
 
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>

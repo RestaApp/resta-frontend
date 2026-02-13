@@ -78,7 +78,6 @@ export const ProfilePage = memo(() => {
   const { t } = useTranslation()
   const m = useProfilePageModel()
 
-
   const achievements = useMemo(() => {
     return buildProfileAchievements({
       t,
@@ -139,12 +138,7 @@ export const ProfilePage = memo(() => {
         appliedShiftsCount={m.appliedShiftsCount}
       />
 
-
-
       {m.apiRole === 'employee' && <SpecializationsSection specializations={m.specializations} />}
-
-
-
       <ProfileInfoCard
         apiRole={m.apiRole}
         userProfile={m.userProfile}
@@ -176,7 +170,7 @@ export const ProfilePage = memo(() => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
             >
-              <Card className="p-4 text-center w-[170px]">
+              <Card className="p-4 text-center w-[140px]">
                 <div className="text-3xl mb-2">{a.emoji}</div>
                 <div className="text-sm font-medium mb-1">{a.title}</div>
                 <p className="text-xs text-muted-foreground">{a.value}</p>

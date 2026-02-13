@@ -48,7 +48,9 @@ export const EmptySearchIllustration = memo(function EmptySearchIllustration({ c
   )
 })
 
-export const EmptyFiltersIllustration = memo(function EmptyFiltersIllustration({ className }: Props) {
+export const EmptyFiltersIllustration = memo(function EmptyFiltersIllustration({
+  className,
+}: Props) {
   return (
     <svg
       className={className}
@@ -192,4 +194,3 @@ export const EmptyBriefcaseIllustration = memo(function EmptyBriefcaseIllustrati
     </svg>
   )
 })
-

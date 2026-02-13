@@ -2,7 +2,10 @@ import { useTranslation } from 'react-i18next'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { FeedType } from '@/features/feed/model/types'
-import { EmptyFiltersIllustration, EmptySearchIllustration } from '@/components/ui/empty-illustrations'
+import {
+  EmptyFiltersIllustration,
+  EmptySearchIllustration,
+} from '@/components/ui/empty-illustrations'
 
 interface FeedEmptyProps {
   emptyMessage: string

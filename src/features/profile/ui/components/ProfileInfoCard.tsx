@@ -70,7 +70,6 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
           {open_to_work ? t('common.yes') : t('common.no')}
         </InfoRow>
       )}
-
     </>
   )
 })
