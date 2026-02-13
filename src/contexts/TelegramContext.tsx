@@ -1,5 +1,6 @@
 import {
   createContext,
+  useContext,
   useCallback,
   useEffect,
   useMemo,
@@ -313,4 +314,10 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   )
 
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>
+}
+
+export const useTelegram = (): TelegramContextValue => {
+  const ctx = useContext(TelegramContext)
+  if (!ctx) throw new Error('useTelegram должен использоваться внутри TelegramProvider')
+  return ctx
 }

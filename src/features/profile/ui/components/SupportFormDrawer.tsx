@@ -23,7 +23,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
 
   if (form.isSuccess) {
     return (
-      <Drawer enableContentDragToClose open={open} onOpenChange={onOpenChange}>
+      <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerHeader>
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted/50">
@@ -43,7 +43,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
   }
 
   return (
-    <Drawer enableContentDragToClose open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerHeader>
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted/50">

@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { useTelegram } from '@/contexts/TelegramContext'
+import { cn } from '@/utils/cn'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { AddShiftButton } from '@/features/activity/ui/components/AddShiftButton'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
@@ -16,6 +18,7 @@ interface AppHeaderProps {
 
 export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProps) => {
   const { t } = useTranslation()
+  const { isFullscreen } = useTelegram()
   const { userProfile } = useUserProfile()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
@@ -59,10 +62,6 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
     return () => window.removeEventListener('showActivityAddShiftOnboarding', handler)
   }, [])
 
-  useEffect(() => {
-    if (!isActivity) return
-  }, [isActivity])
-
   return (
     <>
       {isActivity && showAddShiftOnboarding ? (
@@ -77,7 +76,10 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="mt-[65px] flex h-[72px] items-center bg-card px-4 shadow-sm"
+        className={cn(
+          isFullscreen ? 'mt-[65px]' : 'mt-0',
+          'flex h-[72px] items-center bg-card px-4 shadow-sm'
+        )}
       >
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-3">

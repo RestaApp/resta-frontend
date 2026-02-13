@@ -30,7 +30,7 @@ import { useProfileFormLabels } from '@/shared/i18n/hooks'
 import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
 
 const TEXTAREA_CLASS =
-  'w-full min-h-[100px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background text-foreground caret-foreground transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
+  'w-full min-h-[100px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
 
 interface EmployeeFieldsSectionProps {
   experienceYearsValue: number
@@ -167,7 +167,7 @@ export const EditProfileDrawer = memo(
     const bioSuffix = getBioLabelSuffix(apiRole)
 
     return (
-      <Drawer enableContentDragToClose open={open} onOpenChange={handleDrawerOpenChange}>
+      <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
         <DrawerHeader>
           <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
           <DrawerDescription>{t('profile.editProfileDescription')}</DrawerDescription>

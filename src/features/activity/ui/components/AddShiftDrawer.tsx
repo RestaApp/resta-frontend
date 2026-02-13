@@ -330,7 +330,7 @@ const AddShiftDrawerKeyed = ({
   }, [step, t])
 
   return (
-    <Drawer enableContentDragToClose open={open} onOpenChange={handleDrawerOpenChange}>
+    <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
       <DrawerHeader>
         <DrawerTitle>{t('shift.addTitle')}</DrawerTitle>
         <DrawerDescription>{t('shift.addDescription')}</DrawerDescription>
