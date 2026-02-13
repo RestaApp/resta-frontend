@@ -303,16 +303,14 @@ export const Select = memo(function Select({
   return (
     <div className={cn('w-full', className)} ref={containerRef}>
       {label && <label className="block text-sm font-medium mb-2">{label}</label>}
-      <p
-        className={cn(
-          'text-xs mb-2 min-h-[16px]',
-          errorText ? 'text-destructive' : 'text-muted-foreground'
-        )}
-        role={errorText ? 'alert' : undefined}
-        aria-hidden={!errorText && !hintText}
-      >
-        {errorText ?? hintText ?? '\u00A0'}
-      </p>
+      {errorText || hintText ? (
+        <p
+          className={cn('text-xs mb-2', errorText ? 'text-destructive' : 'text-muted-foreground')}
+          role={errorText ? 'alert' : undefined}
+        >
+          {errorText ?? hintText}
+        </p>
+      ) : null}
       <div className="relative">
         {trigger}
 

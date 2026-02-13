@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle2 } from 'lucide-react'
 import {
   Drawer,
   DrawerHeader,
@@ -8,7 +7,6 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/ui/drawer'
-import { DatePicker } from '@/components/ui/date-picker'
 import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsApi'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
@@ -16,20 +14,17 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/hooks/useToast'
-import {
-  Field,
-  TextField,
-  TextAreaField,
-  MultiSelectSpecializations,
-  TimeField,
-  MoneyField,
-  CheckboxField,
-  LocationField,
-} from './fields'
-import { Select } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
-import { getTodayDateISO } from '@/utils/datetime'
+import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
+import {
+  AddShiftDrawerBanner,
+  AddShiftDrawerProgress,
+  AddShiftDrawerStep0,
+  AddShiftDrawerStep1,
+  AddShiftDrawerStep2,
+  AddShiftDrawerSuccess,
+} from './add-shift-drawer/AddShiftDrawerSteps'
+import { useAddShiftDrawerController } from './add-shift-drawer/useAddShiftDrawerController'
 
 const getLockedShiftType = (role?: string | null): ShiftType | null => {
   if (role === 'employee') return 'replacement'
@@ -51,7 +46,6 @@ type SelectFieldOption = {
 
 const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
 const TOTAL_STEPS = 3 as const
-type StepIndex = 0 | 1 | 2
 
 export const AddShiftDrawer = (props: AddShiftDrawerProps) => {
   const keyedId = props.open ? String(props.initialValues?.id ?? 'new') : 'closed'
@@ -70,614 +64,145 @@ const AddShiftDrawerKeyed = ({
   const { toast, hideToast } = useToast()
   const isEmployeeRole = userProfile?.role === 'employee'
   const lockedShiftType = getLockedShiftType(userProfile?.role)
-  const titleRef = useRef<HTMLDivElement | null>(null)
-  const dateRef = useRef<HTMLDivElement | null>(null)
-  const timeRef = useRef<HTMLDivElement | null>(null)
-  const locationRef = useRef<HTMLDivElement | null>(null)
-  const positionRef = useRef<HTMLDivElement | null>(null)
-  const specializationRef = useRef<HTMLDivElement | null>(null)
-  const descriptionRef = useRef<HTMLDivElement | null>(null)
-  const requirementsRef = useRef<HTMLDivElement | null>(null)
-  const [step, setStep] = useState<StepIndex>(0)
-  const [attemptedSteps, setAttemptedSteps] = useState<[boolean, boolean, boolean]>([
-    false,
-    false,
-    false,
-  ])
-  const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false)
-
-  const SHIFT_TYPE_OPTIONS: SelectFieldOption[] = [
-    { value: 'vacancy', label: t('common.vacancy') },
-    { value: 'replacement', label: t('common.replacement') },
-  ]
+  const shiftTypeOptions: SelectFieldOption[] = useMemo(
+    () => [
+      { value: 'vacancy', label: t('common.vacancy') },
+      { value: 'replacement', label: t('common.replacement') },
+    ],
+    [t]
+  )
 
   const form = useAddShiftForm({
     initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE,
     onSave,
     initialValues,
   })
-  const {
-    title,
-    setTitle,
-    description,
-    setDescription,
-    date,
-    setDate,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    pay,
-    setPay,
-    location,
-    setLocation,
-    requirements,
-    setRequirements,
-    shiftType,
-    setShiftType,
-    urgent,
-    setUrgent,
-    position: formPosition,
-    setPosition: setFormPosition,
-    specializations,
-    setSpecializations,
-    submitError,
-    clearSubmitError,
-    isCreating,
-    timeRangeError,
-    dateError,
-    positionError,
-    fieldErrors,
-    handleSave,
-    resetForm,
-  } = form
-
-  const showErrors = didAttemptSubmit || !!submitError || Object.keys(fieldErrors).length > 0
-  const showStep0Errors = showErrors || attemptedSteps[0]
-  const showStep1Errors = showErrors || attemptedSteps[1]
-  const showStep2Errors = showErrors || attemptedSteps[2]
-  const requiredFieldError = t('validation.requiredField')
-  const requiredMarker = ' '
-  const normalizeRequiredText = (err?: string) => (err === requiredFieldError ? requiredMarker : err)
-
-  const titleError = showStep0Errors && !title.trim() ? requiredMarker : undefined
-  const dateFieldError = dateError ?? (showStep0Errors && !date ? requiredMarker : undefined)
-  const startTimeError = showStep0Errors && !startTime ? requiredMarker : undefined
-  const endTimeError =
-    timeRangeError ?? (showStep0Errors && !endTime ? requiredMarker : undefined)
-  const locationFieldError =
-    normalizeRequiredText(fieldErrors.location) ??
-    (showStep1Errors && !location.trim() ? requiredMarker : undefined)
-  const positionFieldError =
-    positionError ?? (showStep1Errors && !formPosition ? requiredMarker : undefined)
-
-  const canValidateSpecializations = !!formPosition && !positionError
-  const specializationFieldError =
-    (fieldErrors.specializations ? requiredMarker : undefined) ??
-    (canValidateSpecializations && showStep1Errors && specializations.length === 0
-      ? requiredMarker
-      : undefined)
-  const descriptionFieldError =
-    normalizeRequiredText(fieldErrors.description) ??
-    (showStep2Errors && !description.trim() ? requiredMarker : undefined)
-  const requirementsFieldError =
-    normalizeRequiredText(fieldErrors.requirements) ??
-    (showStep2Errors && !requirements.trim() ? requiredMarker : undefined)
-
-  const genericSubmitError = submitError ? submitError : null
-  const hasMissingRequiredInStep =
-    step === 0
-      ? !title.trim() || !date || !startTime || !endTime
-      : step === 1
-        ? !location.trim() || !formPosition || specializations.length === 0
-        : !description.trim() || !requirements.trim()
-  const bannerError = genericSubmitError ?? (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
-  const clearAllErrorsAfterChange = useCallback(() => {
-    clearSubmitError()
-    if (didAttemptSubmit) setDidAttemptSubmit(false)
-    if (attemptedSteps[0] || attemptedSteps[1] || attemptedSteps[2]) {
-      setAttemptedSteps([false, false, false])
-    }
-  }, [attemptedSteps, clearSubmitError, didAttemptSubmit])
-
-  const handleTitleChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setTitle(next)
-    },
-    [clearAllErrorsAfterChange, setTitle]
-  )
-
-  const handleDateChange = useCallback(
-    (next: string | null) => {
-      clearAllErrorsAfterChange()
-      setDate(next)
-    },
-    [clearAllErrorsAfterChange, setDate]
-  )
-
-  const handleStartTimeChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setStartTime(next)
-    },
-    [clearAllErrorsAfterChange, setStartTime]
-  )
-
-  const handleEndTimeChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setEndTime(next)
-    },
-    [clearAllErrorsAfterChange, setEndTime]
-  )
-
-  const handlePayChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setPay(next)
-    },
-    [clearAllErrorsAfterChange, setPay]
-  )
-
-  const handleLocationChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setLocation(next)
-    },
-    [clearAllErrorsAfterChange, setLocation]
-  )
-
-  const handleShiftTypeChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setShiftType(next as ShiftType)
-    },
-    [clearAllErrorsAfterChange, setShiftType]
-  )
-
-  const handleDescriptionChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setDescription(next)
-    },
-    [clearAllErrorsAfterChange, setDescription]
-  )
-
-  const handleRequirementsChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      setRequirements(next)
-    },
-    [clearAllErrorsAfterChange, setRequirements]
-  )
-
-  const handleUrgentChange = useCallback(
-    (next: boolean) => {
-      clearAllErrorsAfterChange()
-      setUrgent(next)
-    },
-    [clearAllErrorsAfterChange, setUrgent]
-  )
-
-  const handleSpecializationsChange = useCallback(
-    (next: string[]) => {
-      clearAllErrorsAfterChange()
-      setSpecializations(next)
-    },
-    [clearAllErrorsAfterChange, setSpecializations]
-  )
-
-  const scrollToFirstInvalidInStep = useCallback(
-    (targetStep: StepIndex) => {
-      const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
-        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-      if (targetStep === 0) {
-        if (!title.trim()) return scrollTo(titleRef)
-        if (!date || dateError) return scrollTo(dateRef)
-        if (!startTime || !endTime || timeRangeError) return scrollTo(timeRef)
-      }
-      if (targetStep === 1) {
-        if (!location.trim()) return scrollTo(locationRef)
-        if (!formPosition || positionError) return scrollTo(positionRef)
-        if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
-      }
-      if (targetStep === 2) {
-        if (!description.trim()) return scrollTo(descriptionRef)
-        if (!requirements.trim()) return scrollTo(requirementsRef)
-      }
-    },
-    [
-      date,
-      dateError,
-      description,
-      endTime,
-      formPosition,
-      location,
-      positionError,
-      requirements,
-      specializations.length,
-      startTime,
-      timeRangeError,
-      title,
-    ]
-  )
-
-  const findFirstInvalidStep = useCallback((): StepIndex => {
-    if (!title.trim()) return 0
-    if (!date || dateError) return 0
-    if (!startTime || !endTime || timeRangeError) return 0
-    if (!location.trim()) return 1
-    if (!formPosition || positionError) return 1
-    if (formPosition && specializations.length === 0) return 1
-    if (!description.trim()) return 2
-    if (!requirements.trim()) return 2
-    return 2
-  }, [
-    date,
-    dateError,
-    description,
-    endTime,
-    formPosition,
-    location,
-    positionError,
-    requirements,
-    specializations.length,
-    startTime,
-    timeRangeError,
-    title,
-  ])
-
-  const isStepValid = useCallback(
-    (targetStep: StepIndex): boolean => {
-      if (targetStep === 0) {
-        return !!title.trim() && !!date && !!startTime && !!endTime && !timeRangeError && !dateError
-      }
-      if (targetStep === 1) {
-        if (!location.trim()) return false
-        if (!formPosition || !!positionError) return false
-        if (specializations.length === 0) return false
-        return true
-      }
-      if (targetStep === 2) {
-        if (!description.trim()) return false
-        if (!requirements.trim()) return false
-        return true
-      }
-      return true
-    },
-    [
-      date,
-      dateError,
-      description,
-      endTime,
-      formPosition,
-      location,
-      positionError,
-      requirements,
-      specializations.length,
-      startTime,
-      timeRangeError,
-      title,
-    ]
-  )
-
-  const handleDrawerOpenChange = useCallback(
-    (next: boolean) => {
-      if (!next) {
-        setStep(0)
-        setAttemptedSteps([false, false, false])
-        setDidAttemptSubmit(false)
-        setIsSuccessOpen(false)
-        resetForm()
-      }
-      onOpenChange(next)
-    },
-    [onOpenChange, resetForm]
-  )
-
-  const close = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
-
-  useEffect(() => {
-    if (!open) return
-    if (!isSuccessOpen) return
-    const id = window.setTimeout(() => close(), 3000)
-    return () => window.clearTimeout(id)
-  }, [close, isSuccessOpen, open])
-
-  const handleContinue = useCallback(() => {
-    setAttemptedSteps(prev => {
-      const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean]
-      next[step] = true
-      return next
-    })
-
-    if (isStepValid(step)) setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
-    else scrollToFirstInvalidInStep(step)
-  }, [isStepValid, scrollToFirstInvalidInStep, step])
-
-  const handleBackOrCancel = useCallback(() => {
-    if (step === 0) {
-      close()
-      return
-    }
-    clearAllErrorsAfterChange()
-    setStep(prev => (prev > 0 ? ((prev - 1) as StepIndex) : prev))
-  }, [clearAllErrorsAfterChange, close, step])
+  const controller = useAddShiftDrawerController({
+    open,
+    onOpenChange,
+    initialValues,
+    t,
+    form,
+  })
 
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open,
   })
   const { specializations: availableSpecializations, isLoading: isSpecializationsLoading } =
     useUserSpecializations({
-      position: formPosition || null,
-      enabled: open && !!formPosition,
+      position: form.position || null,
+      enabled: open && !!form.position,
     })
 
-  const handlePositionChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      if (next !== formPosition && specializations.length > 0) setSpecializations([])
-      if (!next && specializations.length > 0) setSpecializations([])
-      setFormPosition(next)
-    },
-    [clearAllErrorsAfterChange, formPosition, setFormPosition, setSpecializations, specializations.length]
+  const positionOptions: SelectFieldOption[] = useMemo(
+    () =>
+      (positionsForDisplay ?? []).map(item => {
+        const value = item.originalValue || item.id
+        return {
+          value,
+          label: item.title || getEmployeePositionLabel(value),
+        }
+      }),
+    [getEmployeePositionLabel, positionsForDisplay]
   )
 
-  // handleSave provided by hook; when it succeeds we close the drawer
-
-  // timeRangeError and isFormInvalid provided by hook
-  const positionsOptions: SelectFieldOption[] = (positionsForDisplay ?? []).map(item => {
-    const value = item.originalValue || item.id
-    return {
-      value,
-      label: item.title || getEmployeePositionLabel(value),
-    }
-  })
-
   const stepTitle = useMemo(() => {
-    if (step === 0) return t('shift.addStep1Title')
-    if (step === 1) return t('shift.addStep2Title')
+    if (controller.state.step === 0) return t('shift.addStep1Title')
+    if (controller.state.step === 1) return t('shift.addStep2Title')
     return t('shift.addStep3Title')
-  }, [step, t])
+  }, [controller.state.step, t])
 
   return (
-    <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
+    <Drawer open={open} onOpenChange={controller.actions.handleDrawerOpenChange}>
       <DrawerHeader>
         <DrawerTitle>{t('shift.addTitle')}</DrawerTitle>
         <DrawerDescription>{t('shift.addDescription')}</DrawerDescription>
       </DrawerHeader>
 
       <div className="space-y-5 p-4">
-        {isSuccessOpen ? (
-          <div className="flex flex-col items-center justify-center py-10 px-2 animate-fade-in">
-            <div className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mb-3">
-              <CheckCircle2 className="w-9 h-9 text-success" strokeWidth={1.6} />
-            </div>
-            <p className="text-foreground font-semibold text-center mb-1">{t('shift.created')}</p>
-            <p className="text-muted-foreground text-sm text-center max-w-[320px]">
-              {t('shift.createdConfirmation')}
-            </p>
-          </div>
+        {controller.state.isSuccessOpen ? (
+          <AddShiftDrawerSuccess />
         ) : (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">
-                {t('shift.addStepLabel', { current: step + 1, total: TOTAL_STEPS })}
-              </p>
-              <p className="text-sm font-medium">{stepTitle}</p>
-            </div>
-            <div className="h-1 w-full rounded-full bg-muted">
-              <div
-                className="h-1 rounded-full bg-primary transition-[width]"
-                style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
-              />
-            </div>
-          </div>
+          <AddShiftDrawerProgress step={controller.state.step} totalSteps={TOTAL_STEPS} stepTitle={stepTitle} />
         )}
 
-        {!isSuccessOpen && step === 0 ? (
-          <>
-            <div ref={titleRef}>
-              <TextField
-                label={t('shift.shiftTitle')}
-                value={title}
-                onChange={handleTitleChange}
-                placeholder={t('shift.shiftTitlePlaceholder')}
-                error={titleError}
-              />
-            </div>
-
-            <div ref={dateRef}>
-              <Field label={t('common.date')}>
-                <DatePicker
-                  value={date}
-                  onChange={handleDateChange}
-                  minDate={getTodayDateISO()}
-                  className="w-full"
-                  error={dateFieldError ?? undefined}
-                />
-              </Field>
-            </div>
-
-            <div ref={timeRef} className="grid grid-cols-2 gap-3 w-full">
-              <div className="min-w-0">
-                <TimeField
-                  label={t('shift.start')}
-                  value={startTime}
-                  onChange={handleStartTimeChange}
-                  error={startTimeError}
-                />
-              </div>
-              <div className="min-w-0">
-                <TimeField
-                  label={t('shift.end')}
-                  value={endTime}
-                  onChange={handleEndTimeChange}
-                  error={endTimeError}
-                />
-              </div>
-            </div>
-
-            <MoneyField value={pay} onChange={handlePayChange} />
-          </>
+        {!controller.state.isSuccessOpen && controller.state.step === 0 ? (
+          <AddShiftDrawerStep0
+            titleRef={controller.refs.titleRef}
+            dateRef={controller.refs.dateRef}
+            timeRef={controller.refs.timeRef}
+            title={form.title}
+            onTitleChange={controller.actions.handleTitleChange}
+            titleError={controller.derived.errors.titleError}
+            date={form.date}
+            onDateChange={controller.actions.handleDateChange}
+            dateError={controller.derived.errors.dateFieldError ?? undefined}
+            startTime={form.startTime}
+            onStartTimeChange={controller.actions.handleStartTimeChange}
+            startTimeError={controller.derived.errors.startTimeError}
+            endTime={form.endTime}
+            onEndTimeChange={controller.actions.handleEndTimeChange}
+            endTimeError={controller.derived.errors.endTimeError}
+            pay={form.pay}
+            onPayChange={controller.actions.handlePayChange}
+          />
         ) : null}
 
-        {!isSuccessOpen && step === 1 ? (
-          <>
-            <div ref={locationRef}>
-              <LocationField
-                label={t('common.location')}
-                value={location}
-                onChange={handleLocationChange}
-                placeholder={t('shift.locationPlaceholder')}
-                error={locationFieldError}
-              />
-            </div>
-
-            {!isEmployeeRole ? (
-              <Select
-                label={t('shift.shiftType')}
-                value={shiftType}
-                onChange={handleShiftTypeChange}
-                disabled={!!lockedShiftType}
-                options={SHIFT_TYPE_OPTIONS}
-                placeholder={t('shift.selectShiftType')}
-                hint={
-                  lockedShiftType
-                    ? lockedShiftType === 'vacancy'
-                      ? t('shift.venueCreatesVacancy')
-                      : t('shift.employeeCreatesReplacement')
-                    : undefined
-                }
-              />
-            ) : null}
-
-            <div ref={positionRef}>
-              <Select
-                label={t('common.position')}
-                value={formPosition || ''}
-                onChange={handlePositionChange}
-                options={positionsOptions}
-                placeholder={t('shift.selectPosition')}
-                disabled={isPositionsLoading}
-                error={positionFieldError}
-              />
-            </div>
-
-            <div ref={specializationRef}>
-              <MultiSelectSpecializations
-                label={t('shift.specialization')}
-                value={specializations}
-                onChange={handleSpecializationsChange}
-                options={availableSpecializations}
-                placeholder={
-                  !formPosition ? t('shift.selectPositionFirst') : t('shift.noSpecializations')
-                }
-                disabled={!formPosition}
-                isLoading={isSpecializationsLoading}
-                error={specializationFieldError}
-              />
-            </div>
-          </>
+        {!controller.state.isSuccessOpen && controller.state.step === 1 ? (
+          <AddShiftDrawerStep1
+            locationRef={controller.refs.locationRef}
+            positionRef={controller.refs.positionRef}
+            specializationRef={controller.refs.specializationRef}
+            isEmployeeRole={isEmployeeRole}
+            lockedShiftType={lockedShiftType}
+            shiftType={form.shiftType}
+            onShiftTypeChange={controller.actions.handleShiftTypeChange}
+            shiftTypeOptions={shiftTypeOptions}
+            location={form.location}
+            onLocationChange={controller.actions.handleLocationChange}
+            locationError={controller.derived.errors.locationFieldError}
+            formPosition={form.position}
+            onPositionChange={controller.actions.handlePositionChange}
+            positionOptions={positionOptions}
+            isPositionsLoading={isPositionsLoading}
+            positionError={controller.derived.errors.positionFieldError}
+            specializations={form.specializations}
+            onSpecializationsChange={controller.actions.handleSpecializationsChange}
+            availableSpecializations={availableSpecializations}
+            isSpecializationsLoading={isSpecializationsLoading}
+            specializationError={controller.derived.errors.specializationFieldError}
+          />
         ) : null}
 
-        {!isSuccessOpen && step === 2 ? (
-          <>
-            <div ref={descriptionRef}>
-              <TextAreaField
-                label={t('common.description')}
-                value={description}
-                onChange={handleDescriptionChange}
-                placeholder={t('shift.descriptionPlaceholder')}
-                minHeight="96px"
-                error={descriptionFieldError}
-              />
-            </div>
-
-            <div ref={requirementsRef}>
-              <TextAreaField
-                label={t('common.requirements')}
-                value={requirements}
-                onChange={handleRequirementsChange}
-                placeholder={t('shift.requirementsPlaceholder')}
-                minHeight="80px"
-                error={requirementsFieldError}
-              />
-            </div>
-
-            <CheckboxField
-              id="urgent-shift"
-              label={t('shift.urgent')}
-              checked={urgent}
-              onChange={handleUrgentChange}
-            />
-          </>
+        {!controller.state.isSuccessOpen && controller.state.step === 2 ? (
+          <AddShiftDrawerStep2
+            descriptionRef={controller.refs.descriptionRef}
+            requirementsRef={controller.refs.requirementsRef}
+            description={form.description}
+            onDescriptionChange={controller.actions.handleDescriptionChange}
+            descriptionError={controller.derived.errors.descriptionFieldError}
+            requirements={form.requirements}
+            onRequirementsChange={controller.actions.handleRequirementsChange}
+            requirementsError={controller.derived.errors.requirementsFieldError}
+            urgent={form.urgent}
+            onUrgentChange={controller.actions.handleUrgentChange}
+          />
         ) : null}
 
-        {!isSuccessOpen ? (
-          <div className="min-h-[20px]">
-            {bannerError ? <p className="text-sm text-destructive">{bannerError}</p> : null}
-          </div>
-        ) : null}
+        {!controller.state.isSuccessOpen ? <AddShiftDrawerBanner message={controller.derived.bannerError} /> : null}
       </div>
 
       <DrawerFooter>
-        {isSuccessOpen ? (
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <Button
-              variant="outline"
-              size="md"
-              className="w-full"
-              onClick={() => {
-                setIsSuccessOpen(false)
-                setStep(0)
-                setAttemptedSteps([false, false, false])
-                setDidAttemptSubmit(false)
-              }}
-            >
-              {t('shift.createAnother')}
-            </Button>
-            <Button variant="gradient" size="md" className="w-full" onClick={close}>
-              {t('common.close')}
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <Button variant="outline" size="md" className="w-full" onClick={handleBackOrCancel}>
-              {step === 0 ? t('common.cancel') : t('common.back')}
-            </Button>
-            {step === 2 ? (
-              <Button
-                variant="gradient"
-                size="md"
-                className="w-full"
-                onClick={async () => {
-                  setDidAttemptSubmit(true)
-                  const ok = await handleSave()
-                  if (ok) {
-                    if (initialValues?.id) close()
-                    else setIsSuccessOpen(true)
-                  } else {
-                    const invalidStep = findFirstInvalidStep()
-                    setStep(invalidStep)
-                    setAttemptedSteps([true, true, true])
-                    setTimeout(() => scrollToFirstInvalidInStep(invalidStep), 0)
-                  }
-                }}
-                loading={isCreating}
-              >
-                {t('common.save')}
-              </Button>
-            ) : (
-              <Button variant="gradient" size="md" className="w-full" onClick={handleContinue}>
-                {t('common.continue')}
-              </Button>
-            )}
-          </div>
-        )}
+        <AddShiftDrawerFooter
+          isSuccessOpen={controller.state.isSuccessOpen}
+          step={controller.state.step}
+          onBackOrCancel={controller.actions.handleBackOrCancel}
+          onContinue={controller.actions.handleContinue}
+          onSubmit={controller.actions.handleSubmit}
+          isCreating={form.isCreating}
+          onCreateAnother={controller.actions.handleCreateAnother}
+          onClose={controller.actions.close}
+        />
       </DrawerFooter>
       <Toast
         message={toast.message}
