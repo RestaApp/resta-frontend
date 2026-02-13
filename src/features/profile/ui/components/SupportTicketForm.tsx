@@ -8,7 +8,7 @@ import type { SupportTicketCategory } from '@/services/api/supportTicketsApi'
 import type { SelectOption } from '@/components/ui/select'
 
 const TEXTAREA_CLASS =
-  'w-full min-h-[120px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
+  'w-full min-h-[120px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background text-foreground caret-foreground transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
 
 interface SupportTicketFormProps {
   subject: string

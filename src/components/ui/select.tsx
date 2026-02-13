@@ -262,7 +262,7 @@ export const Select = memo(function Select({
           aria-invalid={!!error}
           placeholder={displayPlaceholder}
           className={cn(
-            'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base transition-all',
+            'flex h-11 w-full min-w-0 items-center rounded-xl border bg-input-background px-4 py-3 pr-10 text-base text-foreground caret-foreground transition-all',
             'placeholder:text-muted-foreground',
             'border-border/50 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20',
             'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
@@ -361,7 +361,7 @@ export const Select = memo(function Select({
                       onKeyDown={handleInputKeyDown}
                       placeholder={displayPlaceholder}
                       className={cn(
-                        'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm',
+                        'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm text-foreground caret-foreground',
                         'placeholder:text-muted-foreground',
                         'focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20'
                       )}
