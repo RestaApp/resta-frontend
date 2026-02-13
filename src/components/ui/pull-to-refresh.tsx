@@ -21,6 +21,7 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
   const pullingRef = useRef(false)
   const [pullPx, setPullPx] = useState(0)
   const [armed, setArmed] = useState(false)
+  const [didTrigger, setDidTrigger] = useState(false)
 
   const reset = useCallback(() => {
     startYRef.current = null
@@ -33,7 +34,10 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
     if (!enabled) return false
     if (isRefreshing) return false
     if (typeof window === 'undefined') return false
+    if (typeof document === 'undefined') return false
     if (!('ontouchstart' in window)) return false
+    const drawerOpenCount = Number.parseInt(document.documentElement?.dataset?.drawerOpenCount ?? '0', 10)
+    if (Number.isFinite(drawerOpenCount) && drawerOpenCount > 0) return false
     return window.scrollY <= 0
   }, [enabled, isRefreshing])
 
@@ -66,6 +70,7 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
       const shouldRefresh = pullingRef.current && armed && !isRefreshing
       reset()
       if (!shouldRefresh) return
+      setDidTrigger(true)
       await onRefresh()
     }
 
@@ -82,7 +87,13 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
     }
   }, [armed, canStartPull, enabled, isRefreshing, onRefresh, reset])
 
-  const showIndicator = isRefreshing || pullPx > 0
+  useEffect(() => {
+    if (!didTrigger) return
+    if (isRefreshing) return
+    setDidTrigger(false)
+  }, [didTrigger, isRefreshing])
+
+  const showIndicator = pullPx > 0 || didTrigger
   const progress = Math.min(1, pullPx / TRIGGER_PX)
 
   return (
@@ -93,11 +104,11 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
           showIndicator ? 'opacity-100' : 'opacity-0'
         )}
         style={{
-          transform: `translateY(${Math.max(0, pullPx - 56)}px)`,
+          transform: `translateY(${didTrigger ? 0 : Math.max(0, pullPx - 56)}px)`,
         }}
       >
         <div className="mt-2 flex items-center gap-2 rounded-full border border-border bg-background/90 backdrop-blur px-3 py-2 shadow-sm">
-          {isRefreshing ? (
+          {didTrigger ? (
             <Loader size="sm" />
           ) : (
             <ArrowDown
@@ -105,13 +116,11 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
               style={{ transform: `rotate(${Math.round(progress * 180)}deg)` }}
             />
           )}
-          <span className="text-xs text-muted-foreground">
-            {isRefreshing
-              ? t('common.loading')
-              : armed
-                ? t('common.releaseToRefresh')
-                : t('common.pullToRefresh')}
-          </span>
+          {!didTrigger ? (
+            <span className="text-xs text-muted-foreground">
+              {armed ? t('common.releaseToRefresh') : t('common.pullToRefresh')}
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -119,4 +128,3 @@ export function PullToRefresh({ children, onRefresh, isRefreshing, enabled = tru
     </div>
   )
 }
-

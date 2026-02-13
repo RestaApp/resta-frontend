@@ -36,6 +36,22 @@ export const AlertDialog = memo(function AlertDialog({
   useBodyScrollLock(open)
 
   useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (!open) return
+    const el = document.documentElement
+    const raw = el.dataset.drawerOpenCount
+    const count = Number.parseInt(raw ?? '0', 10)
+    el.dataset.drawerOpenCount = String(Number.isFinite(count) ? count + 1 : 1)
+    return () => {
+      const rawNext = el.dataset.drawerOpenCount
+      const current = Number.parseInt(rawNext ?? '0', 10)
+      const next = Number.isFinite(current) ? Math.max(0, current - 1) : 0
+      if (next === 0) delete el.dataset.drawerOpenCount
+      else el.dataset.drawerOpenCount = String(next)
+    }
+  }, [open])
+
+  useEffect(() => {
     if (!open || typeof document === 'undefined') return
 
     const prevActive = document.activeElement as HTMLElement | null

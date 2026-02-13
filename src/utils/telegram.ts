@@ -3,11 +3,37 @@ import { logger } from '@/utils/logger'
 
 interface TelegramWebApp {
   version?: string
+  isVersionAtLeast?: (version: string) => boolean
+  isActive?: boolean
+  isFullscreen?: boolean
+  safeAreaInset?: { top: number; bottom: number; left: number; right: number }
+  contentSafeAreaInset?: { top: number; bottom: number; left: number; right: number }
+  onEvent?: (
+    eventType:
+      | 'activated'
+      | 'deactivated'
+      | 'safeAreaChanged'
+      | 'contentSafeAreaChanged'
+      | 'fullscreenChanged'
+      | 'fullscreenFailed',
+    callback: () => void
+  ) => void
+  offEvent?: (
+    eventType:
+      | 'activated'
+      | 'deactivated'
+      | 'safeAreaChanged'
+      | 'contentSafeAreaChanged'
+      | 'fullscreenChanged'
+      | 'fullscreenFailed',
+    callback: () => void
+  ) => void
   ready: () => void
   expand: () => void
   enableClosingConfirmation?: () => void
   disableVerticalSwipes?: () => void
   requestFullscreen?: () => void
+  exitFullscreen?: () => void
   setBackgroundColor?: (color: string) => void
   setHeaderColor?: (color: string) => void
   lockOrientation?: () => void

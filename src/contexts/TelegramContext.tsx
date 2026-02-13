@@ -127,6 +127,29 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     }
   }, [])
 
+  const applyTelegramInsets = useCallback((webApp: TelegramWebApp | null) => {
+    if (!webApp) return
+    if (typeof document === 'undefined') return
+
+    const safe = webApp.safeAreaInset
+    const contentSafe = webApp.contentSafeAreaInset
+
+    const setPx = (name: string, value: number | undefined) => {
+      const v = Number.isFinite(value) ? Math.max(0, Number(value)) : 0
+      document.documentElement.style.setProperty(name, `${v}px`)
+    }
+
+    setPx('--tg-safe-area-inset-top', safe?.top)
+    setPx('--tg-safe-area-inset-right', safe?.right)
+    setPx('--tg-safe-area-inset-bottom', safe?.bottom)
+    setPx('--tg-safe-area-inset-left', safe?.left)
+
+    setPx('--tg-content-safe-area-inset-top', contentSafe?.top)
+    setPx('--tg-content-safe-area-inset-right', contentSafe?.right)
+    setPx('--tg-content-safe-area-inset-bottom', contentSafe?.bottom)
+    setPx('--tg-content-safe-area-inset-left', contentSafe?.left)
+  }, [])
+
   const configureTelegram = useCallback(
     (webApp: TelegramWebApp | null) => {
       if (!webApp) return
@@ -139,7 +162,6 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       }
 
       const isVersionAtLeast = (min: string) => {
-        if (typeof webApp.isVersionAtLeast === 'function') return webApp.isVersionAtLeast(min)
         const [a1, b1] = String(webApp.version ?? '')
           .split('.')
           .map(Number)
@@ -155,10 +177,11 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
         safe(() => webApp.requestFullscreen?.())
       }
 
+      applyTelegramInsets(webApp)
       applyTelegramColors(webApp)
       safe(() => webApp.ready())
     },
-    [applyTelegramColors]
+    [applyTelegramColors, applyTelegramInsets]
   )
 
   const performLogin = useCallback(async (): Promise<TelegramWebApp | null> => {
@@ -299,6 +322,32 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange)
     }
   }, [applyTelegramColors, telegram])
+
+  useEffect(() => {
+    if (!telegram) return
+    if (typeof telegram.onEvent !== 'function') {
+      applyTelegramInsets(telegram)
+      return
+    }
+
+    const onSafeAreaChanged = () => applyTelegramInsets(telegram)
+    const onContentSafeAreaChanged = () => applyTelegramInsets(telegram)
+    const onFullscreenChanged = () => applyTelegramInsets(telegram)
+    const onFullscreenFailed = () => applyTelegramInsets(telegram)
+
+    applyTelegramInsets(telegram)
+    telegram.onEvent('safeAreaChanged', onSafeAreaChanged)
+    telegram.onEvent('contentSafeAreaChanged', onContentSafeAreaChanged)
+    telegram.onEvent('fullscreenChanged', onFullscreenChanged)
+    telegram.onEvent('fullscreenFailed', onFullscreenFailed)
+
+    return () => {
+      telegram.offEvent?.('safeAreaChanged', onSafeAreaChanged)
+      telegram.offEvent?.('contentSafeAreaChanged', onContentSafeAreaChanged)
+      telegram.offEvent?.('fullscreenChanged', onFullscreenChanged)
+      telegram.offEvent?.('fullscreenFailed', onFullscreenFailed)
+    }
+  }, [applyTelegramInsets, telegram])
 
   useLockPortrait(telegram)
 
