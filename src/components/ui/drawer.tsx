@@ -1,5 +1,5 @@
-import { memo, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence, useDragControls, useReducedMotion, type PanInfo } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -50,6 +50,10 @@ const DrawerContent = memo(function DrawerContent({
   bottomOffsetPx,
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
+  const dragControls = useDragControls()
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const didCloseByDragRef = useRef(false)
+  const [contentHeightPx, setContentHeightPx] = useState(600)
 
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -57,6 +61,51 @@ const DrawerContent = memo(function DrawerContent({
       if (!preventClose) onOpenChange(false)
     },
     [preventClose, onOpenChange]
+  )
+
+  useEffect(() => {
+    const el = contentRef.current
+    if (!el) return
+
+    const measure = () => setContentHeightPx(el.getBoundingClientRect().height)
+    measure()
+
+    const cleanup: Array<() => void> = []
+
+    window.addEventListener('resize', measure)
+    cleanup.push(() => window.removeEventListener('resize', measure))
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(measure)
+      ro.observe(el)
+      cleanup.push(() => ro.disconnect())
+    }
+
+    return () => cleanup.forEach((fn) => fn())
+  }, [bottomOffsetPx])
+
+  const closeThresholdPx = Math.min(180, contentHeightPx > 0 ? contentHeightPx * 0.25 : 140)
+  const dragBottomPx = Math.max(0, contentHeightPx + bottomOffsetPx + 40)
+
+  const handleDrag = useCallback(
+    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      if (preventClose) return
+      if (didCloseByDragRef.current) return
+      if (info.offset.y >= closeThresholdPx) {
+        didCloseByDragRef.current = true
+        onOpenChange(false)
+      }
+    },
+    [closeThresholdPx, onOpenChange, preventClose]
+  )
+
+  const handleDragEnd = useCallback(
+    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      if (preventClose) return
+      if (didCloseByDragRef.current) return
+      if (info.offset.y >= closeThresholdPx || info.velocity.y > 800) onOpenChange(false)
+    },
+    [closeThresholdPx, onOpenChange, preventClose]
   )
 
   return (
@@ -69,6 +118,14 @@ const DrawerContent = memo(function DrawerContent({
         transition={
           reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }
         }
+        drag={preventClose ? false : 'y'}
+        dragControls={dragControls}
+        dragListener={false}
+        dragConstraints={{ top: 0, bottom: dragBottomPx }}
+        dragElastic={0.1}
+        dragMomentum={false}
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
         className={cn(
           'fixed inset-x-0 z-10 flex flex-col overflow-y-auto overscroll-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-xl',
@@ -80,8 +137,20 @@ const DrawerContent = memo(function DrawerContent({
         }}
         role="dialog"
         aria-modal="true"
+        ref={contentRef}
       >
-        <div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
+        <div
+          className={cn(
+            'flex justify-center pt-4',
+            preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
+          )}
+          onPointerDown={(e) => {
+            if (preventClose) return
+            dragControls.start(e)
+          }}
+        >
+          <div className="h-2 w-[100px] shrink-0 rounded-full bg-muted" />
+        </div>
         {children}
       </motion.div>
     </div>

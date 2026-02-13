@@ -55,10 +55,12 @@ interface ProfileInfoEmployeeSectionProps {
 const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmployeeSectionProps) => {
   const { t } = useTranslation()
   if (!employeeProfile) return null
-  const { experience_years, open_to_work } = employeeProfile
+  const { experience_years, open_to_work, skills } = employeeProfile
   const hasExperience = experience_years !== undefined
   const hasOpenToWork = open_to_work !== undefined
-  if (!hasExperience && !hasOpenToWork) return null
+  const skillsList = Array.isArray(skills) ? skills.map(s => s.trim()).filter(Boolean) : []
+  const hasSkills = skillsList.length > 0
+  if (!hasExperience && !hasOpenToWork && !hasSkills) return null
 
   return (
     <>
@@ -69,6 +71,18 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
         <InfoRow label={t('profile.openToWork')}>
           {open_to_work ? t('common.yes') : t('common.no')}
         </InfoRow>
+      )}
+      {hasSkills && (
+        <div className={cn(ROW_CLASS, 'items-start')}>
+          <span className={LABEL_CLASS}>{t('profile.skills')}</span>
+          <div className="flex flex-wrap justify-end gap-2 min-w-0">
+            {skillsList.map(skill => (
+              <Badge key={skill} variant="outline" className="bg-white text-black border-border/40">
+                {skill}
+              </Badge>
+            ))}
+          </div>
+        </div>
       )}
     </>
   )

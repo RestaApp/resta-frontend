@@ -349,13 +349,13 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   </Badge>
                 ) : null}
 
-                {aboutVenue.cuisineTypes.length
-                  ? aboutVenue.cuisineTypes.map(type => (
-                      <Badge key={type} variant="outline" className="text-[11px]">
-                        {type}
-                      </Badge>
-                    ))
-                  : null}
+                {aboutVenue.cuisineTypes.length ? (
+                  aboutVenue.cuisineTypes.map(type => (
+                    <Badge key={type} variant="outline" className="text-[11px]">
+                      {type}
+                    </Badge>
+                  ))
+                ) : null}
               </div>
             ) : null}
           </Card>

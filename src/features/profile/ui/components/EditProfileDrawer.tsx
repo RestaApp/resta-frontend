@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { RangeSlider } from '@/components/ui'
 import { CitySelect } from '@/components/ui/city-select'
 import { Loader } from '@/components/ui/loader'
+import { Badge } from '@/components/ui/badge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,6 +49,20 @@ const EmployeeFieldsSection = memo(
     disabled,
   }: EmployeeFieldsSectionProps) => {
     const { t } = useTranslation()
+    const skillsList = useMemo(() => {
+      const parts = skills
+        .split(/[,;\n]+/g)
+        .map(item => item.trim())
+        .filter(Boolean)
+      const seen = new Set<string>()
+      return parts.filter(item => {
+        const key = item.toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+    }, [skills])
+
     return (
       <>
         <div>
@@ -82,12 +97,27 @@ const EmployeeFieldsSection = memo(
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">{t('profile.skills')}</label>
-          <Input
+          <textarea
             value={skills}
             onChange={e => updateField('skills', e.target.value)}
             placeholder={t('profile.form.skillsPlaceholder')}
             disabled={disabled}
+            rows={3}
+            className={TEXTAREA_CLASS}
           />
+          {skillsList.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {skillsList.map(skill => (
+                <Badge
+                  key={skill}
+                  variant="outline"
+                  className="bg-white text-black border-border/40"
+                >
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          )}
           <p className="text-xs text-muted-foreground mt-1">{t('profile.skillsExample')}</p>
         </div>
       </>
@@ -238,11 +268,11 @@ export const EditProfileDrawer = memo(
           </div>
         </div>
 
-        <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-card px-5 py-4">
+        <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-card px-5 py-4 flex-row">
           <Button
             onClick={handleSave}
             disabled={isLoading || !formData.name.trim()}
-            className="w-full"
+            className="flex-1"
             variant="gradient"
             size="md"
           >
@@ -253,7 +283,7 @@ export const EditProfileDrawer = memo(
             disabled={isLoading}
             variant="outline"
             size="md"
-            className="w-full"
+            className="flex-1"
           >
             {t('common.cancel')}
           </Button>
