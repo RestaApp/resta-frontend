@@ -77,7 +77,7 @@ export const AppHeader = ({ greetingName, onAddShift, activeTab }: AppHeaderProp
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="mt-[50px] flex h-[72px] items-center bg-card px-4 shadow-sm"
+        className="mt-[65px] flex h-[72px] items-center bg-card px-4 shadow-sm"
       >
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-3">
