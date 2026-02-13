@@ -151,7 +151,7 @@ const AddShiftDrawerKeyed = ({
   const canValidateSpecializations = !!formPosition && !positionError
   const specializationFieldError =
     canValidateSpecializations &&
-      (isSpecializationError || (showStep1Errors && specializations.length === 0))
+    (isSpecializationError || (showStep1Errors && specializations.length === 0))
       ? isSpecializationError && submitError
         ? submitError
         : t('validation.specializationRequired')

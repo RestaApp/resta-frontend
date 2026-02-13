@@ -181,10 +181,13 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
     void (async () => {
       await applyLanguage(userDataFromStore as UserData)
+      const webApp = getTelegramWebApp()
+      configureTelegram(webApp)
+      setTelegram(webApp ?? null)
       setIsReady(true)
       dispatch(setReady(true))
     })()
-  }, [applyLanguage, dispatch, isReady, userDataFromStore])
+  }, [applyLanguage, configureTelegram, dispatch, isReady, userDataFromStore])
 
   /**
    * Init/login один раз

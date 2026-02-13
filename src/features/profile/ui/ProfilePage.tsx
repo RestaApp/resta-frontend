@@ -170,10 +170,10 @@ export const ProfilePage = memo(() => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
             >
-              <Card className="p-4 text-center w-[140px]">
-                <div className="text-3xl mb-2">{a.emoji}</div>
-                <div className="text-sm font-medium mb-1">{a.title}</div>
-                <p className="text-xs text-muted-foreground">{a.value}</p>
+              <Card className="flex h-[125px] w-[125px] flex-col items-center justify-center gap-2 p-4 text-center">
+                <div className="text-3xl leading-none">{a.emoji}</div>
+                <div className="text-sm font-medium leading-tight">{a.title}</div>
+                <p className="text-xs text-muted-foreground leading-tight">{a.value}</p>
               </Card>
             </motion.div>
           ))}
