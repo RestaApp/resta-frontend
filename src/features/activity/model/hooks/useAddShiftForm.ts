@@ -239,11 +239,12 @@ export const useAddShiftForm = ({
       timeRangeError ||
       dateError ||
       positionError
-    )
-      {
-        setSubmitError(
-          specializations.length === 0 ? t('validation.specializationRequired') : t('validation.fillRequired')
-        )
+    ) {
+      setSubmitError(
+        specializations.length === 0
+          ? t('validation.specializationRequired')
+          : t('validation.fillRequired')
+      )
       return false
     }
 

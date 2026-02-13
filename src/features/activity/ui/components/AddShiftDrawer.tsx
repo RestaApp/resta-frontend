@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -118,22 +118,19 @@ const AddShiftDrawerKeyed = ({
     resetForm,
   } = form
 
-  useEffect(() => {
-    if (submitError) setDidAttemptSubmit(true)
-  }, [submitError])
-
+  const showErrors = didAttemptSubmit || !!submitError
   const requiredFieldError = t('validation.requiredField')
-  const titleError = didAttemptSubmit && !title.trim() ? requiredFieldError : undefined
-  const dateFieldError = dateError ?? (didAttemptSubmit && !date ? requiredFieldError : undefined)
-  const startTimeError = didAttemptSubmit && !startTime ? requiredFieldError : undefined
-  const endTimeError = timeRangeError ?? (didAttemptSubmit && !endTime ? requiredFieldError : undefined)
+  const titleError = showErrors && !title.trim() ? requiredFieldError : undefined
+  const dateFieldError = dateError ?? (showErrors && !date ? requiredFieldError : undefined)
+  const startTimeError = showErrors && !startTime ? requiredFieldError : undefined
+  const endTimeError = timeRangeError ?? (showErrors && !endTime ? requiredFieldError : undefined)
   const positionFieldError =
-    positionError ?? (didAttemptSubmit && !formPosition ? requiredFieldError : undefined)
+    positionError ?? (showErrors && !formPosition ? requiredFieldError : undefined)
 
   const se = submitError?.toLowerCase() || ''
   const isSpecializationError = se.includes('специализац') || se.includes('specialization')
   const specializationFieldError =
-    formPosition && (isSpecializationError || (didAttemptSubmit && specializations.length === 0))
+    formPosition && (isSpecializationError || (showErrors && specializations.length === 0))
       ? isSpecializationError && submitError
         ? submitError
         : t('validation.specializationRequired')
@@ -150,7 +147,16 @@ const AddShiftDrawerKeyed = ({
     if (!startTime || !endTime || timeRangeError) return scrollTo(timeRef)
     if (!formPosition || positionError) return scrollTo(positionRef)
     if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
-  }, [date, formPosition, positionError, specializations.length, startTime, endTime, timeRangeError, title])
+  }, [
+    date,
+    formPosition,
+    positionError,
+    specializations.length,
+    startTime,
+    endTime,
+    timeRangeError,
+    title,
+  ])
 
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open,

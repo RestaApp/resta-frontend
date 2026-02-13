@@ -9,7 +9,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui'
 import { Loader } from '@/components/ui/loader'
 import { useLabels } from '@/shared/i18n/hooks'
-import { ExperienceField, LocationField, OpenToWorkToggle } from './index'
+import { ExperienceField, LocationField } from './index'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { cn } from '@/utils/cn'
 import type { EmployeeFormData } from '../../../../model/useEmployeeSubRoleSelector'
@@ -158,10 +158,6 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
               <ExperienceField
                 value={formData.experienceYears}
                 onChange={(v: number) => onFormDataUpdate({ experienceYears: v })}
-              />
-              <OpenToWorkToggle
-                value={formData.openToWork}
-                onChange={(v: boolean) => onFormDataUpdate({ openToWork: v })}
               />
               <LocationField
                 value={formData.location}

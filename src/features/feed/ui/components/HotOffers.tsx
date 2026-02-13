@@ -54,7 +54,10 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       <span className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-colors" />
 
       {paymentText ? (
-        <Badge variant="primary" className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5">
+        <Badge
+          variant="primary"
+          className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5"
+        >
           {paymentText}
         </Badge>
       ) : null}
@@ -97,7 +100,12 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll }: Ho
         </h3>
 
         {hasMore && onShowAll ? (
-          <Button variant="ghost" size="sm" onClick={onShowAll} className="text-xs text-primary hover:underline">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onShowAll}
+            className="text-xs text-primary hover:underline"
+          >
             {t('common.all')}
           </Button>
         ) : null}

@@ -35,7 +35,11 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
 
   return (
     <section ref={sectionRef}>
-      <SectionHeader icon={Send} title={t('activity.myApplications')} count={appliedShifts.length} />
+      <SectionHeader
+        icon={Send}
+        title={t('activity.myApplications')}
+        count={appliedShifts.length}
+      />
       {appliedShifts.length === 0 ? (
         <EmptyState
           message={t('activity.noApplicationsYet')}

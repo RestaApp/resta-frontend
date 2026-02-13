@@ -24,7 +24,11 @@ function SearchFiltersComponent({
         {activeFiltersList.length > 0 && (
           <div className="flex-1 flex gap-1.5 items-center overflow-x-auto scrollbar-hide">
             {activeFiltersList.map((filter, index) => (
-              <Badge key={index} variant="outline" className="text-xs whitespace-nowrap flex-shrink-0">
+              <Badge
+                key={index}
+                variant="outline"
+                className="text-xs whitespace-nowrap flex-shrink-0"
+              >
                 {filter}
               </Badge>
             ))}

@@ -19,7 +19,10 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
     <section>
       <SectionHeader icon={Briefcase} title={t('activity.myShifts')} count={shifts.length} />
       {shifts.length === 0 ? (
-        <EmptyState message={t('activity.noShiftsYet')} description={t('activity.shiftsWillAppearHere')} />
+        <EmptyState
+          message={t('activity.noShiftsYet')}
+          description={t('activity.shiftsWillAppearHere')}
+        />
       ) : (
         <div className="space-y-4">
           {shifts.map(shift => (
