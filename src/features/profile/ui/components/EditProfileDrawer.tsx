@@ -238,16 +238,23 @@ export const EditProfileDrawer = memo(
           </div>
         </div>
 
-        <DrawerFooter>
+        <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-card px-5 py-4">
           <Button
             onClick={handleSave}
             disabled={isLoading || !formData.name.trim()}
             className="w-full"
-            variant="primary"
+            variant="gradient"
+            size="md"
           >
             {isLoading ? t('common.saving') : t('common.save')}
           </Button>
-          <Button onClick={handleCancel} disabled={isLoading} variant="outline" className="w-full">
+          <Button
+            onClick={handleCancel}
+            disabled={isLoading}
+            variant="outline"
+            size="md"
+            className="w-full"
+          >
             {t('common.cancel')}
           </Button>
         </DrawerFooter>
