@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useCreateShiftMutation,
@@ -86,6 +86,10 @@ export const useAddShiftForm = ({
       : []
   })
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{
+    location?: string
+    requirements?: string
+  }>({})
 
   const timeRangeError = useMemo(() => {
     if (!startTime || !endTime) return null
@@ -181,7 +185,10 @@ export const useAddShiftForm = ({
     !date ||
     !startTime ||
     !endTime ||
+    !location.trim() ||
     !position ||
+    !requirements.trim() ||
+    specializations.length === 0 ||
     !!timeRangeError ||
     !!dateError ||
     !!positionError
@@ -211,6 +218,48 @@ export const useAddShiftForm = ({
     [t]
   )
 
+  const extractFieldErrors = useCallback(
+    (errors: string[]) => {
+      const next: { location?: string; requirements?: string } = {}
+      for (const e of errors) {
+        const le = e.toLowerCase()
+        if (le.includes('location') && (le.includes("can't be blank") || le.includes('required'))) {
+          next.location = t('validation.requiredField')
+        }
+        if (
+          le.includes('requirements') &&
+          (le.includes("can't be blank") || le.includes('required'))
+        ) {
+          next.requirements = t('validation.requiredField')
+        }
+      }
+      return next
+    },
+    [t]
+  )
+
+  const applyServerErrors = useCallback(
+    (errors: string[]) => {
+      const translated = errors.map(translateError)
+      const uniq = Array.from(new Set(translated.filter(Boolean)))
+      const msg = uniq.join('; ')
+      setSubmitError(msg || t('validation.fillRequired'))
+      setFieldErrors(extractFieldErrors(errors))
+      showToast?.(msg || t('validation.fillRequired'), 'error')
+    },
+    [extractFieldErrors, showToast, t, translateError]
+  )
+
+  useEffect(() => {
+    if (!fieldErrors.location) return
+    if (location.trim()) setFieldErrors(prev => ({ ...prev, location: undefined }))
+  }, [fieldErrors.location, location])
+
+  useEffect(() => {
+    if (!fieldErrors.requirements) return
+    if (requirements.trim()) setFieldErrors(prev => ({ ...prev, requirements: undefined }))
+  }, [fieldErrors.requirements, requirements])
+
   const resetForm = useCallback(() => {
     setTitle('')
     setDescription('')
@@ -225,16 +274,20 @@ export const useAddShiftForm = ({
     setPosition('')
     setSpecializations([])
     setSubmitError(null)
+    setFieldErrors({})
   }, [initialShiftType])
 
   const handleSave = useCallback(async (): Promise<boolean> => {
     setSubmitError(null)
+    setFieldErrors({})
     if (
       !title ||
       !date ||
       !startTime ||
       !endTime ||
+      !location.trim() ||
       !position ||
+      !requirements.trim() ||
       specializations.length === 0 ||
       timeRangeError ||
       dateError ||
@@ -255,6 +308,10 @@ export const useAddShiftForm = ({
           ? t('validation.specializationRequired')
           : t('validation.fillRequired')
       )
+      setFieldErrors({
+        location: !location.trim() ? t('validation.requiredField') : undefined,
+        requirements: !requirements.trim() ? t('validation.requiredField') : undefined,
+      })
       return false
     }
 
@@ -290,10 +347,7 @@ export const useAddShiftForm = ({
           if (hasErrors) {
             const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
             const errorMessages = Array.isArray(errs) ? errs.map(String) : [String(errs)]
-            const translatedMessages = errorMessages.map(translateError)
-            const msg = translatedMessages.join('; ')
-            setSubmitError(msg)
-            showToast?.(msg, 'error')
+            applyServerErrors(errorMessages)
             return false
           }
         }
@@ -309,10 +363,7 @@ export const useAddShiftForm = ({
             if (hasErrors) {
               const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
               const errorMessages = Array.isArray(errs) ? errs.map(String) : [String(errs)]
-              const translatedMessages = errorMessages.map(translateError)
-              const msg = translatedMessages.join('; ')
-              setSubmitError(msg)
-              showToast?.(msg, 'error')
+              applyServerErrors(errorMessages)
               return false
             }
           }
@@ -321,6 +372,7 @@ export const useAddShiftForm = ({
         } catch (error: unknown) {
           // Обработка ошибок от сервера
           let errorMessage = t('shift.createError')
+          let rawErrors: string[] | null = null
 
           if (error && typeof error === 'object' && 'data' in error) {
             const data = (error as { data?: unknown }).data
@@ -332,8 +384,10 @@ export const useAddShiftForm = ({
               const messageAlt = dataObj.error
 
               if (Array.isArray(errors)) {
-                const translatedErrors = errors.map(e => translateError(String(e)))
-                errorMessage = translatedErrors.join('; ')
+                rawErrors = errors.map(e => String(e))
+                const translatedErrors = rawErrors.map(translateError)
+                const uniq = Array.from(new Set(translatedErrors.filter(Boolean)))
+                errorMessage = uniq.join('; ')
               } else if (typeof message === 'string') {
                 errorMessage = translateError(message)
               } else if (typeof messageAlt === 'string') {
@@ -344,8 +398,12 @@ export const useAddShiftForm = ({
             errorMessage = translateError(error.message)
           }
 
-          setSubmitError(errorMessage)
-          showToast?.(errorMessage, 'error')
+          if (rawErrors?.length) {
+            applyServerErrors(rawErrors)
+          } else {
+            setSubmitError(errorMessage)
+            showToast?.(errorMessage, 'error')
+          }
           return false
         }
       }
@@ -365,8 +423,11 @@ export const useAddShiftForm = ({
           const messageAlt = dataObj.error
 
           if (Array.isArray(errors)) {
-            const translatedErrors = errors.map(e => translateError(String(e)))
-            errorMessage = translatedErrors.join('; ')
+            const rawErrors = errors.map(e => String(e))
+            const translatedErrors = rawErrors.map(translateError)
+            const uniq = Array.from(new Set(translatedErrors.filter(Boolean)))
+            errorMessage = uniq.join('; ')
+            setFieldErrors(extractFieldErrors(rawErrors))
           } else if (typeof message === 'string') {
             errorMessage = translateError(message)
           } else if (typeof messageAlt === 'string') {
@@ -395,6 +456,7 @@ export const useAddShiftForm = ({
     position,
     specializations,
     createShift,
+    applyServerErrors,
     onSave,
     resetForm,
     showToast,
@@ -403,6 +465,7 @@ export const useAddShiftForm = ({
     positionError,
     initialValues,
     updateShiftMutation,
+    extractFieldErrors,
     translateError,
     t,
   ])
@@ -438,6 +501,7 @@ export const useAddShiftForm = ({
     timeRangeError,
     dateError,
     positionError,
+    fieldErrors,
     handleSave,
     resetForm,
   } as const

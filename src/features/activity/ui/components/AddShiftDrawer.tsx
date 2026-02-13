@@ -73,8 +73,10 @@ const AddShiftDrawerKeyed = ({
   const titleRef = useRef<HTMLDivElement | null>(null)
   const dateRef = useRef<HTMLDivElement | null>(null)
   const timeRef = useRef<HTMLDivElement | null>(null)
+  const locationRef = useRef<HTMLDivElement | null>(null)
   const positionRef = useRef<HTMLDivElement | null>(null)
   const specializationRef = useRef<HTMLDivElement | null>(null)
+  const requirementsRef = useRef<HTMLDivElement | null>(null)
   const [step, setStep] = useState<StepIndex>(0)
   const [attemptedSteps, setAttemptedSteps] = useState<[boolean, boolean, boolean]>([
     false,
@@ -124,6 +126,7 @@ const AddShiftDrawerKeyed = ({
     timeRangeError,
     dateError,
     positionError,
+    fieldErrors,
     handleSave,
     resetForm,
   } = form
@@ -131,12 +134,15 @@ const AddShiftDrawerKeyed = ({
   const showErrors = didAttemptSubmit || !!submitError
   const showStep0Errors = showErrors || attemptedSteps[0]
   const showStep1Errors = showErrors || attemptedSteps[1]
+  const showStep2Errors = showErrors || attemptedSteps[2]
   const requiredFieldError = t('validation.requiredField')
   const titleError = showStep0Errors && !title.trim() ? requiredFieldError : undefined
   const dateFieldError = dateError ?? (showStep0Errors && !date ? requiredFieldError : undefined)
   const startTimeError = showStep0Errors && !startTime ? requiredFieldError : undefined
   const endTimeError =
     timeRangeError ?? (showStep0Errors && !endTime ? requiredFieldError : undefined)
+  const locationFieldError =
+    fieldErrors.location ?? (showStep1Errors && !location.trim() ? requiredFieldError : undefined)
   const positionFieldError =
     positionError ?? (showStep1Errors && !formPosition ? requiredFieldError : undefined)
 
@@ -150,6 +156,9 @@ const AddShiftDrawerKeyed = ({
         ? submitError
         : t('validation.specializationRequired')
       : undefined
+  const requirementsFieldError =
+    fieldErrors.requirements ??
+    (showStep2Errors && !requirements.trim() ? requiredFieldError : undefined)
 
   const genericSubmitError = submitError && !isSpecializationError ? submitError : null
 
@@ -164,8 +173,12 @@ const AddShiftDrawerKeyed = ({
         if (!startTime || !endTime || timeRangeError) return scrollTo(timeRef)
       }
       if (targetStep === 1) {
+        if (!location.trim()) return scrollTo(locationRef)
         if (!formPosition || positionError) return scrollTo(positionRef)
         if (formPosition && specializations.length === 0) return scrollTo(specializationRef)
+      }
+      if (targetStep === 2) {
+        if (!requirements.trim()) return scrollTo(requirementsRef)
       }
     },
     [
@@ -173,7 +186,9 @@ const AddShiftDrawerKeyed = ({
       dateError,
       endTime,
       formPosition,
+      location,
       positionError,
+      requirements,
       specializations.length,
       startTime,
       timeRangeError,
@@ -185,15 +200,19 @@ const AddShiftDrawerKeyed = ({
     if (!title.trim()) return 0
     if (!date || dateError) return 0
     if (!startTime || !endTime || timeRangeError) return 0
+    if (!location.trim()) return 1
     if (!formPosition || positionError) return 1
     if (formPosition && specializations.length === 0) return 1
+    if (!requirements.trim()) return 2
     return 2
   }, [
     date,
     dateError,
     endTime,
     formPosition,
+    location,
     positionError,
+    requirements,
     specializations.length,
     startTime,
     timeRangeError,
@@ -206,8 +225,13 @@ const AddShiftDrawerKeyed = ({
         return !!title.trim() && !!date && !!startTime && !!endTime && !timeRangeError && !dateError
       }
       if (targetStep === 1) {
+        if (!location.trim()) return false
         if (!formPosition || !!positionError) return false
         if (specializations.length === 0) return false
+        return true
+      }
+      if (targetStep === 2) {
+        if (!requirements.trim()) return false
         return true
       }
       return true
@@ -217,7 +241,9 @@ const AddShiftDrawerKeyed = ({
       dateError,
       endTime,
       formPosition,
+      location,
       positionError,
+      requirements,
       specializations.length,
       startTime,
       timeRangeError,
@@ -386,12 +412,15 @@ const AddShiftDrawerKeyed = ({
 
         {!isSuccessOpen && step === 1 ? (
           <>
-            <LocationField
-              label={t('common.location')}
-              value={location}
-              onChange={setLocation}
-              placeholder={t('shift.locationPlaceholder')}
-            />
+            <div ref={locationRef}>
+              <LocationField
+                label={t('common.location')}
+                value={location}
+                onChange={setLocation}
+                placeholder={t('shift.locationPlaceholder')}
+                error={locationFieldError}
+              />
+            </div>
 
             {!isEmployeeRole ? (
               <Select
@@ -450,13 +479,16 @@ const AddShiftDrawerKeyed = ({
               minHeight="96px"
             />
 
-            <TextAreaField
-              label={t('common.requirements')}
-              value={requirements}
-              onChange={setRequirements}
-              placeholder={t('shift.requirementsPlaceholder')}
-              minHeight="80px"
-            />
+            <div ref={requirementsRef}>
+              <TextAreaField
+                label={t('common.requirements')}
+                value={requirements}
+                onChange={setRequirements}
+                placeholder={t('shift.requirementsPlaceholder')}
+                minHeight="80px"
+                error={requirementsFieldError}
+              />
+            </div>
 
             <CheckboxField
               id="urgent-shift"
