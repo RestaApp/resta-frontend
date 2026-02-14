@@ -1,11 +1,14 @@
 import { memo } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { X } from 'lucide-react'
 
 interface SearchFiltersProps {
   activeFiltersList: string[]
+  onResetFilters: () => void
 }
 
-function SearchFiltersComponent({ activeFiltersList }: SearchFiltersProps) {
+function SearchFiltersComponent({ activeFiltersList, onResetFilters }: SearchFiltersProps) {
   if (activeFiltersList.length === 0) return null
 
   return (
@@ -18,6 +21,15 @@ function SearchFiltersComponent({ activeFiltersList }: SearchFiltersProps) {
             </Badge>
           ))}
         </div>
+        <Button
+          onClick={onResetFilters}
+          variant="ghost"
+          size="sm"
+          aria-label="Сбросить фильтры"
+          className="rounded-full p-2 min-w-[32px] h-8 w-8 shrink-0"
+        >
+          <X className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   )

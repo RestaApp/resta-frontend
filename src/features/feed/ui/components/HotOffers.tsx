@@ -85,17 +85,16 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVa
   const { t } = useTranslation()
   const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
-  const hasMore = useMemo(
-    () => totalCount !== undefined && items.length < totalCount,
-    [totalCount, items.length]
-  )
-
   const title = useMemo(() => {
     // Приоритет — раздельные ключи; fallback на старый
     if (isVacancy === true) return t('feed.hotVacancies') || t('feed.hotOffers')
     if (isVacancy === false) return t('feed.hotShifts') || t('feed.hotOffers')
     return t('feed.hotOffers')
   }, [isVacancy, t])
+
+  const showAllLabel = useMemo(() => {
+    return t('feed.showAllHotOffers') || t('common.all')
+  }, [t])
 
   return (
     <div className="py-2">
@@ -107,14 +106,14 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVa
           ) : null}
         </h3>
 
-        {hasMore && onShowAll ? (
+        {onShowAll ? (
           <Button
             variant="ghost"
             size="sm"
             onClick={onShowAll}
             className="text-xs text-primary hover:underline"
           >
-            {t('common.all')}
+            {showAllLabel}
           </Button>
         ) : null}
       </div>

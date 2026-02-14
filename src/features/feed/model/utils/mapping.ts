@@ -17,9 +17,32 @@ const toNumber = (v?: string | number | null): number => {
   return Number.isFinite(n) ? n : 0
 }
 
-const getLogo = (id: number): string => {
+export const getLogo = (id: number): string => {
   const logos = ['🍽️', '☕️', '🍕', '🥖', '🥘', '🍔', '🍣', '🍜']
   return logos[Math.abs(id) % logos.length]
+}
+
+export const getLogoByPosition = (
+  position?: string | null,
+  idFallback?: number | null
+): string => {
+  const p = (position ?? '').toLowerCase()
+
+  const map: Record<string, string[]> = {
+    chef: ['👨‍🍳', '👩‍🍳', '🍳', '🔪', '🥘'],
+    waiter: ['🍽️', '🧑‍🍽️', '🥂', '🍷', '🧾'],
+    bartender: ['🍸', '🍹', '🥃', '🍺', '🧊'],
+    barista: ['☕️', '🫖', '🥐', '🍰', '🫘'],
+    manager: ['🧑‍💼', '📋', '📊', '📞', '🗓️'],
+    support: ['🧽', '🧹', '🧼', '🧤', '🧺'],
+  }
+
+  if (p && map[p]?.length) {
+    const i = typeof idFallback === 'number' ? Math.abs(idFallback) % map[p].length : 0
+    return map[p][i]
+  }
+  if (typeof idFallback === 'number') return getLogo(idFallback)
+  return '🍽️'
 }
 
 // если у API город лежит в restaurant_profile
@@ -45,7 +68,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
   return {
     id: item.id,
-    logo: getLogo(item.id),
+    logo: getLogoByPosition(item.position, item.id),
     restaurant: item.user?.full_name || item.user?.name || item.title || '—',
     rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
 
@@ -105,7 +128,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
 
   return {
     id: v.id,
-    logo: restaurant?.[0] ?? '🍽️',
+    logo: getLogoByPosition(v.position, v.id),
     restaurant,
     rating: 0,
 

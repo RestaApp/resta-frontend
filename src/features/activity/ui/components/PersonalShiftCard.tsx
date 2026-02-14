@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { ShiftCard } from '@/components/ui/ShiftCard'
 import type { Shift } from '@/features/feed/model/types'
+import { getLogoByPosition } from '@/features/feed/model/utils/mapping'
 import {
   parseApiDateTime,
   formatDateRU,
@@ -39,7 +40,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
 
   const mappedShift: Shift = {
     id: shift.id,
-    logo: shift.title?.[0] ?? '🧾',
+    logo: getLogoByPosition(shift.position, shift.id),
     restaurant: shift.title || t('common.myShift'),
     rating: 0,
 

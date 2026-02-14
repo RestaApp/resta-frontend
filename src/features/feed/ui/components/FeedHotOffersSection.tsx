@@ -33,13 +33,11 @@ export const FeedHotOffersSection = memo((props: Props) => {
 
   if (hotOffers.length === 0) return null
 
-  const hasMore = Boolean(totalCount && hotOffers.length < totalCount)
-
   return (
     <HotOffers
       items={hotOffers}
       totalCount={totalCount}
-      onShowAll={hasMore ? onShowAll : undefined}
+      onShowAll={onShowAll}
       onItemClick={onItemClick}
       isVacancy={isVacancy}
     />

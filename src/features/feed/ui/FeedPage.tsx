@@ -15,6 +15,7 @@ export const FeedPage = () => {
         feedType={m.feedType}
         onChangeFeedType={m.setFeedType}
         activeFiltersList={m.activeFiltersList}
+        onResetFilters={m.resetFilters}
       />
 
       <FeedHotOffersSection

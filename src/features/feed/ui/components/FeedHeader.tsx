@@ -10,18 +10,19 @@ type Props = {
   onChangeFeedType: (t: FeedType) => void
 
   activeFiltersList: string[]
+  onResetFilters: () => void
 }
 
 export const FeedHeader = memo((props: Props) => {
-  const { options, feedType, onChangeFeedType, activeFiltersList } = props
+  const { options, feedType, onChangeFeedType, activeFiltersList, onResetFilters } = props
 
   return (
-    <div className="sticky top-0 z-20 border-border/50 bg-background/95 backdrop-blur-sm transition-all">
+    <div className="top-0 z-20 border-border/50 bg-background/95 backdrop-blur-sm transition-all">
       <div className="px-4 py-2">
         <Tabs options={options} activeId={feedType} onChange={onChangeFeedType} />
       </div>
 
-      <SearchFilters activeFiltersList={activeFiltersList} />
+      <SearchFilters activeFiltersList={activeFiltersList} onResetFilters={onResetFilters} />
     </div>
   )
 })
