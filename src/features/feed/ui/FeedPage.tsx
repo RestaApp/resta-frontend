@@ -19,7 +19,7 @@ export const FeedPage = () => {
       />
 
       <FeedHotOffersSection
-        isLoading={m.isRefreshing}
+        isLoading={m.activeList.isInitialLoading}
         hotOffers={m.hotOffers}
         totalCount={m.hotOffersTotalCount}
         onShowAll={m.showAllHotShifts}
