@@ -9,6 +9,7 @@ import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
+import { cn } from '@/utils/cn'
 
 interface ShiftCardOwnerActions {
   onEdit: (id: number) => void
@@ -147,12 +148,18 @@ const ShiftCardComponent = ({
       aria-label={cardAriaLabel}
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
-      className="group relative rounded-[20px] p-4 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] backdrop-blur-xl bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className={cn(
+        'group relative rounded-xl p-4 border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'dark:border-[rgba(255,255,255,0.06)] dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)] dark:shadow-none',
+        shift.urgent &&
+          'border-primary/25 hover:border-primary/35 dark:!border-primary/25 dark:hover:border-primary/35 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.12)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.18)]',
+        !shift.urgent && 'border-border shadow-sm hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
+      )}
     >
       {/* Header */}
-      <div className="flex justify-between items-start mb-2 gap-3">
+      <div className="flex justify-between items-start mb-3 gap-3">
         <div className="flex gap-3 min-w-0">
-          <div className="flex-shrink-0 w-12 h-12 bg-secondary/50 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-white/10">
+          <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-muted/60 flex items-center justify-center text-2xl border border-border/50">
             {shift.logo}
           </div>
 
@@ -161,56 +168,56 @@ const ShiftCardComponent = ({
               <h3 className="font-bold text-base leading-tight truncate">{positionText}</h3>
 
               {shift.rating > 0 ? (
-                <div className="flex items-center gap-1 text-xs font-medium text-amber-500">
+                <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
                   ★ {shift.rating}
                 </div>
               ) : null}
             </div>
 
             <p className="text-sm text-muted-foreground mt-0.5 truncate">{shift.restaurant}</p>
-
-            {/* Pills row */}
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {shift.urgent ? <UrgentPill /> : null}
               {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
             </div>
           </div>
         </div>
-
-        {/* Price */}
         <div className="text-right flex-shrink-0">
-          <div className="font-bold text-lg text-primary tracking-tight">
+          <div
+            className={cn(
+              'font-semibold text-lg text-primary tracking-tight',
+              shift.urgent && 'dark:font-bold dark:text-[1.0625rem]'
+            )}
+          >
             {formatMoney(shift.pay)}{' '}
             <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
           </div>
         </div>
       </div>
 
-      {/* Date / time */}
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <div className="flex items-center gap-2 text-sm text-foreground/80 bg-secondary/30 p-2 rounded-xl">
-          <CalendarDays className="w-4 h-4 text-primary" />
-          <span className="font-medium truncate">{shift.date}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-foreground/80 bg-secondary/30 p-2 rounded-xl">
-          <Clock className="w-4 h-4 text-muted-foreground" />
-          <span className="font-medium truncate">{shift.time}</span>
-        </div>
+      {/* Date / time — текст + иконка, без капсул */}
+      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+        <span className="flex items-center gap-1.5 truncate">
+          <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" />
+          <span className="font-medium text-foreground truncate">{shift.date}</span>
+        </span>
+        <span className="flex items-center gap-1.5 truncate">
+          <Clock className="w-4 h-4 shrink-0 text-muted-foreground" />
+          <span className="font-medium text-foreground truncate">{shift.time}</span>
+        </span>
       </div>
 
       {/* Bottom */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {responsesLabel ? (
-            <div
-              className={
-                hasResponses
-                  ? 'inline-flex items-center rounded-full bg-primary/20 text-primary px-2 py-1 text-[12px] font-medium border border-primary/30'
-                  : 'inline-flex items-center rounded-full bg-secondary/30 px-2 py-1 text-[12px] text-muted-foreground'
-              }
+            <span
+              className={cn(
+                'text-xs',
+                hasResponses ? 'font-medium text-primary' : 'text-muted-foreground'
+              )}
             >
               {responsesLabel}
-            </div>
+            </span>
           ) : null}
         </div>
 

@@ -48,27 +48,45 @@ interface ShiftDetailsScreenProps {
 interface DetailRowProps {
   icon: LucideIcon
   iconColor?: string
+  /** Section-level rows get a soft tinted icon container; meta (date/time/location) stay neutral */
+  iconVariant?: 'meta' | 'section'
   label: string
   value: string | ReactNode
   subValue?: string | ReactNode
   action?: ReactNode
 }
 
+const ICON_WRAPPER_SECTION = 'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10'
+
 const DetailRow = memo(
-  ({ icon: Icon, iconColor = 'text-primary', label, value, subValue, action }: DetailRowProps) => (
+  ({
+    icon: Icon,
+    iconColor = 'text-muted-foreground',
+    iconVariant = 'meta',
+    label,
+    value,
+    subValue,
+    action,
+  }: DetailRowProps) => (
     <div className="flex items-start gap-3">
-      <Icon className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} />
+      {iconVariant === 'section' ? (
+        <div className={cn(ICON_WRAPPER_SECTION, 'mt-0.5')} aria-hidden>
+          <Icon className="h-5 w-5 text-primary shrink-0" />
+        </div>
+      ) : (
+        <Icon className={cn('w-5 h-5 flex-shrink-0 mt-0.5', iconColor)} />
+      )}
       <div className="flex-1 min-w-0">
-        <div className="text-[12px] text-muted-foreground mb-1 break-words">{label}</div>
+        <div className="text-xs text-muted-foreground mb-0.5 break-words">{label}</div>
         <div
-          className="text-[14px] font-medium break-words"
+          className="text-sm font-medium text-foreground break-words"
           style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
         >
           {value}
         </div>
         {subValue ? (
           <div
-            className="text-[12px] text-muted-foreground mt-1 break-words"
+            className="text-xs text-muted-foreground mt-0.5 break-words"
             style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
           >
             {subValue}
@@ -87,16 +105,19 @@ interface TextCardProps {
   content: string
 }
 
-const DETAIL_CARD_CLASS = 'p-4 rounded-xl border border-border bg-background'
+const DETAIL_CARD_CLASS =
+  'p-4 rounded-lg border border-border bg-card shadow-sm dark:shadow-none'
 
 const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => (
   <Card className={DETAIL_CARD_CLASS}>
-    <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-5 h-5 text-primary flex-shrink-0" />
-      <h2 className="text-[16px] font-medium break-words">{title}</h2>
+    <div className="flex items-center gap-2 mb-2">
+      <div className={cn(ICON_WRAPPER_SECTION)} aria-hidden>
+        <Icon className="h-5 w-5 text-primary shrink-0" />
+      </div>
+      <h2 className="text-base font-medium text-foreground break-words">{title}</h2>
     </div>
     <div
-      className="text-[14px] text-muted-foreground leading-relaxed whitespace-pre-line break-words"
+      className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line break-words"
       style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
     >
       {content}
@@ -263,13 +284,13 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
         style={{ height: 'calc(85vh - 52px)' }}
       >
-        <DrawerHeader className="pb-3 border-b border-border shrink-0">
+        <DrawerHeader className="pb-4 pt-1 border-b border-border shrink-0">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <DrawerTitle className="text-xl break-words capitalize">
+              <DrawerTitle className="text-xl font-semibold break-words capitalize text-foreground">
                 {vacancyTitle}
               </DrawerTitle>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="text-sm text-muted-foreground mt-1">
                 {[shiftTypeLabel, shift.date, shift.time].filter(Boolean).join(' · ')}
               </p>
             </div>
@@ -278,18 +299,18 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
               variant="ghost"
               size="sm"
               aria-label={t('common.close')}
-              className="min-w-[44px] min-h-[44px] p-2 hover:bg-muted flex-shrink-0"
+              className="min-w-[44px] min-h-[44px] p-2 hover:bg-muted/50 flex-shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 shrink-0" />
             </Button>
           </div>
-          <div className="flex items-center gap-2 flex-wrap mt-2">
+          <div className="flex items-center gap-2 flex-wrap mt-3">
             {shift.urgent ? <UrgentPill /> : null}
             <StatusPill status={appStatus} />
           </div>
         </DrawerHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-4 pt-2 space-y-4 bg-background">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-5 pt-4 space-y-5 bg-background">
           {showTabs && (
             <Tabs
               options={[
@@ -305,12 +326,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           {(!showTabs || activeTab === 'details') && (
             <>
               <Card className={DETAIL_CARD_CLASS}>
-
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {positionLabel ? (
                     <DetailRow
                       icon={Briefcase}
-                      iconColor="text-indigo-500"
+                      iconVariant="section"
                       label={t('common.position')}
                       value={positionLabel}
                       subValue={
@@ -323,14 +343,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
                   <DetailRow
                     icon={CalendarDays}
-                    iconColor="text-purple-500"
+                    iconVariant="section"
                     label={t('common.date')}
                     value={shift.date}
                   />
 
                   <DetailRow
                     icon={Clock}
-                    iconColor="text-blue-500"
+                    iconVariant="section"
                     label={t('shift.workTime')}
                     value={shift.time}
                     subValue={
@@ -343,7 +363,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   {location ? (
                     <DetailRow
                       icon={MapPin}
-                      iconColor="text-primary"
+                      iconVariant="section"
                       label={t('common.location')}
                       value={location}
                       action={
@@ -351,7 +371,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                           onClick={handleOpenMap}
                           variant="ghost"
                           size="sm"
-                          className="text-[12px] text-primary hover:underline mt-1 px-0"
+                          className="text-xs text-primary hover:underline mt-1 px-0 h-auto"
                         >
                           {t('aria.viewOnMap')}
                         </Button>
@@ -361,10 +381,10 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
                   <DetailRow
                     icon={DollarSign}
-                    iconColor="text-primary"
+                    iconVariant="section"
                     label={t('shift.pay')}
                     value={
-                      <span className="text-[18px] font-semibold text-primary">
+                      <span className="text-lg font-semibold text-primary">
                         {shift.pay} {shift.currency}
                       </span>
                     }
@@ -374,7 +394,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   {applicationsInfo ? (
                     <DetailRow
                       icon={Users}
-                      iconColor="text-green-500"
+                      iconVariant="section"
                       label={t('shift.applicationsCount')}
                       value={applicationsInfo.value}
                     />
@@ -391,33 +411,29 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
               {aboutVenue ? (
                 <Card className={DETAIL_CARD_CLASS}>
-                  <h2 className="text-[16px] font-medium mb-3">{t('common.aboutVenue')}</h2>
-
+                  <h2 className="text-base font-medium text-foreground mb-2">{t('common.aboutVenue')}</h2>
                   {aboutVenue.bio ? (
-                    <p className="text-[12px] text-muted-foreground mb-2">{aboutVenue.bio}</p>
+                    <p className="text-sm text-muted-foreground mb-3">{aboutVenue.bio}</p>
                   ) : null}
-
                   {showVenueBadges ? (
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2">
                       {aboutVenue.city ? (
-                        <Badge variant="outline" className="text-[11px]">
+                        <Badge variant="outline" className="text-xs font-normal">
                           {aboutVenue.city}
                         </Badge>
                       ) : null}
-
                       {aboutVenue.formatKey ? (
-                        <Badge variant="outline" className="text-[11px]">
+                        <Badge variant="outline" className="text-xs font-normal">
                           {getRestaurantFormatLabel(aboutVenue.formatKey)}
                         </Badge>
                       ) : null}
-
-                      {aboutVenue.cuisineTypes.length ? (
-                        aboutVenue.cuisineTypes.map(type => (
-                          <Badge key={type} variant="outline" className="text-[11px]">
-                            {type}
-                          </Badge>
-                        ))
-                      ) : null}
+                      {aboutVenue.cuisineTypes.length
+                        ? aboutVenue.cuisineTypes.map(type => (
+                            <Badge key={type} variant="outline" className="text-xs font-normal">
+                              {type}
+                            </Badge>
+                          ))
+                        : null}
                     </div>
                   ) : null}
                 </Card>
@@ -426,7 +442,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
               {!isOwner && !isApplied && !isAccepted && !isRejected ? (
                 <Card className={DETAIL_CARD_CLASS}>
                   <label
-                    className="text-[12px] text-muted-foreground mb-2 block"
+                    className="text-xs text-muted-foreground mb-2 block font-medium"
                     htmlFor="shift-cover-message"
                   >
                     {t('shift.coverMessage')}
@@ -436,7 +452,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                     value={coverMessage}
                     onChange={e => setCoverMessage(e.target.value)}
                     placeholder={t('shift.coverMessagePlaceholder')}
-                    className="w-full min-h-[88px] px-3 py-2 text-[14px] rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+                    className="w-full min-h-[88px] px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 dark:focus:ring-0 resize-y"
                     maxLength={2000}
                   />
                 </Card>
@@ -446,7 +462,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
           {showTabs && activeTab === 'applicants' && (
             <Card className={DETAIL_CARD_CLASS}>
-
               {applicants.length ? (
                 <div className="space-y-3">
                   {applicants.map((app, index) => {
@@ -489,20 +504,20 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                           setSelectedApplicantApplicationId(appId ?? null)
                         }}
                         className={cn(
-                          'rounded-lg p-2 -mx-2 transition-colors cursor-pointer',
-                          'hover:bg-muted/50 active:bg-muted'
+                          'rounded-lg p-3 -mx-1 transition-colors cursor-pointer',
+                          'hover:bg-muted/40 active:bg-muted/60'
                         )}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0 flex-1">
                             <div
-                              className="text-[14px] font-medium break-words"
+                              className="text-sm font-medium text-foreground break-words"
                               style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                             >
                               {name}
                             </div>
                             <div
-                              className="text-[12px] text-muted-foreground break-words"
+                              className="text-xs text-muted-foreground break-words mt-0.5"
                               style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                             >
                               {t('common.position')}: {position} • {t('profile.experienceYearsLabel')}
@@ -544,14 +559,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                           ) : null}
                         </div>
                         {index < applicants.length - 1 ? (
-                          <hr className="my-3 border-border" />
+                          <hr className="my-2 border-border" />
                         ) : null}
                       </div>
                     )
                   })}
 
                   {typeof applicationsCount === 'number' && applicationsCount > applicants.length ? (
-                    <div className="text-[12px] text-muted-foreground">
+                    <div className="text-xs text-muted-foreground mt-2">
                       {t('shift.applicantsPreviewNote', {
                         shown: applicants.length,
                         total: applicationsCount,
@@ -560,16 +575,15 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   ) : null}
                 </div>
               ) : (
-                <div className="text-[14px] text-muted-foreground">{t('shift.noApplicants')}</div>
+                <div className="text-sm text-muted-foreground">{t('shift.noApplicants')}</div>
               )}
             </Card>
           )}
         </div>
-        <DrawerFooter className="border-t border-border shrink-0">
-          {isOwner ? null : (
+        {!isOwner && !isAccepted && !isRejected ? (
+          <DrawerFooter className="border-t border-border shrink-0">
             <div className="flex gap-3">
-              {/* Не показываем метку "подтверждена" в футере */}
-              {isAccepted || isRejected ? null : isApplied ? (
+              {isApplied ? (
                 <Button
                   onClick={handleCancel}
                   disabled={isLoading}
@@ -589,8 +603,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 </Button>
               )}
             </div>
-          )}
-        </DrawerFooter>
+          </DrawerFooter>
+        ) : null}
       </div>
       <UserProfileDrawer
         userId={selectedApplicantId}

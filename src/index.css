@@ -8,11 +8,12 @@
   --font-size: 16px;
 
   /* --- Base Colors (Light Mode) --- */
-  --background: #ffffff;
+  --background: #F7F8FA;
   --foreground: oklch(0.145 0 0);
 
   --card: #ffffff;
   --card-foreground: oklch(0.145 0 0);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   --popover: #ffffff;
   --popover-foreground: oklch(0.145 0 0);
@@ -42,8 +43,8 @@
 
   --ring: #6b21a8;
 
-  --radius: 0.75rem;
-  /* 12px */
+  --radius: 0.625rem;
+  /* ~10px, чуть менее «мягко» */
 
   /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -73,22 +74,22 @@
 }
 
 .dark {
-  /* FIX: Фон теперь не "черная дыра", а глубокий Zinc. 
-     Это убирает ощущение давления.
-  */
-  --background: #09090b;
+  /* Фон: глубокий серый, не чистый чёрный */
+  --background: #0F1115;
   --foreground: #fdfdfd;
 
-  /* FIX: Карточки теперь спокойного темного цвета.
-     Градиенты будем добавлять точечно классами.
-  */
-  --card: #18181b;
+  /* Иерархия поверхностей: страница < drawer < карточки < инпуты */
+  --card: #161A22;
   --card-foreground: #fdfdfd;
+  --card-shadow: none;
+  --card-border-dark: rgba(255, 255, 255, 0.06);
+  --card-border-dark-hover: rgba(255, 255, 255, 0.10);
+  --drawer-surface: #13161C;
+  --input-background: #1A1F28;
 
   --popover: #18181b;
   --popover-foreground: #fdfdfd;
 
-  /* FIX: Возвращаем фиолетовый бренд в темную тему (чуть светлее для контраста) */
   --primary: #9333ea;
   --primary-foreground: #ffffff;
 
@@ -107,9 +108,8 @@
   --success: oklch(0.696 0.17 162.48);
 
   --border: #27272a;
-  --input: #27272a;
-  --input-background: #18181b;
-  /* Под цвет карточки */
+  --input: rgba(255, 255, 255, 0.10);
+  --input-border-hover: rgba(255, 255, 255, 0.14);
   --switch-background: #27272a;
 
   --ring: #a855f7;
@@ -130,6 +130,29 @@
   --gradient-glow: linear-gradient(135deg,
       rgba(147, 51, 234, 0.25) 0%,
       rgba(244, 114, 182, 0.25) 100%);
+}
+
+/* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней */
+.dark [data-slot='input'],
+.dark input:not([type='range']):not([type='checkbox']):not([type='radio']),
+.dark textarea {
+  background-color: var(--input-background) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dark [data-slot='input']:hover,
+.dark input:not([type='range']):not([type='checkbox']):not([type='radio']):hover,
+.dark textarea:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.dark [data-slot='input']:focus,
+.dark [data-slot='input']:focus-visible,
+.dark input:not([type='range']):not([type='checkbox']):not([type='radio']):focus,
+.dark input:not([type='range']):not([type='checkbox']):not([type='radio']):focus-visible,
+.dark textarea:focus,
+.dark textarea:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 @theme inline {

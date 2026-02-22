@@ -49,8 +49,8 @@ export const DatePicker = ({
           onChange={e => onChange(e.target.value || null)}
           min={minDate}
           className={cn(
-            'w-full rounded-xl border border-border bg-card/60 py-2 pl-3 pr-10 text-sm text-foreground caret-foreground',
-            'transition-all focus:outline-none focus:ring-2 focus:ring-primary/20',
+            'w-full rounded-xl border border-border bg-input-background py-2 pl-3 pr-10 text-sm text-foreground caret-foreground',
+            'transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-0',
             !value && 'text-transparent',
             !!error && 'border-destructive ring-2 ring-destructive/20',
             '[&::-webkit-calendar-picker-indicator]:opacity-0',

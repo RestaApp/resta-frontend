@@ -7,7 +7,7 @@ export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected
 export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 
 const basePill =
-  'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold leading-none border'
+  'inline-flex items-center whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium leading-none border'
 
 export const UrgentPill = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
@@ -19,7 +19,7 @@ export const UrgentPill = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <Flame className="w-3 h-3 mr-1" />
+      <Flame className="w-3 h-3 mr-1.5 shrink-0" />
       {t('activity.urgent')}
     </span>
   )
@@ -36,14 +36,14 @@ const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string
 const statusToClasses = (status: ShiftStatus): string => {
   switch (status) {
     case 'accepted':
-      return 'border-[color:var(--blue-cyber)]/30 bg-[color:var(--blue-cyber)]/10 text-[color:var(--blue-cyber)]'
+      return 'border-emerald-600/20 bg-emerald-600/10 text-emerald-700'
     case 'rejected':
-      return 'border-destructive/25 bg-destructive/10 text-destructive'
+      return 'border-destructive/20 bg-destructive/8 text-destructive'
     case 'pending':
     case 'processing':
-      return 'border-primary/20 bg-primary/10 text-primary'
+      return 'border-primary/20 bg-primary/8 text-primary'
     default:
-      return 'border-border bg-secondary/60 text-muted-foreground'
+      return 'border-border bg-muted/50 text-muted-foreground'
   }
 }
 

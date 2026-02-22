@@ -19,7 +19,7 @@ export const Skeleton = memo(function Skeleton({ className, variant = 'default' 
   return (
     <div
       className={cn(
-        'animate-pulse bg-gradient-to-r from-secondary via-secondary/80 to-secondary',
+        'animate-pulse bg-primary/10 border border-primary/20',
         VARIANT_CLASSES[variant],
         className
       )}

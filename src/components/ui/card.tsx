@@ -1,7 +1,8 @@
 import { forwardRef } from 'react'
 import { cn } from '@/utils/cn'
 
-const BASE_CARD = 'rounded-xl border border-border bg-card transition-all'
+const BASE_CARD =
+  'rounded-xl border border-border bg-card transition-all dark:border-[rgba(255,255,255,0.06)]'
 
 type CardProps = {
   children?: React.ReactNode
@@ -26,6 +27,7 @@ export const ClickableCard = forwardRef<HTMLButtonElement, ClickableCardProps>(
         className={cn(
           BASE_CARD,
           'block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+          'dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)]',
           className
         )}
       >

@@ -44,7 +44,7 @@ export const InfiniteScrollTrigger = ({
   return (
     <div
       ref={observerTarget}
-      className="w-full py-6 flex flex-col items-center justify-center text-muted-foreground min-h-[80px]"
+      className="w-full flex flex-col items-center justify-center text-muted-foreground "
     >
       {/* Состояние 1: Загрузка */}
       {isLoading && <Loader size="md" />}

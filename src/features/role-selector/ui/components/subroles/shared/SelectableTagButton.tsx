@@ -35,8 +35,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
         disabled && 'opacity-50 cursor-not-allowed',
         isSelected
           ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20 border-transparent'
-          : 'bg-secondary/40 text-muted-foreground hover:bg-secondary border-transparent',
-        disabled ? '' : 'hover:bg-secondary'
+          : 'border-primary/20 bg-primary/10 text-foreground hover:bg-primary/15 hover:border-primary/30'
       )}
       aria-pressed={isSelected}
       aria-label={ariaLabel || t('aria.selectType', { label })}

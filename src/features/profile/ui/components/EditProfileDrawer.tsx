@@ -111,7 +111,7 @@ const EmployeeFieldsSection = memo(
                 <Badge
                   key={skill}
                   variant="outline"
-                  className="bg-white text-black border-border/40"
+                  className="border-primary/20 bg-primary/10 text-foreground hover:bg-primary/15 hover:border-primary/30"
                 >
                   {skill}
                 </Badge>
