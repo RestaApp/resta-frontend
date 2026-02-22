@@ -21,18 +21,27 @@ interface ProfileHeroProps {
   roleLabel: string
   apiRole: ApiRole | null
   isProfileFilled: boolean
+  /** В drawer профиля кандидата — без карточки, только контент */
+  wrapInCard?: boolean
 }
 
 export const ProfileHero = memo(
-  ({ userProfile, userName, roleLabel, apiRole, isProfileFilled }: ProfileHeroProps) => {
+  ({
+    userProfile,
+    userName,
+    roleLabel,
+    apiRole,
+    isProfileFilled,
+    wrapInCard = true,
+  }: ProfileHeroProps) => {
     const { t } = useTranslation()
     const photoUrl = userProfile.profile_photo_url || userProfile.photo_url || null
     const cityOrLocation = userProfile.city || userProfile.location
     const openToWork =
       apiRole === 'employee' ? userProfile.employee_profile?.open_to_work : undefined
 
-    return (
-      <Card className="relative p-5">
+    const content = (
+      <>
         {openToWork ? (
           <span
             className="absolute top-4 right-4"
@@ -84,7 +93,12 @@ export const ProfileHero = memo(
             </Badge>
           </div>
         ) : null}
-      </Card>
+      </>
+    )
+    return wrapInCard ? (
+      <Card className="relative p-5">{content}</Card>
+    ) : (
+      <div className="relative py-1">{content}</div>
     )
   }
 )

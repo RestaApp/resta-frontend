@@ -93,20 +93,31 @@ interface ProfileInfoCardProps {
   userProfile: UserData
   apiRole: ApiRole | null
   completeness: ProfileCompleteness | null
-  onFill: () => void
+  /** Если не передан, кнопка «Заполнить» не показывается (например, в drawer просмотра кандидата) */
+  onFill?: () => void
+  defaultOpen?: boolean
+  /** В drawer — без карточки, секция с контентом */
+  variant?: 'card' | 'section'
 }
 
 export const ProfileInfoCard = memo(
-  ({ userProfile, apiRole, completeness, onFill }: ProfileInfoCardProps) => {
+  ({
+    userProfile,
+    apiRole,
+    completeness,
+    onFill,
+    defaultOpen = false,
+    variant = 'card',
+  }: ProfileInfoCardProps) => {
     const { t } = useTranslation()
     const { getWorkSummaryLabel } = useProfileFormLabels()
     const isFilled = completeness?.isFilled ?? false
     const cityOrLocation = userProfile.city ?? userProfile.location
     const workSummaryLabel = getWorkSummaryLabel(apiRole)
-    const [isOpen, setIsOpen] = useState(!isFilled)
+    const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
 
-    return (
-      <Card className="p-5 shadow-sm">
+    const content = (
+      <>
         <button
           type="button"
           onClick={() => setIsOpen(v => !v)}
@@ -144,14 +155,16 @@ export const ProfileInfoCard = memo(
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   {t('profile.fillToApply')}
                 </p>
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onFill}
-                  className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
-                  type="button"
-                >
-                  {t('common.fill')}
-                </motion.button>
+                {onFill ? (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onFill}
+                    className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
+                    type="button"
+                  >
+                    {t('common.fill')}
+                  </motion.button>
+                ) : null}
               </div>
             ) : (
               <>
@@ -204,7 +217,12 @@ export const ProfileInfoCard = memo(
             )}
           </motion.div>
         ) : null}
-      </Card>
+      </>
+    )
+    return variant === 'section' ? (
+      <div className="py-2">{content}</div>
+    ) : (
+      <Card className="p-5 shadow-sm">{content}</Card>
     )
   }
 )

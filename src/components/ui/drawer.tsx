@@ -55,6 +55,8 @@ const DrawerContent = memo(function DrawerContent({
   const didCloseByDragRef = useRef(false)
   const [contentHeightPx, setContentHeightPx] = useState(600)
 
+  useBodyScrollLock(true)
+
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (e.target !== e.currentTarget) return
@@ -149,7 +151,7 @@ const DrawerContent = memo(function DrawerContent({
             dragControls.start(e)
           }}
         >
-          <div className="h-2 w-[100px] shrink-0 rounded-full bg-muted" />
+          <div className="h-1.5 w-14 shrink-0 rounded-full bg-border" />
         </div>
         {children}
       </motion.div>
@@ -165,8 +167,6 @@ export const Drawer = ({
   bottomOffsetPx,
 }: DrawerProps) => {
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
-
-  useBodyScrollLock(open)
 
   useEffect(() => {
     if (!open) return

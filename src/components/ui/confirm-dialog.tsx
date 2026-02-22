@@ -29,6 +29,8 @@ export const ConfirmDialog = memo(function ConfirmDialog({
   confirmLabel,
   onConfirm,
 }: ConfirmDialogProps) {
+  const handleCancel = () => onOpenChange(false)
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -37,11 +39,10 @@ export const ConfirmDialog = memo(function ConfirmDialog({
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleCancel}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm}>{confirmLabel}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
 })
-

@@ -128,6 +128,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({
           className
         )}
         onPointerDown={e => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {children}
       </div>

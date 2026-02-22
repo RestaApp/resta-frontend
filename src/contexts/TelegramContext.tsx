@@ -42,6 +42,24 @@ interface TelegramProviderProps {
  */
 let loginPromise: Promise<TelegramWebApp | null> | null = null
 
+const isVersionAtLeast = (webApp: TelegramWebApp, target: string): boolean => {
+  if (!webApp) return false
+  if (webApp.isVersionAtLeast) return webApp.isVersionAtLeast(target)
+  const current = typeof webApp.version === 'string' ? webApp.version : null
+  if (!current) return false
+  const parse = (v: string) => v.split('.').map(p => Number(p))
+  const c = parse(current)
+  const t = parse(target)
+  const len = Math.max(c.length, t.length)
+  for (let i = 0; i < len; i++) {
+    const a = c[i] ?? 0
+    const b = t[i] ?? 0
+    if (a > b) return true
+    if (a < b) return false
+  }
+  return true
+}
+
 export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const dispatch = useAppDispatch()
   const userDataFromStore = useAppSelector(selectUserData)
@@ -119,8 +137,8 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       webApp.expand()
       if (!fullscreenRequestedRef.current) {
         fullscreenRequestedRef.current = true
-        if (!webApp.isFullscreen) {
-          webApp.requestFullscreen?.()
+        if (!webApp.isFullscreen && webApp.requestFullscreen && isVersionAtLeast(webApp, '6.1')) {
+          webApp.requestFullscreen()
         }
       }
     } catch {
@@ -285,7 +303,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     const webApp = telegram ?? getTelegramWebApp()
     if (!webApp) return
     try {
-      webApp.requestFullscreen?.()
+      if (webApp.requestFullscreen && isVersionAtLeast(webApp, '6.1')) {
+        webApp.requestFullscreen()
+      }
     } catch {
       void 0
     }

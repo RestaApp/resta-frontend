@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useId, useMemo, useRef } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/utils/cn'
 
@@ -14,6 +14,8 @@ interface TabsProps<T extends string> {
   onChange: (id: T) => void
   className?: string
   ariaLabel?: string
+  /** Позволяет принудительно задать layoutId индикатора */
+  indicatorLayoutId?: string
 }
 
 export const Tabs = <T extends string>({
@@ -22,9 +24,12 @@ export const Tabs = <T extends string>({
   onChange,
   className,
   ariaLabel = 'Tabs',
+  indicatorLayoutId,
 }: TabsProps<T>) => {
   const tabRefs = useRef(new Map<T, HTMLButtonElement>())
   const reduceMotion = useReducedMotion()
+  const autoLayoutId = useId()
+  const resolvedIndicatorLayoutId = indicatorLayoutId ?? `tabs-active-indicator-${autoLayoutId}`
 
   const ids = useMemo(() => options.map(o => o.id), [options])
 
@@ -93,7 +98,7 @@ export const Tabs = <T extends string>({
           >
             {isActive ? (
               <motion.span
-                layoutId="tabs-active-indicator"
+                layoutId={resolvedIndicatorLayoutId}
                 className="absolute inset-0 rounded-lg gradient-primary shadow-sm"
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"

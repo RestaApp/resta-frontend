@@ -30,8 +30,12 @@ export const useActivityPageModel = () => {
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
   const dateLocale = getDateLocale(i18n.language)
 
-  const { data, isLoading, isError, refetch: refetchMyShifts } = useGetMyShiftsQuery()
-  const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery()
+  const { data, isLoading, isError, refetch: refetchMyShifts } = useGetMyShiftsQuery(undefined, {
+    refetchOnFocus: false,
+  })
+  const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery(undefined, {
+    refetchOnFocus: false,
+  })
 
   const shifts = useMemo(() => normalizeVacanciesResponse(data), [data])
   const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedData), [appliedData])
@@ -115,10 +119,30 @@ export const useActivityPageModel = () => {
     return grouped
   }, [shifts, appliedShifts])
 
+  /** В календаре — только смены, на которые откликнулся (без «моих смен») */
+  const groupedShiftsForCalendar = useMemo<Record<string, GroupedShift[]>>(() => {
+    const grouped: Record<string, GroupedShift[]> = {}
+    const add = (shift: VacancyApiItem) => {
+      if (!shift?.start_time) return
+      const date = new Date(shift.start_time)
+      if (Number.isNaN(date.getTime())) return
+      const dateKey = toLocalISODateKey(date)
+      if (!grouped[dateKey]) grouped[dateKey] = []
+      grouped[dateKey].push({ id: shift.id, type: 'resta', data: shift })
+    }
+    appliedShifts.forEach(add)
+    return grouped
+  }, [appliedShifts])
+
   const selectedDayShifts = useMemo<GroupedShift[]>(() => {
     if (!selectedDayKey) return []
     return groupedShifts[selectedDayKey] || []
   }, [selectedDayKey, groupedShifts])
+
+  const selectedDayShiftsForCalendar = useMemo<GroupedShift[]>(() => {
+    if (!selectedDayKey) return []
+    return groupedShiftsForCalendar[selectedDayKey] || []
+  }, [selectedDayKey, groupedShiftsForCalendar])
 
   const handleFindShift = useCallback(() => {
     // Поведение оставляем 1-в-1: localStorage + event
@@ -167,12 +191,14 @@ export const useActivityPageModel = () => {
     closeDrawer,
     openDrawer,
 
-    // calendar
+    // calendar (только отклики, без «моих смен»)
     weekDays,
     groupedShifts,
+    groupedShiftsForCalendar,
     selectedDayKey,
     setSelectedDayKey,
     selectedDayShifts,
+    selectedDayShiftsForCalendar,
     handleFindShift,
   }
 }

@@ -127,6 +127,19 @@ const ShiftCardComponent = ({
     return isApplied ? t('shift.cancelApplication') : t('shift.apply')
   }, [isLoading, isApplied, t])
 
+  const responsesLabel = useMemo(() => {
+    if (!isOwner) return null
+    const countRaw = shift.applicationsCount
+    const count = typeof countRaw === 'number' && Number.isFinite(countRaw) ? countRaw : 0
+    return count > 0 ? t('shift.responsesCount', { count }) : t('shift.noResponses')
+  }, [isOwner, shift.applicationsCount, t])
+
+  const hasResponses = useMemo(() => {
+    const countRaw = shift.applicationsCount
+    const count = typeof countRaw === 'number' && Number.isFinite(countRaw) ? countRaw : 0
+    return isOwner && count > 0
+  }, [isOwner, shift.applicationsCount])
+
   return (
     <div
       role="button"
@@ -187,7 +200,19 @@ const ShiftCardComponent = ({
 
       {/* Bottom */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex-1" />
+        <div className="flex-1">
+          {responsesLabel ? (
+            <div
+              className={
+                hasResponses
+                  ? 'inline-flex items-center rounded-full bg-primary/20 text-primary px-2 py-1 text-[12px] font-medium border border-primary/30'
+                  : 'inline-flex items-center rounded-full bg-secondary/30 px-2 py-1 text-[12px] text-muted-foreground'
+              }
+            >
+              {responsesLabel}
+            </div>
+          ) : null}
+        </div>
 
         {/* Owner actions */}
         {isOwner && ownerActions ? (

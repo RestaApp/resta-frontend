@@ -97,6 +97,39 @@ export interface UserApi {
   total_reviews?: number
 }
 
+export interface EmployeeProfilePreviewApi {
+  experience_years?: number
+  position?: string
+}
+
+export interface ApplicantUserApi {
+  id: number
+  name?: string
+  last_name?: string
+  full_name?: string
+  position?: string
+  employee_profile?: EmployeeProfilePreviewApi | null
+}
+
+export interface ApplicationPreviewApiItem {
+  id?: number
+  shift_application_id?: number
+  applied_at?: string
+  message?: string | null
+  priority?: number
+  responded_at?: string | null
+  shift_id?: number
+  status?: string
+  user?: ApplicantUserApi
+  user_id?: number
+
+  full_name?: string
+  position?: string
+  specializations?: string[]
+  average_rating?: string | number
+  experience_years?: number
+}
+
 /**
  * Вакансия из API
  */
@@ -131,6 +164,7 @@ export interface VacancyApiItem {
   requirements?: string
   status?: string
   applications_count?: number
+  applications_preview?: ApplicationPreviewApiItem[]
   can_apply?: boolean
   created_at?: string
   updated_at?: string

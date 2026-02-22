@@ -33,10 +33,10 @@ export const ActivityPage = () => {
             isLoading={m.isLoading}
             isError={m.isError}
             weekDays={m.weekDays}
-            groupedShifts={m.groupedShifts}
+            groupedShifts={m.groupedShiftsForCalendar}
             selectedDayKey={m.selectedDayKey}
             onSelectDay={m.setSelectedDayKey}
-            selectedDayShifts={m.selectedDayShifts}
+            selectedDayShifts={m.selectedDayShiftsForCalendar}
             onEdit={m.handleEdit}
             onDelete={m.handleDelete}
             isDeleting={m.isDeleting}

@@ -18,7 +18,11 @@ export const ShiftOwnerActions = memo(function ShiftOwnerActions({
   onDelete,
 }: ShiftOwnerActionsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div
+      className="flex items-center gap-2"
+      onClick={e => e.stopPropagation()}
+      onKeyDown={e => e.stopPropagation()}
+    >
       <IconAction title={editLabel} onClick={onEdit} disabled={isDeleting}>
         <Edit2 className="w-4 h-4" />
       </IconAction>
@@ -28,4 +32,3 @@ export const ShiftOwnerActions = memo(function ShiftOwnerActions({
     </div>
   )
 })
-
