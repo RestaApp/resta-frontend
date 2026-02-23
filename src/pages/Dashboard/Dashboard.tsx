@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
@@ -17,6 +18,20 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
   const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
   const profileCompleteness = useProfileCompleteness()
   const hasIncompleteFields = !profileCompleteness?.isFilled
+
+  useEffect(() => {
+    const resetScroll = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      if (typeof document !== 'undefined') {
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      }
+    }
+
+    resetScroll()
+    const raf = requestAnimationFrame(resetScroll)
+    return () => cancelAnimationFrame(raf)
+  }, [activeTab])
 
   return (
     <div className=" bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
