@@ -245,19 +245,28 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     if (!location) return
 
     const encodedLocation = encodeURIComponent(location)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    const nativeMapUrl = isIOS
-      ? `maps://?q=${encodedLocation}`
-      : `geo:0,0?q=${encodedLocation}`
-    const fallbackUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`
+    const yandexAppUrl = `yandexmaps://maps.yandex.ru/?text=${encodedLocation}`
+    const yandexWebUrl = `https://yandex.ru/maps/?text=${encodedLocation}`
 
-    // Нативная схема даёт системе выбрать установленное приложение карт.
-    window.location.href = nativeMapUrl
+    // Если deep-link открыл приложение, вкладка уйдет в background и fallback не нужен.
+    const fallbackTimer = window.setTimeout(() => {
+      if (!document.hidden) {
+        window.open(yandexWebUrl, '_blank', 'noopener,noreferrer')
+      }
+    }, 900)
 
-    // Если нативная схема недоступна — откроем web-карту.
-    window.setTimeout(() => {
-      window.open(fallbackUrl, '_blank', 'noopener,noreferrer')
-    }, 600)
+    const clearFallback = () => {
+      window.clearTimeout(fallbackTimer)
+    }
+
+    document.addEventListener('visibilitychange', clearFallback, { once: true })
+
+    try {
+      window.location.href = yandexAppUrl
+    } catch {
+      clearFallback()
+      window.open(yandexWebUrl, '_blank', 'noopener,noreferrer')
+    }
   }, [location])
 
   const extractModerationMessage = useCallback((result: unknown): string | undefined => {
