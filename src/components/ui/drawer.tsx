@@ -96,7 +96,7 @@ const DrawerContent = memo(function DrawerContent({
     return () => cleanup.forEach((fn) => fn())
   }, [bottomOffsetPx])
 
-  const closeThresholdPx = Math.min(120, Math.max(64, contentHeightPx > 0 ? contentHeightPx * 0.18 : 96))
+  const closeThresholdPx = Math.min(72, Math.max(32, contentHeightPx > 0 ? contentHeightPx * 0.1 : 48))
   const dragBottomPx = Math.max(0, contentHeightPx + bottomOffsetPx + 40)
 
   const handleDragEnd = useCallback(
@@ -104,7 +104,7 @@ const DrawerContent = memo(function DrawerContent({
       if (preventClose) return
       if (isClosingBySwipeRef.current) return
 
-      const shouldClose = info.offset.y >= closeThresholdPx || info.velocity.y > 550
+      const shouldClose = info.offset.y >= closeThresholdPx || info.velocity.y > 300
       if (!shouldClose) return
 
       isClosingBySwipeRef.current = true
@@ -151,7 +151,7 @@ const DrawerContent = memo(function DrawerContent({
       >
         <div
           className={cn(
-            'sticky top-0 z-20 flex justify-center pt-4 pb-2',
+            'sticky top-0 z-20 flex justify-center pt-4 pb-2 touch-none select-none',
             'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm',
             preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
           )}
