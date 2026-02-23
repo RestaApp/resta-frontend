@@ -218,7 +218,7 @@ const AdvancedFiltersSheet = ({
           {!isVacancy && (
             <div className="space-y-3">
               <h3 className="font-semibold text-base">{t('feed.period')}</h3>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="min-w-0">
                   <DatePicker
                     value={startDate}
@@ -247,6 +247,7 @@ const AdvancedFiltersSheet = ({
               onChange={setSelectedCity}
               onLocationRequest={handleLocationRequest}
               clearOnFocus
+              hideLabel
             />
           </div>
 

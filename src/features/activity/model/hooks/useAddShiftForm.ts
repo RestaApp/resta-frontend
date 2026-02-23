@@ -9,6 +9,7 @@ import {
 } from '@/services/api/shiftsApi'
 import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime } from '@/utils/date'
+import { addDaysToISODate } from '@/utils/datetime'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 
 export type ShiftType = 'vacancy' | 'replacement'
@@ -98,7 +99,9 @@ export const useAddShiftForm = ({
     const startMinutes = toMinutes(startTime)
     const endMinutes = toMinutes(endTime)
     if (startMinutes === null || endMinutes === null) return t('validation.invalidTime')
-    if (endMinutes <= startMinutes) return t('validation.timeEndAfterStart')
+    // Ночная смена: конец < начала — допустимо (конец на след. день)
+    if (endMinutes < startMinutes) return null
+    if (endMinutes === startMinutes) return t('validation.timeEndAfterStart')
     return null
   }, [startTime, endTime, t])
 
@@ -312,12 +315,18 @@ export const useAddShiftForm = ({
 
     try {
       let response: CreateShiftResponse | null = null
+      const startM = toMinutes(startTime)
+      const endM = toMinutes(endTime)
+      const isNightShift =
+        startM !== null && endM !== null && endM <= startM
+      const endDate = isNightShift ? addDaysToISODate(date!, 1) : date!
+
       const payload = {
         shift: {
           title,
           description,
           start_time: buildDateTime(date!, startTime),
-          end_time: buildDateTime(date!, endTime),
+          end_time: buildDateTime(endDate, endTime),
           payment: pay ? Number(pay) : undefined,
           location,
           requirements,

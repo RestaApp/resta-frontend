@@ -137,6 +137,17 @@ export const getTodayDateISO = (): string => {
 }
 
 /**
+ * Добавляет дни к дате в формате YYYY-MM-DD.
+ * Используется для ночных смен (конец на следующий день).
+ */
+export const addDaysToISODate = (isoDate: string, days: number): string => {
+  const d = new Date(isoDate + 'T00:00:00')
+  if (Number.isNaN(d.getTime())) throw new Error(`Invalid date: ${isoDate}`)
+  d.setDate(d.getDate() + days)
+  return toLocalISODateKey(d)
+}
+
+/**
  * Возвращает строку даты завтрашнего дня в формате YYYY-MM-DD.
  * Подходит для использования в полях ввода даты (например, minDate).
  */

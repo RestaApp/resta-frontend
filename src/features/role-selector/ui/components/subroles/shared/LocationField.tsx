@@ -20,6 +20,8 @@ interface LocationFieldProps {
   isLoading?: boolean
   /** Очищать поле при фокусе (например, в фильтрах) */
   clearOnFocus?: boolean
+  /** Не показывать подпись (заголовок задаётся снаружи, напр. в фильтрах) */
+  hideLabel?: boolean
 }
 
 export const LocationField = memo(function LocationField({
@@ -30,6 +32,7 @@ export const LocationField = memo(function LocationField({
   animationDelay = 0,
   isLoading = false,
   clearOnFocus = false,
+  hideLabel = false,
 }: LocationFieldProps) {
   const { t } = useTranslation()
   const {
@@ -53,9 +56,11 @@ export const LocationField = memo(function LocationField({
 
   const content = (
     <div ref={containerRef} className="relative">
-      <label className="block mb-2 text-muted-foreground text-sm font-medium">
-        {t('profile.city')}
-      </label>
+      {!hideLabel && (
+        <label className="block mb-2 text-muted-foreground text-sm font-medium">
+          {t('profile.city')}
+        </label>
+      )}
       <div className="relative">
         <Input
           ref={inputRef}
