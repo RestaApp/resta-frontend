@@ -3,7 +3,7 @@
  * Один источник истины: userData + selectedRole из Redux.
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import {
   selectUserData,
@@ -18,6 +18,8 @@ import { mapRoleFromApi, mapUiRoleToApiRole } from '@/utils/roles'
 
 export type AppScreen = 'loading' | 'role' | 'onboarding_done' | 'dashboard'
 
+const POST_LOGOUT_LOADING_MS = 2000
+
 export function useAppBootstrap() {
   const { isLoading } = useAuth()
   const userData = useAppSelector(selectUserData)
@@ -28,9 +30,24 @@ export function useAppBootstrap() {
   const [currentScreen, setCurrentScreen] = useState<Screen>(ROUTES.HOME)
   const [showOnboardingComplete, setShowOnboardingComplete] = useState(false)
   const [pendingRole, setPendingRole] = useState<UiRole | null>(null)
+  const [postLogoutLoading, setPostLogoutLoading] = useState(false)
+  const prevUserDataRef = useRef<typeof userData>(undefined)
+
+  // После выхода из системы показываем окно загрузки (LoadingPage), а не RoleSelector
+  useEffect(() => {
+    const hadUser = prevUserDataRef.current != null
+    const loggedOut = hadUser && userData === null
+    prevUserDataRef.current = userData
+
+    if (loggedOut && !selectedRole) {
+      setPostLogoutLoading(true)
+      const t = window.setTimeout(() => setPostLogoutLoading(false), POST_LOGOUT_LOADING_MS)
+      return () => window.clearTimeout(t)
+    }
+  }, [userData, selectedRole])
 
   const screen: AppScreen =
-    isLoading && !userData
+    (isLoading && !userData) || (postLogoutLoading && !selectedRole)
       ? 'loading'
       : !selectedRole
         ? 'role'
