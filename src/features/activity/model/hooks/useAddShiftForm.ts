@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime } from '@/utils/date'
 import { addDaysToISODate } from '@/utils/datetime'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
+import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
 
 export type ShiftType = 'vacancy' | 'replacement'
 
@@ -25,6 +26,19 @@ export const useAddShiftForm = ({
   onSave,
   initialValues = null,
 }: UseAddShiftFormOptions = {}) => {
+  const toInputDate = (date: Date): string => {
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }
+
+  const toInputTime = (date: Date): string => {
+    const hh = String(date.getHours()).padStart(2, '0')
+    const mm = String(date.getMinutes()).padStart(2, '0')
+    return `${hh}:${mm}`
+  }
+
   const { t } = useTranslation()
   const { showToast } = useToast()
   const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
@@ -41,26 +55,23 @@ export const useAddShiftForm = ({
   const [date, setDate] = useState<string | null>(() => {
     const start = initialValues?.start_time
     if (!start) return null
-    const dt = new Date(start)
-    if (Number.isNaN(dt.getTime())) return null
-    const yyyy = dt.getFullYear()
-    const mm = String(dt.getMonth() + 1).padStart(2, '0')
-    const dd = String(dt.getDate()).padStart(2, '0')
-    return `${yyyy}-${mm}-${dd}`
+    const dt = parseApiDateTime(start)
+    if (!dt) return null
+    return toInputDate(dt)
   })
   const [startTime, setStartTime] = useState(() => {
     const start = initialValues?.start_time
     if (!start) return ''
-    const dt = new Date(start)
-    if (Number.isNaN(dt.getTime())) return ''
-    return dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+    const dt = parseApiDateTime(start)
+    if (!dt) return ''
+    return toInputTime(dt)
   })
   const [endTime, setEndTime] = useState(() => {
     const end = initialValues?.end_time
     if (!end) return ''
-    const dt = new Date(end)
-    if (Number.isNaN(dt.getTime())) return ''
-    return dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+    const dt = parseApiDateTime(end)
+    if (!dt) return ''
+    return toInputTime(dt)
   })
   const [pay, setPay] = useState(() => {
     if (!initialValues) return ''
