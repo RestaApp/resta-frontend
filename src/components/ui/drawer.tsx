@@ -1,5 +1,13 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, useDragControls, useReducedMotion, type PanInfo } from 'motion/react'
+import {
+  animate,
+  motion,
+  AnimatePresence,
+  useDragControls,
+  useMotionValue,
+  useReducedMotion,
+  type PanInfo,
+} from 'motion/react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/utils/cn'
@@ -53,7 +61,8 @@ const DrawerContent = memo(function DrawerContent({
   const reduceMotion = useReducedMotion()
   const dragControls = useDragControls()
   const contentRef = useRef<HTMLDivElement | null>(null)
-  const didCloseByDragRef = useRef(false)
+  const isClosingBySwipeRef = useRef(false)
+  const y = useMotionValue(0)
   const [contentHeightPx, setContentHeightPx] = useState(600)
 
   useBodyScrollLock(true)
@@ -90,25 +99,22 @@ const DrawerContent = memo(function DrawerContent({
   const closeThresholdPx = Math.min(180, contentHeightPx > 0 ? contentHeightPx * 0.25 : 140)
   const dragBottomPx = Math.max(0, contentHeightPx + bottomOffsetPx + 40)
 
-  const handleDrag = useCallback(
-    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-      if (preventClose) return
-      if (didCloseByDragRef.current) return
-      if (info.offset.y >= closeThresholdPx) {
-        didCloseByDragRef.current = true
-        onOpenChange(false)
-      }
-    },
-    [closeThresholdPx, onOpenChange, preventClose]
-  )
-
   const handleDragEnd = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
       if (preventClose) return
-      if (didCloseByDragRef.current) return
-      if (info.offset.y >= closeThresholdPx || info.velocity.y > 800) onOpenChange(false)
+      if (isClosingBySwipeRef.current) return
+
+      const shouldClose = info.offset.y >= closeThresholdPx || info.velocity.y > 800
+      if (!shouldClose) return
+
+      isClosingBySwipeRef.current = true
+      animate(y, dragBottomPx, {
+        duration: reduceMotion ? 0 : 0.22,
+        ease: 'easeOut',
+        onComplete: () => onOpenChange(false),
+      })
     },
-    [closeThresholdPx, onOpenChange, preventClose]
+    [closeThresholdPx, dragBottomPx, onOpenChange, preventClose, reduceMotion, y]
   )
 
   return (
@@ -127,7 +133,6 @@ const DrawerContent = memo(function DrawerContent({
         dragConstraints={{ top: 0, bottom: dragBottomPx }}
         dragElastic={0.1}
         dragMomentum={false}
-        onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         className={cn(
           'fixed inset-x-0 z-10 flex flex-col overflow-y-auto overscroll-contain',
@@ -136,6 +141,7 @@ const DrawerContent = memo(function DrawerContent({
           className
         )}
         style={{
+          y,
           bottom: bottomOffsetPx,
           maxHeight: `min(85vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
         }}
