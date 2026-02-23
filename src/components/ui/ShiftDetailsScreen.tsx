@@ -606,7 +606,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                                 <X className="h-4 w-4" />
                               </Button>
                               <Button
-                                variant="primary"
+                                variant="gradient"
                                 size="sm"
                                 className="h-9 w-9 min-w-9 p-0 shrink-0"
                                 aria-label={t('shift.acceptApplication')}

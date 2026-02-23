@@ -258,7 +258,7 @@ export const UserProfileDrawer = memo(
                     : t('shift.rejectApplication')}
                 </Button>
                 <Button
-                  variant="primary"
+                  variant="gradient"
                   size="md"
                   className="flex-1"
                   loading={moderatingAction === 'accept'}

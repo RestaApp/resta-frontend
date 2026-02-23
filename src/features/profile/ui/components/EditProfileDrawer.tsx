@@ -270,15 +270,6 @@ export const EditProfileDrawer = memo(
 
         <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-background px-5 py-4 flex-row">
           <Button
-            onClick={handleSave}
-            disabled={isLoading || !formData.name.trim()}
-            className="flex-1"
-            variant="gradient"
-            size="md"
-          >
-            {isLoading ? t('common.saving') : t('common.save')}
-          </Button>
-          <Button
             onClick={handleCancel}
             disabled={isLoading}
             variant="outline"
@@ -286,6 +277,15 @@ export const EditProfileDrawer = memo(
             className="flex-1"
           >
             {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={isLoading || !formData.name.trim()}
+            className="flex-1"
+            variant="gradient"
+            size="md"
+          >
+            {isLoading ? t('common.saving') : t('common.save')}
           </Button>
         </DrawerFooter>
 

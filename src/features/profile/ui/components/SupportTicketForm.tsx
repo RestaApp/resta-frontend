@@ -120,7 +120,7 @@ export function SupportTicketForm({
         <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
           <Button
             type="submit"
-            variant="primary"
+            variant="gradient"
             className="w-full rounded-xl"
             disabled={isLoading || !subject.trim() || !message.trim()}
           >
