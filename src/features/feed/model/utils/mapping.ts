@@ -107,6 +107,8 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
     payment: s.pay,
     currency: s.currency,
     time: s.time || s.date,
+    date: s.date || undefined,
+    payPeriod: s.payPeriod,
     restaurant: s.restaurant,
     position: s.position,
     specialization: s.specialization ?? null,

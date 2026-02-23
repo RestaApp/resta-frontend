@@ -11,12 +11,16 @@ export interface HotOffer {
   emoji: string
   payment: number
   currency?: string
+  /** В сменах — дата; в вакансиях не используется в карточке */
   time: string
+  /** Дата смены (для replacement) */
+  date?: string
+  /** Период оплаты для подписи "за смену" / "за месяц" */
+  payPeriod?: 'shift' | 'month'
   restaurant: string
   position: string
   specialization?: string | null
   city?: string | null
-  /** Тип смены/вакансии — влияет на текст в карточке */
   shiftType?: 'vacancy' | 'replacement'
 }
 
@@ -36,15 +40,31 @@ interface HotOfferCardProps {
 }
 
 const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
+  const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const handleClick = useCallback(() => onClick(item), [item, onClick])
 
   const positionText = useMemo(() => {
     const position = getEmployeePositionLabel(item.position)
-    const specialization = item.specialization
-      ? ` • ${getSpecializationLabel(item.specialization)}`
-      : ''
-    return `${position}${specialization}`
+    if (!item.specialization) return position
+
+    const specialization = getSpecializationLabel(item.specialization)
+    const normalize = (value: string): string =>
+      value
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, ' ')
+        .trim()
+
+    const normalizedPosition = normalize(position)
+    const normalizedSpecialization = normalize(specialization)
+
+    const isSameOrVeryClose =
+      normalizedPosition === normalizedSpecialization ||
+      normalizedSpecialization.startsWith(normalizedPosition) ||
+      normalizedPosition.startsWith(normalizedSpecialization)
+
+    if (isSameOrVeryClose) return specialization
+    return `${position} • ${specialization}`
   }, [item.position, item.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
   const paymentText = useMemo(() => {
@@ -52,12 +72,30 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
     return `${formatMoney(item.payment)} ${item.currency ?? 'BYN'}`
   }, [item.payment, item.currency])
 
+  const placeLine = useMemo(() => {
+    const parts = [item.restaurant]
+    if (item.city?.trim()) parts.push(item.city.trim())
+    return parts.join(', ')
+  }, [item.restaurant, item.city])
+
+  const bottomLine = useMemo(() => {
+    if (item.shiftType === 'replacement') {
+      return item.date ?? null
+    }
+    if (!paymentText) return null
+    const suffix =
+      item.payPeriod === 'month'
+        ? t('common.payPerMonthShort')
+        : t('common.payPerShiftShort')
+    return `${paymentText}${suffix}`
+  }, [paymentText, item.shiftType, item.date, item.payPeriod, t])
+
   return (
     <button
       type="button"
       onClick={handleClick}
       className={cn(
-        'snap-center flex-shrink-0 w-[110px] h-[135px] relative overflow-hidden rounded-xl bg-card border border-border p-3 flex flex-col items-center justify-between shadow-sm cursor-pointer group active:scale-[0.99] transition-all duration-150 text-left motion-reduce:!transition-none motion-reduce:active:scale-100',
+        'snap-center flex-shrink-0 w-[112px] h-[142px] relative overflow-hidden rounded-xl bg-card border border-border p-2.5 flex flex-col items-start text-left shadow-sm cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
         'dark:border-[rgba(255,255,255,0.06)] dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)] dark:shadow-none',
         'dark:border-primary/20 dark:hover:border-primary/30 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.08)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.14)]'
       )}
@@ -67,37 +105,31 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       {paymentText ? (
         <Badge
           variant="primary"
-          className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5 dark:font-semibold dark:text-[11px]"
+          className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5 dark:font-semibold dark:text-[11px] z-10"
         >
           {paymentText}
         </Badge>
       ) : null}
 
-      <span className="mt-2 text-3xl drop-shadow-sm transform group-hover:scale-110 transition-transform duration-300 z-10">
-        {item.emoji}
-      </span>
-
-      <span className="text-center w-full z-10">
-        <span className="block text-[10px] text-muted-foreground truncate w-full mb-0.5">
-          {item.restaurant}
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-xl z-10">
+        <span className="drop-shadow-sm transform group-hover:scale-105 transition-transform duration-200" aria-hidden>
+          {item.emoji}
         </span>
+      </div>
 
-        {item.shiftType === 'vacancy' ? (
-          // Для вакансий: показываем полную позицию + специализацию, разрешаем перенос строк
-          <span className="block text-[9px] text-primary font-medium leading-snug whitespace-normal break-words">
-            {positionText}
+      <div className="mt-2 w-full flex flex-col min-w-0 z-10">
+        <span className="block text-[14px] leading-4 font-semibold text-foreground h-8 overflow-hidden">
+          {positionText}
+        </span>
+        <span className="mt-1 block text-[11px] text-muted-foreground truncate">
+          {placeLine}
+        </span>
+        {bottomLine ? (
+          <span className="mt-auto block text-[12px] text-primary font-semibold truncate pt-2">
+            {bottomLine}
           </span>
-        ) : (
-          <>
-            <span className="block text-[9px] text-primary font-medium mb-0.5 truncate">
-              {positionText}
-            </span>
-            <span className="block text-xs font-bold text-foreground leading-tight">
-              {item.time}
-            </span>
-          </>
-        )}
-      </span>
+        ) : null}
+      </div>
     </button>
   )
 })
@@ -147,7 +179,7 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVa
         ) : null}
       </div>
 
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x -mx-1 px-1">
+      <div className="flex gap-2.5 overflow-x-auto scrollbar-hide snap-x -mx-1 px-1">
         {items.map(item => (
           <HotOfferCard key={item.id} item={item} onClick={handleItemClick} />
         ))}

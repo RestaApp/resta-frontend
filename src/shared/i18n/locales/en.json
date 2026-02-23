@@ -51,6 +51,8 @@
     "location": "Location",
     "payPerShift": "per shift",
     "payPerMonth": "per month",
+    "payPerMonthShort": "/mo",
+    "payPerShiftShort": "/shift",
     "notSpecified": "Not specified",
     "aboutVenue": "About the venue",
     "today": "Today",

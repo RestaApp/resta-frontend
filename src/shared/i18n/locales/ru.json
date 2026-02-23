@@ -51,6 +51,8 @@
     "location": "Локация",
     "payPerShift": "за смену",
     "payPerMonth": "за месяц",
+    "payPerMonthShort": "/мес",
+    "payPerShiftShort": "/смену",
     "notSpecified": "Не указано",
     "aboutVenue": "О заведении",
     "today": "Сегодня",
