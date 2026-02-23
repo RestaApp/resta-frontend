@@ -131,7 +131,7 @@ export const UserProfileDrawer = memo(
     onReject,
   }: UserProfileDrawerProps) => {
     const { t } = useTranslation()
-    const { getUiRoleLabel } = useLabels()
+    const { getUiRoleLabel, getEmployeePositionLabel } = useLabels()
 
     const { data: userResponse, isLoading, isError } = useGetUserQuery(userId ?? 0, {
       skip: !userId || !open,
@@ -140,6 +140,11 @@ export const UserProfileDrawer = memo(
     const userProfile = userResponse?.data
     const apiRole = useMemo(() => (userProfile ? mapRoleFromApi(userProfile.role) : null), [userProfile])
     const roleLabel = useMemo(() => (apiRole ? getUiRoleLabel(apiRole) : ''), [apiRole, getUiRoleLabel])
+    const positionLabel = useMemo(() => {
+      if (apiRole !== 'employee' || !userProfile?.employee_profile?.position) return null
+      return getEmployeePositionLabel(userProfile.employee_profile.position)
+    }, [apiRole, userProfile?.employee_profile?.position, getEmployeePositionLabel])
+    const heroRoleOrPositionLabel = positionLabel ?? roleLabel
 
     const userName = useMemo(() => {
       if (!userProfile) return ''
@@ -212,7 +217,7 @@ export const UserProfileDrawer = memo(
                 <ProfileHero
                   userProfile={userProfile}
                   userName={userName}
-                  roleLabel={roleLabel}
+                  roleLabel={heroRoleOrPositionLabel}
                   apiRole={apiRole}
                   isProfileFilled={profileCompleteness?.isFilled ?? false}
                   wrapInCard={false}
