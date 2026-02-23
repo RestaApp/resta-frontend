@@ -472,11 +472,7 @@
     "darkTheme": "Выбрать тёмную тему",
     "toggleTheme": "Переключить тему",
     "closeNotification": "Закрыть уведомление",
-    "viewOnMap": "Посмотреть на карте",
-    "mapAppGoogle": "Google Карты",
-    "mapAppYandex": "Яндекс Карты",
-    "mapApp2GIS": "2ГИС",
-    "mapAppApple": "Apple Карты"
+    "viewOnMap": "Посмотреть на карте"
   },
   "localeRu": "Русский",
   "localeEn": "English",
