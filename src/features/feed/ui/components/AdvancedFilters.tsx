@@ -1,7 +1,8 @@
-import { X, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { useCallback, useMemo, useState } from 'react'
+import { Drawer, DrawerCloseButton } from '@/components/ui/drawer'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { Button } from '@/components/ui/button'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
@@ -39,17 +40,15 @@ export const AdvancedFilters = ({
   isVacancy = false,
 }: AdvancedFiltersProps) => {
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <AdvancedFiltersSheet
-          onClose={onClose}
-          onApply={onApply}
-          initialFilters={initialFilters}
-          filteredCount={filteredCount}
-          isVacancy={isVacancy}
-        />
-      )}
-    </AnimatePresence>
+    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <AdvancedFiltersSheet
+        onClose={onClose}
+        onApply={onApply}
+        initialFilters={initialFilters}
+        filteredCount={filteredCount}
+        isVacancy={isVacancy}
+      />
+    </Drawer>
   )
 }
 
@@ -159,37 +158,9 @@ const AdvancedFiltersSheet = ({
   )
 
   return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px]"
-      />
-
-      {/* Bottom Sheet */}
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        layout
-        transition={{
-          type: 'spring',
-          damping: 25,
-          stiffness: 300,
-          layout: { duration: 0.25, ease: 'easeInOut' },
-        }}
-        className="fixed bottom-0 left-0 right-0 z-[60] bg-card rounded-t-[24px] flex flex-col max-h-[85vh]"
-      >
-        {/* Drag Handle */}
-        <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0" onClick={onClose}>
-          <div className="w-12 h-1.5 bg-muted rounded-full" />
-        </div>
-
-        {/* Header - фиксированный */}
-        <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-card sticky top-0 z-10">
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Header */}
+      <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-background sticky top-0 z-10">
           <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
           <div className="flex items-center gap-2">
             {hasActiveFilters && (
@@ -203,23 +174,15 @@ const AdvancedFiltersSheet = ({
                 {t('common.reset')}
               </Button>
             )}
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              aria-label={t('common.close')}
-              className="-mr-2 min-w-[40px] p-2"
-            >
-              <X className="w-5 h-5" />
-            </Button>
+            <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} className="-mr-2" />
           </div>
-        </div>
+      </div>
 
-        <motion.div
-          layout
-          transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
-          className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
-        >
+      <motion.div
+        layout
+        transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
+        className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
+      >
           {/* 1. Бюджет (Range Slider) */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -331,25 +294,24 @@ const AdvancedFiltersSheet = ({
                 </motion.div>
               )}
           </AnimatePresence>
-        </motion.div>
-
-        <div className="px-5 py-4 border-t border-border/50 bg-card">
-          <Button
-            type="button"
-            onClick={() => {
-              handleApply()
-              onClose()
-            }}
-            variant="gradient"
-            size="md"
-            className="w-full"
-          >
-            {isVacancy
-              ? t('feed.showVacanciesCount', { count: previewCount })
-              : t('feed.showShiftsCount', { count: previewCount })}
-          </Button>
-        </div>
       </motion.div>
-    </>
+
+      <div className="px-5 py-4 border-t border-border/50 bg-background flex-shrink-0">
+        <Button
+          type="button"
+          onClick={() => {
+            handleApply()
+            onClose()
+          }}
+          variant="gradient"
+          size="md"
+          className="w-full"
+        >
+          {isVacancy
+            ? t('feed.showVacanciesCount', { count: previewCount })
+            : t('feed.showShiftsCount', { count: previewCount })}
+        </Button>
+      </div>
+    </div>
   )
 }

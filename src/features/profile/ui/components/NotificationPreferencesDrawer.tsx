@@ -1,7 +1,14 @@
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from '@/components/ui/drawer'
 import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import {
   useGetNotificationPreferencesQuery,
@@ -172,29 +179,35 @@ export const NotificationPreferencesDrawer = memo(
                   />
                 </div>
               ))}
-              <div className="mt-4 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleClose(false)}
-                  className="flex-1 py-2 rounded-xl border-2 text-sm"
-                  style={{ borderColor: 'var(--border)' }}
-                  disabled={isUpdating}
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleApply}
-                  className="flex-1 py-2 rounded-xl text-white text-sm disabled:opacity-50"
-                  style={{ background: 'var(--gradient-primary)' }}
-                  disabled={isUpdating}
-                >
-                  {t('common.save')}
-                </button>
-              </div>
             </>
           )}
         </div>
+        {effectivePrefs ? (
+          <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                onClick={() => handleClose(false)}
+                variant="outline"
+                size="md"
+                className="flex-1"
+                disabled={isUpdating}
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button
+                type="button"
+                onClick={handleApply}
+                variant="gradient"
+                size="md"
+                className="flex-1"
+                disabled={isUpdating}
+              >
+                {t('common.save')}
+              </Button>
+            </div>
+          </DrawerFooter>
+        ) : null}
       </Drawer>
     )
   }

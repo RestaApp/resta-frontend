@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useDragControls, useReducedMotion, type PanInfo } from 'motion/react'
 import { createPortal } from 'react-dom'
+import { X } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
@@ -24,8 +25,8 @@ type OverlayProps = {
 const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
   <motion.div
     initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
+    animate={{ opacity: 1, pointerEvents: 'auto' }}
+    exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
     className={cn('fixed inset-0 bg-black/50', className)}
     onClick={onClick}
@@ -111,12 +112,12 @@ const DrawerContent = memo(function DrawerContent({
   )
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <div className="fixed inset-0 z-[60] pointer-events-none">
       <DrawerOverlay onClick={handleOverlayClick} />
       <motion.div
         initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
+        animate={{ y: 0, pointerEvents: 'auto' }}
+        exit={{ y: '100%', pointerEvents: 'none' }}
         transition={
           reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }
         }
@@ -214,4 +215,27 @@ export const DrawerDescription = ({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) => {
   return <p className={cn('text-sm text-muted-foreground', className)} {...props} />
+}
+
+type DrawerCloseButtonProps = {
+  onClick: () => void
+  ariaLabel?: string
+  className?: string
+}
+
+export const DrawerCloseButton = ({ onClick, ariaLabel, className }: DrawerCloseButtonProps) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className={cn(
+        'min-h-[44px] min-w-[44px] rounded-lg p-2 text-muted-foreground transition-colors',
+        'hover:bg-muted/50 hover:text-foreground',
+        className
+      )}
+    >
+      <X className="h-5 w-5 shrink-0" />
+    </button>
+  )
 }

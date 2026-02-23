@@ -62,9 +62,10 @@ export const AddShiftDrawerProgress = ({
   )
 }
 
-export const AddShiftDrawerBanner = ({ message }: { message: string | null }) => (
-  <div className="min-h-[20px]">{message ? <p className="text-sm text-destructive">{message}</p> : null}</div>
-)
+export const AddShiftDrawerBanner = ({ message }: { message: string | null }) => {
+  if (!message) return null
+  return <p className="text-sm text-destructive">{message}</p>
+}
 
 export const AddShiftDrawerStep0 = ({
   titleRef,

@@ -28,7 +28,10 @@ export function ProfileSettings({ onLogout, onNotificationSettingsClick }: Profi
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">{t('profile.settings')}</h3>
+      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        <Settings className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+        {t('profile.settings')}
+      </h3>
 
       <div className="space-y-3">
         <Card className="p-4">

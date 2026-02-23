@@ -11,7 +11,7 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
-import { Award } from 'lucide-react'
+import { Award, ChefHat } from 'lucide-react'
 import { buildProfileAchievements } from './utils/profileAchievements'
 
 const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
@@ -21,7 +21,10 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">{t('profile.specializationSection')}</h3>
+      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+        {t('profile.specializationSection')}
+      </h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
           <span key={spec} className="px-4 py-2 rounded-full text-white text-sm gradient-primary">

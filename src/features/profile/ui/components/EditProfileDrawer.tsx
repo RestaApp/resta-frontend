@@ -268,7 +268,7 @@ export const EditProfileDrawer = memo(
           </div>
         </div>
 
-        <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-card px-5 py-4 flex-row">
+        <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-background px-5 py-4 flex-row">
           <Button
             onClick={handleSave}
             disabled={isLoading || !formData.name.trim()}

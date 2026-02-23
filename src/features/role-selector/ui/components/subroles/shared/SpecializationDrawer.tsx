@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import { useLabels } from '@/shared/i18n/hooks'
 import { ExperienceField, LocationField } from './index'
@@ -171,14 +172,16 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
       </div>
 
       <DrawerFooter>
-        <motion.button
-          whileTap={{ scale: 0.98 }}
+        <Button
+          type="button"
           onClick={onDone}
           disabled={specializations.length > 0 && selectedSpecializations.length === 0}
-          className="w-full py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed gradient-primary"
+          variant="gradient"
+          size="md"
+          className="w-full"
         >
           {t('common.done')}
-        </motion.button>
+        </Button>
         <p className="text-center text-xs text-muted-foreground mt-4 opacity-70">
           {t('profile.fillLaterHint')}
         </p>

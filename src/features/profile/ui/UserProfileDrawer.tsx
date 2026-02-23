@@ -1,8 +1,13 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Drawer, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerCloseButton,
+} from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { X } from 'lucide-react'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { mapRoleFromApi } from '@/utils/roles'
 import { ProfileHero } from './components/ProfileHero'
@@ -11,6 +16,7 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { Card } from '@/components/ui/card'
 import { Loader } from '@/components/ui/loader'
 import { getProfileCompleteness } from '../model/utils/profileCompleteness'
+import { ChefHat } from 'lucide-react'
 
 interface UserProfileDrawerProps {
   userId: number | null
@@ -30,7 +36,10 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">{t('profile.specializationSection')}</h3>
+      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+        {t('profile.specializationSection')}
+      </h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
           <span key={spec} className="px-4 py-2 rounded-full text-white text-sm gradient-primary">
@@ -176,14 +185,7 @@ export const UserProfileDrawer = memo(
           <DrawerHeader className="pb-2 border-b border-border shrink-0">
             <div className="flex items-center justify-between gap-2">
               <DrawerTitle className="text-lg font-semibold">{t('profile.personalInfo')}</DrawerTitle>
-              <Button
-                onClick={onClose}
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full hover:bg-muted"
-              >
-                <X className="w-5 h-5" />
-              </Button>
+              <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
             </div>
           </DrawerHeader>
 

@@ -1,21 +1,17 @@
 import { memo, useCallback, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  MapPin,
-  Clock,
-  DollarSign,
-  FileText,
-  CalendarDays,
-  X,
-  Users,
-  Briefcase,
-  type LucideIcon,
-} from 'lucide-react'
+import { MapPin, Clock, Banknote, FileText, CalendarDays, Users, Briefcase, type LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Drawer, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerCloseButton,
+} from '@/components/ui/drawer'
 import { Tabs } from '@/components/ui/tabs'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import {
@@ -294,15 +290,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 {[shiftTypeLabel, shift.date, shift.time].filter(Boolean).join(' · ')}
               </p>
             </div>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              aria-label={t('common.close')}
-              className="min-w-[44px] min-h-[44px] p-2 hover:bg-muted/50 flex-shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
-            >
-              <X className="w-5 h-5 shrink-0" />
-            </Button>
+            <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-3">
             {shift.urgent ? <UrgentPill /> : null}
@@ -380,7 +368,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   ) : null}
 
                   <DetailRow
-                    icon={DollarSign}
+                    icon={Banknote}
                     iconVariant="section"
                     label={t('shift.pay')}
                     value={

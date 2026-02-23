@@ -16,6 +16,12 @@ interface SupportFormDrawerProps {
   onOpenChange: (open: boolean) => void
 }
 
+const SupportDrawerIcon = () => (
+  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted/50">
+    <HelpCircle className="h-6 w-6 text-primary" />
+  </div>
+)
+
 export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps) {
   const { t } = useTranslation()
   const handleClose = () => onOpenChange(false)
@@ -26,11 +32,9 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted/50">
-              <HelpCircle className="h-6 w-6 text-primary" />
-            </div>
+              <SupportDrawerIcon />
             <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
-          </div>
+            </div>
           <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
@@ -46,9 +50,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerHeader>
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted/50">
-            <HelpCircle className="h-6 w-6 text-primary" />
-          </div>
+          <SupportDrawerIcon />
           <div>
             <DrawerTitle>{t('profile.supportForm.title')}</DrawerTitle>
             <DrawerDescription>{t('profile.supportForm.description')}</DrawerDescription>
