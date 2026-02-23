@@ -243,7 +243,7 @@ export const UserProfileDrawer = memo(
           </div>
 
           {showModerationActions ? (
-            <DrawerFooter className="border-t border-border bg-background shrink-0">
+            <DrawerFooter className="border-t border-border/50 bg-background shrink-0 px-5 py-4">
               <div className="flex gap-3">
                 <Button
                   variant="outline"

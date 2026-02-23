@@ -192,7 +192,7 @@ const AddShiftDrawerKeyed = ({
         {!controller.state.isSuccessOpen ? <AddShiftDrawerBanner message={controller.derived.bannerError} /> : null}
       </div>
 
-      <DrawerFooter>
+      <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
         <AddShiftDrawerFooter
           isSuccessOpen={controller.state.isSuccessOpen}
           step={controller.state.step}

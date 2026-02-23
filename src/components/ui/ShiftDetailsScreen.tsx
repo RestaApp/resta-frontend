@@ -645,13 +645,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           )}
         </div>
         {!isOwner && !isAccepted && !isRejected ? (
-          <DrawerFooter className="border-t border-border shrink-0">
+          <DrawerFooter className="border-t border-border/50 bg-background shrink-0 px-5 py-4">
             <div className="flex gap-3">
               {isApplied ? (
                 <Button
                   onClick={handleCancel}
                   disabled={isLoading}
                   variant="outline"
+                  size="md"
                   className="flex-1"
                 >
                   {isLoading ? t('shift.cancelling') : t('shift.cancelApplication')}
@@ -659,6 +660,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
               ) : (
                 <Button
                   variant="gradient"
+                  size="md"
                   onClick={handleApply}
                   disabled={isLoading}
                   className="flex-1"

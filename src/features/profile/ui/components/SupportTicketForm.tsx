@@ -110,7 +110,8 @@ export function SupportTicketForm({
           <Button
             type="button"
             variant="outline"
-            className="w-full rounded-xl"
+            size="md"
+            className="w-full"
             onClick={onCancel}
             disabled={isLoading}
           >
@@ -121,7 +122,8 @@ export function SupportTicketForm({
           <Button
             type="submit"
             variant="gradient"
-            className="w-full rounded-xl"
+            size="md"
+            className="w-full"
             disabled={isLoading || !subject.trim() || !message.trim()}
           >
             {isLoading ? (

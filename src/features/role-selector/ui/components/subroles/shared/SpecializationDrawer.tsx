@@ -171,7 +171,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         )}
       </div>
 
-      <DrawerFooter>
+      <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
         <Button
           type="button"
           onClick={onDone}

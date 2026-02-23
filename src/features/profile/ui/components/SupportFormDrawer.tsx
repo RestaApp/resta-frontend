@@ -37,8 +37,8 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
             </div>
           <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
         </DrawerHeader>
-        <DrawerFooter>
-          <Button variant="gradient" className="w-full rounded-xl" onClick={form.handleClose}>
+        <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
+          <Button variant="gradient" size="md" className="w-full" onClick={form.handleClose}>
             {t('common.understand')}
           </Button>
         </DrawerFooter>
