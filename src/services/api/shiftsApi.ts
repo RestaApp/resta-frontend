@@ -121,6 +121,8 @@ export interface ApplicationPreviewApiItem {
   responded_at?: string | null
   shift_id?: number
   status?: string
+  /** Статус заявки в API (pending, accepted, rejected) */
+  shift_application_status?: string
   user?: ApplicantUserApi
   user_id?: number
 

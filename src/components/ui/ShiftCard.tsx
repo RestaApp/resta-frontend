@@ -197,8 +197,14 @@ const ShiftCardComponent = ({
               shift.urgent && 'dark:font-bold dark:text-[1.0625rem]'
             )}
           >
-            {formatMoney(shift.pay)}{' '}
-            <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
+            {shift.pay == null || Number(shift.pay) === 0 ? (
+              t('shift.payNegotiable')
+            ) : (
+              <>
+                {formatMoney(shift.pay)}{' '}
+                <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
+              </>
+            )}
           </span>
         </div>
       </div>
