@@ -24,6 +24,8 @@ interface UserProfileDrawerProps {
   onClose: () => void
   applicationId?: number | null
   canModerate?: boolean
+  /** Статус заявки: при 'accepted' показывается только кнопка «Отклонить» */
+  applicationStatus?: 'pending' | 'accepted'
   moderatingAction?: 'accept' | 'reject' | null
   onAccept?: () => Promise<void>
   onReject?: () => Promise<void>
@@ -123,6 +125,7 @@ export const UserProfileDrawer = memo(
     onClose,
     applicationId = null,
     canModerate = false,
+    applicationStatus = 'pending',
     moderatingAction = null,
     onAccept,
     onReject,
@@ -173,8 +176,14 @@ export const UserProfileDrawer = memo(
       return getProfileCompleteness(userProfile, apiRole)
     }, [userProfile, apiRole])
 
-    const showModerationActions =
-      canModerate && typeof applicationId === 'number' && Boolean(onAccept) && Boolean(onReject)
+    const canReject =
+      canModerate && typeof applicationId === 'number' && Boolean(onReject)
+    const canAccept =
+      canModerate &&
+      typeof applicationId === 'number' &&
+      Boolean(onAccept) &&
+      applicationStatus !== 'accepted'
+    const showModerationActions = canReject || canAccept
 
     return (
       <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()}>
@@ -245,30 +254,34 @@ export const UserProfileDrawer = memo(
           {showModerationActions ? (
             <DrawerFooter className="border-t border-border/50 bg-background shrink-0 px-5 py-4">
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  size="md"
-                  className="flex-1"
-                  loading={moderatingAction === 'reject'}
-                  disabled={moderatingAction != null}
-                  onClick={onReject}
-                >
-                  {moderatingAction === 'reject'
-                    ? t('shift.rejectingApplication')
-                    : t('shift.rejectApplication')}
-                </Button>
-                <Button
-                  variant="gradient"
-                  size="md"
-                  className="flex-1"
-                  loading={moderatingAction === 'accept'}
-                  disabled={moderatingAction != null}
-                  onClick={onAccept}
-                >
-                  {moderatingAction === 'accept'
-                    ? t('shift.acceptingApplication')
-                    : t('shift.acceptApplication')}
-                </Button>
+                {canReject ? (
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="flex-1"
+                    loading={moderatingAction === 'reject'}
+                    disabled={moderatingAction != null}
+                    onClick={onReject}
+                  >
+                    {moderatingAction === 'reject'
+                      ? t('shift.rejectingApplication')
+                      : t('shift.rejectApplication')}
+                  </Button>
+                ) : null}
+                {canAccept ? (
+                  <Button
+                    variant="gradient"
+                    size="md"
+                    className="flex-1"
+                    loading={moderatingAction === 'accept'}
+                    disabled={moderatingAction != null}
+                    onClick={onAccept}
+                  >
+                    {moderatingAction === 'accept'
+                      ? t('shift.acceptingApplication')
+                      : t('shift.acceptApplication')}
+                  </Button>
+                ) : null}
               </div>
             </DrawerFooter>
           ) : null}

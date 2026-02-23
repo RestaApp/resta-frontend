@@ -196,7 +196,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const canModerateSelected =
     isOwner &&
     typeof selectedApplicantApplicationId === 'number' &&
-    selectedAppStatus === 'pending'
+    (selectedAppStatus === 'pending' || selectedAppStatus === 'accepted')
 
   const showVenueBadges = Boolean(
     aboutVenue && (aboutVenue.city || aboutVenue.formatKey || aboutVenue.cuisineTypes.length > 0)
@@ -521,7 +521,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                     const appId = app.shift_application_id ?? app.id
                     const appStatus =
                       app.shift_application_status ?? app.status ?? 'pending'
-                    const canModerate =
+                    const canReject =
+                      Boolean(appId) &&
+                      typeof appId === 'number' &&
+                      (appStatus === 'pending' || appStatus === 'accepted')
+                    const canAccept =
                       Boolean(appId) &&
                       typeof appId === 'number' &&
                       appStatus === 'pending'
@@ -589,36 +593,40 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                             </div>
                           </div>
 
-                          {canModerate ? (
+                          {canReject || canAccept ? (
                             <div className="flex flex-row items-center gap-2 shrink-0">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-9 w-9 min-w-9 p-0 shrink-0"
-                                aria-label={t('shift.rejectApplication')}
-                                loading={moderating?.id === appId && moderating.action === 'reject'}
-                                disabled={moderating?.id === appId}
-                                onClick={async e => {
-                                  e.stopPropagation()
-                                  await handleRejectApplication(appId)
-                                }}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="gradient"
-                                size="sm"
-                                className="h-9 w-9 min-w-9 p-0 shrink-0"
-                                aria-label={t('shift.acceptApplication')}
-                                loading={moderating?.id === appId && moderating.action === 'accept'}
-                                disabled={moderating?.id === appId}
-                                onClick={async e => {
-                                  e.stopPropagation()
-                                  await handleAcceptApplication(appId)
-                                }}
-                              >
-                                <Check className="h-4 w-4" />
-                              </Button>
+                              {canReject ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 w-9 min-w-9 p-0 shrink-0"
+                                  aria-label={t('shift.rejectApplication')}
+                                  loading={moderating?.id === appId && moderating.action === 'reject'}
+                                  disabled={moderating?.id === appId}
+                                  onClick={async e => {
+                                    e.stopPropagation()
+                                    await handleRejectApplication(appId)
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              ) : null}
+                              {canAccept ? (
+                                <Button
+                                  variant="gradient"
+                                  size="sm"
+                                  className="h-9 w-9 min-w-9 p-0 shrink-0"
+                                  aria-label={t('shift.acceptApplication')}
+                                  loading={moderating?.id === appId && moderating.action === 'accept'}
+                                  disabled={moderating?.id === appId}
+                                  onClick={async e => {
+                                    e.stopPropagation()
+                                    await handleAcceptApplication(appId)
+                                  }}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                              ) : null}
                             </div>
                           ) : null}
                         </div>
@@ -677,6 +685,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         open={selectedApplicantId !== null}
         applicationId={selectedApplicantApplicationId}
         canModerate={canModerateSelected}
+        applicationStatus={
+          selectedAppStatus === 'accepted' ? 'accepted' : 'pending'
+        }
         moderatingAction={
           moderating?.id === selectedApplicantApplicationId ? moderating.action : null
         }
