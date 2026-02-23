@@ -242,8 +242,28 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   }, [shift, applicationId, vacancyData, onCancel, handleClose, isRejected])
 
   const handleOpenMap = useCallback(() => {
-    // TODO: открыть карту
-  }, [])
+    if (!location) return
+
+    const encodedLocation = encodeURIComponent(location)
+    const yandexAppUrl = `yandexmaps://maps.yandex.ru/?text=${encodedLocation}`
+    const systemMapsUrl = `geo:0,0?q=${encodedLocation}`
+    const yandexWebUrl = `https://yandex.ru/maps/?text=${encodedLocation}`
+
+    // Приоритет: сначала Яндекс.Карты как нативное приложение.
+    window.location.href = yandexAppUrl
+
+    // Если схема не обработалась, пробуем системный chooser, затем web fallback.
+    window.setTimeout(() => {
+      if (document.hidden) return
+
+      window.location.href = systemMapsUrl
+
+      window.setTimeout(() => {
+        if (document.hidden) return
+        window.open(yandexWebUrl, '_blank', 'noopener,noreferrer')
+      }, 700)
+    }, 700)
+  }, [location])
 
   const extractModerationMessage = useCallback((result: unknown): string | undefined => {
     const r = result as { message?: string; data?: { message?: string } } | null
