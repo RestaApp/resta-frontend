@@ -30,7 +30,8 @@ export interface CreateShiftBody {
   shift_type: 'vacancy' | 'replacement'
   urgent?: boolean
   position: string
-  specialization?: string | null
+  /** Несколько специализаций для смены */
+  specializations?: string[]
 }
 
 export interface CreateShiftRequest {

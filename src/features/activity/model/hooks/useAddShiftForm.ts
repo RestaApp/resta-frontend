@@ -333,7 +333,7 @@ export const useAddShiftForm = ({
           shift_type: shiftType,
           urgent,
           position,
-          specialization: specializations.length > 0 ? specializations.join(',') : undefined,
+          specializations: specializations.length > 0 ? specializations : undefined,
         },
       }
 
