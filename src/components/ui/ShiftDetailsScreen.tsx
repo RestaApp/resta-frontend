@@ -242,32 +242,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   }, [shift, applicationId, vacancyData, onCancel, handleClose, isRejected])
 
   const handleOpenMap = useCallback(() => {
-    if (!location) return
-
-    const encodedLocation = encodeURIComponent(location)
-    const yandexAppUrl = `yandexmaps://maps.yandex.ru/?text=${encodedLocation}`
-    const yandexWebUrl = `https://yandex.ru/maps/?text=${encodedLocation}`
-
-    // Если deep-link открыл приложение, вкладка уйдет в background и fallback не нужен.
-    const fallbackTimer = window.setTimeout(() => {
-      if (!document.hidden) {
-        window.open(yandexWebUrl, '_blank', 'noopener,noreferrer')
-      }
-    }, 900)
-
-    const clearFallback = () => {
-      window.clearTimeout(fallbackTimer)
-    }
-
-    document.addEventListener('visibilitychange', clearFallback, { once: true })
-
-    try {
-      window.location.href = yandexAppUrl
-    } catch {
-      clearFallback()
-      window.open(yandexWebUrl, '_blank', 'noopener,noreferrer')
-    }
-  }, [location])
+    // TODO: открыть карту
+  }, [])
 
   const extractModerationMessage = useCallback((result: unknown): string | undefined => {
     const r = result as { message?: string; data?: { message?: string } } | null
@@ -380,29 +356,12 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   ) : null}
 
                   {specializations.length > 0 ? (
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={cn(ICON_WRAPPER_SECTION, 'mt-0.5')}
-                        aria-hidden
-                      >
-                        <ChefHat className="h-5 w-5 text-primary shrink-0" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs text-muted-foreground mb-1.5">
-                          {t('profile.specializationSection')}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {specializations.map((spec) => (
-                            <span
-                              key={spec}
-                              className="px-4 py-2 rounded-full text-white text-sm gradient-primary"
-                            >
-                              {getSpecializationLabel(spec)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                    <DetailRow
+                      icon={ChefHat}
+                      iconVariant="section"
+                      label={t('profile.specializationSection')}
+                      value={specializations.map(spec => getSpecializationLabel(spec)).join(', ')}
+                    />
                   ) : null}
 
                   <DetailRow

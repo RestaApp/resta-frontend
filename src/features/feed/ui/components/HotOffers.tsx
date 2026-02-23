@@ -47,7 +47,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
   const positionText = useMemo(() => {
     const position = getEmployeePositionLabel(item.position)
     const specialization = item.specialization
-      ? `, ${getSpecializationLabel(item.specialization)}`
+      ? ` • ${getSpecializationLabel(item.specialization)}`
       : ''
     return `${position}${specialization}`
   }, [item.position, item.specialization, getEmployeePositionLabel, getSpecializationLabel])
