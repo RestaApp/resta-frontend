@@ -9,11 +9,13 @@ import { useUserPositions } from '@/features/navigation/model/hooks/useUserPosit
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
+import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFilters } from '../../model/hooks/useAdvancedFilters'
 import { DEFAULT_PRICE_RANGE, DEFAULT_JOBS_PRICE_RANGE } from '@/utils/filters'
 
 export interface AdvancedFiltersData {
   priceRange: [number, number] | null
+  selectedCity?: string | null
   selectedPosition?: string | null
   selectedSpecializations?: string[]
   startDate?: string | null // YYYY-MM-DD
@@ -63,11 +65,13 @@ const AdvancedFiltersSheet = ({
   const { getSpecializationLabel } = useLabels()
   const {
     priceRange,
+    selectedCity,
     selectedPosition,
     selectedSpecializations,
     startDate,
     endDate,
     setPriceRange,
+    setSelectedCity,
     setStartDate,
     setEndDate,
     handlePositionSelect,
@@ -157,6 +161,10 @@ const AdvancedFiltersSheet = ({
     [setPriceRange]
   )
 
+  const handleLocationRequest = useCallback(() => {
+    // Для фильтров не используем геолокацию: город выбирается вручную из списка.
+  }, [])
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
@@ -231,7 +239,18 @@ const AdvancedFiltersSheet = ({
             </div>
           )}
 
-          {/* 3. Позиция */}
+          {/* 3. Город */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-base">{t('profile.city')}</h3>
+            <LocationField
+              value={selectedCity}
+              onChange={setSelectedCity}
+              onLocationRequest={handleLocationRequest}
+              clearOnFocus
+            />
+          </div>
+
+          {/* 4. Позиция */}
           {positionsForDisplay.length > 0 && (
             <div className="space-y-3">
               <h3 className="font-semibold text-base">{t('common.position')}</h3>
@@ -255,7 +274,7 @@ const AdvancedFiltersSheet = ({
             </div>
           )}
 
-          {/* 4. Специализация (показываем только если выбрана позиция) */}
+          {/* 5. Специализация (показываем только если выбрана позиция) */}
           <AnimatePresence initial={false}>
             {selectedPosition &&
               (displaySpecializations.length > 0 || isSpecializationsLoading) && (

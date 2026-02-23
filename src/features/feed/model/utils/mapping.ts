@@ -45,9 +45,8 @@ export const getLogoByPosition = (
   return '🍽️'
 }
 
-// если у API город лежит в restaurant_profile
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {
-  return item.user?.restaurant_profile?.city ?? undefined
+  return item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
 }
 
 export const vacancyToShift = (item: VacancyApiItem): Shift => {
@@ -93,6 +92,9 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
     canApply: item.can_apply,
     applicationsCount: item.applications_count,
+
+    city: getCityFromUser(item) ?? null,
+    shiftType: item.shift_type,
   }
 }
 
@@ -107,6 +109,8 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
     restaurant: s.restaurant,
     position: s.position,
     specialization: s.specialization ?? null,
+    city: s.city ?? null,
+    shiftType: v.shift_type,
   }
 }
 
@@ -151,5 +155,8 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     canApply: Boolean(v.can_apply),
 
     applicationStatus,
+
+    city: getCityFromUser(v) ?? null,
+    shiftType: v.shift_type,
   }
 }

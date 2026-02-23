@@ -25,6 +25,7 @@ export const FeedPage = () => {
         onShowAll={m.showAllHotShifts}
         onItemClick={m.onHotOfferClick}
         isVacancy={m.isVacancy}
+        isUrgentFilterActive={m.quickFilter === 'urgent'}
       />
 
       <FeedBody vm={vm} />

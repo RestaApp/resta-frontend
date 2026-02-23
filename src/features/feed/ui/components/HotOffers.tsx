@@ -15,6 +15,9 @@ export interface HotOffer {
   restaurant: string
   position: string
   specialization?: string | null
+  city?: string | null
+  /** Тип смены/вакансии — влияет на текст в карточке */
+  shiftType?: 'vacancy' | 'replacement'
 }
 
 interface HotOffersProps {
@@ -23,6 +26,8 @@ interface HotOffersProps {
   totalCount?: number
   onShowAll?: () => void
   isVacancy?: boolean
+  /** Фильтр «срочные» активен — показываем «Убрать фильтр» */
+  isUrgentFilterActive?: boolean
 }
 
 interface HotOfferCardProps {
@@ -76,17 +81,29 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
         <span className="block text-[10px] text-muted-foreground truncate w-full mb-0.5">
           {item.restaurant}
         </span>
-        <span className="block text-[9px] text-primary font-medium mb-0.5 truncate">
-          {positionText}
-        </span>
-        <span className="block text-xs font-bold text-foreground leading-tight">{item.time}</span>
+
+        {item.shiftType === 'vacancy' ? (
+          // Для вакансий: показываем полную позицию + специализацию, разрешаем перенос строк
+          <span className="block text-[9px] text-primary font-medium leading-snug whitespace-normal break-words">
+            {positionText}
+          </span>
+        ) : (
+          <>
+            <span className="block text-[9px] text-primary font-medium mb-0.5 truncate">
+              {positionText}
+            </span>
+            <span className="block text-xs font-bold text-foreground leading-tight">
+              {item.time}
+            </span>
+          </>
+        )}
       </span>
     </button>
   )
 })
 HotOfferCard.displayName = 'HotOfferCard'
 
-export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVacancy }: HotOffersProps) => {
+export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVacancy, isUrgentFilterActive }: HotOffersProps) => {
   const { t } = useTranslation()
   const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
@@ -97,8 +114,9 @@ export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVa
   }, [isVacancy, t])
 
   const showAllLabel = useMemo(() => {
+    if (isUrgentFilterActive) return t('feed.clearHotFilter')
     return t('feed.showAllHotOffers') || t('common.all')
-  }, [t])
+  }, [t, isUrgentFilterActive])
 
   return (
     <div

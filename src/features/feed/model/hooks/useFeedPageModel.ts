@@ -217,9 +217,13 @@ export const useFeedPageModel = () => {
   )
 
   const showAllHotShifts = useCallback(() => {
-    setQuickFilter('urgent')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [setQuickFilter])
+    if (quickFilter === 'urgent') {
+      setQuickFilter('all')
+    } else {
+      setQuickFilter('urgent')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [quickFilter, setQuickFilter])
 
   const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
 

@@ -1,7 +1,17 @@
 import { memo, useCallback, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapPin, Clock, Banknote, FileText, CalendarDays, Users, Briefcase, type LucideIcon } from 'lucide-react'
+import {
+  MapPin,
+  Clock,
+  Banknote,
+  FileText,
+  CalendarDays,
+  Users,
+  Briefcase,
+  Building2,
+  type LucideIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -230,7 +240,10 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       try {
         setModerating({ id, action: 'accept' })
         triggerHapticFeedback('light')
-        const result = await acceptApplication(id).unwrap()
+        const result = await acceptApplication({
+          applicationId: id,
+          shiftId: shift?.id,
+        }).unwrap()
         showToast(
           extractModerationMessage(result) ?? t('shift.applicationAccepted'),
           'success'
@@ -243,7 +256,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         setModerating(null)
       }
     },
-    [acceptApplication, extractModerationMessage, showToast, t]
+    [acceptApplication, extractModerationMessage, shift?.id, showToast, t]
   )
 
   const handleRejectApplication = useCallback(
@@ -251,7 +264,10 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       try {
         setModerating({ id, action: 'reject' })
         triggerHapticFeedback('light')
-        const result = await rejectApplication(id).unwrap()
+        const result = await rejectApplication({
+          applicationId: id,
+          shiftId: shift?.id,
+        }).unwrap()
         showToast(
           extractModerationMessage(result) ?? t('shift.applicationRejected'),
           'success'
@@ -264,7 +280,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         setModerating(null)
       }
     },
-    [extractModerationMessage, rejectApplication, showToast, t]
+    [extractModerationMessage, rejectApplication, shift?.id, showToast, t]
   )
 
   if (!shift) return null
@@ -399,7 +415,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
               {aboutVenue ? (
                 <Card className={DETAIL_CARD_CLASS}>
-                  <h2 className="text-base font-medium text-foreground mb-2">{t('common.aboutVenue')}</h2>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={cn(ICON_WRAPPER_SECTION)} aria-hidden>
+                      <Building2 className="h-5 w-5 text-primary shrink-0" />
+                    </div>
+                    <h2 className="text-base font-medium text-foreground break-words">
+                      {t('common.aboutVenue')}
+                    </h2>
+                  </div>
                   {aboutVenue.bio ? (
                     <p className="text-sm text-muted-foreground mb-3">{aboutVenue.bio}</p>
                   ) : null}

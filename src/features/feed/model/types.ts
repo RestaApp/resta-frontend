@@ -26,4 +26,9 @@ export interface Shift {
 
   // NEW: чтобы ShiftCard не лазил в any
   applicationStatus?: string | null
+
+  /** Город (для отображения в карточке). Из user.city / restaurant_profile */
+  city?: string | null
+  /** Тип: вакансия — без даты/времени на карточке */
+  shiftType?: 'vacancy' | 'replacement'
 }

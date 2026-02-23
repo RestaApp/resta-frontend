@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Clock, CalendarDays } from 'lucide-react'
+import { Clock, CalendarDays, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -128,12 +128,12 @@ const ShiftCardComponent = ({
     return isApplied ? t('shift.cancelApplication') : t('shift.apply')
   }, [isLoading, isApplied, t])
 
-  const responsesLabel = useMemo(() => {
+  const responsesText = useMemo(() => {
     if (!isOwner) return null
     const countRaw = shift.applicationsCount
     const count = typeof countRaw === 'number' && Number.isFinite(countRaw) ? countRaw : 0
-    return count > 0 ? t('shift.responsesCount', { count }) : t('shift.noResponses')
-  }, [isOwner, shift.applicationsCount, t])
+    return { count, hasResponses: count > 0 }
+  }, [isOwner, shift.applicationsCount])
 
   const hasResponses = useMemo(() => {
     const countRaw = shift.applicationsCount
@@ -194,29 +194,41 @@ const ShiftCardComponent = ({
         </div>
       </div>
 
-      {/* Date / time — текст + иконка, без капсул */}
-      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-        <span className="flex items-center gap-1.5 truncate">
-          <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" />
-          <span className="font-medium text-foreground truncate">{shift.date}</span>
-        </span>
-        <span className="flex items-center gap-1.5 truncate">
-          <Clock className="w-4 h-4 shrink-0 text-muted-foreground" />
-          <span className="font-medium text-foreground truncate">{shift.time}</span>
-        </span>
-      </div>
+      {/* Date / time — только для смен (не для вакансий) */}
+      {shift.shiftType !== 'vacancy' ? (
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+          <span className="flex items-center gap-1.5 truncate">
+            <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" />
+            <span className="font-medium text-foreground truncate">{shift.date}</span>
+          </span>
+          <span className="flex items-center gap-1.5 truncate">
+            <Clock className="w-4 h-4 shrink-0 text-muted-foreground" />
+            <span className="font-medium text-foreground truncate">{shift.time}</span>
+          </span>
+        </div>
+      ) : null}
 
       {/* Bottom */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          {responsesLabel ? (
+        <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+          {responsesText ? (
             <span
               className={cn(
-                'text-xs',
-                hasResponses ? 'font-medium text-primary' : 'text-muted-foreground'
+                'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium tabular-nums border',
+                hasResponses
+                  ? 'border-primary/25 bg-primary/5 text-primary dark:bg-primary/10'
+                  : 'border-border bg-muted/40 text-muted-foreground'
               )}
             >
-              {responsesLabel}
+              {responsesText.hasResponses ? (
+                <>
+                  <Users className="w-3.5 h-3.5 shrink-0" />
+                  <span>{t('shift.responsesCountLabel')}</span>
+                  <span className="font-bold">{responsesText.count}</span>
+                </>
+              ) : (
+                t('shift.noResponses')
+              )}
             </span>
           ) : null}
         </div>

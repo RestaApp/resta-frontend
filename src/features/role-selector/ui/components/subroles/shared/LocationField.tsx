@@ -18,6 +18,8 @@ interface LocationFieldProps {
   withAnimation?: boolean
   animationDelay?: number
   isLoading?: boolean
+  /** Очищать поле при фокусе (например, в фильтрах) */
+  clearOnFocus?: boolean
 }
 
 export const LocationField = memo(function LocationField({
@@ -27,6 +29,7 @@ export const LocationField = memo(function LocationField({
   withAnimation = false,
   animationDelay = 0,
   isLoading = false,
+  clearOnFocus = false,
 }: LocationFieldProps) {
   const { t } = useTranslation()
   const {
@@ -58,7 +61,12 @@ export const LocationField = memo(function LocationField({
           ref={inputRef}
           value={value}
           onChange={handleInputChange}
-          onFocus={handleInputFocus}
+          onFocus={() => {
+            if (clearOnFocus && value) {
+              onChange('')
+            }
+            handleInputFocus()
+          }}
           onBlur={handleInputBlur}
           placeholder={t('citySelect.placeholder')}
           className="pr-12"

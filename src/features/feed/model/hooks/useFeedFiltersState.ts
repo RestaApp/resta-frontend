@@ -4,7 +4,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserPosition } from '@/features/navigation/model/userSlice'
+import { selectUserCity, selectUserPosition } from '@/features/navigation/model/userSlice'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 import type { QuickFilter } from '../utils/clientFilters'
@@ -43,9 +43,13 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
 
   // Инициализируем фильтры синхронно, если у пользователя есть позиция
   const userPosition = useAppSelector(selectUserPosition)
+  const userCity = useAppSelector(selectUserCity)
 
   // Отдельные фильтры для смен и вакансий
-  const derivedInitialFilters = useMemo(() => createInitialFilters(userPosition), [userPosition])
+  const derivedInitialFilters = useMemo(
+    () => createInitialFilters(userPosition, userCity),
+    [userPosition, userCity]
+  )
   const [shiftsAdvancedFiltersState, setShiftsAdvancedFiltersState] = useState<
     AdvancedFiltersData | null | undefined
   >(undefined)

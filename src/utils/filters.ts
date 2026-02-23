@@ -103,6 +103,11 @@ export const formatFiltersForDisplay = (
     result.push(getEmployeePositionLabel(filters.selectedPosition))
   }
 
+  // Город
+  if (filters.selectedCity) {
+    result.push(filters.selectedCity)
+  }
+
   // Специализации
   if (filters.selectedSpecializations && filters.selectedSpecializations.length > 0) {
     result.push(...formatSpecializations(filters.selectedSpecializations))
@@ -130,8 +135,9 @@ export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean =
 
   const hasNonDefaultPrice = filters.priceRange !== null && !isDefaultPriceRange(filters.priceRange)
   const hasPosition = filters.selectedPosition !== null && filters.selectedPosition !== undefined
+  const hasCity = filters.selectedCity !== null && filters.selectedCity !== undefined && filters.selectedCity !== ''
   const hasSpecializations = (filters.selectedSpecializations?.length ?? 0) > 0
   const hasDates = filters.startDate !== null || filters.endDate !== null
 
-  return hasNonDefaultPrice || hasPosition || hasSpecializations || hasDates
+  return hasNonDefaultPrice || hasPosition || hasCity || hasSpecializations || hasDates
 }

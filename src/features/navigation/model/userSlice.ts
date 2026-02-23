@@ -53,3 +53,4 @@ export const selectUserPosition = createSelector(
   [selectUserData],
   u => u?.position || u?.employee_profile?.position || null
 )
+export const selectUserCity = createSelector([selectUserData], u => u?.city || null)

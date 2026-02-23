@@ -15,6 +15,7 @@ export const useAdvancedFilters = ({
   const [priceRange, setPriceRange] = useState<[number, number] | null>(
     () => initialFilters?.priceRange ?? null
   )
+  const [selectedCity, setSelectedCity] = useState<string>(() => initialFilters?.selectedCity ?? '')
   const [selectedPosition, setSelectedPosition] = useState<string | null>(
     () => initialFilters?.selectedPosition ?? null
   )
@@ -67,25 +68,28 @@ export const useAdvancedFilters = ({
   // текущие draft-фильтры (то, что пользователь “собрал”)
   const currentFilters = useMemo<AdvancedFiltersData | null>(() => {
     const hasPrice = priceRange !== null
+    const hasCity = selectedCity.trim().length > 0
     const hasPos = selectedPosition !== null
     const hasSpecs = selectedSpecializations.length > 0
     const hasDates = startDate !== null || endDate !== null
 
-    if (!hasPrice && !hasPos && !hasSpecs && !hasDates) return null
+    if (!hasPrice && !hasCity && !hasPos && !hasSpecs && !hasDates) return null
 
     return {
       priceRange,
+      selectedCity: selectedCity.trim() || undefined,
       selectedPosition: selectedPosition || undefined,
       selectedSpecializations: selectedSpecializations.length ? selectedSpecializations : undefined,
       startDate: startDate || undefined,
       endDate: endDate || undefined,
     }
-  }, [priceRange, selectedPosition, selectedSpecializations, startDate, endDate])
+  }, [priceRange, selectedCity, selectedPosition, selectedSpecializations, startDate, endDate])
 
   const hasActiveFilters = useMemo(() => checkHasActiveFilters(currentFilters), [currentFilters])
 
   const handleReset = useCallback(() => {
     setPriceRange(null)
+    setSelectedCity('')
     setSelectedPosition(null)
     setSelectedSpecializations([])
     handleStartDateChange(null)
@@ -100,6 +104,7 @@ export const useAdvancedFilters = ({
   return {
     // draft state
     priceRange,
+    selectedCity,
     selectedPosition,
     selectedSpecializations,
     startDate,
@@ -107,6 +112,7 @@ export const useAdvancedFilters = ({
 
     // setters
     setPriceRange,
+    setSelectedCity,
     setStartDate: handleStartDateChange,
     setEndDate: handleEndDateChange,
     handlePositionSelect,

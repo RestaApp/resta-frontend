@@ -30,6 +30,10 @@ export const buildVacanciesBaseParams = (
       params.specialization = adv.selectedSpecializations.join(',')
     }
 
+    if (adv.selectedCity?.trim()) {
+      params.city = adv.selectedCity.trim()
+    }
+
     // даты — только для смен
     if (options.shiftType !== 'vacancy') {
       if (adv.startDate) params.start_date = adv.startDate

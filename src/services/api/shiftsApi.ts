@@ -85,6 +85,7 @@ export interface UserApi {
   id: number
   name: string
   full_name?: string
+  city?: string
   location?: string
   bio?: string
   phone?: string
@@ -314,27 +315,35 @@ export const shiftsApi = api.injectEndpoints({
       ],
     }),
 
-    // Принять заявку (только для владельца смены / ресторана)
-    acceptApplication: builder.mutation<ApplyToShiftResponse, number>({
-      query: id => ({
-        url: `/api/v1/shift_applications/${id}/accept`,
+    // Принять заявку (только для владельца смены / ресторана). shiftId — для инвалидации кэша смены без перезагрузки.
+    acceptApplication: builder.mutation<
+      ApplyToShiftResponse,
+      { applicationId: number; shiftId?: number }
+    >({
+      query: ({ applicationId }) => ({
+        url: `/api/v1/shift_applications/${applicationId}/accept`,
         method: 'POST',
       }),
-      invalidatesTags: [
+      invalidatesTags: (_result, _error, { shiftId }) => [
         { type: 'AppliedShift', id: 'LIST' },
         { type: 'Shift', id: 'LIST' },
+        ...(typeof shiftId === 'number' ? [{ type: 'Shift' as const, id: String(shiftId) }] : []),
       ],
     }),
 
-    // Отклонить заявку (только для владельца смены / ресторана)
-    rejectApplication: builder.mutation<ApplyToShiftResponse, number>({
-      query: id => ({
-        url: `/api/v1/shift_applications/${id}/reject`,
+    // Отклонить заявку (только для владельца смены / ресторана). shiftId — для инвалидации кэша смены без перезагрузки.
+    rejectApplication: builder.mutation<
+      ApplyToShiftResponse,
+      { applicationId: number; shiftId?: number }
+    >({
+      query: ({ applicationId }) => ({
+        url: `/api/v1/shift_applications/${applicationId}/reject`,
         method: 'POST',
       }),
-      invalidatesTags: [
+      invalidatesTags: (_result, _error, { shiftId }) => [
         { type: 'AppliedShift', id: 'LIST' },
         { type: 'Shift', id: 'LIST' },
+        ...(typeof shiftId === 'number' ? [{ type: 'Shift' as const, id: String(shiftId) }] : []),
       ],
     }),
 
