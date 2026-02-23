@@ -89,6 +89,8 @@ export const useAddShiftForm = ({
   const [urgent, setUrgent] = useState(() => !!initialValues?.urgent)
   const [position, setPosition] = useState(() => initialValues?.position || '')
   const [specializations, setSpecializations] = useState<string[]>(() => {
+    const list = initialValues?.specializations
+    if (list?.length) return list
     const specValue = initialValues?.specialization || ''
     return specValue
       ? specValue

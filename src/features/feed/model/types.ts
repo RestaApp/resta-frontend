@@ -4,6 +4,8 @@ export type PayPeriod = 'shift' | 'month'
 export interface Shift {
   id: number
   logo: string
+  /** URL фото исполнителя (при заполненной смене); при наличии показывается вместо logo */
+  userPhotoUrl?: string | null
   /** Название смены/вакансии от автора (если задано) */
   title?: string | null
   restaurant: string

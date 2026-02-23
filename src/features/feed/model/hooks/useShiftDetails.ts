@@ -37,6 +37,8 @@ export interface UseShiftDetailsReturn {
   vacancyTitle: string
   positionLabel: string | null
   specializationLabel: string | null
+  /** Список специализаций для отображения тегами */
+  specializations: string[]
   applicationsInfo: { value: string; label: string } | null
 }
 
@@ -107,6 +109,14 @@ export const useShiftDetails = (
     return getSpecializationLabel(vacancyData.specialization)
   }, [vacancyData, getSpecializationLabel])
 
+  const specializations = useMemo(() => {
+    const list = vacancyData?.specializations ?? []
+    if (list.length > 0) return list
+    if (vacancyData?.specialization)
+      return [vacancyData.specialization]
+    return []
+  }, [vacancyData?.specializations, vacancyData?.specialization])
+
   const applicationsInfo = useMemo(() => {
     if (vacancyData?.applications_count === undefined) return null
     return formatApplicationsCount(vacancyData.applications_count)
@@ -120,6 +130,7 @@ export const useShiftDetails = (
     vacancyTitle,
     positionLabel,
     specializationLabel,
+    specializations,
     applicationsInfo,
   }
 }

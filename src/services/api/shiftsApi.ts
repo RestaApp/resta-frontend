@@ -163,7 +163,9 @@ export interface VacancyApiItem {
   urgent?: boolean
   shift_type?: 'vacancy' | 'replacement'
   position?: string // Позиция (chef, waiter, bartender, barista, manager, support)
-  specialization?: string | null // Специализация сотрудника
+  specialization?: string | null // Специализация сотрудника (одиночная, устаревший вариант)
+  /** Список специализаций для вакансии/смены */
+  specializations?: string[]
   target_roles?: string[]
   requirements?: string
   status?: string

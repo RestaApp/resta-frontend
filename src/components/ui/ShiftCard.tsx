@@ -9,6 +9,7 @@ import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/utils/cn'
 
 interface ShiftCardOwnerActions {
@@ -168,11 +169,20 @@ const ShiftCardComponent = ({
         !shift.urgent && 'border-border shadow-sm hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
       )}
     >
-      {/* 1. Header: иконка + Title (1 строка) + Price (справа) */}
+      {/* 1. Header: иконка/фото + Title (1 строка) + Price (справа) */}
       <div className="flex justify-between items-start gap-3 mb-1.5">
         <div className="flex gap-3 min-w-0 flex-1">
-          <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-muted/60 flex items-center justify-center text-2xl border border-border/50">
-            {shift.logo}
+          <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-muted/60 flex items-center justify-center text-2xl border border-border/50 overflow-hidden">
+            {shift.userPhotoUrl ? (
+              <Avatar className="w-12 h-12 rounded-lg">
+                <AvatarImage src={shift.userPhotoUrl} alt="" />
+                <AvatarFallback className="rounded-lg bg-muted/60 text-2xl">
+                  {shift.logo}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              shift.logo
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-base leading-tight truncate">

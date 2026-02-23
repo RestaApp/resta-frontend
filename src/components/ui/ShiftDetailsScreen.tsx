@@ -13,6 +13,7 @@ import {
   Star,
   X,
   Check,
+  ChefHat,
   type LucideIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -149,14 +150,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   } = props
 
   const { t } = useTranslation()
-  const { getRestaurantFormatLabel, getEmployeePositionLabel } = useLabels()
+  const { getRestaurantFormatLabel, getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const {
     aboutVenue,
     hourlyRate,
     shiftTypeLabel,
     vacancyTitle,
     positionLabel,
-    specializationLabel,
+    specializations,
     applicationsInfo,
   } = useShiftDetails(shift, vacancyData)
 
@@ -351,12 +352,33 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                       iconVariant="section"
                       label={t('common.position')}
                       value={positionLabel}
-                      subValue={
-                        specializationLabel
-                          ? `${t('profileFields.specialization')}: ${specializationLabel}`
-                          : undefined
-                      }
                     />
+                  ) : null}
+
+                  {specializations.length > 0 ? (
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={cn(ICON_WRAPPER_SECTION, 'mt-0.5')}
+                        aria-hidden
+                      >
+                        <ChefHat className="h-5 w-5 text-primary shrink-0" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground mb-1.5">
+                          {t('profile.specializationSection')}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {specializations.map((spec) => (
+                            <span
+                              key={spec}
+                              className="px-4 py-2 rounded-full text-white text-sm gradient-primary"
+                            >
+                              {getSpecializationLabel(spec)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   ) : null}
 
                   <DetailRow
