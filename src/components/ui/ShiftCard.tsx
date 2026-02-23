@@ -152,7 +152,7 @@ const ShiftCardComponent = ({
         'group relative rounded-xl p-4 border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
         'dark:border-[rgba(255,255,255,0.06)] dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)] dark:shadow-none',
         shift.urgent &&
-          'border-primary/25 hover:border-primary/35 dark:!border-primary/25 dark:hover:border-primary/35 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.12)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.18)]',
+        'border-primary/25 hover:border-primary/35 dark:!border-primary/25 dark:hover:border-primary/35 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.12)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.18)]',
         !shift.urgent && 'border-border shadow-sm hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
       )}
     >
