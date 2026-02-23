@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Clock, CalendarDays, Users } from 'lucide-react'
+import { Clock, CalendarDays, Users, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -67,9 +67,21 @@ const ShiftCardComponent = ({
 
   const locationText = useMemo(() => stripMinskPrefix(shift.location) ?? '', [shift.location])
 
+  /** Одна строка: компания · место (для единого шаблона смены/вакансии) */
+  const companyPlaceLine = useMemo(() => {
+    const parts = [shift.restaurant]
+    if (locationText) parts.push(locationText)
+    return parts.join(' · ')
+  }, [shift.restaurant, locationText])
+
+  const displayTitle = useMemo(
+    () => (shift.title?.trim() || '').slice(0, 80) || null,
+    [shift.title]
+  )
+
   const cardAriaLabel = useMemo(
-    () => [shift.restaurant, positionText, locationText].filter(Boolean).join(', '),
-    [shift.restaurant, positionText, locationText]
+    () => [displayTitle, shift.restaurant, positionText, locationText].filter(Boolean).join(', '),
+    [displayTitle, shift.restaurant, positionText, locationText]
   )
 
   const handleOpen = useCallback(() => onOpenDetails(shift.id), [onOpenDetails, shift.id])
@@ -156,33 +168,30 @@ const ShiftCardComponent = ({
         !shift.urgent && 'border-border shadow-sm hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
       )}
     >
-      {/* Header */}
-      <div className="flex justify-between items-start mb-3 gap-3">
-        <div className="flex gap-3 min-w-0">
+      {/* 1. Header: иконка + Title (1 строка) + Price (справа) */}
+      <div className="flex justify-between items-start gap-3 mb-1.5">
+        <div className="flex gap-3 min-w-0 flex-1">
           <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-muted/60 flex items-center justify-center text-2xl border border-border/50">
             {shift.logo}
           </div>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-bold text-base leading-tight truncate">{positionText}</h3>
-
-              {shift.rating > 0 ? (
-                <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                  ★ {shift.rating}
-                </div>
-              ) : null}
-            </div>
-
-            <p className="text-sm text-muted-foreground mt-0.5 truncate">{shift.restaurant}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              {shift.urgent ? <UrgentPill /> : null}
-              {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
-            </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-base leading-tight truncate">
+              {displayTitle ?? positionText}
+            </h3>
+            {shift.urgent ? (
+              <div className="mt-1">
+                <UrgentPill />
+              </div>
+            ) : null}
+            {displayTitle != null && shift.rating > 0 ? (
+              <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground mt-0.5">
+                ★ {shift.rating}
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="text-right flex-shrink-0">
-          <div
+          <span
             className={cn(
               'font-semibold text-lg text-primary tracking-tight',
               shift.urgent && 'dark:font-bold dark:text-[1.0625rem]'
@@ -190,30 +199,45 @@ const ShiftCardComponent = ({
           >
             {formatMoney(shift.pay)}{' '}
             <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
-          </div>
+          </span>
         </div>
       </div>
 
-      {/* Date / time — только для смен (не для вакансий) */}
-      {shift.shiftType !== 'vacancy' ? (
-        <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground mb-3">
-          <span className="flex items-center gap-1.5 min-w-0">
-            <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
-            <span className="font-medium text-foreground truncate">{shift.date}</span>
-          </span>
-          <span className="shrink-0 text-muted-foreground/50" aria-hidden>
-            ·
-          </span>
-          <span className="flex items-center gap-1.5 min-w-0 justify-end">
-            <Clock className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
-            <span className="font-medium text-foreground truncate">{shift.time}</span>
-          </span>
-        </div>
-      ) : null}
+      {/* 2. Subheader: Role / Category */}
+      <p className="text-sm text-muted-foreground truncate mb-1">
+        {positionText}
+      </p>
 
-      {/* Bottom */}
+      {/* 3. Company / Place (1 строка) */}
+      <p className="text-sm text-muted-foreground truncate mb-2">
+        {companyPlaceLine}
+      </p>
+
+      {/* 4. Meta-row: 2–3 пункта с иконками (смена: дата + время; вакансия: место) */}
+      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3 min-h-[1.25rem]">
+        {shift.shiftType === 'vacancy' ? (
+          <span className="flex items-center gap-1.5 min-w-0">
+            <MapPin className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
+            <span className="font-medium text-foreground truncate">{locationText || '—'}</span>
+          </span>
+        ) : (
+          <>
+            <span className="flex items-center gap-1.5 min-w-0">
+              <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="font-medium text-foreground truncate">{shift.date}</span>
+            </span>
+            <span className="flex items-center gap-1.5 min-w-0">
+              <Clock className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="font-medium text-foreground truncate">{shift.time}</span>
+            </span>
+          </>
+        )}
+      </div>
+
+      {/* 5. Footer: Status chip (слева) + CTA (справа) */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+          {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
           {responsesText ? (
             <span
               className={cn(
@@ -236,7 +260,6 @@ const ShiftCardComponent = ({
           ) : null}
         </div>
 
-        {/* Owner actions */}
         {isOwner && ownerActions ? (
           <ShiftOwnerActions
             editLabel={t('common.edit')}
@@ -247,7 +270,6 @@ const ShiftCardComponent = ({
           />
         ) : null}
 
-        {/* Apply / Cancel */}
         {!isOwner && canShowApply ? (
           <Button
             variant={isApplied ? 'outline' : 'gradient'}

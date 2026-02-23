@@ -46,7 +46,8 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
     () => ({
       id: shift.id,
       logo: getLogoByPosition(shift.position, shift.id),
-      restaurant: shift.title || t('common.myShift'),
+      title: shift.title?.trim() || null,
+      restaurant: t('common.myShift'),
       rating: 0,
 
       position: shift.position ?? 'chef',

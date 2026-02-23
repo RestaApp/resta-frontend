@@ -4,6 +4,8 @@ export type PayPeriod = 'shift' | 'month'
 export interface Shift {
   id: number
   logo: string
+  /** Название смены/вакансии от автора (если задано) */
+  title?: string | null
   restaurant: string
   rating: number
   position: string

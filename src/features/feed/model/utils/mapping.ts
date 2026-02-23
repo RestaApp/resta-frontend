@@ -68,6 +68,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   return {
     id: item.id,
     logo: getLogoByPosition(item.position, item.id),
+    title: item.title?.trim() || null,
     restaurant: item.user?.full_name || item.user?.name || item.title || '—',
     rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
 
@@ -133,6 +134,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   return {
     id: v.id,
     logo: getLogoByPosition(v.position, v.id),
+    title: v.title?.trim() || null,
     restaurant,
     rating: 0,
 
