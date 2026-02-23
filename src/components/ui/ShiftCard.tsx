@@ -57,7 +57,7 @@ const ShiftCardComponent = ({
   const positionText = useMemo(() => {
     const position = getEmployeePositionLabel(shift.position)
     const specialization = shift.specialization
-      ? ` • ${getSpecializationLabel(shift.specialization)}`
+      ? `, ${getSpecializationLabel(shift.specialization)}`
       : ''
     return `${position}${specialization}`
   }, [shift.position, shift.specialization, getEmployeePositionLabel, getSpecializationLabel])

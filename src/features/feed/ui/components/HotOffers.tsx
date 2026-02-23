@@ -46,25 +46,10 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
 
   const positionText = useMemo(() => {
     const position = getEmployeePositionLabel(item.position)
-    if (!item.specialization) return position
-
-    const specialization = getSpecializationLabel(item.specialization)
-    const normalize = (value: string): string =>
-      value
-        .toLowerCase()
-        .replace(/[^\p{L}\p{N}]+/gu, ' ')
-        .trim()
-
-    const normalizedPosition = normalize(position)
-    const normalizedSpecialization = normalize(specialization)
-
-    const isSameOrVeryClose =
-      normalizedPosition === normalizedSpecialization ||
-      normalizedSpecialization.startsWith(normalizedPosition) ||
-      normalizedPosition.startsWith(normalizedSpecialization)
-
-    if (isSameOrVeryClose) return specialization
-    return `${position} • ${specialization}`
+    const specialization = item.specialization
+      ? `, ${getSpecializationLabel(item.specialization)}`
+      : ''
+    return `${position}${specialization}`
   }, [item.position, item.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
   const paymentText = useMemo(() => {
@@ -78,10 +63,8 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
     return parts.join(', ')
   }, [item.restaurant, item.city])
 
-  const bottomLine = useMemo(() => {
-    if (item.shiftType === 'replacement') {
-      return item.date ?? null
-    }
+  const vacancyBottomLine = useMemo(() => {
+    if (item.shiftType === 'replacement') return null
     if (!paymentText) return null
     const suffix =
       item.payPeriod === 'month'
@@ -95,14 +78,14 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       type="button"
       onClick={handleClick}
       className={cn(
-        'snap-center flex-shrink-0 w-[112px] h-[142px] relative overflow-hidden rounded-xl bg-card border border-border p-2.5 flex flex-col items-start text-left shadow-sm cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
+        'snap-center flex-shrink-0 w-[105px] min-h-[108px] relative overflow-hidden rounded-xl bg-card border border-border p-2 flex flex-col items-start text-left shadow-sm cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
         'dark:border-[rgba(255,255,255,0.06)] dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)] dark:shadow-none',
         'dark:border-primary/20 dark:hover:border-primary/30 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.08)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.14)]'
       )}
     >
       <span className="absolute inset-0 bg-gradient-to-b from-primary/5 to-primary/5 group-hover:from-primary/8 group-hover:to-primary/8 transition-colors pointer-events-none" />
 
-      {paymentText ? (
+      {paymentText && item.shiftType !== 'replacement' ? (
         <Badge
           variant="primary"
           className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5 dark:font-semibold dark:text-[11px] z-10"
@@ -117,16 +100,22 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
         </span>
       </div>
 
-      <div className="mt-2 w-full flex flex-col min-w-0 z-10">
-        <span className="block text-[14px] leading-4 font-semibold text-foreground h-8 overflow-hidden">
+      <div className="mt-1 w-full flex flex-col min-w-0 z-10 gap-1 flex-1">
+        <span className="block text-[14px] leading-4 font-semibold text-foreground overflow-hidden line-clamp-2">
           {positionText}
         </span>
-        <span className="mt-1 block text-[11px] text-muted-foreground truncate">
+        <span className="block text-[11px] text-muted-foreground leading-tight break-words line-clamp-2 overflow-hidden">
           {placeLine}
         </span>
-        {bottomLine ? (
-          <span className="mt-auto block text-[12px] text-primary font-semibold truncate pt-2">
-            {bottomLine}
+        {item.shiftType === 'replacement' ? (
+          item.date ? (
+            <span className="mt-auto block text-[12px] text-primary font-semibold truncate pt-0.5">
+              {item.date}
+            </span>
+          ) : null
+        ) : vacancyBottomLine ? (
+          <span className="mt-auto block text-[12px] text-primary font-semibold truncate">
+            {vacancyBottomLine}
           </span>
         ) : null}
       </div>

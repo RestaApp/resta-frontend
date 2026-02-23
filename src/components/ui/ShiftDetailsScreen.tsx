@@ -26,6 +26,12 @@ import {
   DrawerFooter,
   DrawerCloseButton,
 } from '@/components/ui/drawer'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Tabs } from '@/components/ui/tabs'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import {
@@ -241,8 +247,16 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     }
   }, [shift, applicationId, vacancyData, onCancel, handleClose, isRejected])
 
-  const handleOpenMap = useCallback(() => {
-    // TODO: открыть карту
+  const mapAppOptions: Array<{ key: string; labelKey: string; getUrl: (address: string) => string }> = [
+    { key: 'google', labelKey: 'aria.mapAppGoogle', getUrl: (address) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` },
+    { key: 'yandex', labelKey: 'aria.mapAppYandex', getUrl: (address) => `https://yandex.ru/maps/?text=${encodeURIComponent(address)}` },
+    { key: '2gis', labelKey: 'aria.mapApp2GIS', getUrl: (address) => `https://2gis.com/search?query=${encodeURIComponent(address)}` },
+    { key: 'apple', labelKey: 'aria.mapAppApple', getUrl: (address) => `https://maps.apple.com/?q=${encodeURIComponent(address)}` },
+  ]
+
+  const handleOpenInMapApp = useCallback((address: string, getUrl: (address: string) => string) => {
+    const url = getUrl(address)
+    window.open(url, '_blank', 'noopener,noreferrer')
   }, [])
 
   const extractModerationMessage = useCallback((result: unknown): string | undefined => {
@@ -356,29 +370,12 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   ) : null}
 
                   {specializations.length > 0 ? (
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={cn(ICON_WRAPPER_SECTION, 'mt-0.5')}
-                        aria-hidden
-                      >
-                        <ChefHat className="h-5 w-5 text-primary shrink-0" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs text-muted-foreground mb-1.5">
-                          {t('profile.specializationSection')}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {specializations.map((spec) => (
-                            <span
-                              key={spec}
-                              className="px-4 py-2 rounded-full text-white text-sm gradient-primary"
-                            >
-                              {getSpecializationLabel(spec)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                    <DetailRow
+                      icon={ChefHat}
+                      iconVariant="section"
+                      label={t('profile.specializationSection')}
+                      value={specializations.map((spec) => getSpecializationLabel(spec)).join(', ')}
+                    />
                   ) : null}
 
                   <DetailRow
@@ -407,14 +404,28 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                       label={t('common.location')}
                       value={location}
                       action={
-                        <Button
-                          onClick={handleOpenMap}
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs text-primary hover:underline mt-1 px-0 h-auto"
-                        >
-                          {t('aria.viewOnMap')}
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-xs text-primary hover:underline mt-1 px-0 h-auto"
+                              aria-label={t('aria.viewOnMap')}
+                            >
+                              {t('aria.viewOnMap')}
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" side="top">
+                            {mapAppOptions.map(({ key, labelKey, getUrl }) => (
+                              <DropdownMenuItem
+                                key={key}
+                                onSelect={() => handleOpenInMapApp(location, getUrl)}
+                              >
+                                {t(labelKey)}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       }
                     />
                   ) : null}

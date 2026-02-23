@@ -472,7 +472,11 @@
     "darkTheme": "Select dark theme",
     "toggleTheme": "Toggle theme",
     "closeNotification": "Close notification",
-    "viewOnMap": "View on map"
+    "viewOnMap": "View on map",
+    "mapAppGoogle": "Google Maps",
+    "mapAppYandex": "Yandex Maps",
+    "mapApp2GIS": "2GIS",
+    "mapAppApple": "Apple Maps"
   },
   "localeRu": "Russian",
   "localeEn": "English",
