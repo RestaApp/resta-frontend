@@ -151,7 +151,8 @@ const DrawerContent = memo(function DrawerContent({
       >
         <div
           className={cn(
-            'flex justify-center pt-4',
+            'sticky top-0 z-20 flex justify-center pt-4 pb-2',
+            'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm',
             preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
           )}
           onPointerDown={(e) => {
