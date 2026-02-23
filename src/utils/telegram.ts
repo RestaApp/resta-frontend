@@ -60,6 +60,19 @@ interface TelegramWebApp {
   HapticFeedback?: {
     impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void
   }
+  openLink?: (url: string, options?: { try_instant_view?: boolean }) => void
+  showPopup?: (
+    params: {
+      title?: string
+      message: string
+      buttons?: Array<{
+        id?: string
+        type?: 'default' | 'ok' | 'close' | 'cancel' | 'destructive'
+        text?: string
+      }>
+    },
+    callback?: (buttonId: string | null) => void
+  ) => void
 }
 
 interface TelegramWindow extends Window {

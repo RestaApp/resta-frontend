@@ -41,6 +41,7 @@ import { useToast } from '@/hooks/useToast'
 import { triggerHapticFeedback } from '@/utils/haptics'
 import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
 import { cn } from '@/utils/cn'
+import { getTelegramWebApp } from '@/utils/telegram'
 import { StatusPill, UrgentPill, type ShiftStatus } from './StatusPill'
 
 interface ShiftDetailsScreenProps {
@@ -242,8 +243,49 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   }, [shift, applicationId, vacancyData, onCancel, handleClose, isRejected])
 
   const handleOpenMap = useCallback(() => {
-    // TODO: открыть карту
-  }, [])
+    if (!location) return
+
+    const encodedLocation = encodeURIComponent(location)
+    const yandexUrl = `https://yandex.ru/maps/?text=${encodedLocation}`
+    const googleUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`
+
+    const openExternalMapLink = (url: string) => {
+      const webApp = getTelegramWebApp()
+      if (webApp?.openLink) {
+        webApp.openLink(url)
+        return
+      }
+      window.open(url, '_blank', 'noopener,noreferrer')
+    }
+
+    const webApp = getTelegramWebApp()
+    if (webApp?.showPopup) {
+      webApp.showPopup(
+        {
+          title: t('shift.openMapTitle', 'Открыть на карте'),
+          message: t('shift.openMapMessage', 'Выберите приложение карт'),
+          buttons: [
+            { id: 'yandex', type: 'default', text: t('shift.openInYandex', 'Яндекс Карты') },
+            { id: 'google', type: 'default', text: t('shift.openInGoogle', 'Google Maps') },
+            { type: 'cancel' },
+          ],
+        },
+        buttonId => {
+          if (buttonId === 'google') {
+            openExternalMapLink(googleUrl)
+            return
+          }
+          if (buttonId === 'yandex') {
+            openExternalMapLink(yandexUrl)
+          }
+        }
+      )
+      return
+    }
+
+    // Фолбэк: без Telegram popup открываем Яндекс как приоритетный вариант.
+    openExternalMapLink(yandexUrl)
+  }, [location, t])
 
   const extractModerationMessage = useCallback((result: unknown): string | undefined => {
     const r = result as { message?: string; data?: { message?: string } } | null

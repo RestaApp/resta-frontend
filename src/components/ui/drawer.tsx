@@ -96,7 +96,7 @@ const DrawerContent = memo(function DrawerContent({
     return () => cleanup.forEach((fn) => fn())
   }, [bottomOffsetPx])
 
-  const closeThresholdPx = Math.min(180, contentHeightPx > 0 ? contentHeightPx * 0.25 : 140)
+  const closeThresholdPx = Math.min(120, Math.max(64, contentHeightPx > 0 ? contentHeightPx * 0.18 : 96))
   const dragBottomPx = Math.max(0, contentHeightPx + bottomOffsetPx + 40)
 
   const handleDragEnd = useCallback(
@@ -104,7 +104,7 @@ const DrawerContent = memo(function DrawerContent({
       if (preventClose) return
       if (isClosingBySwipeRef.current) return
 
-      const shouldClose = info.offset.y >= closeThresholdPx || info.velocity.y > 800
+      const shouldClose = info.offset.y >= closeThresholdPx || info.velocity.y > 550
       if (!shouldClose) return
 
       isClosingBySwipeRef.current = true
