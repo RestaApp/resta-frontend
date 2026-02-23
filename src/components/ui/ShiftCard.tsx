@@ -196,13 +196,16 @@ const ShiftCardComponent = ({
 
       {/* Date / time — только для смен (не для вакансий) */}
       {shift.shiftType !== 'vacancy' ? (
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-          <span className="flex items-center gap-1.5 truncate">
-            <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" />
+        <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground mb-3">
+          <span className="flex items-center gap-1.5 min-w-0">
+            <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
             <span className="font-medium text-foreground truncate">{shift.date}</span>
           </span>
-          <span className="flex items-center gap-1.5 truncate">
-            <Clock className="w-4 h-4 shrink-0 text-muted-foreground" />
+          <span className="shrink-0 text-muted-foreground/50" aria-hidden>
+            ·
+          </span>
+          <span className="flex items-center gap-1.5 min-w-0 justify-end">
+            <Clock className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
             <span className="font-medium text-foreground truncate">{shift.time}</span>
           </span>
         </div>
