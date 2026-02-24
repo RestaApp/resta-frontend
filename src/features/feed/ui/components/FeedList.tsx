@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
 import { ShiftCard } from '@/components/ui/ShiftCard'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
@@ -35,6 +35,8 @@ export function FeedList({
   onDelete,
   isDeleting,
 }: FeedListProps) {
+  const prevItemsCountRef = useRef(0)
+
   const ownerActions = useMemo(
     () => ({
       onEdit,
@@ -62,28 +64,38 @@ export function FeedList({
       .map(item => item.shift)
   }, [shifts, getApplicationStatus])
 
+  useEffect(() => {
+    prevItemsCountRef.current = sortedShifts.length
+  }, [sortedShifts.length])
+
   return (
     <>
-      {sortedShifts.map((shift, index) => (
-        <motion.div
-          key={shift.id}
-          initial={index < 6 ? { y: 16, opacity: 0 } : false}
-          animate={index < 6 ? { y: 0, opacity: 1 } : undefined}
-          transition={index < 6 ? { delay: 0.15 + index * 0.04 } : undefined}
-        >
-          <ShiftCard
-            shift={shift}
-            applicationId={getApplicationId(shift.id) ?? null}
-            applicationStatus={getApplicationStatus(shift.id) ?? null}
-            isApplied={isApplied(shift.id)}
-            onOpenDetails={onOpenDetails}
-            onApply={onApplyWithModal}
-            onCancel={onCancel}
-            isLoading={isShiftLoading(shift.id)}
-            ownerActions={ownerActions}
-          />
-        </motion.div>
-      ))}
+      {sortedShifts.map((shift, index) => {
+        // Плавно анимируем только новые карточки, пришедшие после догрузки.
+        const isNewItem = index >= prevItemsCountRef.current
+
+        return (
+          <motion.div
+            key={shift.id}
+            layout
+            initial={isNewItem ? { y: 16, opacity: 0 } : false}
+            animate={isNewItem ? { y: 0, opacity: 1 } : undefined}
+            transition={isNewItem ? { duration: 0.24, ease: 'easeOut' } : undefined}
+          >
+            <ShiftCard
+              shift={shift}
+              applicationId={getApplicationId(shift.id) ?? null}
+              applicationStatus={getApplicationStatus(shift.id) ?? null}
+              isApplied={isApplied(shift.id)}
+              onOpenDetails={onOpenDetails}
+              onApply={onApplyWithModal}
+              onCancel={onCancel}
+              isLoading={isShiftLoading(shift.id)}
+              ownerActions={ownerActions}
+            />
+          </motion.div>
+        )
+      })}
 
       {shifts.length > 0 ? (
         <InfiniteScrollTrigger

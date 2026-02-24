@@ -19,16 +19,32 @@ export const InfiniteScrollTrigger = ({
 }: InfiniteScrollProps) => {
   const { t } = useTranslation()
   const observerTarget = useRef<HTMLDivElement>(null)
+  const loadLockedRef = useRef(false)
+
+  useEffect(() => {
+    if (!isLoading) {
+      loadLockedRef.current = false
+    }
+  }, [isLoading])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        // Если элемент появился в зоне видимости и мы не грузимся прямо сейчас
-        if (entries[0].isIntersecting && hasMore && !isLoading && !isError) {
+        const isIntersecting = entries[0]?.isIntersecting
+
+        // Блокируем повторный вызов, пока не изменится состояние загрузки.
+        if (
+          isIntersecting &&
+          hasMore &&
+          !isLoading &&
+          !isError &&
+          !loadLockedRef.current
+        ) {
+          loadLockedRef.current = true
           onLoadMore()
         }
       },
-      { threshold: 0, rootMargin: '200px' }
+      { threshold: 0, rootMargin: '320px 0px' }
     )
 
     const currentTarget = observerTarget.current
