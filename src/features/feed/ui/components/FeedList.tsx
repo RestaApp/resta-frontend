@@ -44,9 +44,27 @@ export function FeedList({
     [onEdit, onDelete, isDeleting]
   )
 
+  const sortedShifts = useMemo(() => {
+    if (!shifts.length) return shifts
+
+    return shifts
+      .map((shift, index) => ({
+        shift,
+        index,
+        isRejected: getApplicationStatus(shift.id) === 'rejected',
+      }))
+      .sort((a, b) => {
+        if (a.isRejected === b.isRejected) {
+          return a.index - b.index
+        }
+        return a.isRejected ? 1 : -1
+      })
+      .map(item => item.shift)
+  }, [shifts, getApplicationStatus])
+
   return (
     <>
-      {shifts.map((shift, index) => (
+      {sortedShifts.map((shift, index) => (
         <motion.div
           key={shift.id}
           initial={index < 6 ? { y: 16, opacity: 0 } : false}
