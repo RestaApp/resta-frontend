@@ -95,29 +95,37 @@ export function PullToRefresh({
   }, [])
 
   const isReady = pullDistance >= threshold
-  const indicatorHeight = useMemo(
+  const contentOffset = useMemo(
     () => (isRefreshing ? threshold : pullDistance),
     [isRefreshing, pullDistance, threshold]
   )
 
   return (
     <div
-      className={cn('relative', className)}
+      className={cn('relative overscroll-y-contain', className)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
     >
       <div
-        className="flex items-end justify-center overflow-hidden transition-[height] duration-200"
-        style={{ height: indicatorHeight }}
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-end justify-center overflow-hidden transition-[height,opacity] duration-200"
+        style={{
+          height: contentOffset,
+          opacity: contentOffset > 0 ? 1 : 0,
+        }}
         aria-hidden="true"
       >
         <div className="pb-2">
           <Loader size="sm" className={cn(!isRefreshing && !isReady && 'opacity-50')} />
         </div>
       </div>
-      {children}
+      <div
+        className="transition-transform duration-200 will-change-transform"
+        style={{ transform: `translate3d(0, ${contentOffset}px, 0)` }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
