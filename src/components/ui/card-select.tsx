@@ -42,8 +42,16 @@ const CardSelectInner = <TId extends string>({
   return (
     <div className="relative">
       {badge ? (
-        <span className="absolute -top-1 left-3 z-10 rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
-          {badge}
+        <span className="absolute -top-3 left-3 z-10">
+          <span className="relative block">
+            <span
+              className="absolute top-1 left-0 right-0 bottom-0 rounded-tl-xl bg-background pointer-events-none -z-10"
+              aria-hidden
+            />
+            <span className="relative rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+              {badge}
+            </span>
+          </span>
         </span>
       ) : null}
       <motion.button

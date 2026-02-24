@@ -65,9 +65,9 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto w-full flex-1 content-start pb-24">
+      <div className="grid grid-cols-2 gap-3 max-w-md mx-auto w-full flex-1 content-start pb-24">
         {filteredRoles.length === 0 ? (
-          <p className="col-span-1 sm:col-span-2 text-sm text-muted-foreground text-center py-6">
+          <p className="col-span-2 text-sm text-muted-foreground text-center py-6">
             {searchQuery.trim() ? t('common.nothingFound') : null}
           </p>
         ) : null}
