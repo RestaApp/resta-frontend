@@ -185,11 +185,11 @@ const ShiftCardComponent = ({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-base leading-tight truncate">
+            <h3 className="font-bold text-base leading-tight">
               {displayTitle ?? positionText}
             </h3>
             {shift.urgent ? (
-              <div className="mt-1">
+              <div>
                 <UrgentPill />
               </div>
             ) : null}

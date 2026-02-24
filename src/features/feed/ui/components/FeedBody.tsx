@@ -42,6 +42,9 @@ export function FeedBody({ vm }: FeedBodyProps) {
             onApplyWithModal={vm.handleApplyWithModal}
             onCancel={vm.handleCancel}
             isShiftLoading={vm.isShiftLoading}
+            onEdit={vm.handleEdit}
+            onDelete={vm.handleDelete}
+            isDeleting={vm.isDeleting}
           />
         </FeedListArea>
       </div>

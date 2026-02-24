@@ -4,11 +4,13 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney } from '../../model/utils/formatting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/utils/cn'
 
 export interface HotOffer {
   id: number
   emoji: string
+  photoUrl?: string | null
   payment: number
   currency?: string
   /** В сменах — дата; в вакансиях не используется в карточке */
@@ -94,11 +96,17 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
         </Badge>
       ) : null}
 
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-xl z-10">
-        <span className="drop-shadow-sm transform group-hover:scale-105 transition-transform duration-200" aria-hidden>
-          {item.emoji}
-        </span>
-      </div>
+      <Avatar className="w-8 h-8 z-10 border border-border/50 bg-primary/10">
+        <AvatarImage src={item.photoUrl ?? undefined} alt="" />
+        <AvatarFallback className="bg-primary/10 text-base">
+          <span
+            className="drop-shadow-sm transform group-hover:scale-105 transition-transform duration-200"
+            aria-hidden
+          >
+            {item.emoji}
+          </span>
+        </AvatarFallback>
+      </Avatar>
 
       <div className="mt-1 w-full flex flex-col min-w-0 z-10 gap-1 flex-1">
         <span className="block text-[14px] leading-4 font-semibold text-foreground overflow-hidden line-clamp-2">

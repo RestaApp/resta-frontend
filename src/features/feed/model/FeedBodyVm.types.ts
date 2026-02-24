@@ -25,6 +25,9 @@ export interface FeedBodyVm {
   handleApplyWithModal: (id: number, message?: string) => Promise<void>
   handleCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (id: number) => boolean
+  handleEdit: (id: number) => void
+  handleDelete: (id: number) => Promise<void>
+  isDeleting: boolean
 
   selectedShiftId: number | null
   selectedShift: Shift | null

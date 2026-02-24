@@ -51,6 +51,13 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     return () => window.removeEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
   }, [])
 
+  // Переход на вкладку Activity для редактирования смены (из ленты)
+  useEffect(() => {
+    const handleNavigateToActivityEdit = () => setActiveTab('activity')
+    window.addEventListener('navigateToActivityEdit', handleNavigateToActivityEdit)
+    return () => window.removeEventListener('navigateToActivityEdit', handleNavigateToActivityEdit)
+  }, [])
+
   // Переход на вкладку Activity (мои отклики) по клику на карточку «Активные заявки» в профиле
   useEffect(() => {
     const handleNavigateToActivityMyApplications = () => setActiveTab('activity')

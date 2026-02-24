@@ -41,11 +41,13 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
 
   const rawPay = shift.payment ?? shift.hourly_rate ?? 0
   const pay = typeof rawPay === 'string' ? Number(rawPay) : rawPay
+  const userPhotoUrl = shift.user?.photo_url ?? shift.user?.profile_photo_url ?? null
 
   const mappedShift = useMemo<Shift>(
     () => ({
       id: shift.id,
       logo: getLogoByPosition(shift.position, shift.id),
+      userPhotoUrl: typeof userPhotoUrl === 'string' && userPhotoUrl.trim().length > 0 ? userPhotoUrl : null,
       title: shift.title?.trim() || null,
       restaurant: t('common.myShift'),
       rating: 0,
@@ -84,6 +86,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
       dateText,
       timeText,
       pay,
+      userPhotoUrl,
       t,
     ]
   )
@@ -93,8 +96,8 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
       <ShiftCard
         shift={mappedShift}
         onOpenDetails={handleOpenDetails}
-        onApply={() => {}}
-        onCancel={() => {}}
+        onApply={() => { }}
+        onCancel={() => { }}
         ownerActions={{ onEdit: handleEdit, onDelete: handleDelete, isDeleting }}
       />
 
@@ -104,9 +107,9 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
         applicationId={null}
         isOpen={isOpen}
         onClose={handleCloseDetails}
-        onApply={async () => {}}
+        onApply={async () => { }}
         isApplied={false}
-        onCancel={async () => {}}
+        onCancel={async () => { }}
         isLoading={false}
       />
     </>

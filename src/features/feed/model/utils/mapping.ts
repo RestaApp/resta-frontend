@@ -49,6 +49,13 @@ const getCityFromUser = (item: VacancyApiItem): string | undefined => {
   return item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
 }
 
+const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
+  const photoUrl = item.user?.photo_url ?? item.user?.profile_photo_url ?? null
+  if (typeof photoUrl !== 'string') return null
+  const normalized = photoUrl.trim()
+  return normalized.length > 0 ? normalized : null
+}
+
 export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const start = parseApiDateTime(item.start_time ?? undefined)
   const end = parseApiDateTime(item.end_time ?? undefined)
@@ -68,6 +75,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   return {
     id: item.id,
     logo: getLogoByPosition(item.position, item.id),
+    userPhotoUrl: getUserPhotoUrl(item),
     title: item.title?.trim() || null,
     restaurant: item.user?.full_name || item.user?.name || item.title || '—',
     rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
@@ -104,6 +112,7 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
   return {
     id: s.id,
     emoji: s.logo,
+    photoUrl: s.userPhotoUrl ?? null,
     payment: s.pay,
     currency: s.currency,
     time: s.time || s.date,
@@ -136,6 +145,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   return {
     id: v.id,
     logo: getLogoByPosition(v.position, v.id),
+    userPhotoUrl: getUserPhotoUrl(v),
     title: v.title?.trim() || null,
     restaurant,
     rating: 0,

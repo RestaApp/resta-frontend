@@ -4,7 +4,11 @@ import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/sh
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
-import { setLocalStorageItem } from '@/utils/localStorage'
+import {
+  getLocalStorageItem,
+  removeLocalStorageItem,
+  setLocalStorageItem,
+} from '@/utils/localStorage'
 import { toLocalISODateKey } from '@/utils/datetime'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
@@ -164,6 +168,21 @@ export const useActivityPageModel = () => {
     window.addEventListener('openActivityAddShift', handleOpen)
     return () => window.removeEventListener('openActivityAddShift', handleOpen)
   }, [openDrawer])
+
+  // Открыть редактирование смены по id из ленты (navigateToActivityEdit + EDIT_SHIFT_ID)
+  useEffect(() => {
+    if (isLoading) return
+    const editIdRaw = getLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID)
+    if (!editIdRaw) return
+    const editId = Number(editIdRaw)
+    removeLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID)
+    if (!Number.isFinite(editId)) return
+    const found = shifts.find(s => s.id === editId) || null
+    if (found) {
+      setEditingShift(found)
+      setIsDrawerOpen(true)
+    }
+  }, [shifts, isLoading])
 
   return {
     // tabs

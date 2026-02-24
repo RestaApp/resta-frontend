@@ -17,6 +17,7 @@ import { buildVacanciesBaseParams } from '../utils/queryParams'
 import { applyClientQuickFilters } from '../utils/clientFilters'
 import { useHotOffers } from '../hooks/useHotOffers'
 import { useShiftActions } from '../hooks/useShiftActions'
+import { useDeleteShift } from '@/features/activity/model/hooks/useShifts'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
 import { normalizeApiError } from '../utils/apiErrors'
 
@@ -40,7 +41,7 @@ export const useFeedPageModel = () => {
   const { t } = useTranslation()
   useUserProfile()
 
-  const { toast, hideToast } = useToast()
+  const { toast, showToast, hideToast } = useToast()
   const haptics = useHaptics()
 
   const feedTypeOptions = useMemo<TabOption<FeedType>[]>(
@@ -87,6 +88,8 @@ export const useFeedPageModel = () => {
     isShiftLoading,
   } = useShiftActions()
 
+  const { deleteShift, isLoading: isDeleting } = useDeleteShift()
+
   const [profileAlert, setProfileAlert] = useState<ProfileAlertState>({
     open: false,
     message: '',
@@ -103,6 +106,25 @@ export const useFeedPageModel = () => {
     window.dispatchEvent(new CustomEvent('navigateToProfileEdit'))
     window.dispatchEvent(new CustomEvent('openProfileEdit'))
   }, [closeProfileAlert])
+
+  const handleEdit = useCallback((id: number) => {
+    setLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID, String(id))
+    window.dispatchEvent(new CustomEvent('navigateToActivityEdit'))
+  }, [])
+
+  const handleDelete = useCallback(
+    async (id: number) => {
+      try {
+        await deleteShift(String(id))
+        hideToast()
+        showToast(t('shift.deleted'), 'success')
+      } catch {
+        hideToast()
+        showToast(t('shift.deleteError'), 'error')
+      }
+    },
+    [deleteShift, t, showToast, hideToast]
+  )
 
   const handleApplyWithModal = useCallback(
     async (shiftId: number, message?: string) => {
@@ -363,6 +385,9 @@ export const useFeedPageModel = () => {
     getApplicationId: getApplicationIdStable,
     getApplicationStatus: getApplicationStatusStable,
     isShiftLoading,
+    handleEdit,
+    handleDelete,
+    isDeleting,
 
     // toast
     toast,

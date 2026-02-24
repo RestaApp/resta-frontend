@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { motion } from 'motion/react'
 import { ShiftCard } from '@/components/ui/ShiftCard'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
@@ -15,6 +16,9 @@ interface FeedListProps {
   onApplyWithModal: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (id: number) => boolean
+  onEdit: (id: number) => void
+  onDelete: (id: number) => Promise<void>
+  isDeleting: boolean
 }
 
 export function FeedList({
@@ -27,7 +31,19 @@ export function FeedList({
   onApplyWithModal,
   onCancel,
   isShiftLoading,
+  onEdit,
+  onDelete,
+  isDeleting,
 }: FeedListProps) {
+  const ownerActions = useMemo(
+    () => ({
+      onEdit,
+      onDelete,
+      isDeleting,
+    }),
+    [onEdit, onDelete, isDeleting]
+  )
+
   return (
     <>
       {shifts.map((shift, index) => (
@@ -46,6 +62,7 @@ export function FeedList({
             onApply={onApplyWithModal}
             onCancel={onCancel}
             isLoading={isShiftLoading(shift.id)}
+            ownerActions={ownerActions}
           />
         </motion.div>
       ))}
