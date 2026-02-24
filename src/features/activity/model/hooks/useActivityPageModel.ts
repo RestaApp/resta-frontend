@@ -37,7 +37,11 @@ export const useActivityPageModel = () => {
   const { data, isLoading, isError, refetch: refetchMyShifts } = useGetMyShiftsQuery(undefined, {
     refetchOnFocus: false,
   })
-  const { data: appliedData, isLoading: isAppliedLoading } = useGetAppliedShiftsQuery(undefined, {
+  const {
+    data: appliedData,
+    isLoading: isAppliedLoading,
+    refetch: refetchAppliedShifts,
+  } = useGetAppliedShiftsQuery(undefined, {
     refetchOnFocus: false,
   })
 
@@ -71,6 +75,10 @@ export const useActivityPageModel = () => {
     },
     [deleteShift, refetchMyShifts, showToast, t]
   )
+
+  const refreshList = useCallback(async () => {
+    await Promise.all([refetchMyShifts(), refetchAppliedShifts()])
+  }, [refetchMyShifts, refetchAppliedShifts])
 
   // Calendar state
   const [selectedDayKey, setSelectedDayKey] = useState<string>(() => toLocalISODateKey(new Date()))
@@ -199,6 +207,7 @@ export const useActivityPageModel = () => {
     // actions
     handleEdit,
     handleDelete,
+    refreshList,
     isDeleting,
     showToast,
 

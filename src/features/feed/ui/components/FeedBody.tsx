@@ -4,6 +4,7 @@ import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
 import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
 import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDialog'
+import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
 
 interface FeedBodyProps {
@@ -20,34 +21,39 @@ export function FeedBody({ vm }: FeedBodyProps) {
 
   return (
     <>
-      <div className="space-y-4 px-4 py-4">
-        <FeedListArea
-          isInitialLoading={vm.activeList.isInitialLoading}
-          error={vm.activeList.error}
-          showEmptyState={showEmptyState}
-          showLoadingAfterEmpty={showLoadingAfterEmpty}
-          feedType={vm.feedType}
-          hasActiveFilters={vm.hasActiveFilters}
-          emptyMessage={vm.emptyMessage}
-          emptyDescription={vm.emptyDescription}
-          onResetFilters={vm.resetFilters}
-        >
-          <FeedList
-            shifts={vm.filteredShifts}
-            activeList={vm.activeList}
-            getApplicationId={vm.getApplicationId}
-            getApplicationStatus={vm.getApplicationStatus}
-            isApplied={vm.isApplied}
-            onOpenDetails={vm.openShiftDetails}
-            onApplyWithModal={vm.handleApplyWithModal}
-            onCancel={vm.handleCancel}
-            isShiftLoading={vm.isShiftLoading}
-            onEdit={vm.handleEdit}
-            onDelete={vm.handleDelete}
-            isDeleting={vm.isDeleting}
-          />
-        </FeedListArea>
-      </div>
+      <PullToRefresh
+        onRefresh={vm.activeList.refresh}
+        disabled={vm.activeList.isInitialLoading || vm.activeList.isFetching}
+      >
+        <div className="space-y-4 px-4 py-4">
+          <FeedListArea
+            isInitialLoading={vm.activeList.isInitialLoading}
+            error={vm.activeList.error}
+            showEmptyState={showEmptyState}
+            showLoadingAfterEmpty={showLoadingAfterEmpty}
+            feedType={vm.feedType}
+            hasActiveFilters={vm.hasActiveFilters}
+            emptyMessage={vm.emptyMessage}
+            emptyDescription={vm.emptyDescription}
+            onResetFilters={vm.resetFilters}
+          >
+            <FeedList
+              shifts={vm.filteredShifts}
+              activeList={vm.activeList}
+              getApplicationId={vm.getApplicationId}
+              getApplicationStatus={vm.getApplicationStatus}
+              isApplied={vm.isApplied}
+              onOpenDetails={vm.openShiftDetails}
+              onApplyWithModal={vm.handleApplyWithModal}
+              onCancel={vm.handleCancel}
+              isShiftLoading={vm.isShiftLoading}
+              onEdit={vm.handleEdit}
+              onDelete={vm.handleDelete}
+              isDeleting={vm.isDeleting}
+            />
+          </FeedListArea>
+        </div>
+      </PullToRefresh>
 
       <Toast
         message={vm.toast.message}

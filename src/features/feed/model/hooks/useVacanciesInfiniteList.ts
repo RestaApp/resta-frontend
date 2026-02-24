@@ -22,6 +22,7 @@ export interface UseVacanciesInfiniteListReturn {
   error: unknown
   totalCount: number
   loadMore: () => void
+  refresh: () => Promise<void>
   reset: () => void
 }
 
@@ -47,6 +48,7 @@ export const useVacanciesInfiniteList = (
     isFetching,
     isError,
     error,
+    refetch,
   } = useGetVacanciesQuery(queryParams, {
     refetchOnMountOrArgChange: false,
     skip: !enabled,
@@ -97,6 +99,11 @@ export const useVacanciesInfiniteList = (
     setVisibleCount(c => c + perPage)
   }, [enabled, hasMore, isLoading, isFetching, perPage])
 
+  const refresh = useCallback(async () => {
+    if (!enabled) return
+    await refetch()
+  }, [enabled, refetch])
+
   const reset = useCallback(() => {
     setVisibleCount(perPage)
   }, [perPage])
@@ -121,6 +128,7 @@ export const useVacanciesInfiniteList = (
     error: isError ? error : null,
     totalCount,
     loadMore,
+    refresh,
     reset,
   }
 }

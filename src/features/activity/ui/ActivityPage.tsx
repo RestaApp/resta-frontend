@@ -26,6 +26,7 @@ export const ActivityPage = () => {
               onEdit={m.handleEdit}
               onDelete={m.handleDelete}
               showToast={m.showToast}
+              onRefresh={m.refreshList}
             />
           </div>
         ) : (

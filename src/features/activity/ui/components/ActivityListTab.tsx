@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -5,6 +6,7 @@ import { MyShiftsSection } from '@/features/activity/ui/components/MyShiftsSecti
 import { MyApplicationsSection } from '@/features/activity/ui/components/MyApplicationsSection'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
+import { PullToRefresh } from '@/components/ui/PullToRefresh'
 
 function ActivityListSkeleton() {
   return (
@@ -37,6 +39,7 @@ interface ActivityListTabProps {
   onEdit: (id: number) => void
   onDelete: (id: number) => void
   showToast: (m: string, t?: 'success' | 'error' | 'info') => void
+  onRefresh: () => Promise<void>
 }
 
 export function ActivityListTab({
@@ -49,37 +52,42 @@ export function ActivityListTab({
   onEdit,
   onDelete,
   showToast,
+  onRefresh,
 }: ActivityListTabProps) {
   const { t } = useTranslation()
   const isLoadingAny = isLoading || isAppliedLoading
 
+  let content: ReactNode
+
   if (isError) {
-    return <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
-  }
-
-  if (isLoadingAny) {
-    return <ActivityListSkeleton />
-  }
-
-  if (shifts.length === 0 && appliedShifts.length === 0) {
-    return (
+    content = <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
+  } else if (isLoadingAny) {
+    content = <ActivityListSkeleton />
+  } else if (shifts.length === 0 && appliedShifts.length === 0) {
+    content = (
       <EmptyState
         message={t('activity.emptyList')}
         description={t('activity.emptyListDescription')}
         illustration={<EmptyInboxIllustration className="h-24 w-24" />}
       />
     )
+  } else {
+    content = (
+      <div className="space-y-6">
+        <MyShiftsSection
+          shifts={shifts}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          isDeleting={isDeleting}
+        />
+        <MyApplicationsSection appliedShifts={appliedShifts} showToast={showToast} />
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <MyShiftsSection
-        shifts={shifts}
-        onEdit={onEdit}
-        onDelete={onDelete}
-        isDeleting={isDeleting}
-      />
-      <MyApplicationsSection appliedShifts={appliedShifts} showToast={showToast} />
-    </div>
+    <PullToRefresh onRefresh={onRefresh} disabled={isLoadingAny}>
+      {content}
+    </PullToRefresh>
   )
 }
