@@ -14,6 +14,7 @@ import { ProfileHero } from './components/ProfileHero'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { useLabels } from '@/shared/i18n/hooks'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Loader } from '@/components/ui/loader'
 import { getProfileCompleteness } from '../model/utils/profileCompleteness'
 import { ChefHat } from 'lucide-react'
@@ -44,9 +45,13 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
       </h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
-          <span key={spec} className="px-4 py-2 rounded-full text-white text-sm gradient-primary">
+          <Badge
+            key={spec}
+            variant="outline"
+            className="border-primary/20 bg-primary/10 text-foreground font-normal"
+          >
             {getSpecializationLabel(spec)}
-          </span>
+          </Badge>
         ))}
       </div>
     </div>

@@ -11,6 +11,7 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Award, ChefHat } from 'lucide-react'
 import { buildProfileAchievements } from './utils/profileAchievements'
 
@@ -27,9 +28,13 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
       </h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
-          <span key={spec} className="px-4 py-2 rounded-full text-white text-sm gradient-primary">
+          <Badge
+            key={spec}
+            variant="outline"
+            className="border-primary/20 bg-primary/10 text-foreground font-normal"
+          >
             {getSpecializationLabel(spec)}
-          </span>
+          </Badge>
         ))}
       </div>
     </div>
