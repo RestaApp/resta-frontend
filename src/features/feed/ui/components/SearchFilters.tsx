@@ -12,7 +12,7 @@ function SearchFiltersComponent({ activeFiltersList, onResetFilters }: SearchFil
   if (activeFiltersList.length === 0) return null
 
   return (
-    <div className="px-4 py-2 bg-card border-b border-border">
+    <div className="px-4 py-2 bg-background border-b border-border">
       <div className="flex gap-2 items-center">
         <div className="flex-1 flex gap-1.5 items-center overflow-x-auto scrollbar-hide">
           {activeFiltersList.map((filter, index) => (
