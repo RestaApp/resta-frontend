@@ -362,7 +362,7 @@
     "positionScreenDescription": "Choose your main position",
     "venueInfoTitle": "Restaurant info",
     "venueInfoDescription": "Fill in your venue details",
-    "venueNameLabel": "Restaurant name",
+    "venueNameLabel": "Venue name",
     "venueNamePlaceholder": "Enter name",
     "venueTypeLabel": "Venue type",
     "supplierInfoTitle": "Supplier info",
@@ -384,7 +384,11 @@
     "stepOf": "Step {{current}} of {{total}}",
     "doneTitle": "All set",
     "doneEmoji": "🎉",
-    "doneTip": "We recommend applying to at least 3 vacancies"
+    "doneTip": "We recommend applying to at least 3 vacancies",
+    "doneTitleVenue": "Venue created",
+    "doneTipVenue": "You can complete your profile in the Profile section",
+    "doneTitleSupplier": "Supplier profile ready",
+    "doneTipSupplier": "You can add more details in the Profile section"
   },
   "drawer": {
     "chef": "What kind of chef are you?",

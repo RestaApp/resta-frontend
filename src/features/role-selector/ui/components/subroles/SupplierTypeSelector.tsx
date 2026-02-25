@@ -61,6 +61,8 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
       continueButtonAriaLabel={t('common.continueFormSupplier')}
+      step={2}
+      totalSteps={2}
     />
   )
 })

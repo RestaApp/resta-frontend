@@ -6,6 +6,7 @@ import { memo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { SectionHeader } from '@/components/ui/section-header'
+import { OnboardingProgress } from '../../OnboardingProgress'
 import { LocationField } from './LocationField'
 import { Button } from '@/components/ui/button'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
@@ -32,6 +33,9 @@ interface FormScreenProps {
   onBack: () => void
   isLoadingLocation?: boolean
   continueButtonAriaLabel: string
+  /** Индикатор шага онбординга (например, шаг 2 из 3) */
+  step?: number
+  totalSteps?: number
 }
 
 export const FormScreen = memo(function FormScreen({
@@ -49,8 +53,12 @@ export const FormScreen = memo(function FormScreen({
   onBack,
   isLoadingLocation = false,
   continueButtonAriaLabel,
+  step,
+  totalSteps,
 }: FormScreenProps) {
   const { t } = useTranslation()
+  const showProgress = step != null && totalSteps != null && totalSteps > 0
+
   useEffect(() => {
     const cleanup = setupTelegramBackButton(() => {
       onBack()
@@ -70,6 +78,9 @@ export const FormScreen = memo(function FormScreen({
 
   return (
     <div className=" bg-background flex flex-col px-6 py-12">
+      {showProgress && (
+        <OnboardingProgress current={step} total={totalSteps} className="mb-6" />
+      )}
       <SectionHeader title={title} description={description} className="mb-8" />
 
       <div className="flex-1 flex flex-col gap-6 max-w-md mx-auto w-full">

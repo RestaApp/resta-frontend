@@ -61,6 +61,8 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
       continueButtonAriaLabel={t('common.continueFormVenue')}
+      step={2}
+      totalSteps={2}
     />
   )
 })

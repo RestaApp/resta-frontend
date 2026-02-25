@@ -10,7 +10,7 @@ export const App = () => {
 
   if (screen === 'loading') return <LoadingPage />
   if (screen === 'onboarding_done') {
-    return <OnboardingCompleteScreen onComplete={onOnboardingComplete} />
+    return <OnboardingCompleteScreen role={role} onComplete={onOnboardingComplete} />
   }
   if (screen === 'role') return <RoleSelector onSelectRole={onSelectRole} />
 
