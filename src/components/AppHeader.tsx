@@ -6,11 +6,12 @@ import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/button'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
 import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
-import type { Tab } from '@/types'
+import type { Tab, UiRole } from '@/types'
 
 interface AppHeaderProps {
   onAddShift?: () => void
   activeTab?: Tab
+  role?: UiRole
 }
 
 type HeaderAction = {
@@ -40,10 +41,25 @@ const getHeaderAction = (params: {
   activeTab: Tab | undefined
   t: (key: string, options?: any) => string
   onAddShift?: () => void
+  role?: UiRole
 }): HeaderAction | null => {
-  const { activeTab, t, onAddShift } = params
+  const { activeTab, t, onAddShift, role } = params
 
   if (activeTab === 'feed') {
+    // Для ресторана в шапке — создание вакансии/смены вместо фильтров
+    if (role === 'venue') {
+      return {
+        ariaLabel: t('feed.venueEmptyCta', {
+          defaultValue: 'Создать вакансию или смену',
+        }),
+        Icon: Plus,
+        onClick: () => {
+          onAddShift?.()
+          window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+        },
+      }
+    }
+
     return {
       ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
       Icon: SlidersHorizontal,
@@ -52,6 +68,19 @@ const getHeaderAction = (params: {
   }
 
   if (activeTab === 'activity') {
+    if (role === 'venue') {
+      return {
+        ariaLabel: t('feed.venueEmptyCta', {
+          defaultValue: 'Создать вакансию или смену',
+        }),
+        Icon: Plus,
+        onClick: () => {
+          onAddShift?.()
+          window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+        },
+      }
+    }
+
     return {
       ariaLabel: t('shift.addShiftAria'),
       Icon: Plus,
@@ -73,7 +102,7 @@ const getHeaderAction = (params: {
   return null
 }
 
-export const AppHeader = ({ onAddShift, activeTab }: AppHeaderProps) => {
+export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   const { t } = useTranslation()
   const { isFullscreen } = useTelegram()
   const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
@@ -83,8 +112,8 @@ export const AppHeader = ({ onAddShift, activeTab }: AppHeaderProps) => {
 
   const title = useMemo(() => getHeaderTitle(activeTab, t), [activeTab, t])
   const action = useMemo(
-    () => getHeaderAction({ activeTab, t, onAddShift }),
-    [activeTab, onAddShift, t]
+    () => getHeaderAction({ activeTab, t, onAddShift, role }),
+    [activeTab, onAddShift, role, t]
   )
 
   const dismissAddShiftOnboarding = useCallback(() => {

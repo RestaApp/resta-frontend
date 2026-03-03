@@ -72,11 +72,12 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
       )
   }, [])
 
-  // Синхронизация внешнего currentScreen -> activeTab
+  // Синхронизация внешнего currentScreen -> activeTab (только если таб есть у текущей роли)
   useEffect(() => {
     if (!currentScreen) return
     const mappedTab = SCREEN_TO_TAB_MAP[currentScreen]
-    if (mappedTab && mappedTab !== activeTab) {
+    const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
+    if (tabAllowed && mappedTab !== activeTab) {
       setActiveTab(mappedTab)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

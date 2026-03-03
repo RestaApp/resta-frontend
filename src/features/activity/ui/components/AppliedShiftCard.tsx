@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { mapVacancyToCardShift } from '@/features/feed/model/utils/mapping'
-import { ShiftCard } from '@/components/ui/ShiftCard'
-import { ShiftDetailsScreen } from '@/components/ui/ShiftDetailsScreen'
+import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
+import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
 
 interface AppliedShiftCardProps {
   shift: VacancyApiItem

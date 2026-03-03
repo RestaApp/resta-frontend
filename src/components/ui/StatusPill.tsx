@@ -15,7 +15,7 @@ export const UrgentPill = ({ className }: { className?: string }) => {
     <span
       className={cn(
         basePill,
-        'border-transparent text-primary-foreground gradient-primary shadow-sm',
+        'text-primary-foreground gradient-primary shadow-sm',
         className
       )}
     >

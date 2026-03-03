@@ -6,12 +6,14 @@ type MoneyFieldProps = {
   value: string
   onChange: (value: string) => void
   error?: string
+  label?: string
+  placeholder?: string
 }
 
-export const MoneyField = ({ value, onChange, error }: MoneyFieldProps) => {
+export const MoneyField = ({ value, onChange, error, label, placeholder }: MoneyFieldProps) => {
   const { t } = useTranslation()
   return (
-    <Field label={t('shift.pay')} error={error}>
+    <Field label={label ?? t('shift.pay')} error={error}>
       <div className="relative">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
           BYN
@@ -20,7 +22,7 @@ export const MoneyField = ({ value, onChange, error }: MoneyFieldProps) => {
           type="number"
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-          placeholder={t('shift.payPlaceholder')}
+          placeholder={placeholder ?? t('shift.payPlaceholder')}
           className="pl-14"
           aria-invalid={!!error}
         />

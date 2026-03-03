@@ -59,6 +59,7 @@
     "vacancy": "Vacancy",
     "replacement": "Replacement",
     "myShift": "My shift",
+    "myVacancy": "My vacancy",
     "permanent": "Permanent",
     "oneTime": "One-time",
     "selectValue": "Select value",
@@ -75,6 +76,52 @@
     "bottomNav": "Bottom navigation",
     "fillProfileRequired": "Profile needs to be completed"
   },
+  "venueUi": {
+    "create": "Create",
+    "createShift": "Create shift",
+    "createVacancy": "Create vacancy",
+    "profileRequiredToCreate": "Complete your profile first to create vacancies and shifts.",
+    "staff": {
+      "filters": {
+        "all": "All",
+        "current": "Current",
+        "former": "Former"
+      },
+      "emptyTitle": "No staff yet",
+      "emptyDescription": "Accepted employees will appear here after reviewing applications",
+      "noPosition": "No position",
+      "accepted": "Employee accepted",
+      "rejected": "Application rejected",
+      "acceptError": "Failed to accept application",
+      "rejectError": "Failed to reject application",
+      "status": {
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "pending": "Pending"
+      },
+      "actions": {
+        "accept": "Accept",
+        "reject": "Reject"
+      }
+    },
+    "suppliers": {
+      "total": "Total suppliers",
+      "showAll": "Show all",
+      "showActive": "Only active",
+      "emptyTitle": "No suppliers found",
+      "emptyDescription": "Disable the filter or add a new supplier",
+      "status": {
+        "active": "Active",
+        "paused": "Paused"
+      }
+    },
+    "createPicker": {
+      "title": "What to create?",
+      "description": "Choose what you want to publish for your venue",
+      "vacancy": "Create vacancy",
+      "shift": "Create shift"
+    }
+  },
   "tabs": {
     "employee": {
       "feed": "Search",
@@ -82,8 +129,9 @@
       "profile": "Profile"
     },
     "venue": {
-      "home": "Home",
-      "staff": "Staff",
+      "feed": "Search",
+      "activity": "Activity",
+      "staff": "Employees",
       "suppliers": "Suppliers",
       "profile": "Profile"
     },
@@ -240,11 +288,18 @@
     "resetFilters": "Reset filters",
     "applicationNotSent": "Application not sent",
     "sawAll": "You've seen all offers",
-    "networkError": "Network error. Tap to retry"
+    "networkError": "Network error. Tap to retry",
+    "venueEmptyTitle": "Your vacancies and shifts will be here",
+    "venueEmptyDescription": "Create your first vacancy or shift — candidates will start applying and you will see them here.",
+    "venueEmptyCta": "Create vacancy / shift"
   },
   "shift": {
     "addTitle": "Add shift",
     "addDescription": "Find a replacement.",
+    "addVacancyTitle": "Create vacancy",
+    "addVacancyDescription": "Describe the vacancy to get responses from suitable candidates.",
+    "addReplacementTitle": "Create shift",
+    "addReplacementDescription": "Describe the shift to quickly find a replacement.",
     "addStepLabel": "Step {{current}} of {{total}}",
     "addStep1Title": "Date & time",
     "addStep2Title": "Location & position",
@@ -279,6 +334,8 @@
     "confirmed": "confirmed",
     "shiftTitle": "Shift title",
     "shiftTitlePlaceholder": "e.g. \"Main shift\", \"Banquet\"",
+    "vacancyTitleLabel": "Vacancy title",
+    "vacancyTitlePlaceholder": "e.g. Waiter for evening shift",
     "descriptionPlaceholder": "Briefly describe the shift and duties",
     "start": "Start",
     "end": "End",
@@ -293,6 +350,7 @@
     "selectPositionFirst": "Select position first",
     "noSpecializations": "No specializations available",
     "urgent": "Urgent shift",
+    "urgentVacancy": "Urgent vacancy",
     "selectSpecialization": "Select specialization",
     "selectSpecializations": "Select one or more specializations",
     "specializationCount": "Selected: {{count}} specialization",
@@ -312,7 +370,9 @@
     "applicationCancelled": "Application cancelled",
     "cancelApplicationError": "Failed to cancel application",
     "applyNotAvailable": "Apply is not available on this screen",
-    "payPlaceholder": "How much?",
+    "payPlaceholder": "How much per shift?",
+    "payMonthLabel": "Monthly salary",
+    "payMonthPlaceholder": "How much per month?",
     "addShiftAria": "Add shift"
   },
   "activity": {

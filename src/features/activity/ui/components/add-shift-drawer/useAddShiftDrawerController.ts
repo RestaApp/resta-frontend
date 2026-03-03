@@ -110,7 +110,8 @@ export const useAddShiftDrawerController = ({
 
   const hasMissingRequiredInStep =
     step === 0
-      ? !form.title.trim() || !form.date || !form.startTime || !form.endTime
+      ? !form.title.trim() ||
+        (form.shiftType === 'replacement' && (!form.date || !form.startTime || !form.endTime))
       : step === 1
         ? !form.location.trim() || !form.position || form.specializations.length === 0
         : !form.description.trim() || !form.requirements.trim()
@@ -200,8 +201,10 @@ export const useAddShiftDrawerController = ({
       }
       if (targetStep === 0) {
         if (!form.title.trim()) return scrollTo(titleRef)
-        if (!form.date || form.dateError) return scrollTo(dateRef)
-        if (!form.startTime || !form.endTime || form.timeRangeError) return scrollTo(timeRef)
+        if (form.shiftType === 'replacement') {
+          if (!form.date || form.dateError) return scrollTo(dateRef)
+          if (!form.startTime || !form.endTime || form.timeRangeError) return scrollTo(timeRef)
+        }
       }
       if (targetStep === 1) {
         if (!form.location.trim()) return scrollTo(locationRef)
@@ -218,8 +221,10 @@ export const useAddShiftDrawerController = ({
 
   const findFirstInvalidStep = useCallback((): StepIndex => {
     if (!form.title.trim()) return 0
-    if (!form.date || form.dateError) return 0
-    if (!form.startTime || !form.endTime || form.timeRangeError) return 0
+    if (form.shiftType === 'replacement') {
+      if (!form.date || form.dateError) return 0
+      if (!form.startTime || !form.endTime || form.timeRangeError) return 0
+    }
     if (!form.location.trim()) return 1
     if (!form.position || form.positionError) return 1
     if (form.position && form.specializations.length === 0) return 1
@@ -231,14 +236,17 @@ export const useAddShiftDrawerController = ({
   const isStepValid = useCallback(
     (targetStep: StepIndex): boolean => {
       if (targetStep === 0) {
-        return (
-          !!form.title.trim() &&
-          !!form.date &&
-          !!form.startTime &&
-          !!form.endTime &&
-          !form.timeRangeError &&
-          !form.dateError
-        )
+        if (!form.title.trim()) return false
+        if (form.shiftType === 'replacement') {
+          return (
+            !!form.date &&
+            !!form.startTime &&
+            !!form.endTime &&
+            !form.timeRangeError &&
+            !form.dateError
+          )
+        }
+        return true
       }
       if (targetStep === 1) {
         if (!form.location.trim()) return false

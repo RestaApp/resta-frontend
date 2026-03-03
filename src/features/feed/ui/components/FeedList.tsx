@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
-import { ShiftCard } from '@/components/ui/ShiftCard'
+import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
 import type { Shift } from '@/features/feed/model/types'
 import type { UseVacanciesInfiniteListReturn } from '@/features/feed/model/hooks/useVacanciesInfiniteList'

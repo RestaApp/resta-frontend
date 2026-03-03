@@ -21,6 +21,8 @@ interface SelectProps {
   hint?: string
   error?: string
   allowCustomValue?: boolean
+  searchable?: boolean
+  forceDropdownBelow?: boolean
   /** Отступ снизу (например высота BottomNav) для расчёта позиции дропдауна */
   bottomOffsetPx?: number
 }
@@ -36,6 +38,8 @@ export const Select = memo(function Select({
   hint,
   error,
   allowCustomValue = false,
+  searchable = true,
+  forceDropdownBelow = false,
   bottomOffsetPx = 88,
 }: SelectProps) {
   const { t } = useTranslation()
@@ -58,13 +62,14 @@ export const Select = memo(function Select({
 
   // Фильтрация опций по поисковому запросу
   const filteredOptions = useMemo(() => {
+    if (!searchable) return options
     if (!searchQuery.trim()) return options
 
     const query = searchQuery.toLowerCase().trim()
     return options.filter(
       opt => opt.label.toLowerCase().includes(query) || opt.value.toLowerCase().includes(query)
     )
-  }, [options, searchQuery])
+  }, [options, searchQuery, searchable])
 
   // Проверка, есть ли точное совпадение
   const hasExactMatch = useMemo(() => {
@@ -101,11 +106,13 @@ export const Select = memo(function Select({
         const estimatedDropdownHeight = 320 // примерная высота дропдауна
 
         // Определяем, открывать вверх или вниз
-        const opensUp = spaceBelow < estimatedDropdownHeight && spaceAbove > spaceBelow
+        const opensUp = forceDropdownBelow
+          ? false
+          : spaceBelow < estimatedDropdownHeight && spaceAbove > spaceBelow
 
         const availableSpace = opensUp
           ? Math.max(spaceAbove - 20, 200)
-          : Math.max(spaceBelow - 20, 200)
+          : Math.max(spaceBelow - 20, forceDropdownBelow ? 120 : 200)
 
         // Корректируем позицию по горизонтали, чтобы не выходить за границы экрана
         let left = rect.left
@@ -122,8 +129,7 @@ export const Select = memo(function Select({
         if (opensUp) {
           top = rect.top - Math.min(availableSpace, 320) - 8
         } else {
-          const maxTop = viewportHeight - bottomOffsetPx - Math.min(availableSpace, 320) - 8
-          top = Math.min(rect.bottom + 8, maxTop)
+          top = rect.bottom + 8
         }
 
         setDropdownPosition({
@@ -154,11 +160,11 @@ export const Select = memo(function Select({
         if (rafId !== null) cancelAnimationFrame(rafId)
       }
     }
-  }, [isOpen, bottomOffsetPx])
+  }, [isOpen, bottomOffsetPx, forceDropdownBelow])
 
   // Фокус на input при открытии
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen || !searchable) return
     let rafId: number | null = null
     rafId = requestAnimationFrame(() => {
       searchInputRef.current?.focus()
@@ -167,7 +173,7 @@ export const Select = memo(function Select({
     return () => {
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
-  }, [isOpen])
+  }, [isOpen, searchable])
 
   // Проверка, нужна ли прокрутка
   const [needsScroll, setNeedsScroll] = useState(false)
@@ -346,31 +352,32 @@ export const Select = memo(function Select({
                   maxWidth: 'calc(100vw - 32px)', // Отступы от краев экрана
                 }}
               >
-                {/* Header with Search */}
-                <div className="sticky top-0 z-10 border-b border-border/30 bg-card/95 backdrop-blur-sm p-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      value={searchQuery}
-                      onChange={e => {
-                        const newValue = e.target.value
-                        setSearchQuery(newValue)
-                        if (allowCustomValue) {
-                          onChange(newValue)
-                        }
-                      }}
-                      onKeyDown={handleInputKeyDown}
-                      placeholder={displayPlaceholder}
-                      className={cn(
-                        'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm text-foreground caret-foreground',
-                        'placeholder:text-muted-foreground',
-                        'focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20'
-                      )}
-                    />
+                {searchable ? (
+                  <div className="sticky top-0 z-10 border-b border-border/30 bg-card/95 backdrop-blur-sm p-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        value={searchQuery}
+                        onChange={e => {
+                          const newValue = e.target.value
+                          setSearchQuery(newValue)
+                          if (allowCustomValue) {
+                            onChange(newValue)
+                          }
+                        }}
+                        onKeyDown={handleInputKeyDown}
+                        placeholder={displayPlaceholder}
+                        className={cn(
+                          'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm text-foreground caret-foreground',
+                          'placeholder:text-muted-foreground',
+                          'focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20'
+                        )}
+                      />
+                    </div>
                   </div>
-                </div>
+                ) : null}
 
                 {/* Scrollable Options Container */}
                 <div
@@ -378,7 +385,7 @@ export const Select = memo(function Select({
                   role="listbox"
                   aria-label={label ?? displayPlaceholder}
                   className="overflow-y-auto overscroll-contain"
-                  style={{ maxHeight: `${maxHeight - 88}px` }}
+                  style={{ maxHeight: `${searchable ? maxHeight - 88 : maxHeight}px` }}
                 >
                   <div className="p-2">
                     {filteredOptions.length === 0 ? (

@@ -4,6 +4,8 @@ import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/sh
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 import {
   getLocalStorageItem,
   removeLocalStorageItem,
@@ -31,6 +33,8 @@ const getStartOfWeekMonday = (base: Date) => {
 
 export const useActivityPageModel = () => {
   const { t, i18n } = useTranslation()
+  const selectedRole = useAppSelector(selectSelectedRole)
+  const isVenue = selectedRole === 'venue'
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
   const dateLocale = getDateLocale(i18n.language)
 
@@ -42,6 +46,7 @@ export const useActivityPageModel = () => {
     isLoading: isAppliedLoading,
     refetch: refetchAppliedShifts,
   } = useGetAppliedShiftsQuery(undefined, {
+    skip: isVenue,
     refetchOnFocus: false,
   })
 
@@ -77,8 +82,12 @@ export const useActivityPageModel = () => {
   )
 
   const refreshList = useCallback(async () => {
+    if (isVenue) {
+      await refetchMyShifts()
+      return
+    }
     await Promise.all([refetchMyShifts(), refetchAppliedShifts()])
-  }, [refetchMyShifts, refetchAppliedShifts])
+  }, [isVenue, refetchMyShifts, refetchAppliedShifts])
 
   // Calendar state
   const [selectedDayKey, setSelectedDayKey] = useState<string>(() => toLocalISODateKey(new Date()))

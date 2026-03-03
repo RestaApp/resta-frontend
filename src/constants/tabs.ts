@@ -22,7 +22,8 @@ export const TAB_LABEL_KEYS = {
     profile: 'tabs.employee.profile',
   },
   venue: {
-    home: 'tabs.venue.home',
+    feed: 'tabs.venue.feed',
+    activity: 'tabs.venue.activity',
     staff: 'tabs.venue.staff',
     suppliers: 'tabs.venue.suppliers',
     profile: 'tabs.venue.profile',
@@ -51,7 +52,7 @@ export const getEmployeeTabs = (): TabItem[] => {
  */
 export const getVenueTabs = (): TabItem[] => {
   return [
-    { id: 'home', label: TAB_LABEL_KEYS.venue.home, icon: Home },
+    { id: 'activity', label: TAB_LABEL_KEYS.venue.activity, icon: Zap },
     { id: 'staff', label: TAB_LABEL_KEYS.venue.staff, icon: Users },
     { id: 'suppliers', label: TAB_LABEL_KEYS.venue.suppliers, icon: Package },
     { id: 'profile', label: TAB_LABEL_KEYS.venue.profile, icon: User },

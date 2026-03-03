@@ -28,7 +28,6 @@ import { useAddShiftDrawerController } from './add-shift-drawer/useAddShiftDrawe
 
 const getLockedShiftType = (role?: string | null): ShiftType | null => {
   if (role === 'employee') return 'replacement'
-  if (role === 'restaurant') return 'vacancy'
   return null
 }
 
@@ -37,6 +36,8 @@ type AddShiftDrawerProps = {
   onOpenChange: (open: boolean) => void
   onSave?: (shift: CreateShiftResponse | null) => void
   initialValues?: VacancyApiItem | null
+  initialShiftType?: ShiftType | null
+  lockShiftType?: boolean
 }
 
 type SelectFieldOption = {
@@ -44,11 +45,50 @@ type SelectFieldOption = {
   label: string
 }
 
+type DrawerCopy = {
+  drawerTitle: string
+  drawerDescription: string
+  titleLabel: string
+  titlePlaceholder: string
+  payLabel: string
+  payPlaceholder: string
+}
+
 const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
 const TOTAL_STEPS = 3 as const
 
+const getDrawerCopy = (isVacancyType: boolean, t: (key: string, options?: Record<string, unknown>) => string): DrawerCopy => {
+  if (isVacancyType) {
+    return {
+      drawerTitle: t('shift.addVacancyTitle', { defaultValue: 'Создать вакансию' }),
+      drawerDescription: t('shift.addVacancyDescription', {
+        defaultValue: 'Опишите вакансию, чтобы получить отклики подходящих кандидатов.',
+      }),
+      titleLabel: t('shift.vacancyTitleLabel', { defaultValue: 'Название вакансии' }),
+      titlePlaceholder: t('shift.vacancyTitlePlaceholder', {
+        defaultValue: 'Например: Официант в вечернюю смену',
+      }),
+      payLabel: t('shift.payMonthLabel', { defaultValue: 'Оплата в месяц' }),
+      payPlaceholder: t('shift.payMonthPlaceholder', { defaultValue: 'Сколько платят в месяц?' }),
+    }
+  }
+
+  return {
+    drawerTitle: t('shift.addReplacementTitle', { defaultValue: 'Создать смену' }),
+    drawerDescription: t('shift.addReplacementDescription', {
+      defaultValue: 'Опишите смену, чтобы быстро найти замену.',
+    }),
+    titleLabel: t('shift.shiftTitle', { defaultValue: 'Название смены' }),
+    titlePlaceholder: t('shift.shiftTitlePlaceholder'),
+    payLabel: t('shift.pay'),
+    payPlaceholder: t('shift.payPlaceholder'),
+  }
+}
+
 export const AddShiftDrawer = (props: AddShiftDrawerProps) => {
-  const keyedId = props.open ? String(props.initialValues?.id ?? 'new') : 'closed'
+  const keyedId = props.open
+    ? String(props.initialValues?.id ?? `new-${props.initialShiftType ?? 'vacancy'}`)
+    : 'closed'
   return <AddShiftDrawerKeyed key={keyedId} {...props} />
 }
 
@@ -57,13 +97,17 @@ const AddShiftDrawerKeyed = ({
   onOpenChange,
   onSave,
   initialValues = null,
+  initialShiftType = null,
+  lockShiftType = false,
 }: AddShiftDrawerProps) => {
   const { t } = useTranslation()
   const { getEmployeePositionLabel } = useLabels()
   const { userProfile } = useUserProfile()
   const { toast, hideToast } = useToast()
   const isEmployeeRole = userProfile?.role === 'employee'
-  const lockedShiftType = getLockedShiftType(userProfile?.role)
+  const isVenueRole = userProfile?.role === 'restaurant' || userProfile?.role === 'venue'
+  const roleLockedShiftType = getLockedShiftType(userProfile?.role)
+  const lockedShiftType = roleLockedShiftType ?? (lockShiftType ? initialShiftType : null)
   const shiftTypeOptions: SelectFieldOption[] = useMemo(
     () => [
       { value: 'vacancy', label: t('common.vacancy') },
@@ -72,10 +116,16 @@ const AddShiftDrawerKeyed = ({
     [t]
   )
 
+  const defaultLocation =
+    (userProfile?.location && userProfile.location.trim()) ||
+    (userProfile?.city && userProfile.city.trim()) ||
+    null
+
   const form = useAddShiftForm({
-    initialShiftType: lockedShiftType ?? INITIAL_SHIFT_TYPE,
+    initialShiftType: lockedShiftType ?? initialShiftType ?? INITIAL_SHIFT_TYPE,
     onSave,
     initialValues,
+    initialLocation: initialValues?.location ?? defaultLocation,
   })
   const controller = useAddShiftDrawerController({
     open,
@@ -107,16 +157,23 @@ const AddShiftDrawerKeyed = ({
   )
 
   const stepTitle = useMemo(() => {
-    if (controller.state.step === 0) return t('shift.addStep1Title')
+    if (controller.state.step === 0) {
+      return form.shiftType === 'vacancy'
+        ? t('shift.addStep1TitleVacancy', { defaultValue: 'Основные данные' })
+        : t('shift.addStep1Title')
+    }
     if (controller.state.step === 1) return t('shift.addStep2Title')
     return t('shift.addStep3Title')
-  }, [controller.state.step, t])
+  }, [controller.state.step, form.shiftType, t])
+
+  const isVacancyType = form.shiftType === 'vacancy'
+  const drawerCopy = useMemo(() => getDrawerCopy(isVacancyType, t), [isVacancyType, t])
 
   return (
     <Drawer open={open} onOpenChange={controller.actions.handleDrawerOpenChange}>
       <DrawerHeader>
-        <DrawerTitle>{t('shift.addTitle')}</DrawerTitle>
-        <DrawerDescription>{t('shift.addDescription')}</DrawerDescription>
+        <DrawerTitle>{drawerCopy.drawerTitle}</DrawerTitle>
+        <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
       </DrawerHeader>
 
       <div className="space-y-5 p-4">
@@ -131,6 +188,13 @@ const AddShiftDrawerKeyed = ({
             titleRef={controller.refs.titleRef}
             dateRef={controller.refs.dateRef}
             timeRef={controller.refs.timeRef}
+            showScheduleFields={!isVacancyType}
+            showShiftTypeSelect={isVenueRole && !lockedShiftType}
+            shiftType={form.shiftType}
+            onShiftTypeChange={controller.actions.handleShiftTypeChange}
+            shiftTypeOptions={shiftTypeOptions}
+            titleLabel={drawerCopy.titleLabel}
+            titlePlaceholder={drawerCopy.titlePlaceholder}
             title={form.title}
             onTitleChange={controller.actions.handleTitleChange}
             titleError={controller.derived.errors.titleError}
@@ -145,6 +209,8 @@ const AddShiftDrawerKeyed = ({
             endTimeError={controller.derived.errors.endTimeError}
             pay={form.pay}
             onPayChange={controller.actions.handlePayChange}
+            payLabel={drawerCopy.payLabel}
+            payPlaceholder={drawerCopy.payPlaceholder}
           />
         ) : null}
 
@@ -186,6 +252,7 @@ const AddShiftDrawerKeyed = ({
             requirementsError={controller.derived.errors.requirementsFieldError}
             urgent={form.urgent}
             onUrgentChange={controller.actions.handleUrgentChange}
+            isVacancyType={isVacancyType}
           />
         ) : null}
 

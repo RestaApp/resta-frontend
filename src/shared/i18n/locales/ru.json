@@ -56,6 +56,7 @@
     "vacancy": "Вакансия",
     "replacement": "Замена",
     "myShift": "Моя смена",
+    "myVacancy": "Моя вакансия",
     "permanent": "Постоянная",
     "oneTime": "Одноразовая",
     "selectValue": "Выберите значение",
@@ -72,6 +73,52 @@
     "bottomNav": "Нижняя навигация",
     "fillProfileRequired": "Требуется заполнить профиль"
   },
+  "venueUi": {
+    "create": "Создать",
+    "createShift": "Создать смену",
+    "createVacancy": "Создать вакансию",
+    "profileRequiredToCreate": "Чтобы создавать вакансии и смены, сначала заполните профиль.",
+    "staff": {
+      "filters": {
+        "all": "Все",
+        "current": "Текущие",
+        "former": "Бывшие"
+      },
+      "emptyTitle": "Сотрудников пока нет",
+      "emptyDescription": "Принятые сотрудники появятся здесь после обработки заявок",
+      "noPosition": "Без позиции",
+      "accepted": "Сотрудник принят",
+      "rejected": "Заявка отклонена",
+      "acceptError": "Не удалось принять заявку",
+      "rejectError": "Не удалось отклонить заявку",
+      "status": {
+        "accepted": "Принят",
+        "rejected": "Отклонён",
+        "pending": "На рассмотрении"
+      },
+      "actions": {
+        "accept": "Принять",
+        "reject": "Отклонить"
+      }
+    },
+    "suppliers": {
+      "total": "Всего поставщиков",
+      "showAll": "Показать всех",
+      "showActive": "Только активные",
+      "emptyTitle": "Поставщики не найдены",
+      "emptyDescription": "Отключите фильтр или добавьте нового поставщика",
+      "status": {
+        "active": "Активен",
+        "paused": "Пауза"
+      }
+    },
+    "createPicker": {
+      "title": "Что создать?",
+      "description": "Выберите тип публикации для вашего заведения",
+      "vacancy": "Создать вакансию",
+      "shift": "Создать смену"
+    }
+  },
   "tabs": {
     "employee": {
       "feed": "Поиск",
@@ -79,8 +126,9 @@
       "profile": "Профиль"
     },
     "venue": {
-      "home": "Главная",
-      "staff": "Кадры",
+      "feed": "Поиск",
+      "activity": "Активность",
+      "staff": "Сотрудники",
       "suppliers": "Поставщики",
       "profile": "Профиль"
     },
@@ -212,6 +260,9 @@
     "openFilters": "Открыть фильтры",
     "emptyByFilters": "По вашим фильтрам ничего не найдено",
     "emptyByFiltersDescription": "Измените фильтры или период — подходящие смены появятся в ленте",
+    "venueEmptyTitle": "Здесь будут ваши вакансии и смены",
+    "venueEmptyDescription": "Создайте первую вакансию или смену — кандидаты начнут откликаться, и вы увидите их здесь.",
+    "venueEmptyCta": "Создать вакансию / смену",
     "noShifts": "Смены не найдены",
     "noShiftsDescription": "Здесь будут смены, на которые можно откликнуться. Загляните позже или измените фильтры",
     "noVacancies": "Вакансии не найдены",
@@ -242,6 +293,10 @@
   "shift": {
     "addTitle": "Добавить смену",
     "addDescription": "Найдите себе замену.",
+    "addVacancyTitle": "Создать вакансию",
+    "addVacancyDescription": "Опишите вакансию, чтобы получить отклики подходящих кандидатов.",
+    "addReplacementTitle": "Создать смену",
+    "addReplacementDescription": "Опишите смену, чтобы быстро найти замену.",
     "addStepLabel": "Шаг {{current}} из {{total}}",
     "addStep1Title": "Дата и время",
     "addStep2Title": "Локация и позиция",
@@ -274,6 +329,8 @@
     "confirmed": "подтверждена",
     "shiftTitle": "Название смены",
     "shiftTitlePlaceholder": "Например: \"Основная работа\", \"Банкет\"",
+    "vacancyTitleLabel": "Название вакансии",
+    "vacancyTitlePlaceholder": "Например: Официант в вечернюю смену",
     "descriptionPlaceholder": "Коротко опишите смену и обязанности",
     "start": "Начало",
     "end": "Конец",
@@ -288,6 +345,7 @@
     "selectPositionFirst": "Сначала выберите позицию",
     "noSpecializations": "Нет доступных специализаций",
     "urgent": "Срочная смена",
+    "urgentVacancy": "Срочная вакансия",
     "selectSpecialization": "Выберите специализацию",
     "selectSpecializations": "Выберите одну или несколько специализаций",
     "specializationCount": "Выбрано: {{count}} специализация",
@@ -307,7 +365,9 @@
     "applicationCancelled": "Заявка отменена",
     "cancelApplicationError": "Не удалось отменить заявку",
     "applyNotAvailable": "Отклик пока недоступен в этом экране",
-    "payPlaceholder": "Сколько платят?",
+    "payPlaceholder": "Сколько платят за смену?",
+    "payMonthLabel": "Оплата в месяц",
+    "payMonthPlaceholder": "Сколько платят в месяц?",
     "addShiftAria": "Добавить смену"
   },
   "activity": {

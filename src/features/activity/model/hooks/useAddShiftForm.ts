@@ -19,12 +19,14 @@ type UseAddShiftFormOptions = {
   initialShiftType?: ShiftType | null
   onSave?: (shift: CreateShiftResponse | null) => void
   initialValues?: VacancyApiItem | null
+  initialLocation?: string | null
 }
 
 export const useAddShiftForm = ({
   initialShiftType = 'vacancy',
   onSave,
   initialValues = null,
+  initialLocation = null,
 }: UseAddShiftFormOptions = {}) => {
   const toInputDate = (date: Date): string => {
     const yyyy = date.getFullYear()
@@ -79,7 +81,7 @@ export const useAddShiftForm = ({
     if (initialValues.hourly_rate) return String(initialValues.hourly_rate)
     return ''
   })
-  const [location, setLocation] = useState(() => initialValues?.location || '')
+  const [location, setLocation] = useState(() => initialValues?.location || initialLocation || '')
   const [requirements, setRequirements] = useState(() => initialValues?.requirements || '')
   const [shiftType, setShiftType] = useState<ShiftType>(() => {
     const v = initialValues?.shift_type
@@ -200,16 +202,14 @@ export const useAddShiftForm = ({
 
   const isFormInvalid =
     !title ||
-    !date ||
-    !startTime ||
-    !endTime ||
     !location ||
     !description ||
     !requirements ||
     !position ||
     specializations.length === 0 ||
-    !!timeRangeError ||
-    !!dateError ||
+    (shiftType === 'replacement' && (!date || !startTime || !endTime)) ||
+    (shiftType === 'replacement' && !!timeRangeError) ||
+    (shiftType === 'replacement' && !!dateError) ||
     !!positionError
 
   const translateError = useCallback(
@@ -257,7 +257,7 @@ export const useAddShiftForm = ({
     setStartTime('')
     setEndTime('')
     setPay('')
-    setLocation('')
+    setLocation(initialLocation || '')
     setRequirements('')
     setShiftType(initialShiftType ?? 'vacancy')
     setUrgent(false)
@@ -265,7 +265,7 @@ export const useAddShiftForm = ({
     setSpecializations([])
     setSubmitError(null)
     setFieldErrors({})
-  }, [initialShiftType])
+  }, [initialShiftType, initialLocation])
 
   const applyServerErrors = useCallback(
     (errors: string[]) => {
@@ -311,16 +311,14 @@ export const useAddShiftForm = ({
     setFieldErrors({})
     if (
       !title ||
-      !date ||
-      !startTime ||
-      !endTime ||
       !location ||
       !description ||
       !requirements ||
       !position ||
       specializations.length === 0 ||
-      timeRangeError ||
-      dateError ||
+      (shiftType === 'replacement' && (!date || !startTime || !endTime)) ||
+      (shiftType === 'replacement' && !!timeRangeError) ||
+      (shiftType === 'replacement' && !!dateError) ||
       positionError
     ) {
       return false
@@ -328,18 +326,23 @@ export const useAddShiftForm = ({
 
     try {
       let response: CreateShiftResponse | null = null
+      const requiresSchedule = shiftType === 'replacement'
+
       const startM = toMinutes(startTime)
       const endM = toMinutes(endTime)
-      const isNightShift =
-        startM !== null && endM !== null && endM <= startM
-      const endDate = isNightShift ? addDaysToISODate(date!, 1) : date!
+      const isNightShift = startM !== null && endM !== null && endM <= startM
+      const endDate = date ? (isNightShift ? addDaysToISODate(date, 1) : date) : null
 
       const payload = {
         shift: {
           title,
           description,
-          start_time: buildDateTime(date!, startTime),
-          end_time: buildDateTime(endDate, endTime),
+          ...(requiresSchedule
+            ? {
+                start_time: buildDateTime(date!, startTime),
+                end_time: buildDateTime(endDate!, endTime),
+              }
+            : {}),
           payment: pay ? Number(pay) : undefined,
           location,
           requirements,

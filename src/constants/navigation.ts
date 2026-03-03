@@ -10,16 +10,16 @@ import { ROUTES } from './routes'
  */
 export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
   [ROUTES.HOME]: 'feed',
-  [ROUTES.SHIFTS]: null,
-  [ROUTES.VACANCIES]: null,
+  [ROUTES.SHIFTS]: 'activity',
+  [ROUTES.VACANCIES]: 'activity',
   [ROUTES.NOTIFICATIONS]: null,
   [ROUTES.PROFILE]: 'profile',
   [ROUTES.SETTINGS]: 'profile',
   [ROUTES.CREATE_SHIFT]: null,
-  [ROUTES.SUPPLIERS]: null,
+  [ROUTES.SUPPLIERS]: 'suppliers',
   [ROUTES.FIND_REPLACEMENT]: null,
   [ROUTES.WORK_MANAGEMENT]: null,
-  [ROUTES.APPLICATIONS]: null,
+  [ROUTES.APPLICATIONS]: 'staff',
 } as const
 
 /** Обратный маппинг: таб → первый экран (для onNavigate при смене таба) */

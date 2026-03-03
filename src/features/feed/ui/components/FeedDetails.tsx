@@ -1,4 +1,4 @@
-import { ShiftDetailsScreen } from '@/components/ui/ShiftDetailsScreen'
+import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
 import type { Shift } from '@/features/feed/model/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 

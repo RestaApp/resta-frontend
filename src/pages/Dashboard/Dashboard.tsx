@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
+import { VenueAddShiftListener } from '@/features/venue/ui/VenueAddShiftListener'
 import { useProfileCompleteness } from '@/features/profile/model/utils/profileCompleteness'
 import type { UiRole, Screen } from '@/types'
 import { AppHeader } from '@/components/AppHeader'
@@ -35,7 +36,8 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
 
   return (
     <div className=" bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
-      <AppHeader activeTab={activeTab} />
+      <AppHeader activeTab={activeTab} role={role} />
+      {role === 'venue' ? <VenueAddShiftListener /> : null}
       <main className="mx-auto max-w-2xl">
         <TabContent activeTab={activeTab} />
       </main>

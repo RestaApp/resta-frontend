@@ -11,11 +11,19 @@ const ActivityPage = lazy(() =>
 const ProfilePage = lazy(() =>
   import('@/features/profile/ui/ProfilePage').then(m => ({ default: m.ProfilePage }))
 )
+const VenueStaffPage = lazy(() =>
+  import('@/features/venue/ui/VenueStaffPage').then(m => ({ default: m.VenueStaffPage }))
+)
+const VenueSuppliersPage = lazy(() =>
+  import('@/features/venue/ui/VenueSuppliersPage').then(m => ({ default: m.VenueSuppliersPage }))
+)
 
 const TAB_COMPONENTS: Partial<Record<Tab, ComponentType>> = {
   feed: FeedPage,
   activity: ActivityPage,
   profile: ProfilePage,
+  staff: VenueStaffPage,
+  suppliers: VenueSuppliersPage,
 }
 
 interface TabContentProps {

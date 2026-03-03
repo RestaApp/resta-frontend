@@ -22,8 +22,8 @@ export interface ShiftApi {
 export interface CreateShiftBody {
   title: string
   description?: string
-  start_time: string
-  end_time: string
+  start_time?: string
+  end_time?: string
   payment?: number
   location?: string
   requirements?: string

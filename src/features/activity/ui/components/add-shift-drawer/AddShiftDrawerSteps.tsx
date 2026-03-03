@@ -1,5 +1,6 @@
 import { CheckCircle2 } from 'lucide-react'
 import { useMemo } from 'react'
+import type { RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Select } from '@/components/ui/select'
@@ -21,6 +22,79 @@ type SelectFieldOption = {
   label: string
 }
 
+interface AddShiftDrawerProgressProps {
+  step: number
+  totalSteps: number
+  stepTitle: string
+}
+
+interface AddShiftDrawerStep0Props {
+  titleRef: RefObject<HTMLDivElement | null>
+  dateRef: RefObject<HTMLDivElement | null>
+  timeRef: RefObject<HTMLDivElement | null>
+  showScheduleFields: boolean
+  showShiftTypeSelect: boolean
+  shiftType: ShiftType
+  onShiftTypeChange: (value: string) => void
+  shiftTypeOptions: SelectFieldOption[]
+  titleLabel: string
+  titlePlaceholder: string
+  title: string
+  onTitleChange: (value: string) => void
+  titleError?: string
+  date: string | null
+  onDateChange: (value: string | null) => void
+  dateError?: string
+  startTime: string
+  onStartTimeChange: (value: string) => void
+  startTimeError?: string
+  endTime: string
+  onEndTimeChange: (value: string) => void
+  endTimeError?: string
+  pay: string
+  onPayChange: (value: string) => void
+  payLabel?: string
+  payPlaceholder?: string
+}
+
+interface AddShiftDrawerStep1Props {
+  locationRef: RefObject<HTMLDivElement | null>
+  positionRef: RefObject<HTMLDivElement | null>
+  specializationRef: RefObject<HTMLDivElement | null>
+  isEmployeeRole: boolean
+  lockedShiftType: ShiftType | null
+  shiftType: ShiftType
+  onShiftTypeChange: (value: string) => void
+  shiftTypeOptions: SelectFieldOption[]
+  location: string
+  onLocationChange: (value: string) => void
+  locationError?: string
+  formPosition: string
+  onPositionChange: (value: string) => void
+  positionOptions: SelectFieldOption[]
+  isPositionsLoading: boolean
+  positionError?: string
+  specializations: string[]
+  onSpecializationsChange: (value: string[]) => void
+  availableSpecializations: string[]
+  isSpecializationsLoading: boolean
+  specializationError?: string
+}
+
+interface AddShiftDrawerStep2Props {
+  descriptionRef: RefObject<HTMLDivElement | null>
+  requirementsRef: RefObject<HTMLDivElement | null>
+  description: string
+  onDescriptionChange: (value: string) => void
+  descriptionError?: string
+  requirements: string
+  onRequirementsChange: (value: string) => void
+  requirementsError?: string
+  urgent: boolean
+  onUrgentChange: (value: boolean) => void
+  isVacancyType?: boolean
+}
+
 export const AddShiftDrawerSuccess = () => {
   const { t } = useTranslation()
   return (
@@ -40,11 +114,7 @@ export const AddShiftDrawerProgress = ({
   step,
   totalSteps,
   stepTitle,
-}: {
-  step: number
-  totalSteps: number
-  stepTitle: string
-}) => {
+}: AddShiftDrawerProgressProps) => {
   const { t } = useTranslation()
   const progress = useMemo(() => `${((step + 1) / totalSteps) * 100}%`, [step, totalSteps])
   return (
@@ -71,6 +141,13 @@ export const AddShiftDrawerStep0 = ({
   titleRef,
   dateRef,
   timeRef,
+  showScheduleFields,
+  showShiftTypeSelect,
+  shiftType,
+  onShiftTypeChange,
+  shiftTypeOptions,
+  titleLabel,
+  titlePlaceholder,
   title,
   onTitleChange,
   titleError,
@@ -85,65 +162,70 @@ export const AddShiftDrawerStep0 = ({
   endTimeError,
   pay,
   onPayChange,
-}: {
-  titleRef: React.RefObject<HTMLDivElement | null>
-  dateRef: React.RefObject<HTMLDivElement | null>
-  timeRef: React.RefObject<HTMLDivElement | null>
-  title: string
-  onTitleChange: (value: string) => void
-  titleError?: string
-  date: string | null
-  onDateChange: (value: string | null) => void
-  dateError?: string
-  startTime: string
-  onStartTimeChange: (value: string) => void
-  startTimeError?: string
-  endTime: string
-  onEndTimeChange: (value: string) => void
-  endTimeError?: string
-  pay: string
-  onPayChange: (value: string) => void
-}) => {
+  payLabel,
+  payPlaceholder,
+}: AddShiftDrawerStep0Props) => {
   const { t } = useTranslation()
   return (
     <>
+      {showShiftTypeSelect ? (
+        <Select
+          label={t('shift.shiftType')}
+          value={shiftType}
+          onChange={onShiftTypeChange}
+          options={shiftTypeOptions}
+          placeholder={t('shift.selectShiftType')}
+          searchable={false}
+          forceDropdownBelow
+        />
+      ) : null}
+
       <div ref={titleRef}>
         <TextField
-          label={t('shift.shiftTitle')}
+          label={titleLabel}
           value={title}
           onChange={onTitleChange}
-          placeholder={t('shift.shiftTitlePlaceholder')}
+          placeholder={titlePlaceholder}
           error={titleError}
         />
       </div>
 
-      <div ref={dateRef}>
-        <Field label={t('common.date')}>
-          <DatePicker
-            value={date}
-            onChange={onDateChange}
-            minDate={getTodayDateISO()}
-            className="w-full"
-            error={dateError ?? undefined}
-          />
-        </Field>
-      </div>
+      {showScheduleFields ? (
+        <>
+          <div ref={dateRef}>
+            <Field label={t('common.date')}>
+              <DatePicker
+                value={date}
+                onChange={onDateChange}
+                minDate={getTodayDateISO()}
+                className="w-full"
+                error={dateError ?? undefined}
+              />
+            </Field>
+          </div>
 
-      <div ref={timeRef} className="grid grid-cols-2 gap-3 w-full">
-        <div className="min-w-0">
-          <TimeField
-            label={t('shift.start')}
-            value={startTime}
-            onChange={onStartTimeChange}
-            error={startTimeError}
-          />
-        </div>
-        <div className="min-w-0">
-          <TimeField label={t('shift.end')} value={endTime} onChange={onEndTimeChange} error={endTimeError} />
-        </div>
-      </div>
+          <div ref={timeRef} className="grid grid-cols-2 gap-3 w-full">
+            <div className="min-w-0">
+              <TimeField
+                label={t('shift.start')}
+                value={startTime}
+                onChange={onStartTimeChange}
+                error={startTimeError}
+              />
+            </div>
+            <div className="min-w-0">
+              <TimeField
+                label={t('shift.end')}
+                value={endTime}
+                onChange={onEndTimeChange}
+                error={endTimeError}
+              />
+            </div>
+          </div>
+        </>
+      ) : null}
 
-      <MoneyField value={pay} onChange={onPayChange} />
+      <MoneyField value={pay} onChange={onPayChange} label={payLabel} placeholder={payPlaceholder} />
     </>
   )
 }
@@ -170,29 +252,7 @@ export const AddShiftDrawerStep1 = ({
   availableSpecializations,
   isSpecializationsLoading,
   specializationError,
-}: {
-  locationRef: React.RefObject<HTMLDivElement | null>
-  positionRef: React.RefObject<HTMLDivElement | null>
-  specializationRef: React.RefObject<HTMLDivElement | null>
-  isEmployeeRole: boolean
-  lockedShiftType: ShiftType | null
-  shiftType: ShiftType
-  onShiftTypeChange: (value: string) => void
-  shiftTypeOptions: SelectFieldOption[]
-  location: string
-  onLocationChange: (value: string) => void
-  locationError?: string
-  formPosition: string
-  onPositionChange: (value: string) => void
-  positionOptions: SelectFieldOption[]
-  isPositionsLoading: boolean
-  positionError?: string
-  specializations: string[]
-  onSpecializationsChange: (value: string[]) => void
-  availableSpecializations: string[]
-  isSpecializationsLoading: boolean
-  specializationError?: string
-}) => {
+}: AddShiftDrawerStep1Props) => {
   const { t } = useTranslation()
   return (
     <>
@@ -206,21 +266,15 @@ export const AddShiftDrawerStep1 = ({
         />
       </div>
 
-      {!isEmployeeRole ? (
+      {!isEmployeeRole && !lockedShiftType ? (
         <Select
           label={t('shift.shiftType')}
           value={shiftType}
           onChange={onShiftTypeChange}
-          disabled={!!lockedShiftType}
           options={shiftTypeOptions}
           placeholder={t('shift.selectShiftType')}
-          hint={
-            lockedShiftType
-              ? lockedShiftType === 'vacancy'
-                ? t('shift.venueCreatesVacancy')
-                : t('shift.employeeCreatesReplacement')
-              : undefined
-          }
+          searchable={false}
+          forceDropdownBelow
         />
       ) : null}
 
@@ -263,19 +317,12 @@ export const AddShiftDrawerStep2 = ({
   requirementsError,
   urgent,
   onUrgentChange,
-}: {
-  descriptionRef: React.RefObject<HTMLDivElement | null>
-  requirementsRef: React.RefObject<HTMLDivElement | null>
-  description: string
-  onDescriptionChange: (value: string) => void
-  descriptionError?: string
-  requirements: string
-  onRequirementsChange: (value: string) => void
-  requirementsError?: string
-  urgent: boolean
-  onUrgentChange: (value: boolean) => void
-}) => {
+  isVacancyType,
+}: AddShiftDrawerStep2Props) => {
   const { t } = useTranslation()
+  const urgentLabel = isVacancyType
+    ? t('shift.urgentVacancy', { defaultValue: 'Срочная вакансия' })
+    : t('shift.urgent')
   return (
     <>
       <div ref={descriptionRef}>
@@ -300,7 +347,7 @@ export const AddShiftDrawerStep2 = ({
         />
       </div>
 
-      <CheckboxField id="urgent-shift" label={t('shift.urgent')} checked={urgent} onChange={onUrgentChange} />
+      <CheckboxField id="urgent-shift" label={urgentLabel} checked={urgent} onChange={onUrgentChange} />
     </>
   )
 }
