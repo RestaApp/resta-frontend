@@ -1,5 +1,5 @@
 import { Field } from './Field'
-import { TEXTAREA_BASE_CLASS } from './constants'
+import { Textarea } from '@/components/ui/textarea'
 
 type TextAreaFieldProps = {
   label: string
@@ -19,11 +19,10 @@ export const TextAreaField = ({
   error,
 }: TextAreaFieldProps) => (
   <Field label={label} error={error}>
-    <textarea
+    <Textarea
       value={value}
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={TEXTAREA_BASE_CLASS}
       style={minHeight ? { minHeight } : undefined}
       aria-invalid={!!error}
     />

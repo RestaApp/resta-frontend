@@ -2,6 +2,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { FormField } from '@/components/ui/form-field'
 
 /** Формат даты для <input type="date">: YYYY-MM-DD */
 export type DateIso = string
@@ -34,13 +35,7 @@ export const DatePicker = ({
   const displayPlaceholder = placeholder ?? t('datePicker.placeholder')
 
   return (
-    <div className={cn('relative', className)}>
-      {label && (
-        <label htmlFor={inputId} className="mb-2 block text-sm text-muted-foreground">
-          {label}
-        </label>
-      )}
-
+    <FormField label={label} htmlFor={inputId} error={error} className={className}>
       <div className="relative flex min-h-10 items-stretch">
         <input
           id={inputId}
@@ -49,7 +44,7 @@ export const DatePicker = ({
           onChange={e => onChange(e.target.value || null)}
           min={minDate}
           className={cn(
-            'w-full rounded-xl border border-border bg-input-background py-2 pl-3 pr-10 text-sm text-foreground caret-foreground',
+            'w-full rounded-xl border border-border/50 bg-input-background py-2.5 pl-4 pr-10 text-base text-foreground caret-foreground',
             'transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-0',
             !value && 'text-transparent',
             !!error && 'border-destructive ring-2 ring-destructive/20',
@@ -69,18 +64,13 @@ export const DatePicker = ({
 
         {!value && (
           <span
-            className="pointer-events-none absolute left-3 top-1/2 inline-flex h-5 -translate-y-1/2 items-center text-sm text-muted-foreground"
+            className="pointer-events-none absolute left-4 top-1/2 inline-flex h-5 -translate-y-1/2 items-center text-sm text-muted-foreground"
             aria-hidden
           >
             {displayPlaceholder}
           </span>
         )}
       </div>
-      {error ? (
-        <p className="mt-1.5 text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-    </div>
+    </FormField>
   )
 }

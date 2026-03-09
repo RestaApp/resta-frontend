@@ -4,6 +4,13 @@ import { Sun, Moon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { useTheme } from '@/hooks/useTheme'
+import {
+  SEGMENTED_CONTAINER_CLASS,
+  SEGMENTED_INDICATOR_CLASS,
+  SEGMENTED_TRIGGER_ACTIVE_CLASS,
+  SEGMENTED_TRIGGER_CLASS,
+  SEGMENTED_TRIGGER_INACTIVE_CLASS,
+} from '@/components/ui/ui-patterns'
 
 export const ThemeToggleCompact = () => {
   const { t } = useTranslation()
@@ -29,12 +36,9 @@ export const ThemeToggleCompact = () => {
   const setDark = useCallback(() => setTheme('dark'), [setTheme])
 
   return (
-    <div
-      ref={containerRef}
-      className="relative inline-flex rounded-full border border-border bg-muted p-1"
-    >
+    <div ref={containerRef} className={SEGMENTED_CONTAINER_CLASS}>
       <motion.div
-        className="absolute bottom-1 top-1 rounded-full gradient-primary"
+        className={SEGMENTED_INDICATOR_CLASS}
         initial={false}
         animate={{ left: indicator.left, width: indicator.width }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -45,8 +49,8 @@ export const ThemeToggleCompact = () => {
         type="button"
         onClick={setLight}
         className={cn(
-          'relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors',
-          theme === 'light' ? 'text-primary-foreground' : 'text-muted-foreground'
+          SEGMENTED_TRIGGER_CLASS,
+          theme === 'light' ? SEGMENTED_TRIGGER_ACTIVE_CLASS : SEGMENTED_TRIGGER_INACTIVE_CLASS
         )}
         aria-pressed={theme === 'light'}
         aria-label={t('aria.lightTheme')}
@@ -59,8 +63,8 @@ export const ThemeToggleCompact = () => {
         type="button"
         onClick={setDark}
         className={cn(
-          'relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors',
-          theme === 'dark' ? 'text-primary-foreground' : 'text-muted-foreground'
+          SEGMENTED_TRIGGER_CLASS,
+          theme === 'dark' ? SEGMENTED_TRIGGER_ACTIVE_CLASS : SEGMENTED_TRIGGER_INACTIVE_CLASS
         )}
         aria-pressed={theme === 'dark'}
         aria-label={t('aria.darkTheme')}

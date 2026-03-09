@@ -79,7 +79,7 @@ export const LoadingPage = memo(function LoadingPage() {
         className="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-3xl"
         style={{
           background: 'var(--gradient-primary)',
-          boxShadow: '0 20px 60px rgba(107, 33, 168, 0.4)',
+          boxShadow: 'var(--primary-hero-shadow)',
         }}
       >
         <motion.div
@@ -140,7 +140,7 @@ export const LoadingPage = memo(function LoadingPage() {
           <div
             className="relative h-1.5 overflow-hidden rounded-full border backdrop-blur-xl"
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
+              background: 'var(--overlay-glass)',
               borderColor: 'var(--border)',
             }}
           >
@@ -156,7 +156,7 @@ export const LoadingPage = memo(function LoadingPage() {
               className="absolute inset-y-0 left-0 w-full"
               style={{
                 background:
-                  'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                  'linear-gradient(90deg, transparent 0%, var(--overlay-shine) 50%, transparent 100%)',
                 transform: 'translateX(-100%)',
               }}
               animate={

@@ -16,11 +16,7 @@ function SearchFiltersComponent({ activeFiltersList, onResetFilters }: SearchFil
       <div className="flex gap-2 items-center">
         <div className="flex-1 flex gap-1.5 items-center overflow-x-auto scrollbar-hide">
           {activeFiltersList.map((filter, index) => (
-            <Badge
-              key={index}
-              variant="outline"
-              className="text-xs whitespace-nowrap flex-shrink-0 border-primary/20 bg-primary/10 text-foreground hover:bg-primary/15 hover:border-primary/30"
-            >
+            <Badge key={index} variant="tag" className="whitespace-nowrap flex-shrink-0">
               {filter}
             </Badge>
           ))}

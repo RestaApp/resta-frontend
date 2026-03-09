@@ -6,9 +6,11 @@ import { memo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { SectionHeader } from '@/components/ui/section-header'
+import { FormField } from '@/components/ui/form-field'
 import { OnboardingProgress } from '../../OnboardingProgress'
 import { LocationField } from './LocationField'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { setupTelegramBackButton } from '@/utils/telegram'
 
@@ -78,9 +80,7 @@ export const FormScreen = memo(function FormScreen({
 
   return (
     <div className=" bg-background flex flex-col px-6 py-12">
-      {showProgress && (
-        <OnboardingProgress current={step} total={totalSteps} className="mb-6" />
-      )}
+      {showProgress && <OnboardingProgress current={step} total={totalSteps} className="mb-6" />}
       <SectionHeader title={title} description={description} className="mb-8" />
 
       <div className="flex-1 flex flex-col gap-6 max-w-md mx-auto w-full">
@@ -90,16 +90,14 @@ export const FormScreen = memo(function FormScreen({
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <label className="block mb-2 text-muted-foreground text-sm font-medium">
-            {nameLabel}
-          </label>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={e => onFormDataUpdate({ name: e.target.value })}
-            placeholder={namePlaceholder}
-            className="w-full px-4 py-3 rounded-2xl border border-[#E0E0E0] bg-input-background focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/50 transition-all text-sm text-foreground"
-          />
+          <FormField label={nameLabel}>
+            <Input
+              type="text"
+              value={formData.name}
+              onChange={e => onFormDataUpdate({ name: e.target.value })}
+              placeholder={namePlaceholder}
+            />
+          </FormField>
         </motion.div>
 
         {/* Выбор типа */}
@@ -108,21 +106,20 @@ export const FormScreen = memo(function FormScreen({
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <label className="block mb-3 text-muted-foreground text-sm font-medium">
-            {typeLabel}
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {types.map(type => (
-              <SelectableTagButton
-                key={type}
-                value={type}
-                label={getTypeLabel(type)}
-                isSelected={formData.type === type}
-                onClick={value => onFormDataUpdate({ type: value })}
-                ariaLabel={t('aria.selectType', { label: getTypeLabel(type) })}
-              />
-            ))}
-          </div>
+          <FormField label={typeLabel}>
+            <div className="flex flex-wrap gap-2">
+              {types.map(type => (
+                <SelectableTagButton
+                  key={type}
+                  value={type}
+                  label={getTypeLabel(type)}
+                  isSelected={formData.type === type}
+                  onClick={value => onFormDataUpdate({ type: value })}
+                  ariaLabel={t('aria.selectType', { label: getTypeLabel(type) })}
+                />
+              ))}
+            </div>
+          </FormField>
         </motion.div>
 
         {/* Поле города */}

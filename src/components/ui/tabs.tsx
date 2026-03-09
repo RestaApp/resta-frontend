@@ -1,6 +1,12 @@
 import { useCallback, useId, useMemo, useRef } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/utils/cn'
+import {
+  SEGMENTED_CONTAINER_CLASS,
+  SEGMENTED_TRIGGER_ACTIVE_CLASS,
+  SEGMENTED_TRIGGER_CLASS,
+  SEGMENTED_TRIGGER_INACTIVE_CLASS,
+} from '@/components/ui/ui-patterns'
 
 export type TabOption<T extends string> = {
   id: T
@@ -71,7 +77,7 @@ export const Tabs = <T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       onKeyDown={onKeyDown}
-      className={cn('relative flex rounded-xl border border-border p-1', className)}
+      className={cn(SEGMENTED_CONTAINER_CLASS, 'flex', className)}
     >
       {options.map(option => {
         const isActive = option.id === activeId
@@ -91,15 +97,16 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-300',
+              'relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-1.5 text-sm transition-colors duration-300',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
-              isActive ? 'font-semibold text-white' : 'text-muted-foreground hover:bg-muted/60'
+              SEGMENTED_TRIGGER_CLASS,
+              isActive ? SEGMENTED_TRIGGER_ACTIVE_CLASS : SEGMENTED_TRIGGER_INACTIVE_CLASS
             )}
           >
             {isActive ? (
               <motion.span
                 layoutId={resolvedIndicatorLayoutId}
-                className="absolute inset-0 rounded-lg gradient-primary shadow-sm"
+                className="absolute inset-0 rounded-full gradient-primary shadow-sm"
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"
               />

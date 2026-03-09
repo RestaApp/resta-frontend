@@ -1,9 +1,21 @@
 import { memo } from 'react'
-import { Banknote, Briefcase, Building2, CalendarDays, ChefHat, Clock, FileText, MapPin, Users } from 'lucide-react'
+import {
+  Banknote,
+  Briefcase,
+  Building2,
+  CalendarDays,
+  ChefHat,
+  Clock,
+  FileText,
+  MapPin,
+  Users,
+} from 'lucide-react'
 import type { TFunction } from 'i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { FormField } from '@/components/ui/form-field'
+import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/utils/cn'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
@@ -111,7 +123,9 @@ export const DetailsTab = memo(
                 iconVariant="section"
                 label={t('shift.workTime')}
                 value={shiftTime}
-                subValue={duration ? t('activity.durationWithValue', { value: duration }) : undefined}
+                subValue={
+                  duration ? t('activity.durationWithValue', { value: duration }) : undefined
+                }
               />
             ) : null}
 
@@ -140,7 +154,9 @@ export const DetailsTab = memo(
               label={t('shift.pay')}
               value={
                 <span className="text-lg font-semibold text-primary">
-                  {pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : `${pay} ${currency}`}
+                  {pay == null || Number(pay) === 0
+                    ? t('shift.payNegotiable')
+                    : `${pay} ${currency}`}
                 </span>
               }
               subValue={pay != null && Number(pay) > 0 ? paySuffix : undefined}
@@ -180,21 +196,21 @@ export const DetailsTab = memo(
             {showVenueBadges ? (
               <div className="flex flex-wrap gap-2">
                 {aboutVenue.city ? (
-                  <Badge variant="outline" className="text-xs font-normal">
+                  <Badge variant="tag" className="font-normal">
                     {aboutVenue.city}
                   </Badge>
                 ) : null}
                 {aboutVenue.formatKey ? (
-                  <Badge variant="outline" className="text-xs font-normal">
+                  <Badge variant="tag" className="font-normal">
                     {getRestaurantFormatLabel(aboutVenue.formatKey)}
                   </Badge>
                 ) : null}
                 {aboutVenue.cuisineTypes.length
                   ? aboutVenue.cuisineTypes.map(type => (
-                    <Badge key={type} variant="outline" className="text-xs font-normal">
-                      {type}
-                    </Badge>
-                  ))
+                      <Badge key={type} variant="tag" className="font-normal">
+                        {type}
+                      </Badge>
+                    ))
                   : null}
               </div>
             ) : null}
@@ -203,20 +219,16 @@ export const DetailsTab = memo(
 
         {!isOwner && !isApplied && !isAccepted && !isRejected ? (
           <Card className={DETAIL_CARD_CLASS}>
-            <label
-              className="text-xs text-muted-foreground mb-2 block font-medium"
-              htmlFor="shift-cover-message"
-            >
-              {t('shift.coverMessage')}
-            </label>
-            <textarea
-              id="shift-cover-message"
-              value={coverMessage}
-              onChange={e => setCoverMessage(e.target.value)}
-              placeholder={t('shift.coverMessagePlaceholder')}
-              className="w-full min-h-[88px] px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 dark:focus:ring-0 resize-y"
-              maxLength={2000}
-            />
+            <FormField label={t('shift.coverMessage')} htmlFor="shift-cover-message">
+              <Textarea
+                id="shift-cover-message"
+                value={coverMessage}
+                onChange={e => setCoverMessage(e.target.value)}
+                placeholder={t('shift.coverMessagePlaceholder')}
+                className="min-h-[88px] resize-y"
+                maxLength={2000}
+              />
+            </FormField>
           </Card>
         ) : null}
       </>

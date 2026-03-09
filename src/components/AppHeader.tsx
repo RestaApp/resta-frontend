@@ -20,8 +20,7 @@ type HeaderAction = {
   onClick: () => void
 }
 
-const HEADER_ACTION_BUTTON_CLASS =
-  'min-w-[44px] min-h-[44px] p-0 rounded-full flex-shrink-0'
+const HEADER_ACTION_BUTTON_CLASS = 'min-w-[44px] min-h-[44px] p-0 rounded-full flex-shrink-0'
 
 const getHeaderTitle = (activeTab: Tab | undefined, t: (key: string, options?: any) => string) => {
   if (activeTab === 'feed') return t('tabs.employee.feed', { defaultValue: 'Поиск' })
@@ -29,7 +28,11 @@ const getHeaderTitle = (activeTab: Tab | undefined, t: (key: string, options?: a
   if (activeTab === 'profile') return t('tabs.employee.profile', { defaultValue: 'Профиль' })
   if (!activeTab) return ''
 
-  const candidates = [`tabs.employee.${activeTab}`, `tabs.venue.${activeTab}`, `tabs.supplier.${activeTab}`]
+  const candidates = [
+    `tabs.employee.${activeTab}`,
+    `tabs.venue.${activeTab}`,
+    `tabs.supplier.${activeTab}`,
+  ]
   for (const key of candidates) {
     const v = t(key, { defaultValue: '' })
     if (v) return v
@@ -99,6 +102,14 @@ const getHeaderAction = (params: {
     }
   }
 
+  if (activeTab === 'suppliers') {
+    return {
+      ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
+      Icon: SlidersHorizontal,
+      onClick: () => window.dispatchEvent(new CustomEvent('openSuppliersFilters')),
+    }
+  }
+
   return null
 }
 
@@ -147,12 +158,12 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
         animate={{ y: 0, opacity: 1 }}
         className={cn(
           isFullscreen ? 'mt-[80px]' : 'mt-0',
-          'flex items-center bg-background px-4 py-3',
-          'border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]'
+          'flex items-center bg-background ui-density-page ui-density-py-sm',
+          'border-b border-[var(--surface-stroke-soft)]'
         )}
       >
         <div className="flex w-full items-center justify-between gap-3">
-          <h1 className="text-[22px] font-semibold leading-tight truncate">{title}</h1>
+          <h1 className="text-2xl font-semibold leading-tight truncate">{title}</h1>
 
           {action ? (
             <Button
@@ -163,7 +174,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
               aria-label={action.ariaLabel}
               className={HEADER_ACTION_BUTTON_CLASS}
             >
-              <action.Icon className="w-[22px] h-[22px]" />
+              <action.Icon className="h-5 w-5" />
             </Button>
           ) : null}
         </div>

@@ -10,6 +10,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { FormField } from '@/components/ui/form-field'
+import { Textarea } from '@/components/ui/textarea'
 import { RangeSlider } from '@/components/ui'
 import { CitySelect } from '@/components/ui/city-select'
 import { Loader } from '@/components/ui/loader'
@@ -28,9 +30,6 @@ import { formatExperienceText } from '@/utils/experience'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
 import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
-
-const TEXTAREA_CLASS =
-  'w-full min-h-[100px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
 
 interface EmployeeFieldsSectionProps {
   experienceYearsValue: number
@@ -65,10 +64,7 @@ const EmployeeFieldsSection = memo(
 
     return (
       <>
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            {t('profile.experienceYearsLabel')}
-          </label>
+        <FormField label={t('profile.experienceYearsLabel')}>
           <div className="mb-3">
             <span className="text-lg font-semibold text-gradient">
               {formatExperienceText(experienceYearsValue)}
@@ -83,10 +79,10 @@ const EmployeeFieldsSection = memo(
             showTicks={true}
             tickCount={5}
           />
-        </div>
+        </FormField>
         <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
           <div>
-            <label className="block text-sm font-medium mb-1">{t('profile.openToWork')}</label>
+            <p className="block text-sm font-medium mb-1">{t('profile.openToWork')}</p>
             <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
           </div>
           <Switch
@@ -95,31 +91,25 @@ const EmployeeFieldsSection = memo(
             disabled={disabled}
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('profile.skills')}</label>
-          <textarea
+        <FormField label={t('profile.skills')} hint={t('profile.skillsExample')}>
+          <Textarea
             value={skills}
             onChange={e => updateField('skills', e.target.value)}
             placeholder={t('profile.form.skillsPlaceholder')}
             disabled={disabled}
             rows={3}
-            className={TEXTAREA_CLASS}
+            className="resize-none"
           />
           {skillsList.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {skillsList.map(skill => (
-                <Badge
-                  key={skill}
-                  variant="outline"
-                  className="border-primary/20 bg-primary/10 text-foreground hover:bg-primary/15 hover:border-primary/30"
-                >
+                <Badge key={skill} variant="tag">
                   {skill}
                 </Badge>
               ))}
             </div>
           )}
-          <p className="text-xs text-muted-foreground mt-1">{t('profile.skillsExample')}</p>
-        </div>
+        </FormField>
       </>
     )
   }
@@ -174,49 +164,41 @@ export const EditProfileDrawer = memo(
         </DrawerHeader>
 
         <div className="px-4 space-y-4 pb-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('profile.nameLabel')}{' '}
-              {apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''} *
-            </label>
+          <FormField
+            label={`${t('profile.nameLabel')} ${apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''}`.trim()}
+            required
+          >
             <Input
               value={formData.name}
               onChange={e => updateField('name', e.target.value)}
               placeholder={t('profile.form.namePlaceholder')}
               disabled={isLoading}
             />
-          </div>
+          </FormField>
 
           {apiRole === 'employee' && (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                {t('profile.surnameRequired')}
-              </label>
+            <FormField label={t('profile.surnameRequired')}>
               <Input
                 value={formData.lastName}
                 onChange={e => updateField('lastName', e.target.value)}
                 placeholder={t('profile.form.surnamePlaceholder')}
                 disabled={isLoading}
               />
-            </div>
+            </FormField>
           )}
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('common.description')} {bioSuffix}
-            </label>
-            <textarea
+          <FormField label={`${t('common.description')} ${bioSuffix}`.trim()}>
+            <Textarea
               value={formData.bio}
               onChange={e => updateField('bio', e.target.value)}
               placeholder={t('profile.bioPlaceholder', { suffix: bioSuffix })}
               disabled={isLoading}
               rows={4}
-              className={TEXTAREA_CLASS}
+              className="resize-none"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('profile.email')}</label>
+          <FormField label={t('profile.email')}>
             <Input
               type="email"
               value={formData.email}
@@ -224,10 +206,9 @@ export const EditProfileDrawer = memo(
               placeholder={t('profile.form.emailPlaceholder')}
               disabled={isLoading}
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('profile.phoneRequired')}</label>
+          <FormField label={t('profile.phoneRequired')} hint={t('profile.phoneHint')}>
             <Input
               type="tel"
               inputMode="tel"
@@ -237,8 +218,7 @@ export const EditProfileDrawer = memo(
               placeholder={t('phone.placeholderExample')}
               disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground mt-1">{t('profile.phoneHint')}</p>
-          </div>
+          </FormField>
 
           {apiRole === 'employee' && (
             <EmployeeFieldsSection
@@ -250,8 +230,7 @@ export const EditProfileDrawer = memo(
             />
           )}
 
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('profile.cityRequired')}</label>
+          <FormField label={t('profile.cityRequired')}>
             {isCitiesLoading ? (
               <div className="flex items-center gap-2 py-2">
                 <Loader size="sm" />
@@ -265,7 +244,7 @@ export const EditProfileDrawer = memo(
                 disabled={isLoading}
               />
             )}
-          </div>
+          </FormField>
         </div>
 
         <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-background px-5 py-4 flex-row">

@@ -45,11 +45,7 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
       </h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
-          <Badge
-            key={spec}
-            variant="outline"
-            className="border-primary/20 bg-primary/10 text-foreground font-normal"
-          >
+          <Badge key={spec} variant="tag" className="font-normal">
             {getSpecializationLabel(spec)}
           </Badge>
         ))}
@@ -138,13 +134,23 @@ export const UserProfileDrawer = memo(
     const { t } = useTranslation()
     const { getUiRoleLabel, getEmployeePositionLabel } = useLabels()
 
-    const { data: userResponse, isLoading, isError } = useGetUserQuery(userId ?? 0, {
+    const {
+      data: userResponse,
+      isLoading,
+      isError,
+    } = useGetUserQuery(userId ?? 0, {
       skip: !userId || !open,
     })
 
     const userProfile = userResponse?.data
-    const apiRole = useMemo(() => (userProfile ? mapRoleFromApi(userProfile.role) : null), [userProfile])
-    const roleLabel = useMemo(() => (apiRole ? getUiRoleLabel(apiRole) : ''), [apiRole, getUiRoleLabel])
+    const apiRole = useMemo(
+      () => (userProfile ? mapRoleFromApi(userProfile.role) : null),
+      [userProfile]
+    )
+    const roleLabel = useMemo(
+      () => (apiRole ? getUiRoleLabel(apiRole) : ''),
+      [apiRole, getUiRoleLabel]
+    )
     const positionLabel = useMemo(() => {
       if (apiRole !== 'employee' || !userProfile?.employee_profile?.position) return null
       return getEmployeePositionLabel(userProfile.employee_profile.position)
@@ -186,8 +192,7 @@ export const UserProfileDrawer = memo(
       return getProfileCompleteness(userProfile, apiRole)
     }, [userProfile, apiRole])
 
-    const canReject =
-      canModerate && typeof applicationId === 'number' && Boolean(onReject)
+    const canReject = canModerate && typeof applicationId === 'number' && Boolean(onReject)
     const canAccept =
       canModerate &&
       typeof applicationId === 'number' &&
@@ -203,7 +208,9 @@ export const UserProfileDrawer = memo(
         >
           <DrawerHeader className="pb-2 border-b border-border shrink-0">
             <div className="flex items-center justify-between gap-2">
-              <DrawerTitle className="text-lg font-semibold">{t('profile.personalInfo')}</DrawerTitle>
+              <DrawerTitle className="text-lg font-semibold">
+                {t('profile.personalInfo')}
+              </DrawerTitle>
               <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
             </div>
           </DrawerHeader>
@@ -214,9 +221,7 @@ export const UserProfileDrawer = memo(
                 <Loader size="lg" />
               </div>
             ) : isError ? (
-              <div className="text-center py-10 text-muted-foreground">
-                {t('errors.loadError')}
-              </div>
+              <div className="text-center py-10 text-muted-foreground">{t('errors.loadError')}</div>
             ) : userProfile ? (
               <>
                 <ProfileHero
@@ -298,6 +303,7 @@ export const UserProfileDrawer = memo(
         </div>
       </Drawer>
     )
-  })
+  }
+)
 
 UserProfileDrawer.displayName = 'UserProfileDrawer'

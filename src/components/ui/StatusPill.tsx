@@ -1,24 +1,19 @@
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/utils/cn'
 import { Flame } from 'lucide-react'
+import { TAG_ACTIVE_CLASS } from '@/components/ui/ui-patterns'
 
 export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
 
 export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 
 const basePill =
-  'inline-flex items-center whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium leading-none border'
+  'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium leading-none border'
 
 export const UrgentPill = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   return (
-    <span
-      className={cn(
-        basePill,
-        'text-primary-foreground gradient-primary shadow-sm',
-        className
-      )}
-    >
+    <span className={cn(basePill, `border ${TAG_ACTIVE_CLASS}`, className)}>
       <Flame className="w-3 h-3 mr-1.5 shrink-0" />
       {t('activity.urgent')}
     </span>

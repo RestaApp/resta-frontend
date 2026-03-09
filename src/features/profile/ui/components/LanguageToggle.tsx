@@ -3,6 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n/config'
+import {
+  SEGMENTED_CONTAINER_CLASS,
+  SEGMENTED_INDICATOR_CLASS,
+  SEGMENTED_TRIGGER_ACTIVE_CLASS,
+  SEGMENTED_TRIGGER_CLASS,
+  SEGMENTED_TRIGGER_INACTIVE_CLASS,
+} from '@/components/ui/ui-patterns'
 
 interface LanguageToggleProps {
   currentLocale: string
@@ -31,24 +38,23 @@ export function LanguageToggle({ currentLocale, onLocaleChange }: LanguageToggle
   const setEn = useCallback(() => onLocaleChange(en), [onLocaleChange, en])
 
   return (
-    <div
-      ref={containerRef}
-      className="relative inline-flex rounded-full border border-border bg-muted p-1"
-    >
+    <div ref={containerRef} className={SEGMENTED_CONTAINER_CLASS}>
       <motion.div
-        className="absolute bottom-1 top-1 rounded-full gradient-primary"
+        className={SEGMENTED_INDICATOR_CLASS}
         initial={false}
         animate={{ left: indicator.left, width: indicator.width }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       />
 
       <button
-        ref={el => { buttonRefs.current[0] = el }}
+        ref={el => {
+          buttonRefs.current[0] = el
+        }}
         type="button"
         onClick={setRu}
         className={cn(
-          'relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors',
-          currentLocale === 'ru' ? 'text-primary-foreground' : 'text-muted-foreground'
+          SEGMENTED_TRIGGER_CLASS,
+          currentLocale === 'ru' ? SEGMENTED_TRIGGER_ACTIVE_CLASS : SEGMENTED_TRIGGER_INACTIVE_CLASS
         )}
         aria-pressed={currentLocale === 'ru'}
         aria-label={t('localeRu')}
@@ -57,12 +63,14 @@ export function LanguageToggle({ currentLocale, onLocaleChange }: LanguageToggle
       </button>
 
       <button
-        ref={el => { buttonRefs.current[1] = el }}
+        ref={el => {
+          buttonRefs.current[1] = el
+        }}
         type="button"
         onClick={setEn}
         className={cn(
-          'relative z-10 rounded-full px-3 py-1 text-sm font-medium transition-colors',
-          currentLocale === 'en' ? 'text-primary-foreground' : 'text-muted-foreground'
+          SEGMENTED_TRIGGER_CLASS,
+          currentLocale === 'en' ? SEGMENTED_TRIGGER_ACTIVE_CLASS : SEGMENTED_TRIGGER_INACTIVE_CLASS
         )}
         aria-pressed={currentLocale === 'en'}
         aria-label={t('localeEn')}

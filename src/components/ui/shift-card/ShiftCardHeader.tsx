@@ -8,9 +8,16 @@ interface ShiftCardHeaderProps {
     displayTitle: string | null
     positionText: string
     priceContent: React.ReactNode
+    hidePrice?: boolean
 }
 
-export const ShiftCardHeader = ({ shift, displayTitle, positionText, priceContent }: ShiftCardHeaderProps) => {
+export const ShiftCardHeader = ({
+    shift,
+    displayTitle,
+    positionText,
+    priceContent,
+    hidePrice = false,
+}: ShiftCardHeaderProps) => {
     return (
         <div className="flex justify-between items-start gap-3 mb-1.5">
             <div className="flex gap-3 min-w-0 flex-1">
@@ -42,16 +49,18 @@ export const ShiftCardHeader = ({ shift, displayTitle, positionText, priceConten
                     ) : null}
                 </div>
             </div>
-            <div className="text-right flex-shrink-0">
-                <span
-                    className={cn(
-                        'font-semibold text-lg text-primary tracking-tight',
-                        shift.urgent && 'dark:font-bold dark:text-[1.0625rem]'
-                    )}
-                >
-                    {priceContent}
-                </span>
-            </div>
+            {!hidePrice ? (
+                <div className="text-right flex-shrink-0">
+                    <span
+                        className={cn(
+                            'font-semibold text-lg text-primary tracking-tight',
+                            shift.urgent && 'dark:font-bold dark:text-[1.0625rem]'
+                        )}
+                    >
+                        {priceContent}
+                    </span>
+                </div>
+            ) : null}
         </div>
     )
 }

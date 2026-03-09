@@ -19,17 +19,19 @@ import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
 import {
   AddShiftDrawerBanner,
   AddShiftDrawerProgress,
+  type SelectFieldOption,
   AddShiftDrawerStep0,
   AddShiftDrawerStep1,
   AddShiftDrawerStep2,
   AddShiftDrawerSuccess,
 } from './add-shift-drawer/AddShiftDrawerSteps'
 import { useAddShiftDrawerController } from './add-shift-drawer/useAddShiftDrawerController'
-
-const getLockedShiftType = (role?: string | null): ShiftType | null => {
-  if (role === 'employee') return 'replacement'
-  return null
-}
+import {
+  getDrawerCopy,
+  getLockedShiftType,
+  INITIAL_SHIFT_TYPE,
+  TOTAL_STEPS,
+} from './add-shift-drawer/config'
 
 type AddShiftDrawerProps = {
   open: boolean
@@ -38,51 +40,6 @@ type AddShiftDrawerProps = {
   initialValues?: VacancyApiItem | null
   initialShiftType?: ShiftType | null
   lockShiftType?: boolean
-}
-
-type SelectFieldOption = {
-  value: string
-  label: string
-}
-
-type DrawerCopy = {
-  drawerTitle: string
-  drawerDescription: string
-  titleLabel: string
-  titlePlaceholder: string
-  payLabel: string
-  payPlaceholder: string
-}
-
-const INITIAL_SHIFT_TYPE: ShiftType = 'vacancy'
-const TOTAL_STEPS = 3 as const
-
-const getDrawerCopy = (isVacancyType: boolean, t: (key: string, options?: Record<string, unknown>) => string): DrawerCopy => {
-  if (isVacancyType) {
-    return {
-      drawerTitle: t('shift.addVacancyTitle', { defaultValue: 'Создать вакансию' }),
-      drawerDescription: t('shift.addVacancyDescription', {
-        defaultValue: 'Опишите вакансию, чтобы получить отклики подходящих кандидатов.',
-      }),
-      titleLabel: t('shift.vacancyTitleLabel', { defaultValue: 'Название вакансии' }),
-      titlePlaceholder: t('shift.vacancyTitlePlaceholder', {
-        defaultValue: 'Например: Официант в вечернюю смену',
-      }),
-      payLabel: t('shift.payMonthLabel', { defaultValue: 'Оплата в месяц' }),
-      payPlaceholder: t('shift.payMonthPlaceholder', { defaultValue: 'Сколько платят в месяц?' }),
-    }
-  }
-
-  return {
-    drawerTitle: t('shift.addReplacementTitle', { defaultValue: 'Создать смену' }),
-    drawerDescription: t('shift.addReplacementDescription', {
-      defaultValue: 'Опишите смену, чтобы быстро найти замену.',
-    }),
-    titleLabel: t('shift.shiftTitle', { defaultValue: 'Название смены' }),
-    titlePlaceholder: t('shift.shiftTitlePlaceholder'),
-    payLabel: t('shift.pay'),
-    payPlaceholder: t('shift.payPlaceholder'),
-  }
 }
 
 export const AddShiftDrawer = (props: AddShiftDrawerProps) => {
@@ -180,7 +137,11 @@ const AddShiftDrawerKeyed = ({
         {controller.state.isSuccessOpen ? (
           <AddShiftDrawerSuccess />
         ) : (
-          <AddShiftDrawerProgress step={controller.state.step} totalSteps={TOTAL_STEPS} stepTitle={stepTitle} />
+          <AddShiftDrawerProgress
+            step={controller.state.step}
+            totalSteps={TOTAL_STEPS}
+            stepTitle={stepTitle}
+          />
         )}
 
         {!controller.state.isSuccessOpen && controller.state.step === 0 ? (
@@ -256,7 +217,9 @@ const AddShiftDrawerKeyed = ({
           />
         ) : null}
 
-        {!controller.state.isSuccessOpen ? <AddShiftDrawerBanner message={controller.derived.bannerError} /> : null}
+        {!controller.state.isSuccessOpen ? (
+          <AddShiftDrawerBanner message={controller.derived.bannerError} />
+        ) : null}
       </div>
 
       <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">

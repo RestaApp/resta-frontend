@@ -4,48 +4,69 @@
 
 :root {
   --font-size: 16px;
+  --font-family-base: 'Manrope', 'Segoe UI', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  --ui-density-page-x: 1rem;
+  --ui-density-page-y: 1rem;
+  --ui-density-stack-sm: 0.75rem;
+  --ui-density-stack: 1rem;
+  --ui-density-stack-lg: 1.5rem;
+  --ui-density-section-gap: 1.5rem;
 
   /* --- Base Colors (Light Mode) --- */
-  --background: #F7F8FA;
+  --background: #f7f8fa;
   --foreground: oklch(0.145 0 0);
 
   --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: var(--foreground);
+  --drawer-surface: var(--card);
 
-  --popover: #ffffff;
-  --popover-foreground: oklch(0.145 0 0);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
 
   /* BRAND: Фиолетовый бренд везде! */
   --primary: #6b21a8;
   --primary-foreground: #ffffff;
+  --ring: var(--primary);
 
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
+  --surface-subtle: #f4f4f5;
+  --surface-subtle-foreground: #18181b;
+  --surface-border: #e4e4e7;
 
-  --muted: #f4f4f5;
+  --secondary: var(--surface-subtle);
+  --secondary-foreground: var(--surface-subtle-foreground);
+
+  --muted: var(--surface-subtle);
   --muted-foreground: #52525b;
 
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
+  --accent: var(--surface-subtle);
+  --accent-foreground: var(--surface-subtle-foreground);
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
   --success: oklch(0.6 0.118 184.704);
 
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --input-background: #f4f4f5;
-  --switch-background: #e4e4e7;
-
-  --ring: #6b21a8;
+  --border: var(--surface-border);
+  --input: var(--surface-border);
+  --input-background: var(--surface-subtle);
+  --switch-background: var(--surface-border);
+  --surface-stroke-soft: rgba(0, 0, 0, 0.06);
+  --surface-stroke-soft-hover: rgba(0, 0, 0, 0.1);
+  --surface-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --primary-ring-soft: 0 0 0 1px rgba(107, 33, 168, 0.1);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(107, 33, 168, 0.16);
+  --primary-hero-shadow: 0 20px 60px rgba(107, 33, 168, 0.4);
+  --overlay-scrim: rgba(0, 0, 0, 0.6);
+  --overlay-scrim-strong: rgba(0, 0, 0, 0.65);
+  --overlay-glass: rgba(255, 255, 255, 0.05);
+  --overlay-shine: rgba(255, 255, 255, 0.4);
 
   --radius: 0.625rem;
   /* ~10px, чуть менее «мягко» */
 
   /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-2: var(--success);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
@@ -53,33 +74,46 @@
   /* Sidebar */
   --sidebar: #f8fafc;
   --sidebar-foreground: #0f172a;
-  --sidebar-primary: #6b21a8;
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f1f5f9;
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #6b21a8;
+  --sidebar-ring: var(--primary);
 
   /* Resta Premium Colors (Light) */
-  --purple-deep: #6b21a8;
+  --purple-deep: var(--primary);
   --pink-electric: #ec4899;
   --blue-cyber: #06b6d4;
-  --gradient-primary: linear-gradient(135deg, #6b21a8 0%, #ec4899 100%);
-  --gradient-glow: linear-gradient(135deg,
-      rgba(107, 33, 168, 0.1) 0%,
-      rgba(236, 72, 153, 0.1) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
+  --gradient-glow: linear-gradient(
+    135deg,
+    rgba(107, 33, 168, 0.1) 0%,
+    rgba(236, 72, 153, 0.1) 100%
+  );
+}
+
+@media (min-width: 640px) {
+  :root {
+    --ui-density-page-x: 1.25rem;
+    --ui-density-page-y: 1.25rem;
+    --ui-density-stack-sm: 0.875rem;
+    --ui-density-stack: 1.125rem;
+    --ui-density-stack-lg: 1.75rem;
+    --ui-density-section-gap: 1.75rem;
+  }
 }
 
 .dark {
   /* Фон: глубокий серый, не чистый чёрный */
-  --background: #0F1115;
+  --background: #0f1115;
   --foreground: #fdfdfd;
 
   /* Иерархия поверхностей: страница < drawer < карточки < инпуты */
-  --card: #161A22;
+  --card: #161a22;
   --card-foreground: #fdfdfd;
-  --drawer-surface: #13161C;
-  --input-background: #1A1F28;
+  --drawer-surface: #13161c;
+  --input-background: #1a1f28;
 
   --popover: #18181b;
   --popover-foreground: #fdfdfd;
@@ -87,13 +121,17 @@
   --primary: #9333ea;
   --primary-foreground: #ffffff;
 
-  --secondary: #27272a;
+  --surface-subtle: #27272a;
+  --surface-subtle-foreground: #fafafa;
+  --surface-border: #27272a;
+
+  --secondary: var(--surface-subtle);
   --secondary-foreground: #fafafa;
 
-  --muted: #27272a;
+  --muted: var(--surface-subtle);
   --muted-foreground: #d4d4d8;
 
-  --accent: #27272a;
+  --accent: var(--surface-subtle);
   --accent-foreground: #fafafa;
 
   --destructive: #7f1d1d;
@@ -101,28 +139,38 @@
 
   --success: oklch(0.696 0.17 162.48);
 
-  --border: #27272a;
-  --input: rgba(255, 255, 255, 0.10);
-  --switch-background: #27272a;
+  --border: var(--surface-border);
+  --input: rgba(255, 255, 255, 0.1);
+  --switch-background: var(--surface-border);
+  --surface-stroke-soft: rgba(255, 255, 255, 0.06);
+  --surface-stroke-soft-hover: rgba(255, 255, 255, 0.1);
+  --surface-shadow-soft: none;
+  --primary-ring-soft: 0 0 0 1px rgba(147, 51, 234, 0.12);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(147, 51, 234, 0.18);
+  --primary-hero-shadow: 0 20px 60px rgba(147, 51, 234, 0.4);
+  --input-stroke: rgba(255, 255, 255, 0.1);
+  --input-stroke-hover: rgba(255, 255, 255, 0.14);
 
   --ring: #a855f7;
 
   /* Charts Dark */
   --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-2: var(--success);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
   /* Resta Premium Colors (Dark - Neon/Pastel) */
-  --purple-deep: #9333ea;
+  --purple-deep: var(--primary);
   --pink-electric: #f472b6;
   --blue-cyber: #22d3ee;
-  --gradient-primary: linear-gradient(135deg, #9333ea 0%, #f472b6 100%);
+  --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
   /* Свечение чуть ярче в темноте */
-  --gradient-glow: linear-gradient(135deg,
-      rgba(147, 51, 234, 0.25) 0%,
-      rgba(244, 114, 182, 0.25) 100%);
+  --gradient-glow: linear-gradient(
+    135deg,
+    rgba(147, 51, 234, 0.25) 0%,
+    rgba(244, 114, 182, 0.25) 100%
+  );
 }
 
 /* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней */
@@ -130,12 +178,12 @@
 .dark input:not([type='range']):not([type='checkbox']):not([type='radio']),
 .dark textarea {
   background-color: var(--input-background) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--input-stroke);
 }
 .dark [data-slot='input']:hover,
 .dark input:not([type='range']):not([type='checkbox']):not([type='radio']):hover,
 .dark textarea:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: var(--input-stroke-hover);
 }
 .dark [data-slot='input']:focus,
 .dark [data-slot='input']:focus-visible,
@@ -170,6 +218,7 @@
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);
+  --color-drawer-surface: var(--drawer-surface);
   --color-ring: var(--ring);
 
   --color-chart-1: var(--chart-1);
@@ -214,6 +263,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-family-base);
     margin: 0;
     padding: 0;
     min-height: var(--tg-viewport-stable-height, 100dvh);
@@ -291,6 +341,47 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
     /* Chrome, Safari and Opera */
+  }
+
+  .ui-density-page {
+    padding-left: var(--ui-density-page-x);
+    padding-right: var(--ui-density-page-x);
+  }
+
+  .ui-density-py {
+    padding-top: var(--ui-density-page-y);
+    padding-bottom: var(--ui-density-page-y);
+  }
+
+  .ui-density-py-sm {
+    padding-top: calc(var(--ui-density-page-y) * 0.5);
+    padding-bottom: calc(var(--ui-density-page-y) * 0.5);
+  }
+
+  .ui-density-stack-sm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-density-stack-sm);
+  }
+
+  .ui-density-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-density-stack);
+  }
+
+  .ui-density-stack-lg {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-density-stack-lg);
+  }
+
+  .ui-density-mb {
+    margin-bottom: var(--ui-density-stack);
+  }
+
+  .ui-density-mb-lg {
+    margin-bottom: var(--ui-density-section-gap);
   }
 }
 

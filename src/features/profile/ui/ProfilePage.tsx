@@ -22,17 +22,13 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
         <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
         {t('profile.specializationSection')}
       </h3>
       <div className="flex flex-wrap gap-2">
         {specializations.map((spec: string) => (
-          <Badge
-            key={spec}
-            variant="outline"
-            className="border-primary/20 bg-primary/10 text-foreground font-normal"
-          >
+          <Badge key={spec} variant="tag" className="font-normal">
             {getSpecializationLabel(spec)}
           </Badge>
         ))}
@@ -47,7 +43,7 @@ const RestaurantInfoCard = memo(
     const { t } = useTranslation()
     return (
       <Card className="p-5">
-        <h4 className="font-semibold mb-3">{t('roles.venueInfoTitle')}</h4>
+        <h4 className="font-semibold ui-density-mb">{t('roles.venueInfoTitle')}</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('profile.venueName')}</span>
@@ -70,7 +66,7 @@ const SupplierInfoCard = memo(({ supplierInfo }: { supplierInfo: { name: string 
   const { t } = useTranslation()
   return (
     <Card className="p-5">
-      <h4 className="font-semibold mb-3">{t('roles.supplierInfoTitle')}</h4>
+      <h4 className="font-semibold ui-density-mb">{t('roles.supplierInfoTitle')}</h4>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">{t('profile.companyName')}</span>
@@ -112,7 +108,7 @@ export const ProfilePage = memo(() => {
 
   if (m.isProfileLoading) {
     return (
-      <div className="pb-24 pt-6 px-4">
+      <div className="pb-24 ui-density-page ui-density-py">
         <div className="flex flex-col items-center justify-center py-12 gap-4">
           <Loader size="lg" />
         </div>
@@ -122,14 +118,14 @@ export const ProfilePage = memo(() => {
 
   if (!m.userProfile) {
     return (
-      <div className="pb-24 pt-6 px-4">
+      <div className="pb-24 ui-density-page ui-density-py">
         <div className="text-center py-8 text-destructive">{t('profile.loadError')}</div>
       </div>
     )
   }
 
   return (
-    <div className="pb-4 pt-2 px-4 space-y-6">
+    <div className="pb-4 pt-2 ui-density-page ui-density-stack-lg">
       <ProfileHero
         userProfile={m.userProfile}
         userName={m.userName}
@@ -162,7 +158,7 @@ export const ProfilePage = memo(() => {
       ) : null}
 
       <div>
-        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+        <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
           <Award className="w-5 h-5" style={{ color: 'var(--pink-electric)' }} />
           {t('profile.achievements')}
         </h3>

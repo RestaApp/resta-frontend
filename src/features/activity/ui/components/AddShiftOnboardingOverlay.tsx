@@ -64,7 +64,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
 
   return (
     <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="absolute inset-0 bg-[var(--overlay-scrim)]" onClick={onClose} />
 
       <div
         className="absolute rounded-full"
@@ -73,7 +73,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
           top: circleTop,
           width: circleSize,
           height: circleSize,
-          boxShadow: '0 0 0 9999px rgba(0,0,0,0.65)',
+          boxShadow: '0 0 0 9999px var(--overlay-scrim-strong)',
           pointerEvents: 'none',
         }}
       />

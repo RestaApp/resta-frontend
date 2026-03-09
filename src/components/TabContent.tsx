@@ -37,7 +37,7 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center ui-density-page ui-density-py">
           <Loader size="lg" />
         </div>
       }

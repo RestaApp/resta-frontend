@@ -15,8 +15,6 @@ import { cn } from '@/utils/cn'
 import { ShiftCardHeader } from './ShiftCardHeader'
 import { ShiftCardMeta } from './ShiftCardMeta'
 
-
-
 interface ShiftCardOwnerActions {
   onEdit: (id: number) => void
   onDelete: (id: number) => void
@@ -28,6 +26,7 @@ export interface ShiftCardProps {
   isApplied?: boolean
   applicationId?: number | null
   applicationStatus?: ShiftStatus
+  variant?: 'default' | 'supplier'
   onOpenDetails: (id: number) => void
   onApply: (id: number) => void
   onCancel: (applicationId: number | null | undefined, shiftId: number) => void
@@ -40,6 +39,7 @@ const ShiftCardComponent = ({
   isApplied = false,
   applicationId = null,
   applicationStatus = null,
+  variant = 'default',
   onOpenDetails,
   onApply,
   onCancel,
@@ -71,6 +71,7 @@ const ShiftCardComponent = ({
   // simplified card: period label moved to details modal
   const canShowApply = !isOwner && !isAccepted && !isRejected
   const canApply = shift.canApply !== false
+  const isSupplierVariant = variant === 'supplier'
 
   const locationText = useMemo(() => stripMinskPrefix(shift.location) ?? '', [shift.location])
   const hasDate = Boolean(shift.date?.trim())
@@ -79,9 +80,9 @@ const ShiftCardComponent = ({
   /** Одна строка: компания · место (для единого шаблона смены/вакансии) */
   const companyPlaceLine = useMemo(() => {
     const parts = [shift.restaurant]
-    if (locationText) parts.push(locationText)
+    if (!isSupplierVariant && locationText) parts.push(locationText)
     return parts.join(' · ')
-  }, [shift.restaurant, locationText])
+  }, [shift.restaurant, isSupplierVariant, locationText])
 
   const displayTitle = useMemo(
     () => (shift.title?.trim() || '').slice(0, 80) || null,
@@ -182,10 +183,10 @@ const ShiftCardComponent = ({
       onClick={handleOpen}
       className={cn(
         'group relative rounded-xl p-4 border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'dark:border-[rgba(255,255,255,0.06)] dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)] dark:shadow-none',
+        'border-[var(--surface-stroke-soft)] hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
         shift.urgent &&
-        'border-primary/25 hover:border-primary/35 dark:!border-primary/25 dark:hover:border-primary/35 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.12)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.18)]',
-        !shift.urgent && 'border-border shadow-sm hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
+          'border-primary/25 hover:border-primary/35 dark:!border-primary/25 dark:hover:border-primary/35 dark:[box-shadow:var(--primary-ring-soft)] dark:hover:[box-shadow:var(--primary-ring-soft-hover)]',
+        !shift.urgent && 'shadow-sm hover:[box-shadow:var(--surface-shadow-soft)]'
       )}
     >
       <ShiftCardHeader
@@ -193,6 +194,7 @@ const ShiftCardComponent = ({
         displayTitle={displayTitle}
         positionText={positionText}
         priceContent={priceContent}
+        hidePrice={isSupplierVariant}
       />
 
       <ShiftCardMeta
@@ -208,53 +210,54 @@ const ShiftCardComponent = ({
         time={shift.time}
       />
 
-      {/* 5. Footer: Status chip (слева) + CTA (справа) */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-          {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
-          {responses ? (
-            <span
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium tabular-nums border',
-                responses.hasResponses
-                  ? 'border-primary/25 bg-primary/5 text-primary dark:bg-primary/10'
-                  : 'border-border bg-muted/40 text-muted-foreground'
-              )}
+      {!isSupplierVariant ? (
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+            {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
+            {responses ? (
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium tabular-nums border',
+                  responses.hasResponses
+                    ? 'border-primary/25 bg-primary/5 text-primary dark:bg-primary/10'
+                    : 'border-border bg-muted/40 text-muted-foreground'
+                )}
+              >
+                {responses.hasResponses ? (
+                  <>
+                    <Users className="w-3.5 h-3.5 shrink-0" />
+                    <span>{t('shift.responsesCountLabel')}</span>
+                    <span className="font-bold">{responses.count}</span>
+                  </>
+                ) : (
+                  t('shift.noResponses')
+                )}
+              </span>
+            ) : null}
+          </div>
+
+          {isOwner && ownerActions ? (
+            <ShiftOwnerActions
+              editLabel={t('common.edit')}
+              deleteLabel={t('common.delete')}
+              isDeleting={ownerActions.isDeleting}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ) : null}
+
+          {!isOwner && canShowApply ? (
+            <Button
+              variant={isApplied ? 'outline' : 'gradient'}
+              loading={isLoading}
+              onClick={isApplied ? handleCancelClick : handleApplyClick}
+              disabled={isLoading || (!canApply && !isApplied)}
             >
-              {responses.hasResponses ? (
-                <>
-                  <Users className="w-3.5 h-3.5 shrink-0" />
-                  <span>{t('shift.responsesCountLabel')}</span>
-                  <span className="font-bold">{responses.count}</span>
-                </>
-              ) : (
-                t('shift.noResponses')
-              )}
-            </span>
+              {actionLabel}
+            </Button>
           ) : null}
         </div>
-
-        {isOwner && ownerActions ? (
-          <ShiftOwnerActions
-            editLabel={t('common.edit')}
-            deleteLabel={t('common.delete')}
-            isDeleting={ownerActions.isDeleting}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ) : null}
-
-        {!isOwner && canShowApply ? (
-          <Button
-            variant={isApplied ? 'outline' : 'gradient'}
-            loading={isLoading}
-            onClick={isApplied ? handleCancelClick : handleApplyClick}
-            disabled={isLoading || (!canApply && !isApplied)}
-          >
-            {actionLabel}
-          </Button>
-        ) : null}
-      </div>
+      ) : null}
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}

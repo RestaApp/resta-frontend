@@ -9,7 +9,7 @@ export const FeedPage = () => {
   const vm: FeedBodyVm = m
 
   return (
-    <div className=" bg-background">
+    <div className="bg-background ui-density-stack-sm">
       <FeedHeader
         options={m.feedTypeOptions}
         feedType={m.feedType}

@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export const ShiftSkeleton = memo(function ShiftSkeleton() {
   return (
-    <div className="space-y-4 rounded-xl border border-border bg-card p-4 dark:border-[rgba(255,255,255,0.06)]">
+    <div className="space-y-4 rounded-xl border border-[var(--surface-stroke-soft)] bg-card p-4">
       <div className="flex justify-between">
         <div className="flex gap-3">
           <Skeleton className="h-12 w-12 rounded-lg shrink-0" />

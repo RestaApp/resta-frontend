@@ -87,6 +87,35 @@ export interface GetUserResponse {
   data: UserData
 }
 
+export type UsersListType = 'employees' | 'supplier' | 'restaurant'
+
+export interface GetUsersParams {
+  user_type: UsersListType
+  city?: string
+  location?: string
+  supplier_type?: string
+  service_categories?: string
+  delivery_available?: boolean
+  page?: number
+  per_page?: number
+}
+
+export interface UsersPaginationMeta {
+  current_page?: number
+  next_page?: number | null
+  prev_page?: number | null
+  per_page?: number
+  total_pages?: number
+  total_count?: number
+}
+
+export interface GetUsersResponse {
+  success: boolean
+  data: UserData[]
+  pagination?: UsersPaginationMeta
+  meta?: UsersPaginationMeta
+}
+
 export const usersApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получение данных пользователя
@@ -97,6 +126,17 @@ export const usersApi = api.injectEndpoints({
       }),
       providesTags: ['User'],
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+    }),
+
+    // Получение списка пользователей по типу
+    getUsers: builder.query<GetUsersResponse, GetUsersParams>({
+      query: params => ({
+        url: '/api/v1/users',
+        method: 'GET',
+        params,
+      }),
+      providesTags: ['User'],
+      keepUnusedDataFor: 60,
     }),
 
     // Обновление данных пользователя
@@ -143,6 +183,7 @@ export const usersApi = api.injectEndpoints({
 // Экспорт базовых хуков RTK Query (используются в кастомных хуках)
 export const {
   useGetUserQuery,
+  useGetUsersQuery,
   useUpdateUserMutation,
   useGetUserPositionsQuery,
   useGetUserSpecializationsQuery,

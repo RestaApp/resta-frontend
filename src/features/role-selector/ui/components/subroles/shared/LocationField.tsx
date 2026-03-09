@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
 import { AnimatedField } from './AnimatedField'
@@ -56,42 +57,42 @@ export const LocationField = memo(function LocationField({
 
   const content = (
     <div ref={containerRef} className="relative">
-      {!hideLabel && (
-        <label className="block mb-2 text-muted-foreground text-sm font-medium">
-          {t('profile.city')}
-        </label>
-      )}
-      <div className="relative">
-        <Input
-          ref={inputRef}
-          value={value}
-          onChange={handleInputChange}
-          onFocus={() => {
-            if (clearOnFocus && value) {
-              onChange('')
-            }
-            handleInputFocus()
-          }}
-          onBlur={handleInputBlur}
-          placeholder={t('citySelect.placeholder')}
-          className="pr-12"
-          autoComplete="off"
-          aria-invalid={!isValid}
-        />
-        <button
-          onClick={onLocationRequest}
-          disabled={isLoading}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label={t('aria.determineLocation')}
-          type="button"
-        >
-          {isLoading ? (
-            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <MapPin className="w-4 h-4 text-muted-foreground" />
-          )}
-        </button>
-      </div>
+      <FormField
+        label={hideLabel ? undefined : t('profile.city')}
+        error={!isValid ? (errorMessage ?? undefined) : undefined}
+      >
+        <div className="relative">
+          <Input
+            ref={inputRef}
+            value={value}
+            onChange={handleInputChange}
+            onFocus={() => {
+              if (clearOnFocus && value) {
+                onChange('')
+              }
+              handleInputFocus()
+            }}
+            onBlur={handleInputBlur}
+            placeholder={t('citySelect.placeholder')}
+            className="pr-12"
+            autoComplete="off"
+            aria-invalid={!isValid}
+          />
+          <button
+            onClick={onLocationRequest}
+            disabled={isLoading}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={t('aria.determineLocation')}
+            type="button"
+          >
+            {isLoading ? (
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+      </FormField>
 
       {/* Выпадающий список с городами */}
       <AnimatePresence>
@@ -133,18 +134,6 @@ export const LocationField = memo(function LocationField({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Сообщение об ошибке */}
-      {!isValid && errorMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -5 }}
-          className="mt-1 text-xs text-red-500"
-        >
-          {errorMessage}
-        </motion.div>
-      )}
     </div>
   )
 

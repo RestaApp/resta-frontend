@@ -69,9 +69,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
     if (item.shiftType === 'replacement') return null
     if (!paymentText) return null
     const suffix =
-      item.payPeriod === 'month'
-        ? t('common.payPerMonthShort')
-        : t('common.payPerShiftShort')
+      item.payPeriod === 'month' ? t('common.payPerMonthShort') : t('common.payPerShiftShort')
     return `${paymentText}${suffix}`
   }, [paymentText, item.shiftType, item.date, item.payPeriod, t])
 
@@ -81,8 +79,8 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       onClick={handleClick}
       className={cn(
         'snap-center flex-shrink-0 w-[105px] min-h-[108px] relative overflow-hidden rounded-xl bg-card border border-border p-2 flex flex-col items-start text-left shadow-sm cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
-        'dark:border-[rgba(255,255,255,0.06)] dark:hover:border-[rgba(255,255,255,0.10)] dark:active:border-[rgba(255,255,255,0.10)] dark:shadow-none',
-        'dark:border-primary/20 dark:hover:border-primary/30 dark:shadow-[0_0_0_1px_rgba(147,51,234,0.08)] dark:hover:shadow-[0_0_0_1px_rgba(147,51,234,0.14)]'
+        'border-[var(--surface-stroke-soft)] hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
+        'dark:border-primary/20 dark:hover:border-primary/30 dark:[box-shadow:var(--primary-ring-soft)] dark:hover:[box-shadow:var(--primary-ring-soft-hover)]'
       )}
     >
       <span className="absolute inset-0 bg-gradient-to-b from-primary/5 to-primary/5 group-hover:from-primary/8 group-hover:to-primary/8 transition-colors pointer-events-none" />
@@ -90,7 +88,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       {paymentText && item.shiftType !== 'replacement' ? (
         <Badge
           variant="primary"
-          className="absolute top-0 right-0 rounded-bl-lg text-[10px] px-1.5 py-0.5 dark:font-semibold dark:text-[11px] z-10"
+          className="absolute top-0 right-0 rounded-bl-lg text-xs px-1.5 py-0.5 dark:font-semibold z-10"
         >
           {paymentText}
         </Badge>
@@ -109,20 +107,20 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       </Avatar>
 
       <div className="mt-1 w-full flex flex-col min-w-0 z-10 gap-1 flex-1">
-        <span className="block text-[14px] leading-4 font-semibold text-foreground overflow-hidden line-clamp-2">
+        <span className="block text-sm leading-4 font-semibold text-foreground overflow-hidden line-clamp-2">
           {positionText}
         </span>
-        <span className="block text-[11px] text-muted-foreground leading-tight break-words line-clamp-2 overflow-hidden">
+        <span className="block text-xs text-muted-foreground leading-tight break-words line-clamp-2 overflow-hidden">
           {placeLine}
         </span>
         {item.shiftType === 'replacement' ? (
           item.date ? (
-            <span className="mt-auto block text-[12px] text-primary font-semibold truncate pt-0.5">
+            <span className="mt-auto block text-xs text-primary font-semibold truncate pt-0.5">
               {item.date}
             </span>
           ) : null
         ) : vacancyBottomLine ? (
-          <span className="mt-auto block text-[12px] text-primary font-semibold truncate">
+          <span className="mt-auto block text-xs text-primary font-semibold truncate">
             {vacancyBottomLine}
           </span>
         ) : null}
@@ -132,56 +130,67 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
 })
 HotOfferCard.displayName = 'HotOfferCard'
 
-export const HotOffers = memo(({ items, onItemClick, totalCount, onShowAll, isVacancy, isUrgentFilterActive }: HotOffersProps) => {
-  const { t } = useTranslation()
-  const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
+export const HotOffers = memo(
+  ({
+    items,
+    onItemClick,
+    totalCount,
+    onShowAll,
+    isVacancy,
+    isUrgentFilterActive,
+  }: HotOffersProps) => {
+    const { t } = useTranslation()
+    const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
-  const title = useMemo(() => {
-    if (isVacancy === true) return t('feed.hotVacancies') || t('feed.hotOffers')
-    if (isVacancy === false) return t('feed.hotShifts') || t('feed.hotOffers')
-    return t('feed.hotOffers')
-  }, [isVacancy, t])
+    const title = useMemo(() => {
+      if (isVacancy === true) return t('feed.hotVacancies') || t('feed.hotOffers')
+      if (isVacancy === false) return t('feed.hotShifts') || t('feed.hotOffers')
+      return t('feed.hotOffers')
+    }, [isVacancy, t])
 
-  const showAllLabel = useMemo(() => {
-    if (isUrgentFilterActive) return t('feed.clearHotFilter')
-    return t('feed.showAllHotOffers') || t('common.all')
-  }, [t, isUrgentFilterActive])
+    const showAllLabel = useMemo(() => {
+      if (isUrgentFilterActive) return t('feed.clearHotFilter')
+      return t('feed.showAllHotOffers') || t('common.all')
+    }, [t, isUrgentFilterActive])
 
-  return (
-    <div
-      className={cn(
-        'py-3 px-4 rounded-xl',
-        'bg-card/50 dark:bg-[#161A22] dark:border dark:border-primary/15 dark:border-l-2 dark:border-l-primary/40'
-      )}
-    >
-      <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="font-bold text-lg flex items-center gap-2">
-            <span className="text-lg" aria-hidden>🔥</span>
-            {title}
-            {totalCount !== undefined ? (
-              <span className="text-sm font-normal text-muted-foreground">({totalCount})</span>
-            ) : null}
-          </h3>
+    return (
+      <div
+        className={cn(
+          'py-3 px-4 rounded-xl',
+          'bg-card/50 dark:bg-card dark:border dark:border-primary/15 dark:border-l-2 dark:border-l-primary/40'
+        )}
+      >
+        <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <span className="text-lg" aria-hidden>
+                🔥
+              </span>
+              {title}
+              {totalCount !== undefined ? (
+                <span className="text-sm font-normal text-muted-foreground">({totalCount})</span>
+              ) : null}
+            </h3>
+          </div>
+          {onShowAll ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onShowAll}
+              className="text-xs text-primary hover:underline shrink-0"
+            >
+              {showAllLabel}
+            </Button>
+          ) : null}
         </div>
-        {onShowAll ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onShowAll}
-            className="text-xs text-primary hover:underline shrink-0"
-          >
-            {showAllLabel}
-          </Button>
-        ) : null}
-      </div>
 
-      <div className="flex gap-2.5 overflow-x-auto scrollbar-hide snap-x -mx-1 px-1">
-        {items.map(item => (
-          <HotOfferCard key={item.id} item={item} onClick={handleItemClick} />
-        ))}
+        <div className="flex gap-2.5 overflow-x-auto scrollbar-hide snap-x -mx-1 px-1">
+          {items.map(item => (
+            <HotOfferCard key={item.id} item={item} onClick={handleItemClick} />
+          ))}
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 HotOffers.displayName = 'HotOffers'

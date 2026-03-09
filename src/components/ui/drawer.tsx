@@ -93,10 +93,13 @@ const DrawerContent = memo(function DrawerContent({
       cleanup.push(() => ro.disconnect())
     }
 
-    return () => cleanup.forEach((fn) => fn())
+    return () => cleanup.forEach(fn => fn())
   }, [bottomOffsetPx])
 
-  const closeThresholdPx = Math.min(72, Math.max(32, contentHeightPx > 0 ? contentHeightPx * 0.1 : 48))
+  const closeThresholdPx = Math.min(
+    72,
+    Math.max(32, contentHeightPx > 0 ? contentHeightPx * 0.1 : 48)
+  )
   const dragBottomPx = Math.max(0, contentHeightPx + bottomOffsetPx + 40)
 
   const handleDragEnd = useCallback(
@@ -137,7 +140,7 @@ const DrawerContent = memo(function DrawerContent({
         className={cn(
           'fixed inset-x-0 z-10 flex flex-col overflow-y-auto overscroll-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-lg dark:shadow-none',
-          'dark:bg-[var(--drawer-surface)] dark:border-t-[rgba(255,255,255,0.06)]',
+          'dark:bg-[var(--drawer-surface)] border-t-[var(--surface-stroke-soft)]',
           className
         )}
         style={{
@@ -155,7 +158,7 @@ const DrawerContent = memo(function DrawerContent({
             'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm',
             preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
           )}
-          onPointerDown={(e) => {
+          onPointerDown={e => {
             if (preventClose) return
             dragControls.start(e)
           }}

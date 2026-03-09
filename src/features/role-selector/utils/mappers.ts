@@ -46,7 +46,7 @@ const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>>
 }
 
 const ROLE_COLOR_MAP: Record<UiRole, string> = {
-  chef: 'from-[#d16b9f] to-[#8b5da8]',
+  chef: 'from-[var(--pink-electric)] to-[var(--purple-deep)]',
   waiter: 'from-green-500 to-emerald-500',
   bartender: 'from-purple-500 to-pink-500',
   barista: 'from-amber-500 to-orange-500',
@@ -54,8 +54,8 @@ const ROLE_COLOR_MAP: Record<UiRole, string> = {
   admin: 'from-indigo-500 to-blue-600',
   manager: 'from-indigo-500 to-blue-600',
   support: 'from-gray-500 to-gray-600',
-  venue: 'from-[#8b5da8] to-[#6b4c9a]',
-  supplier: 'from-[#7ec8e3] to-[#a8d5e2]',
+  venue: 'from-[var(--purple-deep)] to-[var(--primary)]',
+  supplier: 'from-[var(--blue-cyber)] to-[var(--pink-electric)]',
 }
 
 const ROLE_DESCRIPTION_MAP: Record<UiRole, string> = {

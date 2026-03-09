@@ -8,6 +8,7 @@ import { Search } from 'lucide-react'
 import { CardSelect } from '@/components/ui/card-select'
 import { SectionHeader } from '@/components/ui/section-header'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { OnboardingProgress } from '../OnboardingProgress'
 import type { EmployeeSubRole, EmployeeRole } from '@/shared/types/roles.types'
 
@@ -42,15 +43,15 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   )
 
   return (
-    <div className="bg-background flex flex-col min-h-[100dvh] px-6 py-6">
-      <OnboardingProgress current={2} total={3} className="mb-4" />
+    <div className="bg-background flex flex-col min-h-[100dvh] ui-density-page ui-density-py">
+      <OnboardingProgress current={2} total={3} className="ui-density-mb" />
       <SectionHeader
         title={t('roles.positionScreenTitle')}
         description={t('roles.positionScreenDescription')}
-        className="mb-6"
+        className="ui-density-mb-lg"
       />
 
-      <div className="relative mb-4 max-w-md mx-auto w-full">
+      <div className="relative ui-density-mb max-w-md mx-auto w-full">
         <Search
           className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
           aria-hidden
@@ -93,13 +94,15 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
 
       {selectedSubRole ? (
         <div className="fixed bottom-0 left-0 right-0 p-4 pt-3 safe-area-bottom bg-background/95 backdrop-blur-sm border-t border-border">
-          <button
+          <Button
             type="button"
             onClick={onContinue}
-            className="w-full max-w-md mx-auto flex py-3 rounded-xl text-white font-medium gradient-primary shadow-lg flex items-center justify-center"
+            variant="gradient"
+            size="lg"
+            className="w-full max-w-md mx-auto"
           >
             {t('roles.continuePosition')}
-          </button>
+          </Button>
         </div>
       ) : null}
     </div>

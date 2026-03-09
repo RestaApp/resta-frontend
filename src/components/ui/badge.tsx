@@ -1,4 +1,5 @@
 import { cn } from '@/utils/cn'
+import { TAG_ACTIVE_CLASS, TAG_INACTIVE_CLASS } from '@/components/ui/ui-patterns'
 
 const BADGE_VARIANTS = {
   default: 'bg-muted text-muted-foreground',
@@ -7,6 +8,8 @@ const BADGE_VARIANTS = {
   success: 'bg-success text-white',
   destructive: 'bg-destructive text-destructive-foreground',
   outline: 'border border-border bg-transparent',
+  tag: `border ${TAG_INACTIVE_CLASS}`,
+  tagActive: `border ${TAG_ACTIVE_CLASS}`,
 } as const
 
 interface BadgeProps {

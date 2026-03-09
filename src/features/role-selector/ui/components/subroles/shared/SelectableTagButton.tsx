@@ -6,6 +6,12 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
+import {
+  TAG_ACTIVE_CLASS,
+  TAG_BASE_CLASS,
+  TAG_DISABLED_CLASS,
+  TAG_INACTIVE_CLASS,
+} from '@/components/ui/ui-patterns'
 
 interface SelectableTagButtonProps {
   value: string
@@ -31,11 +37,9 @@ export const SelectableTagButton = memo(function SelectableTagButton({
       onClick={() => !disabled && onClick(value)}
       disabled={disabled}
       className={cn(
-        'px-4 py-2 rounded-full text-sm font-medium transition-all border',
-        disabled && 'opacity-50 cursor-not-allowed',
-        isSelected
-          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20 border-transparent'
-          : 'border-primary/20 bg-primary/10 text-foreground hover:bg-primary/15 hover:border-primary/30'
+        TAG_BASE_CLASS,
+        disabled && TAG_DISABLED_CLASS,
+        isSelected ? TAG_ACTIVE_CLASS : TAG_INACTIVE_CLASS
       )}
       aria-pressed={isSelected}
       aria-label={ariaLabel || t('aria.selectType', { label })}

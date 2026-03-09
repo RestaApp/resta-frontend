@@ -68,17 +68,17 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
 
   return (
     <>
-      <div className=" bg-background flex flex-col">
-        <div className="flex-1 flex flex-col px-6 py-6 overflow-y-auto">
-          <OnboardingProgress current={1} total={3} className="mb-6" />
+      <div className="bg-background flex flex-col">
+        <div className="flex-1 flex flex-col ui-density-page ui-density-py overflow-y-auto">
+          <OnboardingProgress current={1} total={3} className="ui-density-mb-lg" />
           <SectionHeader
             title={t('roles.whoAreYou')}
             description={t('roles.chooseRole')}
             hint={t('roles.roleChoiceHint')}
-            className="mb-6"
+            className="ui-density-mb-lg"
           />
 
-          <div className="flex-1 flex flex-col gap-3 max-w-md mx-auto w-full">
+          <div className="flex-1 ui-density-stack-sm max-w-md mx-auto w-full">
             {vm.mainRoles.map((role: RoleOption, index: number) => (
               <RoleCard
                 key={role.id}

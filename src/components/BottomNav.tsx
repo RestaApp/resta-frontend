@@ -33,7 +33,7 @@ export const BottomNav = ({
         isEmployee ? 'bg-background/80 backdrop-blur-xl' : 'bg-background',
       ].join(' ')}
     >
-      <div className="mx-auto flex max-w-2xl items-center justify-around px-4 py-2">
+      <div className="mx-auto flex max-w-2xl items-center justify-around ui-density-page ui-density-py-sm">
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = activeTab === id
           const showProfileDot = id === 'profile' && hasIncompleteProfile

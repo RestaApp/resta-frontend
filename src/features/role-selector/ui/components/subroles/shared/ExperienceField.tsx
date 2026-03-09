@@ -5,6 +5,7 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RangeSlider } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import { formatExperienceText } from '@/utils/experience'
 import { AnimatedField } from './AnimatedField'
 
@@ -23,10 +24,7 @@ export const ExperienceField = memo(function ExperienceField({
 }: ExperienceFieldProps) {
   const { t } = useTranslation()
   const content = (
-    <div>
-      <label className="block mb-1 text-muted-foreground text-sm font-medium">
-        {t('roles.yourExperience')}
-      </label>
+    <FormField label={t('roles.yourExperience')} labelClassName="mb-1">
       <div className="mb-3">
         <span className="text-lg font-semibold text-gradient">{formatExperienceText(value)}</span>
       </div>
@@ -39,7 +37,7 @@ export const ExperienceField = memo(function ExperienceField({
         showTicks={true}
         tickCount={5}
       />
-    </div>
+    </FormField>
   )
 
   return (

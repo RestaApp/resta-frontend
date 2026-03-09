@@ -35,7 +35,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
   }, [activeTab])
 
   return (
-    <div className=" bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
+    <div className="bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
       <AppHeader activeTab={activeTab} role={role} />
       {role === 'venue' ? <VenueAddShiftListener /> : null}
       <main className="mx-auto max-w-2xl">

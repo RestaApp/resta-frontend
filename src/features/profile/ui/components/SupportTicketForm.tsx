@@ -4,11 +4,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import { Select } from '@/components/ui/select'
+import { FormField } from '@/components/ui/form-field'
+import { Textarea } from '@/components/ui/textarea'
 import type { SupportTicketCategory } from '@/services/api/supportTicketsApi'
 import type { SelectOption } from '@/components/ui/select'
-
-const TEXTAREA_CLASS =
-  'w-full min-h-[120px] rounded-xl border border-border/50 px-4 py-3 text-base bg-input-background text-foreground caret-foreground transition-all outline-none focus-visible:border-purple-500/50 focus-visible:ring-purple-500/10 focus-visible:ring-4 disabled:opacity-50 resize-none'
 
 interface SupportTicketFormProps {
   subject: string
@@ -47,10 +46,7 @@ export function SupportTicketForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div>
-        <label className="mb-1.5 block text-sm font-medium">
-          {t('profile.supportForm.subject')} *
-        </label>
+      <FormField label={t('profile.supportForm.subject')} required>
         <Input
           value={subject}
           onChange={e => setSubject(e.target.value)}
@@ -59,26 +55,23 @@ export function SupportTicketForm({
           maxLength={200}
           data-autofocus
         />
-      </div>
+      </FormField>
 
-      <div>
-        <label className="mb-1.5 block text-sm font-medium">
-          {t('profile.supportForm.categoryLabel')} *
-        </label>
+      <FormField label={t('profile.supportForm.categoryLabel')} required>
         <Select
           value={category}
           onChange={v => setCategory(v as SupportTicketCategory)}
           options={categoryOptions}
-          label={undefined}
         />
-      </div>
+      </FormField>
 
-      <div>
-        <label className="mb-1.5 block text-sm font-medium">
-          {t('profile.supportForm.message')} *
-        </label>
-        <textarea
-          className={TEXTAREA_CLASS}
+      <FormField
+        label={t('profile.supportForm.message')}
+        required
+        hint={`${message.length}/${maxMessageLength}`}
+      >
+        <Textarea
+          className="min-h-[120px] resize-none"
           value={message}
           onChange={e => setMessage(e.target.value)}
           placeholder={t('profile.supportForm.messagePlaceholder')}
@@ -86,22 +79,16 @@ export function SupportTicketForm({
           maxLength={maxMessageLength}
           rows={4}
         />
-        <p className="mt-1 text-xs text-muted-foreground">
-          {message.length}/{maxMessageLength}
-        </p>
-      </div>
+      </FormField>
 
-      <div>
-        <label className="mb-1.5 block text-sm font-medium">
-          {t('profile.supportForm.contactInfo')}
-        </label>
+      <FormField label={t('profile.supportForm.contactInfo')}>
         <Input
           value={contactInfo}
           onChange={e => setContactInfo(e.target.value)}
           placeholder={t('profile.supportForm.contactInfoPlaceholder')}
           type="text"
         />
-      </div>
+      </FormField>
 
       {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
 
