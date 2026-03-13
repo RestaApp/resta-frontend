@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ApplicationPreviewApiItem } from '@/services/api/shiftsApi'
 import { getLogoByPosition } from '@/features/feed/model/utils/mapping'
@@ -37,6 +38,7 @@ interface VenueStaffListProps {
   isRejecting: boolean
   onAccept: (applicationId: number, shiftId: number) => void
   onReject: (applicationId: number, shiftId: number) => void
+  onOpenDetails: (item: StaffItem) => void
 }
 
 export const VenueStaffList = ({
@@ -48,6 +50,7 @@ export const VenueStaffList = ({
   isRejecting,
   onAccept,
   onReject,
+  onOpenDetails,
 }: VenueStaffListProps) => {
   const { t } = useTranslation()
   const filterOptions: TabOption<StaffFilter>[] = [
@@ -96,11 +99,18 @@ export const VenueStaffList = ({
               const isPending = item.applicationStatus === 'pending'
 
               return (
-                <Card
-                  key={`${item.shiftId}-${item.applicationId}`}
-                  className="ui-density-stack-sm p-4"
-                >
-                  <div className="flex items-start gap-3">
+                <Card key={`${item.shiftId}-${item.applicationId}`} className="ui-density-stack-sm p-4">
+                  <div
+                    className="flex items-start gap-3 cursor-pointer rounded-lg transition-colors hover:bg-muted/30"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onOpenDetails(item)}
+                    onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+                      if (event.key !== 'Enter' && event.key !== ' ') return
+                      event.preventDefault()
+                      onOpenDetails(item)
+                    }}
+                  >
                     <Avatar className="h-11 w-11">
                       <AvatarFallback>
                         {getLogoByPosition(
@@ -140,7 +150,10 @@ export const VenueStaffList = ({
                         size="sm"
                         variant="primary"
                         disabled={isAccepting || isRejecting}
-                        onClick={() => onAccept(item.applicationId, item.shiftId)}
+                        onClick={event => {
+                          event.stopPropagation()
+                          onAccept(item.applicationId, item.shiftId)
+                        }}
                       >
                         {t('venueUi.staff.actions.accept', { defaultValue: 'Принять' })}
                       </Button>
@@ -149,7 +162,10 @@ export const VenueStaffList = ({
                         size="sm"
                         variant="outline"
                         disabled={isAccepting || isRejecting}
-                        onClick={() => onReject(item.applicationId, item.shiftId)}
+                        onClick={event => {
+                          event.stopPropagation()
+                          onReject(item.applicationId, item.shiftId)
+                        }}
                       >
                         {t('venueUi.staff.actions.reject', { defaultValue: 'Отклонить' })}
                       </Button>

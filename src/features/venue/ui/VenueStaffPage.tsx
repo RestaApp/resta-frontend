@@ -9,6 +9,7 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { useToast } from '@/hooks/useToast'
+import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueStaffList, type StaffFilter, type StaffItem } from './staff/VenueStaffList'
 
 export function VenueStaffPage() {
@@ -18,6 +19,8 @@ export function VenueStaffPage() {
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
   const [activeFilter, setActiveFilter] = useState<StaffFilter>('all')
+  const [selectedItem, setSelectedItem] = useState<StaffItem | null>(null)
+  const [moderatingAction, setModeratingAction] = useState<'accept' | 'reject' | null>(null)
 
   const shifts: VacancyApiItem[] = useMemo(
     () => (data?.data && Array.isArray(data.data) ? normalizeVacanciesResponse(data) : []),
@@ -88,6 +91,39 @@ export function VenueStaffPage() {
     }
   }
 
+  const handleOpenDetails = (item: StaffItem) => {
+    const userId = item.person.user_id ?? item.person.user?.id ?? null
+    if (!userId) return
+    setSelectedItem(item)
+  }
+
+  const handleCloseDetails = () => {
+    setSelectedItem(null)
+    setModeratingAction(null)
+  }
+
+  const handleDrawerAccept = async () => {
+    if (!selectedItem) return
+    try {
+      setModeratingAction('accept')
+      await handleAccept(selectedItem.applicationId, selectedItem.shiftId)
+      handleCloseDetails()
+    } finally {
+      setModeratingAction(null)
+    }
+  }
+
+  const handleDrawerReject = async () => {
+    if (!selectedItem) return
+    try {
+      setModeratingAction('reject')
+      await handleReject(selectedItem.applicationId, selectedItem.shiftId)
+      handleCloseDetails()
+    } finally {
+      setModeratingAction(null)
+    }
+  }
+
   if (isError) {
     return (
       <div className="ui-density-page ui-density-py text-center text-destructive">
@@ -97,17 +133,35 @@ export function VenueStaffPage() {
   }
 
   return (
-    <PullToRefresh onRefresh={() => refetch()} disabled={isLoading || isAccepting || isRejecting}>
-      <VenueStaffList
-        isLoading={isLoading}
-        activeFilter={activeFilter}
-        onSetActiveFilter={setActiveFilter}
-        items={filteredItems}
-        isAccepting={isAccepting}
-        isRejecting={isRejecting}
-        onAccept={handleAccept}
-        onReject={handleReject}
+    <>
+      <PullToRefresh
+        onRefresh={() => refetch()}
+        disabled={isLoading || isAccepting || isRejecting || moderatingAction != null}
+      >
+        <VenueStaffList
+          isLoading={isLoading}
+          activeFilter={activeFilter}
+          onSetActiveFilter={setActiveFilter}
+          items={filteredItems}
+          isAccepting={isAccepting}
+          isRejecting={isRejecting}
+          onAccept={handleAccept}
+          onReject={handleReject}
+          onOpenDetails={handleOpenDetails}
+        />
+      </PullToRefresh>
+
+      <UserProfileDrawer
+        userId={selectedItem?.person.user_id ?? selectedItem?.person.user?.id ?? null}
+        open={selectedItem != null}
+        onClose={handleCloseDetails}
+        applicationId={selectedItem?.applicationId ?? null}
+        applicationStatus={selectedItem?.applicationStatus === 'accepted' ? 'accepted' : 'pending'}
+        canModerate={selectedItem?.applicationStatus !== 'rejected'}
+        moderatingAction={moderatingAction}
+        onAccept={handleDrawerAccept}
+        onReject={handleDrawerReject}
       />
-    </PullToRefresh>
+    </>
   )
 }
