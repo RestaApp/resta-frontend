@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { MapPin, Truck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/cn'
+import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
 
 export interface SupplierCardData {
   id: number
@@ -26,8 +27,6 @@ interface SupplierCardProps {
   supplier: SupplierCardData
   onOpenDetails: (id: number) => void
 }
-
-const formatServiceCategory = (value: string): string => value.split('_').join(' ').trim()
 
 const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) => {
   const { t } = useTranslation()

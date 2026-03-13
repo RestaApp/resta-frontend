@@ -9,8 +9,8 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
+import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
-import { formatServiceCategory } from './mappers'
 
 interface VenueSuppliersFiltersDrawerProps {
   open: boolean

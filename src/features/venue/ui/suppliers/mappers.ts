@@ -1,7 +1,6 @@
 import type { TFunction } from 'i18next'
 import type { SupplierApiUser, SupplierItem } from './types'
-
-export const formatServiceCategory = (value: string): string => value.split('_').join(' ').trim()
+import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
 
 const getSupplierName = (item: SupplierApiUser, fallback: string) => {
   const profile = item.supplier_profile ?? item.supplier_profile_attributes ?? null
