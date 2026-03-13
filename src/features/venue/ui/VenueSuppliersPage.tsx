@@ -15,8 +15,11 @@ import {
   DEFAULT_SUPPLIER_FILTERS,
   DEFAULT_SUPPLIER_TYPES,
   SUPPLIERS_PER_PAGE,
+  SUPPLIER_TYPES_BY_CATEGORY,
   type SupplierApiUser,
   type SupplierFilters,
+  getValidSupplierTypesForCategory,
+  isSupplierCategory,
 } from './suppliers/types'
 
 export function VenueSuppliersPage() {
@@ -64,16 +67,15 @@ export function VenueSuppliersPage() {
   const queryParams = useMemo<GetUsersParams>(() => {
     const city = appliedFilters.city.trim()
     const supplierType = appliedFilters.supplierType || undefined
-    const supplierTypes =
-      !supplierType && appliedFilters.serviceCategories.length > 0
-        ? appliedFilters.serviceCategories.join(',')
-        : undefined
+    const supplierTypes = supplierType
+      ? getValidSupplierTypesForCategory(supplierType, appliedFilters.serviceCategories)
+      : []
 
     return {
       user_type: 'supplier',
       city: city || undefined,
       supplier_category: supplierType,
-      supplier_types: supplierTypes,
+      supplier_types: supplierTypes.length > 0 ? supplierTypes.join(',') : undefined,
       delivery_available:
         appliedFilters.delivery === 'all' ? undefined : appliedFilters.delivery === 'yes',
       page: 1,
@@ -141,7 +143,7 @@ export function VenueSuppliersPage() {
     return Array.from(new Set([...DEFAULT_SUPPLIER_TYPES, ...fromApi]))
   }, [supplierUsers])
 
-  const serviceCategoryOptions = useMemo(() => {
+  const allServiceCategoryOptions = useMemo(() => {
     const fromApi = supplierUsers.flatMap(item => {
       const categories =
         item.supplier_profile?.supplier_types ?? item.supplier_profile_attributes?.supplier_types
@@ -151,11 +153,25 @@ export function VenueSuppliersPage() {
     return Array.from(new Set([...DEFAULT_SERVICE_CATEGORY_OPTIONS, ...fromApi]))
   }, [supplierUsers])
 
+  const serviceCategoryOptions = useMemo(() => {
+    const selectedCategory = draftFilters.supplierType
+    if (!selectedCategory || !isSupplierCategory(selectedCategory)) {
+      return allServiceCategoryOptions
+    }
+
+    const validByCategory = new Set(SUPPLIER_TYPES_BY_CATEGORY[selectedCategory])
+    return allServiceCategoryOptions.filter(option => validByCategory.has(option))
+  }, [allServiceCategoryOptions, draftFilters.supplierType])
+
   const hasActiveApiFilters = useMemo(() => {
+    const validSupplierTypes = appliedFilters.supplierType
+      ? getValidSupplierTypesForCategory(appliedFilters.supplierType, appliedFilters.serviceCategories)
+      : []
+
     return (
       Boolean(appliedFilters.city.trim()) ||
       Boolean(appliedFilters.supplierType) ||
-      appliedFilters.serviceCategories.length > 0 ||
+      validSupplierTypes.length > 0 ||
       appliedFilters.delivery !== 'all'
     )
   }, [appliedFilters])
@@ -170,9 +186,13 @@ export function VenueSuppliersPage() {
       result.push(getSupplierTypeLabel(appliedFilters.supplierType))
     }
 
-    if (appliedFilters.serviceCategories.length > 0) {
+    const validSupplierTypes = appliedFilters.supplierType
+      ? getValidSupplierTypesForCategory(appliedFilters.supplierType, appliedFilters.serviceCategories)
+      : []
+
+    if (validSupplierTypes.length > 0) {
       result.push(
-        ...appliedFilters.serviceCategories.map(category => getSupplierTypeLabel(category))
+        ...validSupplierTypes.map(category => getSupplierTypeLabel(category))
       )
     }
 

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
-import type { SupplierFilters } from './types'
+import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 import { formatServiceCategory } from './mappers'
 
 interface VenueSuppliersFiltersDrawerProps {
@@ -103,7 +103,16 @@ export const VenueSuppliersFiltersDrawer = ({
                   key={value}
                   size="sm"
                   variant={draftFilters.supplierType === value ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, supplierType: value }))}
+                  onClick={() =>
+                    setDraftFilters(prev => ({
+                      ...prev,
+                      supplierType: value,
+                      serviceCategories: getValidSupplierTypesForCategory(
+                        value,
+                        prev.serviceCategories
+                      ),
+                    }))
+                  }
                 >
                   {getSupplierTypeLabel(value)}
                 </Button>
