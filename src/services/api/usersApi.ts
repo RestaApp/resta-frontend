@@ -94,7 +94,8 @@ export interface GetUsersParams {
   city?: string
   location?: string
   supplier_type?: string
-  service_categories?: string
+  supplier_category?: string
+  supplier_types?: string
   delivery_available?: boolean
   page?: number
   per_page?: number

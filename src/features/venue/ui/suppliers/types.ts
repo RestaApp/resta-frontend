@@ -11,7 +11,6 @@ export type DeliveryFilter = 'all' | 'yes' | 'no'
 
 export interface SupplierFilters {
   city: string
-  location: string
   supplierType: string | null
   serviceCategories: string[]
   delivery: DeliveryFilter
@@ -23,7 +22,6 @@ export interface SupplierProfile {
   supplier_types?: string[] | null
   name?: string | null
   delivery_available?: boolean | null
-  service_categories?: string[] | null
 }
 
 export interface SupplierApiUser extends UserData {
@@ -33,7 +31,6 @@ export interface SupplierApiUser extends UserData {
 
 export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   city: '',
-  location: '',
   supplierType: null,
   serviceCategories: [],
   delivery: 'all',

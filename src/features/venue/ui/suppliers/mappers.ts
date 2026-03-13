@@ -32,12 +32,9 @@ const getSupplierProfile = (item: SupplierApiUser) =>
 
 const getSupplierCategories = (item: SupplierApiUser): string[] => {
   const profile = getSupplierProfile(item)
-  const fromApi =
-    profile?.supplier_types && Array.isArray(profile.supplier_types)
-      ? profile.supplier_types
-      : profile?.service_categories && Array.isArray(profile.service_categories)
-        ? profile.service_categories
-        : []
+  const fromApi = profile?.supplier_types && Array.isArray(profile.supplier_types)
+    ? profile.supplier_types
+    : []
   return fromApi.filter(Boolean)
 }
 
@@ -54,7 +51,7 @@ export const mapSupplierUsersToItems = (
       categories.length > 0
         ? categories
             .map(category =>
-              t(`labels.serviceCategory.${category}`, {
+              t(`labels.supplierType.${category}`, {
                 defaultValue: formatServiceCategory(category),
               })
             )

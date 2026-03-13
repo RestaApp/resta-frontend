@@ -63,17 +63,18 @@ export function VenueSuppliersPage() {
 
   const queryParams = useMemo<GetUsersParams>(() => {
     const city = appliedFilters.city.trim()
-    const location = appliedFilters.location.trim()
+    const supplierType = appliedFilters.supplierType || undefined
+    const supplierTypes =
+      appliedFilters.serviceCategories.length > 0
+        ? appliedFilters.serviceCategories.join(',')
+        : undefined
 
     return {
       user_type: 'supplier',
       city: city || undefined,
-      location: location || undefined,
-      supplier_type: appliedFilters.supplierType || undefined,
-      service_categories:
-        appliedFilters.serviceCategories.length > 0
-          ? appliedFilters.serviceCategories.join(',')
-          : undefined,
+      supplier_category: supplierType,
+      supplier_types: supplierTypes,
+      supplier_type: supplierType,
       delivery_available:
         appliedFilters.delivery === 'all' ? undefined : appliedFilters.delivery === 'yes',
       page: 1,
@@ -144,10 +145,7 @@ export function VenueSuppliersPage() {
   const serviceCategoryOptions = useMemo(() => {
     const fromApi = supplierUsers.flatMap(item => {
       const categories =
-        item.supplier_profile?.supplier_types ??
-        item.supplier_profile_attributes?.supplier_types ??
-        item.supplier_profile?.service_categories ??
-        item.supplier_profile_attributes?.service_categories
+        item.supplier_profile?.supplier_types ?? item.supplier_profile_attributes?.supplier_types
       return Array.isArray(categories) ? categories : []
     })
 
@@ -157,7 +155,6 @@ export function VenueSuppliersPage() {
   const hasActiveApiFilters = useMemo(() => {
     return (
       Boolean(appliedFilters.city.trim()) ||
-      Boolean(appliedFilters.location.trim()) ||
       Boolean(appliedFilters.supplierType) ||
       appliedFilters.serviceCategories.length > 0 ||
       appliedFilters.delivery !== 'all'

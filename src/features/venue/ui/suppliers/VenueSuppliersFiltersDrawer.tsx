@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
-import { Input } from '@/components/ui/input'
 import type { SupplierFilters } from './types'
 import { formatServiceCategory } from './mappers'
 
@@ -89,20 +88,6 @@ export const VenueSuppliersFiltersDrawer = ({
           </div>
           <div className="ui-density-stack-sm">
             <p className="text-sm font-medium">
-              {t('profile.location', { defaultValue: 'Локация' })}
-            </p>
-            <Input
-              value={draftFilters.location}
-              onChange={event =>
-                setDraftFilters(prev => ({ ...prev, location: event.target.value }))
-              }
-              placeholder={t('venueUi.suppliers.filters.locationPlaceholder', {
-                defaultValue: 'Улица, район или адрес',
-              })}
-            />
-          </div>
-          <div className="ui-density-stack-sm">
-            <p className="text-sm font-medium">
               {t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -138,7 +123,7 @@ export const VenueSuppliersFiltersDrawer = ({
                   variant={draftFilters.serviceCategories.includes(value) ? 'primary' : 'outline'}
                   onClick={() => toggleDraftServiceCategory(value)}
                 >
-                  {t(`labels.serviceCategory.${value}`, {
+                  {t(`labels.supplierType.${value}`, {
                     defaultValue: formatServiceCategory(value),
                   })}
                 </Button>

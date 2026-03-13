@@ -7,6 +7,7 @@ export interface ProfileFormData {
   lastName: string
   bio: string
   city: string
+  location: string
   email: string
   phone: string
   workExperienceSummary: string
@@ -30,6 +31,7 @@ export const buildUpdateUserRequest = (
         formData.lastName.trim() && { last_name: formData.lastName.trim() }),
       bio: formData.bio.trim() || null,
       city: formData.city.trim() || null,
+      ...(apiRole === 'restaurant' && { location: formData.location.trim() || null }),
       email: formData.email.trim() || null,
       phone: toE164(formData.phone.trim()) || null,
       work_experience_summary: formData.workExperienceSummary.trim() || null,

@@ -245,6 +245,27 @@ export const EditProfileDrawer = memo(
               />
             )}
           </FormField>
+
+          {apiRole === 'restaurant' && (
+            <FormField
+              label={t('profile.addresses', { defaultValue: 'Адрес(а) заведения' })}
+              hint={t('profile.addressesHint', {
+                defaultValue: 'Если у вас несколько точек, укажите каждый адрес с новой строки',
+              })}
+            >
+              <Textarea
+                value={formData.location}
+                onChange={e => updateField('location', e.target.value)}
+                placeholder={t('profile.form.addressesPlaceholder', {
+                  defaultValue:
+                    'Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9',
+                })}
+                disabled={isLoading}
+                rows={4}
+                className="resize-y"
+              />
+            </FormField>
+          )}
         </div>
 
         <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-background px-5 py-4 flex-row">

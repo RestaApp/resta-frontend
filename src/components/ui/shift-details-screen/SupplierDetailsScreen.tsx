@@ -179,7 +179,7 @@ export const SupplierDetailsScreen = memo(
                 <div className="flex flex-wrap gap-2">
                   {supplier.serviceCategories.map(category => (
                     <Badge key={category} variant="tag" className="font-normal">
-                      {t(`labels.serviceCategory.${category}`, {
+                      {t(`labels.supplierType.${category}`, {
                         defaultValue: formatServiceCategory(category),
                       })}
                     </Badge>

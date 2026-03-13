@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
+import { MapPin, Truck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/cn'
 
@@ -64,7 +64,30 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
         <div className="min-w-0">
           <p className="truncate font-semibold text-foreground">{supplier.name}</p>
         </div>
-        <div className="shrink-0 flex flex-col items-end leading-tight text-muted-foreground">
+        <span
+          className={cn(
+            'relative inline-flex h-9 w-9 items-center justify-center rounded-full border',
+            supplier.deliveryAvailable
+              ? 'border-primary/30 bg-primary/10 text-primary'
+              : 'border-border bg-muted/30 text-muted-foreground'
+          )}
+          aria-label={
+            supplier.deliveryAvailable
+              ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+              : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+          }
+          title={
+            supplier.deliveryAvailable
+              ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+              : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+          }
+        >
+          <Truck className="h-4 w-4" />
+          {!supplier.deliveryAvailable ? (
+            <span className="absolute h-[2px] w-6 rotate-[-30deg] rounded-full bg-current" />
+          ) : null}
+        </span>
+        {/* <div className="shrink-0 flex flex-col items-end leading-tight text-muted-foreground">
           <span className="inline-flex items-center gap-1.5 text-sm">
             <Star className="h-4 w-4" />
             {supplier.averageRating.toFixed(1)}
@@ -72,28 +95,18 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
           <span className="text-sm">
             {supplier.totalReviews} {t('common.reviews', { defaultValue: 'отзывов' })}
           </span>
-        </div>
+        </div> */}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         <Badge variant="tag">{supplier.supplierCategory}</Badge>
-        <Badge variant={supplier.deliveryAvailable ? 'tagActive' : 'tag'}>
-          <span className="inline-flex items-center gap-1">
-            <Truck className="h-3.5 w-3.5" />
-            {supplier.deliveryAvailable == null
-              ? t('common.notSpecified', { defaultValue: 'Не указано' })
-              : supplier.deliveryAvailable
-                ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-                : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })}
-          </span>
-        </Badge>
       </div>
 
       {supplier.serviceCategories.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-2">
           {supplier.serviceCategories.slice(0, 3).map(category => (
             <Badge key={category} variant="tag" className="font-normal">
-              {t(`labels.serviceCategory.${category}`, {
+              {t(`labels.supplierType.${category}`, {
                 defaultValue: formatServiceCategory(category),
               })}
             </Badge>
@@ -107,17 +120,6 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
       ) : null}
 
       <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-        <div className="flex items-center justify-between gap-3">
-          <p className="inline-flex items-center gap-2 min-w-0 max-w-[48%]">
-            <Phone className="h-4 w-4 shrink-0" />
-            <span className="truncate">{supplier.phone}</span>
-          </p>
-          <p className="inline-flex items-center justify-end gap-2 min-w-0 max-w-[48%] ml-auto">
-            <Mail className="h-4 w-4 shrink-0" />
-            <span className="truncate text-right">{supplier.email}</span>
-          </p>
-        </div>
-
         <p className="inline-flex items-center gap-2 truncate">
           <MapPin className="h-4 w-4 shrink-0" />
           <span className="truncate">{locationText}</span>

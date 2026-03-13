@@ -228,6 +228,8 @@
     "phoneRequired": "Phone *",
     "phoneHint": "International format. Start with +375 or 8",
     "cityRequired": "City *",
+    "addresses": "Venue address(es)",
+    "addressesHint": "If you have multiple locations, put each address on a new line",
     "cityNotSet": "City not set",
     "cityWarningDescription": "Without a city you won't see relevant jobs and shifts in your region. We recommend adding a city for better matches.",
     "saveWithoutCity": "Save without city",
@@ -238,7 +240,8 @@
       "namePlaceholder": "Enter first name",
       "surnamePlaceholder": "Enter surname",
       "emailPlaceholder": "Enter email",
-      "cityPlaceholder": "Select city"
+      "cityPlaceholder": "Select city",
+      "addressesPlaceholder": "For example:\nMinsk, Lenina st., 1\nMinsk, Pobediteley ave., 9"
     },
     "subtitle": {
       "employee": "HoReCa employee",
@@ -564,6 +567,7 @@
       "dairy": "Dairy products",
       "bakery": "Bakery products",
       "grocery": "Grocery",
+      "produce": "Produce",
       "frozen_food": "Frozen food",
       "beverages": "Beverages",
       "coffee": "Coffee",

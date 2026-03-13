@@ -112,7 +112,9 @@ export const ProfileInfoCard = memo(
     const { t } = useTranslation()
     const { getWorkSummaryLabel } = useProfileFormLabels()
     const isFilled = completeness?.isFilled ?? false
-    const cityOrLocation = userProfile.city ?? userProfile.location
+    const cityValue = userProfile.city ?? null
+    const locationValue = userProfile.location ?? null
+    const cityDisplay = apiRole === 'restaurant' ? cityValue : (cityValue ?? locationValue)
     const workSummaryLabel = getWorkSummaryLabel(apiRole)
     const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
 
@@ -177,9 +179,17 @@ export const ProfileInfoCard = memo(
                   </div>
                 )}
                 <div className="divide-y divide-border/50">
-                  {cityOrLocation && (
+                  {cityDisplay && (
                     <InfoRow label={t('profile.city')} valueClassName={`${VALUE_CLASS} truncate`}>
-                      {cityOrLocation}
+                      {cityDisplay}
+                    </InfoRow>
+                  )}
+                  {apiRole === 'restaurant' && locationValue && (
+                    <InfoRow
+                      label={t('profileFields.address', { defaultValue: 'Адрес' })}
+                      valueClassName={`${VALUE_CLASS} whitespace-pre-line text-right`}
+                    >
+                      {locationValue}
                     </InfoRow>
                   )}
                   {apiRole === 'employee' && userProfile.last_name && (
