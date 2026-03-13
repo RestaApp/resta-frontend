@@ -61,7 +61,6 @@ const AddShiftDrawerKeyed = ({
   const { getEmployeePositionLabel } = useLabels()
   const { userProfile } = useUserProfile()
   const { toast, hideToast } = useToast()
-  const isEmployeeRole = userProfile?.role === 'employee'
   const isVenueRole = userProfile?.role === 'restaurant' || userProfile?.role === 'venue'
   const roleLockedShiftType = getLockedShiftType(userProfile?.role)
   const lockedShiftType = roleLockedShiftType ?? (lockShiftType ? initialShiftType : null)
@@ -180,11 +179,6 @@ const AddShiftDrawerKeyed = ({
             locationRef={controller.refs.locationRef}
             positionRef={controller.refs.positionRef}
             specializationRef={controller.refs.specializationRef}
-            isEmployeeRole={isEmployeeRole}
-            lockedShiftType={lockedShiftType}
-            shiftType={form.shiftType}
-            onShiftTypeChange={controller.actions.handleShiftTypeChange}
-            shiftTypeOptions={shiftTypeOptions}
             location={form.location}
             onLocationChange={controller.actions.handleLocationChange}
             locationError={controller.derived.errors.locationFieldError}

@@ -162,7 +162,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
           'border-b border-[var(--surface-stroke-soft)]'
         )}
       >
-        <div className="flex w-full items-center justify-between gap-3">
+        <div className="flex w-full min-h-[44px] items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold leading-tight truncate">{title}</h1>
 
           {action ? (

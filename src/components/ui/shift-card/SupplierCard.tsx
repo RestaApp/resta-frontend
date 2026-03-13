@@ -31,11 +31,15 @@ const formatServiceCategory = (value: string): string => value.split('_').join('
 
 const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) => {
   const { t } = useTranslation()
+  const notSpecified = t('common.notSpecified', { defaultValue: 'Не указано' })
 
-  const locationText = useMemo(
-    () => (supplier.city !== supplier.location ? supplier.location : supplier.city),
-    [supplier.city, supplier.location]
-  )
+  const locationText = useMemo(() => {
+    const city = supplier.city.trim()
+    const location = supplier.location.trim()
+    if (location && location !== city) return location
+    if (city) return city
+    return notSpecified
+  }, [notSpecified, supplier.city, supplier.location])
 
   const ariaLabel = useMemo(
     () => [supplier.name, supplier.supplierType, supplier.city].filter(Boolean).join(', '),
@@ -67,23 +71,27 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
         <span
           className={cn(
             'relative inline-flex h-9 w-9 items-center justify-center rounded-full border',
-            supplier.deliveryAvailable
+            supplier.deliveryAvailable === true
               ? 'border-primary/30 bg-primary/10 text-primary'
               : 'border-border bg-muted/30 text-muted-foreground'
           )}
           aria-label={
-            supplier.deliveryAvailable
-              ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-              : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+            supplier.deliveryAvailable == null
+              ? notSpecified
+              : supplier.deliveryAvailable
+                ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+                : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
           }
           title={
-            supplier.deliveryAvailable
-              ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-              : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+            supplier.deliveryAvailable == null
+              ? notSpecified
+              : supplier.deliveryAvailable
+                ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+                : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
           }
         >
           <Truck className="h-4 w-4" />
-          {!supplier.deliveryAvailable ? (
+          {supplier.deliveryAvailable === false ? (
             <span className="absolute h-[2px] w-6 rotate-[-30deg] rounded-full bg-current" />
           ) : null}
         </span>

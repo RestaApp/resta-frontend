@@ -118,10 +118,9 @@ export const useProfilePageModel = () => {
   const restaurantInfo = useMemo(() => {
     if (apiRole !== 'restaurant') return null
     return {
-      name: userProfile?.full_name || userProfile?.name || t('venue'),
       format: null,
     }
-  }, [apiRole, userProfile, t])
+  }, [apiRole])
 
   const supplierInfo = useMemo(() => {
     if (apiRole !== 'supplier') return null

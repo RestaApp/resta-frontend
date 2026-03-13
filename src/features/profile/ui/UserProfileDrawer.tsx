@@ -60,24 +60,20 @@ const RestaurantInfoCard = memo(
     restaurantInfo,
     variant = 'card',
   }: {
-    restaurantInfo: { name: string; format: string | null }
+    restaurantInfo: { format: string | null }
     variant?: 'card' | 'section'
   }) => {
     const { t } = useTranslation()
+    if (!restaurantInfo.format) return null
+
     const content = (
       <>
         <h4 className="font-semibold mb-3">{t('roles.venueInfoTitle')}</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">{t('profile.venueName')}</span>
-            <span>{restaurantInfo.name}</span>
+            <span className="text-muted-foreground">{t('profile.venueType')}</span>
+            <span>{restaurantInfo.format}</span>
           </div>
-          {restaurantInfo.format && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('profile.venueType')}</span>
-              <span>{restaurantInfo.format}</span>
-            </div>
-          )}
         </div>
       </>
     )
@@ -175,10 +171,9 @@ export const UserProfileDrawer = memo(
     const restaurantInfo = useMemo(() => {
       if (apiRole !== 'restaurant') return null
       return {
-        name: userProfile?.full_name || userProfile?.name || t('venue'),
         format: null, // TODO: add format if available in UserData
       }
-    }, [apiRole, userProfile, t])
+    }, [apiRole])
 
     const supplierInfo = useMemo(() => {
       if (apiRole !== 'supplier') return null

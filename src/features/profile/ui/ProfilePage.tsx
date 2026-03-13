@@ -39,22 +39,18 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
 SpecializationsSection.displayName = 'SpecializationsSection'
 
 const RestaurantInfoCard = memo(
-  ({ restaurantInfo }: { restaurantInfo: { name: string; format: string | null } }) => {
+  ({ restaurantInfo }: { restaurantInfo: { format: string | null } }) => {
     const { t } = useTranslation()
+    if (!restaurantInfo.format) return null
+
     return (
       <Card className="p-5">
         <h4 className="font-semibold ui-density-mb">{t('roles.venueInfoTitle')}</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">{t('profile.venueName')}</span>
-            <span>{restaurantInfo.name}</span>
+            <span className="text-muted-foreground">{t('profile.venueType')}</span>
+            <span>{restaurantInfo.format}</span>
           </div>
-          {restaurantInfo.format && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('profile.venueType')}</span>
-              <span>{restaurantInfo.format}</span>
-            </div>
-          )}
         </div>
       </Card>
     )

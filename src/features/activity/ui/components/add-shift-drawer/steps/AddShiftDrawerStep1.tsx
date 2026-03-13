@@ -7,11 +7,6 @@ export const AddShiftDrawerStep1 = ({
   locationRef,
   positionRef,
   specializationRef,
-  isEmployeeRole,
-  lockedShiftType,
-  shiftType,
-  onShiftTypeChange,
-  shiftTypeOptions,
   location,
   onLocationChange,
   locationError,
@@ -39,18 +34,6 @@ export const AddShiftDrawerStep1 = ({
           error={locationError}
         />
       </div>
-
-      {!isEmployeeRole && !lockedShiftType ? (
-        <Select
-          label={t('shift.shiftType')}
-          value={shiftType}
-          onChange={onShiftTypeChange}
-          options={shiftTypeOptions}
-          placeholder={t('shift.selectShiftType')}
-          searchable={false}
-          forceDropdownBelow
-        />
-      ) : null}
 
       <div ref={positionRef}>
         <Select

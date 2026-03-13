@@ -20,38 +20,44 @@ const formatServiceCategory = (value: string): string => value.split('_').join('
 export const SupplierDetailsScreen = memo(
   ({ supplier, isOpen, onClose }: SupplierDetailsScreenProps) => {
     const { t } = useTranslation()
+    const notSpecified = t('common.notSpecified', { defaultValue: 'Не указано' })
 
     const locationText = useMemo(() => {
       if (!supplier) return ''
-      return supplier.city !== supplier.location ? supplier.location : supplier.city
+      const city = supplier.city.trim()
+      const location = supplier.location.trim()
+      if (location && location !== city) return location
+      return city
     }, [supplier])
 
     const phoneHref = useMemo(() => {
-      if (!supplier) return '#'
+      if (!supplier) return null
       const normalized = supplier.phone.replace(/[^\d+]/g, '')
-      return normalized ? `tel:${normalized}` : '#'
+      return normalized ? `tel:${normalized}` : null
     }, [supplier])
 
     const emailHref = useMemo(() => {
-      if (!supplier || !supplier.email || supplier.email === t('common.notSpecified')) return '#'
-      return `mailto:${supplier.email}`
-    }, [supplier, t])
+      if (!supplier) return null
+      const value = supplier.email.trim()
+      if (!value || !value.includes('@')) return null
+      return `mailto:${value}`
+    }, [supplier])
 
     const usernameValue = useMemo(() => {
       if (!supplier?.username) return null
       return supplier.username.replace(/^@+/, '')
-    }, [supplier?.username])
+    }, [supplier])
 
     const telegramHref = useMemo(() => {
-      if (!usernameValue) return '#'
+      if (!usernameValue) return null
       return `https://t.me/${usernameValue}`
     }, [usernameValue])
 
     const mapHref = useMemo(() => {
       const value = locationText.trim()
-      if (!value || value === t('common.notSpecified')) return '#'
+      if (!value) return null
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`
-    }, [locationText, t])
+    }, [locationText])
 
     if (!supplier) return null
 
@@ -76,7 +82,6 @@ export const SupplierDetailsScreen = memo(
               <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
             </div>
             <div className="flex items-center gap-2 flex-wrap mt-3">
-
               <Badge variant="tag" className="inline-flex items-center gap-1">
                 <Star className="h-3.5 w-3.5" />
                 {supplier.averageRating.toFixed(1)} · {supplier.totalReviews}
@@ -109,13 +114,17 @@ export const SupplierDetailsScreen = memo(
                   iconVariant="section"
                   label={t('profile.phone', { defaultValue: 'Телефон' })}
                   value={
-                    <a
-                      href={phoneHref}
-                      className="text-primary hover:underline"
-                      onClick={event => event.stopPropagation()}
-                    >
-                      {supplier.phone}
-                    </a>
+                    phoneHref ? (
+                      <a
+                        href={phoneHref}
+                        className="text-primary hover:underline"
+                        onClick={event => event.stopPropagation()}
+                      >
+                        {supplier.phone}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">{notSpecified}</span>
+                    )
                   }
                 />
                 <DetailRow
@@ -123,13 +132,17 @@ export const SupplierDetailsScreen = memo(
                   iconVariant="section"
                   label={t('profile.email', { defaultValue: 'Email' })}
                   value={
-                    <a
-                      href={emailHref}
-                      className="text-primary hover:underline"
-                      onClick={event => event.stopPropagation()}
-                    >
-                      {supplier.email}
-                    </a>
+                    emailHref ? (
+                      <a
+                        href={emailHref}
+                        className="text-primary hover:underline"
+                        onClick={event => event.stopPropagation()}
+                      >
+                        {supplier.email}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">{notSpecified}</span>
+                    )
                   }
                 />
                 <DetailRow
@@ -137,18 +150,22 @@ export const SupplierDetailsScreen = memo(
                   iconVariant="section"
                   label={t('common.location', { defaultValue: 'Локация' })}
                   value={
-                    <a
-                      href={mapHref}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="text-primary hover:underline"
-                      onClick={event => event.stopPropagation()}
-                    >
-                      {locationText || t('common.notSpecified', { defaultValue: 'Не указано' })}
-                    </a>
+                    mapHref ? (
+                      <a
+                        href={mapHref}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="text-primary hover:underline"
+                        onClick={event => event.stopPropagation()}
+                      >
+                        {locationText}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">{notSpecified}</span>
+                    )
                   }
                 />
-                {usernameValue ? (
+                {usernameValue && telegramHref ? (
                   <DetailRow
                     icon={AtSign}
                     iconVariant="section"
@@ -187,8 +204,6 @@ export const SupplierDetailsScreen = memo(
                 </div>
               </Card>
             ) : null}
-
-
             {supplier.bio ? (
               <TextCard
                 icon={Building2}

@@ -45,11 +45,6 @@ export interface AddShiftDrawerStep1Props {
   locationRef: RefObject<HTMLDivElement | null>
   positionRef: RefObject<HTMLDivElement | null>
   specializationRef: RefObject<HTMLDivElement | null>
-  isEmployeeRole: boolean
-  lockedShiftType: ShiftType | null
-  shiftType: ShiftType
-  onShiftTypeChange: (value: string) => void
-  shiftTypeOptions: SelectFieldOption[]
   location: string
   onLocationChange: (value: string) => void
   locationError?: string

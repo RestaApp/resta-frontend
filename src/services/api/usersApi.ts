@@ -93,7 +93,6 @@ export interface GetUsersParams {
   user_type: UsersListType
   city?: string
   location?: string
-  supplier_type?: string
   supplier_category?: string
   supplier_types?: string
   delivery_available?: boolean

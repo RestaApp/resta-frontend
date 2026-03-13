@@ -27,8 +27,7 @@ export const buildUpdateUserRequest = (
   return {
     user: {
       name: formData.name.trim() || undefined,
-      ...(apiRole === 'employee' &&
-        formData.lastName.trim() && { last_name: formData.lastName.trim() }),
+      ...(apiRole === 'employee' && { last_name: formData.lastName.trim() }),
       bio: formData.bio.trim() || null,
       city: formData.city.trim() || null,
       ...(apiRole === 'restaurant' && { location: formData.location.trim() || null }),

@@ -32,9 +32,8 @@ const getSupplierProfile = (item: SupplierApiUser) =>
 
 const getSupplierCategories = (item: SupplierApiUser): string[] => {
   const profile = getSupplierProfile(item)
-  const fromApi = profile?.supplier_types && Array.isArray(profile.supplier_types)
-    ? profile.supplier_types
-    : []
+  const fromApi =
+    profile?.supplier_types && Array.isArray(profile.supplier_types) ? profile.supplier_types : []
   return fromApi.filter(Boolean)
 }
 
@@ -61,10 +60,10 @@ export const mapSupplierUsersToItems = (
     return {
       id: item.id,
       bio: item.bio ?? null,
-      city: item.city || t('common.notSpecified', { defaultValue: 'Не указано' }),
-      location: item.location || t('common.notSpecified', { defaultValue: 'Не указано' }),
-      email: item.email || t('common.notSpecified', { defaultValue: 'Не указано' }),
-      phone: item.phone || t('common.notSpecified', { defaultValue: 'Не указано' }),
+      city: item.city?.trim() || '',
+      location: item.location?.trim() || '',
+      email: item.email?.trim() || '',
+      phone: item.phone?.trim() || '',
       averageRating: normalizeRating(item.average_rating),
       totalReviews: normalizeReviewsCount(item.total_reviews),
       username: item.username || null,

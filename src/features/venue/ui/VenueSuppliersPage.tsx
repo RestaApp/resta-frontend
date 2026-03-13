@@ -65,7 +65,7 @@ export function VenueSuppliersPage() {
     const city = appliedFilters.city.trim()
     const supplierType = appliedFilters.supplierType || undefined
     const supplierTypes =
-      appliedFilters.serviceCategories.length > 0
+      !supplierType && appliedFilters.serviceCategories.length > 0
         ? appliedFilters.serviceCategories.join(',')
         : undefined
 
@@ -74,7 +74,6 @@ export function VenueSuppliersPage() {
       city: city || undefined,
       supplier_category: supplierType,
       supplier_types: supplierTypes,
-      supplier_type: supplierType,
       delivery_available:
         appliedFilters.delivery === 'all' ? undefined : appliedFilters.delivery === 'yes',
       page: 1,
@@ -106,7 +105,7 @@ export function VenueSuppliersPage() {
   }, [suppliers])
 
   const selectedSupplier = useMemo(
-    () => (selectedSupplierId ? (suppliersMap.get(selectedSupplierId) ?? null) : null),
+    () => (selectedSupplierId !== null ? (suppliersMap.get(selectedSupplierId) ?? null) : null),
     [selectedSupplierId, suppliersMap]
   )
 
@@ -161,6 +160,31 @@ export function VenueSuppliersPage() {
     )
   }, [appliedFilters])
 
+  const activeFiltersList = useMemo(() => {
+    const result: string[] = []
+
+    const city = appliedFilters.city.trim()
+    if (city) result.push(city)
+
+    if (appliedFilters.supplierType) {
+      result.push(getSupplierTypeLabel(appliedFilters.supplierType))
+    }
+
+    if (appliedFilters.serviceCategories.length > 0) {
+      result.push(
+        ...appliedFilters.serviceCategories.map(category => getSupplierTypeLabel(category))
+      )
+    }
+
+    if (appliedFilters.delivery === 'yes') {
+      result.push(t('venueUi.suppliers.filters.deliveryYes', { defaultValue: 'С доставкой' }))
+    } else if (appliedFilters.delivery === 'no') {
+      result.push(t('venueUi.suppliers.filters.deliveryNo', { defaultValue: 'Без доставки' }))
+    }
+
+    return result
+  }, [appliedFilters, getSupplierTypeLabel, t])
+
   const handleLoadMore = useCallback(() => {
     if (isLoading || isFetching || !hasMore) return
     setVisibleCount(prev => prev + SUPPLIERS_PER_PAGE)
@@ -196,6 +220,7 @@ export function VenueSuppliersPage() {
         suppliersCount={suppliers.length}
         totalCount={totalCount}
         hasActiveApiFilters={hasActiveApiFilters}
+        activeFiltersList={activeFiltersList}
         onlyActive={onlyActive}
         onToggleOnlyActive={() => setOnlyActive(v => !v)}
         onResetFilters={handleResetFilters}
