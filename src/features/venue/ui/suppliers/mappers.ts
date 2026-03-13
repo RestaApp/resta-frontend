@@ -36,6 +36,13 @@ const getSupplierCategories = (item: SupplierApiUser): string[] => {
   return fromApi.filter(Boolean)
 }
 
+const getUserPhotoUrl = (item: SupplierApiUser): string | null => {
+  const raw = item.photo_url ?? item.profile_photo_url
+  if (typeof raw !== 'string') return null
+  const normalized = raw.trim()
+  return normalized.length > 0 ? normalized : null
+}
+
 export const mapSupplierUsersToItems = (
   users: SupplierApiUser[],
   t: TFunction,
@@ -66,6 +73,7 @@ export const mapSupplierUsersToItems = (
       averageRating: normalizeRating(item.average_rating),
       totalReviews: normalizeReviewsCount(item.total_reviews),
       username: item.username || null,
+      photoUrl: getUserPhotoUrl(item),
       supplierType: categoriesLabel || t('common.notSpecified', { defaultValue: 'Не указано' }),
       supplierCategory: supplierTypeCode
         ? getSupplierTypeLabel(supplierTypeCode)

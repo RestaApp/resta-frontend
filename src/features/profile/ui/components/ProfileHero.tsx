@@ -35,7 +35,7 @@ export const ProfileHero = memo(
     wrapInCard = true,
   }: ProfileHeroProps) => {
     const { t } = useTranslation()
-    const photoUrl = userProfile.profile_photo_url || userProfile.photo_url || null
+    const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
     const cityOrLocation = userProfile.city || userProfile.location
     const openToWork =
       apiRole === 'employee' ? userProfile.employee_profile?.open_to_work : undefined

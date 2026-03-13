@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AtSign, Building2, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import type { SupplierCardData } from '@/components/ui/shift-card/SupplierCard'
@@ -68,7 +69,17 @@ export const SupplierDetailsScreen = memo(
         }}
         onClose={onClose}
         closeAriaLabel={t('common.close')}
-        title={supplier.name}
+        title={
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="h-11 w-11">
+              <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
+              <AvatarFallback className="gradient-primary text-primary-foreground font-semibold">
+                {supplier.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate">{supplier.name}</span>
+          </div>
+        }
         headerMeta={
           <>
             <Badge variant="tag" className="inline-flex items-center gap-1">

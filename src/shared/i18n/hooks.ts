@@ -5,13 +5,24 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
+const humanizeLabel = (value: string): string => {
+  const normalized = value
+    .replace(/[_-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .trim()
+    .replace(/\s+/g, ' ')
+
+  if (!normalized) return value
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1)
+}
+
 export function useLabels() {
   const { t } = useTranslation()
 
   const resolve = useCallback(
     (key: string, fallback: string) => {
       const res = t(key)
-      return res === key ? fallback : res
+      return res === key ? humanizeLabel(fallback) : res
     },
     [t]
   )

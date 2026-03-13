@@ -25,7 +25,13 @@ const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string
   if (status === 'accepted') return t('activity.statusAcceptedPill')
   if (status === 'rejected') return t('activity.statusRejectedPill')
   if (status === 'pending' || status === 'processing') return t('activity.statusPendingPill')
-  return String(status)
+  const raw = String(status)
+  const normalized = raw
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!normalized) return ''
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1)
 }
 
 const statusToClasses = (status: ShiftStatus): string => {

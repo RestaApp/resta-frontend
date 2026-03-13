@@ -2,53 +2,55 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useAcceptApplicationMutation,
-  useGetMyShiftsQuery,
+  useGetReceivedShiftApplicationsQuery,
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
-import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { useToast } from '@/hooks/useToast'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueStaffList, type StaffFilter, type StaffItem } from './staff/VenueStaffList'
 
+const normalizeShiftStatus = (status?: string | null): string => {
+  if (!status) return 'active'
+  if (status === 'open') return 'active'
+  return status
+}
+
 export function VenueStaffPage() {
   const { t } = useTranslation()
   const { showToast } = useToast()
-  const { data, isLoading, isError, refetch } = useGetMyShiftsQuery()
+  const { data, isLoading, isError, refetch } = useGetReceivedShiftApplicationsQuery()
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
   const [activeFilter, setActiveFilter] = useState<StaffFilter>('all')
   const [selectedItem, setSelectedItem] = useState<StaffItem | null>(null)
   const [moderatingAction, setModeratingAction] = useState<'accept' | 'reject' | null>(null)
 
-  const shifts: VacancyApiItem[] = useMemo(
-    () => (data?.data && Array.isArray(data.data) ? normalizeVacanciesResponse(data) : []),
+  const applications = useMemo(
+    () => (data?.data && Array.isArray(data.data) ? data.data : []),
     [data]
   )
 
   const staffItems: StaffItem[] = useMemo(() => {
     const list: StaffItem[] = []
 
-    for (const shift of shifts) {
-      const previews = shift.applications_preview ?? []
-      for (const person of previews) {
-        const applicationId = person.shift_application_id ?? person.id
-        if (!applicationId) continue
+    for (const application of applications) {
+      const applicationId = application.shift_application_id ?? application.id
+      if (!applicationId) continue
 
-        list.push({
-          shiftId: shift.id,
-          shiftTitle: shift.title ?? '',
-          shiftStatus: shift.status ?? 'active',
-          applicationId,
-          applicationStatus: person.shift_application_status ?? person.status ?? 'pending',
-          person,
-        })
-      }
+      list.push({
+        shiftId: application.shift_id ?? 0,
+        shiftTitle: application.shift_title ?? '',
+        shiftStatus: normalizeShiftStatus(application.shift_status),
+        applicationId,
+        applicationStatus:
+          application.shift_application_status ?? application.status ?? 'pending',
+        person: application,
+      })
     }
 
     return list
-  }, [shifts])
+  }, [applications])
 
   const filteredItems = useMemo(() => {
     if (activeFilter === 'all') return staffItems
@@ -67,7 +69,7 @@ export function VenueStaffPage() {
 
   const handleAccept = async (applicationId: number, shiftId: number) => {
     try {
-      await acceptApplication({ applicationId, shiftId }).unwrap()
+      await acceptApplication({ applicationId, shiftId: shiftId > 0 ? shiftId : undefined }).unwrap()
       showToast(t('venueUi.staff.accepted', { defaultValue: 'Сотрудник принят' }), 'success')
       await refetch()
     } catch {
@@ -80,7 +82,7 @@ export function VenueStaffPage() {
 
   const handleReject = async (applicationId: number, shiftId: number) => {
     try {
-      await rejectApplication({ applicationId, shiftId }).unwrap()
+      await rejectApplication({ applicationId, shiftId: shiftId > 0 ? shiftId : undefined }).unwrap()
       showToast(t('venueUi.staff.rejected', { defaultValue: 'Заявка отклонена' }), 'success')
       await refetch()
     } catch {

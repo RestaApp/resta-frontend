@@ -2,7 +2,7 @@ import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ApplicationPreviewApiItem } from '@/services/api/shiftsApi'
 import { getLogoByPosition } from '@/features/feed/model/utils/mapping'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -95,8 +95,10 @@ export const VenueStaffList = ({
               const position =
                 item.person.position ??
                 item.person.user?.position ??
+                item.person.user?.employee_profile?.position ??
                 t('venueUi.staff.noPosition', { defaultValue: 'Без позиции' })
               const isPending = item.applicationStatus === 'pending'
+              const photoUrl = item.person.user?.photo_url ?? item.person.user?.profile_photo_url ?? null
 
               return (
                 <Card key={`${item.shiftId}-${item.applicationId}`} className="ui-density-stack-sm p-4">
@@ -112,6 +114,7 @@ export const VenueStaffList = ({
                     }}
                   >
                     <Avatar className="h-11 w-11">
+                      <AvatarImage src={photoUrl} alt={fullName} />
                       <AvatarFallback>
                         {getLogoByPosition(
                           position,
@@ -144,22 +147,10 @@ export const VenueStaffList = ({
                   </div>
 
                   {isPending ? (
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <Button
                         className="flex-1"
-                        size="sm"
-                        variant="primary"
-                        disabled={isAccepting || isRejecting}
-                        onClick={event => {
-                          event.stopPropagation()
-                          onAccept(item.applicationId, item.shiftId)
-                        }}
-                      >
-                        {t('venueUi.staff.actions.accept', { defaultValue: 'Принять' })}
-                      </Button>
-                      <Button
-                        className="flex-1"
-                        size="sm"
+                        size="md"
                         variant="outline"
                         disabled={isAccepting || isRejecting}
                         onClick={event => {
@@ -168,6 +159,18 @@ export const VenueStaffList = ({
                         }}
                       >
                         {t('venueUi.staff.actions.reject', { defaultValue: 'Отклонить' })}
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        size="md"
+                        variant="gradient"
+                        disabled={isAccepting || isRejecting}
+                        onClick={event => {
+                          event.stopPropagation()
+                          onAccept(item.applicationId, item.shiftId)
+                        }}
+                      >
+                        {t('venueUi.staff.actions.accept', { defaultValue: 'Принять' })}
                       </Button>
                     </div>
                   ) : null}

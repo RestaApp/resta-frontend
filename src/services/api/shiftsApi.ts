@@ -109,6 +109,8 @@ export interface ApplicantUserApi {
   name?: string
   last_name?: string
   full_name?: string
+  photo_url?: string | null
+  profile_photo_url?: string | null
   position?: string
   employee_profile?: EmployeeProfilePreviewApi | null
 }
@@ -132,6 +134,21 @@ export interface ApplicationPreviewApiItem {
   specializations?: string[]
   average_rating?: string | number
   experience_years?: number
+}
+
+export interface ReceivedShiftApplicationApiItem extends ApplicationPreviewApiItem {
+  id: number
+  shift_id?: number
+  shift_title?: string
+  shift_type?: 'vacancy' | 'replacement' | string
+  shift_status?: string
+}
+
+export interface ReceivedShiftApplicationsResponse {
+  success: boolean
+  data: ReceivedShiftApplicationApiItem[]
+  meta?: PaginationMeta
+  pagination?: PaginationMeta
 }
 
 /**
@@ -362,6 +379,16 @@ export const shiftsApi = api.injectEndpoints({
       keepUnusedDataFor: 60,
     }),
 
+    // Получить отклики на смены/вакансии текущего заведения
+    getReceivedShiftApplications: builder.query<ReceivedShiftApplicationsResponse, void>({
+      query: () => ({
+        url: '/api/v1/shift_applications/received',
+        method: 'GET',
+      }),
+      providesTags: result => provideListTags('AppliedShift', result),
+      keepUnusedDataFor: 30,
+    }),
+
     // Получить мои смены (список смен текущего пользователя)
     getMyShifts: builder.query<VacanciesResponse, void>({
       query: () => ({
@@ -385,6 +412,7 @@ export const {
   useApplyToShiftMutation,
   useCancelApplicationMutation,
   useGetAppliedShiftsQuery,
+  useGetReceivedShiftApplicationsQuery,
   useGetMyShiftsQuery,
   useAcceptApplicationMutation,
   useRejectApplicationMutation,

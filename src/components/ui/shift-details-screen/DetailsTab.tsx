@@ -20,6 +20,7 @@ import { cn } from '@/utils/cn'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
 import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
+import { formatServiceCategory } from './formatServiceCategory'
 
 interface AboutVenue {
   bio?: string | null
@@ -208,7 +209,9 @@ export const DetailsTab = memo(
                 {aboutVenue.cuisineTypes.length
                   ? aboutVenue.cuisineTypes.map(type => (
                       <Badge key={type} variant="tag" className="font-normal">
-                        {type}
+                        {t(`labels.cuisineType.${type}`, {
+                          defaultValue: formatServiceCategory(type),
+                        })}
                       </Badge>
                     ))
                   : null}

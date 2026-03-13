@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin, Truck } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/cn'
 import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
@@ -16,6 +17,7 @@ export interface SupplierCardData {
   averageRating: number
   totalReviews: number
   username: string | null
+  photoUrl: string | null
   supplierType: string
   supplierCategory: string
   serviceCategories: string[]
@@ -64,7 +66,13 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 flex items-center gap-3">
+          <Avatar className="h-11 w-11">
+            <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
+            <AvatarFallback className="gradient-primary text-primary-foreground font-semibold">
+              {supplier.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
           <p className="truncate font-semibold text-foreground">{supplier.name}</p>
         </div>
         <span

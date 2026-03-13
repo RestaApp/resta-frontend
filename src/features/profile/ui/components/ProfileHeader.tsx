@@ -13,7 +13,7 @@ interface ProfileHeaderProps {
 export const ProfileHeader = memo(
   ({ userProfile, userName, roleLabel, onEdit }: ProfileHeaderProps) => {
     const { t } = useTranslation()
-    const photoUrl = userProfile?.profile_photo_url || userProfile?.photo_url || null
+    const photoUrl = userProfile?.photo_url || userProfile?.profile_photo_url || null
 
     return (
       <div className="text-center relative">
