@@ -19,6 +19,8 @@ export interface SupplierFilters {
 
 export interface SupplierProfile {
   supplier_type?: string | null
+  supplier_category?: string | null
+  supplier_types?: string[] | null
   name?: string | null
   delivery_available?: boolean | null
   service_categories?: string[] | null

@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Building2, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
+import { AtSign, Building2, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Drawer, DrawerCloseButton, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -26,6 +26,33 @@ export const SupplierDetailsScreen = memo(
       return supplier.city !== supplier.location ? supplier.location : supplier.city
     }, [supplier])
 
+    const phoneHref = useMemo(() => {
+      if (!supplier) return '#'
+      const normalized = supplier.phone.replace(/[^\d+]/g, '')
+      return normalized ? `tel:${normalized}` : '#'
+    }, [supplier])
+
+    const emailHref = useMemo(() => {
+      if (!supplier || !supplier.email || supplier.email === t('common.notSpecified')) return '#'
+      return `mailto:${supplier.email}`
+    }, [supplier, t])
+
+    const usernameValue = useMemo(() => {
+      if (!supplier?.username) return null
+      return supplier.username.replace(/^@+/, '')
+    }, [supplier?.username])
+
+    const telegramHref = useMemo(() => {
+      if (!usernameValue) return '#'
+      return `https://t.me/${usernameValue}`
+    }, [usernameValue])
+
+    const mapHref = useMemo(() => {
+      const value = locationText.trim()
+      if (!value || value === t('common.notSpecified')) return '#'
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`
+    }, [locationText, t])
+
     if (!supplier) return null
 
     return (
@@ -45,19 +72,14 @@ export const SupplierDetailsScreen = memo(
                 <DrawerTitle className="text-xl font-semibold break-words text-foreground">
                   {supplier.name}
                 </DrawerTitle>
-                <p className="text-sm text-muted-foreground mt-1">{supplier.supplierType}</p>
               </div>
               <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
             </div>
             <div className="flex items-center gap-2 flex-wrap mt-3">
-              <Badge variant={supplier.status === 'active' ? 'tagActive' : 'tag'}>
-                {supplier.status === 'active'
-                  ? t('venueUi.suppliers.status.active', { defaultValue: 'Активен' })
-                  : t('venueUi.suppliers.status.paused', { defaultValue: 'Пауза' })}
-              </Badge>
+
               <Badge variant="tag" className="inline-flex items-center gap-1">
                 <Star className="h-3.5 w-3.5" />
-                {supplier.averageRating.toFixed(1)}
+                {supplier.averageRating.toFixed(1)} · {supplier.totalReviews}
               </Badge>
               <Badge
                 variant={supplier.deliveryAvailable ? 'tagActive' : 'tag'}
@@ -80,33 +102,79 @@ export const SupplierDetailsScreen = memo(
                   icon={Building2}
                   iconVariant="section"
                   label={t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
-                  value={supplier.supplierType}
+                  value={supplier.supplierCategory}
                 />
                 <DetailRow
                   icon={Phone}
                   iconVariant="section"
-                  label={t('profile.phoneRequired', { defaultValue: 'Телефон' })}
-                  value={supplier.phone}
+                  label={t('profile.phone', { defaultValue: 'Телефон' })}
+                  value={
+                    <a
+                      href={phoneHref}
+                      className="text-primary hover:underline"
+                      onClick={event => event.stopPropagation()}
+                    >
+                      {supplier.phone}
+                    </a>
+                  }
                 />
                 <DetailRow
                   icon={Mail}
                   iconVariant="section"
                   label={t('profile.email', { defaultValue: 'Email' })}
-                  value={supplier.email}
+                  value={
+                    <a
+                      href={emailHref}
+                      className="text-primary hover:underline"
+                      onClick={event => event.stopPropagation()}
+                    >
+                      {supplier.email}
+                    </a>
+                  }
                 />
                 <DetailRow
                   icon={MapPin}
                   iconVariant="section"
                   label={t('common.location', { defaultValue: 'Локация' })}
-                  value={locationText || t('common.notSpecified', { defaultValue: 'Не указано' })}
+                  value={
+                    <a
+                      href={mapHref}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="text-primary hover:underline"
+                      onClick={event => event.stopPropagation()}
+                    >
+                      {locationText || t('common.notSpecified', { defaultValue: 'Не указано' })}
+                    </a>
+                  }
                 />
+                {usernameValue ? (
+                  <DetailRow
+                    icon={AtSign}
+                    iconVariant="section"
+                    label={t('profile.username', { defaultValue: 'Username' })}
+                    value={
+                      <a
+                        href={telegramHref}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="text-primary hover:underline"
+                        onClick={event => event.stopPropagation()}
+                      >
+                        @{usernameValue}
+                      </a>
+                    }
+                  />
+                ) : null}
               </div>
             </Card>
 
             {supplier.serviceCategories.length > 0 ? (
               <Card className={DETAIL_CARD_CLASS}>
                 <h2 className="text-base font-medium text-foreground mb-3">
-                  {t('venueUi.suppliers.filters.categories', { defaultValue: 'Категории услуг' })}
+                  {t('venueUi.suppliers.filters.categories', {
+                    defaultValue: 'Категории товаров и услуг',
+                  })}
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {supplier.serviceCategories.map(category => (
@@ -119,6 +187,7 @@ export const SupplierDetailsScreen = memo(
                 </div>
               </Card>
             ) : null}
+
 
             {supplier.bio ? (
               <TextCard

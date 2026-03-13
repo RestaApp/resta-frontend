@@ -13,7 +13,10 @@ export interface SupplierCardData {
   email: string
   phone: string
   averageRating: number
+  totalReviews: number
+  username: string | null
   supplierType: string
+  supplierCategory: string
   serviceCategories: string[]
   deliveryAvailable: boolean | null
   status: 'active' | 'paused'
@@ -58,22 +61,22 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1">
+        <div className="min-w-0">
           <p className="truncate font-semibold text-foreground">{supplier.name}</p>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Star className="h-4 w-4" />
-            <span>{supplier.averageRating.toFixed(1)}</span>
-          </div>
         </div>
-        <Badge variant={supplier.status === 'active' ? 'tagActive' : 'tag'}>
-          {supplier.status === 'active'
-            ? t('venueUi.suppliers.status.active', { defaultValue: 'Активен' })
-            : t('venueUi.suppliers.status.paused', { defaultValue: 'Пауза' })}
-        </Badge>
+        <div className="shrink-0 flex flex-col items-end leading-tight text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5 text-sm">
+            <Star className="h-4 w-4" />
+            {supplier.averageRating.toFixed(1)}
+          </span>
+          <span className="text-sm">
+            {supplier.totalReviews} {t('common.reviews', { defaultValue: 'отзывов' })}
+          </span>
+        </div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Badge variant="tag">{supplier.supplierType}</Badge>
+        <Badge variant="tag">{supplier.supplierCategory}</Badge>
         <Badge variant={supplier.deliveryAvailable ? 'tagActive' : 'tag'}>
           <span className="inline-flex items-center gap-1">
             <Truck className="h-3.5 w-3.5" />
@@ -85,10 +88,6 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
           </span>
         </Badge>
       </div>
-
-      {supplier.bio ? (
-        <p className="mt-3 text-sm text-muted-foreground line-clamp-2">{supplier.bio}</p>
-      ) : null}
 
       {supplier.serviceCategories.length > 0 ? (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -108,14 +107,17 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
       ) : null}
 
       <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-        <p className="inline-flex items-center gap-2 truncate">
-          <Phone className="h-4 w-4 shrink-0" />
-          <span className="truncate">{supplier.phone}</span>
-        </p>
-        <p className="inline-flex items-center gap-2 truncate">
-          <Mail className="h-4 w-4 shrink-0" />
-          <span className="truncate">{supplier.email}</span>
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="inline-flex items-center gap-2 min-w-0 max-w-[48%]">
+            <Phone className="h-4 w-4 shrink-0" />
+            <span className="truncate">{supplier.phone}</span>
+          </p>
+          <p className="inline-flex items-center justify-end gap-2 min-w-0 max-w-[48%] ml-auto">
+            <Mail className="h-4 w-4 shrink-0" />
+            <span className="truncate text-right">{supplier.email}</span>
+          </p>
+        </div>
+
         <p className="inline-flex items-center gap-2 truncate">
           <MapPin className="h-4 w-4 shrink-0" />
           <span className="truncate">{locationText}</span>

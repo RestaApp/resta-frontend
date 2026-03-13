@@ -5,9 +5,11 @@ import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useCities } from '@/hooks/useCities'
 import { SupplierDetailsScreen } from '@/components/ui/shift-details-screen/SupplierDetailsScreen'
+import { useAppSelector } from '@/store/hooks'
+import { selectUserCity } from '@/features/navigation/model/userSlice'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'
 import { VenueSuppliersList } from './suppliers/VenueSuppliersList'
-import { buildSupplierShiftMap, mapSupplierUsersToItems } from './suppliers/mappers'
+import { mapSupplierUsersToItems } from './suppliers/mappers'
 import {
   DEFAULT_SERVICE_CATEGORY_OPTIONS,
   DEFAULT_SUPPLIER_FILTERS,
@@ -21,13 +23,29 @@ export function VenueSuppliersPage() {
   const { t } = useTranslation()
   const { getSupplierTypeLabel } = useLabels()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
+  const userCity = useAppSelector(selectUserCity)
+
+  const defaultFilters = useMemo(
+    () => ({
+      ...DEFAULT_SUPPLIER_FILTERS,
+      city: userCity?.trim() || '',
+    }),
+    [userCity]
+  )
 
   const [onlyActive, setOnlyActive] = useState(false)
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
-  const [appliedFilters, setAppliedFilters] = useState<SupplierFilters>(DEFAULT_SUPPLIER_FILTERS)
-  const [draftFilters, setDraftFilters] = useState<SupplierFilters>(DEFAULT_SUPPLIER_FILTERS)
+  const [appliedFilters, setAppliedFilters] = useState<SupplierFilters>(defaultFilters)
+  const [draftFilters, setDraftFilters] = useState<SupplierFilters>(defaultFilters)
   const [visibleCount, setVisibleCount] = useState(SUPPLIERS_PER_PAGE)
+
+  useEffect(() => {
+    if (!defaultFilters.city) return
+
+    setAppliedFilters(prev => (prev.city.trim() ? prev : { ...prev, city: defaultFilters.city }))
+    setDraftFilters(prev => (prev.city.trim() ? prev : { ...prev, city: defaultFilters.city }))
+  }, [defaultFilters.city])
 
   useEffect(() => {
     const handler = () => {
@@ -91,8 +109,6 @@ export function VenueSuppliersPage() {
     [selectedSupplierId, suppliersMap]
   )
 
-  const supplierShiftMap = useMemo(() => buildSupplierShiftMap(list, t), [list, t])
-
   const pagination = data?.pagination || data?.meta
   const totalCount =
     typeof pagination?.total_count === 'number' ? pagination.total_count : suppliers.length
@@ -115,7 +131,10 @@ export function VenueSuppliersPage() {
     const fromApi = supplierUsers
       .map(
         item =>
-          item.supplier_profile?.supplier_type ?? item.supplier_profile_attributes?.supplier_type
+          item.supplier_profile?.supplier_category ??
+          item.supplier_profile_attributes?.supplier_category ??
+          item.supplier_profile?.supplier_type ??
+          item.supplier_profile_attributes?.supplier_type
       )
       .filter((value): value is string => Boolean(value))
 
@@ -124,7 +143,11 @@ export function VenueSuppliersPage() {
 
   const serviceCategoryOptions = useMemo(() => {
     const fromApi = supplierUsers.flatMap(item => {
-      const categories = item.supplier_profile?.service_categories
+      const categories =
+        item.supplier_profile?.supplier_types ??
+        item.supplier_profile_attributes?.supplier_types ??
+        item.supplier_profile?.service_categories ??
+        item.supplier_profile_attributes?.service_categories
       return Array.isArray(categories) ? categories : []
     })
 
@@ -147,13 +170,13 @@ export function VenueSuppliersPage() {
   }, [hasMore, isFetching, isLoading])
 
   const handleResetFilters = useCallback(() => {
-    setAppliedFilters(DEFAULT_SUPPLIER_FILTERS)
-    setDraftFilters(DEFAULT_SUPPLIER_FILTERS)
-  }, [])
+    setAppliedFilters(defaultFilters)
+    setDraftFilters(defaultFilters)
+  }, [defaultFilters])
 
   const handleResetDraftFilters = useCallback(() => {
-    setDraftFilters(DEFAULT_SUPPLIER_FILTERS)
-  }, [])
+    setDraftFilters(defaultFilters)
+  }, [defaultFilters])
 
   const handleApplyFilters = useCallback(() => {
     setAppliedFilters(draftFilters)
@@ -180,7 +203,6 @@ export function VenueSuppliersPage() {
         onToggleOnlyActive={() => setOnlyActive(v => !v)}
         onResetFilters={handleResetFilters}
         list={list}
-        supplierShiftMap={supplierShiftMap}
         hasMore={hasMore}
         onLoadMore={handleLoadMore}
         onOpenDetails={setSelectedSupplierId}

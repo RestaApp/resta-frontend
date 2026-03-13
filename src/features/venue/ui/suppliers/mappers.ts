@@ -1,5 +1,4 @@
 import type { TFunction } from 'i18next'
-import type { Shift } from '@/features/feed/model/types'
 import type { SupplierApiUser, SupplierItem } from './types'
 
 export const formatServiceCategory = (value: string): string => value.split('_').join(' ').trim()
@@ -19,14 +18,48 @@ const normalizeRating = (value: unknown): number => {
   return 0
 }
 
+const normalizeReviewsCount = (value: unknown): number => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0
+  if (typeof value === 'string') {
+    const parsed = Number.parseInt(value, 10)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  return 0
+}
+
+const getSupplierProfile = (item: SupplierApiUser) =>
+  item.supplier_profile ?? item.supplier_profile_attributes ?? null
+
+const getSupplierCategories = (item: SupplierApiUser): string[] => {
+  const profile = getSupplierProfile(item)
+  const fromApi =
+    profile?.supplier_types && Array.isArray(profile.supplier_types)
+      ? profile.supplier_types
+      : profile?.service_categories && Array.isArray(profile.service_categories)
+        ? profile.service_categories
+        : []
+  return fromApi.filter(Boolean)
+}
+
 export const mapSupplierUsersToItems = (
   users: SupplierApiUser[],
   t: TFunction,
   getSupplierTypeLabel: (value: string) => string
 ): SupplierItem[] => {
   return users.map(item => {
-    const profile = item.supplier_profile ?? item.supplier_profile_attributes ?? null
-    const serviceCategories = profile?.service_categories
+    const profile = getSupplierProfile(item)
+    const categories = getSupplierCategories(item)
+    const supplierTypeCode = profile?.supplier_category ?? profile?.supplier_type ?? null
+    const categoriesLabel =
+      categories.length > 0
+        ? categories
+            .map(category =>
+              t(`labels.serviceCategory.${category}`, {
+                defaultValue: formatServiceCategory(category),
+              })
+            )
+            .join(', ')
+        : null
 
     return {
       id: item.id,
@@ -36,40 +69,17 @@ export const mapSupplierUsersToItems = (
       email: item.email || t('common.notSpecified', { defaultValue: 'Не указано' }),
       phone: item.phone || t('common.notSpecified', { defaultValue: 'Не указано' }),
       averageRating: normalizeRating(item.average_rating),
-      supplierType: profile?.supplier_type
-        ? getSupplierTypeLabel(profile.supplier_type)
+      totalReviews: normalizeReviewsCount(item.total_reviews),
+      username: item.username || null,
+      supplierType: categoriesLabel || t('common.notSpecified', { defaultValue: 'Не указано' }),
+      supplierCategory: supplierTypeCode
+        ? getSupplierTypeLabel(supplierTypeCode)
         : t('common.notSpecified', { defaultValue: 'Не указано' }),
-      serviceCategories: Array.isArray(serviceCategories) ? serviceCategories : [],
+      serviceCategories: categories,
       deliveryAvailable:
         typeof profile?.delivery_available === 'boolean' ? profile.delivery_available : null,
       name: getSupplierName(item, t('common.user', { defaultValue: `Поставщик #${item.id}` })),
       status: item.active ? 'active' : 'paused',
     }
   })
-}
-
-export const buildSupplierShiftMap = (items: SupplierItem[], t: TFunction): Map<number, Shift> => {
-  const map = new Map<number, Shift>()
-
-  for (const item of items) {
-    map.set(item.id, {
-      id: item.id,
-      logo: '🏪',
-      title: item.name,
-      restaurant: item.supplierType,
-      rating: item.averageRating,
-      position: t('tabs.venue.suppliers', { defaultValue: 'Поставщик' }),
-      specialization: item.serviceCategories[0] ?? null,
-      date: '',
-      time: '',
-      pay: 0,
-      currency: '',
-      payPeriod: 'shift',
-      location: item.location,
-      shiftType: 'vacancy',
-      canApply: false,
-    })
-  }
-
-  return map
 }

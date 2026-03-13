@@ -3,9 +3,8 @@ import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
-import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
+import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Shift } from '@/features/feed/model/types'
 import type { SupplierItem } from './types'
 
 interface VenueSuppliersListProps {
@@ -18,7 +17,6 @@ interface VenueSuppliersListProps {
   onToggleOnlyActive: () => void
   onResetFilters: () => void
   list: SupplierItem[]
-  supplierShiftMap: Map<number, Shift>
   hasMore: boolean
   onLoadMore: () => void
   onOpenDetails: (id: number) => void
@@ -30,11 +28,8 @@ export const VenueSuppliersList = ({
   suppliersCount,
   totalCount,
   hasActiveApiFilters,
-  onlyActive,
-  onToggleOnlyActive,
   onResetFilters,
   list,
-  supplierShiftMap,
   hasMore,
   onLoadMore,
   onOpenDetails,
@@ -53,23 +48,14 @@ export const VenueSuppliersList = ({
               {t('common.reset', { defaultValue: 'Сбросить' })}
             </Button>
           ) : null}
-          <Button
-            size="sm"
-            variant={onlyActive ? 'primary' : 'outline'}
-            onClick={onToggleOnlyActive}
-          >
-            {onlyActive
-              ? t('venueUi.suppliers.showAll', { defaultValue: 'Показать всех' })
-              : t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
-          </Button>
         </div>
       </div>
 
       {isLoading && suppliersCount === 0 ? (
         <div className="ui-density-stack-sm">
-          <Skeleton className="h-24 rounded-xl" />
-          <Skeleton className="h-24 rounded-xl" />
-          <Skeleton className="h-24 rounded-xl" />
+          <Skeleton className="h-40 rounded-xl" />
+          <Skeleton className="h-40 rounded-xl" />
+          <Skeleton className="h-40 rounded-xl" />
         </div>
       ) : list.length === 0 ? (
         <EmptyState
@@ -83,19 +69,7 @@ export const VenueSuppliersList = ({
         <>
           <div className="ui-density-stack-sm">
             {list.map(item => {
-              const shift = supplierShiftMap.get(item.id)
-              if (!shift) return null
-
-              return (
-                <ShiftCard
-                  key={item.id}
-                  shift={shift}
-                  variant="supplier"
-                  onOpenDetails={onOpenDetails}
-                  onApply={() => {}}
-                  onCancel={() => {}}
-                />
-              )
+              return <SupplierCard key={item.id} supplier={item} onOpenDetails={onOpenDetails} />
             })}
           </div>
 

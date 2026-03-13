@@ -240,7 +240,7 @@ export const DrawerCloseButton = ({ onClick, ariaLabel, className }: DrawerClose
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        'min-h-[44px] min-w-[44px] rounded-lg p-2 text-muted-foreground transition-colors',
+        'p-1 text-muted-foreground transition-colors',
         'hover:bg-muted/50 hover:text-foreground',
         className
       )}
