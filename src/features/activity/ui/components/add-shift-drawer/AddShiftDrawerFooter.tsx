@@ -41,7 +41,13 @@ export const AddShiftDrawerFooter = ({
         {step === 0 ? t('common.cancel') : t('common.back')}
       </Button>
       {step === 2 ? (
-        <Button variant="gradient" size="md" className="w-full" onClick={onSubmit} loading={isCreating}>
+        <Button
+          variant="gradient"
+          size="md"
+          className="w-full"
+          onClick={onSubmit}
+          loading={isCreating}
+        >
           {t('common.save')}
         </Button>
       ) : (
@@ -52,4 +58,3 @@ export const AddShiftDrawerFooter = ({
     </div>
   )
 }
-

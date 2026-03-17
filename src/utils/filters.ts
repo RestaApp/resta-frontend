@@ -135,7 +135,10 @@ export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean =
 
   const hasNonDefaultPrice = filters.priceRange !== null && !isDefaultPriceRange(filters.priceRange)
   const hasPosition = filters.selectedPosition !== null && filters.selectedPosition !== undefined
-  const hasCity = filters.selectedCity !== null && filters.selectedCity !== undefined && filters.selectedCity !== ''
+  const hasCity =
+    filters.selectedCity !== null &&
+    filters.selectedCity !== undefined &&
+    filters.selectedCity !== ''
   const hasSpecializations = (filters.selectedSpecializations?.length ?? 0) > 0
   const hasDates = filters.startDate !== null || filters.endDate !== null
 

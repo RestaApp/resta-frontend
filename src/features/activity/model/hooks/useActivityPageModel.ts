@@ -4,8 +4,9 @@ import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/sh
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
-import { useAppSelector } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 import {
   getLocalStorageItem,
   removeLocalStorageItem,
@@ -33,12 +34,18 @@ const getStartOfWeekMonday = (base: Date) => {
 
 export const useActivityPageModel = () => {
   const { t, i18n } = useTranslation()
+  const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
   const [activeTab, setActiveTab] = useState<ActivityTab>('list')
   const dateLocale = getDateLocale(i18n.language)
 
-  const { data, isLoading, isError, refetch: refetchMyShifts } = useGetMyShiftsQuery(undefined, {
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch: refetchMyShifts,
+  } = useGetMyShiftsQuery(undefined, {
     refetchOnFocus: false,
   })
   const {
@@ -166,10 +173,10 @@ export const useActivityPageModel = () => {
   }, [selectedDayKey, groupedShiftsForCalendar])
 
   const handleFindShift = useCallback(() => {
-    // Поведение оставляем 1-в-1: localStorage + event
+    // Сохраняем поведение выбора вкладки "Смены" внутри фида.
     setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS, 'true')
-    window.dispatchEvent(new CustomEvent('navigateToFeedShifts'))
-  }, [])
+    dispatch(navigateToTab('feed'))
+  }, [dispatch])
 
   const closeDrawer = useCallback(() => {
     setIsDrawerOpen(false)
@@ -186,7 +193,7 @@ export const useActivityPageModel = () => {
     return () => window.removeEventListener('openActivityAddShift', handleOpen)
   }, [openDrawer])
 
-  // Открыть редактирование смены по id из ленты (navigateToActivityEdit + EDIT_SHIFT_ID)
+  // Открыть редактирование смены по id из ленты (через EDIT_SHIFT_ID + переход на tab activity)
   useEffect(() => {
     if (isLoading) return
     const editIdRaw = getLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID)
@@ -196,8 +203,10 @@ export const useActivityPageModel = () => {
     if (!Number.isFinite(editId)) return
     const found = shifts.find(s => s.id === editId) || null
     if (found) {
-      setEditingShift(found)
-      setIsDrawerOpen(true)
+      queueMicrotask(() => {
+        setEditingShift(found)
+        setIsDrawerOpen(true)
+      })
     }
   }, [shifts, isLoading])
 

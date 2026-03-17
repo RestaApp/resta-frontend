@@ -13,7 +13,15 @@ type Props = {
 }
 
 export const FeedHotOffersSection = memo((props: Props) => {
-  const { hotOffers, totalCount, onShowAll, onItemClick, isLoading, isVacancy, isUrgentFilterActive } = props
+  const {
+    hotOffers,
+    totalCount,
+    onShowAll,
+    onItemClick,
+    isLoading,
+    isVacancy,
+    isUrgentFilterActive,
+  } = props
 
   if (isLoading && hotOffers.length === 0) {
     return (

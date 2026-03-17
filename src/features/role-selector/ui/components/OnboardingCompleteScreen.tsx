@@ -23,8 +23,10 @@ export const OnboardingCompleteScreen = memo(function OnboardingCompleteScreen({
   const { t } = useTranslation()
 
   const { titleKey, tipKey } = useMemo(() => {
-    if (role === 'venue') return { titleKey: 'onboarding.doneTitleVenue', tipKey: 'onboarding.doneTipVenue' }
-    if (role === 'supplier') return { titleKey: 'onboarding.doneTitleSupplier', tipKey: 'onboarding.doneTipSupplier' }
+    if (role === 'venue')
+      return { titleKey: 'onboarding.doneTitleVenue', tipKey: 'onboarding.doneTipVenue' }
+    if (role === 'supplier')
+      return { titleKey: 'onboarding.doneTitleSupplier', tipKey: 'onboarding.doneTipSupplier' }
     return { titleKey: 'onboarding.doneTitle', tipKey: 'onboarding.doneTip' }
   }, [role])
 

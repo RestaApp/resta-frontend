@@ -102,7 +102,9 @@ export const useAddShiftForm = ({
       : []
   })
   const [submitError, setSubmitError] = useState<string | null>(null)
-  type FieldErrors = Partial<Record<'location' | 'requirements' | 'description' | 'specializations', string>>
+  type FieldErrors = Partial<
+    Record<'location' | 'requirements' | 'description' | 'specializations', string>
+  >
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const clearSubmitError = useCallback(() => {
     setSubmitError(null)

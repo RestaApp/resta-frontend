@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
+import { useAppDispatch } from '@/store/hooks'
 import { useHaptics } from '@/utils/haptics'
 import {
   getLocalStorageItem,
@@ -20,6 +21,7 @@ import { useShiftActions } from '../hooks/useShiftActions'
 import { useDeleteShift } from '@/features/activity/model/hooks/useShifts'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
 import { normalizeApiError } from '../utils/apiErrors'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
 import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
 import { vacancyToShift } from '../utils/mapping'
@@ -39,6 +41,7 @@ type ProfileAlertState = {
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   useUserProfile()
 
   const { toast, showToast, hideToast } = useToast()
@@ -103,14 +106,17 @@ export const useFeedPageModel = () => {
   const openProfileEdit = useCallback(() => {
     closeProfileAlert()
     setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
-    window.dispatchEvent(new CustomEvent('navigateToProfileEdit'))
+    dispatch(navigateToTab('profile'))
     window.dispatchEvent(new CustomEvent('openProfileEdit'))
-  }, [closeProfileAlert])
+  }, [closeProfileAlert, dispatch])
 
-  const handleEdit = useCallback((id: number) => {
-    setLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID, String(id))
-    window.dispatchEvent(new CustomEvent('navigateToActivityEdit'))
-  }, [])
+  const handleEdit = useCallback(
+    (id: number) => {
+      setLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID, String(id))
+      dispatch(navigateToTab('activity'))
+    },
+    [dispatch]
+  )
 
   const handleDelete = useCallback(
     async (id: number) => {

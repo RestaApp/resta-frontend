@@ -19,3 +19,15 @@ export const SEGMENTED_TRIGGER_CLASS =
 export const SEGMENTED_TRIGGER_ACTIVE_CLASS = 'text-primary-foreground'
 
 export const SEGMENTED_TRIGGER_INACTIVE_CLASS = 'text-muted-foreground'
+
+export const INPUT_FIELD_BASE_CLASS =
+  'w-full min-w-0 rounded-xl border bg-input-background text-foreground caret-foreground'
+
+export const INPUT_FIELD_INTERACTIVE_CLASS =
+  'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20'
+
+export const INPUT_FIELD_INVALID_CLASS =
+  'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20'
+
+export const INPUT_FIELD_DISABLED_CLASS =
+  'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'

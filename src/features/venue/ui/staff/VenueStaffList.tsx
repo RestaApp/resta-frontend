@@ -98,10 +98,14 @@ export const VenueStaffList = ({
                 item.person.user?.employee_profile?.position ??
                 t('venueUi.staff.noPosition', { defaultValue: 'Без позиции' })
               const isPending = item.applicationStatus === 'pending'
-              const photoUrl = item.person.user?.photo_url ?? item.person.user?.profile_photo_url ?? null
+              const photoUrl =
+                item.person.user?.photo_url ?? item.person.user?.profile_photo_url ?? null
 
               return (
-                <Card key={`${item.shiftId}-${item.applicationId}`} className="ui-density-stack-sm p-4">
+                <Card
+                  key={`${item.shiftId}-${item.applicationId}`}
+                  className="ui-density-stack-sm p-4"
+                >
                   <div
                     className="flex items-start gap-3 cursor-pointer rounded-lg transition-colors hover:bg-muted/30"
                     role="button"

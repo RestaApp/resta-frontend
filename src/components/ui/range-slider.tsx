@@ -113,7 +113,8 @@ export const RangeSlider = memo(function RangeSlider({
   const trackBg = 'bg-muted'
   const tickInactive = 'bg-muted'
   const activeTrack = 'gradient-primary dark:!bg-primary'
-  const thumbClass = 'absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full pointer-events-none z-20 gradient-primary dark:!bg-primary shadow-lg dark:shadow-none'
+  const thumbClass =
+    'absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full pointer-events-none z-20 gradient-primary dark:!bg-primary shadow-lg dark:shadow-none'
 
   if (isRangeMode) {
     return (

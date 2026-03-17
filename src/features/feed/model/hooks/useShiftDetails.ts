@@ -112,8 +112,7 @@ export const useShiftDetails = (
   const specializations = useMemo(() => {
     const list = vacancyData?.specializations ?? []
     if (list.length > 0) return list
-    if (vacancyData?.specialization)
-      return [vacancyData.specialization]
+    if (vacancyData?.specialization) return [vacancyData.specialization]
     return []
   }, [vacancyData?.specializations, vacancyData?.specialization])
 

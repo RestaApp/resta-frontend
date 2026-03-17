@@ -1,4 +1,5 @@
 import i18n from '@/shared/i18n/config'
+import { parseDate } from '@/utils/datetime'
 
 export const formatReviews = (count: number): string => {
   const n = Math.abs(count)
@@ -22,23 +23,7 @@ export const formatMoney = (value: number): string => {
  * -> ISO: "2026-01-11T08:00:00+01:00"
  */
 export const parseApiDateTime = (value?: string | null): Date | null => {
-  if (!value) return null
-
-  // 1) Если уже ISO — пробуем сразу
-  // примеры: 2026-01-11T08:00:00+01:00, 2026-01-11T08:00:00Z
-  if (value.includes('T')) {
-    const d = new Date(value)
-    return Number.isNaN(d.getTime()) ? null : d
-  }
-
-  // 2) Формат: "YYYY-MM-DD HH:MM:SS +0100" или "+01:00"
-  const m = value.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})\s+([+-]\d{2}):?(\d{2})$/)
-  if (!m) return null
-
-  const [, datePart, timePart, oh, om] = m
-  const iso = `${datePart}T${timePart}${oh}:${om}`
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? null : d
+  return value ? parseDate(value) : null
 }
 
 export const formatDateRU = (d: Date): string => {

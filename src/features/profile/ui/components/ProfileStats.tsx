@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Calendar, TrendingUp, User } from 'lucide-react'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { useAppDispatch } from '@/store/hooks'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 import type { ApiRole } from '@/types'
 
 interface EmployeeStats {
@@ -20,6 +22,7 @@ interface ProfileStatsProps {
 export const ProfileStats = memo(
   ({ apiRole, employeeStats, myShiftsCount, appliedShiftsCount }: ProfileStatsProps) => {
     const { t } = useTranslation()
+    const dispatch = useAppDispatch()
     if (!apiRole) return null
 
     return (
@@ -37,7 +40,7 @@ export const ProfileStats = memo(
               className="flex items-center gap-2 hover:underline"
               onClick={() => {
                 setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
-                window.dispatchEvent(new CustomEvent('navigateToActivityMyApplications'))
+                dispatch(navigateToTab('activity'))
               }}
             >
               <TrendingUp className="w-4 h-4 text-green-500" />

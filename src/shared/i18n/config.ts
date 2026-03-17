@@ -6,6 +6,7 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { getLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
 import ru from './locales/ru.json'
 import en from './locales/en.json'
 
@@ -32,13 +33,8 @@ export function telegramCodeToLocale(code: string | null): Locale {
 }
 
 function getSavedLocale(): Locale | null {
-  if (typeof window === 'undefined') return null
-  try {
-    const saved = localStorage.getItem(STORAGE_KEYS.LOCALE)
-    if (saved === 'ru' || saved === 'en') return saved
-  } catch {
-    // ignore
-  }
+  const saved = getLocalStorageItem(STORAGE_KEYS.LOCALE)
+  if (saved === 'ru' || saved === 'en') return saved
   return null
 }
 
@@ -54,14 +50,9 @@ i18n.use(initReactI18next).init({
 })
 
 i18n.on('languageChanged', (lng: string) => {
-  if (typeof window === 'undefined') return
   const locale = lng.split('-')[0]
   if (locale === 'ru' || locale === 'en') {
-    try {
-      localStorage.setItem(STORAGE_KEYS.LOCALE, locale)
-    } catch {
-      // ignore
-    }
+    setLocalStorageItem(STORAGE_KEYS.LOCALE, locale)
   }
 })
 

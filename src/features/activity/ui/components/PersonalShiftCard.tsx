@@ -48,7 +48,8 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
     () => ({
       id: shift.id,
       logo: getLogoByPosition(shift.position, shift.id),
-      userPhotoUrl: typeof userPhotoUrl === 'string' && userPhotoUrl.trim().length > 0 ? userPhotoUrl : null,
+      userPhotoUrl:
+        typeof userPhotoUrl === 'string' && userPhotoUrl.trim().length > 0 ? userPhotoUrl : null,
       title: shift.title?.trim() || null,
       restaurant: isVacancy
         ? t('common.myVacancy', { defaultValue: 'Моя вакансия' })
@@ -66,7 +67,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
       payPeriod: shift.shift_type === 'vacancy' ? 'month' : 'shift',
       shiftType: shift.shift_type,
 
-      location: isVacancy ? undefined : shift.location ?? undefined,
+      location: isVacancy ? undefined : (shift.location ?? undefined),
       urgent: Boolean(shift.urgent),
 
       applicationId: null,
@@ -101,8 +102,8 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
       <ShiftCard
         shift={mappedShift}
         onOpenDetails={handleOpenDetails}
-        onApply={() => { }}
-        onCancel={() => { }}
+        onApply={() => {}}
+        onCancel={() => {}}
         ownerActions={{ onEdit: handleEdit, onDelete: handleDelete, isDeleting }}
       />
 
@@ -112,9 +113,9 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
         applicationId={null}
         isOpen={isOpen}
         onClose={handleCloseDetails}
-        onApply={async () => { }}
+        onApply={async () => {}}
         isApplied={false}
-        onCancel={async () => { }}
+        onCancel={async () => {}}
         isLoading={false}
       />
     </>

@@ -7,8 +7,7 @@ import {
 } from '@reduxjs/toolkit/query'
 import { API_BASE_URL } from './config'
 import { authService } from '@/services/auth'
-import { clearUserData } from '@/features/navigation/model/userSlice'
-import { api } from '@/shared/api/api'
+import { authSessionExpired } from '@/shared/api/authEvents'
 
 export const tagTypes = [
   'Shift',
@@ -94,8 +93,7 @@ const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = asy
   }
 
   authService.logout()
-  apiCtx.dispatch(clearUserData())
-  apiCtx.dispatch(api.util.resetApiState())
+  apiCtx.dispatch(authSessionExpired())
 
   return result
 }

@@ -42,25 +42,22 @@ export function PullToRefresh({
     [canStartPull]
   )
 
-  const handleTouchMove = useCallback(
-    (event: TouchEvent<HTMLDivElement>) => {
-      if (!isDraggingRef.current || startYRef.current === null) return
+  const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || startYRef.current === null) return
 
-      const currentY = event.touches[0]?.clientY
-      if (typeof currentY !== 'number') return
+    const currentY = event.touches[0]?.clientY
+    if (typeof currentY !== 'number') return
 
-      const delta = currentY - startYRef.current
-      if (delta <= 0) {
-        setPullDistance(0)
-        return
-      }
+    const delta = currentY - startYRef.current
+    if (delta <= 0) {
+      setPullDistance(0)
+      return
+    }
 
-      const nextDistance = Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE)
-      setPullDistance(nextDistance)
-      event.preventDefault()
-    },
-    []
-  )
+    const nextDistance = Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE)
+    setPullDistance(nextDistance)
+    event.preventDefault()
+  }, [])
 
   const finishPull = useCallback(async () => {
     const shouldRefresh = pullDistance >= threshold

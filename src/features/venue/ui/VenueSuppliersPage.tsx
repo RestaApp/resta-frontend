@@ -44,13 +44,6 @@ export function VenueSuppliersPage() {
   const [visibleCount, setVisibleCount] = useState(SUPPLIERS_PER_PAGE)
 
   useEffect(() => {
-    if (!defaultFilters.city) return
-
-    setAppliedFilters(prev => (prev.city.trim() ? prev : { ...prev, city: defaultFilters.city }))
-    setDraftFilters(prev => (prev.city.trim() ? prev : { ...prev, city: defaultFilters.city }))
-  }, [defaultFilters.city])
-
-  useEffect(() => {
     const handler = () => {
       setDraftFilters(appliedFilters)
       setIsFiltersOpen(true)
@@ -60,12 +53,8 @@ export function VenueSuppliersPage() {
     return () => window.removeEventListener('openSuppliersFilters', handler)
   }, [appliedFilters])
 
-  useEffect(() => {
-    setVisibleCount(SUPPLIERS_PER_PAGE)
-  }, [appliedFilters])
-
   const queryParams = useMemo<GetUsersParams>(() => {
-    const city = appliedFilters.city.trim()
+    const city = (appliedFilters.city.trim() || defaultFilters.city).trim()
     const supplierType = appliedFilters.supplierType || undefined
     const supplierTypes = supplierType
       ? getValidSupplierTypesForCategory(supplierType, appliedFilters.serviceCategories)
@@ -81,7 +70,7 @@ export function VenueSuppliersPage() {
       page: 1,
       per_page: visibleCount,
     }
-  }, [appliedFilters, visibleCount])
+  }, [appliedFilters, defaultFilters.city, visibleCount])
 
   const { data, isLoading, isFetching, isError, refetch } = useGetUsersQuery(queryParams)
 
@@ -164,22 +153,26 @@ export function VenueSuppliersPage() {
   }, [allServiceCategoryOptions, draftFilters.supplierType])
 
   const hasActiveApiFilters = useMemo(() => {
+    const city = (appliedFilters.city.trim() || defaultFilters.city).trim()
     const validSupplierTypes = appliedFilters.supplierType
-      ? getValidSupplierTypesForCategory(appliedFilters.supplierType, appliedFilters.serviceCategories)
+      ? getValidSupplierTypesForCategory(
+          appliedFilters.supplierType,
+          appliedFilters.serviceCategories
+        )
       : []
 
     return (
-      Boolean(appliedFilters.city.trim()) ||
+      Boolean(city) ||
       Boolean(appliedFilters.supplierType) ||
       validSupplierTypes.length > 0 ||
       appliedFilters.delivery !== 'all'
     )
-  }, [appliedFilters])
+  }, [appliedFilters, defaultFilters.city])
 
   const activeFiltersList = useMemo(() => {
     const result: string[] = []
 
-    const city = appliedFilters.city.trim()
+    const city = (appliedFilters.city.trim() || defaultFilters.city).trim()
     if (city) result.push(city)
 
     if (appliedFilters.supplierType) {
@@ -187,13 +180,14 @@ export function VenueSuppliersPage() {
     }
 
     const validSupplierTypes = appliedFilters.supplierType
-      ? getValidSupplierTypesForCategory(appliedFilters.supplierType, appliedFilters.serviceCategories)
+      ? getValidSupplierTypesForCategory(
+          appliedFilters.supplierType,
+          appliedFilters.serviceCategories
+        )
       : []
 
     if (validSupplierTypes.length > 0) {
-      result.push(
-        ...validSupplierTypes.map(category => getSupplierTypeLabel(category))
-      )
+      result.push(...validSupplierTypes.map(category => getSupplierTypeLabel(category)))
     }
 
     if (appliedFilters.delivery === 'yes') {
@@ -203,7 +197,7 @@ export function VenueSuppliersPage() {
     }
 
     return result
-  }, [appliedFilters, getSupplierTypeLabel, t])
+  }, [appliedFilters, defaultFilters.city, getSupplierTypeLabel, t])
 
   const handleLoadMore = useCallback(() => {
     if (isLoading || isFetching || !hasMore) return
@@ -213,6 +207,7 @@ export function VenueSuppliersPage() {
   const handleResetFilters = useCallback(() => {
     setAppliedFilters(defaultFilters)
     setDraftFilters(defaultFilters)
+    setVisibleCount(SUPPLIERS_PER_PAGE)
   }, [defaultFilters])
 
   const handleResetDraftFilters = useCallback(() => {
@@ -221,6 +216,7 @@ export function VenueSuppliersPage() {
 
   const handleApplyFilters = useCallback(() => {
     setAppliedFilters(draftFilters)
+    setVisibleCount(SUPPLIERS_PER_PAGE)
     setIsFiltersOpen(false)
   }, [draftFilters])
 

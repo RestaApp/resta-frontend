@@ -47,9 +47,9 @@ export const useShiftDetailsScreenController = ({
   const [coverMessage, setCoverMessage] = useState('')
   const [activeTab, setActiveTab] = useState<'applicants' | 'details'>('applicants')
   const [selectedApplicantId, setSelectedApplicantId] = useState<number | null>(null)
-  const [selectedApplicantApplicationId, setSelectedApplicantApplicationId] = useState<number | null>(
-    null
-  )
+  const [selectedApplicantApplicationId, setSelectedApplicantApplicationId] = useState<
+    number | null
+  >(null)
   const [moderating, setModerating] = useState<{ id: number; action: 'accept' | 'reject' } | null>(
     null
   )
@@ -68,10 +68,10 @@ export const useShiftDetailsScreenController = ({
   const applicationsCount = vacancyData?.applications_count
 
   const selectedApp = applicants.find(
-    a =>
-      (a.shift_application_id ?? a.id) === selectedApplicantApplicationId
+    a => (a.shift_application_id ?? a.id) === selectedApplicantApplicationId
   )
-  const selectedAppStatus = selectedApp?.shift_application_status ?? selectedApp?.status ?? 'pending'
+  const selectedAppStatus =
+    selectedApp?.shift_application_status ?? selectedApp?.status ?? 'pending'
   const canModerateSelected =
     isOwner &&
     typeof selectedApplicantApplicationId === 'number' &&

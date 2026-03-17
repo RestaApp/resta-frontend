@@ -55,7 +55,8 @@ export const ApplicantsTab = memo(
                 : t('common.notSpecified')
 
               const rawRating = app.average_rating
-              const ratingValue = rawRating !== undefined && rawRating !== null ? Number(rawRating) : NaN
+              const ratingValue =
+                rawRating !== undefined && rawRating !== null ? Number(rawRating) : NaN
               const hasRating = Number.isFinite(ratingValue) && ratingValue > 0
               const normalizedRating = Math.min(5, Math.max(0, ratingValue))
 
@@ -66,9 +67,7 @@ export const ApplicantsTab = memo(
                 typeof appId === 'number' &&
                 (appStatus === 'pending' || appStatus === 'accepted')
               const canAccept =
-                Boolean(appId) &&
-                typeof appId === 'number' &&
-                appStatus === 'pending'
+                Boolean(appId) && typeof appId === 'number' && appStatus === 'pending'
               const isAccepted = appStatus === 'accepted'
 
               const key = appId || index
@@ -113,7 +112,10 @@ export const ApplicantsTab = memo(
                           {t('common.position')}: {position}
                         </span>
                         {hasRating ? (
-                          <span className="inline-flex items-center gap-0.5" aria-label={t('common.rating')}>
+                          <span
+                            className="inline-flex items-center gap-0.5"
+                            aria-label={t('common.rating')}
+                          >
                             {[0, 1, 2, 3, 4].map(i => (
                               <Star
                                 key={i}
@@ -169,9 +171,7 @@ export const ApplicantsTab = memo(
                       </div>
                     ) : null}
                   </div>
-                  {index < applicants.length - 1 ? (
-                    <hr className="my-2 border-border" />
-                  ) : null}
+                  {index < applicants.length - 1 ? <hr className="my-2 border-border" /> : null}
                 </div>
               )
             })}

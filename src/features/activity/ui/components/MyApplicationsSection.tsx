@@ -67,9 +67,7 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
                   <span>{t(label)}</span>
                   {isRejectedGroup ? (
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform ${
-                        isCollapsed ? '' : 'rotate-180'
-                      }`}
+                      className={`w-4 h-4 transition-transform ${isCollapsed ? '' : 'rotate-180'}`}
                     />
                   ) : null}
                 </button>

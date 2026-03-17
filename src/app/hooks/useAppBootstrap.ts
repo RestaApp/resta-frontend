@@ -31,20 +31,29 @@ export function useAppBootstrap() {
   const [showOnboardingComplete, setShowOnboardingComplete] = useState(false)
   const [pendingRole, setPendingRole] = useState<UiRole | null>(null)
   const [postLogoutLoading, setPostLogoutLoading] = useState(false)
-  const prevUserDataRef = useRef<typeof userData>(undefined)
+  const logoutTimerRef = useRef<number | null>(null)
 
-  // После выхода из системы показываем окно загрузки (LoadingPage), а не RoleSelector
+  // После logout кратко показываем LoadingPage, чтобы избежать резкого перехода на RoleSelector.
   useEffect(() => {
-    const hadUser = prevUserDataRef.current != null
-    const loggedOut = hadUser && userData === null
-    prevUserDataRef.current = userData
-
-    if (loggedOut && !selectedRole) {
+    const handleLogout = () => {
+      if (logoutTimerRef.current !== null) {
+        window.clearTimeout(logoutTimerRef.current)
+      }
       setPostLogoutLoading(true)
-      const t = window.setTimeout(() => setPostLogoutLoading(false), POST_LOGOUT_LOADING_MS)
-      return () => window.clearTimeout(t)
+      logoutTimerRef.current = window.setTimeout(() => {
+        setPostLogoutLoading(false)
+        logoutTimerRef.current = null
+      }, POST_LOGOUT_LOADING_MS)
     }
-  }, [userData, selectedRole])
+
+    window.addEventListener('auth:logout', handleLogout)
+    return () => {
+      window.removeEventListener('auth:logout', handleLogout)
+      if (logoutTimerRef.current !== null) {
+        window.clearTimeout(logoutTimerRef.current)
+      }
+    }
+  }, [])
 
   const screen: AppScreen =
     (isLoading && !userData) || (postLogoutLoading && !selectedRole)

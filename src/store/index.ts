@@ -2,7 +2,7 @@
  * Redux Store конфигурация
  */
 
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, type Middleware } from '@reduxjs/toolkit'
 import {
   persistStore,
   persistReducer,
@@ -14,10 +14,11 @@ import {
   REGISTER,
 } from 'redux-persist'
 import { api } from './api'
-import userReducer from '@/features/navigation/model/userSlice'
+import userReducer, { clearUserData } from '@/features/navigation/model/userSlice'
 import telegramReducer from '@/features/navigation/model/telegramSlice'
 import catalogReducer from '@/features/navigation/model/catalogSlice'
 import navigationReducer from '@/features/navigation/model/navigationSlice'
+import { authSessionExpired } from '@/shared/api/authEvents'
 
 // Импортируем все API endpoints для их регистрации
 // Это гарантирует, что все endpoints будут зарегистрированы в api
@@ -72,6 +73,17 @@ const userPersistConfig = {
 
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer)
 
+const authSessionMiddleware: Middleware = storeApi => next => action => {
+  const result = next(action)
+
+  if (authSessionExpired.match(action)) {
+    storeApi.dispatch(clearUserData())
+    storeApi.dispatch(api.util.resetApiState())
+  }
+
+  return result
+}
+
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
@@ -85,7 +97,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(api.middleware),
+    }).concat(api.middleware, authSessionMiddleware),
 })
 
 export const persistor = persistStore(store)

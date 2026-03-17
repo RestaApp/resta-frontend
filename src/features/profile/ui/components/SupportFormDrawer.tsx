@@ -32,9 +32,9 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerHeader>
           <div className="flex items-center gap-3">
-              <SupportDrawerIcon />
+            <SupportDrawerIcon />
             <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
-            </div>
+          </div>
           <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">

@@ -3,6 +3,21 @@ import { useEffect } from 'react'
 let lockCount = 0
 const KEY = 'data-prev-scroll-lock'
 
+interface ScrollLockSnapshot {
+  body?: {
+    overflow?: string
+    position?: string
+    top?: string
+    left?: string
+    right?: string
+    width?: string
+  }
+  html?: {
+    overflow?: string
+  }
+  scrollY?: number
+}
+
 export function useBodyScrollLock(locked: boolean) {
   useEffect(() => {
     if (!locked) return
@@ -43,7 +58,9 @@ export function useBodyScrollLock(locked: boolean) {
       if (lockCount === 0) {
         const raw = body.getAttribute(KEY)
         try {
-          const parsed = raw ? (JSON.parse(raw) as any) : null
+          const parsed: ScrollLockSnapshot | null = raw
+            ? (JSON.parse(raw) as ScrollLockSnapshot)
+            : null
           const prevBody = parsed?.body
           const prevHtml = parsed?.html
           const scrollY = typeof parsed?.scrollY === 'number' ? parsed.scrollY : 0

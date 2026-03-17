@@ -257,8 +257,7 @@ export const EditProfileDrawer = memo(
                 value={formData.location}
                 onChange={e => updateField('location', e.target.value)}
                 placeholder={t('profile.form.addressesPlaceholder', {
-                  defaultValue:
-                    'Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9',
+                  defaultValue: 'Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9',
                 })}
                 disabled={isLoading}
                 rows={4}

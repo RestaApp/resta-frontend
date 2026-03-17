@@ -7,8 +7,11 @@ import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/ui/toast'
+import { useAppDispatch } from '@/store/hooks'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
 export function VenueAddShiftListener() {
+  const dispatch = useAppDispatch()
   const { t } = useTranslation()
   const profileCompleteness = useProfileCompleteness()
   const { toast, showToast, hideToast } = useToast()
@@ -18,9 +21,9 @@ export function VenueAddShiftListener() {
 
   const openProfileEdit = useCallback(() => {
     setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
-    window.dispatchEvent(new CustomEvent('navigateToProfileEdit'))
+    dispatch(navigateToTab('profile'))
     window.dispatchEvent(new CustomEvent('openProfileEdit'))
-  }, [])
+  }, [dispatch])
 
   const handleCreateIntent = useCallback(() => {
     if (profileCompleteness?.isFilled) {

@@ -147,10 +147,10 @@ export const UserProfileDrawer = memo(
       () => (apiRole ? getUiRoleLabel(apiRole) : ''),
       [apiRole, getUiRoleLabel]
     )
-    const positionLabel = useMemo(() => {
+    const positionLabel = (() => {
       if (apiRole !== 'employee' || !userProfile?.employee_profile?.position) return null
       return getEmployeePositionLabel(userProfile.employee_profile.position)
-    }, [apiRole, userProfile?.employee_profile?.position, getEmployeePositionLabel])
+    })()
     const heroRoleOrPositionLabel = positionLabel ?? roleLabel
 
     const userName = useMemo(() => {

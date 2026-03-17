@@ -19,6 +19,7 @@ import { updateUserDataInStore } from '@/utils/userData'
 import type { UserData } from '@/services/api/authApi'
 import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { getLocalStorageItem } from '@/utils/localStorage'
 
 type TelegramWebApp = ReturnType<typeof getTelegramWebApp>
 
@@ -60,6 +61,12 @@ const isVersionAtLeast = (webApp: TelegramWebApp, target: string): boolean => {
   return true
 }
 
+const isMobileDevice = (): boolean => {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+}
+
 export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const dispatch = useAppDispatch()
   const userDataFromStore = useAppSelector(selectUserData)
@@ -76,14 +83,10 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
   const applyLanguage = useCallback(async (userData: UserData | null) => {
     // 1) localStorage
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.LOCALE)
-      if (saved === 'ru' || saved === 'en') {
-        await i18n.changeLanguage(saved)
-        return
-      }
-    } catch {
-      // ignore
+    const saved = getLocalStorageItem(STORAGE_KEYS.LOCALE)
+    if (saved === 'ru' || saved === 'en') {
+      await i18n.changeLanguage(saved)
+      return
     }
 
     // 2) user profile
@@ -137,7 +140,12 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       webApp.expand()
       if (!fullscreenRequestedRef.current) {
         fullscreenRequestedRef.current = true
-        if (!webApp.isFullscreen && webApp.requestFullscreen && isVersionAtLeast(webApp, '6.1')) {
+        if (
+          isMobileDevice() &&
+          !webApp.isFullscreen &&
+          webApp.requestFullscreen &&
+          isVersionAtLeast(webApp, '6.1')
+        ) {
           webApp.requestFullscreen()
         }
       }
@@ -260,13 +268,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     if (userDataFromStore?.id) return
 
     void (async () => {
-      try {
-        if (!localStorage.getItem(STORAGE_KEYS.LOCALE)) {
-          const code = getTelegramLanguageCode()
-          await i18n.changeLanguage(telegramCodeToLocale(code))
-        }
-      } catch {
-        // ignore
+      if (!getLocalStorageItem(STORAGE_KEYS.LOCALE)) {
+        const code = getTelegramLanguageCode()
+        await i18n.changeLanguage(telegramCodeToLocale(code))
       }
     })()
   }, [isReady, userDataFromStore?.id])
@@ -300,6 +304,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   }, [telegram])
 
   const requestFullscreen = useCallback(() => {
+    if (!isMobileDevice()) return
     const webApp = telegram ?? getTelegramWebApp()
     if (!webApp) return
     try {
@@ -336,6 +341,7 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTelegram = (): TelegramContextValue => {
   const ctx = useContext(TelegramContext)
   if (!ctx) throw new Error('useTelegram должен использоваться внутри TelegramProvider')

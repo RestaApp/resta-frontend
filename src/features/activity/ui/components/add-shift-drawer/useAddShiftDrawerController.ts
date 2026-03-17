@@ -40,7 +40,9 @@ type UseAddShiftDrawerControllerParams = {
     timeRangeError: string | null
     dateError: string | null
     positionError: string | null
-    fieldErrors: Partial<Record<'location' | 'requirements' | 'description' | 'specializations', string>>
+    fieldErrors: Partial<
+      Record<'location' | 'requirements' | 'description' | 'specializations', string>
+    >
     handleSave: () => Promise<boolean>
     resetForm: () => void
   }
@@ -85,7 +87,8 @@ export const useAddShiftDrawerController = ({
   )
 
   const titleError = showStep0Errors && !form.title.trim() ? requiredMarker : undefined
-  const dateFieldError = form.dateError ?? (showStep0Errors && !form.date ? requiredMarker : undefined)
+  const dateFieldError =
+    form.dateError ?? (showStep0Errors && !form.date ? requiredMarker : undefined)
   const startTimeError = showStep0Errors && !form.startTime ? requiredMarker : undefined
   const endTimeError =
     form.timeRangeError ?? (showStep0Errors && !form.endTime ? requiredMarker : undefined)
@@ -116,7 +119,9 @@ export const useAddShiftDrawerController = ({
         ? !form.location.trim() || !form.position || form.specializations.length === 0
         : !form.description.trim() || !form.requirements.trim()
 
-  const bannerError = form.submitError ?? (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
+  const bannerError =
+    form.submitError ??
+    (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
 
   const clearAllErrorsAfterChange = useCallback(() => {
     form.clearSubmitError()
@@ -150,7 +155,10 @@ export const useAddShiftDrawerController = ({
     [clearAllErrorsAfterChange]
   )
 
-  const handleTitleChange = useMemo(() => wrapStringSetter(form.setTitle), [form.setTitle, wrapStringSetter])
+  const handleTitleChange = useMemo(
+    () => wrapStringSetter(form.setTitle),
+    [form.setTitle, wrapStringSetter]
+  )
   const handleStartTimeChange = useMemo(
     () => wrapStringSetter(form.setStartTime),
     [form.setStartTime, wrapStringSetter]
@@ -159,7 +167,10 @@ export const useAddShiftDrawerController = ({
     () => wrapStringSetter(form.setEndTime),
     [form.setEndTime, wrapStringSetter]
   )
-  const handlePayChange = useMemo(() => wrapStringSetter(form.setPay), [form.setPay, wrapStringSetter])
+  const handlePayChange = useMemo(
+    () => wrapStringSetter(form.setPay),
+    [form.setPay, wrapStringSetter]
+  )
   const handleLocationChange = useMemo(
     () => wrapStringSetter(form.setLocation),
     [form.setLocation, wrapStringSetter]
@@ -172,7 +183,10 @@ export const useAddShiftDrawerController = ({
     () => wrapStringSetter(form.setRequirements),
     [form.setRequirements, wrapStringSetter]
   )
-  const handleUrgentChange = useMemo(() => wrapBooleanSetter(form.setUrgent), [form.setUrgent, wrapBooleanSetter])
+  const handleUrgentChange = useMemo(
+    () => wrapBooleanSetter(form.setUrgent),
+    [form.setUrgent, wrapBooleanSetter]
+  )
   const handleSpecializationsChange = useMemo(
     () => wrapArraySetter(form.setSpecializations),
     [form.setSpecializations, wrapArraySetter]
@@ -403,4 +417,3 @@ export const useAddShiftDrawerController = ({
     },
   } as const
 }
-

@@ -71,7 +71,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
     const suffix =
       item.payPeriod === 'month' ? t('common.payPerMonthShort') : t('common.payPerShiftShort')
     return `${paymentText}${suffix}`
-  }, [paymentText, item.shiftType, item.date, item.payPeriod, t])
+  }, [paymentText, item.shiftType, item.payPeriod, t])
 
   return (
     <button

@@ -43,8 +43,7 @@ export function VenueStaffPage() {
         shiftTitle: application.shift_title ?? '',
         shiftStatus: normalizeShiftStatus(application.shift_status),
         applicationId,
-        applicationStatus:
-          application.shift_application_status ?? application.status ?? 'pending',
+        applicationStatus: application.shift_application_status ?? application.status ?? 'pending',
         person: application,
       })
     }
@@ -69,7 +68,10 @@ export function VenueStaffPage() {
 
   const handleAccept = async (applicationId: number, shiftId: number) => {
     try {
-      await acceptApplication({ applicationId, shiftId: shiftId > 0 ? shiftId : undefined }).unwrap()
+      await acceptApplication({
+        applicationId,
+        shiftId: shiftId > 0 ? shiftId : undefined,
+      }).unwrap()
       showToast(t('venueUi.staff.accepted', { defaultValue: 'Сотрудник принят' }), 'success')
       await refetch()
     } catch {
@@ -82,7 +84,10 @@ export function VenueStaffPage() {
 
   const handleReject = async (applicationId: number, shiftId: number) => {
     try {
-      await rejectApplication({ applicationId, shiftId: shiftId > 0 ? shiftId : undefined }).unwrap()
+      await rejectApplication({
+        applicationId,
+        shiftId: shiftId > 0 ? shiftId : undefined,
+      }).unwrap()
       showToast(t('venueUi.staff.rejected', { defaultValue: 'Заявка отклонена' }), 'success')
       await refetch()
     } catch {

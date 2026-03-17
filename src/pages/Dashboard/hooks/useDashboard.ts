@@ -6,6 +6,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getTabsForRole } from '@/constants/tabs'
 import { SCREEN_TO_TAB_MAP, TAB_TO_SCREEN_MAP } from '@/constants/navigation'
 import type { Tab, UiRole, Screen } from '@/types'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   getLocalStorageItem,
   removeLocalStorageItem,
@@ -13,6 +14,10 @@ import {
 } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { isEmployeeRole } from '@/utils/roles'
+import {
+  consumeCommand,
+  selectNavigationCommand,
+} from '@/features/navigation/model/navigationSlice'
 
 interface UseDashboardProps {
   role: UiRole
@@ -21,56 +26,54 @@ interface UseDashboardProps {
 }
 
 export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDashboardProps) => {
+  const dispatch = useAppDispatch()
+  const navigationCommand = useAppSelector(selectNavigationCommand)
   const tabs = useMemo(() => getTabsForRole(role), [role])
   const [activeTab, setActiveTab] = useState<Tab>(tabs[0]?.id ?? 'home')
+  const scheduleTabUpdate = useCallback((nextTab: Tab) => {
+    queueMicrotask(() => {
+      setActiveTab(prev => (prev === nextTab ? prev : nextTab))
+    })
+  }, [])
 
   // Проверка флага для перехода на Feed с вкладкой смен
   useEffect(() => {
     const shouldNavigateToFeed = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     if (shouldNavigateToFeed === 'true') {
-      setActiveTab('feed')
+      scheduleTabUpdate('feed')
       removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     }
+  }, [scheduleTabUpdate])
 
-    // Слушаем событие для переключения на Feed с вкладкой смен
-    const handleNavigateToFeedShifts = () => {
-      setActiveTab('feed')
-      setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS, 'true')
+  useEffect(() => {
+    if (!navigationCommand) return
+
+    if (navigationCommand.type === 'NAVIGATE_TAB') {
+      const tabAllowed = tabs.some(t => t.id === navigationCommand.tab)
+      if (tabAllowed && navigationCommand.tab !== activeTab) {
+        scheduleTabUpdate(navigationCommand.tab)
+      }
+      dispatch(consumeCommand())
+      return
     }
 
-    window.addEventListener('navigateToFeedShifts', handleNavigateToFeedShifts)
-    return () => {
-      window.removeEventListener('navigateToFeedShifts', handleNavigateToFeedShifts)
+    if (navigationCommand.type === 'NAVIGATE_SCREEN') {
+      const mappedTab = SCREEN_TO_TAB_MAP[navigationCommand.screen]
+      const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
+      if (tabAllowed && mappedTab !== activeTab) {
+        scheduleTabUpdate(mappedTab)
+      }
+      dispatch(consumeCommand())
+      return
     }
-  }, [])
 
-  // Переход на вкладку «Профиль» по событию из модалки «Открыть профиль» (флаг редактирования уже выставлен в openProfileEdit)
-  useEffect(() => {
-    const handleNavigateToProfileEdit = () => setActiveTab('profile')
-    window.addEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
-    return () => window.removeEventListener('navigateToProfileEdit', handleNavigateToProfileEdit)
-  }, [])
-
-  // Переход на вкладку Activity для редактирования смены (из ленты)
-  useEffect(() => {
-    const handleNavigateToActivityEdit = () => setActiveTab('activity')
-    window.addEventListener('navigateToActivityEdit', handleNavigateToActivityEdit)
-    return () => window.removeEventListener('navigateToActivityEdit', handleNavigateToActivityEdit)
-  }, [])
-
-  // Переход на вкладку Activity (мои отклики) по клику на карточку «Активные заявки» в профиле
-  useEffect(() => {
-    const handleNavigateToActivityMyApplications = () => setActiveTab('activity')
-    window.addEventListener(
-      'navigateToActivityMyApplications',
-      handleNavigateToActivityMyApplications
-    )
-    return () =>
-      window.removeEventListener(
-        'navigateToActivityMyApplications',
-        handleNavigateToActivityMyApplications
-      )
-  }, [])
+    if (navigationCommand.type === 'RESET_HOME') {
+      if (tabs[0]?.id && tabs[0].id !== activeTab) {
+        scheduleTabUpdate(tabs[0].id)
+      }
+      dispatch(consumeCommand())
+    }
+  }, [activeTab, dispatch, navigationCommand, scheduleTabUpdate, tabs])
 
   // Синхронизация внешнего currentScreen -> activeTab (только если таб есть у текущей роли)
   useEffect(() => {
@@ -78,10 +81,9 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     const mappedTab = SCREEN_TO_TAB_MAP[currentScreen]
     const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
     if (tabAllowed && mappedTab !== activeTab) {
-      setActiveTab(mappedTab)
+      scheduleTabUpdate(mappedTab)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen, tabs])
+  }, [activeTab, currentScreen, scheduleTabUpdate, tabs])
 
   const handleTabChange = useCallback(
     (tab: Tab) => {

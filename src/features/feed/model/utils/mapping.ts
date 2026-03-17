@@ -22,10 +22,7 @@ export const getLogo = (id: number): string => {
   return logos[Math.abs(id) % logos.length]
 }
 
-export const getLogoByPosition = (
-  position?: string | null,
-  idFallback?: number | null
-): string => {
+export const getLogoByPosition = (position?: string | null, idFallback?: number | null): string => {
   const p = (position ?? '').toLowerCase()
 
   const map: Record<string, string[]> = {

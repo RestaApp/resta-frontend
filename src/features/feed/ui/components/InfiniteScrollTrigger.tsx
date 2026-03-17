@@ -33,13 +33,7 @@ export const InfiniteScrollTrigger = ({
         const isIntersecting = entries[0]?.isIntersecting
 
         // Блокируем повторный вызов, пока не изменится состояние загрузки.
-        if (
-          isIntersecting &&
-          hasMore &&
-          !isLoading &&
-          !isError &&
-          !loadLockedRef.current
-        ) {
+        if (isIntersecting && hasMore && !isLoading && !isError && !loadLockedRef.current) {
           loadLockedRef.current = true
           onLoadMore()
         }

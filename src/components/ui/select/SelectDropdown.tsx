@@ -3,6 +3,7 @@ import { Check, Search } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { ChangeEvent, KeyboardEvent, RefObject } from 'react'
 import type { SelectOption } from './types'
+import { INPUT_FIELD_INTERACTIVE_CLASS, INPUT_FIELD_BASE_CLASS } from '@/components/ui/ui-patterns'
 
 interface DropdownPosition {
   left: number
@@ -96,9 +97,9 @@ export const SelectDropdown = ({
                     onKeyDown={onKeyDown}
                     placeholder={displayPlaceholder}
                     className={cn(
-                      'w-full h-9 pl-9 pr-3 rounded-lg border border-border/30 bg-input-background text-sm text-foreground caret-foreground',
-                      'placeholder:text-muted-foreground',
-                      'focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20'
+                      INPUT_FIELD_BASE_CLASS,
+                      INPUT_FIELD_INTERACTIVE_CLASS,
+                      'h-9 rounded-lg border-border/30 pl-9 pr-3 text-sm'
                     )}
                   />
                 </div>

@@ -20,9 +20,11 @@ type HeaderAction = {
   onClick: () => void
 }
 
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string
+
 const HEADER_ACTION_BUTTON_CLASS = 'min-w-[44px] min-h-[44px] p-0 rounded-full flex-shrink-0'
 
-const getHeaderTitle = (activeTab: Tab | undefined, t: (key: string, options?: any) => string) => {
+const getHeaderTitle = (activeTab: Tab | undefined, t: TranslateFn) => {
   if (activeTab === 'feed') return t('tabs.employee.feed', { defaultValue: 'Поиск' })
   if (activeTab === 'activity') return t('tabs.employee.activity', { defaultValue: 'Активность' })
   if (activeTab === 'profile') return t('tabs.employee.profile', { defaultValue: 'Профиль' })
@@ -42,7 +44,7 @@ const getHeaderTitle = (activeTab: Tab | undefined, t: (key: string, options?: a
 
 const getHeaderAction = (params: {
   activeTab: Tab | undefined
-  t: (key: string, options?: any) => string
+  t: TranslateFn
   onAddShift?: () => void
   role?: UiRole
 }): HeaderAction | null => {
