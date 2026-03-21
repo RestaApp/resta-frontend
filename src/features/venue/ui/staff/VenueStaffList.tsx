@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
-import { Skeleton } from '@/components/ui/skeleton'
+import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { Tabs, type TabOption } from '@/components/ui/tabs'
 
 export type StaffFilter = 'all' | 'current' | 'former'
@@ -73,9 +73,9 @@ export const VenueStaffList = ({
       <div className="ui-density-page ui-density-py">
         {isLoading ? (
           <div className="ui-density-stack-sm">
-            <Skeleton className="h-24 rounded-xl" />
-            <Skeleton className="h-24 rounded-xl" />
-            <Skeleton className="h-24 rounded-xl" />
+            <ShiftSkeleton variant="staff" />
+            <ShiftSkeleton variant="staff" />
+            <ShiftSkeleton variant="staff" />
           </div>
         ) : items.length === 0 ? (
           <EmptyState

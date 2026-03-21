@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
-
-export type StepIndex = 0 | 1 | 2
+import {
+  buildDrawerErrorState,
+  findFirstInvalidStep,
+  isStepValid,
+  type AddShiftDrawerFormState,
+  type StepIndex,
+} from './validation'
 
 type UseAddShiftDrawerControllerParams = {
   open: boolean
@@ -73,55 +78,37 @@ export const useAddShiftDrawerController = ({
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
   const [isSuccessOpen, setIsSuccessOpen] = useState(false)
 
-  const showErrors =
-    didAttemptSubmit || !!form.submitError || Object.keys(form.fieldErrors ?? {}).length > 0
-  const showStep0Errors = showErrors || attemptedSteps[0]
-  const showStep1Errors = showErrors || attemptedSteps[1]
-  const showStep2Errors = showErrors || attemptedSteps[2]
-
   const requiredFieldError = t('validation.requiredField')
-  const requiredMarker = ' '
-  const normalizeRequiredText = useCallback(
-    (err?: string) => (err === requiredFieldError ? requiredMarker : err),
-    [requiredFieldError]
+  const drawerFormState = form as AddShiftDrawerFormState
+  const derivedState = useMemo(
+    () =>
+      buildDrawerErrorState({
+        form: drawerFormState,
+        attemptedSteps,
+        didAttemptSubmit,
+        requiredFieldError,
+        t,
+      }),
+    [attemptedSteps, didAttemptSubmit, drawerFormState, requiredFieldError, t]
   )
-
-  const titleError = showStep0Errors && !form.title.trim() ? requiredMarker : undefined
-  const dateFieldError =
-    form.dateError ?? (showStep0Errors && !form.date ? requiredMarker : undefined)
-  const startTimeError = showStep0Errors && !form.startTime ? requiredMarker : undefined
-  const endTimeError =
-    form.timeRangeError ?? (showStep0Errors && !form.endTime ? requiredMarker : undefined)
-  const locationFieldError =
-    normalizeRequiredText(form.fieldErrors.location) ??
-    (showStep1Errors && !form.location.trim() ? requiredMarker : undefined)
-  const positionFieldError =
-    form.positionError ?? (showStep1Errors && !form.position ? requiredMarker : undefined)
-
-  const canValidateSpecializations = !!form.position && !form.positionError
-  const specializationFieldError =
-    (form.fieldErrors.specializations ? requiredMarker : undefined) ??
-    (canValidateSpecializations && showStep1Errors && form.specializations.length === 0
-      ? requiredMarker
-      : undefined)
-  const descriptionFieldError =
-    normalizeRequiredText(form.fieldErrors.description) ??
-    (showStep2Errors && !form.description.trim() ? requiredMarker : undefined)
-  const requirementsFieldError =
-    normalizeRequiredText(form.fieldErrors.requirements) ??
-    (showStep2Errors && !form.requirements.trim() ? requiredMarker : undefined)
-
-  const hasMissingRequiredInStep =
-    step === 0
-      ? !form.title.trim() ||
-        (form.shiftType === 'replacement' && (!form.date || !form.startTime || !form.endTime))
-      : step === 1
-        ? !form.location.trim() || !form.position || form.specializations.length === 0
-        : !form.description.trim() || !form.requirements.trim()
-
-  const bannerError =
-    form.submitError ??
-    (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
+  const {
+    showErrors,
+    showStep0Errors,
+    showStep1Errors,
+    showStep2Errors,
+    bannerError,
+    errors: {
+      titleError,
+      dateFieldError,
+      startTimeError,
+      endTimeError,
+      locationFieldError,
+      positionFieldError,
+      specializationFieldError,
+      descriptionFieldError,
+      requirementsFieldError,
+    },
+  } = derivedState
 
   const clearAllErrorsAfterChange = useCallback(() => {
     form.clearSubmitError()
@@ -233,49 +220,13 @@ export const useAddShiftDrawerController = ({
     [form]
   )
 
-  const findFirstInvalidStep = useCallback((): StepIndex => {
-    if (!form.title.trim()) return 0
-    if (form.shiftType === 'replacement') {
-      if (!form.date || form.dateError) return 0
-      if (!form.startTime || !form.endTime || form.timeRangeError) return 0
-    }
-    if (!form.location.trim()) return 1
-    if (!form.position || form.positionError) return 1
-    if (form.position && form.specializations.length === 0) return 1
-    if (!form.description.trim()) return 2
-    if (!form.requirements.trim()) return 2
-    return 2
-  }, [form])
-
-  const isStepValid = useCallback(
-    (targetStep: StepIndex): boolean => {
-      if (targetStep === 0) {
-        if (!form.title.trim()) return false
-        if (form.shiftType === 'replacement') {
-          return (
-            !!form.date &&
-            !!form.startTime &&
-            !!form.endTime &&
-            !form.timeRangeError &&
-            !form.dateError
-          )
-        }
-        return true
-      }
-      if (targetStep === 1) {
-        if (!form.location.trim()) return false
-        if (!form.position || !!form.positionError) return false
-        if (form.specializations.length === 0) return false
-        return true
-      }
-      if (targetStep === 2) {
-        if (!form.description.trim()) return false
-        if (!form.requirements.trim()) return false
-        return true
-      }
-      return true
-    },
-    [form]
+  const findInvalidStep = useCallback(
+    () => findFirstInvalidStep(drawerFormState),
+    [drawerFormState]
+  )
+  const isCurrentStepValid = useCallback(
+    (targetStep: StepIndex) => isStepValid(drawerFormState, targetStep),
+    [drawerFormState]
   )
 
   const handleDrawerOpenChange = useCallback(
@@ -308,9 +259,9 @@ export const useAddShiftDrawerController = ({
       return next
     })
 
-    if (isStepValid(step)) setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
+    if (isCurrentStepValid(step)) setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
     else scrollToFirstInvalidInStep(step)
-  }, [isStepValid, scrollToFirstInvalidInStep, step])
+  }, [isCurrentStepValid, scrollToFirstInvalidInStep, step])
 
   const handleBackOrCancel = useCallback(() => {
     if (step === 0) {
@@ -339,11 +290,11 @@ export const useAddShiftDrawerController = ({
       else setIsSuccessOpen(true)
       return
     }
-    const invalidStep = findFirstInvalidStep()
+    const invalidStep = findInvalidStep()
     setStep(invalidStep)
     setAttemptedSteps([true, true, true])
     setTimeout(() => scrollToFirstInvalidInStep(invalidStep), 0)
-  }, [close, findFirstInvalidStep, form, initialValues?.id, scrollToFirstInvalidInStep])
+  }, [close, findInvalidStep, form, initialValues?.id, scrollToFirstInvalidInStep])
 
   const handleCreateAnother = useCallback(() => {
     setIsSuccessOpen(false)
@@ -400,8 +351,8 @@ export const useAddShiftDrawerController = ({
       handleSubmit,
       handleCreateAnother,
       scrollToFirstInvalidInStep,
-      findFirstInvalidStep,
-      isStepValid,
+      findFirstInvalidStep: findInvalidStep,
+      isStepValid: isCurrentStepValid,
       handleTitleChange,
       handleDateChange,
       handleStartTimeChange,

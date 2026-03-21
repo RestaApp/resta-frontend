@@ -31,7 +31,9 @@ export const isStepValid = (form: AddShiftDrawerFormState, targetStep: StepIndex
   if (targetStep === 0) {
     if (!form.title.trim()) return false
     if (form.shiftType === 'replacement') {
-      return !!form.date && !!form.startTime && !!form.endTime && !form.timeRangeError && !form.dateError
+      return (
+        !!form.date && !!form.startTime && !!form.endTime && !form.timeRangeError && !form.dateError
+      )
     }
     return true
   }
@@ -72,13 +74,15 @@ export const buildDrawerErrorState = (params: {
 }) => {
   const { form, attemptedSteps, didAttemptSubmit, requiredFieldError, t } = params
   const requiredMarker = ' '
-  const showErrors = didAttemptSubmit || !!form.submitError || Object.keys(form.fieldErrors ?? {}).length > 0
+  const showErrors =
+    didAttemptSubmit || !!form.submitError || Object.keys(form.fieldErrors ?? {}).length > 0
   const showStep0Errors = showErrors || attemptedSteps[0]
   const showStep1Errors = showErrors || attemptedSteps[1]
   const showStep2Errors = showErrors || attemptedSteps[2]
 
   const titleError = showStep0Errors && !form.title.trim() ? requiredMarker : undefined
-  const dateFieldError = form.dateError ?? (showStep0Errors && !form.date ? requiredMarker : undefined)
+  const dateFieldError =
+    form.dateError ?? (showStep0Errors && !form.date ? requiredMarker : undefined)
   const startTimeError = showStep0Errors && !form.startTime ? requiredMarker : undefined
   const endTimeError =
     form.timeRangeError ?? (showStep0Errors && !form.endTime ? requiredMarker : undefined)
@@ -105,11 +109,13 @@ export const buildDrawerErrorState = (params: {
     (showStep0Errors &&
       (!form.title.trim() ||
         (form.shiftType === 'replacement' && (!form.date || !form.startTime || !form.endTime)))) ||
-    (showStep1Errors && (!form.location.trim() || !form.position || form.specializations.length === 0)) ||
+    (showStep1Errors &&
+      (!form.location.trim() || !form.position || form.specializations.length === 0)) ||
     (showStep2Errors && (!form.description.trim() || !form.requirements.trim()))
 
   const bannerError =
-    form.submitError ?? (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
+    form.submitError ??
+    (showErrors && hasMissingRequiredInStep ? t('validation.fillRequired') : null)
 
   return {
     showErrors,

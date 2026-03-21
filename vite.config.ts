@@ -34,11 +34,27 @@ export default defineConfig({
     chunkSizeWarningLimit: 650,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          redux: ['@reduxjs/toolkit', 'react-redux', 'redux-persist'],
-          i18n: ['i18next', 'react-i18next'],
-          ui: ['lucide-react', 'motion', '@radix-ui/react-dropdown-menu'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+
+          if (id.includes('/react/') || id.includes('/react-dom/')) return 'react'
+          if (
+            id.includes('/@reduxjs/') ||
+            id.includes('/react-redux/') ||
+            id.includes('/redux-persist/')
+          ) {
+            return 'redux'
+          }
+          if (id.includes('/i18next/') || id.includes('/react-i18next/')) return 'i18n'
+          if (
+            id.includes('/lucide-react/') ||
+            id.includes('/motion/') ||
+            id.includes('/@radix-ui/')
+          ) {
+            return 'ui'
+          }
+
+          return 'vendor'
         },
       },
     },

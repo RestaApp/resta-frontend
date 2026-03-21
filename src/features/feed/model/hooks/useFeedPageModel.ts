@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, useEffect } from 'react'
+import { useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -18,9 +18,9 @@ import { buildVacanciesBaseParams } from '../utils/queryParams'
 import { applyClientQuickFilters } from '../utils/clientFilters'
 import { useHotOffers } from '../hooks/useHotOffers'
 import { useShiftActions } from '../hooks/useShiftActions'
+import { useFeedApplyFlow } from '../hooks/useFeedApplyFlow'
 import { useDeleteShift } from '@/features/activity/model/hooks/useShifts'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
-import { normalizeApiError } from '../utils/apiErrors'
 import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
 import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
@@ -32,12 +32,6 @@ import type { Shift } from '../types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { HotOffer } from '../../ui/components/HotOffers'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
-
-type ProfileAlertState = {
-  open: boolean
-  message: string
-  missingFields: string[]
-}
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
@@ -93,25 +87,20 @@ export const useFeedPageModel = () => {
 
   const { deleteShift, isLoading: isDeleting } = useDeleteShift()
 
-  const [profileAlert, setProfileAlert] = useState<ProfileAlertState>({
-    open: false,
-    message: '',
-    missingFields: [],
+  const {
+    profileAlert,
+    closeProfileAlert,
+    openProfileEdit,
+    isApplyCoverModalOpen,
+    isApplyCoverModalSubmitting,
+    closeApplyCoverModal,
+    handleApplyWithModal,
+    submitApplyCoverModal,
+  } = useFeedApplyFlow({
+    dispatch,
+    t,
+    handleApply,
   })
-  const [isApplyCoverModalOpen, setIsApplyCoverModalOpen] = useState(false)
-  const [isApplyCoverModalSubmitting, setIsApplyCoverModalSubmitting] = useState(false)
-  const [applyCoverTargetShiftId, setApplyCoverTargetShiftId] = useState<number | null>(null)
-
-  const closeProfileAlert = useCallback(() => {
-    setProfileAlert(prev => ({ ...prev, open: false }))
-  }, [])
-
-  const openProfileEdit = useCallback(() => {
-    closeProfileAlert()
-    setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
-    dispatch(navigateToTab('profile'))
-    window.dispatchEvent(new CustomEvent('openProfileEdit'))
-  }, [closeProfileAlert, dispatch])
 
   const handleEdit = useCallback(
     (id: number) => {
@@ -133,60 +122,6 @@ export const useFeedPageModel = () => {
       }
     },
     [deleteShift, t, showToast, hideToast]
-  )
-
-  const applyWithGuard = useCallback(
-    async (shiftId: number, message?: string) => {
-      try {
-        await handleApply(shiftId, message)
-        return true
-      } catch (error: unknown) {
-        const normalized = normalizeApiError(error, t('errors.applyError'), t)
-
-        if (normalized.kind === 'profile_incomplete') {
-          setProfileAlert({
-            open: true,
-            missingFields: normalized.missingFieldsLabels,
-            message: normalized.message,
-          })
-          return false
-        }
-
-        setProfileAlert({
-          open: true,
-          missingFields: [],
-          message: normalized.message,
-        })
-        return false
-      }
-    },
-    [handleApply, t]
-  )
-
-  const closeApplyCoverModal = useCallback(() => {
-    setIsApplyCoverModalOpen(false)
-    setApplyCoverTargetShiftId(null)
-  }, [])
-
-  const handleApplyWithModal = useCallback(async (shiftId: number) => {
-    setApplyCoverTargetShiftId(shiftId)
-    setIsApplyCoverModalOpen(true)
-  }, [])
-
-  const submitApplyCoverModal = useCallback(
-    async (message?: string) => {
-      if (!applyCoverTargetShiftId || isApplyCoverModalSubmitting) return
-      setIsApplyCoverModalSubmitting(true)
-      try {
-        const ok = await applyWithGuard(applyCoverTargetShiftId, message)
-        if (ok) {
-          closeApplyCoverModal()
-        }
-      } finally {
-        setIsApplyCoverModalSubmitting(false)
-      }
-    },
-    [applyCoverTargetShiftId, isApplyCoverModalSubmitting, applyWithGuard, closeApplyCoverModal]
   )
 
   const shiftsBaseQuery = useMemo(

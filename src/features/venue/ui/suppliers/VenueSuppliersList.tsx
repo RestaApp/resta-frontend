@@ -4,7 +4,7 @@ import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
 import { SearchFilters } from '@/features/feed/ui/components/SearchFilters'
 import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
-import { Skeleton } from '@/components/ui/skeleton'
+import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import type { SupplierItem } from './types'
 
 interface VenueSuppliersListProps {
@@ -42,9 +42,9 @@ export const VenueSuppliersList = ({
       <div className="ui-density-page ui-density-py">
         {isLoading && suppliersCount === 0 ? (
           <div className="ui-density-stack-sm">
-            <Skeleton className="h-40 rounded-xl" />
-            <Skeleton className="h-40 rounded-xl" />
-            <Skeleton className="h-40 rounded-xl" />
+            <ShiftSkeleton variant="supplier" />
+            <ShiftSkeleton variant="supplier" />
+            <ShiftSkeleton variant="supplier" />
           </div>
         ) : list.length === 0 ? (
           <EmptyState
