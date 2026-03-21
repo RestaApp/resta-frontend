@@ -4,7 +4,7 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
 import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
 import type { Shift } from '@/features/feed/model/types'
-import { getLogoByPosition } from '@/features/feed/model/utils/mapping'
+import { getLogoByPosition, resolvePayPeriodFromVacancy } from '@/features/feed/model/utils/mapping'
 import {
   parseApiDateTime,
   formatDateRU,
@@ -64,7 +64,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
 
       pay: Number.isFinite(pay) ? pay : 0,
       currency: 'BYN',
-      payPeriod: shift.shift_type === 'vacancy' ? 'month' : 'shift',
+      payPeriod: resolvePayPeriodFromVacancy(shift),
       shiftType: shift.shift_type,
 
       location: isVacancy ? undefined : (shift.location ?? undefined),
@@ -78,23 +78,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
 
       isMine: true,
     }),
-    [
-      shift.id,
-      shift.position,
-      shift.title,
-      shift.specialization,
-      shift.shift_type,
-      shift.location,
-      shift.urgent,
-      shift.user?.id,
-      shift.applications_count,
-      dateText,
-      timeText,
-      pay,
-      userPhotoUrl,
-      isVacancy,
-      t,
-    ]
+    [shift, t]
   )
 
   return (

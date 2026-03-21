@@ -16,6 +16,16 @@ const humanizeLabel = (value: string): string => {
   return normalized.charAt(0).toUpperCase() + normalized.slice(1)
 }
 
+/** Приводит значение специализации к ключу labels.specialization (snake_case). */
+const normalizeSpecializationKey = (value: string): string => {
+  const trimmed = value.trim()
+  if (!trimmed) return value
+  return trimmed
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/[\s-]+/g, '_')
+    .toLowerCase()
+}
+
 export function useLabels() {
   const { t } = useTranslation()
 
@@ -75,8 +85,17 @@ export function useLabels() {
     [resolve]
   )
   const getSpecializationLabel = useCallback(
-    (value: string) => resolve(`labels.specialization.${value}`, value),
-    [resolve]
+    (value: string) => {
+      const normalized = normalizeSpecializationKey(value)
+      const keyRaw = `labels.specialization.${value}`
+      const keyNorm = `labels.specialization.${normalized}`
+      const r0 = t(keyRaw)
+      if (r0 !== keyRaw) return r0
+      const r1 = t(keyNorm)
+      if (r1 !== keyNorm) return r1
+      return resolve(keyRaw, value)
+    },
+    [resolve, t]
   )
 
   return {

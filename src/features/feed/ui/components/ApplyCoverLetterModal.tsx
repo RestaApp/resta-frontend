@@ -42,14 +42,7 @@ function ApplyCoverLetterModalContent({
   const { t } = useTranslation()
   const [message, setMessage] = useState('')
 
-  const example = useMemo(
-    () =>
-      t(
-        'shift.coverMessageExample',
-        'Здравствуйте! Имею релевантный опыт на этой позиции, готов(а) выйти в указанное время и быстро включиться в работу.'
-      ),
-    [t]
-  )
+  const example = useMemo(() => t('shift.coverMessageExample'), [t])
 
   const handleUseExample = () => {
     setMessage(example)
@@ -63,19 +56,16 @@ function ApplyCoverLetterModalContent({
     <Modal isOpen onClose={onClose} className="max-w-lg">
       <div className="w-full rounded-3xl border border-border bg-card p-5 shadow-xl">
         <h2 className="text-lg font-semibold text-foreground">
-          {t('shift.coverMessagePromptTitle', 'Сопроводительное письмо')}
+          {t('shift.coverMessagePromptTitle')}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {t(
-            'shift.coverMessagePromptDescription',
-            'При отклике можно добавить короткое сообщение работодателю.'
-          )}
+          {t('shift.coverMessagePromptDescription')}
         </p>
 
         <div className="mt-4 space-y-3">
           <FormField
             label={t('shift.coverMessage')}
-            hint={t('shift.coverMessageHint', 'Необязательно, но повышает шанс ответа')}
+            hint={t('shift.coverMessageHint')}
             htmlFor="apply-cover-message"
           >
             <Textarea
@@ -93,7 +83,7 @@ function ApplyCoverLetterModalContent({
             onClick={handleUseExample}
             className="text-xs text-primary hover:underline"
           >
-            {t('shift.useCoverMessageExample', 'Вставить пример')}
+            {t('shift.useCoverMessageExample')}
           </button>
         </div>
 

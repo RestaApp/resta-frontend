@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Drawer, DrawerCloseButton } from '@/components/ui/drawer'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -89,6 +90,22 @@ const AdvancedFiltersSheet = ({
     return priceRange || (isVacancy ? DEFAULT_JOBS_PRICE_RANGE : DEFAULT_PRICE_RANGE)
   }, [priceRange, isVacancy])
 
+  const maxRateLimit = isVacancy ? 5000 : 1000
+
+  const clampPriceRange = useCallback(
+    (lo: number, hi: number): [number, number] => {
+      let a = Math.min(Math.max(0, Math.round(lo)), maxRateLimit)
+      let b = Math.min(Math.max(0, Math.round(hi)), maxRateLimit)
+      if (a > b) {
+        const t = a
+        a = b
+        b = t
+      }
+      return [a, b]
+    },
+    [maxRateLimit]
+  )
+
   // Предыдущие специализации (показываем во время загрузки при смене позиции)
   const [previousSpecializations, setPreviousSpecializations] = useState<string[]>([])
 
@@ -156,9 +173,29 @@ const AdvancedFiltersSheet = ({
 
   const handleRangeChange = useCallback(
     (range: [number, number]) => {
-      setPriceRange(range)
+      setPriceRange(clampPriceRange(range[0], range[1]))
     },
-    [setPriceRange]
+    [setPriceRange, clampPriceRange]
+  )
+
+  const handleMinInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value
+      const v = raw === '' ? 0 : Number(raw)
+      if (!Number.isFinite(v)) return
+      handleRangeChange(clampPriceRange(v, displayPriceRange[1]))
+    },
+    [clampPriceRange, displayPriceRange, handleRangeChange]
+  )
+
+  const handleMaxInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value
+      const v = raw === '' ? 0 : Number(raw)
+      if (!Number.isFinite(v)) return
+      handleRangeChange(clampPriceRange(displayPriceRange[0], v))
+    },
+    [clampPriceRange, displayPriceRange, handleRangeChange]
   )
 
   const handleLocationRequest = useCallback(() => {
@@ -193,24 +230,51 @@ const AdvancedFiltersSheet = ({
       >
         {/* 1. Бюджет (Range Slider) */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-2">
             <h3 className="font-semibold text-base">
               {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
             </h3>
-            <span className="text-primary font-bold text-sm">
-              {displayPriceRange[0]} - {displayPriceRange[1]} BYN
-            </span>
+            <div className="flex items-center gap-1.5 min-w-0 ml-auto">
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={maxRateLimit}
+                step={1}
+                value={displayPriceRange[0]}
+                onChange={handleMinInputChange}
+                aria-label={t('feed.filterRateMinAria')}
+                className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"
+              />
+              <span className="text-muted-foreground shrink-0" aria-hidden>
+                —
+              </span>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={maxRateLimit}
+                step={1}
+                value={displayPriceRange[1]}
+                onChange={handleMaxInputChange}
+                aria-label={t('feed.filterRateMaxAria')}
+                className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"
+              />
+              <span className="text-primary font-bold text-sm shrink-0">BYN</span>
+            </div>
           </div>
           <RangeSlider
             min={0}
-            max={isVacancy ? 5000 : 1000}
-            step={isVacancy ? 50 : 10}
+            max={maxRateLimit}
+            step={isVacancy ? 50 : 5}
             range={displayPriceRange}
             onRangeChange={handleRangeChange}
           />
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>0 BYN</span>
-            <span>{isVacancy ? '5000+' : '1000+'} BYN</span>
+            <span>{t('feed.filterScaleMin')}</span>
+            <span>
+              {isVacancy ? t('feed.filterScaleMaxVacancy') : t('feed.filterScaleMaxShift')}
+            </span>
           </div>
         </div>
 

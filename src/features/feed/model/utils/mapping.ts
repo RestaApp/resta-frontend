@@ -53,6 +53,18 @@ const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
   return normalized.length > 0 ? normalized : null
 }
 
+/**
+ * Оплата за период: для вакансии без конкретного окна времени — «за месяц»;
+ * если указаны начало и конец смены — сумма относится к этой смене («за смену»).
+ */
+export const resolvePayPeriodFromVacancy = (item: VacancyApiItem): PayPeriod => {
+  if (item.shift_type !== 'vacancy') return 'shift'
+  const start = parseApiDateTime(item.start_time ?? undefined)
+  const end = parseApiDateTime(item.end_time ?? undefined)
+  if (start && end && end.getTime() > start.getTime()) return 'shift'
+  return 'month'
+}
+
 export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const start = parseApiDateTime(item.start_time ?? undefined)
   const end = parseApiDateTime(item.end_time ?? undefined)
@@ -63,7 +75,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const time =
     start && end ? `${formatTimeRangeRU(start, end)}${duration ? ` (${duration})` : ''}` : ''
 
-  const payPeriod: PayPeriod = item.shift_type === 'vacancy' ? 'month' : 'shift'
+  const payPeriod: PayPeriod = resolvePayPeriodFromVacancy(item)
 
   const locationRaw = item.location ?? getCityFromUser(item)
   const location = stripMinskPrefix(locationRaw)
@@ -156,7 +168,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
 
     pay: toNumber(pay),
     currency: 'BYN',
-    payPeriod: v.shift_type === 'vacancy' ? 'month' : 'shift',
+    payPeriod: resolvePayPeriodFromVacancy(v),
 
     location: v.location ?? v.user?.restaurant_profile?.city ?? undefined,
     urgent: Boolean(v.urgent),
