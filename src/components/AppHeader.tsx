@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
 import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab, UiRole } from '@/types'
+import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 
 interface AppHeaderProps {
   onAddShift?: () => void
@@ -48,6 +49,7 @@ const getHeaderAction = (params: {
   role?: UiRole
 }): HeaderAction | null => {
   const { activeTab, t, onAddShift, role } = params
+  const isEmployeeFlow = role != null && UI_ROLE_TO_API_ROLE[role] === 'employee'
 
   if (activeTab === 'feed') {
     // Для ресторана в шапке — создание вакансии/смены вместо фильтров
@@ -86,7 +88,7 @@ const getHeaderAction = (params: {
     }
 
     return {
-      ariaLabel: t('shift.addShiftAria'),
+      ariaLabel: isEmployeeFlow ? t('shift.offerShiftAria') : t('shift.addShiftAria'),
       Icon: Plus,
       onClick: () => {
         onAddShift?.()
@@ -118,6 +120,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   const { t } = useTranslation()
   const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
   const actionButtonRef = useRef<HTMLButtonElement | null>(null)
+  const isEmployeeFlow = role != null && UI_ROLE_TO_API_ROLE[role] === 'employee'
 
   const isActivity = activeTab === 'activity'
 
@@ -150,6 +153,8 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
           targetRef={actionButtonRef}
           onClose={dismissAddShiftOnboarding}
           onProxyClick={handleProxyActionClick}
+          ariaLabel={isEmployeeFlow ? t('shift.offerShiftAria') : undefined}
+          tooltipText={isEmployeeFlow ? t('activity.addShiftOnboardingTextEmployee') : undefined}
         />
       ) : null}
 

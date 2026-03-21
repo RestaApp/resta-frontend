@@ -19,7 +19,8 @@ export const getLockedShiftType = (role?: string | null): ShiftType | null => {
 
 export const getDrawerCopy = (
   isVacancyType: boolean,
-  t: (key: string, options?: Record<string, unknown>) => string
+  t: (key: string, options?: Record<string, unknown>) => string,
+  options?: { isEmployeeReplacement?: boolean }
 ): DrawerCopy => {
   if (isVacancyType) {
     return {
@@ -36,11 +37,17 @@ export const getDrawerCopy = (
     }
   }
 
+  const isEmployeeReplacement = options?.isEmployeeReplacement === true
+
   return {
-    drawerTitle: t('shift.addReplacementTitle', { defaultValue: 'Создать смену' }),
-    drawerDescription: t('shift.addReplacementDescription', {
-      defaultValue: 'Опишите смену, чтобы быстро найти замену.',
-    }),
+    drawerTitle: isEmployeeReplacement
+      ? t('shift.offerReplacementTitle')
+      : t('shift.addReplacementTitle', { defaultValue: 'Создать смену' }),
+    drawerDescription: isEmployeeReplacement
+      ? t('shift.offerReplacementDescription')
+      : t('shift.addReplacementDescription', {
+          defaultValue: 'Опишите смену, чтобы быстро найти замену.',
+        }),
     titleLabel: t('shift.shiftTitle', { defaultValue: 'Название смены' }),
     titlePlaceholder: t('shift.shiftTitlePlaceholder'),
     payLabel: t('shift.pay'),

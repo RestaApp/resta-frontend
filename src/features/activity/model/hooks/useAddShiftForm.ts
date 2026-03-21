@@ -10,7 +10,12 @@ import {
 import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
-import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
+import {
+  getInitialPay,
+  getInitialShiftDate,
+  getInitialShiftTime,
+  getInitialSpecializations,
+} from '@/features/activity/model/utils/addShiftFormInitialization'
 
 export type ShiftType = 'vacancy' | 'replacement'
 
@@ -27,19 +32,6 @@ export const useAddShiftForm = ({
   initialValues = null,
   initialLocation = null,
 }: UseAddShiftFormOptions = {}) => {
-  const toInputDate = (date: Date): string => {
-    const yyyy = date.getFullYear()
-    const mm = String(date.getMonth() + 1).padStart(2, '0')
-    const dd = String(date.getDate()).padStart(2, '0')
-    return `${yyyy}-${mm}-${dd}`
-  }
-
-  const toInputTime = (date: Date): string => {
-    const hh = String(date.getHours()).padStart(2, '0')
-    const mm = String(date.getMinutes()).padStart(2, '0')
-    return `${hh}:${mm}`
-  }
-
   const { t } = useTranslation()
   const { showToast } = useToast()
   const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
@@ -53,33 +45,10 @@ export const useAddShiftForm = ({
 
   const [title, setTitle] = useState(() => initialValues?.title || '')
   const [description, setDescription] = useState(() => initialValues?.description || '')
-  const [date, setDate] = useState<string | null>(() => {
-    const start = initialValues?.start_time
-    if (!start) return null
-    const dt = parseApiDateTime(start)
-    if (!dt) return null
-    return toInputDate(dt)
-  })
-  const [startTime, setStartTime] = useState(() => {
-    const start = initialValues?.start_time
-    if (!start) return ''
-    const dt = parseApiDateTime(start)
-    if (!dt) return ''
-    return toInputTime(dt)
-  })
-  const [endTime, setEndTime] = useState(() => {
-    const end = initialValues?.end_time
-    if (!end) return ''
-    const dt = parseApiDateTime(end)
-    if (!dt) return ''
-    return toInputTime(dt)
-  })
-  const [pay, setPay] = useState(() => {
-    if (!initialValues) return ''
-    if (initialValues.payment) return String(initialValues.payment)
-    if (initialValues.hourly_rate) return String(initialValues.hourly_rate)
-    return ''
-  })
+  const [date, setDate] = useState<string | null>(() => getInitialShiftDate(initialValues))
+  const [startTime, setStartTime] = useState(() => getInitialShiftTime(initialValues, 'start_time'))
+  const [endTime, setEndTime] = useState(() => getInitialShiftTime(initialValues, 'end_time'))
+  const [pay, setPay] = useState(() => getInitialPay(initialValues))
   const [location, setLocation] = useState(() => initialValues?.location || initialLocation || '')
   const [requirements, setRequirements] = useState(() => initialValues?.requirements || '')
   const [shiftType, setShiftType] = useState<ShiftType>(() => {
@@ -89,17 +58,9 @@ export const useAddShiftForm = ({
   })
   const [urgent, setUrgent] = useState(() => !!initialValues?.urgent)
   const [position, setPosition] = useState(() => initialValues?.position || '')
-  const [specializations, setSpecializations] = useState<string[]>(() => {
-    const list = initialValues?.specializations
-    if (list?.length) return list
-    const specValue = initialValues?.specialization || ''
-    return specValue
-      ? specValue
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean)
-      : []
-  })
+  const [specializations, setSpecializations] = useState<string[]>(() =>
+    getInitialSpecializations(initialValues)
+  )
   const [submitError, setSubmitError] = useState<string | null>(null)
   type FieldErrors = Partial<
     Record<'location' | 'requirements' | 'description' | 'specializations', string>

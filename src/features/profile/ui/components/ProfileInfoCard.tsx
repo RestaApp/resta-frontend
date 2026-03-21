@@ -8,6 +8,7 @@ import { CheckCircle2, AlertCircle, Briefcase, ChevronDown } from 'lucide-react'
 import type { ApiRole } from '@/types'
 import type { UserData, EmployeeProfile } from '@/services/api/authApi'
 import { formatExperienceText } from '@/utils/experience'
+import { formatPhoneDisplay, toE164 } from '@/utils/phone'
 import { getProfileCompleteness } from '../../model/utils/profileCompleteness'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
 
@@ -192,6 +193,9 @@ export const ProfileInfoCard = memo(
                       {locationValue}
                     </InfoRow>
                   )}
+                  {apiRole === 'employee' && userProfile.name && (
+                    <InfoRow label={t('profile.nameLabel')}>{userProfile.name}</InfoRow>
+                  )}
                   {apiRole === 'employee' && userProfile.last_name && (
                     <InfoRow label={t('profile.surname')}>{userProfile.last_name}</InfoRow>
                   )}
@@ -205,8 +209,8 @@ export const ProfileInfoCard = memo(
                     </InfoRow>
                   )}
                   {userProfile.phone && (
-                    <InfoRow label={t('profile.phone')} href={`tel:${userProfile.phone}`}>
-                      {userProfile.phone}
+                    <InfoRow label={t('profile.phone')} href={`tel:${toE164(userProfile.phone)}`}>
+                      {formatPhoneDisplay(userProfile.phone)}
                     </InfoRow>
                   )}
                   {userProfile.work_experience_summary && (

@@ -11,6 +11,14 @@ export function parsePhoneDigits(value: string): string {
 }
 
 /**
+ * Отображение сохранённого номера (E.164 или сырые цифры) в том же виде, что и при вводе.
+ */
+export function formatPhoneDisplay(raw: string | null | undefined): string {
+  if (raw == null || !String(raw).trim()) return ''
+  return formatPhoneInput(String(raw).trim())
+}
+
+/**
  * Форматирование при вводе: автоподстановка +375 для Беларуси,
  * маска +375-XX-XXX-XX-XX. Если пользователь начинает с 8 — подставляем +375.
  */

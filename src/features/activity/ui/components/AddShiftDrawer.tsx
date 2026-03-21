@@ -62,6 +62,7 @@ const AddShiftDrawerKeyed = ({
   const { userProfile } = useUserProfile()
   const { toast, hideToast } = useToast()
   const isVenueRole = userProfile?.role === 'restaurant' || userProfile?.role === 'venue'
+  const isEmployeeUser = userProfile?.role === 'employee'
   const roleLockedShiftType = getLockedShiftType(userProfile?.role)
   const lockedShiftType = roleLockedShiftType ?? (lockShiftType ? initialShiftType : null)
   const shiftTypeOptions: SelectFieldOption[] = useMemo(
@@ -123,7 +124,13 @@ const AddShiftDrawerKeyed = ({
   }, [controller.state.step, form.shiftType, t])
 
   const isVacancyType = form.shiftType === 'vacancy'
-  const drawerCopy = useMemo(() => getDrawerCopy(isVacancyType, t), [isVacancyType, t])
+  const drawerCopy = useMemo(
+    () =>
+      getDrawerCopy(isVacancyType, t, {
+        isEmployeeReplacement: isEmployeeUser && !isVacancyType,
+      }),
+    [isVacancyType, isEmployeeUser, t]
+  )
 
   return (
     <Drawer open={open} onOpenChange={controller.actions.handleDrawerOpenChange}>

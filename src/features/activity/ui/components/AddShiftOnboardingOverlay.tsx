@@ -7,6 +7,10 @@ interface AddShiftOnboardingOverlayProps {
   targetRef: React.RefObject<HTMLElement | null>
   onClose: () => void
   onProxyClick: () => void
+  /** По умолчанию — shift.addShiftAria */
+  ariaLabel?: string
+  /** По умолчанию — activity.addShiftOnboardingText */
+  tooltipText?: string
 }
 
 export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay({
@@ -14,8 +18,12 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
   targetRef,
   onClose,
   onProxyClick,
+  ariaLabel,
+  tooltipText,
 }: AddShiftOnboardingOverlayProps) {
   const { t } = useTranslation()
+  const resolvedAria = ariaLabel ?? t('shift.addShiftAria')
+  const resolvedTooltip = tooltipText ?? t('activity.addShiftOnboardingText')
   const [rect, setRect] = useState<{
     top: number
     left: number
@@ -81,7 +89,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
       <button
         type="button"
         onClick={onProxyClick}
-        aria-label={t('shift.addShiftAria')}
+        aria-label={resolvedAria}
         className="absolute"
         style={{
           left: rect.left,
@@ -102,9 +110,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
         }}
       >
         <div className="bg-card border border-border rounded-2xl p-4 shadow-lg">
-          <p className="text-sm font-medium text-foreground">
-            {t('activity.addShiftOnboardingText')}
-          </p>
+          <p className="text-sm font-medium text-foreground">{resolvedTooltip}</p>
           <div className="mt-3 flex justify-end">
             <Button variant="ghost" size="sm" onClick={onClose}>
               {t('common.understand')}
