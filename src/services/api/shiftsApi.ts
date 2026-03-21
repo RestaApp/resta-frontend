@@ -10,6 +10,7 @@ import type {
   CancelApplicationResponse,
   CreateShiftRequest,
   CreateShiftResponse,
+  GetShiftsListParams,
   GetVacanciesParams,
   ReceivedShiftApplicationsResponse,
   ShiftApi,
@@ -19,12 +20,15 @@ import type {
 
 export const shiftsApi = api.injectEndpoints({
   endpoints: builder => ({
-    // Получить все смены
-    getShifts: builder.query<ShiftApi[], { status?: string; role?: string }>({
-      query: params => ({
-        url: '/api/v1/shifts',
-        params,
-      }),
+    // GET /api/v1/shifts — параметры как в API.md (без legacy status/role)
+    getShifts: builder.query<VacanciesResponse, GetShiftsListParams | void>({
+      query: params => {
+        const queryString = params ? buildQueryParams(params) : ''
+        return {
+          url: `/api/v1/shifts${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
       providesTags: result => provideListTags('Shift', result),
     }),
 

@@ -14,6 +14,14 @@ export interface AvailableUiRolesResponse {
 }
 
 /**
+ * GET /api/v1/catalogs/supplier_categories
+ */
+export interface SupplierCategoriesResponse {
+  success?: boolean
+  data: string[]
+}
+
+/**
  * Ответ API с типами поставщиков
  * GET /api/v1/catalogs/supplier_types?supplier_category=...
  */
@@ -37,6 +45,10 @@ export const rolesApi = api.injectEndpoints({
       url: '/api/v1/catalogs/roles',
     }),
 
+    getSupplierCategories: createCatalogQuery<SupplierCategoriesResponse, void>(builder, {
+      url: '/api/v1/catalogs/supplier_categories',
+    }),
+
     // Типы поставщиков по категории (supplier_category обязателен в API)
     getSupplierTypes: builder.query<SupplierTypesResponse, string>({
       query: supplierCategory => ({
@@ -56,6 +68,7 @@ export const rolesApi = api.injectEndpoints({
 // Экспорт хуков для использования в компонентах
 export const {
   useGetAvailableUiRolesQuery,
+  useGetSupplierCategoriesQuery,
   useGetSupplierTypesQuery,
   useGetRestaurantFormatsQuery,
 } = rolesApi

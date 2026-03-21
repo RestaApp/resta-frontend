@@ -4,6 +4,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { FormField } from '@/components/ui/form-field'
 import { Textarea } from '@/components/ui/textarea'
+import { MODAL_SURFACE_CLASS } from '@/components/ui/ui-patterns'
 
 interface ApplyCoverLetterModalProps {
   open: boolean
@@ -54,7 +55,7 @@ function ApplyCoverLetterModalContent({
 
   return (
     <Modal isOpen onClose={onClose} className="max-w-lg">
-      <div className="w-full rounded-3xl border border-border bg-card p-5 shadow-xl">
+      <div className={`${MODAL_SURFACE_CLASS} p-5`}>
         <h2 className="text-lg font-semibold text-foreground">
           {t('shift.coverMessagePromptTitle')}
         </h2>

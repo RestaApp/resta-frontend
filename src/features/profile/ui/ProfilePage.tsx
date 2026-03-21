@@ -9,6 +9,7 @@ import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
+import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -37,42 +38,6 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
   )
 })
 SpecializationsSection.displayName = 'SpecializationsSection'
-
-const RestaurantInfoCard = memo(
-  ({ restaurantInfo }: { restaurantInfo: { format: string | null } }) => {
-    const { t } = useTranslation()
-    if (!restaurantInfo.format) return null
-
-    return (
-      <Card className="p-5">
-        <h4 className="font-semibold ui-density-mb">{t('roles.venueInfoTitle')}</h4>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{t('profile.venueType')}</span>
-            <span>{restaurantInfo.format}</span>
-          </div>
-        </div>
-      </Card>
-    )
-  }
-)
-RestaurantInfoCard.displayName = 'RestaurantInfoCard'
-
-const SupplierInfoCard = memo(({ supplierInfo }: { supplierInfo: { name: string } }) => {
-  const { t } = useTranslation()
-  return (
-    <Card className="p-5">
-      <h4 className="font-semibold ui-density-mb">{t('roles.supplierInfoTitle')}</h4>
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{t('profile.companyName')}</span>
-          <span>{supplierInfo.name}</span>
-        </div>
-      </div>
-    </Card>
-  )
-})
-SupplierInfoCard.displayName = 'SupplierInfoCard'
 
 export const ProfilePage = memo(() => {
   const { t } = useTranslation()
@@ -146,11 +111,11 @@ export const ProfilePage = memo(() => {
       />
 
       {m.apiRole === 'restaurant' && m.restaurantInfo ? (
-        <RestaurantInfoCard restaurantInfo={m.restaurantInfo} />
+        <ProfileBusinessInfoCard kind="restaurant" value={m.restaurantInfo.format} />
       ) : null}
 
       {m.apiRole === 'supplier' && m.supplierInfo ? (
-        <SupplierInfoCard supplierInfo={m.supplierInfo} />
+        <ProfileBusinessInfoCard kind="supplier" value={m.supplierInfo.name} />
       ) : null}
 
       <div>

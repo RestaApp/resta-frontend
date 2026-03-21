@@ -8,9 +8,7 @@ import { useAppDispatch } from '@/store/hooks'
 import {
   useAuthTelegramMutation,
   useRefreshTokenMutation,
-  useUpdateRoleMutation,
   type TelegramAuthRequest,
-  type UpdateRoleRequest,
   type UserData,
   type SignInResponse,
 } from '@/services/api/authApi'
@@ -60,8 +58,6 @@ export const useAuthActions = () => {
   const dispatch = useAppDispatch()
   const [authTelegramMutation, { isLoading: isAuthLoading }] = useAuthTelegramMutation()
   const [refreshTokenMutation, { isLoading: isRefreshLoading }] = useRefreshTokenMutation()
-  const [updateRoleMutation, { isLoading: isUpdateRoleLoading }] = useUpdateRoleMutation()
-
   /**
    * Авторизация через Telegram
    */
@@ -125,40 +121,16 @@ export const useAuthActions = () => {
    */
   const refreshToken = useCallback(async () => {
     try {
-      const result = await refreshTokenMutation().unwrap()
-
-      // Обновляем токены при успешном обновлении
-      authService.setTokens(result.accessToken, result.refreshToken)
-
-      return result
+      return await refreshTokenMutation().unwrap()
     } catch (error) {
-      // При ошибке обновления токена - выходим
       authService.logout()
       throw error
     }
   }, [refreshTokenMutation])
 
-  /**
-   * Обновление роли пользователя
-   */
-  const updateRole = useCallback(
-    async (request: UpdateRoleRequest) => {
-      const result = await updateRoleMutation(request).unwrap()
-
-      // Обновляем данные пользователя в Redux после успешного обновления роли
-      if (result.success && result.data) {
-        updateUserDataInStore(dispatch, result.data)
-      }
-
-      return result
-    },
-    [updateRoleMutation, dispatch]
-  )
-
   return {
     authTelegram,
     refreshToken,
-    updateRole,
-    isLoading: isAuthLoading || isRefreshLoading || isUpdateRoleLoading,
+    isLoading: isAuthLoading || isRefreshLoading,
   }
 }

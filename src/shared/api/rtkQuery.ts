@@ -8,6 +8,7 @@ import {
 import { API_BASE_URL } from './config'
 import { authService } from '@/services/auth'
 import { authSessionExpired } from '@/shared/api/authEvents'
+import { applyAuthRefreshPayload } from '@/shared/api/authRefresh'
 
 export const tagTypes = [
   'Shift',
@@ -50,23 +51,24 @@ const rawBaseQuery = fetchBaseQuery({
 
 let refreshPromise: Promise<boolean> | null = null
 
+/** POST /api/v1/auth/refresh — только заголовок Authorization: Bearer (см. API.md), без тела */
 const refreshToken = async (): Promise<boolean> => {
-  const refreshTokenValue = authService.getRefreshToken()
-  if (!refreshTokenValue) return false
+  const accessToken = authService.getToken()
+  if (!accessToken) return false
 
   try {
     const res = await fetch(`${rtkQueryConfig.baseUrl}/api/v1/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: refreshTokenValue }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
 
     if (!res.ok) return false
 
-    const data = (await res.json()) as { accessToken: string; refreshToken: string }
-    authService.setTokens(data.accessToken, data.refreshToken)
-
-    return true
+    const json: unknown = await res.json()
+    return applyAuthRefreshPayload(json)
   } catch {
     return false
   }

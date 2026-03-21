@@ -434,6 +434,21 @@
     "noRoles": "No roles found",
     "positionsError": "Failed to load positions",
     "supplierTypesError": "Failed to load supplier types",
+    "categoriesError": "Failed to load supplier categories",
+    "supplierCategoryTitle": "What do you supply?",
+    "supplierCategoryDescription": "Choose a category — we'll show matching supplier types next",
+    "supplierCategories": {
+      "products": "Products",
+      "equipment": "Equipment",
+      "services": "Services",
+      "logistics": "Logistics"
+    },
+    "supplierCategoriesDesc": {
+      "products": "Food, beverages, ingredients",
+      "equipment": "Kitchen and bar equipment",
+      "services": "Cleaning, maintenance, consulting",
+      "logistics": "Delivery and warehousing"
+    },
     "restaurantFormatsError": "Failed to load restaurant formats",
     "positionScreenTitle": "Profile details",
     "positionScreenDescription": "Choose your position, then add specializations, experience, and city",
@@ -548,6 +563,7 @@
     "selectPosition": "Select position: {{label}}",
     "selectSpecialization": "Select specialization: {{label}}",
     "selectRole": "Select role: {{label}}",
+    "selectSupplierCategory": "Select supplier category: {{label}}",
     "selectType": "Select: {{label}}",
     "determineLocation": "Determine location",
     "lightTheme": "Select light theme",

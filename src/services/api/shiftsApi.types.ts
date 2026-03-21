@@ -63,6 +63,23 @@ export interface GetVacanciesParams {
 }
 
 /**
+ * GET /api/v1/shifts — все query-параметры опциональны (см. API.md)
+ */
+export interface GetShiftsListParams {
+  shift_type?: 'vacancy' | 'replacement'
+  position?: string
+  specialization?: string
+  city?: string
+  min_payment?: number
+  max_payment?: number
+  start_date?: string
+  end_date?: string
+  urgent?: boolean
+  page?: number
+  per_page?: number
+}
+
+/**
  * Профиль ресторана из API
  */
 export interface RestaurantProfileApi {

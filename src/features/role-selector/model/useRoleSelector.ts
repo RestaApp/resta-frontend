@@ -3,8 +3,9 @@ import { useRoleSelection } from './useRoleSelection'
 import { useSubRoleSubmission } from './useSubRoleSubmission'
 import { logger } from '@/utils/logger'
 import type { UiRole } from '@/shared/types/roles.types'
+import type { FormData } from './useFormSelector'
 
-type RoleSelectorFlow = 'main' | 'employee' | 'supplier' | 'restaurant'
+type RoleSelectorFlow = 'main' | 'employee' | 'supplier_category' | 'supplier' | 'restaurant'
 
 interface UseRoleSelectorProps {
   onSelectRole: (role: UiRole) => void
@@ -21,19 +22,31 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
 
   const flow: RoleSelectorFlow = useMemo(() => {
     if (roleSelection.showEmployeeSubRoles) return 'employee'
+    if (roleSelection.showSupplierCategory) return 'supplier_category'
     if (roleSelection.showSupplierTypes) return 'supplier'
     if (roleSelection.showRestaurantFormats) return 'restaurant'
     return 'main'
   }, [
     roleSelection.showEmployeeSubRoles,
+    roleSelection.showSupplierCategory,
     roleSelection.showSupplierTypes,
     roleSelection.showRestaurantFormats,
   ])
 
   const handleBack = useCallback(() => {
     roleSelection.handleBack()
-    subRoleSubmission.resetSubRoleSelection() // reset всегда при back из subflow
+    subRoleSubmission.resetSubRoleSelection()
   }, [roleSelection, subRoleSubmission])
+
+  const handleSupplierTypeContinue = useCallback(
+    async (formData?: FormData) => {
+      return subRoleSubmission.handleSupplierTypeContinue(
+        formData,
+        roleSelection.selectedSupplierCategory ?? undefined
+      )
+    },
+    [subRoleSubmission, roleSelection.selectedSupplierCategory]
+  )
 
   return {
     flow,
@@ -48,6 +61,11 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     isLoadingPositions: roleSelection.isLoadingPositions,
     isFetchingPositions: roleSelection.isFetchingPositions,
 
+    supplierCategories: roleSelection.supplierCategories,
+    isLoadingSupplierCategories: roleSelection.isLoadingSupplierCategories,
+    isFetchingSupplierCategories: roleSelection.isFetchingSupplierCategories,
+    handleSupplierCategoryContinue: roleSelection.handleSupplierCategoryContinue,
+
     supplierTypes: roleSelection.supplierTypes,
     isLoadingSupplierTypes: roleSelection.isLoadingSupplierTypes,
     isFetchingSupplierTypes: roleSelection.isFetchingSupplierTypes,
@@ -61,7 +79,7 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     handleRoleSelect: roleSelection.handleRoleSelect,
     handleSubRoleSelect: subRoleSubmission.handleSubRoleSelect,
     handleSubRoleContinue: subRoleSubmission.handleSubRoleContinue,
-    handleSupplierTypeContinue: subRoleSubmission.handleSupplierTypeContinue,
+    handleSupplierTypeContinue,
     handleRestaurantFormatContinue: subRoleSubmission.handleRestaurantFormatContinue,
 
     handleBack,

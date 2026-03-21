@@ -5,7 +5,7 @@
  */
 
 import { api } from '@/shared/api/api'
-import { authService } from '@/services/auth'
+import { applyAuthRefreshPayload } from '@/shared/api/authRefresh'
 
 export interface TelegramAuthRequest {
   initData: string
@@ -74,23 +74,9 @@ export interface AuthResponse {
   }
 }
 
-export interface RefreshTokenRequest {
-  refreshToken: string
-}
-
+/** Успешный refresh (тело ответа разбирается в transformResponse) */
 export interface RefreshTokenResponse {
-  accessToken: string
-  refreshToken: string
-}
-
-export interface UpdateRoleRequest {
-  role: string
-  position?: string
-}
-
-export interface UpdateRoleResponse {
-  success: boolean
-  data: UserData
+  ok: true
 }
 
 export const authApi = api.injectEndpoints({
@@ -100,39 +86,28 @@ export const authApi = api.injectEndpoints({
       query: body => ({
         url: '/api/v1/auth/sign_in',
         method: 'POST',
-        // Контракт API: поле `init_data` (snake_case)
-        body: { init_data: body.initData },
+        // API.md: `init_data`; часть деплоев Rails принимает `initData` (как в Telegram WebApp) — шлём оба.
+        body: { init_data: body.initData, initData: body.initData },
       }),
       // Не инвалидируем теги 'User' при sign_in, чтобы избежать лишнего refetch
       // (userData обновляется вручную в хуке authTelegram)
     }),
 
-    // Обновление JWT токена
+    // POST /api/v1/auth/refresh — только Bearer; тело запроса не передаём (API.md)
     refreshToken: builder.mutation<RefreshTokenResponse, void>({
-      query: () => {
-        const refreshToken = authService.getRefreshToken()
-        if (!refreshToken) {
-          throw new Error('Refresh token не найден')
-        }
-        return {
-          url: '/api/v1/auth/refresh',
-          method: 'POST',
-          body: { refreshToken } as RefreshTokenRequest,
-        }
-      },
-    }),
-
-    // Обновление роли пользователя
-    updateRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
-      query: body => ({
-        url: '/api/v1/auth/sign_in',
-        method: 'PUT',
-        body,
+      query: () => ({
+        url: '/api/v1/auth/refresh',
+        method: 'POST',
       }),
-      invalidatesTags: ['User'],
+      transformResponse: (response: unknown): RefreshTokenResponse => {
+        if (!applyAuthRefreshPayload(response)) {
+          throw new Error('Некорректный ответ refresh')
+        }
+        return { ok: true }
+      },
     }),
   }),
 })
 
 // Экспорт базовых хуков RTK Query (используются в кастомных хуках)
-export const { useAuthTelegramMutation, useRefreshTokenMutation, useUpdateRoleMutation } = authApi
+export const { useAuthTelegramMutation, useRefreshTokenMutation } = authApi

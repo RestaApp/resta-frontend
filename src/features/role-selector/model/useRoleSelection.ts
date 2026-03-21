@@ -7,6 +7,7 @@ import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useRoles } from './hooks/useRoles'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
+import { useSupplierCategories } from './hooks/useSupplierCategories'
 import { useSupplierTypes } from './hooks/useSupplierTypes'
 import { useRestaurantFormats } from './hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../utils/mappers'
@@ -20,20 +21,22 @@ interface UseRoleSelectionProps {
 export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const [draftSelectedRole, setDraftSelectedRole] = useState<UiRole | null>(null)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
+  /** Шаг 1 поставщика: категория (GET /catalogs/supplier_categories) */
+  const [showSupplierCategory, setShowSupplierCategory] = useState(false)
+  /** Выбранная категория — для GET /catalogs/supplier_types?supplier_category= */
+  const [selectedSupplierCategory, setSelectedSupplierCategory] = useState<string | null>(null)
+  /** Шаг 2 поставщика: типы и форма */
   const [showSupplierTypes, setShowSupplierTypes] = useState(false)
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
 
   const userData = useAppSelector(selectUserData)
-  // Проверяем, что роль пользователя равна 'unverified'
   const isUnverified = useMemo(() => {
     const apiRole = mapRoleFromApi(userData?.role)
     return !isVerifiedRole(apiRole)
   }, [userData?.role])
 
-  // Запрашиваем роли только если пользователь авторизован И его роль равна 'unverified'
   const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverified })
 
-  // Загружаем позиции только если выбрана роль employee (chef) И роль пользователя unverified
   const shouldLoadPositions = (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverified
 
   const {
@@ -42,17 +45,26 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     isFetching: isFetchingPositions,
   } = useUserPositions({ enabled: shouldLoadPositions })
 
-  // Загружаем типы поставщиков только если выбрана роль supplier И роль пользователя unverified
+  const shouldLoadSupplierCategories = showSupplierCategory && isUnverified
+
+  const {
+    supplierCategories,
+    isLoading: isLoadingSupplierCategories,
+    isFetching: isFetchingSupplierCategories,
+  } = useSupplierCategories({ enabled: shouldLoadSupplierCategories })
+
   const shouldLoadSupplierTypes =
-    (draftSelectedRole === 'supplier' || showSupplierTypes) && isUnverified
+    showSupplierTypes && isUnverified && selectedSupplierCategory !== null
 
   const {
     supplierTypes,
     isLoading: isLoadingSupplierTypes,
     isFetching: isFetchingSupplierTypes,
-  } = useSupplierTypes({ enabled: shouldLoadSupplierTypes })
+  } = useSupplierTypes({
+    enabled: shouldLoadSupplierTypes,
+    supplierCategory: selectedSupplierCategory ?? 'products',
+  })
 
-  // Загружаем форматы ресторанов только если выбрана роль venue И роль пользователя unverified
   const shouldLoadRestaurantFormats =
     (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverified
 
@@ -62,7 +74,6 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     isFetching: isFetchingRestaurantFormats,
   } = useRestaurantFormats({ enabled: shouldLoadRestaurantFormats })
 
-  // Преобразуем данные из API в формат компонентов
   const mainRoles = useMemo(() => {
     if (roles.length === 0) {
       return []
@@ -70,23 +81,26 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     return mapRoleOptionsFromApi(roles)
   }, [roles])
 
+  const handleSupplierCategoryContinue = useCallback((category: string) => {
+    setSelectedSupplierCategory(category)
+    setShowSupplierCategory(false)
+    setShowSupplierTypes(true)
+  }, [])
+
   const handleRoleSelect = useCallback(
     (roleId: UiRole) => {
       setDraftSelectedRole(roleId)
 
-      // Если выбрали сотрудника, показываем экран подролей
       if (roleId === 'chef') {
         setShowEmployeeSubRoles(true)
         return
       }
 
-      // Если выбрали поставщика, показываем экран типов поставщиков
       if (roleId === 'supplier') {
-        setShowSupplierTypes(true)
+        setShowSupplierCategory(true)
         return
       }
 
-      // Если выбрали заведение, показываем экран форматов ресторанов
       if (roleId === 'venue') {
         setShowRestaurantFormats(true)
         return
@@ -98,21 +112,25 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   )
 
   const handleBack = useCallback(() => {
-    // Сбрасываем выбранную роль при возврате
     setDraftSelectedRole(null)
 
     if (showEmployeeSubRoles) {
       setShowEmployeeSubRoles(false)
     } else if (showSupplierTypes) {
       setShowSupplierTypes(false)
+      setShowSupplierCategory(true)
+    } else if (showSupplierCategory) {
+      setShowSupplierCategory(false)
+      setSelectedSupplierCategory(null)
     } else if (showRestaurantFormats) {
       setShowRestaurantFormats(false)
     }
-  }, [showEmployeeSubRoles, showSupplierTypes, showRestaurantFormats])
+  }, [showEmployeeSubRoles, showSupplierTypes, showSupplierCategory, showRestaurantFormats])
 
   return {
     selectedRole: draftSelectedRole,
     showEmployeeSubRoles,
+    showSupplierCategory,
     showSupplierTypes,
     showRestaurantFormats,
     mainRoles,
@@ -122,6 +140,11 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     employeeSubRoles,
     isLoadingPositions,
     isFetchingPositions,
+    supplierCategories,
+    isLoadingSupplierCategories,
+    isFetchingSupplierCategories,
+    selectedSupplierCategory,
+    handleSupplierCategoryContinue,
     supplierTypes,
     isLoadingSupplierTypes,
     isFetchingSupplierTypes,

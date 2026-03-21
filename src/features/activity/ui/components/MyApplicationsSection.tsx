@@ -51,7 +51,7 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
           description={t('activity.applicationsWillAppearHere')}
         />
       ) : (
-        <div className="space-y-6">
+        <div className="ui-density-stack-lg">
           {appliedByStatus.map(({ status, label, items }) => {
             const isRejectedGroup = status === 'rejected'
             const isCollapsed = isRejectedGroup && isRejectedCollapsed
@@ -72,7 +72,7 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
                   ) : null}
                 </button>
                 {!isCollapsed ? (
-                  <div className="space-y-4">
+                  <div className="ui-density-stack">
                     {items.map(shift => (
                       <AppliedShiftCard key={shift.id} shift={shift} showToast={showToast} />
                     ))}

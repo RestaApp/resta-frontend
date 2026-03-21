@@ -13,6 +13,7 @@ import { useUserSpecializations } from '@/features/navigation/model/hooks/useUse
 import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
+import { DRAWER_BODY_CLASS, DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import { useToast } from '@/hooks/useToast'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
 import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
@@ -139,7 +140,7 @@ const AddShiftDrawerKeyed = ({
         <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
       </DrawerHeader>
 
-      <div className="space-y-5 p-4">
+      <div className={`${DRAWER_BODY_CLASS} gap-5`}>
         {controller.state.isSuccessOpen ? (
           <AddShiftDrawerSuccess />
         ) : (
@@ -223,7 +224,7 @@ const AddShiftDrawerKeyed = ({
         ) : null}
       </div>
 
-      <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
+      <DrawerFooter className={DRAWER_FOOTER_CLASS}>
         <AddShiftDrawerFooter
           isSuccessOpen={controller.state.isSuccessOpen}
           step={controller.state.step}

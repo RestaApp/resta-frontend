@@ -6,6 +6,7 @@ import { OnboardingProgress } from './components/OnboardingProgress'
 import { ErrorModal } from './components/subroles/shared/ErrorModal'
 
 import { EmployeeSubRoleSelector } from './components/subroles/EmployeeSubRoleSelector'
+import { SupplierCategorySelector } from './components/subroles/SupplierCategorySelector'
 import { SupplierTypeSelector } from './components/subroles/SupplierTypeSelector'
 import { RestaurantFormatSelector } from './components/subroles/RestaurantFormatSelector'
 import { LoadingState } from './components/subroles/shared/LoadingState'
@@ -33,6 +34,18 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         isLoading={vm.isLoadingPositions}
         isFetching={vm.isFetchingPositions}
         errorDialogOpen={vm.errorDialogOpen}
+      />
+    )
+  }
+
+  if (vm.flow === 'supplier_category') {
+    return (
+      <SupplierCategorySelector
+        categories={vm.supplierCategories}
+        onContinue={vm.handleSupplierCategoryContinue}
+        onBack={vm.handleBack}
+        isLoading={vm.isLoadingSupplierCategories}
+        isFetching={vm.isFetchingSupplierCategories}
       />
     )
   }

@@ -434,6 +434,21 @@
     "noRoles": "Роли не найдены",
     "positionsError": "Не удалось загрузить позиции",
     "supplierTypesError": "Не удалось загрузить типы поставщиков",
+    "categoriesError": "Не удалось загрузить категории поставщиков",
+    "supplierCategoryTitle": "Чем вы торгуете?",
+    "supplierCategoryDescription": "Выберите категорию — дальше покажем подходящие типы поставщика",
+    "supplierCategories": {
+      "products": "Товары",
+      "equipment": "Оборудование",
+      "services": "Услуги",
+      "logistics": "Логистика"
+    },
+    "supplierCategoriesDesc": {
+      "products": "Продукты, напитки, ингредиенты",
+      "equipment": "Кухонное и барное оборудование",
+      "services": "Клининг, обслуживание, консалтинг",
+      "logistics": "Доставка и складирование"
+    },
     "restaurantFormatsError": "Не удалось загрузить форматы ресторанов",
     "positionScreenTitle": "Детали профиля",
     "positionScreenDescription": "Выберите позицию, затем укажите специализации, опыт и город",
@@ -548,6 +563,7 @@
     "selectPosition": "Выбрать позицию: {{label}}",
     "selectSpecialization": "Выбрать специализацию: {{label}}",
     "selectRole": "Выбрать роль: {{label}}",
+    "selectSupplierCategory": "Выбрать категорию поставщика: {{label}}",
     "selectType": "Выбрать: {{label}}",
     "determineLocation": "Определить местоположение",
     "lightTheme": "Выбрать светлую тему",

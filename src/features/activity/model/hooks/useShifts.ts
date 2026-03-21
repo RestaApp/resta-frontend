@@ -13,16 +13,19 @@ import {
   type CreateShiftResponse,
   type CreateShiftBody,
   type ShiftApi,
+  type GetShiftsListParams,
+  type VacancyApiItem,
 } from '@/services/api/shiftsApi'
 
 /**
- * Хук для получения списка смен
+ * Хук для получения списка смен (GET /api/v1/shifts — параметры как в API.md)
  */
-export const useShifts = (params?: { status?: string; role?: string }) => {
-  const { data, isLoading, isFetching, error, refetch } = useGetShiftsQuery(params ?? {})
+export const useShifts = (params?: GetShiftsListParams) => {
+  const { data, isLoading, isFetching, error, refetch } = useGetShiftsQuery(params)
 
   return {
-    shifts: data ?? [],
+    shifts: data?.data ?? ([] as VacancyApiItem[]),
+    raw: data,
     isLoading,
     isFetching,
     error,

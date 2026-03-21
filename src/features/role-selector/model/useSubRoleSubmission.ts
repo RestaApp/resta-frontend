@@ -83,16 +83,15 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
   )
 
   const handleSupplierTypeContinue = useCallback(
-    async (formData?: FormData): Promise<boolean> => {
-      if (!formData?.type) {
+    async (formData?: FormData, supplierCategory?: string): Promise<boolean> => {
+      if (!formData?.type || !supplierCategory) {
         return false
       }
 
       const updateData: UpdateUserRequest = {
         user: {
           role: 'supplier',
-          // Простой формат API: категория и массив типов (см. API.md — профиль поставщика)
-          supplier_category: 'products',
+          supplier_category: supplierCategory,
           supplier_types: [formData.type],
         },
       }

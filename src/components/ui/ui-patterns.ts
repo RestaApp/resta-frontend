@@ -31,3 +31,15 @@ export const INPUT_FIELD_INVALID_CLASS =
 
 export const INPUT_FIELD_DISABLED_CLASS =
   'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+
+export const DRAWER_BODY_CLASS = 'ui-density-page ui-density-py ui-density-stack'
+
+export const DRAWER_BODY_COMPACT_CLASS = 'ui-density-page ui-density-py ui-density-stack-sm'
+
+export const DRAWER_FOOTER_CLASS =
+  'border-t border-border/50 bg-background ui-density-page ui-density-py-sm'
+
+export const DRAWER_SETTING_ROW_CLASS =
+  'flex items-center justify-between gap-3 rounded-xl border border-border/50 p-4'
+
+export const MODAL_SURFACE_CLASS = 'w-full rounded-3xl border border-border bg-card shadow-xl'

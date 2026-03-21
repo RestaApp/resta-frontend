@@ -8,6 +8,7 @@ import {
   DrawerFooter,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
+import { DRAWER_BODY_CLASS, DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import { useSupportTicketForm } from '@/features/profile/model/hooks/useSupportTicketForm'
 import { SupportTicketForm } from './SupportTicketForm'
 
@@ -37,7 +38,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
           </div>
           <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
         </DrawerHeader>
-        <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
+        <DrawerFooter className={DRAWER_FOOTER_CLASS}>
           <Button variant="gradient" size="md" className="w-full" onClick={form.handleClose}>
             {t('common.understand')}
           </Button>
@@ -58,7 +59,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
         </div>
       </DrawerHeader>
 
-      <div className="px-4 pb-6">
+      <div className={DRAWER_BODY_CLASS}>
         <SupportTicketForm
           subject={form.subject}
           setSubject={form.setSubject}

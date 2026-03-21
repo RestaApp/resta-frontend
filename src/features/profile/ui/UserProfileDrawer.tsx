@@ -12,10 +12,11 @@ import { useGetUserQuery } from '@/services/api/usersApi'
 import { mapRoleFromApi } from '@/utils/roles'
 import { ProfileHero } from './components/ProfileHero'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
+import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
 import { useLabels } from '@/shared/i18n/hooks'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Loader } from '@/components/ui/loader'
+import { DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import { getProfileCompleteness } from '../model/utils/profileCompleteness'
 import { ChefHat } from 'lucide-react'
 
@@ -54,66 +55,6 @@ const SpecializationsSection = memo(({ specializations }: { specializations: str
   )
 })
 SpecializationsSection.displayName = 'SpecializationsSection'
-
-const RestaurantInfoCard = memo(
-  ({
-    restaurantInfo,
-    variant = 'card',
-  }: {
-    restaurantInfo: { format: string | null }
-    variant?: 'card' | 'section'
-  }) => {
-    const { t } = useTranslation()
-    if (!restaurantInfo.format) return null
-
-    const content = (
-      <>
-        <h4 className="font-semibold mb-3">{t('roles.venueInfoTitle')}</h4>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{t('profile.venueType')}</span>
-            <span>{restaurantInfo.format}</span>
-          </div>
-        </div>
-      </>
-    )
-    return variant === 'section' ? (
-      <div className="py-2">{content}</div>
-    ) : (
-      <Card className="p-5">{content}</Card>
-    )
-  }
-)
-RestaurantInfoCard.displayName = 'RestaurantInfoCard'
-
-const SupplierInfoCard = memo(
-  ({
-    supplierInfo,
-    variant = 'card',
-  }: {
-    supplierInfo: { name: string }
-    variant?: 'card' | 'section'
-  }) => {
-    const { t } = useTranslation()
-    const content = (
-      <>
-        <h4 className="font-semibold mb-3">{t('roles.supplierInfoTitle')}</h4>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{t('profile.companyName')}</span>
-            <span>{supplierInfo.name}</span>
-          </div>
-        </div>
-      </>
-    )
-    return variant === 'section' ? (
-      <div className="py-2">{content}</div>
-    ) : (
-      <Card className="p-5">{content}</Card>
-    )
-  }
-)
-SupplierInfoCard.displayName = 'SupplierInfoCard'
 
 export const UserProfileDrawer = memo(
   ({
@@ -210,7 +151,7 @@ export const UserProfileDrawer = memo(
             </div>
           </DrawerHeader>
 
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-0">
+          <div className="flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py">
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader size="lg" />
@@ -247,14 +188,22 @@ export const UserProfileDrawer = memo(
                 {apiRole === 'restaurant' && restaurantInfo ? (
                   <>
                     <hr className="my-4 border-border" />
-                    <RestaurantInfoCard restaurantInfo={restaurantInfo} variant="section" />
+                    <ProfileBusinessInfoCard
+                      kind="restaurant"
+                      value={restaurantInfo.format}
+                      variant="section"
+                    />
                   </>
                 ) : null}
 
                 {apiRole === 'supplier' && supplierInfo ? (
                   <>
                     <hr className="my-4 border-border" />
-                    <SupplierInfoCard supplierInfo={supplierInfo} variant="section" />
+                    <ProfileBusinessInfoCard
+                      kind="supplier"
+                      value={supplierInfo.name}
+                      variant="section"
+                    />
                   </>
                 ) : null}
               </>
@@ -262,7 +211,7 @@ export const UserProfileDrawer = memo(
           </div>
 
           {showModerationActions ? (
-            <DrawerFooter className="border-t border-border/50 bg-background shrink-0 px-5 py-4">
+            <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0`}>
               <div className="flex gap-3">
                 {canReject ? (
                   <Button

@@ -11,6 +11,11 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import {
+  DRAWER_BODY_CLASS,
+  DRAWER_FOOTER_CLASS,
+  DRAWER_SETTING_ROW_CLASS,
+} from '@/components/ui/ui-patterns'
+import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
 } from '@/services/api/notificationPreferencesApi'
@@ -139,7 +144,7 @@ export const NotificationPreferencesDrawer = memo(
           <DrawerDescription>{t('profile.notificationsDescription')}</DrawerDescription>
         </DrawerHeader>
 
-        <div className="px-4 pb-6 space-y-2">
+        <div className={`${DRAWER_BODY_CLASS} gap-2`}>
           {isLoading && (
             <div className="flex justify-center py-8">
               <Loader size="lg" />
@@ -148,7 +153,7 @@ export const NotificationPreferencesDrawer = memo(
           {isError && <p className="text-sm text-destructive py-4">{t('profile.loadError')}</p>}
           {effectivePrefs && (
             <>
-              <div className="flex items-center justify-between p-4 rounded-xl border border-border/50 gap-3 bg-muted/30">
+              <div className={`${DRAWER_SETTING_ROW_CLASS} bg-muted/30`}>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium">{t('profile.notifications.all')}</div>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -162,10 +167,7 @@ export const NotificationPreferencesDrawer = memo(
                 />
               </div>
               {PREFERENCE_KEYS.map(key => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between p-4 rounded-xl border border-border/50 gap-3"
-                >
+                <div key={key} className={DRAWER_SETTING_ROW_CLASS}>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium">{t(PREFERENCE_I18N[key].label)}</div>
                     <p className="text-xs text-muted-foreground mt-0.5">
@@ -183,7 +185,7 @@ export const NotificationPreferencesDrawer = memo(
           )}
         </div>
         {effectivePrefs ? (
-          <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
+          <DrawerFooter className={DRAWER_FOOTER_CLASS}>
             <div className="flex gap-3">
               <Button
                 type="button"

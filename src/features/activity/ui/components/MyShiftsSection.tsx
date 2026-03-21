@@ -24,7 +24,7 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
           description={t('activity.shiftsWillAppearHere')}
         />
       ) : (
-        <div className="space-y-4">
+        <div className="ui-density-stack">
           {shifts.map(shift => (
             <PersonalShiftCard
               key={shift.id}

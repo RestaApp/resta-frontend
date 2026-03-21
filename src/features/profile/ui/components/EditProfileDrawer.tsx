@@ -17,6 +17,11 @@ import { CitySelect } from '@/components/ui/city-select'
 import { Loader } from '@/components/ui/loader'
 import { Badge } from '@/components/ui/badge'
 import {
+  DRAWER_BODY_CLASS,
+  DRAWER_FOOTER_CLASS,
+  DRAWER_SETTING_ROW_CLASS,
+} from '@/components/ui/ui-patterns'
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -80,7 +85,7 @@ const EmployeeFieldsSection = memo(
             tickCount={5}
           />
         </FormField>
-        <div className="flex items-center justify-between p-4 rounded-xl border border-border/50">
+        <div className={DRAWER_SETTING_ROW_CLASS}>
           <div>
             <p className="block text-sm font-medium mb-1">{t('profile.openToWork')}</p>
             <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
@@ -164,7 +169,7 @@ export const EditProfileDrawer = memo(
           <DrawerDescription>{t('profile.editProfileDescription')}</DrawerDescription>
         </DrawerHeader>
 
-        <div className="px-4 space-y-4 pb-4">
+        <div className={DRAWER_BODY_CLASS}>
           <FormField
             label={`${t('profile.nameLabel')} ${apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''}`.trim()}
             required
@@ -278,7 +283,7 @@ export const EditProfileDrawer = memo(
           )}
         </div>
 
-        <DrawerFooter className="sticky bottom-0 z-10 border-t border-border/50 bg-background px-5 py-4 flex-row">
+        <DrawerFooter className={`${DRAWER_FOOTER_CLASS} sticky bottom-0 z-10 flex-row`}>
           <Button
             onClick={handleCancel}
             disabled={isLoading}
