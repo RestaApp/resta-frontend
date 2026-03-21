@@ -14,5 +14,3 @@ export const Field = ({ label, hint, error, children }: FieldProps) => {
     </FormField>
   )
 }
-
-export default Field

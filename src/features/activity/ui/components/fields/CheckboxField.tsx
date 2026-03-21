@@ -15,5 +15,3 @@ export const CheckboxField = ({ id, label, checked, onChange }: CheckboxFieldPro
     <Switch checked={checked} onCheckedChange={onChange} ariaLabel={label} />
   </div>
 )
-
-export default CheckboxField

@@ -40,5 +40,3 @@ export const SelectField = ({
     />
   </Field>
 )
-
-export default SelectField

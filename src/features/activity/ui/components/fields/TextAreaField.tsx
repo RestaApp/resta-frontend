@@ -28,5 +28,3 @@ export const TextAreaField = ({
     />
   </Field>
 )
-
-export default TextAreaField

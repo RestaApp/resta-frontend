@@ -3,7 +3,7 @@ import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
 import { VenueAddShiftListener } from '@/features/venue/ui/VenueAddShiftListener'
-import { useProfileCompleteness } from '@/features/profile/model/utils/profileCompleteness'
+import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
 import type { UiRole, Screen } from '@/types'
 import { AppHeader } from '@/components/AppHeader'
 

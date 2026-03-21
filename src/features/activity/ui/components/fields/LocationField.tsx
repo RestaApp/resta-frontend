@@ -86,5 +86,3 @@ export const LocationField = memo(function LocationField({
     </Field>
   )
 })
-
-export default LocationField

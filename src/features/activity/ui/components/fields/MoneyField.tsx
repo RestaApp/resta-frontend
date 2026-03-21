@@ -30,5 +30,3 @@ export const MoneyField = ({ value, onChange, error, label, placeholder }: Money
     </Field>
   )
 }
-
-export default MoneyField

@@ -81,5 +81,3 @@ export const TimeField = ({ label, value, onChange, error }: TimeFieldProps) => 
     </Field>
   )
 }
-
-export default TimeField

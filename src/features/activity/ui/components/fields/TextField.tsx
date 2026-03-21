@@ -19,5 +19,3 @@ export const TextField = ({ label, value, onChange, placeholder, error }: TextFi
     />
   </Field>
 )
-
-export default TextField
