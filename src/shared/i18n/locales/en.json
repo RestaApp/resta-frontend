@@ -454,7 +454,7 @@
     "doneTipSupplier": "You can add more details in the Profile section"
   },
   "drawer": {
-    "chef": "What kind of chef are you?",
+    "chef": "Specialization",
     "waiter": "Your specialization?",
     "bartender": "Your bartending level?",
     "barista": "Your barista level?",

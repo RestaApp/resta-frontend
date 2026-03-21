@@ -70,13 +70,13 @@ export const ActivityCalendarTab = memo((props: Props) => {
               onClick={() => onSelectDay(day.key)}
               variant={isSelected ? 'gradient' : 'outline'}
               size="sm"
-              className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl min-w-[60px] transition-all relative ${
+              className={`!h-auto min-h-[64px] flex-shrink-0 flex flex-col items-center justify-center px-3 py-2 rounded-xl min-w-[60px] transition-all relative ${
                 isSelected ? 'text-white' : 'bg-muted'
               }`}
               aria-pressed={isSelected}
             >
-              <span className="text-xs mb-1">{day.short}</span>
-              <span className="text-lg font-medium">{day.dayNum}</span>
+              <span className="text-xs leading-none mb-1">{day.short}</span>
+              <span className="text-lg leading-none font-medium">{day.dayNum}</span>
               {hasShifts && !isSelected ? (
                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary" />
               ) : null}
