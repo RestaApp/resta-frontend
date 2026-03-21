@@ -47,7 +47,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="ui-density-stack">
         <ShiftSkeleton />
         <ShiftSkeleton />
         <ShiftSkeleton />
@@ -58,7 +58,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
     return <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
 
   return (
-    <div className="space-y-4">
+    <div className="ui-density-stack">
       <div className="flex gap-2 overflow-x-auto pb-2">
         {weekDays.map(day => {
           const hasShifts = (groupedShifts[day.key]?.length ?? 0) > 0
@@ -89,7 +89,7 @@ export const ActivityCalendarTab = memo((props: Props) => {
         <h4 className="mb-3 text-lg font-semibold">{selectedDayMeta?.full || t('activity.day')}</h4>
 
         {selectedDayShifts.length > 0 ? (
-          <div className="space-y-4">
+          <div className="ui-density-stack">
             {selectedDayShifts.map(shift =>
               shift.type === 'resta' ? (
                 <AppliedShiftCard

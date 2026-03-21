@@ -10,17 +10,17 @@ import { PullToRefresh } from '@/components/ui/PullToRefresh'
 
 function ActivityListSkeleton() {
   return (
-    <div className="space-y-8">
+    <div className="ui-density-stack-lg">
       <div>
         <div className="h-9 w-48 bg-muted/50 rounded-xl mb-3" />
-        <div className="space-y-4">
+        <div className="ui-density-stack">
           <ShiftSkeleton />
           <ShiftSkeleton />
         </div>
       </div>
       <div>
         <div className="h-9 w-40 bg-muted/50 rounded-xl mb-3" />
-        <div className="space-y-4">
+        <div className="ui-density-stack">
           <ShiftSkeleton />
           <ShiftSkeleton />
         </div>
@@ -73,7 +73,7 @@ export function ActivityListTab({
     )
   } else {
     content = (
-      <div className="space-y-6">
+      <div className="ui-density-stack-lg">
         <MyShiftsSection
           shifts={shifts}
           onEdit={onEdit}

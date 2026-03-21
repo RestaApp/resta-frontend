@@ -28,11 +28,11 @@ export const FeedHotOffersSection = memo((props: Props) => {
   if (isLoading && hotOffers.length === 0) {
     return (
       <div className="py-2">
-        <div className="px-4 mb-3 flex items-center justify-between">
+        <div className="ui-density-page mb-3 flex items-center justify-between">
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-5 w-16 rounded-md" />
         </div>
-        <div className="flex gap-3 overflow-x-auto px-4 scrollbar-hide snap-x">
+        <div className="ui-density-page flex gap-3 overflow-x-auto scrollbar-hide snap-x">
           <Skeleton className="w-[110px] h-[135px] rounded-2xl" />
           <Skeleton className="w-[110px] h-[135px] rounded-2xl" />
           <Skeleton className="w-[110px] h-[135px] rounded-2xl" />

@@ -4,6 +4,7 @@ import { motion } from 'motion/react'
 import { Settings, HelpCircle, LogOut, Moon, Languages } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { ThemeToggleCompact } from '@/components/ui/theme-toggle-compact'
+import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
 import type { Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'
@@ -34,7 +35,7 @@ export function ProfileSettings({
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
         <Settings className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
         {t('profile.settings')}
       </h3>
@@ -71,7 +72,7 @@ export function ProfileSettings({
         <motion.button
           type="button"
           whileTap={{ scale: 0.98 }}
-          className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+          className={`w-full text-left transition-colors hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-50 ${DRAWER_SETTING_ROW_CLASS}`}
           onClick={onNotificationSettingsClick}
           disabled={!onNotificationSettingsClick}
         >
@@ -84,7 +85,7 @@ export function ProfileSettings({
             <motion.button
               type="button"
               whileTap={{ scale: 0.98 }}
-              className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 hover:bg-muted/50 transition-colors"
+              className={`w-full text-left transition-colors hover:bg-muted/50 ${DRAWER_SETTING_ROW_CLASS}`}
               onClick={() => setIsSupportDrawerOpen(true)}
             >
               <HelpCircle className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
@@ -98,7 +99,7 @@ export function ProfileSettings({
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={onLogout}
-          className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 text-destructive hover:bg-destructive/10 transition-colors"
+          className={`w-full text-left text-destructive transition-colors hover:bg-destructive/10 ${DRAWER_SETTING_ROW_CLASS}`}
         >
           <LogOut className="w-5 h-5" />
           <span>{t('profile.logout')}</span>

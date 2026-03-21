@@ -36,6 +36,11 @@ export const DRAWER_BODY_CLASS = 'ui-density-page ui-density-py ui-density-stack
 
 export const DRAWER_BODY_COMPACT_CLASS = 'ui-density-page ui-density-py ui-density-stack-sm'
 
+export const DRAWER_HEADER_CLASS = 'border-b border-border/50 ui-density-page'
+
+export const DRAWER_SCROLL_BODY_CLASS =
+  'flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py'
+
 export const DRAWER_FOOTER_CLASS =
   'border-t border-border/50 bg-background ui-density-page ui-density-py-sm'
 

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
+import { DRAWER_FOOTER_CLASS, DRAWER_HEADER_CLASS } from '@/components/ui/ui-patterns'
 import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 
@@ -56,7 +57,7 @@ export const VenueSuppliersFiltersDrawer = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <div className="flex min-h-0 flex-1 flex-col">
-        <DrawerHeader className="border-b border-border/50 ui-density-page">
+        <DrawerHeader className={DRAWER_HEADER_CLASS}>
           <div className="flex items-center justify-between gap-2">
             <DrawerTitle>
               {t('venueUi.suppliers.filters.title', { defaultValue: 'Фильтры поставщиков' })}
@@ -170,7 +171,7 @@ export const VenueSuppliersFiltersDrawer = ({
           </div>
         </div>
 
-        <DrawerFooter className="border-t border-border/50 bg-background ui-density-page ui-density-py-sm">
+        <DrawerFooter className={DRAWER_FOOTER_CLASS}>
           <Button variant="gradient" size="md" className="w-full" onClick={onApply}>
             {t('venueUi.suppliers.filters.apply', { defaultValue: 'Показать поставщиков' })}
           </Button>

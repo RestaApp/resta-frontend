@@ -6,6 +6,7 @@ import { Drawer, DrawerCloseButton } from '@/components/ui/drawer'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DRAWER_FOOTER_CLASS, DRAWER_HEADER_CLASS } from '@/components/ui/ui-patterns'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -205,7 +206,9 @@ const AdvancedFiltersSheet = ({
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
-      <div className="px-5 flex items-center justify-between border-b border-border/50 flex-shrink-0 bg-background sticky top-0 z-10">
+      <div
+        className={`${DRAWER_HEADER_CLASS} sticky top-0 z-10 flex flex-shrink-0 items-center justify-between bg-background`}
+      >
         <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
         <div className="flex items-center gap-2">
           {hasActiveFilters && (
@@ -226,10 +229,10 @@ const AdvancedFiltersSheet = ({
       <motion.div
         layout
         transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
-        className="p-5 space-y-8 pb-4 overflow-y-auto flex-1 min-h-0"
+        className="ui-density-page ui-density-stack-lg overflow-y-auto flex-1 min-h-0 pb-4"
       >
         {/* 1. Бюджет (Range Slider) */}
-        <div className="space-y-4">
+        <div className="ui-density-stack">
           <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-2">
             <h3 className="font-semibold text-base">
               {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
@@ -379,7 +382,7 @@ const AdvancedFiltersSheet = ({
         </AnimatePresence>
       </motion.div>
 
-      <div className="px-5 py-4 border-t border-border/50 bg-background flex-shrink-0">
+      <div className={`${DRAWER_FOOTER_CLASS} flex-shrink-0`}>
         <Button
           type="button"
           onClick={() => {

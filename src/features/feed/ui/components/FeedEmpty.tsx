@@ -69,7 +69,7 @@ export function FeedListArea({
 
   if (isInitialLoading) {
     return (
-      <div className="space-y-4">
+      <div className="ui-density-stack">
         <ShiftSkeleton />
         <ShiftSkeleton />
         <ShiftSkeleton />
@@ -99,7 +99,7 @@ export function FeedListArea({
 
   if (showLoadingAfterEmpty) {
     return (
-      <div className="space-y-4">
+      <div className="ui-density-stack">
         <ShiftSkeleton />
         <ShiftSkeleton />
         <ShiftSkeleton />

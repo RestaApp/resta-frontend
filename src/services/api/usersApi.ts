@@ -107,21 +107,38 @@ export interface GetUserResponse {
   data: UserData
 }
 
-export type UsersListType = 'employees' | 'supplier' | 'restaurant'
+/**
+ * `user_type` для GET /api/v1/users (SEARCH_FILTERS_SPEC.md § Users).
+ * Сотрудников можно запрашивать пачкой (`employees` / `employee`) или по должности (`chef`, `waiter`, …).
+ */
+export type UsersListType =
+  | 'employees'
+  | 'employee'
+  | 'supplier'
+  | 'restaurant'
+  | 'chef'
+  | 'waiter'
+  | 'bartender'
+  | 'barista'
+  | 'manager'
+  | 'support'
+  | 'delivery'
+  | 'cashier'
+  | 'operator'
 
+/**
+ * Поддерживаемые query-параметры — см. SEARCH_FILTERS_SPEC.md.
+ * Не использовать: `location`, `primary_role`, `min_rating`, `skills` (в текущем API не поддерживаются).
+ */
 export interface GetUsersParams {
   user_type: UsersListType
   city?: string
-  location?: string
-  /** Фильтр по должности (для employees) */
-  position?: string
-  /** Фильтр по специализации */
   specialization?: string
-  /** Минимальный опыт работы (лет) */
   min_experience?: number
-  /** Только для employee; для ресторанов false игнорируется на бэкенде */
+  /** Для сотрудников; для ресторанов `false` на бэкенде может игнорироваться */
   open_to_work?: boolean
   supplier_category?: string
+  /** Через запятую, при необходимости; требует `supplier_category` */
   supplier_types?: string
   delivery_available?: boolean
   page?: number

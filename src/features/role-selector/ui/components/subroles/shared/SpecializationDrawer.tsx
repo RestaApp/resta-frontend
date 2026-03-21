@@ -9,6 +9,11 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
+import {
+  DRAWER_BODY_CLASS,
+  DRAWER_FOOTER_CLASS,
+  DRAWER_HEADER_CLASS,
+} from '@/components/ui/ui-patterns'
 import { useLabels } from '@/shared/i18n/hooks'
 import { ExperienceField, LocationField } from './index'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
@@ -66,7 +71,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
 
   return (
     <Drawer open={open} onOpenChange={handleOpenChange} preventClose={errorDialogOpen}>
-      <DrawerHeader>
+      <DrawerHeader className={DRAWER_HEADER_CLASS}>
         <DrawerTitle>{title}</DrawerTitle>
         {specializations.length > 0 && (
           <DrawerDescription>
@@ -77,7 +82,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         )}
       </DrawerHeader>
 
-      <div className="px-4 pb-4 max-h-[50vh] overflow-y-auto">
+      <div className={`${DRAWER_BODY_CLASS} max-h-[50vh] overflow-y-auto`}>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader size="md" />
@@ -85,7 +90,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         ) : (
           <>
             {specializations.length > 0 ? (
-              <div className="space-y-4 mb-6">
+              <div className="ui-density-stack mb-6">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-2">
                     {t('roles.specializationsMain')}
@@ -171,7 +176,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         )}
       </div>
 
-      <DrawerFooter className="border-t border-border/50 bg-background px-5 py-4">
+      <DrawerFooter className={DRAWER_FOOTER_CLASS}>
         <Button
           type="button"
           onClick={onDone}

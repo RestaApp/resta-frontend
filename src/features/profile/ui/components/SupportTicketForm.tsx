@@ -45,7 +45,7 @@ export function SupportTicketForm({
   const { t } = useTranslation()
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="ui-density-stack">
       <FormField label={t('profile.supportForm.subject')} required>
         <Input
           value={subject}

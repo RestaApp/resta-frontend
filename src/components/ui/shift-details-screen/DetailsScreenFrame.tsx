@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Drawer, DrawerCloseButton, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { DRAWER_HEADER_CLASS, DRAWER_SCROLL_BODY_CLASS } from '@/components/ui/ui-patterns'
 
 interface DetailsScreenFrameProps {
   open: boolean
@@ -28,7 +29,7 @@ export function DetailsScreenFrame({
         className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
         style={{ height: 'calc(85vh - 52px)' }}
       >
-        <DrawerHeader className="pb-4 pt-1 border-b border-border shrink-0">
+        <DrawerHeader className={`${DRAWER_HEADER_CLASS} shrink-0 pb-4 pt-1`}>
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
               <DrawerTitle className="text-xl font-semibold break-words text-foreground">
@@ -42,7 +43,7 @@ export function DetailsScreenFrame({
           ) : null}
         </DrawerHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-5 pt-4 space-y-5 bg-background">
+        <div className={`${DRAWER_SCROLL_BODY_CLASS} ui-density-stack bg-background pb-5`}>
           {children}
         </div>
 

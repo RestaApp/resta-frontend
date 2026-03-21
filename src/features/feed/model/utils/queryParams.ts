@@ -1,3 +1,4 @@
+/** Параметры GET /api/v1/shifts — см. SEARCH_FILTERS_SPEC.md § Shifts */
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
 import type { QuickFilter } from './clientFilters'

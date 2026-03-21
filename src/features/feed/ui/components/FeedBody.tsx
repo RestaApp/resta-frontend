@@ -26,7 +26,7 @@ export function FeedBody({ vm }: FeedBodyProps) {
         onRefresh={vm.activeList.refresh}
         disabled={vm.activeList.isInitialLoading || vm.activeList.isFetching}
       >
-        <div className="space-y-4 px-4 py-4">
+        <div className="ui-density-page ui-density-py ui-density-stack">
           <FeedListArea
             isInitialLoading={vm.activeList.isInitialLoading}
             error={vm.activeList.error}
