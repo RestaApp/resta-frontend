@@ -1,11 +1,13 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
 import { VenueAddShiftListener } from '@/features/venue/ui/VenueAddShiftListener'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
-import type { UiRole, Screen } from '@/types'
+import type { Tab, UiRole, Screen } from '@/types'
 import { AppHeader } from '@/components/AppHeader'
+import { setLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/constants/storage'
 
 const BOTTOM_NAV_HEIGHT_PX = 88
 
@@ -19,6 +21,22 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
   const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
   const profileCompleteness = useProfileCompleteness()
   const hasIncompleteFields = !profileCompleteness?.isFilled
+
+  /** При переходе на профиль с незаполненными обязательными полями сразу открываем форму редактирования. */
+  const onTabChange = useCallback(
+    (tab: Tab) => {
+      if (tab === 'profile' && hasIncompleteFields) {
+        setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
+      }
+      handleTabChange(tab)
+      if (tab === 'profile' && hasIncompleteFields) {
+        queueMicrotask(() => {
+          window.dispatchEvent(new CustomEvent('openProfileEdit'))
+        })
+      }
+    },
+    [handleTabChange, hasIncompleteFields]
+  )
 
   useEffect(() => {
     const resetScroll = () => {
@@ -44,7 +62,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
 
       <BottomNav
         activeTab={activeTab}
-        onTabChange={handleTabChange}
+        onTabChange={onTabChange}
         role={role}
         hasIncompleteProfile={hasIncompleteFields}
       />

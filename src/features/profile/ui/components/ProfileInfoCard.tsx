@@ -10,6 +10,8 @@ import type { UserData, EmployeeProfile } from '@/services/api/authApi'
 import { formatExperienceText } from '@/utils/experience'
 import { formatPhoneDisplay, toE164 } from '@/utils/phone'
 import { getProfileCompleteness } from '../../model/utils/profileCompleteness'
+import { businessHoursRecordToFormValue } from '../../model/utils/businessHoursForm'
+import { normalizeExternalUrl } from '@/utils/externalUrl'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
@@ -117,6 +119,10 @@ export const ProfileInfoCard = memo(
     const locationValue = userProfile.location ?? null
     const cityDisplay = apiRole === 'restaurant' ? cityValue : (cityValue ?? locationValue)
     const workSummaryLabel = getWorkSummaryLabel(apiRole)
+    const venueHoursDisplay =
+      apiRole === 'restaurant'
+        ? businessHoursRecordToFormValue(userProfile.business_hours).trim()
+        : ''
     const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
 
     const content = (
@@ -193,6 +199,23 @@ export const ProfileInfoCard = memo(
                       {locationValue}
                     </InfoRow>
                   )}
+                  {apiRole === 'restaurant' && userProfile.website?.trim() && (
+                    <InfoRow
+                      label={t('profile.venueWebsite')}
+                      href={normalizeExternalUrl(userProfile.website)}
+                      valueClassName={VALUE_LINK_CLASS}
+                    >
+                      {userProfile.website.trim()}
+                    </InfoRow>
+                  )}
+                  {apiRole === 'restaurant' && venueHoursDisplay ? (
+                    <InfoRow
+                      label={t('profile.businessHours')}
+                      valueClassName={`${VALUE_CLASS} whitespace-pre-line text-right`}
+                    >
+                      {venueHoursDisplay}
+                    </InfoRow>
+                  ) : null}
                   {apiRole === 'employee' && userProfile.name && (
                     <InfoRow label={t('profile.nameLabel')}>{userProfile.name}</InfoRow>
                   )}

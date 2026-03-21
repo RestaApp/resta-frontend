@@ -1,9 +1,7 @@
 import { useCallback, useState } from 'react'
 import type { TFunction } from 'i18next'
-import { STORAGE_KEYS } from '@/constants/storage'
-import { setLocalStorageItem } from '@/utils/localStorage'
 import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
-import { navigateToTab } from '@/features/navigation/model/navigationSlice'
+import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
 import type { AppDispatch } from '@/store'
 
 export type ProfileAlertState = {
@@ -34,9 +32,7 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
 
   const openProfileEdit = useCallback(() => {
     closeProfileAlert()
-    setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
-    dispatch(navigateToTab('profile'))
-    window.dispatchEvent(new CustomEvent('openProfileEdit'))
+    openProfileEditFlow(dispatch)
   }, [closeProfileAlert, dispatch])
 
   const applyWithGuard = useCallback(

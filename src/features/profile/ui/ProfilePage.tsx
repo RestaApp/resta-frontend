@@ -1,7 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { useLabels } from '@/shared/i18n/hooks'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileHero } from './components/ProfileHero'
 import { ProfileStats } from './components/ProfileStats'
@@ -10,34 +9,11 @@ import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
+import { ProfileSpecializationsSection } from './components/ProfileSpecializationsSection'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Award, ChefHat } from 'lucide-react'
+import { Award } from 'lucide-react'
 import { buildProfileAchievements } from './utils/profileAchievements'
-
-const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
-  const { t } = useTranslation()
-  const { getSpecializationLabel } = useLabels()
-  if (specializations.length === 0) return null
-
-  return (
-    <div>
-      <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
-        <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-        {t('profile.specializationSection')}
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {specializations.map((spec: string) => (
-          <Badge key={spec} variant="tag" className="font-normal">
-            {getSpecializationLabel(spec)}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  )
-})
-SpecializationsSection.displayName = 'SpecializationsSection'
 
 export const ProfilePage = memo(() => {
   const { t } = useTranslation()
@@ -93,6 +69,9 @@ export const ProfilePage = memo(() => {
         roleLabel={m.roleLabel}
         apiRole={m.apiRole}
         isProfileFilled={m.profileCompleteness?.isFilled ?? false}
+        onFillProfile={
+          m.profileCompleteness?.isFilled ? undefined : () => m.setIsEditDrawerOpen(true)
+        }
       />
 
       <ProfileStats
@@ -102,7 +81,9 @@ export const ProfilePage = memo(() => {
         appliedShiftsCount={m.appliedShiftsCount}
       />
 
-      {m.apiRole === 'employee' && <SpecializationsSection specializations={m.specializations} />}
+      {m.apiRole === 'employee' && (
+        <ProfileSpecializationsSection specializations={m.specializations} />
+      )}
       <ProfileInfoCard
         apiRole={m.apiRole}
         userProfile={m.userProfile}

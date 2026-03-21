@@ -9,18 +9,23 @@ export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 const basePill =
   'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium leading-none border'
 
+const urgentInnerPill =
+  'inline-flex items-center whitespace-nowrap px-3 py-1 text-xs font-medium leading-none border-0'
+
 export const UrgentPill = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   return (
     <span
       className={cn(
-        basePill,
-        'border-transparent gradient-primary text-white overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.14)]',
+        'inline-flex max-w-max rounded-full overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.14)]',
         className
       )}
     >
-      <Flame className="w-3 h-3 mr-1.5 shrink-0" />
-      {t('activity.urgent')}
+      {/* Градиент на прямоугольнике; скругление только у обёртки — иначе на стыке дуги и 135°-градиента видны чужие цвета */}
+      <span className={cn(urgentInnerPill, 'gradient-primary text-white')}>
+        <Flame className="w-3 h-3 mr-1.5 shrink-0" />
+        {t('activity.urgent')}
+      </span>
     </span>
   )
 }

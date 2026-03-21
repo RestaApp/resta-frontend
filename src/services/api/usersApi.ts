@@ -38,7 +38,7 @@ export interface UpdateUserRequest {
     restaurant_format?: string
     cuisine_types?: string[]
     website?: string | null
-    business_hours?: Record<string, string>
+    business_hours?: Record<string, string> | null
     /** Простой формат (рекомендуется в API): см. PATCH /users/:id */
     supplier_category?: string
     supplier_types?: string[]

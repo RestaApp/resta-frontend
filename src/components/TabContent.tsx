@@ -24,6 +24,9 @@ const TAB_COMPONENTS: Partial<Record<Tab, ComponentType>> = {
   profile: ProfilePage,
   staff: VenueStaffPage,
   suppliers: VenueSuppliersPage,
+  home: VenueSuppliersPage,
+  showcase: VenueSuppliersPage,
+  requests: ActivityPage,
 }
 
 interface TabContentProps {

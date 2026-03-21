@@ -19,6 +19,12 @@ export interface EmployeeProfile {
   specializations: string[]
 }
 
+export interface RestaurantProfile {
+  name?: string | null
+  restaurant_format?: string | null
+  city?: string | null
+}
+
 export interface UserData {
   id: number
   active: boolean
@@ -28,6 +34,8 @@ export interface UserData {
   created_at: string
   email: string | null
   employee_profile: EmployeeProfile | null
+  /** Название заведения и формат — см. PATCH restaurant_profile_attributes */
+  restaurant_profile?: RestaurantProfile | null
   full_name: string
   language: string
   last_name: string
@@ -44,6 +52,8 @@ export interface UserData {
   updated_at: string
   username: string
   website: string | null
+  /** Расписание работы заведения (ключи — дни или служебные поля вроде schedule) */
+  business_hours?: Record<string, string> | null
   work_experience_summary: string | null
   work_preferences: Record<string, unknown>
   // Опциональные поля, которые могут отсутствовать в ответе

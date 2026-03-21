@@ -9,6 +9,7 @@ export const useProfileCompleteness = () => {
   return useMemo(() => {
     if (!userProfile) {
       return {
+        hasName: false,
         hasPhone: false,
         hasCity: false,
         hasLastName: false,

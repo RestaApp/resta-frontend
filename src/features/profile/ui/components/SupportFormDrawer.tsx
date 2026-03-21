@@ -74,6 +74,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
           onCancel={handleClose}
           isLoading={form.isLoading}
           errorMessage={form.errorMessage}
+          fieldErrors={form.fieldErrors}
           maxMessageLength={form.maxMessageLength}
         />
       </div>

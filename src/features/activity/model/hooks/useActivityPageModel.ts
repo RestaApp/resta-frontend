@@ -15,6 +15,8 @@ import {
 import { toLocalISODateKey } from '@/utils/datetime'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
+import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
+import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
 
 export type ActivityTab = 'list' | 'calendar'
 
@@ -62,6 +64,7 @@ export const useActivityPageModel = () => {
 
   const { deleteShift, isLoading: isDeleting } = useDeleteShift()
   const { showToast } = useToast()
+  const profileCompleteness = useProfileCompleteness()
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [editingShift, setEditingShift] = useState<VacancyApiItem | null>(null)
@@ -187,11 +190,30 @@ export const useActivityPageModel = () => {
     setIsDrawerOpen(true)
   }, [])
 
+  const openProfileEdit = useCallback(() => {
+    openProfileEditFlow(dispatch)
+  }, [dispatch])
+
+  /** Сотрудники и поставщики: без обязательных полей профиля не открываем создание смены. Заведение обрабатывает VenueAddShiftListener. */
+  const handleOpenAddShiftFromEvent = useCallback(() => {
+    if (isVenue) return
+    if (!profileCompleteness.isFilled) {
+      showToast(
+        t('venueUi.profileRequiredToCreate', {
+          defaultValue: 'Чтобы создавать вакансии и смены, сначала заполните профиль.',
+        }),
+        'error'
+      )
+      openProfileEdit()
+      return
+    }
+    openDrawer()
+  }, [isVenue, openDrawer, openProfileEdit, profileCompleteness.isFilled, showToast, t])
+
   useEffect(() => {
-    const handleOpen = () => openDrawer()
-    window.addEventListener('openActivityAddShift', handleOpen)
-    return () => window.removeEventListener('openActivityAddShift', handleOpen)
-  }, [openDrawer])
+    window.addEventListener('openActivityAddShift', handleOpenAddShiftFromEvent)
+    return () => window.removeEventListener('openActivityAddShift', handleOpenAddShiftFromEvent)
+  }, [handleOpenAddShiftFromEvent])
 
   // Открыть редактирование смены по id из ленты (через EDIT_SHIFT_ID + переход на tab activity)
   useEffect(() => {

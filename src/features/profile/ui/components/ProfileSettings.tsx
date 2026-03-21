@@ -76,8 +76,10 @@ export function ProfileSettings({
           onClick={onNotificationSettingsClick}
           disabled={!onNotificationSettingsClick}
         >
-          <Settings className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-          <span>{t('profile.notificationSettings')}</span>
+          <div className="flex items-center gap-3">
+            <Settings className="w-5 h-5 shrink-0" style={{ color: 'var(--purple-deep)' }} />
+            <span>{t('profile.notificationSettings')}</span>
+          </div>
         </motion.button>
 
         {showSupport ? (
@@ -88,8 +90,10 @@ export function ProfileSettings({
               className={`w-full text-left transition-colors hover:bg-muted/50 ${DRAWER_SETTING_ROW_CLASS}`}
               onClick={() => setIsSupportDrawerOpen(true)}
             >
-              <HelpCircle className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-              <span>{t('profile.support')}</span>
+              <div className="flex items-center gap-3">
+                <HelpCircle className="w-5 h-5 shrink-0" style={{ color: 'var(--purple-deep)' }} />
+                <span>{t('profile.support')}</span>
+              </div>
             </motion.button>
 
             <SupportFormDrawer open={isSupportDrawerOpen} onOpenChange={setIsSupportDrawerOpen} />
@@ -101,8 +105,10 @@ export function ProfileSettings({
           onClick={onLogout}
           className={`w-full text-left text-destructive transition-colors hover:bg-destructive/10 ${DRAWER_SETTING_ROW_CLASS}`}
         >
-          <LogOut className="w-5 h-5" />
-          <span>{t('profile.logout')}</span>
+          <div className="flex items-center gap-3">
+            <LogOut className="w-5 h-5 shrink-0" />
+            <span>{t('profile.logout')}</span>
+          </div>
         </motion.button>
       </div>
     </div>

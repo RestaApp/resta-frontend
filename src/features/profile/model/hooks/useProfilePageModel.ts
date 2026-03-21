@@ -58,8 +58,12 @@ export const useProfilePageModel = () => {
 
   const userName = useMemo(() => {
     if (!userProfile) return t('common.user')
+    if (apiRole === 'restaurant') {
+      const venue = userProfile.restaurant_profile?.name?.trim()
+      if (venue) return venue
+    }
     return userProfile.full_name || userProfile.name || t('common.user')
-  }, [userProfile, t])
+  }, [userProfile, apiRole, t])
 
   const roleLabel = useMemo(() => {
     if (!userProfile) return t('common.user')

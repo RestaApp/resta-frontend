@@ -3,12 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
 import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
-import { setLocalStorageItem } from '@/utils/localStorage'
-import { STORAGE_KEYS } from '@/constants/storage'
+import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
 import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/ui/toast'
 import { useAppDispatch } from '@/store/hooks'
-import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
 export function VenueAddShiftListener() {
   const dispatch = useAppDispatch()
@@ -20,9 +18,7 @@ export function VenueAddShiftListener() {
   const [initialShiftType, setInitialShiftType] = useState<ShiftType | null>(null)
 
   const openProfileEdit = useCallback(() => {
-    setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
-    dispatch(navigateToTab('profile'))
-    window.dispatchEvent(new CustomEvent('openProfileEdit'))
+    openProfileEditFlow(dispatch)
   }, [dispatch])
 
   const handleCreateIntent = useCallback(() => {

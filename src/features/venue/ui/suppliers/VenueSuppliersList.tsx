@@ -8,6 +8,7 @@ import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import type { SupplierItem } from './types'
 
 interface VenueSuppliersListProps {
+  mode?: 'suppliers' | 'restaurants'
   isLoading: boolean
   isFetching: boolean
   suppliersCount: number
@@ -24,6 +25,7 @@ interface VenueSuppliersListProps {
 }
 
 export const VenueSuppliersList = ({
+  mode = 'suppliers',
   isLoading,
   isFetching,
   suppliersCount,
@@ -35,6 +37,7 @@ export const VenueSuppliersList = ({
   onOpenDetails,
 }: VenueSuppliersListProps) => {
   const { t } = useTranslation()
+  const isRestaurantsMode = mode === 'restaurants'
 
   return (
     <div>
@@ -48,17 +51,36 @@ export const VenueSuppliersList = ({
           </div>
         ) : list.length === 0 ? (
           <EmptyState
-            message={t('venueUi.suppliers.emptyTitle', { defaultValue: 'Поставщики не найдены' })}
-            description={t('venueUi.suppliers.emptyDescription', {
-              defaultValue: 'Отключите фильтр или добавьте нового поставщика',
-            })}
+            message={
+              isRestaurantsMode
+                ? t('supplierUi.restaurants.emptyTitle', {
+                    defaultValue: 'Заведения не найдены',
+                  })
+                : t('venueUi.suppliers.emptyTitle', { defaultValue: 'Поставщики не найдены' })
+            }
+            description={
+              isRestaurantsMode
+                ? t('supplierUi.restaurants.emptyDescription', {
+                    defaultValue: 'Попробуйте обновить список или изменить фильтры',
+                  })
+                : t('venueUi.suppliers.emptyDescription', {
+                    defaultValue: 'Отключите фильтр или добавьте нового поставщика',
+                  })
+            }
             illustration={<EmptyInboxIllustration className="h-24 w-24" />}
           />
         ) : (
           <>
             <div className="ui-density-stack-sm">
               {list.map(item => {
-                return <SupplierCard key={item.id} supplier={item} onOpenDetails={onOpenDetails} />
+                return (
+                  <SupplierCard
+                    key={item.id}
+                    supplier={item}
+                    onOpenDetails={onOpenDetails}
+                    showDeliveryIndicator={!isRestaurantsMode}
+                  />
+                )
               })}
             </div>
 

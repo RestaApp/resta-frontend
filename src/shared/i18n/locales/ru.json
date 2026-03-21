@@ -230,6 +230,10 @@
     "cityRequired": "Город",
     "addresses": "Адрес(а) заведения",
     "addressesHint": "Если у вас несколько точек, укажите каждый адрес с новой строки",
+    "venueWebsite": "Сайт",
+    "venueWebsiteHint": "Сайт заведения или страница в соцсетях",
+    "businessHours": "Время работы",
+    "businessHoursHint": "Например, по дням недели или одной строкой",
     "cityNotSet": "Город не указан",
     "cityWarningDescription": "Если не указать город, вы не сможете видеть релевантные вакансии и смены в вашем регионе. Рекомендуем указать город для лучшего подбора предложений.",
     "saveWithoutCity": "Сохранить без города",
@@ -241,7 +245,9 @@
       "surnamePlaceholder": "Введите фамилию",
       "emailPlaceholder": "Введите email",
       "cityPlaceholder": "Выберите город",
-      "addressesPlaceholder": "Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9"
+      "addressesPlaceholder": "Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9",
+      "websitePlaceholder": "https://example.by",
+      "businessHoursPlaceholder": "Пн–чт 12:00–23:00\nПт–сб 12:00–02:00"
     },
     "subtitle": {
       "employee": "Сотрудник HoReCa",
@@ -325,6 +331,8 @@
     "applicationRejected": "Заявка отклонена",
     "acceptApplicationError": "Не удалось принять заявку",
     "rejectApplicationError": "Не удалось отклонить заявку",
+    "rejectApplicationConfirmTitle": "Отклонить заявку?",
+    "rejectApplicationConfirmDescription": "Кандидат получит отказ по этой смене. Продолжить?",
     "apply": "Откликнуться",
     "coverMessage": "Сопроводительное сообщение",
     "coverMessagePromptTitle": "Сопроводительное письмо",
@@ -649,7 +657,7 @@
     },
     "restaurantFormat": {
       "restaurant": "Ресторан",
-      "full_service": "Полный сервис",
+      "full_service": "Ресторан",
       "cafe": "Кафе",
       "sushi_bar": "Суши-бар",
       "bistro": "Бистро",

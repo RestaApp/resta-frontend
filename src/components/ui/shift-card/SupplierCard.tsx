@@ -28,9 +28,14 @@ export interface SupplierCardData {
 interface SupplierCardProps {
   supplier: SupplierCardData
   onOpenDetails: (id: number) => void
+  showDeliveryIndicator?: boolean
 }
 
-const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) => {
+const SupplierCardComponent = ({
+  supplier,
+  onOpenDetails,
+  showDeliveryIndicator = true,
+}: SupplierCardProps) => {
   const { t } = useTranslation()
   const notSpecified = t('common.notSpecified', { defaultValue: 'Не указано' })
 
@@ -75,33 +80,35 @@ const SupplierCardComponent = ({ supplier, onOpenDetails }: SupplierCardProps) =
           </Avatar>
           <p className="truncate font-semibold text-foreground">{supplier.name}</p>
         </div>
-        <span
-          className={cn(
-            'relative inline-flex h-9 w-9 items-center justify-center rounded-full border',
-            supplier.deliveryAvailable === true
-              ? 'border-primary/30 bg-primary/10 text-primary'
-              : 'border-border bg-muted/30 text-muted-foreground'
-          )}
-          aria-label={
-            supplier.deliveryAvailable == null
-              ? notSpecified
-              : supplier.deliveryAvailable
-                ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-                : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
-          }
-          title={
-            supplier.deliveryAvailable == null
-              ? notSpecified
-              : supplier.deliveryAvailable
-                ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-                : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
-          }
-        >
-          <Truck className="h-4 w-4" />
-          {supplier.deliveryAvailable === false ? (
-            <span className="absolute h-[2px] w-6 rotate-[-30deg] rounded-full bg-current" />
-          ) : null}
-        </span>
+        {showDeliveryIndicator ? (
+          <span
+            className={cn(
+              'relative inline-flex h-9 w-9 items-center justify-center rounded-full border',
+              supplier.deliveryAvailable === true
+                ? 'border-primary/30 bg-primary/10 text-primary'
+                : 'border-border bg-muted/30 text-muted-foreground'
+            )}
+            aria-label={
+              supplier.deliveryAvailable == null
+                ? notSpecified
+                : supplier.deliveryAvailable
+                  ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+                  : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+            }
+            title={
+              supplier.deliveryAvailable == null
+                ? notSpecified
+                : supplier.deliveryAvailable
+                  ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+                  : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+            }
+          >
+            <Truck className="h-4 w-4" />
+            {supplier.deliveryAvailable === false ? (
+              <span className="absolute h-[2px] w-6 rotate-[-30deg] rounded-full bg-current" />
+            ) : null}
+          </span>
+        ) : null}
         {/* <div className="shrink-0 flex flex-col items-end leading-tight text-muted-foreground">
           <span className="inline-flex items-center gap-1.5 text-sm">
             <Star className="h-4 w-4" />

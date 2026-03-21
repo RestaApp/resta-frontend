@@ -121,16 +121,22 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         return false
       }
 
-      // Плоский PATCH user — как в ROLES_FRONTEND_SPEC §4 (restaurant)
+      const trimmedName = formData.name.trim()
+
+      // Плоский PATCH + вложенный профиль: название заведения хранится в restaurant_profile (не в Telegram name)
       const updateData: UpdateUserRequest = {
         user: {
           role: 'restaurant',
           restaurant_format: formData.type,
+          restaurant_profile_attributes: {
+            restaurant_format: formData.type,
+            ...(trimmedName && { name: trimmedName }),
+          },
         },
       }
 
-      if (formData.name && formData.name.trim() !== '') {
-        updateData.user.name = formData.name.trim()
+      if (trimmedName) {
+        updateData.user.name = trimmedName
       }
 
       if (formData.city && formData.city.trim() !== '') {

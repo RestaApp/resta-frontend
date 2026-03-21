@@ -281,6 +281,32 @@ export const EditProfileDrawer = memo(
               />
             </FormField>
           )}
+
+          {apiRole === 'restaurant' && (
+            <>
+              <FormField label={t('profile.venueWebsite')} hint={t('profile.venueWebsiteHint')}>
+                <Input
+                  type="url"
+                  inputMode="url"
+                  autoComplete="url"
+                  value={formData.website}
+                  onChange={e => updateField('website', e.target.value)}
+                  placeholder={t('profile.form.websitePlaceholder')}
+                  disabled={isLoading}
+                />
+              </FormField>
+              <FormField label={t('profile.businessHours')} hint={t('profile.businessHoursHint')}>
+                <Textarea
+                  value={formData.businessHours}
+                  onChange={e => updateField('businessHours', e.target.value)}
+                  placeholder={t('profile.form.businessHoursPlaceholder')}
+                  disabled={isLoading}
+                  rows={4}
+                  className="resize-y min-h-[5rem]"
+                />
+              </FormField>
+            </>
+          )}
         </div>
 
         <DrawerFooter className={`${DRAWER_FOOTER_CLASS} sticky bottom-0 z-10 flex-row`}>

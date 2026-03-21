@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { Check, Star, X } from 'lucide-react'
 import type { TFunction } from 'i18next'
 import { Button } from '@/components/ui/button'
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/cn'
 import { DETAIL_CARD_CLASS } from './constants'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 type ApplicantPreview = NonNullable<VacancyApiItem['applications_preview']>[number]
 
@@ -32,6 +33,8 @@ export const ApplicantsTab = memo(
     onRejectApplication,
     t,
   }: ApplicantsTabProps) => {
+    const [rejectApplicationId, setRejectApplicationId] = useState<number | null>(null)
+
     return (
       <Card className={DETAIL_CARD_CLASS}>
         {applicants.length ? (
@@ -144,9 +147,9 @@ export const ApplicantsTab = memo(
                             aria-label={t('shift.rejectApplication')}
                             loading={moderating?.id === appId && moderating.action === 'reject'}
                             disabled={moderating?.id === appId}
-                            onClick={async e => {
+                            onClick={e => {
                               e.stopPropagation()
-                              await onRejectApplication(appId)
+                              setRejectApplicationId(appId)
                             }}
                           >
                             <X className="h-4 w-4" />
@@ -188,6 +191,25 @@ export const ApplicantsTab = memo(
         ) : (
           <div className="text-sm text-muted-foreground">{t('shift.noApplicants')}</div>
         )}
+
+        <ConfirmDialog
+          open={rejectApplicationId !== null}
+          onOpenChange={open => {
+            if (!open) setRejectApplicationId(null)
+          }}
+          title={t('shift.rejectApplicationConfirmTitle')}
+          description={t('shift.rejectApplicationConfirmDescription')}
+          cancelLabel={t('common.cancel')}
+          confirmLabel={t('shift.rejectApplication')}
+          onConfirm={() => {
+            void (async () => {
+              const id = rejectApplicationId
+              if (id == null) return
+              setRejectApplicationId(null)
+              await onRejectApplication(id)
+            })()
+          }}
+        />
       </Card>
     )
   }

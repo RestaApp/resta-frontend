@@ -230,6 +230,10 @@
     "cityRequired": "City",
     "addresses": "Venue address(es)",
     "addressesHint": "If you have multiple locations, put each address on a new line",
+    "venueWebsite": "Website",
+    "venueWebsiteHint": "Venue website or social page",
+    "businessHours": "Opening hours",
+    "businessHoursHint": "Per weekday or a single line",
     "cityNotSet": "City not set",
     "cityWarningDescription": "Without a city you won't see relevant jobs and shifts in your region. We recommend adding a city for better matches.",
     "saveWithoutCity": "Save without city",
@@ -241,7 +245,9 @@
       "surnamePlaceholder": "Enter surname",
       "emailPlaceholder": "Enter email",
       "cityPlaceholder": "Select city",
-      "addressesPlaceholder": "For example:\nMinsk, Lenina st., 1\nMinsk, Pobediteley ave., 9"
+      "addressesPlaceholder": "For example:\nMinsk, Lenina st., 1\nMinsk, Pobediteley ave., 9",
+      "websitePlaceholder": "https://example.com",
+      "businessHoursPlaceholder": "Mon–Thu 12:00–23:00\nFri–Sat 12:00–02:00"
     },
     "subtitle": {
       "employee": "HoReCa employee",
@@ -325,6 +331,8 @@
     "applicationRejected": "Application rejected",
     "acceptApplicationError": "Failed to accept application",
     "rejectApplicationError": "Failed to reject application",
+    "rejectApplicationConfirmTitle": "Reject this application?",
+    "rejectApplicationConfirmDescription": "The candidate will be declined for this shift. Continue?",
     "apply": "Apply",
     "coverMessage": "Cover message",
     "coverMessagePromptTitle": "Cover letter",
@@ -649,7 +657,7 @@
     },
     "restaurantFormat": {
       "restaurant": "Restaurant",
-      "full_service": "Full service",
+      "full_service": "Restaurant",
       "cafe": "Cafe",
       "sushi_bar": "Sushi bar",
       "bistro": "Bistro",

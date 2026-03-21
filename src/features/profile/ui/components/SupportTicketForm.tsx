@@ -23,6 +23,7 @@ interface SupportTicketFormProps {
   onCancel: () => void
   isLoading: boolean
   errorMessage: string | null
+  fieldErrors: { subject?: string; message?: string }
   maxMessageLength: number
 }
 
@@ -40,20 +41,27 @@ export function SupportTicketForm({
   onCancel,
   isLoading,
   errorMessage,
+  fieldErrors,
   maxMessageLength,
 }: SupportTicketFormProps) {
   const { t } = useTranslation()
 
   return (
     <form onSubmit={onSubmit} className="ui-density-stack">
-      <FormField label={t('profile.supportForm.subject')} required>
+      <FormField
+        label={t('profile.supportForm.subject')}
+        required
+        htmlFor="support-ticket-subject"
+        error={fieldErrors.subject}
+      >
         <Input
+          id="support-ticket-subject"
           value={subject}
           onChange={e => setSubject(e.target.value)}
           placeholder={t('profile.supportForm.subjectPlaceholder')}
-          required
           maxLength={200}
           data-autofocus
+          aria-invalid={fieldErrors.subject ? true : undefined}
         />
       </FormField>
 
@@ -68,16 +76,19 @@ export function SupportTicketForm({
       <FormField
         label={t('profile.supportForm.message')}
         required
+        htmlFor="support-ticket-message"
         hint={`${message.length}/${maxMessageLength}`}
+        error={fieldErrors.message}
       >
         <Textarea
+          id="support-ticket-message"
           className="min-h-[120px] resize-none"
           value={message}
           onChange={e => setMessage(e.target.value)}
           placeholder={t('profile.supportForm.messagePlaceholder')}
-          required
           maxLength={maxMessageLength}
           rows={4}
+          aria-invalid={fieldErrors.message ? true : undefined}
         />
       </FormField>
 
@@ -111,7 +122,7 @@ export function SupportTicketForm({
             variant="gradient"
             size="md"
             className="w-full"
-            disabled={isLoading || !subject.trim() || !message.trim()}
+            disabled={isLoading}
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

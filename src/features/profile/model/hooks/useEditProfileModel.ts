@@ -9,6 +9,7 @@ import { invalidateUserCache } from '@/utils/userData'
 import { useAppDispatch } from '@/store/hooks'
 import type { ApiRole } from '@/types'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
+import { businessHoursRecordToFormValue } from '../utils/businessHoursForm'
 import { formatPhoneInput, validatePhone } from '@/utils/phone'
 
 type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
@@ -40,6 +41,8 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         email: '',
         phone: '',
         workExperienceSummary: '',
+        website: '',
+        businessHours: '',
         experienceYears: '',
         openToWork: false,
         skills: '',
@@ -48,7 +51,10 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
     const ep = userProfile.employee_profile
     return {
-      name: userProfile.name || '',
+      name:
+        apiRole === 'restaurant'
+          ? userProfile.restaurant_profile?.name?.trim() || userProfile.name || ''
+          : userProfile.name || '',
       lastName: userProfile.last_name || '',
       bio: userProfile.bio || '',
       city: userProfile.city ?? '',
@@ -56,6 +62,8 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
       email: userProfile.email || '',
       phone: formatPhoneInput(userProfile.phone || '') || userProfile.phone || '',
       workExperienceSummary: userProfile.work_experience_summary || '',
+      website: userProfile.website?.trim() || '',
+      businessHours: businessHoursRecordToFormValue(userProfile.business_hours),
       experienceYears:
         apiRole === 'employee' && ep
           ? typeof ep.experience_years === 'number'

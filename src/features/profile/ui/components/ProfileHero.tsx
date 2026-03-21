@@ -21,6 +21,8 @@ interface ProfileHeroProps {
   roleLabel: string
   apiRole: ApiRole | null
   isProfileFilled: boolean
+  /** Своё профиль: открыть форму заполнения (если профиль неполный) */
+  onFillProfile?: () => void
   /** В drawer профиля кандидата — без карточки, только контент */
   wrapInCard?: boolean
 }
@@ -32,6 +34,7 @@ export const ProfileHero = memo(
     roleLabel,
     apiRole,
     isProfileFilled,
+    onFillProfile,
     wrapInCard = true,
   }: ProfileHeroProps) => {
     const { t } = useTranslation()
@@ -91,6 +94,15 @@ export const ProfileHero = memo(
               <AlertCircle className="w-3.5 h-3.5 mr-1" />
               {t('common.needToFill')}
             </Badge>
+            {onFillProfile ? (
+              <button
+                type="button"
+                onClick={onFillProfile}
+                className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                {t('common.fill')}
+              </button>
+            ) : null}
           </div>
         ) : null}
       </>

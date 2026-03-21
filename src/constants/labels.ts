@@ -37,7 +37,7 @@ export type RestaurantFormat =
   | 'catering'
 
 export const RESTAURANT_FORMAT_LABELS = {
-  full_service: 'Полный сервис',
+  full_service: 'Ресторан',
   cafe: 'Кафе',
   sushi_bar: 'Суши-бар',
   bistro: 'Бистро',

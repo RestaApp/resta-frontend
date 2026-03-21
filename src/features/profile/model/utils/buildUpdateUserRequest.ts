@@ -2,6 +2,8 @@ import type { ApiRole } from '@/types'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import { toE164 } from '@/utils/phone'
 
+import { formValueToBusinessHoursRecord } from '@/features/profile/model/utils/businessHoursForm'
+
 export interface ProfileFormData {
   name: string
   lastName: string
@@ -11,6 +13,10 @@ export interface ProfileFormData {
   email: string
   phone: string
   workExperienceSummary: string
+  /** Заведение: сайт */
+  website: string
+  /** Заведение: время работы (многострочный текст → business_hours.schedule) */
+  businessHours: string
   // Для employee
   experienceYears: number | ''
   openToWork: boolean
@@ -30,7 +36,11 @@ export const buildUpdateUserRequest = (
       ...(apiRole === 'employee' && { last_name: formData.lastName.trim() }),
       bio: formData.bio.trim() || null,
       city: formData.city.trim() || null,
-      ...(apiRole === 'restaurant' && { location: formData.location.trim() || null }),
+      ...(apiRole === 'restaurant' && {
+        location: formData.location.trim() || null,
+        website: formData.website.trim() || null,
+        business_hours: formValueToBusinessHoursRecord(formData.businessHours) ?? null,
+      }),
       email: formData.email.trim() || null,
       phone: toE164(formData.phone.trim()) || null,
       work_experience_summary: formData.workExperienceSummary.trim() || null,
@@ -46,6 +56,12 @@ export const buildUpdateUserRequest = (
           }),
         },
       }),
+      ...(apiRole === 'restaurant' &&
+        formData.name.trim() && {
+          restaurant_profile_attributes: {
+            name: formData.name.trim(),
+          },
+        }),
     },
   }
 }

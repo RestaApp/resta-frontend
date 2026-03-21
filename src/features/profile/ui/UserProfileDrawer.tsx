@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -13,12 +13,12 @@ import { mapRoleFromApi } from '@/utils/roles'
 import { ProfileHero } from './components/ProfileHero'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
+import { ProfileSpecializationsSection } from './components/ProfileSpecializationsSection'
 import { useLabels } from '@/shared/i18n/hooks'
-import { Badge } from '@/components/ui/badge'
 import { Loader } from '@/components/ui/loader'
 import { DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import { getProfileCompleteness } from '../model/utils/profileCompleteness'
-import { ChefHat } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface UserProfileDrawerProps {
   userId: number | null
@@ -32,29 +32,6 @@ interface UserProfileDrawerProps {
   onAccept?: () => Promise<void>
   onReject?: () => Promise<void>
 }
-
-const SpecializationsSection = memo(({ specializations }: { specializations: string[] }) => {
-  const { t } = useTranslation()
-  const { getSpecializationLabel } = useLabels()
-  if (specializations.length === 0) return null
-
-  return (
-    <div>
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-        {t('profile.specializationSection')}
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {specializations.map((spec: string) => (
-          <Badge key={spec} variant="tag" className="font-normal">
-            {getSpecializationLabel(spec)}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  )
-})
-SpecializationsSection.displayName = 'SpecializationsSection'
 
 export const UserProfileDrawer = memo(
   ({
@@ -96,13 +73,17 @@ export const UserProfileDrawer = memo(
 
     const userName = useMemo(() => {
       if (!userProfile) return ''
+      if (apiRole === 'restaurant') {
+        const venue = userProfile.restaurant_profile?.name?.trim()
+        if (venue) return venue
+      }
       return (
         userProfile.full_name?.trim() ||
         [userProfile.name, userProfile.last_name].filter(Boolean).join(' ').trim() ||
         userProfile.username ||
         t('common.user')
       )
-    }, [userProfile, t])
+    }, [userProfile, apiRole, t])
 
     const specializations = useMemo(() => {
       if (apiRole !== 'employee' || !userProfile?.employee_profile) return []
@@ -128,6 +109,12 @@ export const UserProfileDrawer = memo(
       return getProfileCompleteness(userProfile, apiRole)
     }, [userProfile, apiRole])
 
+    const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false)
+
+    useEffect(() => {
+      if (!open) setRejectConfirmOpen(false)
+    }, [open])
+
     const canReject = canModerate && typeof applicationId === 'number' && Boolean(onReject)
     const canAccept =
       canModerate &&
@@ -137,6 +124,7 @@ export const UserProfileDrawer = memo(
     const showModerationActions = canReject || canAccept
 
     return (
+      <>
       <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()}>
         <div
           className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
@@ -172,7 +160,7 @@ export const UserProfileDrawer = memo(
                 {apiRole === 'employee' && specializations.length > 0 ? (
                   <>
                     <hr className="my-4 border-border" />
-                    <SpecializationsSection specializations={specializations} />
+                    <ProfileSpecializationsSection specializations={specializations} />
                   </>
                 ) : null}
 
@@ -220,7 +208,7 @@ export const UserProfileDrawer = memo(
                     className="flex-1"
                     loading={moderatingAction === 'reject'}
                     disabled={moderatingAction != null}
-                    onClick={onReject}
+                    onClick={() => setRejectConfirmOpen(true)}
                   >
                     {moderatingAction === 'reject'
                       ? t('shift.rejectingApplication')
@@ -246,6 +234,24 @@ export const UserProfileDrawer = memo(
           ) : null}
         </div>
       </Drawer>
+
+      {canReject && onReject ? (
+        <ConfirmDialog
+          open={rejectConfirmOpen}
+          onOpenChange={setRejectConfirmOpen}
+          title={t('shift.rejectApplicationConfirmTitle')}
+          description={t('shift.rejectApplicationConfirmDescription')}
+          cancelLabel={t('common.cancel')}
+          confirmLabel={t('shift.rejectApplication')}
+          onConfirm={() => {
+            void (async () => {
+              setRejectConfirmOpen(false)
+              await onReject()
+            })()
+          }}
+        />
+      ) : null}
+      </>
     )
   }
 )
