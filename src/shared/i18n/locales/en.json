@@ -517,7 +517,8 @@
     "byFormat": "For Belarus: +375 and 9 digits. Example: +375-29-123-45-67",
     "invalidOperator": "Invalid operator code. Allowed: 29, 33, 44, 25",
     "ruFormat": "For Russia: +7 and 10 digits",
-    "invalidFormat": "Invalid phone format"
+    "invalidFormat": "Invalid phone format",
+    "alreadyTaken": "This phone number is already in use"
   },
   "auth": {
     "loggedOut": "You have logged out"

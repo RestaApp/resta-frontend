@@ -75,6 +75,22 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   const [hasAttemptedSave, setHasAttemptedSave] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<EditProfileErrors>({})
 
+  const mapApiErrorsToFieldErrors = useCallback(
+    (errors: string[] | undefined): EditProfileErrors => {
+      if (!errors?.length) return {}
+
+      const joined = errors.join(' ').toLowerCase()
+      const nextErrors: EditProfileErrors = {}
+
+      if (joined.includes('phone has already been taken')) {
+        nextErrors.phone = t('phone.alreadyTaken')
+      }
+
+      return nextErrors
+    },
+    [t]
+  )
+
   const buildValidationErrors = useCallback(
     (data: ProfileFormData, allowEmptyCity: boolean): EditProfileErrors => {
       const nextErrors: EditProfileErrors = {}
@@ -128,6 +144,15 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         await refetch().catch(() => {})
         onSuccess?.()
       } else {
+        const apiFieldErrors = mapApiErrorsToFieldErrors(result.errors)
+        if (Object.keys(apiFieldErrors).length > 0) {
+          setFieldErrors(prev => ({ ...prev, ...apiFieldErrors }))
+          showToast(
+            apiFieldErrors.phone || result.errors?.join(', ') || t('errors.profileUpdateError'),
+            'error'
+          )
+          return
+        }
         showToast(result.errors?.join(', ') || t('errors.profileUpdateError'), 'error')
       }
     } catch (error) {
@@ -144,6 +169,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     dispatch,
     t,
     buildValidationErrors,
+    mapApiErrorsToFieldErrors,
   ])
 
   const handleSave = useCallback(async () => {
