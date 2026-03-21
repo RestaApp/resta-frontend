@@ -50,7 +50,7 @@ export interface CreateShiftResponse {
  */
 export interface GetVacanciesParams {
   shift_type: 'vacancy' | 'replacement'
-  position?: string // Позиция для фильтрации: chef, waiter, bartender, barista, manager, support
+  position?: string // chef, waiter, bartender, barista, manager, support, delivery, cashier, operator
   specialization?: string // Специализация для фильтрации (опционально)
   city?: string // Фильтр по городу ресторана (ILIKE поиск)
   min_payment?: number // Минимальная оплата за смену
@@ -219,21 +219,32 @@ export interface ApplyToShiftRequest {
 }
 
 /**
- * Ответ на отклик на смену
+ * Ответ на отклик: POST /api/v1/shift_applications (201) или accept/reject
+ * Для apply допускается ответ только с `data` без обёртки success (см. API.md).
  */
 export interface ApplyToShiftResponse {
-  success: boolean
+  success?: boolean
   message?: string
   data?: {
     id?: number
+    shift_id?: number
+    user_id?: number
+    status?: string
+    message?: string
+    applied_at?: string
+    responded_at?: string | null
+    priority?: number
     application_id?: number
   }
 }
 
 /**
- * Ответ на отмену заявки
+ * Ответ на отмену заявки: DELETE /api/v1/shift_applications/:id
  */
 export interface CancelApplicationResponse {
-  success: boolean
+  success?: boolean
   message?: string
+  data?: {
+    message?: string
+  }
 }

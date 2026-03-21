@@ -3,7 +3,7 @@
  */
 
 import { api } from '@/shared/api/api'
-import { createCatalogQuery } from './helpers'
+import { CATALOG_ENDPOINT_CONFIG, createCatalogQuery } from './helpers'
 
 /**
  * Ответ API с доступными ролями
@@ -15,8 +15,10 @@ export interface AvailableUiRolesResponse {
 
 /**
  * Ответ API с типами поставщиков
+ * GET /api/v1/catalogs/supplier_types?supplier_category=...
  */
 export interface SupplierTypesResponse {
+  success?: boolean
   data: string[]
 }
 
@@ -35,9 +37,13 @@ export const rolesApi = api.injectEndpoints({
       url: '/api/v1/catalogs/roles',
     }),
 
-    // Получить список типов поставщиков
-    getSupplierTypes: createCatalogQuery<SupplierTypesResponse, void>(builder, {
-      url: '/api/v1/catalogs/supplier_types',
+    // Типы поставщиков по категории (supplier_category обязателен в API)
+    getSupplierTypes: builder.query<SupplierTypesResponse, string>({
+      query: supplierCategory => ({
+        url: '/api/v1/catalogs/supplier_types',
+        params: { supplier_category: supplierCategory },
+      }),
+      ...CATALOG_ENDPOINT_CONFIG,
     }),
 
     // Получить список форматов ресторанов

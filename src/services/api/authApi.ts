@@ -100,7 +100,8 @@ export const authApi = api.injectEndpoints({
       query: body => ({
         url: '/api/v1/auth/sign_in',
         method: 'POST',
-        body,
+        // Контракт API: поле `init_data` (snake_case)
+        body: { init_data: body.initData },
       }),
       // Не инвалидируем теги 'User' при sign_in, чтобы избежать лишнего refetch
       // (userData обновляется вручную в хуке authTelegram)

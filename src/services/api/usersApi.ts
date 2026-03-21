@@ -30,12 +30,23 @@ export interface UpdateUserRequest {
     location?: string | null
     city?: string | null
     work_experience_summary?: string | null
+    /** Простой формат (рекомендуется в API): см. PATCH /users/:id */
+    supplier_category?: string
+    supplier_types?: string[]
+    delivery_available?: boolean
     employee_profile_attributes?: {
+      id?: number
       experience_years?: number
       open_to_work?: boolean
       skills?: string[]
+      position?: string
+      specializations?: string[]
     }
     supplier_profile_attributes?: {
+      supplier_category?: string
+      supplier_types?: string[]
+      delivery_available?: boolean
+      /** Устаревшее имя поля; предпочтительны supplier_category + supplier_types */
       supplier_type?: string
       name?: string
     }
@@ -93,6 +104,14 @@ export interface GetUsersParams {
   user_type: UsersListType
   city?: string
   location?: string
+  /** Фильтр по должности (для employees) */
+  position?: string
+  /** Фильтр по специализации */
+  specialization?: string
+  /** Минимальный опыт работы (лет) */
+  min_experience?: number
+  /** Только для employee; для ресторанов false игнорируется на бэкенде */
+  open_to_work?: boolean
   supplier_category?: string
   supplier_types?: string
   delivery_available?: boolean

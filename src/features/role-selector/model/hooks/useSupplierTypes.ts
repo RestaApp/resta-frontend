@@ -11,6 +11,11 @@ interface UseSupplierTypesOptions {
    * Загружать типы поставщиков только если включено
    */
   enabled?: boolean
+  /**
+   * Категория поставщика (обязательный query-параметр в API).
+   * Экран онбординга пока использует типы для категории `products`.
+   */
+  supplierCategory?: string
 }
 
 /**
@@ -19,13 +24,16 @@ interface UseSupplierTypesOptions {
  * @param options - Опции для управления загрузкой
  */
 export const useSupplierTypes = (options: UseSupplierTypesOptions = {}) => {
-  const { enabled = false } = options
+  const { enabled = false, supplierCategory = 'products' } = options
   const { isAuthenticated } = useAuth()
 
   // Пропускаем запрос до получения токена или если не включен
-  const { data, isLoading, isFetching, error, refetch } = useGetSupplierTypesQuery(undefined, {
-    skip: !enabled || !isAuthenticated,
-  })
+  const { data, isLoading, isFetching, error, refetch } = useGetSupplierTypesQuery(
+    supplierCategory,
+    {
+      skip: !enabled || !isAuthenticated,
+    }
+  )
 
   const supplierTypes = data?.data ?? []
 

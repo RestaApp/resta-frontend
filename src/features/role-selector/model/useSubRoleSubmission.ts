@@ -91,20 +91,16 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
       const updateData: UpdateUserRequest = {
         user: {
           role: 'supplier',
+          // Простой формат API: категория и массив типов (см. API.md — профиль поставщика)
+          supplier_category: 'products',
+          supplier_types: [formData.type],
         },
       }
 
-      // Создаем объект профиля
-      const profileAttributes: Record<string, string> = {
-        supplier_type: formData.type,
-      }
-
-      // Добавляем название, если есть
+      // Название компании — поле user.name
       if (formData.name && formData.name.trim() !== '') {
-        profileAttributes.name = formData.name.trim()
+        updateData.user.name = formData.name.trim()
       }
-
-      updateData.user.supplier_profile_attributes = profileAttributes
 
       // Добавляем город, если есть
       if (formData.city && formData.city.trim() !== '') {
