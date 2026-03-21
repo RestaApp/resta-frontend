@@ -76,6 +76,7 @@ const ShiftCardComponent = ({
   const locationText = useMemo(() => stripMinskPrefix(shift.location) ?? '', [shift.location])
   const hasDate = Boolean(shift.date?.trim())
   const hasTime = Boolean(shift.time?.trim())
+  const isVacancyCard = shift.shiftType === 'vacancy' || shift.payPeriod === 'month'
 
   /** Одна строка: компания · место (для единого шаблона смены/вакансии) */
   const companyPlaceLine = useMemo(() => {
@@ -170,9 +171,9 @@ const ShiftCardComponent = ({
   const shouldHideOwnerMetaForVenue = isOwner && selectedRole === 'venue'
   const shouldShowMetaRow = useMemo(() => {
     if (shouldHideOwnerMetaForVenue) return false
-    if (shift.shiftType === 'vacancy') return Boolean(locationText)
+    if (isVacancyCard) return Boolean(locationText)
     return hasDate || hasTime
-  }, [shouldHideOwnerMetaForVenue, shift.shiftType, locationText, hasDate, hasTime])
+  }, [shouldHideOwnerMetaForVenue, isVacancyCard, locationText, hasDate, hasTime])
 
   return (
     <div
@@ -202,7 +203,7 @@ const ShiftCardComponent = ({
         companyPlaceLine={companyPlaceLine}
         shouldHideOwnerMetaForVenue={shouldHideOwnerMetaForVenue}
         shouldShowMetaRow={shouldShowMetaRow}
-        shiftType={shift.shiftType}
+        isVacancyCard={isVacancyCard}
         locationText={locationText}
         hasDate={hasDate}
         hasTime={hasTime}

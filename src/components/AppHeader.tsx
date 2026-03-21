@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { useTelegram } from '@/contexts/TelegramContext'
 import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/button'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
@@ -117,7 +116,6 @@ const getHeaderAction = (params: {
 
 export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   const { t } = useTranslation()
-  const { isFullscreen } = useTelegram()
   const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
   const actionButtonRef = useRef<HTMLButtonElement | null>(null)
 
@@ -159,7 +157,6 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className={cn(
-          isFullscreen ? 'mt-[80px]' : 'mt-0',
           'flex items-center bg-background ui-density-page ui-density-py-sm',
           'border-b border-[var(--surface-stroke-soft)]'
         )}

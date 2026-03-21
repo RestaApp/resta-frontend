@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
@@ -32,7 +32,7 @@ export const useVacanciesInfiniteList = (
   const { shiftType, baseQuery, enabled, perPage = 5 } = options
 
   const [visibleCount, setVisibleCount] = useState(perPage)
-  const lastStableDataRef = useRef<{
+  const [lastStableData, setLastStableData] = useState<{
     items: Shift[]
     vacanciesMap: Map<number, VacancyApiItem>
     totalCount: number
@@ -90,8 +90,6 @@ export const useVacanciesInfiniteList = (
     return { items, vacanciesMap: map, totalCount, hasMore, pagination, apiItems }
   }, [response])
 
-  const lastStableData = lastStableDataRef.current
-
   const shouldUseLastStableData = useMemo(() => {
     if (!enabled || !lastStableData || !response) return false
     if (isError) return false
@@ -112,12 +110,26 @@ export const useVacanciesInfiniteList = (
     const explicitEmpty = dataSnapshot.totalCount === 0
 
     if (hasItems || explicitEmpty) {
-      lastStableDataRef.current = {
-        items: dataSnapshot.items,
-        vacanciesMap: dataSnapshot.vacanciesMap,
-        totalCount: dataSnapshot.totalCount,
-        hasMore: dataSnapshot.hasMore,
-      }
+      queueMicrotask(() => {
+        setLastStableData(prev => {
+          if (
+            prev &&
+            prev.items === dataSnapshot.items &&
+            prev.vacanciesMap === dataSnapshot.vacanciesMap &&
+            prev.totalCount === dataSnapshot.totalCount &&
+            prev.hasMore === dataSnapshot.hasMore
+          ) {
+            return prev
+          }
+
+          return {
+            items: dataSnapshot.items,
+            vacanciesMap: dataSnapshot.vacanciesMap,
+            totalCount: dataSnapshot.totalCount,
+            hasMore: dataSnapshot.hasMore,
+          }
+        })
+      })
     }
   }, [enabled, isError, response, dataSnapshot])
 

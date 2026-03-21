@@ -1,4 +1,3 @@
-import type { Shift } from '@/features/feed/model/types'
 import { CalendarDays, Clock, MapPin } from 'lucide-react'
 
 interface ShiftCardMetaProps {
@@ -6,7 +5,7 @@ interface ShiftCardMetaProps {
   companyPlaceLine: string
   shouldHideOwnerMetaForVenue: boolean
   shouldShowMetaRow: boolean
-  shiftType: Shift['shiftType']
+  isVacancyCard: boolean
   locationText: string
   hasDate: boolean
   hasTime: boolean
@@ -19,7 +18,7 @@ export const ShiftCardMeta = ({
   companyPlaceLine,
   shouldHideOwnerMetaForVenue,
   shouldShowMetaRow,
-  shiftType,
+  isVacancyCard,
   locationText,
   hasDate,
   hasTime,
@@ -38,7 +37,7 @@ export const ShiftCardMeta = ({
 
       {shouldShowMetaRow ? (
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3 min-h-[1.25rem]">
-          {shiftType === 'vacancy' ? (
+          {isVacancyCard ? (
             <span className="flex items-center gap-1.5 min-w-0">
               <MapPin className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
               <span className="font-medium text-foreground truncate">{locationText}</span>
