@@ -11,6 +11,8 @@ const EMPLOYEE_POSITIONS = [
   'bartender',
   'barista',
   'delivery',
+  'cashier',
+  'operator',
   'admin',
   'manager',
   'support',
@@ -88,6 +90,8 @@ export const isEmployeeRole = (role: UiRole | null | undefined): role is Employe
     role === 'bartender' ||
     role === 'barista' ||
     role === 'delivery' ||
+    role === 'cashier' ||
+    role === 'operator' ||
     role === 'admin' ||
     role === 'manager' ||
     role === 'support'
@@ -117,6 +121,8 @@ export const mapApiRoleStringToUiRole = (roleValue: string): UiRole | null => {
     bartender: 'bartender',
     barista: 'barista',
     delivery: 'delivery',
+    cashier: 'cashier',
+    operator: 'operator',
     admin: 'admin',
     manager: 'manager',
     support: 'support',
@@ -136,6 +142,8 @@ export const mapPositionFromApi = (positionValue: string): EmployeeRole | null =
     bartender: 'bartender',
     barista: 'barista',
     delivery: 'delivery',
+    cashier: 'cashier',
+    operator: 'operator',
     admin: 'admin',
     manager: 'manager',
     support: 'support',

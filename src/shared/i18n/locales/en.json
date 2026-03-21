@@ -621,6 +621,9 @@
       "sushi_bar": "Sushi bar",
       "bistro": "Bistro",
       "fast_food": "Fast food",
+      "gastromarket": "Gastromarket",
+      "club": "Club",
+      "canteen": "Canteen",
       "bar": "Bar",
       "pizzeria": "Pizzeria",
       "bakery": "Bakery",
@@ -633,6 +636,9 @@
       "sushi_bar": "Sushi bar with Japanese cuisine",
       "bistro": "Bistro with quick service",
       "fast_food": "Fast food",
+      "gastromarket": "Food hall with multiple food corners",
+      "club": "Club with bar and entertainment program",
+      "canteen": "Self-service canteen",
       "bar": "Bar with drinks and snacks",
       "pizzeria": "Pizzeria with Italian cuisine",
       "bakery": "Bakery with fresh pastries",
@@ -715,10 +721,10 @@
       "steward": "Steward",
       "hookah_master": "Hookah master",
       "courier": "Courier",
-      "checkout_cashier": "Checkout cashier",
+      "checkout_cashier": "Cashier",
       "administrator_cashier": "Administrator-cashier",
       "call_center": "Call center operator",
-      "delivery_dispatcher": "Delivery dispatcher"
+      "delivery_dispatcher": "Delivery operator"
     },
     "roleTitle": {
       "chef": "Chef",

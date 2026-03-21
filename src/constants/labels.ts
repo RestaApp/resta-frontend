@@ -27,6 +27,9 @@ export type RestaurantFormat =
   | 'sushi_bar'
   | 'bistro'
   | 'fast_food'
+  | 'gastromarket'
+  | 'club'
+  | 'canteen'
   | 'bar'
   | 'pizzeria'
   | 'bakery'
@@ -39,6 +42,9 @@ export const RESTAURANT_FORMAT_LABELS = {
   sushi_bar: 'Суши-бар',
   bistro: 'Бистро',
   fast_food: 'Фастфуд',
+  gastromarket: 'Гастромаркет',
+  club: 'Клуб',
+  canteen: 'Столовая',
   bar: 'Бар',
   pizzeria: 'Пиццерия',
   bakery: 'Пекарня',
@@ -52,6 +58,9 @@ export const RESTAURANT_FORMAT_DESCRIPTIONS = {
   sushi_bar: 'Суши-бар с японской кухней',
   bistro: 'Бистро с быстрым обслуживанием',
   fast_food: 'Фастфуд с быстрым обслуживанием',
+  gastromarket: 'Гастромаркет с несколькими корнерами',
+  club: 'Клуб с баром и развлекательной программой',
+  canteen: 'Столовая с линией раздачи',
   bar: 'Бар с напитками и закусками',
   pizzeria: 'Пиццерия с итальянской кухней',
   bakery: 'Пекарня со свежей выпечкой',
@@ -65,6 +74,8 @@ export const EMPLOYEE_POSITION_LABELS = {
   bartender: 'Бармен',
   barista: 'Бариста',
   delivery: 'Доставка',
+  cashier: 'Кассир',
+  operator: 'Оператор',
   manager: 'Менеджер',
   support: 'Поддержка',
   admin: 'Администратор',
@@ -79,6 +90,8 @@ export const EMPLOYEE_POSITION_DESCRIPTIONS: Record<EmployeeRole, string> = {
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
   delivery: 'Доставляю заказы гостям',
+  cashier: 'Работаю на кассе и принимаю оплату',
+  operator: 'Обрабатываю звонки и координирую заказы',
   manager: 'Управляю заведением и персоналом',
   support: 'Оказываю техническую поддержку',
   admin: 'Управляю заведением и персоналом',
@@ -146,6 +159,12 @@ export const SPECIALIZATION_LABELS = {
   hookah_master: 'Кальянный мастер',
   // Delivery специализации
   courier: 'Курьер',
+  // Cashier специализации
+  checkout_cashier: 'Кассир',
+  administrator_cashier: 'Администратор-кассир',
+  // Operator специализации
+  call_center: 'Оператор колл-центра',
+  delivery_dispatcher: 'Оператор доставки',
 } as const
 
 export type SpecializationKey = keyof typeof SPECIALIZATION_LABELS

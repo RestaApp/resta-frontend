@@ -19,7 +19,51 @@ export const normalizeDateString = (value: string): string => {
 
 export const parseDate = (value?: string): Date | null => {
   if (!value) return null
-  const d = new Date(normalizeDateString(value))
+  const raw = value.trim()
+
+  // Unix timestamp (seconds or milliseconds)
+  if (/^\d+$/.test(raw)) {
+    const n = Number(raw)
+    if (!Number.isFinite(n)) return null
+    const ms = raw.length <= 10 ? n * 1000 : n
+    const d = new Date(ms)
+    return Number.isNaN(d.getTime()) ? null : d
+  }
+
+  // Supported textual formats:
+  // - YYYY-MM-DD
+  // - YYYY-MM-DD HH:mm
+  // - YYYY-MM-DD HH:mm:ss
+  // - YYYY-MM-DDTHH:mm[:ss]
+  // with optional timezone: Z | +03:00 | +0300
+  const m = raw.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?(?:\s*(Z|[+-]\d{2}:?\d{2}))?$/
+  )
+
+  if (m) {
+    const year = Number(m[1])
+    const month = Number(m[2])
+    const day = Number(m[3])
+    const hours = Number(m[4] ?? '0')
+    const minutes = Number(m[5] ?? '0')
+    const seconds = Number(m[6] ?? '0')
+    const timezoneRaw = m[7] ?? ''
+
+    if (timezoneRaw) {
+      const timezone = timezoneRaw.replace(/([+-]\d{2})(\d{2})$/, '$1:$2')
+      const iso = `${m[1]}-${m[2]}-${m[3]}T${String(hours).padStart(2, '0')}:${String(
+        minutes
+      ).padStart(2, '0')}:${String(seconds).padStart(2, '0')}${timezone}`
+      const d = new Date(iso)
+      return Number.isNaN(d.getTime()) ? null : d
+    }
+
+    // No timezone in source -> treat as local time.
+    const d = new Date(year, month - 1, day, hours, minutes, seconds)
+    return Number.isNaN(d.getTime()) ? null : d
+  }
+
+  const d = new Date(normalizeDateString(raw))
   return Number.isNaN(d.getTime()) ? null : d
 }
 
