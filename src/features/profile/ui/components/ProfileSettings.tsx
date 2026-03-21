@@ -11,9 +11,15 @@ import { LanguageToggle } from './LanguageToggle'
 interface ProfileSettingsProps {
   onLogout: () => void
   onNotificationSettingsClick?: () => void
+  /** ROLES_FRONTEND_SPEC §6: support_tickets недоступны для unverified */
+  showSupport?: boolean
 }
 
-export function ProfileSettings({ onLogout, onNotificationSettingsClick }: ProfileSettingsProps) {
+export function ProfileSettings({
+  onLogout,
+  onNotificationSettingsClick,
+  showSupport = true,
+}: ProfileSettingsProps) {
   const { t, i18n } = useTranslation()
   const [isSupportDrawerOpen, setIsSupportDrawerOpen] = useState(false)
 
@@ -73,17 +79,21 @@ export function ProfileSettings({ onLogout, onNotificationSettingsClick }: Profi
           <span>{t('profile.notificationSettings')}</span>
         </motion.button>
 
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.98 }}
-          className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 hover:bg-muted/50 transition-colors"
-          onClick={() => setIsSupportDrawerOpen(true)}
-        >
-          <HelpCircle className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-          <span>{t('profile.support')}</span>
-        </motion.button>
+        {showSupport ? (
+          <>
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.98 }}
+              className="w-full p-4 rounded-xl border border-border text-left flex items-center gap-3 hover:bg-muted/50 transition-colors"
+              onClick={() => setIsSupportDrawerOpen(true)}
+            >
+              <HelpCircle className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+              <span>{t('profile.support')}</span>
+            </motion.button>
 
-        <SupportFormDrawer open={isSupportDrawerOpen} onOpenChange={setIsSupportDrawerOpen} />
+            <SupportFormDrawer open={isSupportDrawerOpen} onOpenChange={setIsSupportDrawerOpen} />
+          </>
+        ) : null}
 
         <motion.button
           whileTap={{ scale: 0.98 }}

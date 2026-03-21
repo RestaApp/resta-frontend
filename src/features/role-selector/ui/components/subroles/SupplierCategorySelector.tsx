@@ -4,7 +4,7 @@
 
 import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Headphones, Package, Truck, type LucideIcon, Wrench } from 'lucide-react'
+import { Boxes, Headphones, Package, Truck, type LucideIcon, Wrench } from 'lucide-react'
 import { SectionHeader } from '@/components/ui'
 import { CardSelect } from '@/components/ui/card-select'
 import { OnboardingProgress } from '../OnboardingProgress'
@@ -13,6 +13,7 @@ import { LoadingState } from './shared/LoadingState'
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   products: Package,
   equipment: Wrench,
+  consumables: Boxes,
   services: Headphones,
   logistics: Truck,
 }

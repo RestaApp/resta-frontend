@@ -1,5 +1,6 @@
 /**
- * Хук для логики отправки подролей (employee, supplier, venue)
+ * Хук для логики отправки подролей (employee, supplier, restaurant)
+ * PATCH /api/v1/users/:id — плоский user, см. ROLES_FRONTEND_SPEC §4
  */
 
 import { useState, useCallback } from 'react'
@@ -34,37 +35,30 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         return false
       }
 
+      // Плоский PATCH user — как в ROLES_FRONTEND_SPEC §4 (employee)
       const updateData: UpdateUserRequest = {
         user: {
           role: 'employee',
         },
       }
 
-      // Обязательно сохраняем позицию, если она выбрана
       if (selectedPositionValue) {
         updateData.user.position = selectedPositionValue
       }
 
-      // Обязательно сохраняем специализации, если они есть
       if (formData?.specializations && formData.specializations.length > 0) {
         updateData.user.specializations = formData.specializations
       }
 
-      // Опциональные поля - отправляем только если есть значение
       if (formData?.location && formData.location.trim() !== '') {
         updateData.user.city = formData.location.trim()
       }
 
-      // Опциональные поля employee_profile_attributes
-      const employeeAttrs: Record<string, unknown> = {}
       if (typeof formData?.experienceYears === 'number' && formData.experienceYears > 0) {
-        employeeAttrs.experience_years = formData.experienceYears
+        updateData.user.experience_years = formData.experienceYears
       }
       if (typeof formData?.openToWork === 'boolean') {
-        employeeAttrs.open_to_work = formData.openToWork
-      }
-      if (Object.keys(employeeAttrs).length > 0) {
-        updateData.user.employee_profile_attributes = employeeAttrs
+        updateData.user.open_to_work = formData.openToWork
       }
 
       const success = await updateUserWithData(
@@ -93,15 +87,15 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
           role: 'supplier',
           supplier_category: supplierCategory,
           supplier_types: [formData.type],
+          // ROLES_FRONTEND_SPEC: supplier_profile.delivery_available (boolean)
+          delivery_available: false,
         },
       }
 
-      // Название компании — поле user.name
       if (formData.name && formData.name.trim() !== '') {
         updateData.user.name = formData.name.trim()
       }
 
-      // Добавляем город, если есть
       if (formData.city && formData.city.trim() !== '') {
         updateData.user.city = formData.city.trim()
       }
@@ -127,25 +121,18 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         return false
       }
 
+      // Плоский PATCH user — как в ROLES_FRONTEND_SPEC §4 (restaurant)
       const updateData: UpdateUserRequest = {
         user: {
           role: 'restaurant',
+          restaurant_format: formData.type,
         },
       }
 
-      // Создаем объект профиля
-      const profileAttributes: Record<string, string> = {
-        restaurant_format: formData.type,
-      }
-
-      // Добавляем название, если есть
       if (formData.name && formData.name.trim() !== '') {
-        profileAttributes.name = formData.name.trim()
+        updateData.user.name = formData.name.trim()
       }
 
-      updateData.user.restaurant_profile_attributes = profileAttributes
-
-      // Добавляем город, если есть
       if (formData.city && formData.city.trim() !== '') {
         updateData.user.city = formData.city.trim()
       }

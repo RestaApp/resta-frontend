@@ -440,12 +440,14 @@
     "supplierCategories": {
       "products": "Products",
       "equipment": "Equipment",
+      "consumables": "Consumables",
       "services": "Services",
       "logistics": "Logistics"
     },
     "supplierCategoriesDesc": {
       "products": "Food, beverages, ingredients",
       "equipment": "Kitchen and bar equipment",
+      "consumables": "Packaging, disposables, hygiene",
       "services": "Cleaning, maintenance, consulting",
       "logistics": "Delivery and warehousing"
     },

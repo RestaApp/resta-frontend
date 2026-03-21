@@ -30,6 +30,15 @@ export interface UpdateUserRequest {
     location?: string | null
     city?: string | null
     work_experience_summary?: string | null
+    /** Плоский формат employee (ROLES_FRONTEND_SPEC / API.md) */
+    skills?: string[]
+    experience_years?: number
+    open_to_work?: boolean
+    /** Плоский формат restaurant */
+    restaurant_format?: string
+    cuisine_types?: string[]
+    website?: string | null
+    business_hours?: Record<string, string>
     /** Простой формат (рекомендуется в API): см. PATCH /users/:id */
     supplier_category?: string
     supplier_types?: string[]

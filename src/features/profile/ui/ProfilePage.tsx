@@ -147,6 +147,7 @@ export const ProfilePage = memo(() => {
       <ProfileSettings
         onLogout={m.handleLogout}
         onNotificationSettingsClick={() => m.setIsNotificationPrefsDrawerOpen(true)}
+        showSupport={m.apiRole != null && m.apiRole !== 'unverified'}
       />
 
       <EditProfileDrawer

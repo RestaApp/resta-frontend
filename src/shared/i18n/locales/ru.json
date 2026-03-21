@@ -440,12 +440,14 @@
     "supplierCategories": {
       "products": "Товары",
       "equipment": "Оборудование",
+      "consumables": "Расходники",
       "services": "Услуги",
       "logistics": "Логистика"
     },
     "supplierCategoriesDesc": {
       "products": "Продукты, напитки, ингредиенты",
       "equipment": "Кухонное и барное оборудование",
+      "consumables": "Упаковка, одноразовая посуда, гигиена",
       "services": "Клининг, обслуживание, консалтинг",
       "logistics": "Доставка и складирование"
     },
