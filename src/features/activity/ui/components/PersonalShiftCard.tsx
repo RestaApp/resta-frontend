@@ -31,21 +31,19 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
   const handleOpenDetails = useCallback(() => setIsOpen(true), [])
   const handleCloseDetails = useCallback(() => setIsOpen(false), [])
 
-  // Используем parseApiDateTime для корректного парсинга формата API
-  const start = parseApiDateTime(shift.start_time ?? undefined)
-  const end = parseApiDateTime(shift.end_time ?? undefined)
+  const mappedShift = useMemo<Shift>(() => {
+    const start = parseApiDateTime(shift.start_time ?? undefined)
+    const end = parseApiDateTime(shift.end_time ?? undefined)
+    const dateText = start ? formatDateRU(start) : ''
+    const timeText =
+      start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
 
-  const dateText = start ? formatDateRU(start) : ''
-  const timeText =
-    start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
+    const rawPay = shift.payment ?? shift.hourly_rate ?? 0
+    const pay = typeof rawPay === 'string' ? Number(rawPay) : rawPay
+    const userPhotoUrl = shift.user?.photo_url ?? shift.user?.profile_photo_url ?? null
+    const isVacancy = shift.shift_type === 'vacancy'
 
-  const rawPay = shift.payment ?? shift.hourly_rate ?? 0
-  const pay = typeof rawPay === 'string' ? Number(rawPay) : rawPay
-  const userPhotoUrl = shift.user?.photo_url ?? shift.user?.profile_photo_url ?? null
-  const isVacancy = shift.shift_type === 'vacancy'
-
-  const mappedShift = useMemo<Shift>(
-    () => ({
+    return {
       id: shift.id,
       logo: getLogoByPosition(shift.position, shift.id),
       userPhotoUrl:
@@ -77,9 +75,8 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
       applicationsCount: shift.applications_count ?? 0,
 
       isMine: true,
-    }),
-    [shift, t]
-  )
+    }
+  }, [shift, t])
 
   return (
     <>
