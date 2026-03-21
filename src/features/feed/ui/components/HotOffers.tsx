@@ -42,7 +42,6 @@ interface HotOfferCardProps {
 }
 
 const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
-  const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const handleClick = useCallback(() => onClick(item), [item, onClick])
 
@@ -56,22 +55,14 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
 
   const paymentText = useMemo(() => {
     if (!Number.isFinite(item.payment) || item.payment <= 0) return null
-    return `${formatMoney(item.payment)} ${item.currency ?? 'BYN'}`
-  }, [item.payment, item.currency])
+    return formatMoney(item.payment)
+  }, [item.payment])
 
   const placeLine = useMemo(() => {
     const parts = [item.restaurant]
     if (item.city?.trim()) parts.push(item.city.trim())
     return parts.join(', ')
   }, [item.restaurant, item.city])
-
-  const vacancyBottomLine = useMemo(() => {
-    if (item.shiftType === 'replacement') return null
-    if (!paymentText) return null
-    const suffix =
-      item.payPeriod === 'month' ? t('common.payPerMonthShort') : t('common.payPerShiftShort')
-    return `${paymentText}${suffix}`
-  }, [paymentText, item.shiftType, item.payPeriod, t])
 
   return (
     <button
@@ -119,10 +110,6 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
               {item.date}
             </span>
           ) : null
-        ) : vacancyBottomLine ? (
-          <span className="mt-auto block text-xs text-primary font-semibold truncate">
-            {vacancyBottomLine}
-          </span>
         ) : null}
       </div>
     </button>

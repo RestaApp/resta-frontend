@@ -23,6 +23,8 @@ export const FeedHotOffersSection = memo((props: Props) => {
     isUrgentFilterActive,
   } = props
 
+  if (isUrgentFilterActive) return null
+
   if (isLoading && hotOffers.length === 0) {
     return (
       <div className="py-2">

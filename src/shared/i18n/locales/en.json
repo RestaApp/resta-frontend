@@ -223,7 +223,7 @@
     "nameOrTitle": " / Name",
     "surnameRequired": "Surname *",
     "experienceYearsLabel": "Experience (years)",
-    "openToWorkDescription": "Open to job offers",
+    "openToWorkDescription": "When enabled, your profile is visible to employers.",
     "skillsExample": "e.g. knife skills, HACCP knowledge",
     "phoneRequired": "Phone *",
     "phoneHint": "International format. Start with +375 or 8",

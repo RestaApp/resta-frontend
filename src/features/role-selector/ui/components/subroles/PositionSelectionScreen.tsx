@@ -66,7 +66,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 max-w-md mx-auto w-full flex-1 content-start pb-24">
+      <div className="grid grid-cols-2 gap-3 max-w-md mx-auto w-full flex-1 content-start pb-[calc(8.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]">
         {filteredRoles.length === 0 ? (
           <p className="col-span-2 text-sm text-muted-foreground text-center py-6">
             {searchQuery.trim() ? t('common.nothingFound') : null}
@@ -93,7 +93,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
       </div>
 
       {selectedSubRole ? (
-        <div className="fixed bottom-0 left-0 right-0 p-4 pt-3 safe-area-bottom bg-background/95 backdrop-blur-sm border-t border-border">
+        <div className="fixed bottom-0 left-0 right-0 px-4 pt-3 pb-[calc(1.25rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] bg-background/95 backdrop-blur-sm border-t border-border">
           <Button
             type="button"
             onClick={onContinue}

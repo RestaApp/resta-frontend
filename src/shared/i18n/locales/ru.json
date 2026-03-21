@@ -223,7 +223,7 @@
     "nameOrTitle": "/ Название",
     "surnameRequired": "Фамилия *",
     "experienceYearsLabel": "Опыт работы (лет)",
-    "openToWorkDescription": "Готов рассматривать предложения",
+    "openToWorkDescription": "При включении вы будете видны работодателям.",
     "skillsExample": "Например: работа с ножом, знание HACCP",
     "phoneRequired": "Телефон *",
     "phoneHint": "Международный формат. Начните с +375 или 8",
