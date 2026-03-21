@@ -30,8 +30,9 @@ export const ShiftCardMeta = ({
       {!shouldHideOwnerMetaForVenue ? (
         <>
           <p className="text-sm text-muted-foreground truncate mb-1">{positionText}</p>
-
-          <p className="text-sm text-muted-foreground truncate mb-2">{companyPlaceLine}</p>
+          {companyPlaceLine.trim() ? (
+            <p className="text-sm text-muted-foreground truncate mb-2">{companyPlaceLine}</p>
+          ) : null}
         </>
       ) : null}
 
@@ -43,7 +44,7 @@ export const ShiftCardMeta = ({
               <span className="font-medium text-foreground truncate">{locationText}</span>
             </span>
           ) : (
-            <>
+            <div className="flex w-full items-center justify-between gap-3">
               {hasDate ? (
                 <span className="flex items-center gap-1.5 min-w-0">
                   <CalendarDays className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -51,12 +52,12 @@ export const ShiftCardMeta = ({
                 </span>
               ) : null}
               {hasTime ? (
-                <span className="flex items-center gap-1.5 min-w-0">
+                <span className="flex items-center justify-end gap-1.5 min-w-0 ml-auto">
                   <Clock className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden />
                   <span className="font-medium text-foreground truncate">{time}</span>
                 </span>
               ) : null}
-            </>
+            </div>
           )}
         </div>
       ) : null}

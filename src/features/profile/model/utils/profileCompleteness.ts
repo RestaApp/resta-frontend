@@ -30,7 +30,8 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
   const hasBioOrSummary = !!(userProfile.bio?.trim() || userProfile.work_experience_summary?.trim())
   const hasPhoto = !!(userProfile.profile_photo_url || userProfile.photo_url)
   const hasEmail = !!userProfile.email
-  const hasExperience = userProfile.employee_profile?.experience_years !== undefined
+  const experienceYears = userProfile.employee_profile?.experience_years
+  const hasExperience = typeof experienceYears === 'number' && Number.isFinite(experienceYears)
 
   const infoFlags = [hasBioOrSummary, hasPhoto, hasEmail, hasExperience]
   const infoTotal = infoFlags.length

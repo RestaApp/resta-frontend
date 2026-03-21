@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useRoleSelection } from './useRoleSelection'
 import { useSubRoleSubmission } from './useSubRoleSubmission'
-import { logger } from '@/shared/lib/logger'
+import { logger } from '@/utils/logger'
 import type { UiRole } from '@/shared/types/roles.types'
 
 type RoleSelectorFlow = 'main' | 'employee' | 'supplier' | 'restaurant'

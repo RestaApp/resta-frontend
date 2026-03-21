@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,27 @@ export function ApplyCoverLetterModal({
   onClose,
   onSubmit,
 }: ApplyCoverLetterModalProps) {
+  if (!open) return null
+  return (
+    <ApplyCoverLetterModalContent
+      isSubmitting={isSubmitting}
+      onClose={onClose}
+      onSubmit={onSubmit}
+    />
+  )
+}
+
+interface ApplyCoverLetterModalContentProps {
+  isSubmitting: boolean
+  onClose: () => void
+  onSubmit: (message?: string) => Promise<void>
+}
+
+function ApplyCoverLetterModalContent({
+  isSubmitting,
+  onClose,
+  onSubmit,
+}: ApplyCoverLetterModalContentProps) {
   const { t } = useTranslation()
   const [message, setMessage] = useState('')
 
@@ -30,10 +51,6 @@ export function ApplyCoverLetterModal({
     [t]
   )
 
-  useEffect(() => {
-    if (!open) setMessage('')
-  }, [open])
-
   const handleUseExample = () => {
     setMessage(example)
   }
@@ -43,7 +60,7 @@ export function ApplyCoverLetterModal({
   }
 
   return (
-    <Modal isOpen={open} onClose={onClose} className="max-w-lg">
+    <Modal isOpen onClose={onClose} className="max-w-lg">
       <div className="w-full rounded-3xl border border-border bg-card p-5 shadow-xl">
         <h2 className="text-lg font-semibold text-foreground">
           {t('shift.coverMessagePromptTitle', 'Сопроводительное письмо')}
@@ -81,10 +98,22 @@ export function ApplyCoverLetterModal({
         </div>
 
         <div className="mt-5 flex gap-3">
-          <Button onClick={onClose} variant="outline" size="md" className="flex-1" disabled={isSubmitting}>
+          <Button
+            onClick={onClose}
+            variant="outline"
+            size="md"
+            className="flex-1"
+            disabled={isSubmitting}
+          >
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit} variant="gradient" size="md" className="flex-1" disabled={isSubmitting}>
+          <Button
+            onClick={handleSubmit}
+            variant="gradient"
+            size="md"
+            className="flex-1"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? t('shift.sending') : t('shift.apply')}
           </Button>
         </div>

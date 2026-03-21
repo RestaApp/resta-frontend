@@ -12,6 +12,16 @@ export default defineConfig({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 650,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          redux: ['@reduxjs/toolkit', 'react-redux', 'redux-persist'],
+          i18n: ['i18next', 'react-i18next'],
+          ui: ['lucide-react', 'motion', '@radix-ui/react-dropdown-menu'],
+        },
+      },
+    },
   },
 })

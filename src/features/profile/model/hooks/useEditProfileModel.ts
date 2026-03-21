@@ -16,7 +16,7 @@ type EditProfileErrors = Partial<Record<EditProfileField, string>>
 
 export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   const { t } = useTranslation()
-  const { userProfile, refetch } = useUserProfile()
+  const { userProfile, refetch } = useUserProfile({ forceRefetch: open })
   const { updateUser, isLoading } = useUpdateUser()
   const { showToast } = useToast()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: open })
@@ -122,10 +122,10 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     try {
       const updateData = buildUpdateUserRequest(formData, apiRole)
       const result = await updateUser(userProfile.id, updateData)
-      if (result.success && result.data) {
+      if (result.success) {
         showToast(t('errors.profileUpdateSuccess'), 'success')
         invalidateUserCache(dispatch)
-        setTimeout(() => refetch().catch(() => {}), 300)
+        await refetch().catch(() => {})
         onSuccess?.()
       } else {
         showToast(result.errors?.join(', ') || t('errors.profileUpdateError'), 'error')

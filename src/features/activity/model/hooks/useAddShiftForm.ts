@@ -8,8 +8,7 @@ import {
   type VacancyApiItem,
 } from '@/services/api/shiftsApi'
 import { useToast } from '@/hooks/useToast'
-import { toMinutes, buildDateTime } from '@/utils/date'
-import { addDaysToISODate } from '@/utils/datetime'
+import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
 
