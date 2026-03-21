@@ -4,6 +4,7 @@ import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
 import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
 import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDialog'
+import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
 
@@ -70,10 +71,17 @@ export function FeedBody({ vm }: FeedBodyProps) {
           isApplied={vm.isApplied(vm.selectedShiftId)}
           isLoading={vm.isShiftLoading(vm.selectedShiftId)}
           onClose={vm.closeShiftDetails}
-          onApply={vm.handleApply}
+          onApply={vm.handleApplyWithModal}
           onCancel={vm.handleCancel}
         />
       ) : null}
+
+      <ApplyCoverLetterModal
+        open={vm.isApplyCoverModalOpen}
+        isSubmitting={vm.isApplyCoverModalSubmitting}
+        onClose={vm.closeApplyCoverModal}
+        onSubmit={vm.submitApplyCoverModal}
+      />
 
       <ProfileAlertDialog
         state={vm.profileAlert}

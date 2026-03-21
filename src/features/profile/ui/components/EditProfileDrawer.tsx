@@ -138,6 +138,7 @@ export const EditProfileDrawer = memo(
       updateField,
       showCityWarning,
       setShowCityWarning,
+      fieldErrors,
       handleSaveWithoutCity,
       resetForm,
     } = useEditProfileModel(open, onSuccess)
@@ -167,22 +168,25 @@ export const EditProfileDrawer = memo(
           <FormField
             label={`${t('profile.nameLabel')} ${apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''}`.trim()}
             required
+            error={fieldErrors.name}
           >
             <Input
               value={formData.name}
               onChange={e => updateField('name', e.target.value)}
               placeholder={t('profile.form.namePlaceholder')}
               disabled={isLoading}
+              aria-invalid={fieldErrors.name ? true : undefined}
             />
           </FormField>
 
           {apiRole === 'employee' && (
-            <FormField label={t('profile.surnameRequired')}>
+            <FormField label={t('profile.surnameRequired')} required error={fieldErrors.lastName}>
               <Input
                 value={formData.lastName}
                 onChange={e => updateField('lastName', e.target.value)}
                 placeholder={t('profile.form.surnamePlaceholder')}
                 disabled={isLoading}
+                aria-invalid={fieldErrors.lastName ? true : undefined}
               />
             </FormField>
           )}
@@ -208,7 +212,12 @@ export const EditProfileDrawer = memo(
             />
           </FormField>
 
-          <FormField label={t('profile.phoneRequired')} hint={t('profile.phoneHint')}>
+          <FormField
+            label={t('profile.phoneRequired')}
+            hint={t('profile.phoneHint')}
+            required
+            error={fieldErrors.phone}
+          >
             <Input
               type="tel"
               inputMode="tel"
@@ -217,6 +226,7 @@ export const EditProfileDrawer = memo(
               onChange={e => updateField('phone', e.target.value)}
               placeholder={t('phone.placeholderExample')}
               disabled={isLoading}
+              aria-invalid={fieldErrors.phone ? true : undefined}
             />
           </FormField>
 
@@ -230,7 +240,7 @@ export const EditProfileDrawer = memo(
             />
           )}
 
-          <FormField label={t('profile.cityRequired')}>
+          <FormField label={t('profile.cityRequired')} required error={fieldErrors.city}>
             {isCitiesLoading ? (
               <div className="flex items-center gap-2 py-2">
                 <Loader size="sm" />
@@ -279,7 +289,7 @@ export const EditProfileDrawer = memo(
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isLoading || !formData.name.trim()}
+            disabled={isLoading}
             className="flex-1"
             variant="gradient"
             size="md"

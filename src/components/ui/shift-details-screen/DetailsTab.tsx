@@ -14,8 +14,6 @@ import type { TFunction } from 'i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { FormField } from '@/components/ui/form-field'
-import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/utils/cn'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
@@ -53,8 +51,6 @@ interface DetailsTabProps {
   isApplied: boolean
   isAccepted: boolean
   isRejected: boolean
-  coverMessage: string
-  setCoverMessage: (value: string) => void
   t: TFunction
 }
 
@@ -83,8 +79,6 @@ export const DetailsTab = memo(
     isApplied,
     isAccepted,
     isRejected,
-    coverMessage,
-    setCoverMessage,
     t,
   }: DetailsTabProps) => {
     return (
@@ -217,21 +211,6 @@ export const DetailsTab = memo(
                   : null}
               </div>
             ) : null}
-          </Card>
-        ) : null}
-
-        {!isOwner && !isApplied && !isAccepted && !isRejected ? (
-          <Card className={DETAIL_CARD_CLASS}>
-            <FormField label={t('shift.coverMessage')} htmlFor="shift-cover-message">
-              <Textarea
-                id="shift-cover-message"
-                value={coverMessage}
-                onChange={e => setCoverMessage(e.target.value)}
-                placeholder={t('shift.coverMessagePlaceholder')}
-                className="min-h-[88px] resize-y"
-                maxLength={2000}
-              />
-            </FormField>
           </Card>
         ) : null}
       </>

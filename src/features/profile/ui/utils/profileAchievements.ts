@@ -26,11 +26,14 @@ export function buildProfileAchievements(params: {
     activeApplications,
     myShiftsCount,
     appliedShiftsCount,
+    isProfileFilled,
     infoPercent,
     specializationsCount,
   } = params
 
-  const filledValue = `${Math.max(0, Math.min(100, Math.round(infoPercent)))}%`
+  const normalizedPercent = Math.max(0, Math.min(100, Math.round(infoPercent)))
+  // Не показываем 100%, пока обязательные поля профиля не заполнены.
+  const filledValue = `${isProfileFilled ? normalizedPercent : Math.min(normalizedPercent, 99)}%`
 
   if (apiRole === 'employee') {
     return [

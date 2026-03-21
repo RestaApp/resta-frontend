@@ -11,6 +11,9 @@ import type { ApiRole } from '@/types'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
 import { formatPhoneInput, validatePhone } from '@/utils/phone'
 
+type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
+type EditProfileErrors = Partial<Record<EditProfileField, string>>
+
 export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   const { t } = useTranslation()
   const { userProfile, refetch } = useUserProfile()
@@ -69,17 +72,52 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
   // Состояние для модалки подтверждения сохранения без города
   const [showCityWarning, setShowCityWarning] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<EditProfileErrors>({})
+
+  const buildValidationErrors = useCallback(
+    (allowEmptyCity: boolean): EditProfileErrors => {
+      const nextErrors: EditProfileErrors = {}
+
+      if (!formData.name.trim()) {
+        nextErrors.name = t('validation.requiredField')
+      }
+
+      if (apiRole === 'employee' && !formData.lastName.trim()) {
+        nextErrors.lastName = t('validation.requiredField')
+      }
+
+      const phoneRaw = formData.phone.trim()
+      if (!phoneRaw) {
+        nextErrors.phone = t('phone.required')
+      } else {
+        const phoneValidation = validatePhone(phoneRaw)
+        if (!phoneValidation.valid) {
+          nextErrors.phone = phoneValidation.message ?? t('phone.invalidFormat')
+        }
+      }
+
+      if (!allowEmptyCity && !formData.city.trim()) {
+        nextErrors.city = t('validation.requiredField')
+      }
+
+      return nextErrors
+    },
+    [apiRole, formData, t]
+  )
 
   const performSave = useCallback(async () => {
     if (!userProfile?.id) {
       showToast(t('errors.userNotFound'), 'error')
       return
     }
-    const phoneValidation = validatePhone(formData.phone)
-    if (!phoneValidation.valid) {
-      showToast(phoneValidation.message ?? t('phone.invalidFormat'), 'error')
+
+    const nextErrors = buildValidationErrors(true)
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      showToast(t('validation.fillRequired'), 'error')
       return
     }
+
     try {
       const updateData = buildUpdateUserRequest(formData, apiRole)
       const result = await updateUser(userProfile.id, updateData)
@@ -94,15 +132,35 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     } catch (error) {
       showToast(error instanceof Error ? error.message : t('errors.profileUpdateError'), 'error')
     }
-  }, [userProfile, formData, apiRole, updateUser, showToast, refetch, onSuccess, dispatch, t])
+  }, [
+    userProfile,
+    formData,
+    apiRole,
+    updateUser,
+    showToast,
+    refetch,
+    onSuccess,
+    dispatch,
+    t,
+    buildValidationErrors,
+  ])
 
   const handleSave = useCallback(async () => {
-    if (!formData.city?.trim()) {
+    const nextErrors = buildValidationErrors(false)
+    setFieldErrors(nextErrors)
+
+    const hasNonCityErrors = Object.entries(nextErrors).some(([key]) => key !== 'city')
+    if (hasNonCityErrors) {
+      showToast(t('validation.fillRequired'), 'error')
+      return
+    }
+
+    if (nextErrors.city) {
       setShowCityWarning(true)
       return
     }
     await performSave()
-  }, [formData.city, performSave])
+  }, [buildValidationErrors, performSave, showToast, t])
 
   const updateField = useCallback(
     <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => {
@@ -112,6 +170,12 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         if (field === 'phone' && typeof value === 'string') {
           next.phone = formatPhoneInput(value)
         }
+        return next
+      })
+      setFieldErrors(prev => {
+        if (!(field in prev)) return prev
+        const next = { ...prev }
+        delete next[field as EditProfileField]
         return next
       })
     },
@@ -129,6 +193,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   const resetForm = useCallback(() => {
     setDraftFormData(null)
     setShowCityWarning(false)
+    setFieldErrors({})
   }, [])
 
   return {
@@ -143,6 +208,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     updateField,
     showCityWarning,
     setShowCityWarning,
+    fieldErrors,
     handleSaveWithoutCity,
     resetForm,
   }

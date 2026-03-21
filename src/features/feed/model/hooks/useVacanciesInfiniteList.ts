@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
@@ -32,7 +32,7 @@ export const useVacanciesInfiniteList = (
   const { shiftType, baseQuery, enabled, perPage = 5 } = options
 
   const [visibleCount, setVisibleCount] = useState(perPage)
-  const [lastStableData, setLastStableData] = useState<{
+  const lastStableDataRef = useRef<{
     items: Shift[]
     vacanciesMap: Map<number, VacancyApiItem>
     totalCount: number
@@ -90,6 +90,8 @@ export const useVacanciesInfiniteList = (
     return { items, vacanciesMap: map, totalCount, hasMore, pagination, apiItems }
   }, [response])
 
+  const lastStableData = lastStableDataRef.current
+
   const shouldUseLastStableData = useMemo(() => {
     if (!enabled || !lastStableData || !response) return false
     if (isError) return false
@@ -110,12 +112,12 @@ export const useVacanciesInfiniteList = (
     const explicitEmpty = dataSnapshot.totalCount === 0
 
     if (hasItems || explicitEmpty) {
-      setLastStableData({
+      lastStableDataRef.current = {
         items: dataSnapshot.items,
         vacanciesMap: dataSnapshot.vacanciesMap,
         totalCount: dataSnapshot.totalCount,
         hasMore: dataSnapshot.hasMore,
-      })
+      }
     }
   }, [enabled, isError, response, dataSnapshot])
 
@@ -126,7 +128,9 @@ export const useVacanciesInfiniteList = (
   const totalCount = shouldUseLastStableData
     ? (lastStableData?.totalCount ?? -1)
     : dataSnapshot.totalCount
-  const hasMore = shouldUseLastStableData ? (lastStableData?.hasMore ?? false) : dataSnapshot.hasMore
+  const hasMore = shouldUseLastStableData
+    ? (lastStableData?.hasMore ?? false)
+    : dataSnapshot.hasMore
 
   const loadMore = useCallback(() => {
     if (!enabled) return

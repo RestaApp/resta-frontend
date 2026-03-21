@@ -23,6 +23,10 @@ export interface FeedBodyVm {
   isApplied: (id: number) => boolean
   handleApply: (id: number, message?: string) => Promise<void>
   handleApplyWithModal: (id: number, message?: string) => Promise<void>
+  isApplyCoverModalOpen: boolean
+  isApplyCoverModalSubmitting: boolean
+  closeApplyCoverModal: () => void
+  submitApplyCoverModal: (message?: string) => Promise<void>
   handleCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (id: number) => boolean
   handleEdit: (id: number) => void

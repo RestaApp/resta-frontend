@@ -98,6 +98,9 @@ export const useFeedPageModel = () => {
     message: '',
     missingFields: [],
   })
+  const [isApplyCoverModalOpen, setIsApplyCoverModalOpen] = useState(false)
+  const [isApplyCoverModalSubmitting, setIsApplyCoverModalSubmitting] = useState(false)
+  const [applyCoverTargetShiftId, setApplyCoverTargetShiftId] = useState<number | null>(null)
 
   const closeProfileAlert = useCallback(() => {
     setProfileAlert(prev => ({ ...prev, open: false }))
@@ -132,10 +135,11 @@ export const useFeedPageModel = () => {
     [deleteShift, t, showToast, hideToast]
   )
 
-  const handleApplyWithModal = useCallback(
+  const applyWithGuard = useCallback(
     async (shiftId: number, message?: string) => {
       try {
         await handleApply(shiftId, message)
+        return true
       } catch (error: unknown) {
         const normalized = normalizeApiError(error, t('errors.applyError'), t)
 
@@ -145,7 +149,7 @@ export const useFeedPageModel = () => {
             missingFields: normalized.missingFieldsLabels,
             message: normalized.message,
           })
-          return
+          return false
         }
 
         setProfileAlert({
@@ -153,9 +157,36 @@ export const useFeedPageModel = () => {
           missingFields: [],
           message: normalized.message,
         })
+        return false
       }
     },
     [handleApply, t]
+  )
+
+  const closeApplyCoverModal = useCallback(() => {
+    setIsApplyCoverModalOpen(false)
+    setApplyCoverTargetShiftId(null)
+  }, [])
+
+  const handleApplyWithModal = useCallback(async (shiftId: number) => {
+    setApplyCoverTargetShiftId(shiftId)
+    setIsApplyCoverModalOpen(true)
+  }, [])
+
+  const submitApplyCoverModal = useCallback(
+    async (message?: string) => {
+      if (!applyCoverTargetShiftId || isApplyCoverModalSubmitting) return
+      setIsApplyCoverModalSubmitting(true)
+      try {
+        const ok = await applyWithGuard(applyCoverTargetShiftId, message)
+        if (ok) {
+          closeApplyCoverModal()
+        }
+      } finally {
+        setIsApplyCoverModalSubmitting(false)
+      }
+    },
+    [applyCoverTargetShiftId, isApplyCoverModalSubmitting, applyWithGuard, closeApplyCoverModal]
   )
 
   const shiftsBaseQuery = useMemo(
@@ -386,6 +417,10 @@ export const useFeedPageModel = () => {
     closeShiftDetails,
     handleApply,
     handleApplyWithModal,
+    isApplyCoverModalOpen,
+    isApplyCoverModalSubmitting,
+    closeApplyCoverModal,
+    submitApplyCoverModal,
     handleCancel,
     isApplied,
     getApplicationId: getApplicationIdStable,
