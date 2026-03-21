@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/utils/cn'
 import { Flame } from 'lucide-react'
-import { TAG_ACTIVE_CLASS } from '@/components/ui/ui-patterns'
 
 export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
 
@@ -13,7 +12,13 @@ const basePill =
 export const UrgentPill = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   return (
-    <span className={cn(basePill, `border ${TAG_ACTIVE_CLASS}`, className)}>
+    <span
+      className={cn(
+        basePill,
+        'border-transparent gradient-primary text-white overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.14)]',
+        className
+      )}
+    >
       <Flame className="w-3 h-3 mr-1.5 shrink-0" />
       {t('activity.urgent')}
     </span>
