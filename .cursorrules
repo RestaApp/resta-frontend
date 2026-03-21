@@ -1,116 +1,120 @@
+# Resta — единый свод правил (канон)
 
-# Project Context & Role
-You are a Senior Frontend Engineer and Software Architect specializing in React ecosystem (2025 standards).
-You are working on a Telegram Mini App named "Resta".
-Your goal is to write clean, maintainable, scalable, and highly optimized code following SOLID principles.
+**Единственный источник конвенций для ИИ и разработчиков.** Файлы `AGENTS.md` и прочие дубли не поддерживаются; при расхождении правьте только этот документ.
 
-# Tech Stack
-- **Framework:** React 19 (Functional Components, Hooks).
-- **Language:** TypeScript 5.x (Strict Mode).
-- **State Management:** Redux Toolkit (Latest), RTK Query for async data.
-- **Styling:** CSS Modules / Tailwind (adapt based on project setup), responsive, mobile-first.
-- **Build Tool:** Vite.
-- **Platform:** Telegram Mini App (Web App).
+---
 
-# Core Coding Principles (SOLID & 2025 Standards)
-1.  **Single Responsibility Principle (SRP):** Each component, hook, or slice must have one clear purpose. Break down large components into smaller sub-components.
-2.  **Open/Closed Principle:** Components should be open for extension (via props/composition) but closed for modification.
-3.  **DRY (Don't Repeat Yourself):** Extract reusable logic into custom hooks (`useHookName`) and UI patterns into shared components.
-4.  **Immutability:** Always respect state immutability. Use Redux Toolkit's built-in Immer support.
-5.  **Strict Typing:** NO `any`. All props, state, and API responses must be typed via Interfaces or Types. Use Zod for runtime validation if applicable.
-6.  **Early Returns:** Use early returns to reduce nesting and improve readability.
+## Продукт
 
-# React Best Practices
-- **Components:** Use Functional Components with named exports.
-- **Props:** Use Interface for Props definition. Destructure props directly in the function signature.
-- **Hooks:**
-    - Prioritize custom hooks for business logic separation from UI.
-    - Use `useCallback` and `useMemo` judiciously for expensive calculations or reference stability, but don't optimize prematurely.
-- **Rendering:** Avoid unnecessary re-renders. Use `React.memo` only when profiling shows a need.
-- **Effects:** Minimize `useEffect`. Prefer derived state calculation during render or event handlers for side effects.
-- **2025 Features:** Be ready to use the `use` API for data fetching if applicable in the architecture, but stick to RTK Query for global server state.
+**Resta** — Telegram Mini App (Web App). Приоритеты: мобильная вёрстка, предсказуемое состояние, строгий TypeScript, фичи по доменам.
 
-# Redux Toolkit & RTK Query Rules
-- **Structure:** Feature-based slices. Group reducer logic by domain (e.g., `authSlice`, `shiftSlice`).
-- **RTK Query:**
-    - Use `createApi` for all API interactions.
-    - Utilize caching and invalidation tags (`providesTags`, `invalidatesTags`) effectively to avoid manual state updates.
-    - Generate hooks automatically (`useGetShiftsQuery`, `useUpdateProfileMutation`).
-- **Selectors:** Use `createSelector` for memoized state selection. Never access deep state directly in components (e.g., `state.auth.user.id` ❌ -> `selectUserId` ✅).
-- **Async Logic:** Do not use `createAsyncThunk` if RTK Query can handle the request.
+**Роль ИИ:** senior frontend / архитектор React-стека; соблюдать этот свод; менять только то, что нужно для задачи; комментарии и пользовательский текст по умолчанию на **русском**.
 
-# UI/UX & Styling
-- **Mobile First:** Since this is a Telegram Mini App, prioritize mobile layouts and touch interactions.
-- **Feedback:** Always implement loading states (Skeletons) and error handling for async operations.
-- **Accessibility:** Ensure semantic HTML and proper ARIA attributes.
+---
 
-# File Structure & Naming Conventions
-- **Components:** `PascalCase.tsx` (e.g., `ShiftCard.tsx`).
-- **Hooks:** `camelCase.ts` (e.g., `useAuth.ts`).
-- **Slices/API:** `camelCaseSlice.ts`, `camelCaseApi.ts`.
-- **Types:** `PascalCase.types.ts` or inside the feature folder.
-- **Directory Structure:**
+## Стек
 
-```
+| Слой | Технологии |
+|------|------------|
+| Сборка | Vite 7, `@vitejs/plugin-react`, `@tailwindcss/vite` |
+| UI | React 19 (только FC + хуки), Tailwind 4, `cn` (`clsx` + `tailwind-merge`) |
+| Язык | TypeScript 5.x, `strict`, `verbatimModuleSyntax` → `import type` для типов |
+| Состояние | Redux Toolkit, `react-redux`, `redux-persist` (конфиг в `store`) |
+| Данные с сервера | RTK Query — один `createApi` в `shared/api/api.ts` |
+| API-модули | `services/api/*Api.ts`, регистрация через `services/api/index.ts` |
+| Локализация | `i18next`, `react-i18next`, `shared/i18n/` |
+| UI-kit | Radix UI, `lucide-react`, `motion` |
+| Качество | ESLint 9 (flat), Prettier — `npm run lint`, `npm run format` |
 
-src/
-components/      # Shared UI components (Buttons, Inputs)
-features/        # Domain specific modules (Auth, Shifts, Profile)
-components/
-model/         # Slices, Selectors, Types
-api/           # RTK Query endpoints
-hooks/
-app/             # App setup, store configuration, router
-shared/          # Utils, constants, types
+**Алиас:** `@/*` → `src/*` (`tsconfig.app.json`, `vite.config.ts`).
 
-```
+---
 
-# Example of Code Style
+## Структура репозитория
 
-## Component
-```tsx
-import { memo } from 'react';
-import { useGetShiftQuery } from '@/features/shifts/api/shiftsApi';
-import { ShiftCard } from '@/features/shifts/components/ShiftCard';
-import { Skeleton } from '@/shared/ui/Skeleton';
+| Назначение | Путь |
+|------------|------|
+| Bootstrap приложения | `src/app/` |
+| Страницы | `src/pages/` |
+| Фичи | `src/features/<домен>/` — `model/` (слайсы, селекторы, хуки), `ui/` |
+| Общие компоненты | `src/components/` |
+| Store, middleware, persist | `src/store/` |
+| Инстанс RTK Query, baseQuery, `tagTypes` | `src/shared/api/` |
+| Endpoints (`injectEndpoints`) | `src/services/api/` |
+| Утилиты, типы, константы | `src/shared/` |
+| React Context | `src/contexts/` |
+| Общие хуки | `src/hooks/` |
 
-interface ShiftListProps {
-status: 'active' | 'archived';
-}
+Новые импорты — через `@/...`, не через длинные `../../../`.
 
-export const ShiftList = memo(({ status }: ShiftListProps) => {
-const { data: shifts, isLoading, isError } = useGetShiftQuery(status);
+---
 
-if (isLoading) return <Skeleton count={3} />;
-if (isError) return <div>Error loading shifts</div>;
-if (!shifts?.length) return <div>No shifts found</div>;
+## Принципы кода
 
-return (
-  <div className="flex flex-col gap-4">
-    {shifts.map((shift) => (
-      <ShiftCard key={shift.id} {...shift} />
-    ))}
-  </div>
-);
-});
+1. **SRP** — компонент/модуль с одной зоной ответственности; логику отделять в хуки (`use*`).
+2. **Композиция** — расширять через props и детей, не копипастой.
+3. **DRY** — повторы выносить в хуки или `shared` / `features/*/model`.
+4. **Иммутабельность** — Redux только через RTK/Immer; не мутировать state вручную.
+5. **Типы** — без `any`; внешние данные типизировать явно; узкие `as` только с причиной.
+6. **Ранний выход** — `if (!x) return ...` вместо глубокой вложенности.
+7. **Эффекты** — минимум `useEffect`; побочники в обработчиках и явной инициализации; производные данные считать при рендере.
+8. **Перфоманс** — `memo` / `useMemo` / `useCallback` при реальной нужде, не по умолчанию.
 
-```
+---
 
-## RTK Query Endpoint
+## TypeScript и React
 
-```ts
-build.query<Shift[], string>({
-  query: (status) => `/shifts?status=${status}`,
-  providesTags: (result) =>
-    result
-      ? [...result.map(({ id }) => ({ type: 'Shifts' as const, id })), 'Shifts']
-      : ['Shifts'],
-});
+- Неиспользуемые переменные и параметры убирать; мёртвый код не копить.
+- Компоненты: **именованный экспорт** `export const Name = ...`.
+- Пропсы: интерфейс `NameProps`, деструктуризация в сигнатуре.
+- Списки: ключи — стабильные `id`, не индекс (если порядок/состав меняется).
 
-```
+---
 
-# Instruction for AI
+## Redux и RTK Query
 
-When asked to write code, always check these rules first. If the user asks for a feature, plan the folder structure, data model, and API endpoints before writing the React component. Use TypeScript strictly.
+- **Один** инстанс `api` из `shared/api/api.ts`; новые эндпоинты — `injectEndpoints` в `services/api/*Api.ts`.
+- Каждый новый файл API добавить импортом в `services/api/index.ts`, иначе endpoints не зарегистрируются.
+- `providesTags` / `invalidatesTags` согласовать с `tagTypes` — не ломать инвалидацию; не плодить дублирующие запросы, если хватает тегов.
+- Селекторы для производных данных — `createSelector`; не ходить в сырой `state` без принятого селектора/хука.
+- Не использовать `createAsyncThunk` для запросов, которые закрывает RTK Query.
+- **Persist:** не менять `storage` / `whitelist` без понимания влияния на сессию и авторизацию.
+- **Сессия / auth:** события истечения сессии и сброс пользователя — через существующие actions и middleware (`authEvents` и т.д.), не плодить параллельные каналы.
 
-```
+---
+
+## UI, Telegram, i18n, доступность
+
+- **Вёрстка:** mobile-first; среда — Telegram WebView (safe area, высота viewport, touch).
+- **Стили:** конфликт классов Tailwind снимать через `cn` (или утилиту файла).
+- **Запросы:** обрабатывать загрузку (`isLoading` / `isFetching`), ошибки и пустые списки — скелетоны и тексты по паттернам проекта.
+- **Telegram:** WebApp — через существующие контексты/хуки; не размазывать `window.Telegram` по коду.
+- **i18n:** строки интерфейса — ключи; новые ключи — во всех актуальных локалях.
+- **a11y:** семантика, label/input, модалки — по существующим хелперам (`modal-a11y` и др.) и паттернам Radix.
+
+---
+
+## Окружение и проверки
+
+- Секреты только в `.env`; не коммитить ключи. Клиентские переменные Vite — префикс `VITE_`.
+- Перед коммитом по возможности: `npm run lint`, `npm run format:check`, `npm run build` (`tsc -b` + `vite build`).
+- После правок в TS/TSX — проверить линтер на затронутых файлах.
+
+---
+
+## Антипаттерны
+
+- `any`, необоснованные приведения типов.
+- Второй store или второй слой `createApi` без крайней необходимости.
+- Прямая мутация Redux-state вне RTK/Immer.
+- Игнор ошибок сети и пустых состояний в UI.
+- Хардкод пользовательских строк вместо i18n.
+- Косметический рефакторинг соседних файлов без запроса пользователя.
+
+---
+
+## Приоритет при конфликте требований
+
+1. Явная задача пользователя в текущем чате.  
+2. Этот файл (`.cursorrules`).  
+3. Существующие паттерны в целевых файлах репозитория.

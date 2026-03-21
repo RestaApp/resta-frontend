@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { Shift } from '../types'
@@ -32,6 +32,12 @@ export const useVacanciesInfiniteList = (
   const { shiftType, baseQuery, enabled, perPage = 5 } = options
 
   const [visibleCount, setVisibleCount] = useState(perPage)
+  const [lastStableData, setLastStableData] = useState<{
+    items: Shift[]
+    vacanciesMap: Map<number, VacancyApiItem>
+    totalCount: number
+    hasMore: boolean
+  } | null>(null)
 
   const queryParams = useMemo<GetVacanciesParams>(() => {
     return {
@@ -54,43 +60,73 @@ export const useVacanciesInfiniteList = (
     skip: !enabled,
   })
 
-  const items = useMemo<Shift[]>(() => {
+  const dataSnapshot = useMemo(() => {
     const apiItems = response?.data
-    if (!apiItems?.length) return []
-    return apiItems.map(vacancyToShift)
-  }, [response])
-
-  const vacanciesMap = useMemo(() => {
-    const apiItems = response?.data
+    const items = apiItems?.length ? apiItems.map(vacancyToShift) : []
     const map = new Map<number, VacancyApiItem>()
-    if (!apiItems?.length) return map
-    for (const v of apiItems) map.set(v.id, v)
-    return map
-  }, [response])
-
-  const totalCount = useMemo(() => {
+    if (apiItems?.length) {
+      for (const v of apiItems) map.set(v.id, v)
+    }
     const pagination = response?.pagination || response?.meta
+    let totalCount = -1
     if (!pagination || typeof pagination.total_count !== 'number') {
-      // -1 => “ещё не получили итог по текущим параметрам”
-      return -1
+      totalCount = -1
+    } else {
+      totalCount = pagination.total_count
     }
-    return pagination.total_count
+
+    let hasMore = false
+    if (pagination) {
+      if (typeof pagination.total_count === 'number') {
+        hasMore = items.length < pagination.total_count
+      } else if (pagination.next_page !== undefined && pagination.next_page !== null) {
+        hasMore = true
+      } else {
+        const { current_page, total_pages } = pagination
+        if (current_page && total_pages) hasMore = current_page < total_pages
+      }
+    }
+
+    return { items, vacanciesMap: map, totalCount, hasMore, pagination, apiItems }
   }, [response])
 
-  const hasMore = useMemo(() => {
-    const pagination = response?.pagination || response?.meta
-    if (!pagination) return false
+  const shouldUseLastStableData = useMemo(() => {
+    if (!enabled || !lastStableData || !response) return false
+    if (isError) return false
 
-    if (typeof pagination.total_count === 'number') {
-      return items.length < pagination.total_count
+    const hasNoItems = dataSnapshot.items.length === 0
+    const hasNoPagination = !dataSnapshot.pagination
+    const hasUnknownTotal = dataSnapshot.totalCount === -1
+
+    return hasNoItems && hasNoPagination && hasUnknownTotal
+  }, [enabled, isError, lastStableData, response, dataSnapshot])
+
+  useEffect(() => {
+    if (!enabled) return
+    if (!response) return
+    if (isError) return
+
+    const hasItems = dataSnapshot.items.length > 0
+    const explicitEmpty = dataSnapshot.totalCount === 0
+
+    if (hasItems || explicitEmpty) {
+      setLastStableData({
+        items: dataSnapshot.items,
+        vacanciesMap: dataSnapshot.vacanciesMap,
+        totalCount: dataSnapshot.totalCount,
+        hasMore: dataSnapshot.hasMore,
+      })
     }
-    if (pagination.next_page !== undefined && pagination.next_page !== null) return true
+  }, [enabled, isError, response, dataSnapshot])
 
-    const { current_page, total_pages } = pagination
-    if (current_page && total_pages) return current_page < total_pages
-
-    return false
-  }, [response, items.length])
+  const items = shouldUseLastStableData ? (lastStableData?.items ?? []) : dataSnapshot.items
+  const vacanciesMap = shouldUseLastStableData
+    ? (lastStableData?.vacanciesMap ?? new Map<number, VacancyApiItem>())
+    : dataSnapshot.vacanciesMap
+  const totalCount = shouldUseLastStableData
+    ? (lastStableData?.totalCount ?? -1)
+    : dataSnapshot.totalCount
+  const hasMore = shouldUseLastStableData ? (lastStableData?.hasMore ?? false) : dataSnapshot.hasMore
 
   const loadMore = useCallback(() => {
     if (!enabled) return

@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { motion } from 'motion/react'
 import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
 import type { Shift } from '@/features/feed/model/types'
@@ -66,7 +65,7 @@ export function FeedList({
     <>
       {sortedShifts.map(shift => {
         return (
-          <motion.div key={shift.id} layout>
+          <div key={shift.id}>
             <ShiftCard
               shift={shift}
               applicationId={getApplicationId(shift.id) ?? null}
@@ -78,7 +77,7 @@ export function FeedList({
               isLoading={isShiftLoading(shift.id)}
               ownerActions={ownerActions}
             />
-          </motion.div>
+          </div>
         )
       })}
 
