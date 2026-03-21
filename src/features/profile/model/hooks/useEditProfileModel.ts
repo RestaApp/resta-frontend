@@ -72,21 +72,22 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
   // Состояние для модалки подтверждения сохранения без города
   const [showCityWarning, setShowCityWarning] = useState(false)
+  const [hasAttemptedSave, setHasAttemptedSave] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<EditProfileErrors>({})
 
   const buildValidationErrors = useCallback(
-    (allowEmptyCity: boolean): EditProfileErrors => {
+    (data: ProfileFormData, allowEmptyCity: boolean): EditProfileErrors => {
       const nextErrors: EditProfileErrors = {}
 
-      if (!formData.name.trim()) {
+      if (!data.name.trim()) {
         nextErrors.name = t('validation.requiredField')
       }
 
-      if (apiRole === 'employee' && !formData.lastName.trim()) {
+      if (apiRole === 'employee' && !data.lastName.trim()) {
         nextErrors.lastName = t('validation.requiredField')
       }
 
-      const phoneRaw = formData.phone.trim()
+      const phoneRaw = data.phone.trim()
       if (!phoneRaw) {
         nextErrors.phone = t('phone.required')
       } else {
@@ -96,13 +97,13 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         }
       }
 
-      if (!allowEmptyCity && !formData.city.trim()) {
+      if (!allowEmptyCity && !data.city.trim()) {
         nextErrors.city = t('validation.requiredField')
       }
 
       return nextErrors
     },
-    [apiRole, formData, t]
+    [apiRole, t]
   )
 
   const performSave = useCallback(async () => {
@@ -111,7 +112,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
       return
     }
 
-    const nextErrors = buildValidationErrors(true)
+    const nextErrors = buildValidationErrors(formData, true)
     setFieldErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) {
       showToast(t('validation.fillRequired'), 'error')
@@ -146,7 +147,8 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   ])
 
   const handleSave = useCallback(async () => {
-    const nextErrors = buildValidationErrors(false)
+    setHasAttemptedSave(true)
+    const nextErrors = buildValidationErrors(formData, false)
     setFieldErrors(nextErrors)
 
     const hasNonCityErrors = Object.entries(nextErrors).some(([key]) => key !== 'city')
@@ -160,29 +162,29 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
       return
     }
     await performSave()
-  }, [buildValidationErrors, performSave, showToast, t])
+  }, [buildValidationErrors, formData, performSave, showToast, t])
 
   const updateField = useCallback(
     <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => {
+      let nextFormData: ProfileFormData | null = null
       setDraftFormData(prev => {
         const base = prev ?? baseFormData
         const next: ProfileFormData = { ...base, [field]: value }
         if (field === 'phone' && typeof value === 'string') {
           next.phone = formatPhoneInput(value)
         }
+        nextFormData = next
         return next
       })
-      setFieldErrors(prev => {
-        if (!(field in prev)) return prev
-        const next = { ...prev }
-        delete next[field as EditProfileField]
-        return next
-      })
+
+      if (!hasAttemptedSave || !nextFormData) return
+      setFieldErrors(buildValidationErrors(nextFormData, false))
     },
-    [baseFormData]
+    [baseFormData, buildValidationErrors, hasAttemptedSave]
   )
 
   const handleSaveWithoutCity = useCallback(async () => {
+    setHasAttemptedSave(true)
     setShowCityWarning(false)
     await performSave()
   }, [performSave])
@@ -193,6 +195,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   const resetForm = useCallback(() => {
     setDraftFormData(null)
     setShowCityWarning(false)
+    setHasAttemptedSave(false)
     setFieldErrors({})
   }, [])
 

@@ -156,12 +156,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             aboutVenue={aboutVenue}
             showVenueBadges={showVenueBadges}
             getRestaurantFormatLabel={value => getRestaurantFormatLabel(value ?? '')}
-            isOwner={controller.isOwner}
-            isApplied={isApplied}
-            isAccepted={controller.isAccepted}
-            isRejected={controller.isRejected}
-            coverMessage={controller.coverMessage}
-            setCoverMessage={controller.setCoverMessage}
             t={t}
           />
         ) : null}

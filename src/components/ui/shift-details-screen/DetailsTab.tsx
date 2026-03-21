@@ -47,10 +47,6 @@ interface DetailsTabProps {
   aboutVenue: AboutVenue | null
   showVenueBadges: boolean
   getRestaurantFormatLabel: (value?: string | null) => string
-  isOwner: boolean
-  isApplied: boolean
-  isAccepted: boolean
-  isRejected: boolean
   t: TFunction
 }
 
@@ -75,10 +71,6 @@ export const DetailsTab = memo(
     aboutVenue,
     showVenueBadges,
     getRestaurantFormatLabel,
-    isOwner,
-    isApplied,
-    isAccepted,
-    isRejected,
     t,
   }: DetailsTabProps) => {
     return (

@@ -252,6 +252,7 @@ export const EditProfileDrawer = memo(
                 options={cities}
                 placeholder={t('profile.form.cityPlaceholder')}
                 disabled={isLoading}
+                error={fieldErrors.city}
               />
             )}
           </FormField>

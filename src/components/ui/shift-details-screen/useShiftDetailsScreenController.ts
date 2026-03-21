@@ -44,7 +44,6 @@ export const useShiftDetailsScreenController = ({
   const [acceptApplication] = useAcceptApplicationMutation()
   const [rejectApplication] = useRejectApplicationMutation()
 
-  const [coverMessage, setCoverMessage] = useState('')
   const [activeTab, setActiveTab] = useState<'applicants' | 'details'>('applicants')
   const [selectedApplicantId, setSelectedApplicantId] = useState<number | null>(null)
   const [selectedApplicantApplicationId, setSelectedApplicantApplicationId] = useState<
@@ -90,19 +89,17 @@ export const useShiftDetailsScreenController = ({
   }, [hourlyRate, shift, t])
 
   const handleClose = useCallback(() => {
-    setCoverMessage('')
     onClose()
   }, [onClose])
 
   const handleApply = useCallback(async () => {
     if (!shift) return
     try {
-      await onApply(shift.id, coverMessage.trim() || undefined)
-      handleClose()
+      await onApply(shift.id)
     } catch {
       // Ошибка уже обрабатывается выше по стеку.
     }
-  }, [shift, coverMessage, onApply, handleClose])
+  }, [shift, onApply])
 
   const handleCancel = useCallback(async () => {
     if (!shift || isRejected) return
@@ -217,8 +214,6 @@ export const useShiftDetailsScreenController = ({
     isAccepted,
     isRejected,
     paySuffix,
-    coverMessage,
-    setCoverMessage,
     activeTab,
     setActiveTab,
     selectedApplicantId,
