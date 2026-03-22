@@ -72,10 +72,18 @@ export const useActivityPageModel = () => {
   const handleEdit = useCallback(
     (id: number) => {
       const found = shifts.find(s => s.id === id) || null
+      if (isVenue) {
+        if (found) {
+          window.dispatchEvent(
+            new CustomEvent('openActivityEditShift', { detail: { shift: found } })
+          )
+        }
+        return
+      }
       setEditingShift(found)
       setIsDrawerOpen(true)
     },
-    [shifts]
+    [isVenue, shifts]
   )
 
   const handleDelete = useCallback(

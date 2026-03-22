@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
 import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
 import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
 import { useToast } from '@/hooks/useToast'
@@ -16,6 +17,7 @@ export function VenueAddShiftListener() {
   const [open, setOpen] = useState(false)
   const [currentCreateType, setCurrentCreateType] = useState<ShiftType>('vacancy')
   const [initialShiftType, setInitialShiftType] = useState<ShiftType | null>(null)
+  const [editingShift, setEditingShift] = useState<VacancyApiItem | null>(null)
 
   const openProfileEdit = useCallback(() => {
     openProfileEditFlow(dispatch)
@@ -23,6 +25,7 @@ export function VenueAddShiftListener() {
 
   const handleCreateIntent = useCallback(() => {
     if (profileCompleteness?.isFilled) {
+      setEditingShift(null)
       setInitialShiftType(currentCreateType)
       setOpen(true)
       return
@@ -39,6 +42,14 @@ export function VenueAddShiftListener() {
 
   useEffect(() => {
     const handleOpenAdd = () => handleCreateIntent()
+    const handleOpenEdit = (event: Event) => {
+      const customEvent = event as CustomEvent<{ shift?: VacancyApiItem }>
+      const shift = customEvent.detail?.shift ?? null
+      if (!shift) return
+      setInitialShiftType(null)
+      setEditingShift(shift)
+      setOpen(true)
+    }
     const handleSetCreateType = (event: Event) => {
       const customEvent = event as CustomEvent<{ type?: ShiftType }>
       const nextType = customEvent.detail?.type
@@ -48,10 +59,12 @@ export function VenueAddShiftListener() {
     }
 
     window.addEventListener('openActivityAddShift', handleOpenAdd)
+    window.addEventListener('openActivityEditShift', handleOpenEdit)
     window.addEventListener('setVenueCreateType', handleSetCreateType)
 
     return () => {
       window.removeEventListener('openActivityAddShift', handleOpenAdd)
+      window.removeEventListener('openActivityEditShift', handleOpenEdit)
       window.removeEventListener('setVenueCreateType', handleSetCreateType)
     }
   }, [handleCreateIntent])
@@ -60,12 +73,14 @@ export function VenueAddShiftListener() {
     setOpen(next)
     if (!next) {
       setInitialShiftType(null)
+      setEditingShift(null)
     }
   }, [])
 
   const handleSave = useCallback(() => {
     setOpen(false)
     setInitialShiftType(null)
+    setEditingShift(null)
   }, [])
 
   return (
@@ -74,6 +89,7 @@ export function VenueAddShiftListener() {
         open={open}
         onOpenChange={handleOpenChange}
         onSave={handleSave}
+        initialValues={editingShift}
         initialShiftType={initialShiftType}
       />
 
