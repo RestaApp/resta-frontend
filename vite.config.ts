@@ -32,31 +32,5 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 650,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined
-
-          if (id.includes('/react/') || id.includes('/react-dom/')) return 'react'
-          if (
-            id.includes('/@reduxjs/') ||
-            id.includes('/react-redux/') ||
-            id.includes('/redux-persist/')
-          ) {
-            return 'redux'
-          }
-          if (id.includes('/i18next/') || id.includes('/react-i18next/')) return 'i18n'
-          if (
-            id.includes('/lucide-react/') ||
-            id.includes('/motion/') ||
-            id.includes('/@radix-ui/')
-          ) {
-            return 'ui'
-          }
-
-          return 'vendor'
-        },
-      },
-    },
   },
 })
