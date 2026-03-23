@@ -22,9 +22,7 @@ export function businessHoursRecordToFormValue(
     .join('\n')
 }
 
-export function formValueToBusinessHoursRecord(
-  text: string
-): Record<string, string> | undefined {
+export function formValueToBusinessHoursRecord(text: string): Record<string, string> | undefined {
   const t = text.trim()
   if (!t) return undefined
   return { schedule: t }
