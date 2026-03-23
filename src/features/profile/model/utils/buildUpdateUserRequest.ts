@@ -28,40 +28,110 @@ export interface ProfileFormData {
  */
 export const buildUpdateUserRequest = (
   formData: ProfileFormData,
-  apiRole: ApiRole | null
+  apiRole: ApiRole | null,
+  initialFormData?: ProfileFormData
 ): UpdateUserRequest => {
+  const source = initialFormData ?? formData
+  const hasDiff = <T>(current: T, initial: T) => {
+    return JSON.stringify(current) !== JSON.stringify(initial)
+  }
+
+  const normalizeStringOrNull = (value: string) => value.trim() || null
+
+  const currentName = formData.name.trim()
+  const initialName = source.name.trim()
+  const currentLastName = formData.lastName.trim()
+  const initialLastName = source.lastName.trim()
+  const currentBio = normalizeStringOrNull(formData.bio)
+  const initialBio = normalizeStringOrNull(source.bio)
+  const currentCity = normalizeStringOrNull(formData.city)
+  const initialCity = normalizeStringOrNull(source.city)
+  const currentLocation = normalizeStringOrNull(formData.location)
+  const initialLocation = normalizeStringOrNull(source.location)
+  const currentWebsite = normalizeStringOrNull(formData.website)
+  const initialWebsite = normalizeStringOrNull(source.website)
+  const currentBusinessHours = formValueToBusinessHoursRecord(formData.businessHours) ?? null
+  const initialBusinessHours = formValueToBusinessHoursRecord(source.businessHours) ?? null
+  const currentEmail = normalizeStringOrNull(formData.email)
+  const initialEmail = normalizeStringOrNull(source.email)
+  const currentPhone = toE164(formData.phone.trim()) || null
+  const initialPhone = toE164(source.phone.trim()) || null
+  const currentWorkExperienceSummary = normalizeStringOrNull(formData.workExperienceSummary)
+  const initialWorkExperienceSummary = normalizeStringOrNull(source.workExperienceSummary)
+  const currentSkills = formData.skills
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+  const initialSkills = source.skills
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+
+  const user: UpdateUserRequest['user'] = {}
+
+  if (currentName && currentName !== initialName) {
+    user.name = currentName
+  }
+
+  if (apiRole === 'employee' && currentLastName !== initialLastName) {
+    user.last_name = currentLastName
+  }
+
+  if (currentBio !== initialBio) {
+    user.bio = currentBio
+  }
+
+  if (currentCity !== initialCity) {
+    user.city = currentCity
+  }
+
+  if (apiRole === 'restaurant' && currentLocation !== initialLocation) {
+    user.location = currentLocation
+  }
+
+  if (apiRole === 'restaurant' && currentWebsite !== initialWebsite) {
+    user.website = currentWebsite
+  }
+
+  if (apiRole === 'restaurant' && hasDiff(currentBusinessHours, initialBusinessHours)) {
+    user.business_hours = currentBusinessHours
+  }
+
+  if (currentEmail !== initialEmail) {
+    user.email = currentEmail
+  }
+
+  if (currentPhone !== initialPhone) {
+    user.phone = currentPhone
+  }
+
+  if (currentWorkExperienceSummary !== initialWorkExperienceSummary) {
+    user.work_experience_summary = currentWorkExperienceSummary
+  }
+
+  if (apiRole === 'employee') {
+    const employeeProfileAttributes: NonNullable<
+      UpdateUserRequest['user']['employee_profile_attributes']
+    > = {}
+
+    if (formData.experienceYears !== source.experienceYears && formData.experienceYears !== '') {
+      employeeProfileAttributes.experience_years = formData.experienceYears
+    }
+
+    if (formData.openToWork !== source.openToWork) {
+      employeeProfileAttributes.open_to_work = formData.openToWork
+    }
+
+    if (hasDiff(currentSkills, initialSkills)) {
+      employeeProfileAttributes.skills = currentSkills
+    }
+
+    if (Object.keys(employeeProfileAttributes).length > 0) {
+      user.employee_profile_attributes = employeeProfileAttributes
+    }
+  }
+
   return {
-    user: {
-      name: formData.name.trim() || undefined,
-      ...(apiRole === 'employee' && { last_name: formData.lastName.trim() }),
-      bio: formData.bio.trim() || null,
-      city: formData.city.trim() || null,
-      ...(apiRole === 'restaurant' && {
-        location: formData.location.trim() || null,
-        website: formData.website.trim() || null,
-        business_hours: formValueToBusinessHoursRecord(formData.businessHours) ?? null,
-      }),
-      email: formData.email.trim() || null,
-      phone: toE164(formData.phone.trim()) || null,
-      work_experience_summary: formData.workExperienceSummary.trim() || null,
-      ...(apiRole === 'employee' && {
-        employee_profile_attributes: {
-          ...(formData.experienceYears !== '' && { experience_years: formData.experienceYears }),
-          open_to_work: formData.openToWork,
-          ...(formData.skills.trim() && {
-            skills: formData.skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(Boolean),
-          }),
-        },
-      }),
-      ...(apiRole === 'restaurant' &&
-        formData.name.trim() && {
-          restaurant_profile_attributes: {
-            name: formData.name.trim(),
-          },
-        }),
-    },
+    user,
   }
 }

@@ -60,8 +60,10 @@ export interface UpdateUserRequest {
       name?: string
     }
     restaurant_profile_attributes?: {
+      id?: number
       restaurant_format?: string
-      name?: string
+      cuisine_types?: string[]
+      _destroy?: boolean
     }
   }
 }

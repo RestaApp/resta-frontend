@@ -130,7 +130,6 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
           restaurant_format: formData.type,
           restaurant_profile_attributes: {
             restaurant_format: formData.type,
-            ...(trimmedName && { name: trimmedName }),
           },
         },
       }

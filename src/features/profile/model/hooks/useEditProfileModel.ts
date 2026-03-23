@@ -5,8 +5,6 @@ import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { useCities } from '@/hooks/useCities'
 import { mapRoleFromApi } from '@/utils/roles'
-import { invalidateUserCache } from '@/utils/userData'
-import { useAppDispatch } from '@/store/hooks'
 import type { ApiRole } from '@/types'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
 import { businessHoursRecordToFormValue } from '../utils/businessHoursForm'
@@ -17,11 +15,10 @@ type EditProfileErrors = Partial<Record<EditProfileField, string>>
 
 export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
   const { t } = useTranslation()
-  const { userProfile, refetch } = useUserProfile({ forceRefetch: open })
+  const { userProfile } = useUserProfile({ forceRefetch: open })
   const { updateUser, isLoading } = useUpdateUser()
   const { showToast } = useToast()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: open })
-  const dispatch = useAppDispatch()
 
   // Определяем роль
   const apiRole = useMemo<ApiRole | null>(() => {
@@ -144,12 +141,15 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     }
 
     try {
-      const updateData = buildUpdateUserRequest(formData, apiRole)
+      const updateData = buildUpdateUserRequest(formData, apiRole, baseFormData)
+      if (Object.keys(updateData.user).length === 0) {
+        onSuccess?.()
+        return
+      }
+
       const result = await updateUser(userProfile.id, updateData)
       if (result.success) {
         showToast(t('errors.profileUpdateSuccess'), 'success')
-        invalidateUserCache(dispatch)
-        await refetch().catch(() => {})
         onSuccess?.()
       } else {
         const apiFieldErrors = mapApiErrorsToFieldErrors(result.errors)
@@ -170,11 +170,10 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     userProfile,
     formData,
     apiRole,
+    baseFormData,
     updateUser,
     showToast,
-    refetch,
     onSuccess,
-    dispatch,
     t,
     buildValidationErrors,
     mapApiErrorsToFieldErrors,
