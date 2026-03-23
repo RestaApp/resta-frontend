@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
@@ -15,6 +15,7 @@ interface UseHotOffersReturn {
   hotOffers: HotOffer[]
   hotVacancies: VacancyApiItem[]
   hotOffersTotalCount?: number
+  refresh: () => Promise<void>
 }
 
 export const useHotOffers = ({
@@ -35,7 +36,7 @@ export const useHotOffers = ({
     [shiftType, advancedFilters]
   )
 
-  const { data: resp } = useGetVacanciesQuery(params, {
+  const { data: resp, refetch } = useGetVacanciesQuery(params, {
     refetchOnMountOrArgChange: false,
   })
 
@@ -51,5 +52,9 @@ export const useHotOffers = ({
     return p?.total_count ?? undefined
   }, [resp])
 
-  return { hotOffers, hotVacancies, hotOffersTotalCount }
+  const refresh = useCallback(async () => {
+    await refetch()
+  }, [refetch])
+
+  return { hotOffers, hotVacancies, hotOffersTotalCount, refresh }
 }

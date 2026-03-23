@@ -160,7 +160,12 @@ export const useFeedPageModel = () => {
 
   const activeList = feedType === 'shifts' ? shiftsList : jobsList
 
-  const { hotOffers, hotVacancies, hotOffersTotalCount } = useHotOffers({
+  const {
+    hotOffers,
+    hotVacancies,
+    hotOffersTotalCount,
+    refresh: refreshHotOffers,
+  } = useHotOffers({
     feedType,
     advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
   })
@@ -317,6 +322,10 @@ export const useFeedPageModel = () => {
     [activeList.vacanciesMap, hotVacanciesById]
   )
 
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([activeList.refresh(), refreshHotOffers()])
+  }, [activeList, refreshHotOffers])
+
   return {
     // header
     feedType,
@@ -340,6 +349,7 @@ export const useFeedPageModel = () => {
     // list
     filteredShifts,
     activeList,
+    onRefresh: handleRefresh,
     quickFilter,
     advancedFilters,
     resetFilters,

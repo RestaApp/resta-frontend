@@ -6,7 +6,6 @@ import { Dashboard } from '@/pages/Dashboard'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { useTelegram } from '@/contexts/TelegramContext'
-import { APP_PATHS } from '@/constants/appPaths'
 import { cn } from '@/utils/cn'
 
 const AppShell = ({ children }: { children: ReactNode }) => {
@@ -43,7 +42,6 @@ export const App = () => {
   return (
     <AppShell>
       <Routes>
-        <Route path={APP_PATHS.LOADING} element={<LoadingPage />} />
         <Route path="*" element={<AppBootstrapRoutes />} />
       </Routes>
     </AppShell>

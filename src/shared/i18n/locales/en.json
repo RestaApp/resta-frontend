@@ -479,8 +479,8 @@
     "yourExperience": "Your experience",
     "positionSearchPlaceholder": "Search professions",
     "continuePosition": "Continue",
-    "specializationsMain": "Main",
-    "specializationsMore": "Additional"
+    "specializationsMain": "Specializations",
+    "specializationsMore": "More specializations"
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",

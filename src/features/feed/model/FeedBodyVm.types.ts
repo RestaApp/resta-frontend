@@ -16,6 +16,7 @@ export interface FeedBodyVm {
   feedType: FeedType
   filteredShifts: Shift[]
   activeList: UseVacanciesInfiniteListReturn
+  onRefresh: () => Promise<void>
 
   openShiftDetails: (id: number) => void
   getApplicationId: (id: number) => number | undefined

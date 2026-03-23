@@ -23,7 +23,7 @@ export function FeedBody({ vm }: FeedBodyProps) {
   return (
     <>
       <PullToRefresh
-        onRefresh={vm.activeList.refresh}
+        onRefresh={vm.onRefresh}
         disabled={vm.activeList.isInitialLoading || vm.activeList.isFetching}
       >
         <div className="ui-density-page ui-density-py ui-density-stack">

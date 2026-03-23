@@ -479,8 +479,8 @@
     "yourExperience": "Ваш стаж",
     "positionSearchPlaceholder": "Поиск по профессиям",
     "continuePosition": "Продолжить",
-    "specializationsMain": "Основные",
-    "specializationsMore": "Дополнительные"
+    "specializationsMain": "Направления",
+    "specializationsMore": "Ещё направления"
   },
   "onboarding": {
     "stepOf": "Шаг {{current}} из {{total}}",
