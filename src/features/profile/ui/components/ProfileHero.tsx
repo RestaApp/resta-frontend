@@ -79,7 +79,7 @@ export const ProfileHero = memo(
               {isProfileFilled ? (
                 <CheckCircle2
                   className="w-5 h-5 shrink-0"
-                  style={{ color: 'var(--blue-cyber)' }}
+                  style={{ color: 'var(--purple-deep)' }}
                   aria-label={t('common.completed')}
                 />
               ) : null}

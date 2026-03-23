@@ -27,10 +27,10 @@ export const DetailRow = memo(
     <div className="flex items-start gap-3">
       {iconVariant === 'section' ? (
         <div className={cn(ICON_WRAPPER_SECTION, 'mt-0.5')} aria-hidden>
-          <Icon className="h-5 w-5 text-primary shrink-0" />
+          <Icon className="h-5 w-5 shrink-0 stroke-[1.5] text-primary" />
         </div>
       ) : (
-        <Icon className={cn('w-5 h-5 flex-shrink-0 mt-0.5', iconColor)} />
+        <Icon className={cn('mt-0.5 h-5 w-5 shrink-0 stroke-[1.5]', iconColor)} />
       )}
       <div className="flex-1 min-w-0">
         <div className="text-xs text-muted-foreground mb-0.5 break-words">{label}</div>

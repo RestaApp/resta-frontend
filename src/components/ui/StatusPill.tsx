@@ -44,7 +44,7 @@ const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string
 const statusToClasses = (status: ShiftStatus): string => {
   switch (status) {
     case 'accepted':
-      return 'border-emerald-600/20 bg-emerald-600/10 text-emerald-700'
+      return 'border-success/20 bg-success/10 text-success'
     case 'rejected':
       return 'border-destructive/20 bg-destructive/8 text-destructive'
     case 'pending':

@@ -3,8 +3,8 @@ import {
   Banknote,
   Briefcase,
   Building2,
-  CalendarDays,
-  ChefHat,
+  Calendar,
+  CookingPot,
   Clock,
   FileText,
   MapPin,
@@ -88,7 +88,7 @@ export const DetailsTab = memo(
 
             {specializations.length > 0 ? (
               <DetailRow
-                icon={ChefHat}
+                icon={CookingPot}
                 iconVariant="section"
                 label={t('profile.specializationSection')}
                 value={specializations.map(spec => getSpecializationLabel(spec)).join(', ')}
@@ -97,7 +97,7 @@ export const DetailsTab = memo(
 
             {hasDate ? (
               <DetailRow
-                icon={CalendarDays}
+                icon={Calendar}
                 iconVariant="section"
                 label={t('common.date')}
                 value={shiftDate}

@@ -12,9 +12,9 @@
   --ui-density-stack-lg: 1.5rem;
   --ui-density-section-gap: 1.5rem;
 
-  /* --- Base Colors (Light Mode) --- */
-  --background: #f7f8fa;
-  --foreground: oklch(0.145 0 0);
+  /* --- Base Colors (Light Mode / BoomPoker palette) --- */
+  --background: #ffffff;
+  --foreground: #171717;
 
   --card: #ffffff;
   --card-foreground: var(--foreground);
@@ -24,27 +24,28 @@
   --popover-foreground: var(--foreground);
 
   /* BRAND: Фиолетовый бренд везде! */
-  --primary: #6b21a8;
+  --purple-deep: #500eb3;
   --primary-foreground: #ffffff;
-  --ring: var(--primary);
+  --ring: var(--purple-deep);
 
-  --surface-subtle: #f4f4f5;
-  --surface-subtle-foreground: #18181b;
-  --surface-border: #e4e4e7;
+  --surface-subtle: #f4f3fb;
+  --surface-subtle-foreground: #272635;
+  --surface-border: #e3e1ef;
 
   --secondary: var(--surface-subtle);
   --secondary-foreground: var(--surface-subtle-foreground);
 
   --muted: var(--surface-subtle);
-  --muted-foreground: #52525b;
+  --muted-foreground: #56536b;
 
   --accent: var(--surface-subtle);
   --accent-foreground: var(--surface-subtle-foreground);
 
-  --destructive: #ef4444;
+  --destructive: #ea5b68;
   --destructive-foreground: #ffffff;
 
-  --success: oklch(0.6 0.118 184.704);
+  --success: #65ba52;
+  --warning: #e9b051;
 
   --border: var(--surface-border);
   --input: var(--surface-border);
@@ -53,9 +54,9 @@
   --surface-stroke-soft: rgba(0, 0, 0, 0.06);
   --surface-stroke-soft-hover: rgba(0, 0, 0, 0.1);
   --surface-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --primary-ring-soft: 0 0 0 1px rgba(107, 33, 168, 0.1);
-  --primary-ring-soft-hover: 0 0 0 1px rgba(107, 33, 168, 0.16);
-  --primary-hero-shadow: 0 20px 60px rgba(107, 33, 168, 0.4);
+  --primary-ring-soft: 0 0 0 1px rgba(109, 21, 240, 0.1);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(109, 21, 240, 0.16);
+  --primary-hero-shadow: 0 20px 60px rgba(109, 21, 240, 0.4);
   --overlay-scrim: rgba(0, 0, 0, 0.6);
   --overlay-scrim-strong: rgba(0, 0, 0, 0.65);
   --overlay-glass: rgba(255, 255, 255, 0.05);
@@ -72,25 +73,22 @@
   --chart-5: oklch(0.769 0.188 70.08);
 
   /* Sidebar */
-  --sidebar: #f8fafc;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: var(--primary);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #171717;
+  --sidebar-primary: var(--purple-deep);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: var(--primary);
+  --sidebar-accent: var(--surface-subtle);
+  --sidebar-accent-foreground: #272635;
+  --sidebar-border: var(--surface-border);
+  --sidebar-ring: var(--purple-deep);
 
-  /* Resta Premium Colors (Light) */
-  --purple-deep: var(--primary);
+  /* App gradients on top of new brand palette */
   --pink-electric: #ec4899;
   --blue-cyber: #06b6d4;
   --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
-  --gradient-glow: linear-gradient(
-    135deg,
-    rgba(107, 33, 168, 0.1) 0%,
-    rgba(236, 72, 153, 0.1) 100%
-  );
+  --gradient-glow: linear-gradient(135deg,
+      rgba(109, 21, 240, 0.1) 0%,
+      rgba(236, 72, 153, 0.1) 100%);
 }
 
 @media (min-width: 640px) {
@@ -105,53 +103,51 @@
 }
 
 .dark {
-  /* Фон: глубокий серый, не чистый чёрный */
-  --background: #0f1115;
-  --foreground: #fdfdfd;
+  /* Dark theme aligned with provided BoomPoker palette */
+  --background: #171717;
+  --foreground: #ffffff;
 
   /* Иерархия поверхностей: страница < drawer < карточки < инпуты */
-  --card: #161a22;
-  --card-foreground: #fdfdfd;
-  --drawer-surface: #13161c;
-  --input-background: #1a1f28;
+  --card: #272635;
+  --card-foreground: #ffffff;
+  --drawer-surface: #1f1f2a;
+  --input-background: #2c2a3a;
 
-  --popover: #18181b;
-  --popover-foreground: #fdfdfd;
+  --popover: #272635;
+  --popover-foreground: #ffffff;
 
-  --primary: #9333ea;
   --primary-foreground: #ffffff;
 
-  --surface-subtle: #27272a;
-  --surface-subtle-foreground: #fafafa;
-  --surface-border: #27272a;
+  --surface-subtle: #272635;
+  --surface-subtle-foreground: #ffffff;
+  --surface-border: #333147;
 
   --secondary: var(--surface-subtle);
-  --secondary-foreground: #fafafa;
+  --secondary-foreground: #ffffff;
 
   --muted: var(--surface-subtle);
-  --muted-foreground: #d4d4d8;
+  --muted-foreground: #bab7ce;
 
   --accent: var(--surface-subtle);
-  --accent-foreground: #fafafa;
+  --accent-foreground: #ffffff;
 
-  --destructive: #7f1d1d;
-  --destructive-foreground: #fafafa;
+  --destructive: #ea5b68;
+  --destructive-foreground: #ffffff;
 
-  --success: oklch(0.696 0.17 162.48);
+  --success: #65ba52;
+  --warning: #e9b051;
 
   --border: var(--surface-border);
-  --input: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
   --switch-background: var(--surface-border);
   --surface-stroke-soft: rgba(255, 255, 255, 0.06);
   --surface-stroke-soft-hover: rgba(255, 255, 255, 0.1);
   --surface-shadow-soft: none;
-  --primary-ring-soft: 0 0 0 1px rgba(147, 51, 234, 0.12);
-  --primary-ring-soft-hover: 0 0 0 1px rgba(147, 51, 234, 0.18);
-  --primary-hero-shadow: 0 20px 60px rgba(147, 51, 234, 0.4);
+  --primary-ring-soft: 0 0 0 1px rgba(109, 21, 240, 0.12);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(109, 21, 240, 0.18);
+  --primary-hero-shadow: 0 20px 60px rgba(109, 21, 240, 0.4);
   --input-stroke: rgba(255, 255, 255, 0.1);
   --input-stroke-hover: rgba(255, 255, 255, 0.14);
-
-  --ring: #a855f7;
 
   /* Charts Dark */
   --chart-1: oklch(0.488 0.243 264.376);
@@ -160,17 +156,19 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  /* Resta Premium Colors (Dark - Neon/Pastel) */
-  --purple-deep: var(--primary);
-  --pink-electric: #f472b6;
-  --blue-cyber: #22d3ee;
+  --sidebar: #171717;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: var(--purple-deep);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #272635;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #333147;
+  --sidebar-ring: var(--ring);
   --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
   /* Свечение чуть ярче в темноте */
-  --gradient-glow: linear-gradient(
-    135deg,
-    rgba(147, 51, 234, 0.25) 0%,
-    rgba(244, 114, 182, 0.25) 100%
-  );
+  --gradient-glow: linear-gradient(135deg,
+      rgba(109, 21, 240, 0.25) 0%,
+      rgba(236, 72, 153, 0.25) 100%);
 }
 
 /* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней */
@@ -180,20 +178,22 @@
   background-color: var(--input-background) !important;
   border: 1px solid var(--input-stroke);
 }
+
 .dark [data-slot='input']:hover,
 .dark input:not([type='range']):not([type='checkbox']):not([type='radio']):hover,
 .dark textarea:hover {
   border-color: var(--input-stroke-hover);
 }
+
 .dark [data-slot='input']:focus,
 .dark [data-slot='input']:focus-visible,
 .dark input:not([type='range']):not([type='checkbox']):not([type='radio']):focus,
 .dark input:not([type='range']):not([type='checkbox']):not([type='radio']):focus-visible,
 .dark textarea:focus,
 .dark textarea:focus-visible {
-  border-color: var(--primary);
+  border-color: var(--purple-deep);
   outline: none;
-  box-shadow: 0 0 0 1px var(--primary);
+  box-shadow: 0 0 0 1px var(--purple-deep);
 }
 
 @theme inline {
@@ -203,7 +203,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  --color-primary: var(--purple-deep);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -214,6 +214,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-background: var(--input-background);

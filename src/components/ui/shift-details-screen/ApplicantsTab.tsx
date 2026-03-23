@@ -125,7 +125,7 @@ export const ApplicantsTab = memo(
                                 className={cn(
                                   'h-3.5 w-3.5 shrink-0',
                                   normalizedRating >= i + 0.5
-                                    ? 'fill-amber-400 text-amber-400'
+                                    ? 'fill-warning text-warning'
                                     : 'fill-muted text-muted-foreground/40'
                                 )}
                               />

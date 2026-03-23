@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ChefHat } from 'lucide-react'
+import { CookingPot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { ReactNode } from 'react'
 
@@ -28,7 +28,7 @@ export const EmptyState = ({
         <div className="mb-3 text-muted-foreground">{illustration}</div>
       ) : (
         <div className="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-3">
-          <ChefHat className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
+          <CookingPot className="h-8 w-8 stroke-[1.5] text-muted-foreground" />
         </div>
       )}
       <p className="text-foreground font-medium text-center mb-1">{displayMessage}</p>

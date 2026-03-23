@@ -74,13 +74,13 @@ const CardSelectInner = <TId extends string>({
         {image ? (
           <div
             className={cn(
-              'shrink-0 flex items-center justify-center rounded-xl',
-              layout === 'horizontal' ? 'h-12 w-12' : 'h-14 w-14',
+              'shrink-0 flex items-center justify-center rounded-xl [&_svg]:stroke-[1.5]',
               imageType === 'emoji'
                 ? 'bg-transparent'
                 : isSelected
-                  ? 'bg-white/20'
-                  : 'gradient-primary'
+                  ? 'bg-white/20 [&_svg]:text-white'
+                  : 'border border-border/60 bg-muted [&_svg]:text-muted-foreground',
+              layout === 'horizontal' ? 'h-12 w-12' : 'h-14 w-14'
             )}
             aria-hidden="true"
           >

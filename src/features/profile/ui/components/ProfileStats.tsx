@@ -30,7 +30,7 @@ export const ProfileStats = memo(
         {apiRole === 'employee' && employeeStats ? (
           <>
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
+              <Calendar className="h-4 w-4 stroke-[1.5]" style={{ color: 'var(--purple-deep)' }} />
               <span className="font-bold">{employeeStats.completedShifts}</span>
               <span className="text-muted-foreground">{t('profile.completedShifts')}</span>
             </div>
@@ -43,7 +43,7 @@ export const ProfileStats = memo(
                 dispatch(navigateToTab('activity'))
               }}
             >
-              <TrendingUp className="w-4 h-4 text-green-500" />
+              <TrendingUp className="w-4 h-4 text-success" />
               <span className="font-bold">{employeeStats.activeApplications}</span>
               <span className="text-muted-foreground">{t('profile.activeApplications')}</span>
             </button>
@@ -59,7 +59,7 @@ export const ProfileStats = memo(
             </div>
             <span className="text-border">·</span>
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" style={{ color: 'var(--pink-electric)' }} />
+              <TrendingUp className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
               <span className="font-bold">{appliedShiftsCount}</span>
               <span className="text-muted-foreground">{t('profile.activeRequests')}</span>
             </div>
@@ -75,7 +75,7 @@ export const ProfileStats = memo(
             </div>
             <span className="text-border">·</span>
             <div className="flex items-center gap-2">
-              <User className="w-4 h-4" style={{ color: 'var(--pink-electric)' }} />
+              <User className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
               <span className="font-bold">—</span>
               <span className="text-muted-foreground">{t('profile.activeClients')}</span>
             </div>

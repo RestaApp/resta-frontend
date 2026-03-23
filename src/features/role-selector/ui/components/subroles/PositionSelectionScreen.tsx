@@ -80,7 +80,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
               key={subRole.originalValue || subRole.id}
               id={subRole.id}
               title={subRole.title}
-              image={<Icon className="w-7 h-7 text-white" aria-hidden="true" />}
+              image={<Icon className="h-7 w-7" aria-hidden="true" />}
               imageType="icon"
               isSelected={isSelected}
               index={index}

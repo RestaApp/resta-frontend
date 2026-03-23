@@ -1,10 +1,10 @@
 import {
-  UtensilsCrossed,
-  Wine,
+  Utensils,
+  Martini,
   Coffee,
   UserCog,
   Store,
-  ChefHat,
+  CookingPot,
   Truck,
   Briefcase,
   Headphones,
@@ -28,14 +28,14 @@ const POSITION_ICON_MAP: Partial<
 }
 
 const POSITION_COLOR_MAP: Partial<Record<EmployeeRole, string>> = {
-  manager: 'from-indigo-500 to-blue-600',
-  support: 'from-gray-500 to-gray-600',
+  manager: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  support: 'from-[var(--muted-foreground)] to-[var(--surface-subtle-foreground)]',
 }
 
 const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>> = {
-  chef: ChefHat,
-  waiter: UtensilsCrossed,
-  bartender: Wine,
+  chef: CookingPot,
+  waiter: Utensils,
+  bartender: Martini,
   barista: Coffee,
   delivery: Truck,
   cashier: UserCog,
@@ -48,18 +48,18 @@ const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>>
 }
 
 const ROLE_COLOR_MAP: Record<UiRole, string> = {
-  chef: 'from-[var(--pink-electric)] to-[var(--purple-deep)]',
-  waiter: 'from-green-500 to-emerald-500',
-  bartender: 'from-purple-500 to-pink-500',
-  barista: 'from-amber-500 to-orange-500',
-  delivery: 'from-teal-500 to-emerald-500',
-  cashier: 'from-blue-500 to-cyan-500',
-  operator: 'from-sky-500 to-indigo-500',
-  admin: 'from-indigo-500 to-blue-600',
-  manager: 'from-indigo-500 to-blue-600',
-  support: 'from-gray-500 to-gray-600',
-  venue: 'from-[var(--purple-deep)] to-[var(--primary)]',
-  supplier: 'from-[var(--blue-cyber)] to-[var(--pink-electric)]',
+  chef: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  waiter: 'from-[var(--success)] to-[var(--purple-deep)]',
+  bartender: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  barista: 'from-[var(--warning)] to-[var(--purple-deep)]',
+  delivery: 'from-[var(--purple-deep)] to-[var(--success)]',
+  cashier: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  operator: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  admin: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  manager: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  support: 'from-[var(--muted-foreground)] to-[var(--surface-subtle-foreground)]',
+  venue: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  supplier: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
 }
 
 const ROLE_DESCRIPTION_MAP: Record<UiRole, string> = {

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChefHat } from 'lucide-react'
+import { CookingPot } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useLabels } from '@/shared/i18n/hooks'
 
@@ -17,7 +17,7 @@ export const ProfileSpecializationsSection = memo(
     return (
       <div>
         <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
-          <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+          <CookingPot className="h-5 w-5 stroke-[1.5]" style={{ color: 'var(--purple-deep)' }} />
           {t('profile.specializationSection')}
         </h3>
         <div className="flex flex-wrap gap-2">

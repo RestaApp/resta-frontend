@@ -27,7 +27,7 @@ export const RoleCard = memo(function RoleCard({
       id={role.id}
       title={role.title}
       description={role.description}
-      image={<Icon className="w-6 h-6 text-white" aria-hidden="true" />}
+      image={<Icon className="h-6 w-6" aria-hidden="true" />}
       imageType="icon"
       isSelected={isSelected}
       index={index}

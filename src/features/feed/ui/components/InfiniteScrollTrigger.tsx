@@ -76,7 +76,7 @@ export const InfiniteScrollTrigger = ({
         <div className="flex flex-col items-center gap-1 opacity-60">
           <div className="w-12 h-1 bg-border rounded-full mb-2" />
           <div className="flex items-center gap-2 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-green-500" />
+            <CheckCircle2 className="w-4 h-4 text-success" />
             <span>{t('feed.sawAll')}</span>
           </div>
         </div>

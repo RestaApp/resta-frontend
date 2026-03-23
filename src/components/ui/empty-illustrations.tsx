@@ -18,7 +18,7 @@ export const EmptySearchIllustration = memo(function EmptySearchIllustration({ c
       <defs>
         <linearGradient id="g1" x1="10" y1="18" x2="86" y2="86" gradientUnits="userSpaceOnUse">
           <stop stopColor="var(--purple-deep)" stopOpacity="0.22" />
-          <stop offset="1" stopColor="var(--pink-electric)" stopOpacity="0.18" />
+          <stop offset="1" stopColor="var(--purple-deep)" stopOpacity="0.18" />
         </linearGradient>
       </defs>
       <circle cx="46" cy="44" r="26" fill="url(#g1)" />
@@ -64,7 +64,7 @@ export const EmptyFiltersIllustration = memo(function EmptyFiltersIllustration({
       <defs>
         <linearGradient id="g2" x1="12" y1="16" x2="84" y2="84" gradientUnits="userSpaceOnUse">
           <stop stopColor="var(--purple-deep)" stopOpacity="0.22" />
-          <stop offset="1" stopColor="var(--blue-cyber)" stopOpacity="0.16" />
+          <stop offset="1" stopColor="var(--purple-deep)" stopOpacity="0.16" />
         </linearGradient>
       </defs>
       <rect x="14" y="18" width="68" height="60" rx="18" fill="url(#g2)" />
@@ -110,7 +110,7 @@ export const EmptyInboxIllustration = memo(function EmptyInboxIllustration({ cla
       <defs>
         <linearGradient id="g3" x1="16" y1="18" x2="84" y2="84" gradientUnits="userSpaceOnUse">
           <stop stopColor="var(--purple-deep)" stopOpacity="0.2" />
-          <stop offset="1" stopColor="var(--pink-electric)" stopOpacity="0.14" />
+          <stop offset="1" stopColor="var(--purple-deep)" stopOpacity="0.14" />
         </linearGradient>
       </defs>
       <path
@@ -164,7 +164,7 @@ export const EmptyBriefcaseIllustration = memo(function EmptyBriefcaseIllustrati
     >
       <defs>
         <linearGradient id="g4" x1="16" y1="18" x2="84" y2="84" gradientUnits="userSpaceOnUse">
-          <stop stopColor="var(--blue-cyber)" stopOpacity="0.16" />
+          <stop stopColor="var(--purple-deep)" stopOpacity="0.16" />
           <stop offset="1" stopColor="var(--purple-deep)" stopOpacity="0.18" />
         </linearGradient>
       </defs>

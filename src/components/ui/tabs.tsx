@@ -114,7 +114,7 @@ export const Tabs = <T extends string>({
 
             <span className="relative z-10 flex items-center justify-center gap-2">
               {Icon ? (
-                <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
               ) : null}
               <span className={isActive ? 'font-semibold' : 'font-medium'}>{option.label}</span>
             </span>

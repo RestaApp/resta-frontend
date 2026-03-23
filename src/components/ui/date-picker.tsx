@@ -58,7 +58,7 @@ export const DatePicker = ({
         />
 
         <CalendarIcon
-          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 shrink-0 -translate-y-1/2 text-muted-foreground"
+          className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 shrink-0 -translate-y-1/2 stroke-[1.5] text-muted-foreground"
           aria-hidden
         />
 

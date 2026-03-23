@@ -1,14 +1,24 @@
 import type { ReactNode } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { OnboardingCompleteScreen } from '@/features/role-selector/ui/components/OnboardingCompleteScreen'
 import { Dashboard } from '@/pages/Dashboard'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { useTelegram } from '@/contexts/TelegramContext'
+import { APP_PATHS } from '@/constants/appPaths'
 import { cn } from '@/utils/cn'
 
-export const App = () => {
+const AppShell = ({ children }: { children: ReactNode }) => {
   const { isFullscreen } = useTelegram()
+  return (
+    <div className={cn('bg-background min-h-[100dvh]', isFullscreen ? 'mt-[80px]' : 'mt-0')}>
+      {children}
+    </div>
+  )
+}
+
+const AppBootstrapRoutes = () => {
   const { screen, role, currentScreen, navigate, onSelectRole, onOnboardingComplete } =
     useAppBootstrap()
 
@@ -26,9 +36,16 @@ export const App = () => {
     content = <Dashboard role={role} onNavigate={navigate} currentScreen={currentScreen} />
   }
 
+  return <>{content}</>
+}
+
+export const App = () => {
   return (
-    <div className={cn('bg-background min-h-[100dvh]', isFullscreen ? 'mt-[80px]' : 'mt-0')}>
-      {content}
-    </div>
+    <AppShell>
+      <Routes>
+        <Route path={APP_PATHS.LOADING} element={<LoadingPage />} />
+        <Route path="*" element={<AppBootstrapRoutes />} />
+      </Routes>
+    </AppShell>
   )
 }
