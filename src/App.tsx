@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Route, Routes } from 'react-router-dom'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { OnboardingCompleteScreen } from '@/features/role-selector/ui/components/OnboardingCompleteScreen'
 import { Dashboard } from '@/pages/Dashboard'
@@ -41,9 +40,7 @@ const AppBootstrapRoutes = () => {
 export const App = () => {
   return (
     <AppShell>
-      <Routes>
-        <Route path="*" element={<AppBootstrapRoutes />} />
-      </Routes>
+      <AppBootstrapRoutes />
     </AppShell>
   )
 }
