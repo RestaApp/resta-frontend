@@ -12,9 +12,11 @@ import { STORAGE_KEYS } from '@/constants/storage'
 import { useLabels } from '@/shared/i18n/hooks'
 import { normalizeVacanciesResponse } from '../utils/normalizeShiftsResponse'
 import { getProfileCompleteness } from '../utils/profileCompleteness'
+import { useAuth } from '@/contexts/auth'
 
 export const useProfilePageModel = () => {
   const { t } = useTranslation()
+  const { isAuthenticated } = useAuth()
   const { getEmployeePositionLabel } = useLabels()
   const { userProfile, isLoading: isProfileLoading, refetch } = useUserProfile()
   const { clearUserData } = useUser()
@@ -41,8 +43,12 @@ export const useProfilePageModel = () => {
     return () => window.removeEventListener('openProfileEdit', handleOpenEdit)
   }, [])
 
-  const { data: myShiftsData } = useGetMyShiftsQuery()
-  const { data: appliedShiftsData } = useGetAppliedShiftsQuery()
+  const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
+    skip: !isAuthenticated,
+  })
+  const { data: appliedShiftsData } = useGetAppliedShiftsQuery(undefined, {
+    skip: !isAuthenticated,
+  })
 
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
   const appliedShifts = useMemo(

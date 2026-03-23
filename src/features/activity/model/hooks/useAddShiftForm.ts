@@ -10,6 +10,7 @@ import {
 import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
+import { useAuth } from '@/contexts/auth'
 import {
   getInitialPay,
   getInitialShiftDate,
@@ -33,13 +34,14 @@ export const useAddShiftForm = ({
   initialLocation = null,
 }: UseAddShiftFormOptions = {}) => {
   const { t } = useTranslation()
+  const { isAuthenticated } = useAuth()
   const { showToast } = useToast()
   const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
   const [updateShiftMutation] = useUpdateShiftMutation()
 
   // Получаем существующие смены для валидации
   const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
-    skip: !!initialValues?.id, // Не загружаем при редактировании
+    skip: !!initialValues?.id || !isAuthenticated, // Не загружаем при редактировании и до авторизации
   })
   const existingShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
 

@@ -17,6 +17,7 @@ import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
 import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
+import { useAuth } from '@/contexts/auth'
 
 export type ActivityTab = 'list' | 'calendar'
 
@@ -36,6 +37,7 @@ const getStartOfWeekMonday = (base: Date) => {
 
 export const useActivityPageModel = () => {
   const { t, i18n } = useTranslation()
+  const { isAuthenticated } = useAuth()
   const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
@@ -48,6 +50,7 @@ export const useActivityPageModel = () => {
     isError,
     refetch: refetchMyShifts,
   } = useGetMyShiftsQuery(undefined, {
+    skip: !isAuthenticated,
     refetchOnFocus: false,
   })
   const {
@@ -55,7 +58,7 @@ export const useActivityPageModel = () => {
     isLoading: isAppliedLoading,
     refetch: refetchAppliedShifts,
   } = useGetAppliedShiftsQuery(undefined, {
-    skip: isVenue,
+    skip: isVenue || !isAuthenticated,
     refetchOnFocus: false,
   })
 
