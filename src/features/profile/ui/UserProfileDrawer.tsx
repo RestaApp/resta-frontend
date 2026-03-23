@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -111,9 +111,10 @@ export const UserProfileDrawer = memo(
 
     const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false)
 
-    useEffect(() => {
-      if (!open) setRejectConfirmOpen(false)
-    }, [open])
+    const handleClose = () => {
+      setRejectConfirmOpen(false)
+      onClose()
+    }
 
     const canReject = canModerate && typeof applicationId === 'number' && Boolean(onReject)
     const canAccept =
@@ -125,132 +126,134 @@ export const UserProfileDrawer = memo(
 
     return (
       <>
-      <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()}>
-        <div
-          className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
-          style={{ height: 'calc(85vh - 52px)' }}
-        >
-          <DrawerHeader className="pb-2 border-b border-border shrink-0">
-            <div className="flex items-center justify-between gap-2">
-              <DrawerTitle className="text-lg font-semibold">
-                {t('profile.personalInfo')}
-              </DrawerTitle>
-              <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
-            </div>
-          </DrawerHeader>
-
-          <div className="flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader size="lg" />
+        <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
+          <div
+            className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
+            style={{ height: 'calc(85vh - 52px)' }}
+          >
+            <DrawerHeader className="pb-2 border-b border-border shrink-0">
+              <div className="flex items-center justify-between gap-2">
+                <DrawerTitle className="text-lg font-semibold">
+                  {t('profile.personalInfo')}
+                </DrawerTitle>
+                <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
               </div>
-            ) : isError ? (
-              <div className="text-center py-10 text-muted-foreground">{t('errors.loadError')}</div>
-            ) : userProfile ? (
-              <>
-                <ProfileHero
-                  userProfile={userProfile}
-                  userName={userName}
-                  roleLabel={heroRoleOrPositionLabel}
-                  apiRole={apiRole}
-                  isProfileFilled={profileCompleteness?.isFilled ?? false}
-                  wrapInCard={false}
-                />
+            </DrawerHeader>
 
-                {apiRole === 'employee' && specializations.length > 0 ? (
-                  <>
-                    <hr className="my-4 border-border" />
-                    <ProfileSpecializationsSection specializations={specializations} />
-                  </>
-                ) : null}
+            <div className="flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader size="lg" />
+                </div>
+              ) : isError ? (
+                <div className="text-center py-10 text-muted-foreground">
+                  {t('errors.loadError')}
+                </div>
+              ) : userProfile ? (
+                <>
+                  <ProfileHero
+                    userProfile={userProfile}
+                    userName={userName}
+                    roleLabel={heroRoleOrPositionLabel}
+                    apiRole={apiRole}
+                    isProfileFilled={profileCompleteness?.isFilled ?? false}
+                    wrapInCard={false}
+                  />
 
-                <hr className="my-4 border-border" />
-                <ProfileInfoCard
-                  apiRole={apiRole}
-                  userProfile={userProfile}
-                  completeness={profileCompleteness}
-                  defaultOpen={true}
-                  variant="section"
-                />
+                  {apiRole === 'employee' && specializations.length > 0 ? (
+                    <>
+                      <hr className="my-4 border-border" />
+                      <ProfileSpecializationsSection specializations={specializations} />
+                    </>
+                  ) : null}
 
-                {apiRole === 'restaurant' && restaurantInfo ? (
-                  <>
-                    <hr className="my-4 border-border" />
-                    <ProfileBusinessInfoCard
-                      kind="restaurant"
-                      value={restaurantInfo.format}
-                      variant="section"
-                    />
-                  </>
-                ) : null}
+                  <hr className="my-4 border-border" />
+                  <ProfileInfoCard
+                    apiRole={apiRole}
+                    userProfile={userProfile}
+                    completeness={profileCompleteness}
+                    defaultOpen={true}
+                    variant="section"
+                  />
 
-                {apiRole === 'supplier' && supplierInfo ? (
-                  <>
-                    <hr className="my-4 border-border" />
-                    <ProfileBusinessInfoCard
-                      kind="supplier"
-                      value={supplierInfo.name}
-                      variant="section"
-                    />
-                  </>
-                ) : null}
-              </>
+                  {apiRole === 'restaurant' && restaurantInfo ? (
+                    <>
+                      <hr className="my-4 border-border" />
+                      <ProfileBusinessInfoCard
+                        kind="restaurant"
+                        value={restaurantInfo.format}
+                        variant="section"
+                      />
+                    </>
+                  ) : null}
+
+                  {apiRole === 'supplier' && supplierInfo ? (
+                    <>
+                      <hr className="my-4 border-border" />
+                      <ProfileBusinessInfoCard
+                        kind="supplier"
+                        value={supplierInfo.name}
+                        variant="section"
+                      />
+                    </>
+                  ) : null}
+                </>
+              ) : null}
+            </div>
+
+            {showModerationActions ? (
+              <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0`}>
+                <div className="flex gap-3">
+                  {canReject ? (
+                    <Button
+                      variant="outline"
+                      size="md"
+                      className="flex-1"
+                      loading={moderatingAction === 'reject'}
+                      disabled={moderatingAction != null}
+                      onClick={() => setRejectConfirmOpen(true)}
+                    >
+                      {moderatingAction === 'reject'
+                        ? t('shift.rejectingApplication')
+                        : t('shift.rejectApplication')}
+                    </Button>
+                  ) : null}
+                  {canAccept ? (
+                    <Button
+                      variant="gradient"
+                      size="md"
+                      className="flex-1"
+                      loading={moderatingAction === 'accept'}
+                      disabled={moderatingAction != null}
+                      onClick={onAccept}
+                    >
+                      {moderatingAction === 'accept'
+                        ? t('shift.acceptingApplication')
+                        : t('shift.acceptApplication')}
+                    </Button>
+                  ) : null}
+                </div>
+              </DrawerFooter>
             ) : null}
           </div>
+        </Drawer>
 
-          {showModerationActions ? (
-            <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0`}>
-              <div className="flex gap-3">
-                {canReject ? (
-                  <Button
-                    variant="outline"
-                    size="md"
-                    className="flex-1"
-                    loading={moderatingAction === 'reject'}
-                    disabled={moderatingAction != null}
-                    onClick={() => setRejectConfirmOpen(true)}
-                  >
-                    {moderatingAction === 'reject'
-                      ? t('shift.rejectingApplication')
-                      : t('shift.rejectApplication')}
-                  </Button>
-                ) : null}
-                {canAccept ? (
-                  <Button
-                    variant="gradient"
-                    size="md"
-                    className="flex-1"
-                    loading={moderatingAction === 'accept'}
-                    disabled={moderatingAction != null}
-                    onClick={onAccept}
-                  >
-                    {moderatingAction === 'accept'
-                      ? t('shift.acceptingApplication')
-                      : t('shift.acceptApplication')}
-                  </Button>
-                ) : null}
-              </div>
-            </DrawerFooter>
-          ) : null}
-        </div>
-      </Drawer>
-
-      {canReject && onReject ? (
-        <ConfirmDialog
-          open={rejectConfirmOpen}
-          onOpenChange={setRejectConfirmOpen}
-          title={t('shift.rejectApplicationConfirmTitle')}
-          description={t('shift.rejectApplicationConfirmDescription')}
-          cancelLabel={t('common.cancel')}
-          confirmLabel={t('shift.rejectApplication')}
-          onConfirm={() => {
-            void (async () => {
-              setRejectConfirmOpen(false)
-              await onReject()
-            })()
-          }}
-        />
-      ) : null}
+        {canReject && onReject ? (
+          <ConfirmDialog
+            open={rejectConfirmOpen}
+            onOpenChange={setRejectConfirmOpen}
+            title={t('shift.rejectApplicationConfirmTitle')}
+            description={t('shift.rejectApplicationConfirmDescription')}
+            cancelLabel={t('common.cancel')}
+            confirmLabel={t('shift.rejectApplication')}
+            onConfirm={() => {
+              void (async () => {
+                setRejectConfirmOpen(false)
+                await onReject()
+              })()
+            }}
+          />
+        ) : null}
       </>
     )
   }
