@@ -25,6 +25,14 @@ export interface RestaurantProfile {
   city?: string | null
 }
 
+export interface SupplierProfile {
+  supplier_category?: string | null
+  supplier_types?: string[] | null
+  supplier_type?: string | null
+  delivery_available?: boolean | null
+  name?: string | null
+}
+
 export interface UserData {
   id: number
   active: boolean
@@ -36,6 +44,8 @@ export interface UserData {
   employee_profile: EmployeeProfile | null
   /** Название заведения и формат — см. PATCH restaurant_profile_attributes */
   restaurant_profile?: RestaurantProfile | null
+  supplier_profile?: SupplierProfile | null
+  supplier_profile_attributes?: SupplierProfile | null
   full_name: string
   language: string
   last_name: string

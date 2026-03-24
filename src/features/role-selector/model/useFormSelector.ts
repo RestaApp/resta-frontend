@@ -9,17 +9,20 @@ import { isPromise } from '@/utils/promise'
 export interface FormData {
   name: string
   type: string | null
+  types: string[]
   city: string
 }
 
 interface UseFormSelectorProps {
   onContinue?: (formData: FormData) => Promise<boolean> | void
+  multiType?: boolean
 }
 
-export const useFormSelector = ({ onContinue }: UseFormSelectorProps) => {
+export const useFormSelector = ({ onContinue, multiType = false }: UseFormSelectorProps) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     type: null,
+    types: [],
     city: '',
   })
 
@@ -41,7 +44,8 @@ export const useFormSelector = ({ onContinue }: UseFormSelectorProps) => {
   }, [])
 
   const handleContinue = useCallback(async (): Promise<boolean> => {
-    if (!formData.name.trim() || !formData.type || !formData.city.trim()) {
+    const hasType = multiType ? formData.types.length > 0 : !!formData.type
+    if (!formData.name.trim() || !hasType || !formData.city.trim()) {
       return false
     }
 
@@ -62,7 +66,7 @@ export const useFormSelector = ({ onContinue }: UseFormSelectorProps) => {
       console.error('Ошибка при сохранении:', error)
       return false
     }
-  }, [formData, onContinue])
+  }, [formData, onContinue, multiType])
 
   return {
     formData,

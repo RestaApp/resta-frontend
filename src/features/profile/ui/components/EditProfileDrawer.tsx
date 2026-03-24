@@ -16,6 +16,7 @@ import { RangeSlider } from '@/components/ui'
 import { CitySelect } from '@/components/ui/city-select'
 import { Loader } from '@/components/ui/loader'
 import { Badge } from '@/components/ui/badge'
+import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import {
   DRAWER_BODY_CLASS,
   DRAWER_FOOTER_CLASS,
@@ -33,7 +34,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { formatExperienceText } from '@/utils/experience'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
-import { useProfileFormLabels } from '@/shared/i18n/hooks'
+import { useLabels, useProfileFormLabels } from '@/shared/i18n/hooks'
 import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
 
 interface EmployeeFieldsSectionProps {
@@ -131,6 +132,7 @@ export const EditProfileDrawer = memo(
   ({ open, onOpenChange, onSuccess }: EditProfileDrawerProps) => {
     const { t } = useTranslation()
     const { getBioLabelSuffix } = useProfileFormLabels()
+    const { getSupplierTypeLabel } = useLabels()
     const {
       userProfile,
       apiRole,
@@ -138,6 +140,8 @@ export const EditProfileDrawer = memo(
       cities,
       isCitiesLoading,
       isLoading,
+      supplierTypeOptions,
+      isSupplierTypesLoading,
       experienceYearsForSlider,
       handleSave,
       updateField,
@@ -160,13 +164,20 @@ export const EditProfileDrawer = memo(
 
     if (!userProfile) return null
 
+    const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
     const bioSuffix = getBioLabelSuffix(apiRole)
+    const editProfileDescription =
+      apiRole === 'restaurant'
+        ? t('profile.editProfileDescriptionRestaurant')
+        : apiRole === 'supplier'
+          ? t('profile.editProfileDescriptionSupplier')
+          : t('profile.editProfileDescription')
 
     return (
       <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
         <DrawerHeader>
           <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
-          <DrawerDescription>{t('profile.editProfileDescription')}</DrawerDescription>
+          <DrawerDescription>{editProfileDescription}</DrawerDescription>
         </DrawerHeader>
 
         <div className={DRAWER_BODY_CLASS}>
@@ -262,12 +273,77 @@ export const EditProfileDrawer = memo(
             )}
           </FormField>
 
-          {apiRole === 'restaurant' && (
+          {isBusinessRole && (
+            <>
+              {apiRole === 'supplier' && (
+                <FormField
+                  label={t('profile.supplierTypesLabel', { defaultValue: 'Типы поставщика' })}
+                  hint={t('profile.supplierTypesHint', {
+                    defaultValue: 'Можно выбрать несколько направлений',
+                  })}
+                >
+                  {isSupplierTypesLoading ? (
+                    <div className="flex items-center gap-2 py-2">
+                      <Loader size="sm" />
+                    </div>
+                  ) : supplierTypeOptions.length === 0 ? (
+                    <div className="text-sm text-muted-foreground py-2">
+                      {t('profile.supplierTypesEmpty', {
+                        defaultValue: 'Нет доступных типов для выбранной категории',
+                      })}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap gap-2">
+                        {supplierTypeOptions.map(type => (
+                          <SelectableTagButton
+                            key={type}
+                            value={type}
+                            label={getSupplierTypeLabel(type)}
+                            isSelected={formData.supplierTypes.includes(type)}
+                            onClick={value => {
+                              const next = formData.supplierTypes.includes(value)
+                                ? formData.supplierTypes.filter(item => item !== value)
+                                : [...formData.supplierTypes, value]
+                              updateField('supplierTypes', next)
+                            }}
+                            disabled={isLoading}
+                            ariaLabel={t('aria.selectType', {
+                              label: getSupplierTypeLabel(type),
+                            })}
+                          />
+                        ))}
+                      </div>
+                      {formData.supplierTypes.length > 0 && (
+                        <div className="text-xs text-muted-foreground mt-2">
+                          {t('profile.supplierTypesCount', {
+                            defaultValue: 'Выбрано: {{count}}',
+                            count: formData.supplierTypes.length,
+                          })}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </FormField>
+              )}
+            </>
+          )}
+
+          {isBusinessRole && (
             <FormField
-              label={t('profile.addresses', { defaultValue: 'Адрес(а) заведения' })}
-              hint={t('profile.addressesHint', {
-                defaultValue: 'Если у вас несколько точек, укажите каждый адрес с новой строки',
-              })}
+              label={
+                apiRole === 'restaurant'
+                  ? t('profile.addresses', { defaultValue: 'Адрес(а) заведения' })
+                  : t('profileFields.address', { defaultValue: 'Адрес' })
+              }
+              hint={
+                apiRole === 'restaurant'
+                  ? t('profile.addressesHint', {
+                      defaultValue:
+                        'Если у вас несколько точек, укажите каждый адрес с новой строки',
+                    })
+                  : undefined
+              }
             >
               <Textarea
                 value={formData.location}
@@ -282,19 +358,21 @@ export const EditProfileDrawer = memo(
             </FormField>
           )}
 
-          {apiRole === 'restaurant' && (
+          {isBusinessRole && (
             <>
-              <FormField label={t('profile.venueWebsite')} hint={t('profile.venueWebsiteHint')}>
-                <Input
-                  type="url"
-                  inputMode="url"
-                  autoComplete="url"
-                  value={formData.website}
-                  onChange={e => updateField('website', e.target.value)}
-                  placeholder={t('profile.form.websitePlaceholder')}
-                  disabled={isLoading}
-                />
-              </FormField>
+              {apiRole === 'restaurant' && (
+                <FormField label={t('profile.venueWebsite')} hint={t('profile.venueWebsiteHint')}>
+                  <Input
+                    type="url"
+                    inputMode="url"
+                    autoComplete="url"
+                    value={formData.website}
+                    onChange={e => updateField('website', e.target.value)}
+                    placeholder={t('profile.form.websitePlaceholder')}
+                    disabled={isLoading}
+                  />
+                </FormField>
+              )}
               <FormField label={t('profile.businessHours')} hint={t('profile.businessHoursHint')}>
                 <Textarea
                   value={formData.businessHours}

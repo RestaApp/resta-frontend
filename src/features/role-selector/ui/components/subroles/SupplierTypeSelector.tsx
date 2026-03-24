@@ -35,6 +35,7 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
     handleContinue,
   } = useFormSelector({
     onContinue,
+    multiType: true,
   })
 
   if (isLoading || isFetching) {
@@ -61,6 +62,7 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
       continueButtonAriaLabel={t('common.continueFormSupplier')}
+      isMultiType={true}
       step={2}
       totalSteps={2}
     />

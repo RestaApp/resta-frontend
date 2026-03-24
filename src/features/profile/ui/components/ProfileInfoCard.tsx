@@ -114,15 +114,21 @@ export const ProfileInfoCard = memo(
   }: ProfileInfoCardProps) => {
     const { t } = useTranslation()
     const { getWorkSummaryLabel } = useProfileFormLabels()
+    const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
     const isFilled = completeness?.isFilled ?? false
     const cityValue = userProfile.city ?? null
     const locationValue = userProfile.location ?? null
-    const cityDisplay = apiRole === 'restaurant' ? cityValue : (cityValue ?? locationValue)
+    const cityDisplay = isBusinessRole ? cityValue : (cityValue ?? locationValue)
     const workSummaryLabel = getWorkSummaryLabel(apiRole)
-    const venueHoursDisplay =
+    const venueHoursDisplay = isBusinessRole
+      ? businessHoursRecordToFormValue(userProfile.business_hours).trim()
+      : ''
+    const fillRequiredText =
       apiRole === 'restaurant'
-        ? businessHoursRecordToFormValue(userProfile.business_hours).trim()
-        : ''
+        ? t('profile.fillToApplyRestaurant')
+        : apiRole === 'supplier'
+          ? t('profile.fillToApplySupplier')
+          : t('profile.fillToApply')
     const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
 
     const content = (
@@ -162,7 +168,7 @@ export const ProfileInfoCard = memo(
             {!isFilled ? (
               <div className="text-center py-6 px-2">
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  {t('profile.fillToApply')}
+                  {fillRequiredText}
                 </p>
                 {onFill ? (
                   <motion.button
@@ -191,7 +197,7 @@ export const ProfileInfoCard = memo(
                       {cityDisplay}
                     </InfoRow>
                   )}
-                  {apiRole === 'restaurant' && locationValue && (
+                  {isBusinessRole && locationValue && (
                     <InfoRow
                       label={t('profileFields.address', { defaultValue: 'Адрес' })}
                       valueClassName={`${VALUE_CLASS} whitespace-pre-line text-right`}
@@ -208,7 +214,7 @@ export const ProfileInfoCard = memo(
                       {userProfile.website.trim()}
                     </InfoRow>
                   )}
-                  {apiRole === 'restaurant' && venueHoursDisplay ? (
+                  {isBusinessRole && venueHoursDisplay ? (
                     <InfoRow
                       label={t('profile.businessHours')}
                       valueClassName={`${VALUE_CLASS} whitespace-pre-line text-right`}

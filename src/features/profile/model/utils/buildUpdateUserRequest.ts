@@ -21,6 +21,9 @@ export interface ProfileFormData {
   experienceYears: number | ''
   openToWork: boolean
   skills: string
+  // Для supplier
+  supplierCategory: string
+  supplierTypes: string[]
 }
 
 /**
@@ -31,6 +34,7 @@ export const buildUpdateUserRequest = (
   apiRole: ApiRole | null,
   initialFormData?: ProfileFormData
 ): UpdateUserRequest => {
+  const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
   const source = initialFormData ?? formData
   const hasDiff = <T>(current: T, initial: T) => {
     return JSON.stringify(current) !== JSON.stringify(initial)
@@ -66,6 +70,10 @@ export const buildUpdateUserRequest = (
     .split(',')
     .map(s => s.trim())
     .filter(Boolean)
+  const currentSupplierCategory = formData.supplierCategory.trim()
+  const initialSupplierCategory = source.supplierCategory.trim()
+  const currentSupplierTypes = Array.from(new Set(formData.supplierTypes.filter(Boolean)))
+  const initialSupplierTypes = Array.from(new Set(source.supplierTypes.filter(Boolean)))
 
   const user: UpdateUserRequest['user'] = {}
 
@@ -85,7 +93,7 @@ export const buildUpdateUserRequest = (
     user.city = currentCity
   }
 
-  if (apiRole === 'restaurant' && currentLocation !== initialLocation) {
+  if (isBusinessRole && currentLocation !== initialLocation) {
     user.location = currentLocation
   }
 
@@ -93,7 +101,7 @@ export const buildUpdateUserRequest = (
     user.website = currentWebsite
   }
 
-  if (apiRole === 'restaurant' && hasDiff(currentBusinessHours, initialBusinessHours)) {
+  if (isBusinessRole && hasDiff(currentBusinessHours, initialBusinessHours)) {
     user.business_hours = currentBusinessHours
   }
 
@@ -129,6 +137,27 @@ export const buildUpdateUserRequest = (
     if (Object.keys(employeeProfileAttributes).length > 0) {
       user.employee_profile_attributes = employeeProfileAttributes
     }
+  }
+
+  if (apiRole === 'supplier' && hasDiff(currentSupplierTypes, initialSupplierTypes)) {
+    user.supplier_types = currentSupplierTypes
+
+    if (currentSupplierCategory) {
+      user.supplier_category = currentSupplierCategory
+      user.supplier_profile_attributes = {
+        supplier_category: currentSupplierCategory,
+        supplier_types: currentSupplierTypes,
+      }
+    }
+  }
+
+  if (
+    apiRole === 'supplier' &&
+    currentSupplierCategory &&
+    currentSupplierCategory !== initialSupplierCategory &&
+    !user.supplier_category
+  ) {
+    user.supplier_category = currentSupplierCategory
   }
 
   return {

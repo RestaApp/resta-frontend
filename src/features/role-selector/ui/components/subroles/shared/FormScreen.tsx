@@ -17,6 +17,7 @@ import { setupTelegramBackButton } from '@/utils/telegram'
 interface FormScreenData {
   name: string
   type: string | null
+  types: string[]
   city: string
 }
 
@@ -35,6 +36,7 @@ interface FormScreenProps {
   onBack: () => void
   isLoadingLocation?: boolean
   continueButtonAriaLabel: string
+  isMultiType?: boolean
   /** Индикатор шага онбординга (например, шаг 2 из 3) */
   step?: number
   totalSteps?: number
@@ -55,6 +57,7 @@ export const FormScreen = memo(function FormScreen({
   onBack,
   isLoadingLocation = false,
   continueButtonAriaLabel,
+  isMultiType = false,
   step,
   totalSteps,
 }: FormScreenProps) {
@@ -69,14 +72,17 @@ export const FormScreen = memo(function FormScreen({
   }, [onBack])
 
   const handleContinue = () => {
-    if (!formData.name.trim() || !formData.type || !formData.city.trim()) {
+    const hasType = isMultiType ? formData.types.length > 0 : !!formData.type
+    if (!formData.name.trim() || !hasType || !formData.city.trim()) {
       return
     }
     onContinue()
   }
 
-  const isFormValid =
-    formData.name.trim() !== '' && formData.type !== null && formData.city.trim() !== ''
+  const isFormValid = (() => {
+    const hasType = isMultiType ? formData.types.length > 0 : formData.type !== null
+    return formData.name.trim() !== '' && hasType && formData.city.trim() !== ''
+  })()
 
   return (
     <div className=" bg-background flex flex-col px-6 py-12">
@@ -113,8 +119,18 @@ export const FormScreen = memo(function FormScreen({
                   key={type}
                   value={type}
                   label={getTypeLabel(type)}
-                  isSelected={formData.type === type}
-                  onClick={value => onFormDataUpdate({ type: value })}
+                  isSelected={isMultiType ? formData.types.includes(type) : formData.type === type}
+                  onClick={value => {
+                    if (!isMultiType) {
+                      onFormDataUpdate({ type: value })
+                      return
+                    }
+
+                    const nextTypes = formData.types.includes(value)
+                      ? formData.types.filter(item => item !== value)
+                      : [...formData.types, value]
+                    onFormDataUpdate({ types: nextTypes })
+                  }}
                   ariaLabel={t('aria.selectType', { label: getTypeLabel(type) })}
                 />
               ))}

@@ -9,6 +9,7 @@ import type { ApiRole } from '@/types'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
 import { businessHoursRecordToFormValue } from '../utils/businessHoursForm'
 import { formatPhoneInput, validatePhone } from '@/utils/phone'
+import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
 
 type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
 type EditProfileErrors = Partial<Record<EditProfileField, string>>
@@ -27,6 +28,25 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     return mapRoleFromApi(roleValue)
   }, [userProfile?.role])
 
+  const supplierCategory = useMemo(() => {
+    if (apiRole !== 'supplier') return null
+    return (
+      userProfile?.supplier_profile?.supplier_category ??
+      userProfile?.supplier_profile_attributes?.supplier_category ??
+      null
+    )
+  }, [apiRole, userProfile])
+
+  const {
+    data: supplierTypesResponse,
+    isLoading: isSupplierTypesLoading,
+    isFetching: isSupplierTypesFetching,
+  } = useGetSupplierTypesQuery(supplierCategory ?? '', {
+    skip: !open || apiRole !== 'supplier' || !supplierCategory,
+  })
+
+  const supplierTypeOptions = supplierTypesResponse?.data ?? []
+
   const baseFormData = useMemo<ProfileFormData>(() => {
     if (!userProfile) {
       return {
@@ -43,10 +63,13 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         experienceYears: '',
         openToWork: false,
         skills: '',
+        supplierCategory: '',
+        supplierTypes: [],
       }
     }
 
     const ep = userProfile.employee_profile
+    const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
     return {
       name:
         apiRole === 'restaurant'
@@ -69,6 +92,12 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
           : '',
       openToWork: apiRole === 'employee' && ep ? ep.open_to_work || false : false,
       skills: apiRole === 'employee' && ep?.skills ? ep.skills.join(', ') : '',
+      supplierCategory: supplierProfile?.supplier_category ?? '',
+      supplierTypes: Array.isArray(supplierProfile?.supplier_types)
+        ? Array.from(new Set(supplierProfile.supplier_types.filter(Boolean)))
+        : supplierProfile?.supplier_type
+          ? [supplierProfile.supplier_type]
+          : [],
     }
   }, [apiRole, userProfile])
 
@@ -239,6 +268,9 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     cities,
     isCitiesLoading,
     isLoading,
+    supplierTypeOptions,
+    isSupplierTypesLoading: isSupplierTypesLoading || isSupplierTypesFetching,
+    supplierCategory,
     experienceYearsForSlider,
     handleSave,
     updateField,

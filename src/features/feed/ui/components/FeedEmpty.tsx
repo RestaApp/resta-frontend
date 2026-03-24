@@ -15,7 +15,7 @@ interface FeedEmptyProps {
   hasActiveFilters: boolean
 }
 
-export function FeedEmpty({
+function FeedEmptyState({
   emptyMessage,
   emptyDescription,
   onReset,
@@ -87,7 +87,7 @@ export function FeedListArea({
 
   if (showEmptyState) {
     return (
-      <FeedEmpty
+      <FeedEmptyState
         emptyMessage={emptyMessage}
         emptyDescription={emptyDescription}
         onReset={onResetFilters}

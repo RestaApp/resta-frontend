@@ -78,7 +78,14 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
   const handleSupplierTypeContinue = useCallback(
     async (formData?: FormData, supplierCategory?: string): Promise<boolean> => {
-      if (!formData?.type || !supplierCategory) {
+      if (!formData || !supplierCategory) {
+        return false
+      }
+
+      const selectedSupplierTypes =
+        formData.types.length > 0 ? formData.types : formData.type ? [formData.type] : []
+
+      if (selectedSupplierTypes.length === 0) {
         return false
       }
 
@@ -86,7 +93,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         user: {
           role: 'supplier',
           supplier_category: supplierCategory,
-          supplier_types: [formData.type],
+          supplier_types: selectedSupplierTypes,
           // ROLES_FRONTEND_SPEC: supplier_profile.delivery_available (boolean)
           delivery_available: false,
         },
