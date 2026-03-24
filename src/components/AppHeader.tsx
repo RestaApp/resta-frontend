@@ -47,23 +47,24 @@ const getHeaderAction = (params: {
   t: TranslateFn
   onAddShift?: () => void
   role?: UiRole
+  isEmployeeFlow: boolean
 }): HeaderAction | null => {
-  const { activeTab, t, onAddShift, role } = params
-  const isEmployeeFlow = role != null && UI_ROLE_TO_API_ROLE[role] === 'employee'
+  const { activeTab, t, onAddShift, role, isEmployeeFlow } = params
+
+  const venueAddShiftAction = (): HeaderAction => ({
+    ariaLabel: t('feed.venueEmptyCta', {
+      defaultValue: 'Создать вакансию или смену',
+    }),
+    Icon: Plus,
+    onClick: () => {
+      onAddShift?.()
+      window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+    },
+  })
 
   if (activeTab === 'feed') {
-    // Для ресторана в шапке — создание вакансии/смены вместо фильтров
     if (role === 'venue') {
-      return {
-        ariaLabel: t('feed.venueEmptyCta', {
-          defaultValue: 'Создать вакансию или смену',
-        }),
-        Icon: Plus,
-        onClick: () => {
-          onAddShift?.()
-          window.dispatchEvent(new CustomEvent('openActivityAddShift'))
-        },
-      }
+      return venueAddShiftAction()
     }
 
     return {
@@ -75,16 +76,7 @@ const getHeaderAction = (params: {
 
   if (activeTab === 'activity') {
     if (role === 'venue') {
-      return {
-        ariaLabel: t('feed.venueEmptyCta', {
-          defaultValue: 'Создать вакансию или смену',
-        }),
-        Icon: Plus,
-        onClick: () => {
-          onAddShift?.()
-          window.dispatchEvent(new CustomEvent('openActivityAddShift'))
-        },
-      }
+      return venueAddShiftAction()
     }
 
     return {
@@ -113,6 +105,14 @@ const getHeaderAction = (params: {
     }
   }
 
+  if (activeTab === 'home' && role === 'supplier') {
+    return {
+      ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
+      Icon: SlidersHorizontal,
+      onClick: () => window.dispatchEvent(new CustomEvent('openSuppliersFilters')),
+    }
+  }
+
   return null
 }
 
@@ -126,8 +126,8 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
 
   const title = useMemo(() => getHeaderTitle(activeTab, t), [activeTab, t])
   const action = useMemo(
-    () => getHeaderAction({ activeTab, t, onAddShift, role }),
-    [activeTab, onAddShift, role, t]
+    () => getHeaderAction({ activeTab, t, onAddShift, role, isEmployeeFlow }),
+    [activeTab, isEmployeeFlow, onAddShift, role, t]
   )
 
   const dismissAddShiftOnboarding = useCallback(() => {

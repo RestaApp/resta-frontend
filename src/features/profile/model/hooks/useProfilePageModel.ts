@@ -125,19 +125,21 @@ export const useProfilePageModel = () => {
     refetch()
   }, [refetch])
 
-  const restaurantInfo = useMemo(() => {
-    if (apiRole !== 'restaurant') return null
-    return {
-      format: null,
-    }
-  }, [apiRole])
-
   const supplierInfo = useMemo(() => {
     if (apiRole !== 'supplier') return null
     return {
       name: userProfile?.full_name || userProfile?.name || t('company'),
     }
   }, [apiRole, userProfile, t])
+
+  const supplierCategory = useMemo(() => {
+    if (apiRole !== 'supplier') return null
+    return (
+      userProfile?.supplier_profile?.supplier_category ??
+      userProfile?.supplier_profile_attributes?.supplier_category ??
+      null
+    )
+  }, [apiRole, userProfile])
 
   return {
     userProfile,
@@ -168,8 +170,8 @@ export const useProfilePageModel = () => {
     isNotificationPrefsDrawerOpen,
     setIsNotificationPrefsDrawerOpen,
 
-    restaurantInfo,
     supplierInfo,
+    supplierCategory,
 
     handleLogout,
   } as const

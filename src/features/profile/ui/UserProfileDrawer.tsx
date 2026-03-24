@@ -46,7 +46,7 @@ export const UserProfileDrawer = memo(
     onReject,
   }: UserProfileDrawerProps) => {
     const { t } = useTranslation()
-    const { getUiRoleLabel, getEmployeePositionLabel } = useLabels()
+    const { getUiRoleLabel, getEmployeePositionLabel, getRestaurantFormatLabel } = useLabels()
 
     const {
       data: userResponse,
@@ -92,10 +92,16 @@ export const UserProfileDrawer = memo(
 
     const restaurantInfo = useMemo(() => {
       if (apiRole !== 'restaurant') return null
+      const restaurantFormat =
+        userProfile?.restaurant_profile?.restaurant_format?.trim() ||
+        (
+          userProfile?.restaurant_profile as { format?: string | null } | null | undefined
+        )?.format?.trim()
+      if (!restaurantFormat) return null
       return {
-        format: null, // TODO: add format if available in UserData
+        format: getRestaurantFormatLabel(restaurantFormat),
       }
-    }, [apiRole])
+    }, [apiRole, getRestaurantFormatLabel, userProfile])
 
     const supplierInfo = useMemo(() => {
       if (apiRole !== 'supplier') return null
@@ -123,6 +129,12 @@ export const UserProfileDrawer = memo(
       Boolean(onAccept) &&
       applicationStatus !== 'accepted'
     const showModerationActions = canReject || canAccept
+    const drawerTitle =
+      apiRole === 'restaurant'
+        ? t('roles.venueInfoTitle')
+        : apiRole === 'supplier'
+          ? t('roles.supplierInfoTitle')
+          : t('profile.personalInfo')
 
     return (
       <>
@@ -133,9 +145,7 @@ export const UserProfileDrawer = memo(
           >
             <DrawerHeader className="pb-2 border-b border-border shrink-0">
               <div className="flex items-center justify-between gap-2">
-                <DrawerTitle className="text-lg font-semibold">
-                  {t('profile.personalInfo')}
-                </DrawerTitle>
+                <DrawerTitle className="text-lg font-semibold">{drawerTitle}</DrawerTitle>
                 <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
               </div>
             </DrawerHeader>
@@ -176,7 +186,7 @@ export const UserProfileDrawer = memo(
                     variant="section"
                   />
 
-                  {apiRole === 'restaurant' && restaurantInfo ? (
+                  {apiRole === 'restaurant' && restaurantInfo?.format ? (
                     <>
                       <hr className="my-4 border-border" />
                       <ProfileBusinessInfoCard

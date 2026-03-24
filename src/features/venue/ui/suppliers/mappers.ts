@@ -1,6 +1,7 @@
 import type { TFunction } from 'i18next'
-import type { SupplierApiUser, SupplierItem } from './types'
+import type { RestaurantApiUser, SupplierApiUser, SupplierItem } from './types'
 import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
+import type { UserData } from '@/services/api/usersApi'
 
 const getSupplierName = (item: SupplierApiUser, fallback: string) => {
   const profile = item.supplier_profile ?? item.supplier_profile_attributes ?? null
@@ -36,11 +37,56 @@ const getSupplierCategories = (item: SupplierApiUser): string[] => {
   return fromApi.filter(Boolean)
 }
 
-const getUserPhotoUrl = (item: SupplierApiUser): string | null => {
+const getUserPhotoUrl = (
+  item: Pick<UserData, 'photo_url' | 'profile_photo_url'>
+): string | null => {
   const raw = item.photo_url ?? item.profile_photo_url
   if (typeof raw !== 'string') return null
   const normalized = raw.trim()
   return normalized.length > 0 ? normalized : null
+}
+
+export const getRestaurantProfile = (item: RestaurantApiUser) =>
+  item.restaurant_profile ?? item.restaurant_profile_attributes ?? null
+
+export const mapRestaurantUsersToItems = (
+  users: RestaurantApiUser[],
+  t: TFunction,
+  getRestaurantFormatLabel: (value: string) => string
+): SupplierItem[] => {
+  return users.map(item => {
+    const profile = getRestaurantProfile(item)
+    const restaurantFormatCode = profile?.restaurant_format ?? profile?.format ?? null
+    const cuisines = Array.isArray(profile?.cuisine_types)
+      ? profile.cuisine_types.filter(Boolean)
+      : []
+    const formatLabel = restaurantFormatCode
+      ? getRestaurantFormatLabel(restaurantFormatCode)
+      : t('common.notSpecified', { defaultValue: 'Не указано' })
+    const fromParts = [item.name, item.last_name].filter(Boolean).join(' ').trim()
+
+    return {
+      id: item.id,
+      name:
+        item.full_name ||
+        fromParts ||
+        t('venueUi.suppliers.unknownName', { defaultValue: `Заведение #${item.id}` }),
+      bio: item.bio ?? null,
+      city: item.city?.trim() || '',
+      location: item.location?.trim() || '',
+      email: item.email?.trim() || '',
+      phone: item.phone?.trim() || '',
+      averageRating: Number.isFinite(item.average_rating) ? item.average_rating : 0,
+      totalReviews: Number.isFinite(item.total_reviews) ? item.total_reviews : 0,
+      username: item.username || null,
+      photoUrl: getUserPhotoUrl(item),
+      supplierType: formatLabel,
+      supplierCategory: formatLabel,
+      serviceCategories: cuisines,
+      deliveryAvailable: null,
+      status: item.active ? 'active' : 'paused',
+    }
+  })
 }
 
 export const mapSupplierUsersToItems = (

@@ -106,6 +106,7 @@
     },
     "suppliers": {
       "total": "Total suppliers",
+      "shownCount": "Showing {{shown}} of {{total}}",
       "showAll": "Show all",
       "showActive": "Only active",
       "emptyTitle": "No suppliers found",
@@ -122,6 +123,20 @@
       "shift": "Create shift"
     }
   },
+  "supplierUi": {
+    "restaurants": {
+      "shownCount": "Showing {{shown}} of {{total}}",
+      "moreLocations": "+{{count}}",
+      "emptyTitle": "No venues found",
+      "emptyDescription": "Try refreshing the list or changing filters",
+      "filters": {
+        "title": "Venue filters",
+        "format": "Venue format",
+        "cuisines": "Cuisines",
+        "apply": "Show venues"
+      }
+    }
+  },
   "tabs": {
     "employee": {
       "feed": "Search",
@@ -136,7 +151,7 @@
       "profile": "Profile"
     },
     "supplier": {
-      "home": "Dashboard",
+      "home": "Home",
       "requests": "Requests",
       "showcase": "Showcase",
       "profile": "Profile"
@@ -236,12 +251,20 @@
     "addressesHint": "If you have multiple locations, put each address on a new line",
     "venueWebsite": "Website",
     "venueWebsiteHint": "Venue website or social page",
-    "supplierTypesLabel": "Supplier types",
+    "supplierTypesLabel": "Types",
     "supplierTypesHint": "You can select several options",
     "supplierTypesEmpty": "No available types for selected category",
     "supplierTypesCount": "Selected: {{count}}",
     "businessHours": "Opening hours",
     "businessHoursHint": "Per weekday or a single line",
+    "addAddress": "Add address",
+    "copyWeekdaysFromMonday": "Copy to weekdays",
+    "set247": "24/7",
+    "weekdays": "Weekdays",
+    "saturdayShort": "Sat",
+    "sundayShort": "Sun",
+    "showDetailedDays": "Configure",
+    "hideDetailedDays": "Hide detailed days",
     "cityNotSet": "City not set",
     "cityWarningDescription": "Without a city you won't see relevant jobs and shifts in your region. We recommend adding a city for better matches.",
     "saveWithoutCity": "Save without city",
@@ -254,8 +277,10 @@
       "emailPlaceholder": "Enter email",
       "cityPlaceholder": "Select city",
       "addressesPlaceholder": "For example:\nMinsk, Lenina st., 1\nMinsk, Pobediteley ave., 9",
+      "singleAddressPlaceholder": "City, street, building",
       "websitePlaceholder": "https://example.com",
-      "businessHoursPlaceholder": "Mon–Thu 12:00–23:00\nFri–Sat 12:00–02:00"
+      "businessHoursPlaceholder": "Mon–Thu 12:00–23:00\nFri–Sat 12:00–02:00",
+      "businessHoursNotesPlaceholder": "Additional details: break, holidays, special conditions"
     },
     "subtitle": {
       "employee": "HoReCa employee",
@@ -263,6 +288,7 @@
       "supplier": "Supplier"
     },
     "specializationSection": "Specialization",
+    "supplierCategorySection": "Category",
     "venueName": "Name",
     "venueType": "Type",
     "companyName": "Company",
@@ -475,7 +501,7 @@
     "venueNameLabel": "Venue name",
     "venueNamePlaceholder": "Enter name",
     "venueTypeLabel": "Venue type",
-    "supplierInfoTitle": "Supplier info",
+    "supplierInfoTitle": "Information",
     "supplierInfoDescription": "Fill in your company details",
     "supplierNameLabel": "Company name",
     "supplierNamePlaceholder": "Enter company name",
@@ -674,6 +700,8 @@
       "club": "Club",
       "canteen": "Canteen",
       "bar": "Bar",
+      "pub": "Pub",
+      "buffet": "Buffet",
       "pizzeria": "Pizzeria",
       "bakery": "Bakery",
       "food_truck": "Food truck",
@@ -693,6 +721,38 @@
       "bakery": "Bakery with fresh pastries",
       "food_truck": "Mobile food truck",
       "catering": "Event catering"
+    },
+    "cuisineType": {
+      "international": "International",
+      "european": "European",
+      "asian": "Asian",
+      "pub_food": "Pub food",
+      "fusion": "Fusion",
+      "breakfast": "Breakfast",
+      "american": "American",
+      "japanese": "Japanese",
+      "italian": "Italian",
+      "french": "French",
+      "georgian": "Georgian",
+      "belarusian": "Belarusian",
+      "russian": "Russian",
+      "ukrainian": "Ukrainian",
+      "chinese": "Chinese",
+      "pan_asian": "Pan-Asian",
+      "thai": "Thai",
+      "indian": "Indian",
+      "middle_eastern": "Middle Eastern",
+      "mediterranean": "Mediterranean",
+      "mexican": "Mexican",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "seafood": "Seafood",
+      "grill": "Grill",
+      "bbq": "BBQ",
+      "steakhouse": "Steakhouse",
+      "coffee_shop": "Coffee shop",
+      "bakery": "Bakery",
+      "desserts": "Desserts"
     },
     "position": {
       "Chef": "Chef",

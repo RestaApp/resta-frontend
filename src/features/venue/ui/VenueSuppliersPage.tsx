@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetUsersQuery, type GetUsersParams } from '@/services/api/usersApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
@@ -9,7 +9,12 @@ import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole, selectUserCity } from '@/features/navigation/model/userSlice'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'
 import { VenueSuppliersList } from './suppliers/VenueSuppliersList'
-import { mapSupplierUsersToItems } from './suppliers/mappers'
+import {
+  getRestaurantProfile,
+  mapRestaurantUsersToItems,
+  mapSupplierUsersToItems,
+} from './suppliers/mappers'
+import { resolveAppliedCity } from './suppliers/filtersUtils'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import {
   DEFAULT_SERVICE_CATEGORY_OPTIONS,
@@ -17,78 +22,16 @@ import {
   DEFAULT_SUPPLIER_TYPES,
   SUPPLIERS_PER_PAGE,
   SUPPLIER_TYPES_BY_CATEGORY,
+  type RestaurantApiUser,
   type SupplierApiUser,
   type SupplierFilters,
   getValidSupplierTypesForCategory,
   isSupplierCategory,
 } from './suppliers/types'
-import type { UserData } from '@/services/api/authApi'
-import type { SupplierItem } from './suppliers/types'
-
-type RestaurantProfile = {
-  restaurant_format?: string | null
-  format?: string | null
-  cuisine_types?: string[] | null
-}
-
-type RestaurantApiUser = UserData & {
-  restaurant_profile?: RestaurantProfile | null
-  restaurant_profile_attributes?: RestaurantProfile | null
-}
-
-const getRestaurantProfile = (item: RestaurantApiUser) =>
-  item.restaurant_profile ?? item.restaurant_profile_attributes ?? null
-
-const getUserPhotoUrl = (item: UserData): string | null => {
-  const raw = item.photo_url ?? item.profile_photo_url
-  if (typeof raw !== 'string') return null
-  const normalized = raw.trim()
-  return normalized.length > 0 ? normalized : null
-}
-
-const mapRestaurantUsersToItems = (
-  users: RestaurantApiUser[],
-  t: ReturnType<typeof useTranslation>['t'],
-  getRestaurantFormatLabel: (value: string) => string
-): SupplierItem[] => {
-  return users.map(item => {
-    const profile = getRestaurantProfile(item)
-    const restaurantFormatCode = profile?.restaurant_format ?? profile?.format ?? null
-    const cuisines = Array.isArray(profile?.cuisine_types)
-      ? profile.cuisine_types.filter(Boolean)
-      : []
-    const formatLabel = restaurantFormatCode
-      ? getRestaurantFormatLabel(restaurantFormatCode)
-      : t('common.notSpecified', { defaultValue: 'Не указано' })
-    const fromParts = [item.name, item.last_name].filter(Boolean).join(' ').trim()
-
-    return {
-      id: item.id,
-      name:
-        item.full_name ||
-        fromParts ||
-        t('venueUi.suppliers.unknownName', { defaultValue: `Заведение #${item.id}` }),
-      bio: item.bio ?? null,
-      city: item.city?.trim() || '',
-      location: item.location?.trim() || '',
-      email: item.email?.trim() || '',
-      phone: item.phone?.trim() || '',
-      averageRating: Number.isFinite(item.average_rating) ? item.average_rating : 0,
-      totalReviews: Number.isFinite(item.total_reviews) ? item.total_reviews : 0,
-      username: item.username || null,
-      photoUrl: getUserPhotoUrl(item),
-      supplierType: formatLabel,
-      supplierCategory: formatLabel,
-      serviceCategories: cuisines,
-      deliveryAvailable: null,
-      status: item.active ? 'active' : 'paused',
-    }
-  })
-}
 
 export function VenueSuppliersPage() {
   const { t } = useTranslation()
-  const { getSupplierTypeLabel, getRestaurantFormatLabel } = useLabels()
+  const { getSupplierTypeLabel, getRestaurantFormatLabel, getCuisineTypeLabel } = useLabels()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
   const userCity = useAppSelector(selectUserCity)
   const selectedRole = useAppSelector(selectSelectedRole)
@@ -101,6 +44,7 @@ export function VenueSuppliersPage() {
     }),
     [userCity]
   )
+  const cityFallback = isSupplierRole ? '' : defaultFilters.city
 
   const [onlyActive, setOnlyActive] = useState(false)
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null)
@@ -110,28 +54,34 @@ export function VenueSuppliersPage() {
   const [draftFilters, setDraftFilters] = useState<SupplierFilters>(defaultFilters)
   const [visibleCount, setVisibleCount] = useState(SUPPLIERS_PER_PAGE)
 
+  const appliedFiltersRef = useRef(appliedFilters)
+
   useEffect(() => {
-    if (isSupplierRole) return
+    appliedFiltersRef.current = appliedFilters
+  }, [appliedFilters])
+
+  useEffect(() => {
     const handler = () => {
-      setDraftFilters(appliedFilters)
+      setDraftFilters(appliedFiltersRef.current)
       setIsFiltersOpen(true)
     }
 
     window.addEventListener('openSuppliersFilters', handler)
     return () => window.removeEventListener('openSuppliersFilters', handler)
-  }, [appliedFilters, isSupplierRole])
+  }, [])
 
   const queryParams = useMemo<GetUsersParams>(() => {
     if (isSupplierRole) {
+      const city = resolveAppliedCity(appliedFilters, cityFallback)
       return {
         user_type: 'restaurant',
-        city: (defaultFilters.city || '').trim() || undefined,
+        city: city || undefined,
         page: 1,
         per_page: visibleCount,
       }
     }
 
-    const city = (appliedFilters.city.trim() || defaultFilters.city).trim()
+    const city = resolveAppliedCity(appliedFilters, cityFallback)
     const supplierType = appliedFilters.supplierType || undefined
     const supplierTypes = supplierType
       ? getValidSupplierTypesForCategory(supplierType, appliedFilters.serviceCategories)
@@ -147,19 +97,29 @@ export function VenueSuppliersPage() {
       page: 1,
       per_page: visibleCount,
     }
-  }, [appliedFilters, defaultFilters.city, isSupplierRole, visibleCount])
+  }, [appliedFilters, cityFallback, isSupplierRole, visibleCount])
 
   const { data, isLoading, isFetching, isError, refetch } = useGetUsersQuery(queryParams)
 
-  const supplierUsers = useMemo<SupplierApiUser[]>(() => {
+  const { supplierUsers, restaurantUsers } = useMemo(() => {
     const apiData = data?.data
-    return Array.isArray(apiData) ? (apiData as SupplierApiUser[]) : []
-  }, [data?.data])
-
-  const restaurantUsers = useMemo<RestaurantApiUser[]>(() => {
-    const apiData = data?.data
-    return Array.isArray(apiData) ? (apiData as RestaurantApiUser[]) : []
-  }, [data?.data])
+    if (!Array.isArray(apiData)) {
+      return {
+        supplierUsers: [] as SupplierApiUser[],
+        restaurantUsers: [] as RestaurantApiUser[],
+      }
+    }
+    if (isSupplierRole) {
+      return {
+        supplierUsers: [] as SupplierApiUser[],
+        restaurantUsers: apiData as RestaurantApiUser[],
+      }
+    }
+    return {
+      supplierUsers: apiData as SupplierApiUser[],
+      restaurantUsers: [] as RestaurantApiUser[],
+    }
+  }, [data?.data, isSupplierRole])
 
   const suppliers = useMemo(
     () =>
@@ -176,10 +136,39 @@ export function VenueSuppliersPage() {
     ]
   )
 
-  const list = useMemo(
-    () => (onlyActive ? suppliers.filter(item => item.status === 'active') : suppliers),
-    [onlyActive, suppliers]
-  )
+  const list = useMemo(() => {
+    if (isSupplierRole) {
+      return suppliers.filter(item => {
+        if (appliedFilters.restaurantFormats.length > 0) {
+          const normalizedCategory = item.supplierCategory.toLowerCase()
+          const byFormat = appliedFilters.restaurantFormats.some(format => {
+            const label = getRestaurantFormatLabel(format).toLowerCase()
+            return normalizedCategory === label
+          })
+          if (!byFormat) return false
+        }
+
+        if (appliedFilters.cuisineTypes.length > 0) {
+          const selected = new Set(appliedFilters.cuisineTypes.map(value => value.toLowerCase()))
+          const hasCuisine = item.serviceCategories.some(category =>
+            selected.has(category.toLowerCase())
+          )
+          if (!hasCuisine) return false
+        }
+
+        return true
+      })
+    }
+
+    return onlyActive ? suppliers.filter(item => item.status === 'active') : suppliers
+  }, [
+    appliedFilters.cuisineTypes,
+    appliedFilters.restaurantFormats,
+    getRestaurantFormatLabel,
+    isSupplierRole,
+    onlyActive,
+    suppliers,
+  ])
 
   const suppliersMap = useMemo(() => {
     const map = new Map<number, (typeof suppliers)[number]>()
@@ -252,34 +241,46 @@ export function VenueSuppliersPage() {
     return allServiceCategoryOptions.filter(option => validByCategory.has(option))
   }, [allServiceCategoryOptions, draftFilters.supplierType, isSupplierRole])
 
-  const hasActiveApiFilters = useMemo(() => {
-    if (isSupplierRole) return Boolean((defaultFilters.city || '').trim())
-    const city = (appliedFilters.city.trim() || defaultFilters.city).trim()
-    const validSupplierTypes = appliedFilters.supplierType
-      ? getValidSupplierTypesForCategory(
-          appliedFilters.supplierType,
-          appliedFilters.serviceCategories
-        )
-      : []
+  const restaurantFormatOptions = useMemo(() => {
+    if (!isSupplierRole) return []
+    const fromApi = restaurantUsers
+      .map(item => {
+        const profile = getRestaurantProfile(item)
+        return profile?.restaurant_format ?? profile?.format ?? null
+      })
+      .filter((value): value is string => Boolean(value))
 
-    return (
-      Boolean(city) ||
-      Boolean(appliedFilters.supplierType) ||
-      validSupplierTypes.length > 0 ||
-      appliedFilters.delivery !== 'all'
-    )
-  }, [appliedFilters, defaultFilters.city, isSupplierRole])
+    return Array.from(new Set(fromApi))
+  }, [isSupplierRole, restaurantUsers])
+
+  const cuisineTypeOptions = useMemo(() => {
+    if (!isSupplierRole) return []
+    const fromApi = restaurantUsers.flatMap(item => {
+      const profile = getRestaurantProfile(item)
+      const raw = profile?.cuisine_types
+      return Array.isArray(raw) ? raw.filter((value): value is string => Boolean(value)) : []
+    })
+    return Array.from(new Set(fromApi))
+  }, [isSupplierRole, restaurantUsers])
 
   const activeFiltersList = useMemo(() => {
     const result: string[] = []
 
     if (isSupplierRole) {
-      const city = (defaultFilters.city || '').trim()
+      const city = resolveAppliedCity(appliedFilters, cityFallback)
       if (city) result.push(city)
+      if (appliedFilters.restaurantFormats.length > 0) {
+        result.push(
+          ...appliedFilters.restaurantFormats.map(value => getRestaurantFormatLabel(value))
+        )
+      }
+      if (appliedFilters.cuisineTypes.length > 0) {
+        result.push(...appliedFilters.cuisineTypes.map(value => getCuisineTypeLabel(value)))
+      }
       return result
     }
 
-    const city = (appliedFilters.city.trim() || defaultFilters.city).trim()
+    const city = resolveAppliedCity(appliedFilters, cityFallback)
     if (city) result.push(city)
 
     if (appliedFilters.supplierType) {
@@ -304,7 +305,15 @@ export function VenueSuppliersPage() {
     }
 
     return result
-  }, [appliedFilters, defaultFilters.city, getSupplierTypeLabel, isSupplierRole, t])
+  }, [
+    appliedFilters,
+    cityFallback,
+    getRestaurantFormatLabel,
+    getSupplierTypeLabel,
+    getCuisineTypeLabel,
+    isSupplierRole,
+    t,
+  ])
 
   const handleLoadMore = useCallback(() => {
     if (isLoading || isFetching || !hasMore) return
@@ -312,23 +321,32 @@ export function VenueSuppliersPage() {
   }, [hasMore, isFetching, isLoading])
 
   const handleResetFilters = useCallback(() => {
-    if (isSupplierRole) return
-    setAppliedFilters(defaultFilters)
-    setDraftFilters(defaultFilters)
+    const next = isSupplierRole ? { ...defaultFilters, city: '' } : defaultFilters
+    setAppliedFilters(next)
+    setDraftFilters(next)
     setVisibleCount(SUPPLIERS_PER_PAGE)
   }, [defaultFilters, isSupplierRole])
 
   const handleResetDraftFilters = useCallback(() => {
-    if (isSupplierRole) return
-    setDraftFilters(defaultFilters)
+    setDraftFilters(isSupplierRole ? { ...defaultFilters, city: '' } : defaultFilters)
   }, [defaultFilters, isSupplierRole])
 
   const handleApplyFilters = useCallback(() => {
-    if (isSupplierRole) return
     setAppliedFilters(draftFilters)
     setVisibleCount(SUPPLIERS_PER_PAGE)
     setIsFiltersOpen(false)
-  }, [draftFilters, isSupplierRole])
+  }, [draftFilters])
+
+  const handleOpenDetails = useCallback(
+    (id: number) => {
+      if (isSupplierRole) {
+        setSelectedRestaurantId(id)
+        return
+      }
+      setSelectedSupplierId(id)
+    },
+    [isSupplierRole]
+  )
 
   if (isError) {
     return (
@@ -346,21 +364,14 @@ export function VenueSuppliersPage() {
         isFetching={isFetching}
         suppliersCount={suppliers.length}
         totalCount={totalCount}
-        hasActiveApiFilters={hasActiveApiFilters}
         activeFiltersList={activeFiltersList}
         onlyActive={onlyActive}
-        onToggleOnlyActive={() => setOnlyActive(v => !v)}
+        onOnlyActiveChange={setOnlyActive}
         onResetFilters={handleResetFilters}
         list={list}
         hasMore={hasMore}
         onLoadMore={handleLoadMore}
-        onOpenDetails={id => {
-          if (isSupplierRole) {
-            setSelectedRestaurantId(id)
-            return
-          }
-          setSelectedSupplierId(id)
-        }}
+        onOpenDetails={handleOpenDetails}
       />
 
       {isSupplierRole ? (
@@ -370,28 +381,31 @@ export function VenueSuppliersPage() {
           onClose={() => setSelectedRestaurantId(null)}
         />
       ) : (
-        <>
-          <SupplierDetailsScreen
-            supplier={selectedSupplier}
-            isOpen={selectedSupplierId !== null}
-            onClose={() => setSelectedSupplierId(null)}
-          />
-
-          <VenueSuppliersFiltersDrawer
-            open={isFiltersOpen}
-            onOpenChange={setIsFiltersOpen}
-            draftFilters={draftFilters}
-            setDraftFilters={setDraftFilters}
-            supplierTypeOptions={supplierTypeOptions}
-            serviceCategoryOptions={serviceCategoryOptions}
-            cities={cities}
-            isCitiesLoading={isCitiesLoading}
-            getSupplierTypeLabel={getSupplierTypeLabel}
-            onApply={handleApplyFilters}
-            onReset={handleResetDraftFilters}
-          />
-        </>
+        <SupplierDetailsScreen
+          supplier={selectedSupplier}
+          isOpen={selectedSupplierId !== null}
+          onClose={() => setSelectedSupplierId(null)}
+        />
       )}
+
+      <VenueSuppliersFiltersDrawer
+        mode={isSupplierRole ? 'restaurants' : 'suppliers'}
+        open={isFiltersOpen}
+        onOpenChange={setIsFiltersOpen}
+        draftFilters={draftFilters}
+        setDraftFilters={setDraftFilters}
+        supplierTypeOptions={supplierTypeOptions}
+        serviceCategoryOptions={serviceCategoryOptions}
+        restaurantFormatOptions={restaurantFormatOptions}
+        cuisineTypeOptions={cuisineTypeOptions}
+        cities={cities}
+        isCitiesLoading={isCitiesLoading}
+        getSupplierTypeLabel={getSupplierTypeLabel}
+        getRestaurantFormatLabel={getRestaurantFormatLabel}
+        getCuisineTypeLabel={getCuisineTypeLabel}
+        onApply={handleApplyFilters}
+        onReset={handleResetDraftFilters}
+      />
     </PullToRefresh>
   )
 }

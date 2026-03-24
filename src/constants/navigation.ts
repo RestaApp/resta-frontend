@@ -2,8 +2,9 @@
  * Константы для навигации и синхронизации табов
  */
 
-import type { Screen, Tab } from '@/types'
+import type { Screen, Tab, UiRole } from '@/types'
 import { ROUTES } from './routes'
+import { isEmployeeRole } from '@/utils/roles'
 
 /**
  * Маппинг экранов на табы для синхронизации
@@ -30,3 +31,34 @@ export const TAB_TO_SCREEN_MAP: Partial<Record<Tab, Screen>> = (() => {
   }
   return map
 })()
+
+const SUPPLIER_SCREEN_TO_TAB_MAP: Partial<Record<Screen, Tab>> = {
+  [ROUTES.HOME]: 'home',
+  [ROUTES.PROFILE]: 'profile',
+  [ROUTES.SETTINGS]: 'profile',
+}
+
+const SUPPLIER_TAB_TO_SCREEN_MAP: Partial<Record<Tab, Screen>> = {
+  home: ROUTES.HOME,
+  profile: ROUTES.PROFILE,
+}
+
+export const getTabForScreen = (role: UiRole, screen: Screen): Tab | null => {
+  if (role === 'supplier') {
+    return SUPPLIER_SCREEN_TO_TAB_MAP[screen] ?? null
+  }
+  return SCREEN_TO_TAB_MAP[screen]
+}
+
+export const getScreenForTab = (role: UiRole, tab: Tab): Screen | null => {
+  if (role === 'supplier') {
+    return SUPPLIER_TAB_TO_SCREEN_MAP[tab] ?? null
+  }
+
+  // Для employee явно направляем "feed" в home экран.
+  if (tab === 'feed' && isEmployeeRole(role)) {
+    return ROUTES.HOME
+  }
+
+  return TAB_TO_SCREEN_MAP[tab] ?? null
+}

@@ -26,6 +26,16 @@ const normalizeSpecializationKey = (value: string): string => {
     .toLowerCase()
 }
 
+/** Приводит значения из API каталогов к ключам labels.* (snake_case). */
+const normalizeCatalogKey = (value: string): string => {
+  const trimmed = value.trim()
+  if (!trimmed) return value
+  return trimmed
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/[\s-]+/g, '_')
+    .toLowerCase()
+}
+
 export function useLabels() {
   const { t } = useTranslation()
 
@@ -50,16 +60,33 @@ export function useLabels() {
     [t]
   )
   const getRestaurantFormatLabel = useCallback(
-    (value: string) => resolve(`labels.restaurantFormat.${value}`, value),
-    [resolve]
+    (value: string) => {
+      const normalized = normalizeCatalogKey(value)
+      const keyRaw = `labels.restaurantFormat.${value}`
+      const keyNorm = `labels.restaurantFormat.${normalized}`
+      const r0 = t(keyRaw)
+      if (r0 !== keyRaw) return r0
+      const r1 = t(keyNorm)
+      if (r1 !== keyNorm) return r1
+      return resolve(keyRaw, value)
+    },
+    [resolve, t]
   )
   const getRestaurantFormatDescription = useCallback(
     (value: string) => {
-      const key = `labels.restaurantFormatDesc.${value}`
-      const res = t(key)
-      return res === key ? '' : res
+      const normalized = normalizeCatalogKey(value)
+      const keyRaw = `labels.restaurantFormatDesc.${value}`
+      const keyNorm = `labels.restaurantFormatDesc.${normalized}`
+      const r0 = t(keyRaw)
+      if (r0 !== keyRaw) return r0
+      const r1 = t(keyNorm)
+      return r1 === keyNorm ? '' : r1
     },
     [t]
+  )
+  const getCuisineTypeLabel = useCallback(
+    (value: string) => resolve(`labels.cuisineType.${value}`, value),
+    [resolve]
   )
   const getEmployeePositionLabel = useCallback(
     (value: string) => {
@@ -103,6 +130,7 @@ export function useLabels() {
     getSupplierTypeDescription,
     getRestaurantFormatLabel,
     getRestaurantFormatDescription,
+    getCuisineTypeLabel,
     getEmployeePositionLabel,
     getEmployeePositionDescription,
     getUiRoleLabel,

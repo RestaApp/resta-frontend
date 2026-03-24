@@ -4,7 +4,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getTabsForRole } from '@/constants/tabs'
-import { SCREEN_TO_TAB_MAP, TAB_TO_SCREEN_MAP } from '@/constants/navigation'
+import { getScreenForTab, getTabForScreen } from '@/constants/navigation'
 import type { Tab, UiRole, Screen } from '@/types'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
@@ -58,7 +58,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     }
 
     if (navigationCommand.type === 'NAVIGATE_SCREEN') {
-      const mappedTab = SCREEN_TO_TAB_MAP[navigationCommand.screen]
+      const mappedTab = getTabForScreen(role, navigationCommand.screen)
       const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
       if (tabAllowed && mappedTab !== activeTab) {
         scheduleTabUpdate(mappedTab)
@@ -73,22 +73,22 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
       }
       dispatch(consumeCommand())
     }
-  }, [activeTab, dispatch, navigationCommand, scheduleTabUpdate, tabs])
+  }, [activeTab, dispatch, navigationCommand, role, scheduleTabUpdate, tabs])
 
   // Синхронизация внешнего currentScreen -> activeTab (только если таб есть у текущей роли)
   useEffect(() => {
     if (!currentScreen) return
-    const mappedTab = SCREEN_TO_TAB_MAP[currentScreen]
+    const mappedTab = getTabForScreen(role, currentScreen)
     const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
     if (tabAllowed && mappedTab !== activeTab) {
       scheduleTabUpdate(mappedTab)
     }
-  }, [activeTab, currentScreen, scheduleTabUpdate, tabs])
+  }, [activeTab, currentScreen, role, scheduleTabUpdate, tabs])
 
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setActiveTab(tab)
-      const screen = TAB_TO_SCREEN_MAP[tab]
+      const screen = getScreenForTab(role, tab)
       if (screen && onNavigate) onNavigate(screen)
 
       if (tab === 'activity' && isEmployeeRole(role) && typeof window !== 'undefined') {

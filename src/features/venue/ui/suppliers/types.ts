@@ -14,6 +14,8 @@ export interface SupplierFilters {
   supplierType: string | null
   serviceCategories: string[]
   delivery: DeliveryFilter
+  restaurantFormats: string[]
+  cuisineTypes: string[]
 }
 
 export interface SupplierProfile {
@@ -29,6 +31,18 @@ export interface SupplierApiUser extends UserData {
   supplier_profile_attributes?: SupplierProfile | null
 }
 
+/** Профиль заведения в ответе API (роль supplier смотрит список ресторанов). */
+export type RestaurantProfile = {
+  restaurant_format?: string | null
+  format?: string | null
+  cuisine_types?: string[] | null
+}
+
+export type RestaurantApiUser = UserData & {
+  restaurant_profile?: RestaurantProfile | null
+  restaurant_profile_attributes?: RestaurantProfile | null
+}
+
 export type SupplierCategory = 'products' | 'equipment' | 'services' | 'logistics'
 
 export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
@@ -36,6 +50,8 @@ export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   supplierType: null,
   serviceCategories: [],
   delivery: 'all',
+  restaurantFormats: [],
+  cuisineTypes: [],
 }
 
 export const DEFAULT_SERVICE_CATEGORY_OPTIONS = [

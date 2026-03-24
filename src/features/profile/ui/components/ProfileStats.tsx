@@ -23,7 +23,7 @@ export const ProfileStats = memo(
   ({ apiRole, employeeStats, myShiftsCount, appliedShiftsCount }: ProfileStatsProps) => {
     const { t } = useTranslation()
     const dispatch = useAppDispatch()
-    if (!apiRole) return null
+    if (!apiRole || apiRole === 'supplier') return null
 
     return (
       <div className="flex items-center gap-3 text-sm flex-wrap">
@@ -62,22 +62,6 @@ export const ProfileStats = memo(
               <TrendingUp className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
               <span className="font-bold">{appliedShiftsCount}</span>
               <span className="text-muted-foreground">{t('profile.activeRequests')}</span>
-            </div>
-          </>
-        ) : null}
-
-        {apiRole === 'supplier' ? (
-          <>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
-              <span className="font-bold">—</span>
-              <span className="text-muted-foreground">{t('profile.views')}</span>
-            </div>
-            <span className="text-border">·</span>
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
-              <span className="font-bold">—</span>
-              <span className="text-muted-foreground">{t('profile.activeClients')}</span>
             </div>
           </>
         ) : null}

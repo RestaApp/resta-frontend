@@ -36,6 +36,10 @@ import { formatExperienceText } from '@/utils/experience'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useLabels, useProfileFormLabels } from '@/shared/i18n/hooks'
 import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
+import {
+  BusinessAddressesField,
+  BusinessHoursField,
+} from '@/features/profile/ui/components/BusinessStructuredFields'
 
 interface EmployeeFieldsSectionProps {
   experienceYearsValue: number
@@ -330,32 +334,12 @@ export const EditProfileDrawer = memo(
           )}
 
           {isBusinessRole && (
-            <FormField
-              label={
-                apiRole === 'restaurant'
-                  ? t('profile.addresses', { defaultValue: 'Адрес(а) заведения' })
-                  : t('profileFields.address', { defaultValue: 'Адрес' })
-              }
-              hint={
-                apiRole === 'restaurant'
-                  ? t('profile.addressesHint', {
-                      defaultValue:
-                        'Если у вас несколько точек, укажите каждый адрес с новой строки',
-                    })
-                  : undefined
-              }
-            >
-              <Textarea
-                value={formData.location}
-                onChange={e => updateField('location', e.target.value)}
-                placeholder={t('profile.form.addressesPlaceholder', {
-                  defaultValue: 'Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9',
-                })}
-                disabled={isLoading}
-                rows={4}
-                className="resize-y"
-              />
-            </FormField>
+            <BusinessAddressesField
+              value={formData.location}
+              disabled={isLoading}
+              isRestaurant={apiRole === 'restaurant'}
+              onChange={next => updateField('location', next)}
+            />
           )}
 
           {isBusinessRole && (
@@ -373,16 +357,11 @@ export const EditProfileDrawer = memo(
                   />
                 </FormField>
               )}
-              <FormField label={t('profile.businessHours')} hint={t('profile.businessHoursHint')}>
-                <Textarea
-                  value={formData.businessHours}
-                  onChange={e => updateField('businessHours', e.target.value)}
-                  placeholder={t('profile.form.businessHoursPlaceholder')}
-                  disabled={isLoading}
-                  rows={4}
-                  className="resize-y min-h-[5rem]"
-                />
-              </FormField>
+              <BusinessHoursField
+                value={formData.businessHours}
+                disabled={isLoading}
+                onChange={next => updateField('businessHours', next)}
+              />
             </>
           )}
         </div>

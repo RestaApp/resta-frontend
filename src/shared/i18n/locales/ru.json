@@ -106,6 +106,7 @@
     },
     "suppliers": {
       "total": "Всего поставщиков",
+      "shownCount": "Показано {{shown}} из {{total}}",
       "showAll": "Показать всех",
       "showActive": "Только активные",
       "emptyTitle": "Поставщики не найдены",
@@ -122,6 +123,20 @@
       "shift": "Создать смену"
     }
   },
+  "supplierUi": {
+    "restaurants": {
+      "shownCount": "Показано {{shown}} из {{total}}",
+      "moreLocations": "+{{count}}",
+      "emptyTitle": "Заведения не найдены",
+      "emptyDescription": "Попробуйте обновить список или изменить фильтры",
+      "filters": {
+        "title": "Фильтры заведений",
+        "format": "Формат заведения",
+        "cuisines": "Кухни",
+        "apply": "Показать заведения"
+      }
+    }
+  },
   "tabs": {
     "employee": {
       "feed": "Поиск",
@@ -136,7 +151,7 @@
       "profile": "Профиль"
     },
     "supplier": {
-      "home": "Дашборд",
+      "home": "Главная",
       "requests": "Запросы",
       "showcase": "Витрина",
       "profile": "Профиль"
@@ -236,12 +251,20 @@
     "addressesHint": "Если у вас несколько точек, укажите каждый адрес с новой строки",
     "venueWebsite": "Сайт",
     "venueWebsiteHint": "Сайт заведения или страница в соцсетях",
-    "supplierTypesLabel": "Типы поставщика",
+    "supplierTypesLabel": "Типы",
     "supplierTypesHint": "Можно выбрать несколько направлений",
     "supplierTypesEmpty": "Нет доступных типов для выбранной категории",
     "supplierTypesCount": "Выбрано: {{count}}",
     "businessHours": "Время работы",
     "businessHoursHint": "Например, по дням недели или одной строкой",
+    "addAddress": "Добавить адрес",
+    "copyWeekdaysFromMonday": "Скопировать на будни",
+    "set247": "24/7",
+    "weekdays": "Будни",
+    "saturdayShort": "Сб",
+    "sundayShort": "Вс",
+    "showDetailedDays": "Настроить",
+    "hideDetailedDays": "Скрыть точные дни",
     "cityNotSet": "Город не указан",
     "cityWarningDescription": "Если не указать город, вы не сможете видеть релевантные вакансии и смены в вашем регионе. Рекомендуем указать город для лучшего подбора предложений.",
     "saveWithoutCity": "Сохранить без города",
@@ -254,8 +277,10 @@
       "emailPlaceholder": "Введите email",
       "cityPlaceholder": "Выберите город",
       "addressesPlaceholder": "Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9",
+      "singleAddressPlaceholder": "Город, улица, дом",
       "websitePlaceholder": "https://example.by",
-      "businessHoursPlaceholder": "Пн–чт 12:00–23:00\nПт–сб 12:00–02:00"
+      "businessHoursPlaceholder": "Пн–чт 12:00–23:00\nПт–сб 12:00–02:00",
+      "businessHoursNotesPlaceholder": "Дополнительно: перерыв, праздничные дни, особые условия"
     },
     "subtitle": {
       "employee": "Сотрудник HoReCa",
@@ -263,6 +288,7 @@
       "supplier": "Поставщик"
     },
     "specializationSection": "Специализация",
+    "supplierCategorySection": "Категория",
     "venueName": "Название",
     "venueType": "Тип",
     "companyName": "Компания",
@@ -475,11 +501,11 @@
     "venueNameLabel": "Название заведения",
     "venueNamePlaceholder": "Введите название",
     "venueTypeLabel": "Тип заведения",
-    "supplierInfoTitle": "Информация о поставщике",
+    "supplierInfoTitle": "Информация",
     "supplierInfoDescription": "Заполните данные о вашей компании",
     "supplierNameLabel": "Название компании",
     "supplierNamePlaceholder": "Введите название компании",
-    "supplierTypeLabel": "Типы поставщика",
+    "supplierTypeLabel": "ставщика",
     "openToWork": "В активном поиске",
     "openToWorkHint": "Включите, чтобы работодатели могли писать вам напрямую",
     "openToWorkAriaOn": "Включить поиск работы",
@@ -674,6 +700,8 @@
       "club": "Клуб",
       "canteen": "Столовая",
       "bar": "Бар",
+      "pub": "Паб",
+      "buffet": "Буфет",
       "pizzeria": "Пиццерия",
       "bakery": "Пекарня",
       "food_truck": "Фудтрак",
@@ -693,6 +721,38 @@
       "bakery": "Пекарня со свежей выпечкой",
       "food_truck": "Фудтрак с мобильным обслуживанием",
       "catering": "Кейтеринг для мероприятий"
+    },
+    "cuisineType": {
+      "international": "Интернациональная",
+      "european": "Европейская",
+      "asian": "Азиатская",
+      "pub_food": "Пабная кухня",
+      "fusion": "Фьюжн",
+      "breakfast": "Завтраки",
+      "american": "Американская",
+      "japanese": "Японская",
+      "italian": "Итальянская",
+      "french": "Французская",
+      "georgian": "Грузинская",
+      "belarusian": "Белорусская",
+      "russian": "Русская",
+      "ukrainian": "Украинская",
+      "chinese": "Китайская",
+      "pan_asian": "Паназиатская",
+      "thai": "Тайская",
+      "indian": "Индийская",
+      "middle_eastern": "Ближневосточная",
+      "mediterranean": "Средиземноморская",
+      "mexican": "Мексиканская",
+      "vegetarian": "Вегетарианская",
+      "vegan": "Веганская",
+      "seafood": "Морепродукты",
+      "grill": "Гриль",
+      "bbq": "Барбекю",
+      "steakhouse": "Стейкхаус",
+      "coffee_shop": "Кофейня",
+      "bakery": "Пекарня",
+      "desserts": "Десерты"
     },
     "position": {
       "Chef": "Повар",

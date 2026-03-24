@@ -5,6 +5,8 @@ import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScr
 import { SearchFilters } from '@/features/feed/ui/components/SearchFilters'
 import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { Switch } from '@/components/ui/switch'
+import { cn } from '@/utils/cn'
 import type { SupplierItem } from './types'
 
 interface VenueSuppliersListProps {
@@ -13,10 +15,9 @@ interface VenueSuppliersListProps {
   isFetching: boolean
   suppliersCount: number
   totalCount: number
-  hasActiveApiFilters: boolean
   activeFiltersList: string[]
   onlyActive: boolean
-  onToggleOnlyActive: () => void
+  onOnlyActiveChange: (value: boolean) => void
   onResetFilters: () => void
   list: SupplierItem[]
   hasMore: boolean
@@ -29,7 +30,10 @@ export const VenueSuppliersList = ({
   isLoading,
   isFetching,
   suppliersCount,
+  totalCount,
   activeFiltersList,
+  onlyActive,
+  onOnlyActiveChange,
   onResetFilters,
   list,
   hasMore,
@@ -38,10 +42,31 @@ export const VenueSuppliersList = ({
 }: VenueSuppliersListProps) => {
   const { t } = useTranslation()
   const isRestaurantsMode = mode === 'restaurants'
+  const shownCountLabel = isRestaurantsMode
+    ? t('supplierUi.restaurants.shownCount', { shown: list.length, total: totalCount })
+    : t('venueUi.suppliers.shownCount', { shown: list.length, total: totalCount })
 
   return (
     <div>
       <SearchFilters activeFiltersList={activeFiltersList} onResetFilters={onResetFilters} />
+      {!isRestaurantsMode ? (
+        <div
+          className={cn(
+            'flex flex-wrap items-center justify-between gap-3 ui-density-page ui-density-py-sm bg-background',
+            activeFiltersList.length > 0 ? 'border-t border-border' : 'border-b border-border'
+          )}
+        >
+          <p className="text-sm text-muted-foreground">{shownCountLabel}</p>
+          <label className="flex items-center gap-2 text-sm">
+            <span>{t('venueUi.suppliers.showActive')}</span>
+            <Switch
+              checked={onlyActive}
+              onCheckedChange={onOnlyActiveChange}
+              ariaLabel={t('venueUi.suppliers.showActive')}
+            />
+          </label>
+        </div>
+      ) : null}
       <div className="ui-density-page ui-density-py">
         {isLoading && suppliersCount === 0 ? (
           <div className="ui-density-stack-sm">
@@ -79,6 +104,7 @@ export const VenueSuppliersList = ({
                     supplier={item}
                     onOpenDetails={onOpenDetails}
                     showDeliveryIndicator={!isRestaurantsMode}
+                    mode={mode}
                   />
                 )
               })}

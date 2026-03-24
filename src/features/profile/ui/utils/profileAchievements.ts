@@ -80,8 +80,6 @@ export function buildProfileAchievements(params: {
 
   if (apiRole === 'supplier') {
     return [
-      { id: 'supplier.views', emoji: '📈', title: t('profile.views'), value: '—' },
-      { id: 'supplier.clients', emoji: '🤝', title: t('profile.activeClients'), value: '—' },
       { id: 'common.filled', emoji: '💎', title: t('common.filled'), value: filledValue },
       { id: 'common.stats', emoji: '⚡', title: t('profile.stats'), value: '—' },
     ]

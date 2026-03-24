@@ -12,7 +12,7 @@ import { formatPhoneDisplay, toE164 } from '@/utils/phone'
 import { getProfileCompleteness } from '../../model/utils/profileCompleteness'
 import { businessHoursRecordToFormValue } from '../../model/utils/businessHoursForm'
 import { normalizeExternalUrl } from '@/utils/externalUrl'
-import { useProfileFormLabels } from '@/shared/i18n/hooks'
+import { useLabels, useProfileFormLabels } from '@/shared/i18n/hooks'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
 
@@ -113,8 +113,10 @@ export const ProfileInfoCard = memo(
     variant = 'card',
   }: ProfileInfoCardProps) => {
     const { t } = useTranslation()
+    const { getSupplierTypeLabel } = useLabels()
     const { getWorkSummaryLabel } = useProfileFormLabels()
     const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
+    const isSupplierRole = apiRole === 'supplier'
     const isFilled = completeness?.isFilled ?? false
     const cityValue = userProfile.city ?? null
     const locationValue = userProfile.location ?? null
@@ -129,7 +131,31 @@ export const ProfileInfoCard = memo(
         : apiRole === 'supplier'
           ? t('profile.fillToApplySupplier')
           : t('profile.fillToApply')
+    const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
+    const rawSupplierTypes = supplierProfile?.supplier_types
+    const supplierTypes = Array.isArray(rawSupplierTypes)
+      ? Array.from(new Set(rawSupplierTypes.filter(Boolean)))
+      : supplierProfile?.supplier_type
+        ? [supplierProfile.supplier_type]
+        : []
+    const infoSectionTitle =
+      apiRole === 'restaurant'
+        ? t('roles.venueInfoTitle')
+        : apiRole === 'supplier'
+          ? t('roles.supplierInfoTitle')
+          : t('profile.personalInfo')
     const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
+
+    const fillActionButton = onFill ? (
+      <motion.button
+        whileTap={{ scale: 0.98 }}
+        onClick={onFill}
+        className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
+        type="button"
+      >
+        {t('common.fill')}
+      </motion.button>
+    ) : null
 
     const content = (
       <>
@@ -140,7 +166,7 @@ export const ProfileInfoCard = memo(
         >
           <h4 className="text-base font-semibold text-foreground flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
-            {t('profile.personalInfo')}
+            {infoSectionTitle}
           </h4>
           <div className="flex items-center gap-2">
             {isFilled ? (
@@ -165,24 +191,23 @@ export const ProfileInfoCard = memo(
             exit={{ opacity: 0, height: 0 }}
             className="mt-4 space-y-0 text-sm overflow-hidden"
           >
-            {!isFilled ? (
+            {!isFilled && !isSupplierRole ? (
               <div className="text-center py-6 px-2">
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   {fillRequiredText}
                 </p>
-                {onFill ? (
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    onClick={onFill}
-                    className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
-                    type="button"
-                  >
-                    {t('common.fill')}
-                  </motion.button>
-                ) : null}
+                {fillActionButton}
               </div>
             ) : (
               <>
+                {!isFilled && isSupplierRole ? (
+                  <div className="text-center py-2 px-2">
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                      {fillRequiredText}
+                    </p>
+                    {fillActionButton}
+                  </div>
+                ) : null}
                 {userProfile.bio && (
                   <div className="pb-3 border-b border-border/50">
                     <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-1.5">
@@ -221,6 +246,20 @@ export const ProfileInfoCard = memo(
                     >
                       {venueHoursDisplay}
                     </InfoRow>
+                  ) : null}
+                  {isSupplierRole && supplierTypes.length > 0 ? (
+                    <div className={cn(ROW_CLASS, 'items-start')}>
+                      <span className={LABEL_CLASS}>
+                        {t('profile.supplierTypesLabel', { defaultValue: 'Типы поставщика' })}
+                      </span>
+                      <div className="flex flex-wrap justify-end gap-2 min-w-0">
+                        {supplierTypes.map(type => (
+                          <Badge key={type} variant="tag">
+                            {getSupplierTypeLabel(type)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   ) : null}
                   {apiRole === 'employee' && userProfile.name && (
                     <InfoRow label={t('profile.nameLabel')}>{userProfile.name}</InfoRow>

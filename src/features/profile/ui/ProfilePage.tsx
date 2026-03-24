@@ -10,6 +10,7 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
 import { ProfileSpecializationsSection } from './components/ProfileSpecializationsSection'
+import { ProfileSupplierCategorySection } from './components/ProfileSupplierCategorySection'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
 import { Award } from 'lucide-react'
@@ -20,6 +21,7 @@ export const ProfilePage = memo(() => {
   const m = useProfilePageModel()
 
   const achievements = useMemo(() => {
+    if (m.apiRole === 'supplier') return []
     return buildProfileAchievements({
       t,
       apiRole: m.apiRole,
@@ -84,6 +86,7 @@ export const ProfilePage = memo(() => {
       {m.apiRole === 'employee' && (
         <ProfileSpecializationsSection specializations={m.specializations} />
       )}
+      {m.apiRole === 'supplier' && <ProfileSupplierCategorySection category={m.supplierCategory} />}
       <ProfileInfoCard
         apiRole={m.apiRole}
         userProfile={m.userProfile}
@@ -91,39 +94,37 @@ export const ProfilePage = memo(() => {
         onFill={() => m.setIsEditDrawerOpen(true)}
       />
 
-      {m.apiRole === 'restaurant' && m.restaurantInfo ? (
-        <ProfileBusinessInfoCard kind="restaurant" value={m.restaurantInfo.format} />
-      ) : null}
-
       {m.apiRole === 'supplier' && m.supplierInfo ? (
         <ProfileBusinessInfoCard kind="supplier" value={m.supplierInfo.name} />
       ) : null}
 
-      <div>
-        <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
-          <Award className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-          {t('profile.achievements')}
-        </h3>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x pb-1">
-          {achievements.map((a, index) => (
-            <motion.div
-              key={a.id}
-              className="flex-shrink-0 snap-center"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.06 }}
-            >
-              <Card className="flex h-[125px] w-[125px] flex-col items-center justify-center gap-2 p-4 text-center">
-                <div className="text-3xl leading-none">{a.emoji}</div>
-                <div className="text-sm font-medium leading-tight">{a.title}</div>
-                <p className="text-xs text-muted-foreground leading-tight">{a.value}</p>
-              </Card>
-            </motion.div>
-          ))}
+      {m.apiRole !== 'supplier' ? (
+        <div>
+          <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
+            <Award className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+            {t('profile.achievements')}
+          </h3>
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x pb-1">
+            {achievements.map((a, index) => (
+              <motion.div
+                key={a.id}
+                className="flex-shrink-0 snap-center"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.06 }}
+              >
+                <Card className="flex h-[125px] w-[125px] flex-col items-center justify-center gap-2 p-4 text-center">
+                  <div className="text-3xl leading-none">{a.emoji}</div>
+                  <div className="text-sm font-medium leading-tight">{a.title}</div>
+                  <p className="text-xs text-muted-foreground leading-tight">{a.value}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <ProfileSettings
         onLogout={m.handleLogout}
@@ -136,6 +137,7 @@ export const ProfilePage = memo(() => {
         onOpenChange={m.setIsEditDrawerOpen}
         onSuccess={() => {
           m.setIsEditDrawerOpen(false)
+          void m.handleEditSuccess()
         }}
       />
 
