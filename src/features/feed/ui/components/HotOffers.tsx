@@ -159,7 +159,7 @@ export const HotOffers = memo(
       <div
         className={cn(
           'mx-4 py-3 pl-4 pr-1 rounded-xl',
-          'bg-card/50 dark:bg-card dark:border dark:border-primary/15 dark:border-l-2 dark:border-l-primary/40'
+          'bg-card/50 border border-primary/15 border-l-2 border-l-primary/40 dark:bg-card'
         )}
       >
         <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
