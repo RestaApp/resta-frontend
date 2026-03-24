@@ -1,5 +1,6 @@
 import type { TFunction } from 'i18next'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
+import { Toast } from '@/components/ui/toast'
 import { ActivityHeader } from './ActivityHeader'
 import { ActivityListTab } from './ActivityListTab'
 import { ActivityCalendarTab } from './ActivityCalendarTab'
@@ -63,6 +64,13 @@ export const EmployeeActivityContent = ({ t, model }: EmployeeActivityContentPro
           model.setEditingShift(null)
           model.showToast(t('shift.saved'), 'success')
         }}
+      />
+
+      <Toast
+        message={model.toast.message}
+        type={model.toast.type}
+        isVisible={model.toast.isVisible}
+        onClose={model.hideToast}
       />
     </>
   )

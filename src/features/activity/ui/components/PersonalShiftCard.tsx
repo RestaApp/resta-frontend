@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
 import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
@@ -24,7 +23,6 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
   onDelete,
   isDeleting,
 }) => {
-  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const handleEdit = useCallback((id: number) => onEdit(id), [onEdit])
   const handleDelete = useCallback((id: number) => onDelete(id), [onDelete])
@@ -41,17 +39,13 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
     const rawPay = shift.payment ?? shift.hourly_rate ?? 0
     const pay = typeof rawPay === 'string' ? Number(rawPay) : rawPay
     const userPhotoUrl = shift.user?.photo_url ?? shift.user?.profile_photo_url ?? null
-    const isVacancy = shift.shift_type === 'vacancy'
-
     return {
       id: shift.id,
       logo: getLogoByPosition(shift.position, shift.id),
       userPhotoUrl:
         typeof userPhotoUrl === 'string' && userPhotoUrl.trim().length > 0 ? userPhotoUrl : null,
       title: shift.title?.trim() || null,
-      restaurant: isVacancy
-        ? t('common.myVacancy', { defaultValue: 'Моя вакансия' })
-        : t('common.myShift'),
+      restaurant: '',
       rating: 0,
 
       position: shift.position ?? 'chef',
@@ -65,7 +59,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
       payPeriod: resolvePayPeriodFromVacancy(shift),
       shiftType: shift.shift_type,
 
-      location: isVacancy ? undefined : (shift.location ?? undefined),
+      location: shift.shift_type === 'vacancy' ? undefined : (shift.location ?? undefined),
       urgent: Boolean(shift.urgent),
 
       applicationId: null,
@@ -76,7 +70,7 @@ export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
 
       isMine: true,
     }
-  }, [shift, t])
+  }, [shift])
 
   return (
     <>

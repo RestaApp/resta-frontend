@@ -1,6 +1,5 @@
 import { memo, useCallback } from 'react'
 import { motion } from 'motion/react'
-import { Check } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 type ImageType = 'emoji' | 'icon'
@@ -104,12 +103,6 @@ const CardSelectInner = <TId extends string>({
             </div>
           ) : null}
         </div>
-
-        {isSelected ? (
-          <div className="shrink-0 rounded-full bg-white/25 p-1" aria-hidden="true">
-            <Check className="h-5 w-5 text-white" strokeWidth={2.5} />
-          </div>
-        ) : null}
       </motion.button>
     </div>
   )

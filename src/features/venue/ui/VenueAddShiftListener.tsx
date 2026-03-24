@@ -4,13 +4,10 @@ import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer
 import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
-import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
 import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/ui/toast'
-import { useAppDispatch } from '@/store/hooks'
 
 export function VenueAddShiftListener() {
-  const dispatch = useAppDispatch()
   const { t } = useTranslation()
   const profileCompleteness = useProfileCompleteness()
   const { toast, showToast, hideToast } = useToast()
@@ -18,10 +15,6 @@ export function VenueAddShiftListener() {
   const [currentCreateType, setCurrentCreateType] = useState<ShiftType>('vacancy')
   const [initialShiftType, setInitialShiftType] = useState<ShiftType | null>(null)
   const [editingShift, setEditingShift] = useState<VacancyApiItem | null>(null)
-
-  const openProfileEdit = useCallback(() => {
-    openProfileEditFlow(dispatch)
-  }, [dispatch])
 
   const handleCreateIntent = useCallback(() => {
     if (profileCompleteness?.isFilled) {
@@ -37,8 +30,7 @@ export function VenueAddShiftListener() {
       }),
       'error'
     )
-    openProfileEdit()
-  }, [currentCreateType, openProfileEdit, profileCompleteness?.isFilled, showToast, t])
+  }, [currentCreateType, profileCompleteness?.isFilled, showToast, t])
 
   useEffect(() => {
     const handleOpenAdd = () => handleCreateIntent()

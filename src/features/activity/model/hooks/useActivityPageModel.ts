@@ -16,7 +16,6 @@ import { toLocalISODateKey } from '@/utils/datetime'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
-import { openProfileEditFlow } from '@/features/profile/model/openProfileEditFlow'
 import { useAuth } from '@/contexts/auth'
 
 export type ActivityTab = 'list' | 'calendar'
@@ -66,7 +65,7 @@ export const useActivityPageModel = () => {
   const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedData), [appliedData])
 
   const { deleteShift, isLoading: isDeleting } = useDeleteShift()
-  const { showToast } = useToast()
+  const { toast, showToast, hideToast } = useToast()
   const profileCompleteness = useProfileCompleteness()
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -201,10 +200,6 @@ export const useActivityPageModel = () => {
     setIsDrawerOpen(true)
   }, [])
 
-  const openProfileEdit = useCallback(() => {
-    openProfileEditFlow(dispatch)
-  }, [dispatch])
-
   /** Сотрудники и поставщики: без обязательных полей профиля не открываем создание смены. Заведение обрабатывает VenueAddShiftListener. */
   const handleOpenAddShiftFromEvent = useCallback(() => {
     if (isVenue) return
@@ -215,11 +210,10 @@ export const useActivityPageModel = () => {
         }),
         'error'
       )
-      openProfileEdit()
       return
     }
     openDrawer()
-  }, [isVenue, openDrawer, openProfileEdit, profileCompleteness.isFilled, showToast, t])
+  }, [isVenue, openDrawer, profileCompleteness.isFilled, showToast, t])
 
   useEffect(() => {
     window.addEventListener('openActivityAddShift', handleOpenAddShiftFromEvent)
@@ -261,6 +255,8 @@ export const useActivityPageModel = () => {
     refreshList,
     isDeleting,
     showToast,
+    toast,
+    hideToast,
 
     // drawer
     isDrawerOpen,

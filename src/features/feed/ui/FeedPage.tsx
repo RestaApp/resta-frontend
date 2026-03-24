@@ -18,17 +18,20 @@ export const FeedPage = () => {
         onResetFilters={m.resetFilters}
       />
 
-      <FeedHotOffersSection
-        isLoading={m.activeList.isInitialLoading}
-        hotOffers={m.hotOffers}
-        totalCount={m.hotOffersTotalCount}
-        onShowAll={m.showAllHotShifts}
-        onItemClick={m.onHotOfferClick}
-        isVacancy={m.isVacancy}
-        isUrgentFilterActive={m.quickFilter === 'urgent'}
+      <FeedBody
+        vm={vm}
+        topContent={
+          <FeedHotOffersSection
+            isLoading={m.activeList.isInitialLoading}
+            hotOffers={m.hotOffers}
+            totalCount={m.hotOffersTotalCount}
+            onShowAll={m.showAllHotShifts}
+            onItemClick={m.onHotOfferClick}
+            isVacancy={m.isVacancy}
+            isUrgentFilterActive={m.quickFilter === 'urgent'}
+          />
+        }
       />
-
-      <FeedBody vm={vm} />
     </div>
   )
 }

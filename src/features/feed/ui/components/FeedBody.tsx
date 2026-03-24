@@ -7,12 +7,14 @@ import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDi
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
+import type { ReactNode } from 'react'
 
 interface FeedBodyProps {
   vm: FeedBodyVm
+  topContent?: ReactNode
 }
 
-export function FeedBody({ vm }: FeedBodyProps) {
+export function FeedBody({ vm, topContent }: FeedBodyProps) {
   const isEmpty = vm.filteredShifts.length === 0
   const showEmptyState =
     isEmpty &&
@@ -26,7 +28,8 @@ export function FeedBody({ vm }: FeedBodyProps) {
         onRefresh={vm.onRefresh}
         disabled={vm.activeList.isInitialLoading || vm.activeList.isFetching}
       >
-        <div className="ui-density-page ui-density-py ui-density-stack">
+        {topContent}
+        <div className="ui-density-page ui-density-py-sm ui-density-stack">
           <FeedListArea
             isInitialLoading={vm.activeList.isInitialLoading}
             error={vm.activeList.error}
