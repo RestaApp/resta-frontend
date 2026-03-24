@@ -158,7 +158,7 @@ export const HotOffers = memo(
     return (
       <div
         className={cn(
-          'px-4 rounded-xl',
+          'mx-4 py-3 pl-4 pr-1 rounded-xl',
           'bg-card/50 dark:bg-card dark:border dark:border-primary/15 dark:border-l-2 dark:border-l-primary/40'
         )}
       >
