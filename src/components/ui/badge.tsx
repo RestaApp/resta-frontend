@@ -23,6 +23,8 @@ export const Badge = ({ children, className, variant = 'default' }: BadgeProps) 
     className={cn(
       'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
       BADGE_VARIANTS[variant],
+      (variant === 'tag' || variant === 'tagActive') &&
+        'max-w-full overflow-hidden text-ellipsis whitespace-nowrap',
       className
     )}
   >

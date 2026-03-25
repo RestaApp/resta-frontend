@@ -1,5 +1,5 @@
 export const TAG_BASE_CLASS =
-  'inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors'
+  'inline-flex max-w-full items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition-colors'
 
 export const TAG_INACTIVE_CLASS =
   'border-primary/20 bg-primary/10 text-foreground hover:bg-primary/15 hover:border-primary/30'

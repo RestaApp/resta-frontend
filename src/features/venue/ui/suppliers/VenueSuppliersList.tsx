@@ -103,7 +103,6 @@ export const VenueSuppliersList = ({
                     key={item.id}
                     supplier={item}
                     onOpenDetails={onOpenDetails}
-                    showDeliveryIndicator={!isRestaurantsMode}
                     mode={mode}
                   />
                 )

@@ -44,6 +44,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
       aria-pressed={isSelected}
       aria-label={ariaLabel || t('aria.selectType', { label })}
       aria-disabled={disabled}
+      title={label}
     >
       {label}
     </motion.button>

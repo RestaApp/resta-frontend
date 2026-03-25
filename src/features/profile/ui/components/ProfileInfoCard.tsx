@@ -76,9 +76,14 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
         </InfoRow>
       )}
       {hasSkills && (
-        <div className={cn(ROW_CLASS, 'items-start')}>
-          <span className={LABEL_CLASS}>{t('profile.skills')}</span>
-          <div className="flex flex-wrap justify-end gap-2 min-w-0">
+        <div
+          className={cn(
+            ROW_CLASS,
+            'flex-col items-start justify-start gap-2 sm:flex-row sm:items-start sm:justify-between'
+          )}
+        >
+          <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-[8rem]')}>{t('profile.skills')}</span>
+          <div className="flex w-full flex-wrap justify-end gap-2 min-w-0">
             {skillsList.map(skill => (
               <Badge key={skill} variant="tag">
                 {skill}
@@ -249,10 +254,10 @@ export const ProfileInfoCard = memo(
                   ) : null}
                   {isSupplierRole && supplierTypes.length > 0 ? (
                     <div className={cn(ROW_CLASS, 'items-start')}>
-                      <span className={LABEL_CLASS}>
+                      <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-[8rem]')}>
                         {t('profile.supplierTypesLabel', { defaultValue: 'Типы поставщика' })}
                       </span>
-                      <div className="flex flex-wrap justify-end gap-2 min-w-0">
+                      <div className="flex min-w-0 flex-1 flex-wrap justify-end gap-2">
                         {supplierTypes.map(type => (
                           <Badge key={type} variant="tag">
                             {getSupplierTypeLabel(type)}
