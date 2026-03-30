@@ -128,7 +128,7 @@ export const DetailsTab = memo(
                     onClick={onOpenMap}
                     variant="ghost"
                     size="sm"
-                    className="text-xs text-primary hover:underline mt-1 px-0 h-auto"
+                    className="mt-1 px-0 text-primary hover:underline"
                   >
                     {t('aria.viewOnMap')}
                   </Button>

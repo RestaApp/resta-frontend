@@ -26,7 +26,7 @@ export const ProfileStats = memo(
     if (!apiRole || apiRole === 'supplier') return null
 
     return (
-      <div className="flex items-center gap-3 text-sm flex-wrap">
+      <div className="flex flex-nowrap items-center gap-3 overflow-x-auto text-sm whitespace-nowrap">
         {apiRole === 'employee' && employeeStats ? (
           <>
             <div className="flex items-center gap-2">

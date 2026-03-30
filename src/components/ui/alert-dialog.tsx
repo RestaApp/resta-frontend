@@ -198,7 +198,7 @@ export const AlertDialogAction = memo(function AlertDialogAction({
   className?: string
 }) {
   return (
-    <Button onClick={onClick} className={cn('rounded-xl', className)}>
+    <Button onClick={onClick} className={className}>
       {children}
     </Button>
   )
@@ -214,7 +214,7 @@ export const AlertDialogCancel = memo(function AlertDialogCancel({
   className?: string
 }) {
   return (
-    <Button variant="outline" onClick={onClick} className={cn('rounded-xl', className)}>
+    <Button variant="outline" onClick={onClick} className={className}>
       {children}
     </Button>
   )

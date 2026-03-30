@@ -4,14 +4,14 @@ import { Loader } from '@/components/ui/loader'
 
 const SIZE_CLASSES = {
   sm: 'h-10 px-4 text-sm',
-  md: 'h-11 px-5 text-sm',
-  lg: 'h-12 px-6 text-base',
+  md: 'h-10 px-5 text-sm',
+  lg: 'h-10 px-6 text-sm',
 } as const
 
 const LOADER_SLOT = {
-  sm: 'w-3',
+  sm: 'w-4',
   md: 'w-4',
-  lg: 'w-5',
+  lg: 'w-4',
 } as const
 
 const VARIANT_CLASSES = {

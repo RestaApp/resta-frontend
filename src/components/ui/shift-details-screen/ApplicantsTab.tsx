@@ -143,7 +143,7 @@ export const ApplicantsTab = memo(
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-9 w-9 min-w-9 p-0 shrink-0"
+                            className="h-10 w-10 min-w-10 p-0 shrink-0"
                             aria-label={t('shift.rejectApplication')}
                             loading={moderating?.id === appId && moderating.action === 'reject'}
                             disabled={moderating?.id === appId}
@@ -159,7 +159,7 @@ export const ApplicantsTab = memo(
                           <Button
                             variant="gradient"
                             size="sm"
-                            className="h-9 w-9 min-w-9 p-0 shrink-0"
+                            className="h-10 w-10 min-w-10 p-0 shrink-0"
                             aria-label={t('shift.acceptApplication')}
                             loading={moderating?.id === appId && moderating.action === 'accept'}
                             disabled={moderating?.id === appId}

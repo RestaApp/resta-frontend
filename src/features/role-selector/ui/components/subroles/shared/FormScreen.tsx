@@ -159,7 +159,7 @@ export const FormScreen = memo(function FormScreen({
           onClick={handleContinue}
           disabled={!isFormValid}
           variant="gradient"
-          className="w-full h-14 rounded-2xl text-base shadow-lg disabled:opacity-40"
+          className="w-full shadow-lg disabled:opacity-40"
           size="lg"
           aria-label={continueButtonAriaLabel}
         >

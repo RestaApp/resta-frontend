@@ -39,7 +39,7 @@ const ModalActionButton = memo(function ModalActionButton({
         onClick={onClick}
         disabled={disabled || loading}
         aria-busy={loading || undefined}
-        className={cn('w-full rounded-xl', className)}
+        className={cn('w-full', className)}
       >
         {loading ? (
           <span className="flex items-center gap-2">

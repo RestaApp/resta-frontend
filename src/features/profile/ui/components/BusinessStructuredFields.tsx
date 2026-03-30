@@ -302,7 +302,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
           size="sm"
           disabled={disabled}
           onClick={() => setShowDetailedDays(prev => !prev)}
-          className="h-7 justify-start px-1 text-muted-foreground"
+          className="justify-start px-1 text-muted-foreground"
         >
           {showDetailedDays || hasWeekdayCustomPattern
             ? t('profile.hideDetailedDays', { defaultValue: 'Скрыть точные дни' })
