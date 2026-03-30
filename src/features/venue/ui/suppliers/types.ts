@@ -43,7 +43,7 @@ export type RestaurantApiUser = UserData & {
   restaurant_profile_attributes?: RestaurantProfile | null
 }
 
-export type SupplierCategory = 'products' | 'equipment' | 'services' | 'logistics'
+export type SupplierCategory = 'products' | 'equipment' | 'consumables' | 'services' | 'logistics'
 
 export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   city: '',
@@ -68,7 +68,13 @@ export const DEFAULT_SERVICE_CATEGORY_OPTIONS = [
   'maintenance',
 ]
 
-export const DEFAULT_SUPPLIER_TYPES = ['products', 'equipment', 'services']
+export const DEFAULT_SUPPLIER_TYPES = [
+  'products',
+  'equipment',
+  'consumables',
+  'services',
+  'logistics',
+]
 
 export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
   products: [
@@ -83,7 +89,6 @@ export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
     'dairy',
     'bakery',
     'grocery',
-    'produce',
     'frozen_food',
     'beverages',
     'coffee',
@@ -102,7 +107,7 @@ export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
     'tableware',
     'kitchen_inventory',
   ],
-  services: [
+  consumables: [
     'food_packaging',
     'disposable_tableware',
     'hygiene_products',
@@ -110,6 +115,8 @@ export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
     'cleaning_inventory',
     'paper_products',
     'kitchen_consumables',
+  ],
+  services: [
     'cleaning',
     'maintenance',
     'equipment_repair',

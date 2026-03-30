@@ -9,6 +9,8 @@ import './shiftsApi'
 import './rolesApi'
 import './usersApi'
 import './notificationPreferencesApi'
+import './notificationsApi'
+import './reviewsApi'
 import './supportTicketsApi'
 
 // Экспортируем только типы (хуки экспортируются из hooks/)
@@ -17,6 +19,8 @@ export type * from './shiftsApi'
 export type * from './rolesApi'
 export type * from './usersApi'
 export type * from './notificationPreferencesApi'
+export type * from './notificationsApi'
+export type * from './reviewsApi'
 export type * from './supportTicketsApi'
 
 // Экспортируем общие типы для переиспользования

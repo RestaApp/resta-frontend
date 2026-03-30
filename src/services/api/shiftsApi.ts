@@ -4,18 +4,21 @@
 
 import { api } from '@/shared/api/api'
 import { buildQueryParams, provideListTags } from './helpers'
-import type {
-  ApplyToShiftRequest,
-  ApplyToShiftResponse,
-  CancelApplicationResponse,
-  CreateShiftRequest,
-  CreateShiftResponse,
-  GetShiftsListParams,
-  GetVacanciesParams,
-  ReceivedShiftApplicationsResponse,
-  ShiftApi,
-  UpdateShiftArgs,
-  VacanciesResponse,
+import {
+  parseShiftDetailFromResponse,
+  type ApplyToShiftRequest,
+  type ApplyToShiftResponse,
+  type CancelApplicationResponse,
+  type CreateShiftRequest,
+  type CreateShiftResponse,
+  type DeleteShiftResponse,
+  type GetShiftsListParams,
+  type GetVacanciesParams,
+  type MutateShiftResponse,
+  type ReceivedShiftApplicationsResponse,
+  type UpdateShiftArgs,
+  type VacanciesResponse,
+  type VacancyApiItem,
 } from './shiftsApi.types'
 
 export const shiftsApi = api.injectEndpoints({
@@ -45,10 +48,17 @@ export const shiftsApi = api.injectEndpoints({
       keepUnusedDataFor: 30,
     }),
 
-    // Получить смену по ID
-    getShiftById: builder.query<ShiftApi, string>({
+    // GET /api/v1/shifts/:id — детальный ShiftBlueprint (view :detail)
+    getShiftById: builder.query<VacancyApiItem, string>({
       query: id => `/api/v1/shifts/${id}`,
-      providesTags: (_result, _error, id) => [{ type: 'Shift', id }],
+      transformResponse: (response: unknown) => parseShiftDetailFromResponse(response),
+      providesTags: (result, _error, idArg) =>
+        result
+          ? [
+              { type: 'Shift', id: String(result.id) },
+              { type: 'Shift', id: idArg },
+            ]
+          : [{ type: 'Shift', id: idArg }],
     }),
 
     // Создать смену
@@ -62,7 +72,7 @@ export const shiftsApi = api.injectEndpoints({
     }),
 
     // Обновить смену (body — поля без обёртки, обёртка { shift } формируется здесь)
-    updateShift: builder.mutation<ShiftApi, UpdateShiftArgs>({
+    updateShift: builder.mutation<MutateShiftResponse, UpdateShiftArgs>({
       query: ({ id, body }) => ({
         url: `/api/v1/shifts/${id}`,
         method: 'PATCH',
@@ -75,7 +85,7 @@ export const shiftsApi = api.injectEndpoints({
     }),
 
     // Удалить смену
-    deleteShift: builder.mutation<void, string>({
+    deleteShift: builder.mutation<DeleteShiftResponse, string>({
       query: id => ({
         url: `/api/v1/shifts/${id}`,
         method: 'DELETE',

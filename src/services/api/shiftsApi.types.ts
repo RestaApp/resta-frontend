@@ -1,17 +1,4 @@
 /** Типы API для смен и откликов */
-/**
- * Смена из API (используется для старых endpoints)
- * @deprecated Используйте VacancyApiItem для новых endpoints
- */
-export interface ShiftApi {
-  id: string
-  title: string
-  venue: string
-  date: string
-  time: string
-  role: string
-  status: 'active' | 'completed' | 'cancelled'
-}
 
 export interface CreateShiftBody {
   title: string
@@ -38,10 +25,35 @@ export interface UpdateShiftArgs {
   body: Partial<CreateShiftBody>
 }
 
-export interface CreateShiftResponse {
-  success?: boolean
+/** Ответ POST/PATCH /api/v1/shifts — render_resource(ShiftBlueprint, view: :detail) */
+export interface MutateShiftResponse {
+  success: boolean
   data?: VacancyApiItem
+}
+
+export interface CreateShiftResponse extends MutateShiftResponse {
   message?: string
+}
+
+/** Ответ DELETE /api/v1/shifts/:id */
+export interface DeleteShiftResponse {
+  success: boolean
+  data?: { message?: string }
+}
+
+/**
+ * Разбор оболочки success/data для GET/PATCH/POST смены.
+ * Бросает, если структура не соответствует API.
+ */
+export function parseShiftDetailFromResponse(response: unknown): VacancyApiItem {
+  if (!response || typeof response !== 'object') {
+    throw new Error('Пустой ответ API смены')
+  }
+  const r = response as { data?: unknown }
+  if (!r.data || typeof r.data !== 'object') {
+    throw new Error('В ответе смены отсутствует data')
+  }
+  return r.data as VacancyApiItem
 }
 
 /**
@@ -87,6 +99,37 @@ export interface RestaurantProfileApi {
   cuisine_types?: string[]
   format?: string
   restaurant_format?: string
+}
+
+/** UserBlueprint view :basic */
+export interface UserBasicApi {
+  id: number
+  name?: string
+  role?: string
+  city?: string
+  average_rating?: number
+  total_reviews?: number
+  profile_photo_url?: string | null
+  full_name?: string
+}
+
+/** ReviewBlueprint view :basic (в поле my_review смены) */
+export interface ReviewBasicApi {
+  id: number
+  rating?: number
+  comment?: string | null
+  status?: string
+  created_at?: string
+  reviewer_name?: string
+}
+
+/** ApplicantPreviewBlueprint — пользователь-откликнувшийся в детальном просмотре смены */
+export interface ApplicantPreviewApi {
+  user_id: number
+  full_name?: string
+  position?: string
+  specializations?: string[]
+  average_rating?: string | number
 }
 
 /**
@@ -163,26 +206,30 @@ export interface ReceivedShiftApplicationsResponse {
 }
 
 /**
- * Вакансия из API
+ * Вложенная заявка: ShiftApplicationBlueprint view :basic даёт в основном id/status/даты;
+ * остальное опционально при расширении API.
+ */
+export interface ShiftMyApplicationApi {
+  id: number
+  status?: string
+  applied_at?: string
+  responded_at?: string | null
+  message?: string | null
+  priority?: number
+  shift_id?: number
+  user_id?: number
+}
+
+/**
+ * Вакансия / смена из API (список и детальный просмотр)
  */
 export interface VacancyApiItem {
   id: number
   title: string
   description?: string
   location?: string
-  /**
-   * Моя заявка на эту смену (если пользователь подавал заявку)
-   */
-  my_application?: {
-    id: number
-    applied_at?: string
-    message?: string | null
-    priority?: number
-    responded_at?: string | null
-    shift_id?: number
-    status?: string
-    user_id?: number
-  }
+  /** Моя заявка (ShiftApplicationBlueprint :basic / полный) */
+  my_application?: ShiftMyApplicationApi
   payment?: string | number
   hourly_rate?: string | number
   start_time?: string
@@ -203,6 +250,14 @@ export interface VacancyApiItem {
   created_at?: string
   updated_at?: string
   user?: UserApi
+  /** Поля завершённой смены и отзывов (ShiftBlueprint, ресторан) */
+  can_leave_review?: boolean
+  review_target?: UserBasicApi | null
+  my_review?: ReviewBasicApi | null
+  review_deadline?: string | null
+  /** Детальный просмотр для владельца (ShiftBlueprint view :detail) */
+  applicants?: ApplicantPreviewApi[]
+  selected_applicant?: ApplicantPreviewApi | null
 }
 
 /**
@@ -236,8 +291,8 @@ export interface ApplyToShiftRequest {
 }
 
 /**
- * Ответ на отклик: POST /api/v1/shift_applications (201) или accept/reject
- * Для apply допускается ответ только с `data` без обёртки success (см. API.md).
+ * Ответ на отклик: POST shift_applications (201) с телом заявки;
+ * accept/reject — чаще `{ success, data: { message } }`.
  */
 export interface ApplyToShiftResponse {
   success?: boolean

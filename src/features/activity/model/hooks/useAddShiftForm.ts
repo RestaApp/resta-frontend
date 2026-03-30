@@ -343,7 +343,7 @@ export const useAddShiftForm = ({
         try {
           const createResult = await createShift(payload).unwrap()
           if (createResult && typeof createResult === 'object') {
-            const r = createResult as Record<string, unknown>
+            const r = createResult as unknown as Record<string, unknown>
             const hasErrors =
               r.success === false || (Array.isArray(r.errors) && r.errors.length > 0) || !!r.errors
             if (hasErrors) {

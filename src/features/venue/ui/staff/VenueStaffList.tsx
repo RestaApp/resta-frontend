@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { Tabs, type TabOption } from '@/components/ui/tabs'
+import { useLabels } from '@/shared/i18n/hooks'
 
 export type StaffFilter = 'all' | 'current' | 'former'
 
@@ -53,6 +54,7 @@ export const VenueStaffList = ({
   onOpenDetails,
 }: VenueStaffListProps) => {
   const { t } = useTranslation()
+  const { getEmployeePositionLabel } = useLabels()
   const filterOptions: TabOption<StaffFilter>[] = [
     { id: 'all', label: t('venueUi.staff.filters.all', { defaultValue: 'Все' }) },
     { id: 'current', label: t('venueUi.staff.filters.current', { defaultValue: 'Текущие' }) },
@@ -92,11 +94,14 @@ export const VenueStaffList = ({
                 item.person,
                 t('common.user', { defaultValue: 'Сотрудник' })
               )
-              const position =
+              const rawPosition =
                 item.person.position ??
                 item.person.user?.position ??
                 item.person.user?.employee_profile?.position ??
-                t('venueUi.staff.noPosition', { defaultValue: 'Без позиции' })
+                null
+              const positionLabel = rawPosition
+                ? getEmployeePositionLabel(rawPosition)
+                : t('venueUi.staff.noPosition', { defaultValue: 'Без позиции' })
               const isPending = item.applicationStatus === 'pending'
               const photoUrl =
                 item.person.user?.photo_url ?? item.person.user?.profile_photo_url ?? null
@@ -121,7 +126,7 @@ export const VenueStaffList = ({
                       <AvatarImage src={photoUrl} alt={fullName} />
                       <AvatarFallback>
                         {getLogoByPosition(
-                          position,
+                          rawPosition,
                           item.person.user_id ?? item.person.user?.id ?? 0
                         )}
                       </AvatarFallback>
@@ -129,7 +134,7 @@ export const VenueStaffList = ({
 
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium text-foreground">{fullName}</p>
-                      <p className="text-sm text-muted-foreground">{position}</p>
+                      <p className="text-sm text-muted-foreground">{positionLabel}</p>
                       <p className="truncate text-xs text-muted-foreground">{item.shiftTitle}</p>
                     </div>
 

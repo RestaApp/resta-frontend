@@ -39,7 +39,8 @@ export interface UserData {
   average_rating: number
   bio: string | null
   certifications?: string[]
-  created_at: string
+  /** Есть в полном профиле; в кратких Blueprinter-ответах может отсутствовать */
+  created_at?: string
   email: string | null
   employee_profile: EmployeeProfile | null
   /** Название заведения и формат — см. PATCH restaurant_profile_attributes */
@@ -48,18 +49,20 @@ export interface UserData {
   supplier_profile_attributes?: SupplierProfile | null
   full_name: string
   language: string
-  last_name: string
+  /** Только для employee в Blueprinter */
+  last_name?: string
   location: string | null
   city?: string | null
   name: string
   phone: string | null
   photo_url: string | null
-  profile_complete: boolean
+  /** Не входит в UserBlueprint для списков */
+  profile_complete?: boolean
   profile_photo_url: string | null
   role: string
   telegram_id: number
   total_reviews: number
-  updated_at: string
+  updated_at?: string
   username: string
   website: string | null
   /** Расписание работы заведения (ключи — дни или служебные поля вроде schedule) */

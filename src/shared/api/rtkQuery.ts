@@ -16,6 +16,7 @@ export const tagTypes = [
   'Application',
   'AppliedShift',
   'Notification',
+  'Review',
   'User',
   'Profile',
   'Supplier',

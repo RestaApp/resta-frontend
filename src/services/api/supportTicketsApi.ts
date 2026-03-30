@@ -42,9 +42,12 @@ export interface CreateSupportTicketRequest {
   }
 }
 
+/** Фактический ответ POST /api/v1/support_tickets (201): только id созданного тикета */
 export interface CreateSupportTicketResponse {
   success: boolean
-  data: SupportTicket
+  data: {
+    id: number
+  }
 }
 
 export interface ApiErrorResponse {

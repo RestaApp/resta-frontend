@@ -19,6 +19,8 @@ import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
 } from '@/services/api/notificationPreferencesApi'
+import { useToast } from '@/hooks/useToast'
+import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import type {
   NotificationPreference,
   UpdateNotificationPreferenceRequest,
@@ -58,6 +60,7 @@ interface NotificationPreferencesDrawerProps {
 export const NotificationPreferencesDrawer = memo(
   ({ open, onOpenChange }: NotificationPreferencesDrawerProps) => {
     const { t } = useTranslation()
+    const { showToast } = useToast()
     const { data, isLoading, isError } = useGetNotificationPreferencesQuery(undefined, {
       skip: !open,
     })
@@ -126,8 +129,13 @@ export const NotificationPreferencesDrawer = memo(
           application_notifications: effectivePrefs.application_notifications,
         },
       }
-      await updatePreferences(payload)
-    }, [effectivePrefs, updatePreferences])
+      try {
+        await updatePreferences(payload).unwrap()
+        setDraftPrefs(null)
+      } catch (error) {
+        showToast(getErrorMessage(error) ?? t('saveErrorRetry'), 'error')
+      }
+    }, [effectivePrefs, showToast, t, updatePreferences])
 
     const handleClose = useCallback(
       (next: boolean) => {
