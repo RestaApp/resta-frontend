@@ -47,7 +47,6 @@ export function ProfileSettings({
               <Moon className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
               <div>
                 <div className="text-sm font-medium">{t('profile.theme')}</div>
-                <p className="text-xs text-muted-foreground">{t('profile.themeDescription')}</p>
               </div>
             </div>
             <ThemeToggleCompact />
@@ -60,7 +59,6 @@ export function ProfileSettings({
               <Languages className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
               <div>
                 <div className="text-sm font-medium">{t('profile.language')}</div>
-                <p className="text-xs text-muted-foreground">{t('profile.languageDescription')}</p>
               </div>
             </div>
 

@@ -13,9 +13,31 @@ export const formatReviews = (count: number): string => {
 
 export const formatMoney = (value: number): string => {
   const v = Number.isFinite(value) ? value : 0
-  return new Intl.NumberFormat(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
-    maximumFractionDigits: 0,
-  }).format(v)
+  const fixed = v.toFixed(2)
+  const [integerPart, fractionPart] = fixed.split('.')
+  const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  if (fractionPart === '00') return groupedInteger
+  return `${groupedInteger}.${fractionPart}`
+}
+
+export const parseMoneyInput = (value?: string | number | null): number | null => {
+  if (value === null || value === undefined) return null
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+
+  const normalized = value
+    .replace(/\s+/g, '')
+    .replace(',', '.')
+    .replace(/[^\d.]/g, '')
+  if (!normalized) return null
+
+  const firstDot = normalized.indexOf('.')
+  const safeValue =
+    firstDot === -1
+      ? normalized
+      : `${normalized.slice(0, firstDot + 1)}${normalized.slice(firstDot + 1).replace(/\./g, '')}`
+
+  const n = Number(safeValue)
+  return Number.isFinite(n) ? n : null
 }
 
 /**
@@ -51,7 +73,7 @@ export const formatHourlyRate = (hourlyRate?: string | number | null): string | 
   if (hourlyRate === null || hourlyRate === undefined) return null
   const n = typeof hourlyRate === 'string' ? Number(hourlyRate) : hourlyRate
   if (!Number.isFinite(n) || n <= 0) return null
-  return n.toFixed(2)
+  return formatMoney(n)
 }
 
 export const formatShiftType = (shiftType?: 'vacancy' | 'replacement' | null): string | null => {

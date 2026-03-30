@@ -37,7 +37,7 @@ export const ProfileBusinessInfoCard = memo(
 
     if (variant === 'section') return <div className="py-2">{content}</div>
 
-    return <Card className="p-5">{content}</Card>
+    return <Card className="p-4">{content}</Card>
   }
 )
 

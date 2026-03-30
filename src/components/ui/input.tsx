@@ -15,7 +15,7 @@ export const Input = forwardRef<HTMLInputElement, React.ComponentProps<'input'>>
       data-slot="input"
       className={cn(
         INPUT_FIELD_BASE_CLASS,
-        'flex h-11 px-4 py-3 text-base transition-all',
+        'flex px-4 py-3 text-base transition-all',
         'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium',
         INPUT_FIELD_INTERACTIVE_CLASS,
         'selection:bg-primary selection:text-primary-foreground',

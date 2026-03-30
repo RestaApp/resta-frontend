@@ -17,6 +17,7 @@ import {
   getInitialShiftTime,
   getInitialSpecializations,
 } from '@/features/activity/model/utils/addShiftFormInitialization'
+import { parseMoneyInput } from '@/features/feed/model/utils/formatting'
 
 export type ShiftType = 'vacancy' | 'replacement'
 
@@ -307,7 +308,7 @@ export const useAddShiftForm = ({
                 end_time: buildDateTime(endDate!, endTime),
               }
             : {}),
-          payment: pay ? Number(pay) : undefined,
+          payment: parseMoneyInput(pay) ?? undefined,
           location,
           requirements,
           shift_type: shiftType,

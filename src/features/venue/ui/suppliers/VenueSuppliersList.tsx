@@ -42,7 +42,6 @@ export const VenueSuppliersList = ({
 }: VenueSuppliersListProps) => {
   const { t } = useTranslation()
   const isRestaurantsMode = mode === 'restaurants'
-  const shownCountLabel = isRestaurantsMode
     ? t('supplierUi.restaurants.shownCount', { shown: list.length, total: totalCount })
     : t('venueUi.suppliers.shownCount', { shown: list.length, total: totalCount })
 
@@ -56,7 +55,6 @@ export const VenueSuppliersList = ({
             activeFiltersList.length > 0 ? 'border-t border-border' : 'border-b border-border'
           )}
         >
-          <p className="text-sm text-muted-foreground">{shownCountLabel}</p>
           <label className="flex items-center gap-2 text-sm">
             <span>{t('venueUi.suppliers.showActive')}</span>
             <Switch
@@ -79,18 +77,18 @@ export const VenueSuppliersList = ({
             message={
               isRestaurantsMode
                 ? t('supplierUi.restaurants.emptyTitle', {
-                    defaultValue: 'Заведения не найдены',
-                  })
+                  defaultValue: 'Заведения не найдены',
+                })
                 : t('venueUi.suppliers.emptyTitle', { defaultValue: 'Поставщики не найдены' })
             }
             description={
               isRestaurantsMode
                 ? t('supplierUi.restaurants.emptyDescription', {
-                    defaultValue: 'Попробуйте обновить список или изменить фильтры',
-                  })
+                  defaultValue: 'Попробуйте обновить список или изменить фильтры',
+                })
                 : t('venueUi.suppliers.emptyDescription', {
-                    defaultValue: 'Отключите фильтр или добавьте нового поставщика',
-                  })
+                  defaultValue: 'Отключите фильтр или добавьте нового поставщика',
+                })
             }
             illustration={<EmptyInboxIllustration className="h-24 w-24" />}
           />

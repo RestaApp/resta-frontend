@@ -4,7 +4,8 @@ import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, AlertCircle, Briefcase, ChevronDown } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Briefcase, ChevronDown, ArrowRight } from 'lucide-react'
 import type { ApiRole } from '@/types'
 import type { UserData, EmployeeProfile } from '@/services/api/authApi'
 import { formatExperienceText } from '@/utils/experience'
@@ -150,41 +151,69 @@ export const ProfileInfoCard = memo(
           ? t('roles.supplierInfoTitle')
           : t('profile.personalInfo')
     const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
+    const hasBusinessInfoData = Boolean(
+      (userProfile.bio && userProfile.bio.trim()) ||
+      (cityDisplay && cityDisplay.trim()) ||
+      (locationValue && locationValue.trim()) ||
+      (apiRole === 'restaurant' && userProfile.website?.trim()) ||
+      venueHoursDisplay ||
+      (isSupplierRole && supplierTypes.length > 0)
+    )
 
     const fillActionButton = onFill ? (
-      <motion.button
-        whileTap={{ scale: 0.98 }}
-        onClick={onFill}
-        className="px-5 py-2.5 rounded-2xl text-sm font-medium text-white gradient-primary shadow-sm"
-        type="button"
-      >
-        {t('common.fill')}
-      </motion.button>
+      <motion.div whileTap={{ scale: 0.98 }}>
+        <Button
+          onClick={onFill}
+          variant="gradient"
+          size="md"
+          className="h-12 min-w-[156px] rounded-2xl px-6 text-base font-semibold shadow-lg shadow-primary/20"
+          type="button"
+        >
+          {t('common.fill')}
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </motion.div>
     ) : null
+
+    const incompleteCallout = !isFilled ? (
+      <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center shadow-[0_14px_28px_-24px_rgba(124,58,237,0.8)]">
+        <p className="text-sm leading-relaxed text-foreground/80">{fillRequiredText}</p>
+        {fillActionButton ? (
+          <div className="mt-4 flex justify-center">{fillActionButton}</div>
+        ) : null}
+      </div>
+    ) : null
+
+    if (!isFilled || (isBusinessRole && !hasBusinessInfoData)) {
+      return variant === 'section' ? (
+        <div className="py-2">{incompleteCallout}</div>
+      ) : (
+        incompleteCallout
+      )
+    }
 
     const content = (
       <>
         <button
           type="button"
           onClick={() => setIsOpen(v => !v)}
-          className="w-full flex items-center justify-between gap-3"
+          className="w-full -mx-2 -my-1 flex items-center gap-2 rounded-xl transition-colors hover:bg-muted/35"
         >
-          <h4 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-primary" />
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+            <Briefcase className="h-[18px] w-[18px] text-primary" />
+          </span>
+
+          <h4 className="min-w-0 flex-1 truncate text-left text-lg font-semibold leading-tight text-foreground whitespace-nowrap">
             {infoSectionTitle}
           </h4>
-          <div className="flex items-center gap-2">
-            {isFilled ? (
-              <Badge variant="success" className="gap-1.5 shrink-0">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="gap-1.5 shrink-0">
-                <AlertCircle className="w-3.5 h-3.5" />
-              </Badge>
-            )}
-            <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+
+          <div className="ml-auto flex shrink-0 items-center gap-1">
+            <motion.div
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-md bg-muted/60 p-1"
+            >
+              <ChevronDown className="h-[18px] w-[18px] text-muted-foreground" />
             </motion.div>
           </div>
         </button>
@@ -194,24 +223,14 @@ export const ProfileInfoCard = memo(
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-4 space-y-0 text-sm overflow-hidden"
+            className="mt-5 space-y-0 text-sm overflow-hidden"
           >
             {!isFilled && !isSupplierRole ? (
-              <div className="text-center py-6 px-2">
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  {fillRequiredText}
-                </p>
-                {fillActionButton}
-              </div>
+              <div className="py-3">{incompleteCallout}</div>
             ) : (
               <>
                 {!isFilled && isSupplierRole ? (
-                  <div className="text-center py-2 px-2">
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-3">
-                      {fillRequiredText}
-                    </p>
-                    {fillActionButton}
-                  </div>
+                  <div className="mb-4">{incompleteCallout}</div>
                 ) : null}
                 {userProfile.bio && (
                   <div className="pb-3 border-b border-border/50">
@@ -309,7 +328,7 @@ export const ProfileInfoCard = memo(
     return variant === 'section' ? (
       <div className="py-2">{content}</div>
     ) : (
-      <Card className="p-5 shadow-sm">{content}</Card>
+      <Card className="p-4 shadow-sm shadow-black/5">{content}</Card>
     )
   }
 )

@@ -55,7 +55,7 @@ function ApplyCoverLetterModalContent({
 
   return (
     <Modal isOpen onClose={onClose} className="max-w-lg">
-      <div className={`${MODAL_SURFACE_CLASS} p-5`}>
+      <div className={`${MODAL_SURFACE_CLASS} p-4`}>
         <h2 className="text-lg font-semibold text-foreground">
           {t('shift.coverMessagePromptTitle')}
         </h2>

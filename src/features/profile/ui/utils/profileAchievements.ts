@@ -74,15 +74,11 @@ export function buildProfileAchievements(params: {
         value: String(appliedShiftsCount),
       },
       { id: 'common.filled', emoji: '💎', title: t('common.filled'), value: filledValue },
-      { id: 'common.stats', emoji: '⚡', title: t('profile.stats'), value: '—' },
     ]
   }
 
   if (apiRole === 'supplier') {
-    return [
-      { id: 'common.filled', emoji: '💎', title: t('common.filled'), value: filledValue },
-      { id: 'common.stats', emoji: '⚡', title: t('profile.stats'), value: '—' },
-    ]
+    return [{ id: 'common.filled', emoji: '💎', title: t('common.filled'), value: filledValue }]
   }
 
   return []

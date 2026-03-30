@@ -1,0 +1,21 @@
+import { cn } from '@/utils/cn'
+
+interface BynIconProps {
+  className?: string
+}
+
+export const BynIcon = ({ className }: BynIconProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="21 23 56.5 70"
+      className={cn('h-[1em] w-[1em] shrink-0', className)}
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <g transform="translate(0 114) scale(0.1 -0.1)">
+        <path d="M310 680l0-230-50 0-50 0 0-35 0-35 50 0 50 0 0-85 0-85 143 0c153 1 193 9 251 53 46 36 71 90 71 158 0 67-33 124-97 166-39 26-50 28-165 32l-123 3 0 104 0 104 155 0 155 0 0 40 0 40-195 0-195 0 0-230zm285-140c25-6 52-22 73-44 57-63 39-151-38-191-20-11-61-15-135-15l-105 0 0 45 0 45 91 0 90 0-3 38-3 37-87 3-88 3 0 44 0 45 83 0c45 0 100-5 122-10z" />
+      </g>
+    </svg>
+  )
+}

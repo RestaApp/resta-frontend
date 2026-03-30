@@ -14,6 +14,7 @@ import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFilters } from '../../model/hooks/useAdvancedFilters'
 import { DEFAULT_PRICE_RANGE, DEFAULT_JOBS_PRICE_RANGE } from '@/utils/filters'
+import { formatMoney, parseMoneyInput } from '../../model/utils/formatting'
 
 export interface AdvancedFiltersData {
   priceRange: [number, number] | null
@@ -182,9 +183,13 @@ const AdvancedFiltersSheet = ({
   const handleMinInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value
-      const v = raw === '' ? 0 : Number(raw)
-      if (!Number.isFinite(v)) return
-      handleRangeChange(clampPriceRange(v, displayPriceRange[1]))
+      if (!raw.trim()) {
+        handleRangeChange(clampPriceRange(0, displayPriceRange[1]))
+        return
+      }
+      const parsed = parseMoneyInput(raw)
+      if (parsed === null) return
+      handleRangeChange(clampPriceRange(parsed, displayPriceRange[1]))
     },
     [clampPriceRange, displayPriceRange, handleRangeChange]
   )
@@ -192,9 +197,13 @@ const AdvancedFiltersSheet = ({
   const handleMaxInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value
-      const v = raw === '' ? 0 : Number(raw)
-      if (!Number.isFinite(v)) return
-      handleRangeChange(clampPriceRange(displayPriceRange[0], v))
+      if (!raw.trim()) {
+        handleRangeChange(clampPriceRange(displayPriceRange[0], 0))
+        return
+      }
+      const parsed = parseMoneyInput(raw)
+      if (parsed === null) return
+      handleRangeChange(clampPriceRange(displayPriceRange[0], parsed))
     },
     [clampPriceRange, displayPriceRange, handleRangeChange]
   )
@@ -239,12 +248,12 @@ const AdvancedFiltersSheet = ({
             </h3>
             <div className="flex items-center gap-1.5 min-w-0 ml-auto">
               <Input
-                type="number"
+                type="text"
                 inputMode="numeric"
                 min={0}
                 max={maxRateLimit}
                 step={1}
-                value={displayPriceRange[0]}
+                value={formatMoney(displayPriceRange[0])}
                 onChange={handleMinInputChange}
                 aria-label={t('feed.filterRateMinAria')}
                 className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"
@@ -253,12 +262,12 @@ const AdvancedFiltersSheet = ({
                 —
               </span>
               <Input
-                type="number"
+                type="text"
                 inputMode="numeric"
                 min={0}
                 max={maxRateLimit}
                 step={1}
-                value={displayPriceRange[1]}
+                value={formatMoney(displayPriceRange[1])}
                 onChange={handleMaxInputChange}
                 aria-label={t('feed.filterRateMaxAria')}
                 className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"

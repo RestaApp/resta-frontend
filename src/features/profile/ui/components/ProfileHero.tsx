@@ -107,7 +107,7 @@ export const ProfileHero = memo(
       </>
     )
     return wrapInCard ? (
-      <Card className="relative p-5">{content}</Card>
+      <Card className="relative p-4">{content}</Card>
     ) : (
       <div className="relative py-1">{content}</div>
     )

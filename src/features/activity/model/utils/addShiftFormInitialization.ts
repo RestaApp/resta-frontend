@@ -1,5 +1,9 @@
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { parseApiDateTime } from '@/features/feed/model/utils/formatting'
+import {
+  formatMoney,
+  parseApiDateTime,
+  parseMoneyInput,
+} from '@/features/feed/model/utils/formatting'
 
 export const toInputDate = (date: Date): string => {
   const yyyy = date.getFullYear()
@@ -39,9 +43,10 @@ export const getInitialShiftTime = (
 
 export const getInitialPay = (initialValues: VacancyApiItem | null): string => {
   if (!initialValues) return ''
-  if (initialValues.payment) return String(initialValues.payment)
-  if (initialValues.hourly_rate) return String(initialValues.hourly_rate)
-  return ''
+  const initialPay = initialValues.payment ?? initialValues.hourly_rate ?? null
+  const parsed = parseMoneyInput(initialPay)
+  if (parsed === null) return ''
+  return formatMoney(parsed)
 }
 
 export const getInitialSpecializations = (initialValues: VacancyApiItem | null): string[] => {

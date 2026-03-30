@@ -17,6 +17,7 @@ export const isDefaultPriceRange = (priceRange: [number, number]): boolean => {
 
 import { parseDate } from './datetime'
 import i18n from '@/shared/i18n/config'
+import { formatMoney } from '@/features/feed/model/utils/formatting'
 
 /**
  * Форматирует дату для отображения в фильтрах
@@ -115,7 +116,7 @@ export const formatFiltersForDisplay = (
 
   // Диапазон цен (если не по умолчанию и не null)
   if (filters.priceRange && !isDefaultPriceRange(filters.priceRange)) {
-    result.push(`${filters.priceRange[0]}-${filters.priceRange[1]} BYN`)
+    result.push(`${formatMoney(filters.priceRange[0])}-${formatMoney(filters.priceRange[1])} BYN`)
   }
 
   // Даты

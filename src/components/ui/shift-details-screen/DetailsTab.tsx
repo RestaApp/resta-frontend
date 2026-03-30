@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
+import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
 import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
@@ -143,7 +144,7 @@ export const DetailsTab = memo(
                 <span className="text-lg font-semibold text-primary">
                   {pay == null || Number(pay) === 0
                     ? t('shift.payNegotiable')
-                    : `${pay} ${currency}`}
+                    : `${formatMoney(Number(pay))} ${currency}`}
                 </span>
               }
               subValue={pay != null && Number(pay) > 0 ? paySuffix : undefined}

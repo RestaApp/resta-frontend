@@ -54,9 +54,9 @@
   --surface-stroke-soft: rgba(0, 0, 0, 0.06);
   --surface-stroke-soft-hover: rgba(0, 0, 0, 0.1);
   --surface-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --primary-ring-soft: 0 0 0 1px rgba(109, 21, 240, 0.1);
-  --primary-ring-soft-hover: 0 0 0 1px rgba(109, 21, 240, 0.16);
-  --primary-hero-shadow: 0 20px 60px rgba(109, 21, 240, 0.4);
+  --primary-ring-soft: 0 0 0 1px rgba(107, 33, 168, 0.1);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(107, 33, 168, 0.16);
+  --primary-hero-shadow: 0 20px 60px rgba(107, 33, 168, 0.4);
   --overlay-scrim: rgba(0, 0, 0, 0.6);
   --overlay-scrim-strong: rgba(0, 0, 0, 0.65);
   --overlay-glass: rgba(255, 255, 255, 0.05);
@@ -83,11 +83,11 @@
   --sidebar-ring: var(--purple-deep);
 
   /* App gradients on top of new brand palette */
-  --pink-electric: #ec4899;
-  --blue-cyber: #06b6d4;
+  --pink-electric: #EC4899;
+  --blue-cyber: #06B6D4;
   --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
   --gradient-glow: linear-gradient(135deg,
-      rgba(109, 21, 240, 0.1) 0%,
+      rgba(107, 33, 168, 0.1) 0%,
       rgba(236, 72, 153, 0.1) 100%);
 }
 
@@ -143,9 +143,9 @@
   --surface-stroke-soft: rgba(255, 255, 255, 0.06);
   --surface-stroke-soft-hover: rgba(255, 255, 255, 0.1);
   --surface-shadow-soft: none;
-  --primary-ring-soft: 0 0 0 1px rgba(109, 21, 240, 0.12);
-  --primary-ring-soft-hover: 0 0 0 1px rgba(109, 21, 240, 0.18);
-  --primary-hero-shadow: 0 20px 60px rgba(109, 21, 240, 0.4);
+  --primary-ring-soft: 0 0 0 1px rgba(107, 33, 168, 0.12);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(107, 33, 168, 0.18);
+  --primary-hero-shadow: 0 20px 60px rgba(107, 33, 168, 0.4);
   --input-stroke: rgba(255, 255, 255, 0.1);
   --input-stroke-hover: rgba(255, 255, 255, 0.14);
 
@@ -165,10 +165,9 @@
   --sidebar-border: #333147;
   --sidebar-ring: var(--ring);
   --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
-  /* Свечение чуть ярче в темноте */
   --gradient-glow: linear-gradient(135deg,
-      rgba(109, 21, 240, 0.25) 0%,
-      rgba(236, 72, 153, 0.25) 100%);
+      rgba(107, 33, 168, 0.1) 0%,
+      rgba(236, 72, 153, 0.1) 100%);
 }
 
 /* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней */
@@ -386,23 +385,16 @@
   }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+/* Global scrollbar: hidden, scroll behavior remains available */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--muted-foreground);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 /* Animation Utils */
