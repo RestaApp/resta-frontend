@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Drawer, DrawerCloseButton } from '@/components/ui/drawer'
 import { RangeSlider, DatePicker } from '@/components/ui'
 import { Button } from '@/components/ui/button'
+import { BynIcon } from '@/components/ui/byn-icon'
 import { Input } from '@/components/ui/input'
 import { DRAWER_FOOTER_CLASS, DRAWER_HEADER_CLASS } from '@/components/ui/ui-patterns'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
@@ -242,7 +243,7 @@ const AdvancedFiltersSheet = ({
       >
         {/* 1. Бюджет (Range Slider) */}
         <div className="ui-density-stack">
-          <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-2">
+          <div className="py-2 flex flex-wrap justify-between items-center gap-x-3 gap-y-2">
             <h3 className="font-semibold text-base">
               {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
             </h3>
@@ -272,7 +273,7 @@ const AdvancedFiltersSheet = ({
                 aria-label={t('feed.filterRateMaxAria')}
                 className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"
               />
-              <span className="text-primary font-bold text-sm shrink-0">BYN</span>
+              <BynIcon className="text-primary text-sm shrink-0" />
             </div>
           </div>
           <RangeSlider
