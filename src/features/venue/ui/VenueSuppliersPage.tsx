@@ -44,7 +44,6 @@ export function VenueSuppliersPage() {
     }),
     [userCity]
   )
-  const cityFallback = isSupplierRole ? '' : defaultFilters.city
 
   const [onlyActive, setOnlyActive] = useState(false)
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null)
@@ -72,7 +71,7 @@ export function VenueSuppliersPage() {
 
   const queryParams = useMemo<GetUsersParams>(() => {
     if (isSupplierRole) {
-      const city = resolveAppliedCity(appliedFilters, cityFallback)
+      const city = resolveAppliedCity(appliedFilters)
       return {
         user_type: 'restaurant',
         city: city || undefined,
@@ -81,7 +80,7 @@ export function VenueSuppliersPage() {
       }
     }
 
-    const city = resolveAppliedCity(appliedFilters, cityFallback)
+    const city = resolveAppliedCity(appliedFilters)
     const supplierType = appliedFilters.supplierType || undefined
     const supplierTypes = supplierType
       ? getValidSupplierTypesForCategory(supplierType, appliedFilters.serviceCategories)
@@ -97,7 +96,7 @@ export function VenueSuppliersPage() {
       page: 1,
       per_page: visibleCount,
     }
-  }, [appliedFilters, cityFallback, isSupplierRole, visibleCount])
+  }, [appliedFilters, isSupplierRole, visibleCount])
 
   const { data, isLoading, isFetching, isError, refetch } = useGetUsersQuery(queryParams)
 
@@ -267,7 +266,7 @@ export function VenueSuppliersPage() {
     const result: string[] = []
 
     if (isSupplierRole) {
-      const city = resolveAppliedCity(appliedFilters, cityFallback)
+      const city = resolveAppliedCity(appliedFilters)
       if (city) result.push(city)
       if (appliedFilters.restaurantFormats.length > 0) {
         result.push(
@@ -280,7 +279,7 @@ export function VenueSuppliersPage() {
       return result
     }
 
-    const city = resolveAppliedCity(appliedFilters, cityFallback)
+    const city = resolveAppliedCity(appliedFilters)
     if (city) result.push(city)
 
     if (appliedFilters.supplierType) {
@@ -307,7 +306,6 @@ export function VenueSuppliersPage() {
     return result
   }, [
     appliedFilters,
-    cityFallback,
     getRestaurantFormatLabel,
     getSupplierTypeLabel,
     getCuisineTypeLabel,
@@ -321,15 +319,15 @@ export function VenueSuppliersPage() {
   }, [hasMore, isFetching, isLoading])
 
   const handleResetFilters = useCallback(() => {
-    const next = isSupplierRole ? { ...defaultFilters, city: '' } : defaultFilters
+    const next = { ...defaultFilters, city: '' }
     setAppliedFilters(next)
     setDraftFilters(next)
     setVisibleCount(SUPPLIERS_PER_PAGE)
-  }, [defaultFilters, isSupplierRole])
+  }, [defaultFilters])
 
   const handleResetDraftFilters = useCallback(() => {
-    setDraftFilters(isSupplierRole ? { ...defaultFilters, city: '' } : defaultFilters)
-  }, [defaultFilters, isSupplierRole])
+    setDraftFilters({ ...defaultFilters, city: '' })
+  }, [defaultFilters])
 
   const handleApplyFilters = useCallback(() => {
     setAppliedFilters(draftFilters)

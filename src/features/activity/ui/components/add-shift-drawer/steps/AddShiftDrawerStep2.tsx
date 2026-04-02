@@ -19,6 +19,11 @@ export const AddShiftDrawerStep2 = ({
   const urgentLabel = isVacancyType
     ? t('shift.urgentVacancy', { defaultValue: 'Срочная вакансия' })
     : t('shift.urgent')
+  const descriptionPlaceholder = isVacancyType
+    ? t('shift.descriptionPlaceholderVacancy', {
+        defaultValue: 'Коротко опишите вакансию и обязанности',
+      })
+    : t('shift.descriptionPlaceholder')
 
   return (
     <>
@@ -27,7 +32,7 @@ export const AddShiftDrawerStep2 = ({
           label={t('common.description')}
           value={description}
           onChange={onDescriptionChange}
-          placeholder={t('shift.descriptionPlaceholder')}
+          placeholder={descriptionPlaceholder}
           minHeight="96px"
           error={descriptionError}
         />

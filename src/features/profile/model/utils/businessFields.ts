@@ -61,7 +61,7 @@ const normalizeTime = (value: string): string | null => {
 }
 
 const splitAddressLines = (value: string): string[] => {
-  const lines = value.split('\n').map(line => line.trim())
+  const lines = value.split('\n').map(line => line.replace(/\r/g, ''))
   if (lines.length === 0) return ['']
   if (lines.every(line => !line)) return ['']
   return lines
@@ -70,7 +70,7 @@ const splitAddressLines = (value: string): string[] => {
 export const parseAddresses = (value: string): string[] => splitAddressLines(value)
 
 export const serializeAddresses = (addresses: string[]): string => {
-  const normalized = addresses.map(line => line.trim())
+  const normalized = addresses.map(line => line.replace(/\r/g, ''))
   return normalized.join('\n')
 }
 
