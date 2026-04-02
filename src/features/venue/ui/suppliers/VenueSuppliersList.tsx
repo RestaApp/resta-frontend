@@ -41,9 +41,10 @@ export const VenueSuppliersList = ({
   onOpenDetails,
 }: VenueSuppliersListProps) => {
   const { t } = useTranslation()
-  const isRestaurantsMode = mode === 'restaurants'
-    ? t('supplierUi.restaurants.shownCount', { shown: list.length, total: totalCount })
-    : t('venueUi.suppliers.shownCount', { shown: list.length, total: totalCount })
+  const isRestaurantsMode =
+    mode === 'restaurants'
+      ? t('supplierUi.restaurants.shownCount', { shown: list.length, total: totalCount })
+      : t('venueUi.suppliers.shownCount', { shown: list.length, total: totalCount })
 
   return (
     <div>
@@ -77,18 +78,18 @@ export const VenueSuppliersList = ({
             message={
               isRestaurantsMode
                 ? t('supplierUi.restaurants.emptyTitle', {
-                  defaultValue: 'Заведения не найдены',
-                })
+                    defaultValue: 'Заведения не найдены',
+                  })
                 : t('venueUi.suppliers.emptyTitle', { defaultValue: 'Поставщики не найдены' })
             }
             description={
               isRestaurantsMode
                 ? t('supplierUi.restaurants.emptyDescription', {
-                  defaultValue: 'Попробуйте обновить список или изменить фильтры',
-                })
+                    defaultValue: 'Попробуйте обновить список или изменить фильтры',
+                  })
                 : t('venueUi.suppliers.emptyDescription', {
-                  defaultValue: 'Отключите фильтр или добавьте нового поставщика',
-                })
+                    defaultValue: 'Отключите фильтр или добавьте нового поставщика',
+                  })
             }
             illustration={<EmptyInboxIllustration className="h-24 w-24" />}
           />

@@ -47,10 +47,35 @@ const getCityFromUser = (item: VacancyApiItem): string | undefined => {
 }
 
 const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
-  const photoUrl = item.user?.photo_url ?? item.user?.profile_photo_url ?? null
-  if (typeof photoUrl !== 'string') return null
-  const normalized = photoUrl.trim()
-  return normalized.length > 0 ? normalized : null
+  const userWithExtra = item.user as
+    | (typeof item.user & { avatar_url?: string | null; image_url?: string | null })
+    | undefined
+  const profileWithExtra = item.user?.restaurant_profile as
+    | (typeof item.user extends undefined ? never : NonNullable<typeof item.user>['restaurant_profile'] & {
+        photo_url?: string | null
+        logo_url?: string | null
+        image_url?: string | null
+      })
+    | undefined
+
+  const candidateUrls = [
+    item.user?.photo_url,
+    item.user?.profile_photo_url,
+    (item as VacancyApiItem & { photo_url?: string | null }).photo_url,
+    (item as VacancyApiItem & { profile_photo_url?: string | null }).profile_photo_url,
+    userWithExtra?.avatar_url,
+    userWithExtra?.image_url,
+    profileWithExtra?.photo_url,
+    profileWithExtra?.logo_url,
+    profileWithExtra?.image_url,
+  ]
+
+  for (const url of candidateUrls) {
+    if (typeof url !== 'string') continue
+    const normalized = url.trim()
+    if (normalized.length > 0) return normalized
+  }
+  return null
 }
 
 /**
