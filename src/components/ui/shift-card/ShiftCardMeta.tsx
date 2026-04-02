@@ -2,11 +2,12 @@ import { Calendar, Clock, MapPin } from 'lucide-react'
 
 interface ShiftCardMetaProps {
   positionText: string
-  companyPlaceLine: string
+  restaurantName: string
+  locationText: string
+  onOpenRestaurant?: () => void
   shouldHideOwnerMetaForVenue: boolean
   shouldShowMetaRow: boolean
   isVacancyCard: boolean
-  locationText: string
   hasDate: boolean
   hasTime: boolean
   date?: string | null
@@ -15,11 +16,12 @@ interface ShiftCardMetaProps {
 
 export const ShiftCardMeta = ({
   positionText,
-  companyPlaceLine,
+  restaurantName,
+  locationText,
+  onOpenRestaurant,
   shouldHideOwnerMetaForVenue,
   shouldShowMetaRow,
   isVacancyCard,
-  locationText,
   hasDate,
   hasTime,
   date,
@@ -30,8 +32,24 @@ export const ShiftCardMeta = ({
       {!shouldHideOwnerMetaForVenue ? (
         <>
           <p className="text-sm text-muted-foreground truncate mb-1">{positionText}</p>
-          {companyPlaceLine.trim() ? (
-            <p className="text-sm text-muted-foreground truncate mb-2">{companyPlaceLine}</p>
+          {restaurantName.trim() ? (
+            <p className="text-sm text-muted-foreground truncate mb-2">
+              {onOpenRestaurant ? (
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={event => {
+                    event.stopPropagation()
+                    onOpenRestaurant()
+                  }}
+                >
+                  {restaurantName}
+                </button>
+              ) : (
+                restaurantName
+              )}
+              {isVacancyCard && locationText.trim() ? ` · ${locationText}` : ''}
+            </p>
           ) : null}
         </>
       ) : null}

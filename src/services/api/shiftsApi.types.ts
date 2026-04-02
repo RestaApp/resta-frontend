@@ -62,6 +62,7 @@ export function parseShiftDetailFromResponse(response: unknown): VacancyApiItem 
  */
 export interface GetVacanciesParams {
   shift_type: 'vacancy' | 'replacement'
+  user_id?: number // Фильтр по владельцу (ресторану)
   position?: string // chef, waiter, bartender, barista, manager, support, delivery, cashier, operator
   specialization?: string // Специализация для фильтрации (опционально)
   city?: string // Фильтр по городу ресторана (ILIKE поиск)

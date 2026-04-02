@@ -3,6 +3,7 @@ import { AdvancedFilters } from '@/features/feed/ui/components/AdvancedFilters'
 import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
 import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
+import { RestaurantVacanciesDrawer } from '@/features/feed/ui/components/RestaurantVacanciesDrawer'
 import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDialog'
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
@@ -48,6 +49,7 @@ export function FeedBody({ vm, topContent }: FeedBodyProps) {
               getApplicationStatus={vm.getApplicationStatus}
               isApplied={vm.isApplied}
               onOpenDetails={vm.openShiftDetails}
+              onOpenRestaurant={vm.openRestaurantDetails}
               onApplyWithModal={vm.handleApplyWithModal}
               onCancel={vm.handleCancel}
               isShiftLoading={vm.isShiftLoading}
@@ -74,10 +76,24 @@ export function FeedBody({ vm, topContent }: FeedBodyProps) {
           isApplied={vm.isApplied(vm.selectedShiftId)}
           isLoading={vm.isShiftLoading(vm.selectedShiftId)}
           onClose={vm.closeShiftDetails}
+          onOpenRestaurant={vm.openRestaurantDetails}
           onApply={vm.handleApplyWithModal}
           onCancel={vm.handleCancel}
         />
       ) : null}
+
+      <RestaurantVacanciesDrawer
+        restaurantId={vm.selectedRestaurantId}
+        open={vm.selectedRestaurantId !== null}
+        onClose={vm.closeRestaurantDetails}
+        onOpenVacancy={vm.openShiftDetails}
+        getApplicationId={vm.getApplicationId}
+        getApplicationStatus={vm.getApplicationStatus}
+        isApplied={vm.isApplied}
+        onApply={vm.handleApplyWithModal}
+        onCancel={vm.handleCancel}
+        isShiftLoading={vm.isShiftLoading}
+      />
 
       <ApplyCoverLetterModal
         open={vm.isApplyCoverModalOpen}

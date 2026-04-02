@@ -9,6 +9,7 @@ interface FeedDetailsProps {
   isApplied: boolean
   isLoading: boolean
   onClose: () => void
+  onOpenRestaurant: (restaurantId: number) => void
   onApply: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
 }
@@ -20,6 +21,7 @@ export function FeedDetails({
   isApplied,
   isLoading,
   onClose,
+  onOpenRestaurant,
   onApply,
   onCancel,
 }: FeedDetailsProps) {
@@ -30,6 +32,7 @@ export function FeedDetails({
       applicationId={applicationId}
       isOpen
       onClose={onClose}
+      onOpenRestaurant={onOpenRestaurant}
       onApply={onApply}
       onCancel={onCancel}
       isApplied={isApplied}

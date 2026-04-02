@@ -12,6 +12,7 @@ interface FeedListProps {
   getApplicationStatus: (id: number) => ShiftStatus
   isApplied: (id: number) => boolean
   onOpenDetails: (id: number) => void
+  onOpenRestaurant: (restaurantId: number) => void
   onApplyWithModal: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (id: number) => boolean
@@ -27,6 +28,7 @@ export function FeedList({
   getApplicationStatus,
   isApplied,
   onOpenDetails,
+  onOpenRestaurant,
   onApplyWithModal,
   onCancel,
   isShiftLoading,
@@ -72,6 +74,7 @@ export function FeedList({
               applicationStatus={getApplicationStatus(shift.id) ?? null}
               isApplied={isApplied(shift.id)}
               onOpenDetails={onOpenDetails}
+              onOpenRestaurant={onOpenRestaurant}
               onApply={onApplyWithModal}
               onCancel={onCancel}
               isLoading={isShiftLoading(shift.id)}

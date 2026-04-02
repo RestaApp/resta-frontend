@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from 'react'
+import { useMemo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -67,6 +67,7 @@ export const useFeedPageModel = () => {
     resetFilters: resetFeedFilters,
     userPosition,
   } = useFeedFiltersState()
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
 
   // Переключение на таб "Смены" из внешнего флага (поведение сохраняем)
   useEffect(() => {
@@ -194,6 +195,14 @@ export const useFeedPageModel = () => {
 
   const openShiftDetails = useCallback((id: number) => setSelectedShiftId(id), [setSelectedShiftId])
   const closeShiftDetails = useCallback(() => setSelectedShiftId(null), [setSelectedShiftId])
+  const openRestaurantDetails = useCallback(
+    (restaurantId: number) => {
+      setSelectedShiftId(null)
+      setSelectedRestaurantId(restaurantId)
+    },
+    [setSelectedShiftId]
+  )
+  const closeRestaurantDetails = useCallback(() => setSelectedRestaurantId(null), [])
 
   const handleHotOfferClick = useCallback(
     (item: HotOffer) => {
@@ -354,12 +363,15 @@ export const useFeedPageModel = () => {
     advancedFilters,
     resetFilters,
     openShiftDetails,
+    openRestaurantDetails,
 
     // details / actions
     selectedShiftId,
+    selectedRestaurantId,
     selectedShift,
     selectedVacancy,
     closeShiftDetails,
+    closeRestaurantDetails,
     handleApply,
     handleApplyWithModal,
     isApplyCoverModalOpen,

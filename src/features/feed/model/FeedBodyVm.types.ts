@@ -19,6 +19,7 @@ export interface FeedBodyVm {
   onRefresh: () => Promise<void>
 
   openShiftDetails: (id: number) => void
+  openRestaurantDetails: (restaurantId: number) => void
   getApplicationId: (id: number) => number | undefined
   getApplicationStatus: (id: number) => ShiftStatus
   isApplied: (id: number) => boolean
@@ -35,9 +36,11 @@ export interface FeedBodyVm {
   isDeleting: boolean
 
   selectedShiftId: number | null
+  selectedRestaurantId: number | null
   selectedShift: Shift | null
   selectedVacancy: VacancyApiItem | null
   closeShiftDetails: () => void
+  closeRestaurantDetails: () => void
 
   toast: { message: string; type: ToastType; isVisible: boolean }
   hideToast: () => void

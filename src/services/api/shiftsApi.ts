@@ -192,6 +192,7 @@ export const shiftsApi = api.injectEndpoints({
 export const {
   useGetShiftsQuery,
   useGetVacanciesQuery,
+  useLazyGetVacanciesQuery,
   useGetShiftByIdQuery,
   useCreateShiftMutation,
   useUpdateShiftMutation,

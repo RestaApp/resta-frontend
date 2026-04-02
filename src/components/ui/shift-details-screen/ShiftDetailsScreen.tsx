@@ -22,6 +22,7 @@ interface ShiftDetailsScreenProps {
   applicationId?: number | null
   isOpen: boolean
   onClose: () => void
+  onOpenRestaurant?: (restaurantId: number) => void
   onApply: (id: number, message?: string) => Promise<void>
   isApplied: boolean
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
@@ -35,6 +36,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     applicationId = null,
     isOpen,
     onClose,
+    onOpenRestaurant,
     onApply,
     isApplied,
     onCancel,
@@ -72,6 +74,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       ),
     [aboutVenue]
   )
+  const restaurantOwnerId = typeof shift?.ownerId === 'number' ? shift.ownerId : null
 
   if (!shift) return null
 
@@ -90,6 +93,17 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             <p className="w-full text-sm text-muted-foreground">
               {[shiftTypeLabel, shift.date, shift.time].filter(Boolean).join(' · ')}
             </p>
+            {restaurantOwnerId !== null && onOpenRestaurant ? (
+              <button
+                type="button"
+                className="text-sm text-primary hover:underline"
+                onClick={() => onOpenRestaurant(restaurantOwnerId)}
+              >
+                {shift.restaurant}
+              </button>
+            ) : (
+              <p className="text-sm text-muted-foreground">{shift.restaurant}</p>
+            )}
             {shift.urgent ? <UrgentPill /> : null}
             <StatusPill status={controller.appStatus} />
           </>

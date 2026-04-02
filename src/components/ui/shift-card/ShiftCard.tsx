@@ -28,6 +28,7 @@ export interface ShiftCardProps {
   applicationStatus?: ShiftStatus
   variant?: 'default' | 'supplier'
   onOpenDetails: (id: number) => void
+  onOpenRestaurant?: (restaurantId: number) => void
   onApply: (id: number) => void
   onCancel: (applicationId: number | null | undefined, shiftId: number) => void
   isLoading?: boolean
@@ -41,6 +42,7 @@ const ShiftCardComponent = ({
   applicationStatus = null,
   variant = 'default',
   onOpenDetails,
+  onOpenRestaurant,
   onApply,
   onCancel,
   isLoading = false,
@@ -78,12 +80,6 @@ const ShiftCardComponent = ({
   const hasTime = Boolean(shift.time?.trim())
   const isVacancyCard = shift.shiftType === 'vacancy' || shift.payPeriod === 'month'
 
-  /** Одна строка: компания · место (для единого шаблона смены/вакансии) */
-  const companyPlaceLine = useMemo(() => {
-    const parts = [shift.restaurant, !isSupplierVariant ? locationText : ''].filter(Boolean)
-    return parts.join(' · ')
-  }, [shift.restaurant, isSupplierVariant, locationText])
-
   const displayTitle = useMemo(
     () => (shift.title?.trim() || '').slice(0, 80) || null,
     [shift.title]
@@ -108,6 +104,10 @@ const ShiftCardComponent = ({
   )
 
   const handleOpen = useCallback(() => onOpenDetails(shift.id), [onOpenDetails, shift.id])
+  const handleOpenRestaurant = useCallback(() => {
+    if (!onOpenRestaurant || typeof shift.ownerId !== 'number') return
+    onOpenRestaurant(shift.ownerId)
+  }, [onOpenRestaurant, shift.ownerId])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -198,11 +198,12 @@ const ShiftCardComponent = ({
 
       <ShiftCardMeta
         positionText={positionText}
-        companyPlaceLine={companyPlaceLine}
+        restaurantName={shift.restaurant}
+        locationText={locationText}
+        onOpenRestaurant={handleOpenRestaurant}
         shouldHideOwnerMetaForVenue={shouldHideOwnerMetaForVenue}
         shouldShowMetaRow={shouldShowMetaRow}
         isVacancyCard={isVacancyCard}
-        locationText={locationText}
         hasDate={hasDate}
         hasTime={hasTime}
         date={shift.date}
