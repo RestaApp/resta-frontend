@@ -12,6 +12,7 @@ import { triggerHapticFeedback } from '@/utils/haptics'
 import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
 import { getTelegramWebApp } from '@/utils/telegram'
 import type { ShiftStatus } from '@/components/ui/StatusPill'
+import { splitLocationPoints } from '@/shared/utils/location'
 
 interface UseShiftDetailsScreenControllerParams {
   shift: Shift | null
@@ -59,6 +60,8 @@ export const useShiftDetailsScreenController = ({
   const description = vacancyData?.description?.trim() ?? ''
   const requirements = vacancyData?.requirements?.trim() ?? ''
   const location = shift?.location?.trim() ?? ''
+  const locationPoints = splitLocationPoints(location)
+  const mapLocation = locationPoints[0] ?? location
   const hasDate = Boolean(shift?.date?.trim())
   const hasTime = Boolean(shift?.time?.trim())
 
@@ -113,9 +116,9 @@ export const useShiftDetailsScreenController = ({
   }, [shift, isRejected, applicationId, vacancyData, onCancel, handleClose])
 
   const handleOpenMap = useCallback(() => {
-    if (!location) return
+    if (!mapLocation) return
 
-    const encodedLocation = encodeURIComponent(location)
+    const encodedLocation = encodeURIComponent(mapLocation)
     const yandexUrl = `https://yandex.ru/maps/?text=${encodedLocation}`
     const googleUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`
 
@@ -154,7 +157,7 @@ export const useShiftDetailsScreenController = ({
     }
 
     openExternalMapLink(yandexUrl)
-  }, [location, t])
+  }, [mapLocation, t])
 
   const handleAcceptApplication = useCallback(
     async (id: number) => {
@@ -202,7 +205,7 @@ export const useShiftDetailsScreenController = ({
     isOwner,
     description,
     requirements,
-    location,
+    locationPoints,
     hasDate,
     hasTime,
     applicants,

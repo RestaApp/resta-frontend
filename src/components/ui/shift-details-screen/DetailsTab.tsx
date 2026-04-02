@@ -37,7 +37,7 @@ interface DetailsTabProps {
   shiftDate?: string | null
   shiftTime?: string | null
   duration?: string | null
-  location: string
+  locationPoints: string[]
   onOpenMap: () => void
   pay: string | number | null | undefined
   currency?: string | null
@@ -61,7 +61,7 @@ export const DetailsTab = memo(
     shiftDate,
     shiftTime,
     duration,
-    location,
+    locationPoints,
     onOpenMap,
     pay,
     currency,
@@ -117,12 +117,22 @@ export const DetailsTab = memo(
               />
             ) : null}
 
-            {location ? (
+            {locationPoints.length > 0 ? (
               <DetailRow
                 icon={MapPin}
                 iconVariant="section"
                 label={t('common.location')}
-                value={location}
+                value={
+                  locationPoints.length === 1 ? (
+                    locationPoints[0]
+                  ) : (
+                    <div className="space-y-1">
+                      {locationPoints.map((point, index) => (
+                        <p key={`${point}-${index}`}>{point}</p>
+                      ))}
+                    </div>
+                  )
+                }
                 action={
                   <Button
                     onClick={onOpenMap}

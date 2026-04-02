@@ -1,9 +1,12 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Badge } from '@/components/ui/badge'
 
 interface ShiftCardMetaProps {
   positionText: string
   restaurantName: string
   locationText: string
+  extraLocationsCount: number
   onOpenRestaurant?: () => void
   shouldHideOwnerMetaForVenue: boolean
   shouldShowMetaRow: boolean
@@ -18,6 +21,7 @@ export const ShiftCardMeta = ({
   positionText,
   restaurantName,
   locationText,
+  extraLocationsCount,
   onOpenRestaurant,
   shouldHideOwnerMetaForVenue,
   shouldShowMetaRow,
@@ -27,6 +31,15 @@ export const ShiftCardMeta = ({
   date,
   time,
 }: ShiftCardMetaProps) => {
+  const { t } = useTranslation()
+  const extraLocationsLabel =
+    extraLocationsCount > 0
+      ? t('supplierUi.restaurants.moreLocations', {
+          count: extraLocationsCount,
+          defaultValue: '+{{count}}',
+        })
+      : null
+
   return (
     <>
       {!shouldHideOwnerMetaForVenue ? (
@@ -48,7 +61,9 @@ export const ShiftCardMeta = ({
               ) : (
                 restaurantName
               )}
-              {isVacancyCard && locationText.trim() ? ` · ${locationText}` : ''}
+              {isVacancyCard && locationText.trim() && !shouldShowMetaRow
+                ? ` · ${locationText}`
+                : ''}
             </p>
           ) : null}
         </>
@@ -59,7 +74,17 @@ export const ShiftCardMeta = ({
           {isVacancyCard ? (
             <span className="flex items-center gap-1.5 min-w-0">
               <MapPin className="h-4 w-4 shrink-0 stroke-[1.5] text-muted-foreground" aria-hidden />
-              <span className="font-medium text-foreground truncate">{locationText}</span>
+              <span className="min-w-0 flex items-center gap-1.5">
+                <span className="font-medium text-foreground truncate">{locationText}</span>
+                {extraLocationsLabel ? (
+                  <Badge
+                    variant="tag"
+                    className="shrink-0 px-1.5 py-0 text-[11px] font-semibold text-primary border-primary/30 bg-primary/10"
+                  >
+                    {extraLocationsLabel}
+                  </Badge>
+                ) : null}
+              </span>
             </span>
           ) : (
             <div className="flex w-full items-center justify-between gap-3">

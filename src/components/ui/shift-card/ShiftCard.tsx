@@ -12,6 +12,7 @@ import { StatusPill, type ShiftStatus } from '../StatusPill'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 import { cn } from '@/utils/cn'
+import { splitLocationPoints } from '@/shared/utils/location'
 import { ShiftCardHeader } from './ShiftCardHeader'
 import { ShiftCardMeta } from './ShiftCardMeta'
 
@@ -75,7 +76,15 @@ const ShiftCardComponent = ({
   const canApply = shift.canApply !== false
   const isSupplierVariant = variant === 'supplier'
 
-  const locationText = useMemo(() => stripMinskPrefix(shift.location) ?? '', [shift.location])
+  const { locationText, extraLocationsCount } = useMemo(() => {
+    const normalized = stripMinskPrefix(shift.location) ?? ''
+    const points = splitLocationPoints(normalized)
+    if (points.length === 0) return { locationText: '', extraLocationsCount: 0 }
+    return {
+      locationText: points[0],
+      extraLocationsCount: Math.max(points.length - 1, 0),
+    }
+  }, [shift.location])
   const hasDate = Boolean(shift.date?.trim())
   const hasTime = Boolean(shift.time?.trim())
   const isVacancyCard = shift.shiftType === 'vacancy' || shift.payPeriod === 'month'
@@ -200,6 +209,7 @@ const ShiftCardComponent = ({
         positionText={positionText}
         restaurantName={shift.restaurant}
         locationText={locationText}
+        extraLocationsCount={extraLocationsCount}
         onOpenRestaurant={handleOpenRestaurant}
         shouldHideOwnerMetaForVenue={shouldHideOwnerMetaForVenue}
         shouldShowMetaRow={shouldShowMetaRow}

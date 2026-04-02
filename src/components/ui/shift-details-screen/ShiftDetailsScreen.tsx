@@ -160,7 +160,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             shiftDate={shift.date}
             shiftTime={shift.time}
             duration={shift.duration}
-            location={controller.location}
+            locationPoints={controller.locationPoints}
             onOpenMap={controller.handleOpenMap}
             pay={shift.pay}
             currency={shift.currency}

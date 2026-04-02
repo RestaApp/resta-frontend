@@ -18,3 +18,11 @@ export const combineLocation = (city: string, address: string): string => {
   if (!a) return c
   return `${c}, ${a}`
 }
+
+export const splitLocationPoints = (location?: string | null): string[] => {
+  if (!location) return []
+  return location
+    .split(/\r?\n+/)
+    .map(value => value.trim())
+    .filter(Boolean)
+}
