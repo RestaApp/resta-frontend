@@ -51,11 +51,13 @@ const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
     | (typeof item.user & { avatar_url?: string | null; image_url?: string | null })
     | undefined
   const profileWithExtra = item.user?.restaurant_profile as
-    | (typeof item.user extends undefined ? never : NonNullable<typeof item.user>['restaurant_profile'] & {
-        photo_url?: string | null
-        logo_url?: string | null
-        image_url?: string | null
-      })
+    | (typeof item.user extends undefined
+        ? never
+        : NonNullable<typeof item.user>['restaurant_profile'] & {
+            photo_url?: string | null
+            logo_url?: string | null
+            image_url?: string | null
+          })
     | undefined
 
   const candidateUrls = [
