@@ -18,6 +18,7 @@ import {
   consumeCommand,
   selectNavigationCommand,
 } from '@/features/navigation/model/navigationSlice'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 interface UseDashboardProps {
   role: UiRole
@@ -95,7 +96,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
         const shown = getLocalStorageItem(STORAGE_KEYS.ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN)
         if (!shown) {
           setLocalStorageItem(STORAGE_KEYS.ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN, '1')
-          window.dispatchEvent(new Event('showActivityAddShiftOnboarding'))
+          emitAppEvent(APP_EVENTS.SHOW_ACTIVITY_ADD_SHIFT_ONBOARDING)
         }
       }
     },

@@ -7,6 +7,7 @@ import type { TabOption } from '@/components/ui/tabs'
 import { Briefcase, Clock3 } from 'lucide-react'
 import { VenueActivityContent } from './components/VenueActivityContent'
 import { EmployeeActivityContent } from './components/EmployeeActivityContent'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 type VenueTab = 'vacancies' | 'shifts'
 
@@ -67,7 +68,7 @@ export const ActivityPage = () => {
   useEffect(() => {
     if (!isVenue) return
     const type = venueTab === 'vacancies' ? 'vacancy' : 'replacement'
-    window.dispatchEvent(new CustomEvent('setVenueCreateType', { detail: { type } }))
+    emitAppEvent(APP_EVENTS.SET_VENUE_CREATE_TYPE, { type })
   }, [isVenue, venueTab])
 
   return (

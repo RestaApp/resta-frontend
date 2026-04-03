@@ -6,6 +6,7 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
 import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/ui/toast'
+import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export function VenueAddShiftListener() {
   const { t } = useTranslation()
@@ -33,31 +34,29 @@ export function VenueAddShiftListener() {
   }, [currentCreateType, profileCompleteness?.isFilled, showToast, t])
 
   useEffect(() => {
-    const handleOpenAdd = () => handleCreateIntent()
-    const handleOpenEdit = (event: Event) => {
-      const customEvent = event as CustomEvent<{ shift?: VacancyApiItem }>
-      const shift = customEvent.detail?.shift ?? null
+    const offOpenAdd = onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => {
+      handleCreateIntent()
+    })
+
+    const offOpenEdit = onAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT, detail => {
+      const shift = (detail?.shift as VacancyApiItem | undefined) ?? null
       if (!shift) return
       setInitialShiftType(null)
       setEditingShift(shift)
       setOpen(true)
-    }
-    const handleSetCreateType = (event: Event) => {
-      const customEvent = event as CustomEvent<{ type?: ShiftType }>
-      const nextType = customEvent.detail?.type
+    })
+
+    const offSetCreateType = onAppEvent(APP_EVENTS.SET_VENUE_CREATE_TYPE, detail => {
+      const nextType = detail?.type
       if (nextType === 'vacancy' || nextType === 'replacement') {
         setCurrentCreateType(nextType)
       }
-    }
-
-    window.addEventListener('openActivityAddShift', handleOpenAdd)
-    window.addEventListener('openActivityEditShift', handleOpenEdit)
-    window.addEventListener('setVenueCreateType', handleSetCreateType)
+    })
 
     return () => {
-      window.removeEventListener('openActivityAddShift', handleOpenAdd)
-      window.removeEventListener('openActivityEditShift', handleOpenEdit)
-      window.removeEventListener('setVenueCreateType', handleSetCreateType)
+      offOpenAdd()
+      offOpenEdit()
+      offSetCreateType()
     }
   }, [handleCreateIntent])
 

@@ -15,6 +15,7 @@ import { ROUTES } from '@/constants/routes'
 import type { Screen, UiRole } from '@/types'
 import { useUserUpdate } from '@/features/role-selector/model/useUserUpdate'
 import { mapRoleFromApi, mapUiRoleToApiRole } from '@/utils/roles'
+import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export type AppScreen = 'loading' | 'role' | 'onboarding_done' | 'dashboard'
 
@@ -46,9 +47,9 @@ export function useAppBootstrap() {
       }, POST_LOGOUT_LOADING_MS)
     }
 
-    window.addEventListener('auth:logout', handleLogout)
+    const offLogout = onAppEvent(APP_EVENTS.AUTH_LOGOUT, () => handleLogout())
     return () => {
-      window.removeEventListener('auth:logout', handleLogout)
+      offLogout()
       if (logoutTimerRef.current !== null) {
         window.clearTimeout(logoutTimerRef.current)
       }

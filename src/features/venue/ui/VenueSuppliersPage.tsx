@@ -28,6 +28,7 @@ import {
   getValidSupplierTypesForCategory,
   isSupplierCategory,
 } from './suppliers/types'
+import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export function VenueSuppliersPage() {
   const { t } = useTranslation()
@@ -60,13 +61,10 @@ export function VenueSuppliersPage() {
   }, [appliedFilters])
 
   useEffect(() => {
-    const handler = () => {
+    return onAppEvent(APP_EVENTS.OPEN_SUPPLIERS_FILTERS, () => {
       setDraftFilters(appliedFiltersRef.current)
       setIsFiltersOpen(true)
-    }
-
-    window.addEventListener('openSuppliersFilters', handler)
-    return () => window.removeEventListener('openSuppliersFilters', handler)
+    })
   }, [])
 
   const queryParams = useMemo<GetUsersParams>(() => {

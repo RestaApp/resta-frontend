@@ -7,6 +7,7 @@ import type { AppDispatch } from '@/store'
 import { setUserData } from '@/features/navigation/model/userSlice'
 import type { UserData } from '@/services/api/authApi'
 import { api } from '@/shared/api/api'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 /**
  * Обновляет данные пользователя в Redux store
@@ -29,11 +30,9 @@ export const invalidateUserCache = (dispatch: AppDispatch): void => {
  * Отправляет событие об успешной авторизации
  */
 export const dispatchAuthEvent = (): void => {
-  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-    try {
-      window.dispatchEvent(new CustomEvent('auth:authorized'))
-    } catch {
-      // Игнорируем ошибки при отправке события
-    }
+  try {
+    emitAppEvent(APP_EVENTS.AUTH_AUTHORIZED)
+  } catch {
+    // Игнорируем ошибки при отправке события
   }
 }

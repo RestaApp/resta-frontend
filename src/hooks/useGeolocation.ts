@@ -4,13 +4,39 @@
  */
 
 import { useState, useCallback, useRef } from 'react'
+import { logger } from '@/utils/logger'
 
 interface UseGeolocationReturn {
   getLocation: () => Promise<string | null>
   isLoading: boolean
 }
 
-const NOMINATIM_DELAY = 1000 // Задержка для соблюдения rate limit
+const NOMINATIM_DELAY_MS = 1000 // Минимальный интервал между запросами к Nominatim
+const NOMINATIM_TIMEOUT_MS = 8000
+const GEOCODE_CACHE_TTL_MS = 10 * 60 * 1000
+
+let lastNominatimRequestAt = 0
+
+const geocodeCache = new Map<string, { city: string | null; ts: number }>()
+
+const toGeocodeCacheKey = (latitude: number, longitude: number): string => {
+  return `${latitude.toFixed(3)}:${longitude.toFixed(3)}`
+}
+
+const wait = (ms: number): Promise<void> => {
+  if (ms <= 0) return Promise.resolve()
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function enforceNominatimRateLimit(): Promise<void> {
+  const now = Date.now()
+  const elapsed = now - lastNominatimRequestAt
+  const remaining = NOMINATIM_DELAY_MS - elapsed
+  if (remaining > 0) {
+    await wait(remaining)
+  }
+  lastNominatimRequestAt = Date.now()
+}
 
 /**
  * Извлекает название города из ответа Nominatim API
@@ -87,10 +113,19 @@ function getCurrentPosition(): Promise<GeolocationPosition> {
  * Получает название города по координатам через Nominatim API
  */
 async function getCityByCoordinates(latitude: number, longitude: number): Promise<string | null> {
-  // Добавляем задержку для соблюдения rate limit
-  await new Promise(resolve => setTimeout(resolve, NOMINATIM_DELAY))
+  const cacheKey = toGeocodeCacheKey(latitude, longitude)
+  const cached = geocodeCache.get(cacheKey)
+  if (cached && Date.now() - cached.ts < GEOCODE_CACHE_TTL_MS) {
+    return cached.city
+  }
+
+  await enforceNominatimRateLimit()
 
   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1&accept-language=ru`
+  const abortController = new AbortController()
+  const timeoutId = setTimeout(() => {
+    abortController.abort()
+  }, NOMINATIM_TIMEOUT_MS)
 
   try {
     const response = await fetch(url, {
@@ -98,19 +133,24 @@ async function getCityByCoordinates(latitude: number, longitude: number): Promis
       headers: {
         Accept: 'application/json',
       },
+      signal: abortController.signal,
     })
 
     if (!response.ok) {
-      console.warn(`Ошибка Nominatim API: status ${response.status}`)
+      logger.warn(`Ошибка Nominatim API: status ${response.status}`)
       return null
     }
 
     const data = await response.json()
-    return extractCityFromNominatimResponse(data)
+    const city = extractCityFromNominatimResponse(data)
+    geocodeCache.set(cacheKey, { city, ts: Date.now() })
+    return city
   } catch (error) {
     // Ошибка сети или CORS
-    console.warn('Не удалось получить город из API (возможно, проблема с CORS):', error)
+    logger.warn('Не удалось получить город из API (возможно, проблема с CORS):', error)
     return null
+  } finally {
+    clearTimeout(timeoutId)
   }
 }
 
@@ -157,7 +197,7 @@ export const useGeolocation = (): UseGeolocationReturn => {
       }
 
       // Логируем только неожиданные ошибки
-      console.warn('Ошибка определения местоположения:', error)
+      logger.warn('Ошибка определения местоположения:', error)
       return null
     } finally {
       isLoadingRef.current = false

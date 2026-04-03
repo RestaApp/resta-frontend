@@ -17,6 +17,7 @@ import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
 import { useAuth } from '@/contexts/auth'
+import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 
 export type ActivityTab = 'list' | 'calendar'
 
@@ -76,9 +77,7 @@ export const useActivityPageModel = () => {
       const found = shifts.find(s => s.id === id) || null
       if (isVenue) {
         if (found) {
-          window.dispatchEvent(
-            new CustomEvent('openActivityEditShift', { detail: { shift: found } })
-          )
+          emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT, { shift: found })
         }
         return
       }
@@ -216,8 +215,7 @@ export const useActivityPageModel = () => {
   }, [isVenue, openDrawer, profileCompleteness.isFilled, showToast, t])
 
   useEffect(() => {
-    window.addEventListener('openActivityAddShift', handleOpenAddShiftFromEvent)
-    return () => window.removeEventListener('openActivityAddShift', handleOpenAddShiftFromEvent)
+    return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => handleOpenAddShiftFromEvent())
   }, [handleOpenAddShiftFromEvent])
 
   // Открыть редактирование смены по id из ленты (через EDIT_SHIFT_ID + переход на tab activity)

@@ -3,47 +3,93 @@
  */
 
 import { STORAGE_KEYS } from '@/constants/storage'
-import {
-  getLocalStorageItem,
-  setLocalStorageItem,
-  removeLocalStorageItem,
-} from '@/utils/localStorage'
+import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 
 const TOKEN_STORAGE_KEY = STORAGE_KEYS.AUTH_TOKEN
 const REFRESH_TOKEN_STORAGE_KEY = STORAGE_KEYS.REFRESH_TOKEN
+
+const getSessionStorageItem = (key: string): string | null => {
+  if (typeof window === 'undefined') return null
+  try {
+    return window.sessionStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+const setSessionStorageItem = (key: string, value: string): void => {
+  if (typeof window === 'undefined') return
+  try {
+    window.sessionStorage.setItem(key, value)
+  } catch {
+    void 0
+  }
+}
+
+const removeSessionStorageItem = (key: string): void => {
+  if (typeof window === 'undefined') return
+  try {
+    window.sessionStorage.removeItem(key)
+  } catch {
+    void 0
+  }
+}
 
 /**
  * Получает токен авторизации
  */
 export const getToken = (): string | null => {
-  return getLocalStorageItem(TOKEN_STORAGE_KEY)
+  const sessionToken = getSessionStorageItem(TOKEN_STORAGE_KEY)
+  if (sessionToken) return sessionToken
+
+  // Legacy migration: переносим токен из localStorage в sessionStorage при первом чтении.
+  const legacyToken = getLocalStorageItem(TOKEN_STORAGE_KEY)
+  if (legacyToken) {
+    setSessionStorageItem(TOKEN_STORAGE_KEY, legacyToken)
+    removeLocalStorageItem(TOKEN_STORAGE_KEY)
+  }
+
+  return legacyToken
 }
 
 /**
  * Сохраняет токен авторизации
  */
 export const setToken = (token: string): void => {
-  setLocalStorageItem(TOKEN_STORAGE_KEY, token)
+  setSessionStorageItem(TOKEN_STORAGE_KEY, token)
+  removeLocalStorageItem(TOKEN_STORAGE_KEY)
 }
 
 /**
  * Получает refresh токен
  */
 export const getRefreshToken = (): string | null => {
-  return getLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
+  const sessionToken = getSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY)
+  if (sessionToken) return sessionToken
+
+  // Legacy migration: переносим refresh токен из localStorage в sessionStorage при первом чтении.
+  const legacyToken = getLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
+  if (legacyToken) {
+    setSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY, legacyToken)
+    removeLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
+  }
+
+  return legacyToken
 }
 
 /**
  * Сохраняет refresh токен
  */
 export const setRefreshToken = (token: string): void => {
-  setLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY, token)
+  setSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY, token)
+  removeLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
 }
 
 /**
  * Удаляет токен авторизации
  */
 export const removeToken = (): void => {
+  removeSessionStorageItem(TOKEN_STORAGE_KEY)
   removeLocalStorageItem(TOKEN_STORAGE_KEY)
 }
 
@@ -51,6 +97,7 @@ export const removeToken = (): void => {
  * Удаляет refresh токен
  */
 export const removeRefreshToken = (): void => {
+  removeSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY)
   removeLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
 }
 
@@ -146,7 +193,7 @@ export const isTokenValid = (): boolean => {
  * Проверяет, авторизован ли пользователь
  */
 export const isAuthenticated = (): boolean => {
-  return getToken() !== null
+  return isTokenValid()
 }
 
 export const authService = {

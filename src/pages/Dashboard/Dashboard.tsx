@@ -8,6 +8,7 @@ import type { Tab, UiRole, Screen } from '@/types'
 import { AppHeader } from '@/components/AppHeader'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 const BOTTOM_NAV_HEIGHT_PX = 88
 
@@ -31,7 +32,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
       handleTabChange(tab)
       if (tab === 'profile' && hasIncompleteFields) {
         queueMicrotask(() => {
-          window.dispatchEvent(new CustomEvent('openProfileEdit'))
+          emitAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT)
         })
       }
     },

@@ -13,6 +13,7 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { normalizeVacanciesResponse } from '../utils/normalizeShiftsResponse'
 import { getProfileCompleteness } from '../utils/profileCompleteness'
 import { useAuth } from '@/contexts/auth'
+import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 
 export const useProfilePageModel = () => {
   const { t } = useTranslation()
@@ -38,9 +39,9 @@ export const useProfilePageModel = () => {
 
   // legacy: open drawer by window event
   useEffect(() => {
-    const handleOpenEdit = () => setIsEditDrawerOpen(true)
-    window.addEventListener('openProfileEdit', handleOpenEdit)
-    return () => window.removeEventListener('openProfileEdit', handleOpenEdit)
+    return onAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT, () => {
+      setIsEditDrawerOpen(true)
+    })
   }, [])
 
   const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
@@ -109,7 +110,7 @@ export const useProfilePageModel = () => {
   const handleLogout = useCallback(() => {
     authService.logout()
     clearUserData()
-    window.dispatchEvent(new CustomEvent('auth:logout'))
+    emitAppEvent(APP_EVENTS.AUTH_LOGOUT)
     showToast(t('auth.loggedOut'), 'success')
     window.location.reload()
   }, [clearUserData, showToast, t])

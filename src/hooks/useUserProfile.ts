@@ -39,12 +39,11 @@ export const useUserProfile = (options: UseUserProfileOptions = {}) => {
   // - skip=true
   // - не авторизован
   // - нет userId
-  // - данные уже есть в Redux и не требуется принудительная загрузка
-  const shouldSkipQuery =
-    skip || !isAuthenticated || !userId || (!!userDataFromStore && !forceRefetch)
+  const shouldSkipQuery = skip || !isAuthenticated || !userId
 
   const { data, isLoading, isFetching, error, refetch } = useGetUserQuery(userId ?? 0, {
     skip: shouldSkipQuery,
+    refetchOnMountOrArgChange: forceRefetch,
   })
 
   const userProfileFromApi = data?.data ?? null

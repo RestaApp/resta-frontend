@@ -7,6 +7,7 @@ import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { Button } from '@/components/ui/button'
 import { PersonalShiftCard } from './PersonalShiftCard'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 type ActivityPageModel = ReturnType<typeof useActivityPageModel>
 type VenueTab = 'vacancies' | 'shifts'
@@ -35,7 +36,7 @@ export const VenueActivityContent = ({
   venueItems,
   venueEmptyContent,
 }: VenueActivityContentProps) => {
-  const handleOpenCreate = () => window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+  const handleOpenCreate = () => emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)
 
   return (
     <>

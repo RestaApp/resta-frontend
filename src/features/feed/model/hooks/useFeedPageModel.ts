@@ -32,6 +32,7 @@ import type { Shift } from '../types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { HotOffer } from '../../ui/components/HotOffers'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
+import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
@@ -239,9 +240,7 @@ export const useFeedPageModel = () => {
   const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])
 
   useEffect(() => {
-    const handleOpen = () => openFilters()
-    window.addEventListener('openFeedFilters', handleOpen)
-    return () => window.removeEventListener('openFeedFilters', handleOpen)
+    return onAppEvent(APP_EVENTS.OPEN_FEED_FILTERS, () => openFilters())
   }, [openFilters])
 
   const applyAdvancedFilters = useCallback(

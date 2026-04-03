@@ -7,6 +7,7 @@ import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/Add
 import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab, UiRole } from '@/types'
 import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
+import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 
 interface AppHeaderProps {
   onAddShift?: () => void
@@ -58,7 +59,7 @@ const getHeaderAction = (params: {
     Icon: Plus,
     onClick: () => {
       onAddShift?.()
-      window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+      emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)
     },
   })
 
@@ -70,7 +71,7 @@ const getHeaderAction = (params: {
     return {
       ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
       Icon: SlidersHorizontal,
-      onClick: () => window.dispatchEvent(new CustomEvent('openFeedFilters')),
+      onClick: () => emitAppEvent(APP_EVENTS.OPEN_FEED_FILTERS),
     }
   }
 
@@ -84,7 +85,7 @@ const getHeaderAction = (params: {
       Icon: Plus,
       onClick: () => {
         onAddShift?.()
-        window.dispatchEvent(new CustomEvent('openActivityAddShift'))
+        emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)
       },
     }
   }
@@ -93,7 +94,7 @@ const getHeaderAction = (params: {
     return {
       ariaLabel: t('aria.editProfile'),
       Icon: Edit2,
-      onClick: () => window.dispatchEvent(new CustomEvent('openProfileEdit')),
+      onClick: () => emitAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT),
     }
   }
 
@@ -101,7 +102,7 @@ const getHeaderAction = (params: {
     return {
       ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
       Icon: SlidersHorizontal,
-      onClick: () => window.dispatchEvent(new CustomEvent('openSuppliersFilters')),
+      onClick: () => emitAppEvent(APP_EVENTS.OPEN_SUPPLIERS_FILTERS),
     }
   }
 
@@ -109,7 +110,7 @@ const getHeaderAction = (params: {
     return {
       ariaLabel: t('feed.openFilters', { defaultValue: 'Фильтры' }),
       Icon: SlidersHorizontal,
-      onClick: () => window.dispatchEvent(new CustomEvent('openSuppliersFilters')),
+      onClick: () => emitAppEvent(APP_EVENTS.OPEN_SUPPLIERS_FILTERS),
     }
   }
 
@@ -140,9 +141,9 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   }, [dismissAddShiftOnboarding])
 
   useEffect(() => {
-    const handler = () => setShowAddShiftOnboarding(true)
-    window.addEventListener('showActivityAddShiftOnboarding', handler)
-    return () => window.removeEventListener('showActivityAddShiftOnboarding', handler)
+    return onAppEvent(APP_EVENTS.SHOW_ACTIVITY_ADD_SHIFT_ONBOARDING, () => {
+      setShowAddShiftOnboarding(true)
+    })
   }, [])
 
   return (

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { clearUserData } from '@/features/navigation/model/userSlice'
 import { selectTelegramIsReady } from '@/features/navigation/model/telegramSlice'
 import { AuthContext, type AuthContextValue } from './auth'
+import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 interface AuthProviderProps {
   children: ReactNode
@@ -44,15 +45,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const onFocus = () => checkAuth()
 
-    window.addEventListener('auth:unauthorized', onUnauthorized)
-    window.addEventListener('auth:authorized', onAuthorized)
-    window.addEventListener('auth:logout', onLogout)
+    const offUnauthorized = onAppEvent(APP_EVENTS.AUTH_UNAUTHORIZED, () => onUnauthorized())
+    const offAuthorized = onAppEvent(APP_EVENTS.AUTH_AUTHORIZED, () => onAuthorized())
+    const offLogout = onAppEvent(APP_EVENTS.AUTH_LOGOUT, () => onLogout())
     window.addEventListener('focus', onFocus)
 
     return () => {
-      window.removeEventListener('auth:unauthorized', onUnauthorized)
-      window.removeEventListener('auth:authorized', onAuthorized)
-      window.removeEventListener('auth:logout', onLogout)
+      offUnauthorized()
+      offAuthorized()
+      offLogout()
       window.removeEventListener('focus', onFocus)
     }
   }, [dispatch])
