@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 export const AddShiftDrawerFooter = ({
   isSuccessOpen,
   step,
+  onBackOrCancel,
   onContinue,
   onSubmit,
   isCreating,
@@ -36,6 +37,9 @@ export const AddShiftDrawerFooter = ({
 
   return (
     <div className="grid grid-cols-2 gap-3 w-full">
+      <Button variant="outline" size="md" className="w-full" onClick={onBackOrCancel}>
+        {step > 0 ? t('common.back') : t('common.cancel')}
+      </Button>
       {step === 2 ? (
         <Button
           variant="gradient"
