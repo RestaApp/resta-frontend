@@ -80,7 +80,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       {paymentText ? (
         <Badge
           variant="primary"
-          className="absolute top-0 right-0 rounded-bl-lg text-xs px-1.5 py-0.5 dark:font-semibold z-10 inline-flex items-center gap-0.5"
+          className="absolute top-0 right-0 rounded-bl-lg text-xs px-1.5 py-0.5 dark:font-semibold z-10 inline-flex items-center gap-0.5 whitespace-nowrap"
         >
           <span>{paymentText}</span>
           <BynIcon className="h-[0.72em] w-[0.72em] text-primary-foreground/95" />

@@ -21,7 +21,7 @@ interface BadgeProps {
 export const Badge = ({ children, className, variant = 'default' }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium align-middle',
+      'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium align-middle whitespace-nowrap',
       BADGE_VARIANTS[variant],
       (variant === 'tag' || variant === 'tagActive') &&
         'max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
@@ -32,7 +32,7 @@ export const Badge = ({ children, className, variant = 'default' }: BadgeProps) 
       className={cn(
         variant === 'tag' || variant === 'tagActive'
           ? 'relative -top-px inline-flex items-center gap-1 whitespace-nowrap [&>svg]:shrink-0'
-          : undefined
+          : 'inline-flex items-center gap-1 whitespace-nowrap [&>svg]:shrink-0'
       )}
     >
       {children}
