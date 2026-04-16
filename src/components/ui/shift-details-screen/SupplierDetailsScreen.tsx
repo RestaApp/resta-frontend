@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AtSign, Building2, Globe, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
+import { Building2, Globe, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -43,16 +43,6 @@ export const SupplierDetailsScreen = memo(
       if (!value || !value.includes('@')) return null
       return `mailto:${value}`
     }, [supplier])
-
-    const usernameValue = useMemo(() => {
-      if (!supplier?.username) return null
-      return supplier.username.replace(/^@+/, '')
-    }, [supplier])
-
-    const telegramHref = useMemo(() => {
-      if (!usernameValue) return null
-      return `https://t.me/${usernameValue}`
-    }, [usernameValue])
 
     const mapHref = useMemo(() => {
       const value = locationText.trim()
@@ -185,24 +175,6 @@ export const SupplierDetailsScreen = memo(
                     onClick={event => event.stopPropagation()}
                   >
                     {websiteValue}
-                  </a>
-                }
-              />
-            ) : null}
-            {usernameValue && telegramHref ? (
-              <DetailRow
-                icon={AtSign}
-                iconVariant="section"
-                label={t('profile.username', { defaultValue: 'Username' })}
-                value={
-                  <a
-                    href={telegramHref}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="text-primary hover:underline"
-                    onClick={event => event.stopPropagation()}
-                  >
-                    @{usernameValue}
                   </a>
                 }
               />

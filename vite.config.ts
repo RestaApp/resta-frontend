@@ -37,16 +37,20 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return
 
-          if (id.includes('/react/') || id.includes('/react-dom/')) {
-            return 'vendor-react'
-          }
-
           if (
             id.includes('/@reduxjs/') ||
             id.includes('/react-redux/') ||
             id.includes('/redux-persist/')
           ) {
             return 'vendor-state'
+          }
+
+          const isReactPackage =
+            /\/node_modules\/react(\/|$)/.test(id) ||
+            /\/node_modules\/react-dom(\/|$)/.test(id)
+
+          if (isReactPackage) {
+            return 'vendor-react'
           }
 
           if (id.includes('/i18next/') || id.includes('/react-i18next/')) {

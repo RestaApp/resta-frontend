@@ -79,7 +79,6 @@ export const mapRestaurantUsersToItems = (
       phone: item.phone?.trim() || '',
       averageRating: Number.isFinite(item.average_rating) ? item.average_rating : 0,
       totalReviews: Number.isFinite(item.total_reviews) ? item.total_reviews : 0,
-      username: item.username || null,
       photoUrl: getUserPhotoUrl(item),
       supplierType: formatLabel,
       supplierCategory: formatLabel,
@@ -120,7 +119,6 @@ export const mapSupplierUsersToItems = (
       phone: item.phone?.trim() || '',
       averageRating: normalizeRating(item.average_rating),
       totalReviews: normalizeReviewsCount(item.total_reviews),
-      username: item.username || null,
       photoUrl: getUserPhotoUrl(item),
       supplierType: categoriesLabel || t('common.notSpecified', { defaultValue: 'Не указано' }),
       supplierCategory: supplierTypeCode

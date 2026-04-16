@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapPin, Phone } from 'lucide-react'
+import { MapPin, Phone, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/cn'
@@ -16,7 +16,6 @@ export interface SupplierCardData {
   phone: string
   averageRating: number
   totalReviews: number
-  username: string | null
   photoUrl: string | null
   supplierType: string
   supplierCategory: string
@@ -95,6 +94,41 @@ const SupplierCardComponent = ({
         'hover:border-[var(--surface-stroke-soft-hover)] dark:shadow-none'
       )}
     >
+      {!isRestaurantsMode ? (
+        <div className="absolute top-3 right-3">
+          <span
+            className={cn(
+              'relative inline-flex h-8 w-8 items-center justify-center rounded-full border',
+              supplier.deliveryAvailable
+                ? 'text-primary border-primary/30 bg-primary/10'
+                : 'text-muted-foreground border-border bg-muted/30'
+            )}
+            title={
+              supplier.deliveryAvailable == null
+                ? t('common.notSpecified', { defaultValue: 'Не указано' })
+                : supplier.deliveryAvailable
+                  ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+                  : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+            }
+            aria-label={
+              supplier.deliveryAvailable == null
+                ? t('common.notSpecified', { defaultValue: 'Не указано' })
+                : supplier.deliveryAvailable
+                  ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+                  : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+            }
+          >
+            <Truck className="h-4 w-4" />
+            {supplier.deliveryAvailable === false ? (
+              <span
+                aria-hidden="true"
+                className="absolute h-0.5 w-5 rotate-[-30deg] rounded-full bg-current"
+              />
+            ) : null}
+          </span>
+        </div>
+      ) : null}
+
       <div className="flex items-center gap-4">
         <Avatar className="h-11 w-11 rounded-xl shrink-0 self-start">
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
