@@ -10,14 +10,14 @@ export type SupplierType = 'products' | 'equipment' | 'services' | 'logistics'
 export const SUPPLIER_TYPE_LABELS = {
   products: 'Товары',
   equipment: 'Оборудование',
-  services: 'Услуги',
+  services: 'Услуги и подряд',
   logistics: 'Логистика',
 } as const satisfies Record<SupplierType, string>
 
 export const SUPPLIER_TYPE_DESCRIPTIONS = {
   products: 'Поставка продуктов питания и товаров',
   equipment: 'Поставка оборудования для заведений',
-  services: 'Предоставление услуг для ресторанов',
+  services: 'Сервисы и подрядчики для заведений',
   logistics: 'Логистические и транспортные услуги',
 } as const satisfies Record<SupplierType, string>
 
@@ -73,6 +73,7 @@ export const EMPLOYEE_POSITION_LABELS = {
   waiter: 'Официант',
   bartender: 'Бармен',
   barista: 'Бариста',
+  hostess: 'Хостес',
   delivery: 'Доставка',
   cashier: 'Кассир',
   office: 'Офис',
@@ -89,6 +90,7 @@ export const EMPLOYEE_POSITION_DESCRIPTIONS: Record<EmployeeRole, string> = {
   waiter: 'Обслуживаю гостей в зале',
   bartender: 'Готовлю напитки и коктейли',
   barista: 'Готовлю кофе и кофейные напитки',
+  hostess: 'Встречаю гостей и управляю посадкой',
   delivery: 'Доставляю заказы гостям',
   cashier: 'Работаю на кассе и принимаю оплату',
   office: 'Работаю в офисной команде',
@@ -149,6 +151,7 @@ export const SPECIALIZATION_LABELS = {
   latte_artist: 'Латте-артист',
   roaster: 'Обжарщик',
   tea_master: 'Чайный мастер',
+  hostess: 'Хостес',
 
   // Dishwasher специализации
   dishwasher: 'Мойщик посуды',

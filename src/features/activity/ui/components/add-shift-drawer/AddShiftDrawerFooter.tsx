@@ -37,9 +37,7 @@ export const AddShiftDrawerFooter = ({
 
   return (
     <div className="grid grid-cols-2 gap-3 w-full">
-      <Button variant="outline" size="md" className="w-full" onClick={onBackOrCancel}>
-        {step === 0 ? t('common.cancel') : t('common.back')}
-      </Button>
+
       {step === 2 ? (
         <Button
           variant="gradient"

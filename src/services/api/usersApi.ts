@@ -122,6 +122,7 @@ export type UsersListType =
   | 'waiter'
   | 'bartender'
   | 'barista'
+  | 'hostess'
   | 'manager'
   | 'support'
   | 'delivery'

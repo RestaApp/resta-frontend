@@ -84,16 +84,6 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
             )
           })}
         </div>
-
-        <div className="max-w-md mx-auto w-full ui-density-mt-lg">
-          <button
-            type="button"
-            className="text-muted-foreground text-sm w-full py-2"
-            onClick={onBack}
-          >
-            {t('common.back')}
-          </button>
-        </div>
       </div>
     </div>
   )

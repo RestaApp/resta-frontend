@@ -43,7 +43,7 @@ export type RestaurantApiUser = UserData & {
   restaurant_profile_attributes?: RestaurantProfile | null
 }
 
-export type SupplierCategory = 'products' | 'equipment' | 'consumables' | 'services' | 'logistics'
+export type SupplierCategory = 'products' | 'equipment' | 'services' | 'logistics' | 'consumables'
 
 export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   city: '',
@@ -55,83 +55,60 @@ export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
 }
 
 export const DEFAULT_SERVICE_CATEGORY_OPTIONS = [
-  'meat',
-  'seafood',
-  'produce',
-  'dairy',
-  'bakery',
-  'beverages',
-  'alcohol',
-  'kitchen_equipment',
-  'furniture',
-  'cleaning',
-  'maintenance',
+  'produce_supplier',
+  'meat_supplier',
+  'seafood_supplier',
+  'dairy_supplier',
+  'bakery_supplier',
+  'beverage_supplier',
+  'alcohol_supplier',
+  'kitchen_equipment_supplier',
+  'furniture_supplier',
+  'cleaning_service',
+  'maintenance_service',
 ]
 
 export const DEFAULT_SUPPLIER_TYPES = [
   'products',
   'equipment',
-  'consumables',
   'services',
   'logistics',
 ]
 
 export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
   products: [
-    'vegetables',
-    'fruits',
-    'berries',
-    'greens',
-    'microgreens',
-    'meat',
-    'poultry',
-    'seafood',
-    'dairy',
-    'bakery',
-    'grocery',
-    'frozen_food',
-    'beverages',
-    'coffee',
-    'tea',
-    'alcohol',
-    'bar_ingredients',
-    'confectionery_ingredients',
+    'produce_supplier',
+    'meat_supplier',
+    'seafood_supplier',
+    'dairy_supplier',
+    'bakery_supplier',
+    'beverage_supplier',
+    'alcohol_supplier',
+    'coffee_supplier',
   ],
   equipment: [
-    'kitchen_equipment',
-    'refrigeration',
-    'coffee_equipment',
-    'bar_equipment',
-    'bakery_equipment',
-    'furniture',
-    'tableware',
-    'kitchen_inventory',
+    'kitchen_equipment_supplier',
+    'furniture_supplier',
+    'tableware_supplier',
   ],
+  // Legacy category, поддерживаем только для корректной фильтрации старых профилей.
   consumables: [
-    'food_packaging',
-    'disposable_tableware',
-    'hygiene_products',
-    'professional_chemicals',
-    'cleaning_inventory',
-    'paper_products',
-    'kitchen_consumables',
+    'tableware_supplier',
+    'cleaning_service',
   ],
   services: [
-    'cleaning',
-    'maintenance',
-    'equipment_repair',
-    'laundry',
+    'cleaning_service',
+    'maintenance_service',
+    'laundry_service',
     'waste_management',
     'pest_control',
-    'accounting',
-    'marketing',
+    'accounting_service',
+    'marketing_service',
     'staff_training',
-    'uniform_tailoring',
     'consulting',
-    'automation',
-    'design_and_projecting',
+    'staffing_service',
   ],
-  logistics: ['delivery', 'cold_chain_delivery', 'logistics_provider', 'warehousing'],
+  logistics: ['delivery_service', 'logistics_provider'],
 }
 
 export const isSupplierCategory = (value: string): value is SupplierCategory =>
