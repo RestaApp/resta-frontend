@@ -1,11 +1,18 @@
-import type { ReactNode } from 'react'
-import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
-import { OnboardingCompleteScreen } from '@/features/role-selector/ui/components/OnboardingCompleteScreen'
-import { Dashboard } from '@/pages/Dashboard'
+import { Suspense, lazy, type ReactNode } from 'react'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { useTelegram } from '@/contexts/TelegramContext'
 import { cn } from '@/utils/cn'
+
+const RoleSelector = lazy(() =>
+  import('@/features/role-selector/ui/RoleSelector').then(m => ({ default: m.RoleSelector }))
+)
+const OnboardingCompleteScreen = lazy(() =>
+  import('@/features/role-selector/ui/components/OnboardingCompleteScreen').then(m => ({
+    default: m.OnboardingCompleteScreen,
+  }))
+)
+const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })))
 
 const AppShell = ({ children }: { children: ReactNode }) => {
   const { isFullscreen } = useTelegram()
@@ -34,7 +41,7 @@ const AppBootstrapRoutes = () => {
     content = <Dashboard role={role} onNavigate={navigate} currentScreen={currentScreen} />
   }
 
-  return <>{content}</>
+  return <Suspense fallback={<LoadingPage />}>{content}</Suspense>
 }
 
 export const App = () => {

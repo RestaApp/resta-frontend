@@ -126,7 +126,7 @@ export type UsersListType =
   | 'support'
   | 'delivery'
   | 'cashier'
-  | 'operator'
+  | 'office'
 
 /**
  * Поддерживаемые query-параметры — см. SEARCH_FILTERS_SPEC.md.

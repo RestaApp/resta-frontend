@@ -75,7 +75,7 @@ export const EMPLOYEE_POSITION_LABELS = {
   barista: 'Бариста',
   delivery: 'Доставка',
   cashier: 'Кассир',
-  operator: 'Оператор',
+  office: 'Офис',
   manager: 'Менеджер',
   support: 'Поддержка',
   admin: 'Администратор',
@@ -91,7 +91,7 @@ export const EMPLOYEE_POSITION_DESCRIPTIONS: Record<EmployeeRole, string> = {
   barista: 'Готовлю кофе и кофейные напитки',
   delivery: 'Доставляю заказы гостям',
   cashier: 'Работаю на кассе и принимаю оплату',
-  operator: 'Обрабатываю звонки и координирую заказы',
+  office: 'Работаю в офисной команде',
   manager: 'Управляю заведением и персоналом',
   support: 'Оказываю техническую поддержку',
   admin: 'Управляю заведением и персоналом',
@@ -162,9 +162,11 @@ export const SPECIALIZATION_LABELS = {
   // Cashier специализации
   checkout_cashier: 'Кассир',
   administrator_cashier: 'Администратор-кассир',
-  // Operator специализации
+  // Office специализации
   call_center: 'Оператор колл-центра',
-  delivery_dispatcher: 'Оператор доставки',
+  delivery_dispatcher: 'Менеджер доставки',
+  technologist: 'Технолог',
+  accountant: 'Бухгалтер',
 } as const
 
 export type SpecializationKey = keyof typeof SPECIALIZATION_LABELS

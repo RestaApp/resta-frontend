@@ -762,7 +762,7 @@
       "Barista": "Barista",
       "Delivery": "Delivery",
       "Cashier": "Cashier",
-      "Operator": "Operator",
+      "Office": "Office",
       "Manager": "Manager",
       "Support": "Support",
       "chef": "Chef",
@@ -771,7 +771,7 @@
       "barista": "Barista",
       "delivery": "Delivery",
       "cashier": "Cashier",
-      "operator": "Operator",
+      "office": "Office",
       "manager": "Manager",
       "support": "Support"
     },
@@ -782,7 +782,7 @@
       "barista": "Make coffee and coffee drinks",
       "delivery": "Deliver orders to guests",
       "cashier": "Handle checkout and payments",
-      "operator": "Process calls and coordinate orders",
+      "office": "Work in the office team",
       "manager": "Manage venue and staff",
       "support": "Technical support"
     },
@@ -834,7 +834,9 @@
       "checkout_cashier": "Cashier",
       "administrator_cashier": "Administrator-cashier",
       "call_center": "Call center operator",
-      "delivery_dispatcher": "Delivery operator"
+      "delivery_dispatcher": "Delivery manager",
+      "technologist": "Technologist",
+      "accountant": "Accountant"
     },
     "roleTitle": {
       "chef": "Chef",
@@ -844,7 +846,7 @@
       "admin": "Administrator",
       "delivery": "Delivery",
       "cashier": "Cashier",
-      "operator": "Operator",
+      "office": "Office",
       "manager": "Manager",
       "support": "Support",
       "venue": "Venue",
@@ -857,7 +859,7 @@
       "barista": "Make coffee and coffee drinks",
       "delivery": "Deliver orders to guests",
       "cashier": "Handle checkout and payments",
-      "operator": "Process calls and coordinate orders",
+      "office": "Work in the office team",
       "admin": "Manage venue and staff"
     }
   }
