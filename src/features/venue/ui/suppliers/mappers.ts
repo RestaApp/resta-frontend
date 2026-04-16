@@ -72,6 +72,7 @@ export const mapRestaurantUsersToItems = (
         fromParts ||
         t('venueUi.suppliers.unknownName', { defaultValue: `Заведение #${item.id}` }),
       bio: item.bio ?? null,
+      website: item.website?.trim() || '',
       city: item.city?.trim() || '',
       location: item.location?.trim() || '',
       email: item.email?.trim() || '',
@@ -112,6 +113,7 @@ export const mapSupplierUsersToItems = (
     return {
       id: item.id,
       bio: item.bio ?? null,
+      website: item.website?.trim() || '',
       city: item.city?.trim() || '',
       location: item.location?.trim() || '',
       email: item.email?.trim() || '',

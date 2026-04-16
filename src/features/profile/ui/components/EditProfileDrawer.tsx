@@ -344,7 +344,7 @@ export const EditProfileDrawer = memo(
 
           {isBusinessRole && (
             <>
-              {apiRole === 'restaurant' && (
+              {isBusinessRole && (
                 <FormField label={t('profile.venueWebsite')} hint={t('profile.venueWebsiteHint')}>
                   <Input
                     type="url"

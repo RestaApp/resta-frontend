@@ -29,7 +29,6 @@ interface SupplierCategorySelectorProps {
 export const SupplierCategorySelector = memo(function SupplierCategorySelector({
   categories,
   onContinue,
-  onBack,
   isLoading = false,
   isFetching = false,
 }: SupplierCategorySelectorProps) {

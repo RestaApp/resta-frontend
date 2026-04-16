@@ -28,7 +28,13 @@ export const Badge = ({ children, className, variant = 'default' }: BadgeProps) 
       className
     )}
   >
-    <span className={cn((variant === 'tag' || variant === 'tagActive') && 'relative -top-px')}>
+    <span
+      className={cn(
+        variant === 'tag' || variant === 'tagActive'
+          ? 'relative -top-px inline-flex items-center gap-1 whitespace-nowrap [&>svg]:shrink-0'
+          : undefined
+      )}
+    >
       {children}
     </span>
   </span>

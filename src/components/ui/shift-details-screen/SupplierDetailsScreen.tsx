@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AtSign, Building2, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
+import { AtSign, Building2, Globe, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -10,6 +10,7 @@ import { TextCard } from './TextCard'
 import { DETAIL_CARD_CLASS } from './constants'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
 import { formatServiceCategory } from './formatServiceCategory'
+import { normalizeExternalUrl } from '@/utils/externalUrl'
 
 interface SupplierDetailsScreenProps {
   supplier: SupplierCardData | null
@@ -58,6 +59,12 @@ export const SupplierDetailsScreen = memo(
       if (!value) return null
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`
     }, [locationText])
+
+    const websiteValue = useMemo(() => supplier?.website?.trim() || '', [supplier?.website])
+    const websiteHref = useMemo(
+      () => (websiteValue ? normalizeExternalUrl(websiteValue) : null),
+      [websiteValue]
+    )
 
     if (!supplier) return null
 
@@ -164,6 +171,24 @@ export const SupplierDetailsScreen = memo(
                 )
               }
             />
+            {websiteValue ? (
+              <DetailRow
+                icon={Globe}
+                iconVariant="section"
+                label={t('profile.venueWebsite', { defaultValue: 'Сайт' })}
+                value={
+                  <a
+                    href={websiteHref ?? '#'}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-primary hover:underline"
+                    onClick={event => event.stopPropagation()}
+                  >
+                    {websiteValue}
+                  </a>
+                }
+              />
+            ) : null}
             {usernameValue && telegramHref ? (
               <DetailRow
                 icon={AtSign}

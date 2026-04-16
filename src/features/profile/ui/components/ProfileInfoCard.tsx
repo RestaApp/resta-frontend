@@ -192,7 +192,7 @@ export const ProfileInfoCard = memo(
       (userProfile.bio && userProfile.bio.trim()) ||
         (cityDisplay && cityDisplay.trim()) ||
         (locationValue && locationValue.trim()) ||
-        (apiRole === 'restaurant' && userProfile.website?.trim()) ||
+        (isBusinessRole && userProfile.website?.trim()) ||
         venueHoursDisplay ||
         (isSupplierRole && supplierTypes.length > 0)
     )
@@ -291,7 +291,7 @@ export const ProfileInfoCard = memo(
                       {locationValue}
                     </InfoRow>
                   )}
-                  {apiRole === 'restaurant' && userProfile.website?.trim() && (
+                  {isBusinessRole && userProfile.website?.trim() && (
                     <InfoRow
                       label={t('profile.venueWebsite')}
                       href={normalizeExternalUrl(userProfile.website)}

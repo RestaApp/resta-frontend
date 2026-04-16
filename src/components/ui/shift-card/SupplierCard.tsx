@@ -9,6 +9,7 @@ export interface SupplierCardData {
   id: number
   name: string
   bio: string | null
+  website: string
   city: string
   location: string
   email: string

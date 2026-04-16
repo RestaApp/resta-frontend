@@ -90,8 +90,10 @@ export const ProfileHero = memo(
         {!isProfileFilled ? (
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Badge className="border border-warning/25 bg-warning/10 text-warning">
-              <AlertCircle className="w-3.5 h-3.5 mr-1" />
-              {t('common.needToFill')}
+              <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{t('common.needToFill')}</span>
+              </span>
             </Badge>
             {onFillProfile ? (
               <button

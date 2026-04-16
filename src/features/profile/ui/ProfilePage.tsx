@@ -121,6 +121,7 @@ export const ProfilePage = memo(() => {
       <ProfileSettings
         onLogout={m.handleLogout}
         onNotificationSettingsClick={() => m.setIsNotificationPrefsDrawerOpen(true)}
+        showNotificationSettings={m.apiRole !== 'supplier'}
         showSupport={m.apiRole != null && m.apiRole !== 'unverified'}
       />
 
@@ -133,11 +134,13 @@ export const ProfilePage = memo(() => {
         }}
       />
 
-      <NotificationPreferencesDrawer
-        open={m.isNotificationPrefsDrawerOpen}
-        onOpenChange={m.setIsNotificationPrefsDrawerOpen}
-        apiRole={m.apiRole}
-      />
+      {m.apiRole !== 'supplier' ? (
+        <NotificationPreferencesDrawer
+          open={m.isNotificationPrefsDrawerOpen}
+          onOpenChange={m.setIsNotificationPrefsDrawerOpen}
+          apiRole={m.apiRole}
+        />
+      ) : null}
     </div>
   )
 })

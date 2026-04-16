@@ -97,7 +97,7 @@ export const buildUpdateUserRequest = (
     user.location = currentLocation
   }
 
-  if (apiRole === 'restaurant' && currentWebsite !== initialWebsite) {
+  if (isBusinessRole && currentWebsite !== initialWebsite) {
     user.website = currentWebsite
   }
 

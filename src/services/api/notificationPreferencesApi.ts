@@ -51,10 +51,14 @@ export const notificationPreferencesApi = api.injectEndpoints({
         try {
           const { data: updated } = await queryFulfilled
           dispatch(
-            api.util.updateQueryData('getNotificationPreferences', undefined, draft => {
+            notificationPreferencesApi.util.updateQueryData(
+              'getNotificationPreferences',
+              undefined,
+              draft => {
               draft.success = updated.success
               draft.data = updated.data
-            })
+              }
+            )
           )
         } catch {
           // Ошибка PATCH будет обработана в UI; кэш не трогаем.
