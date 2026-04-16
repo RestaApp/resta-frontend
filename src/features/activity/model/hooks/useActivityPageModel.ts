@@ -19,7 +19,7 @@ import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfil
 import { useAuth } from '@/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 
-export type ActivityTab = 'list' | 'calendar'
+export type ActivityTab = 'applications' | 'shifts'
 
 export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: VacancyApiItem }
 
@@ -41,7 +41,8 @@ export const useActivityPageModel = () => {
   const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
-  const [activeTab, setActiveTab] = useState<ActivityTab>('list')
+  const isSupplier = selectedRole === 'supplier'
+  const [activeTab, setActiveTab] = useState<ActivityTab>('shifts')
   const dateLocale = getDateLocale(i18n.language)
 
   const {
@@ -58,7 +59,7 @@ export const useActivityPageModel = () => {
     isLoading: isAppliedLoading,
     refetch: refetchAppliedShifts,
   } = useGetAppliedShiftsQuery(undefined, {
-    skip: isVenue || !isAuthenticated,
+    skip: isVenue || isSupplier || !isAuthenticated,
     refetchOnFocus: false,
   })
 
@@ -101,12 +102,12 @@ export const useActivityPageModel = () => {
   )
 
   const refreshList = useCallback(async () => {
-    if (isVenue) {
+    if (isVenue || isSupplier) {
       await refetchMyShifts()
       return
     }
     await Promise.all([refetchMyShifts(), refetchAppliedShifts()])
-  }, [isVenue, refetchMyShifts, refetchAppliedShifts])
+  }, [isSupplier, isVenue, refetchMyShifts, refetchAppliedShifts])
 
   // Calendar state
   const [selectedDayKey, setSelectedDayKey] = useState<string>(() => toLocalISODateKey(new Date()))

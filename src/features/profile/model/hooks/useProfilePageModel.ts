@@ -44,11 +44,20 @@ export const useProfilePageModel = () => {
     })
   }, [])
 
+  const apiRole = useMemo<ApiRole | null>(() => {
+    const roleValue = userProfile?.role
+    if (!roleValue) return null
+    return mapRoleFromApi(roleValue)
+  }, [userProfile?.role])
+
+  const shouldSkipAppliedShifts =
+    !isAuthenticated || apiRole === 'restaurant' || apiRole === 'supplier'
+
   const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
     skip: !isAuthenticated,
   })
   const { data: appliedShiftsData } = useGetAppliedShiftsQuery(undefined, {
-    skip: !isAuthenticated,
+    skip: shouldSkipAppliedShifts,
   })
 
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
@@ -56,12 +65,6 @@ export const useProfilePageModel = () => {
     () => normalizeVacanciesResponse(appliedShiftsData),
     [appliedShiftsData]
   )
-
-  const apiRole = useMemo<ApiRole | null>(() => {
-    const roleValue = userProfile?.role
-    if (!roleValue) return null
-    return mapRoleFromApi(roleValue)
-  }, [userProfile?.role])
 
   const userName = useMemo(() => {
     if (!userProfile) return t('common.user')

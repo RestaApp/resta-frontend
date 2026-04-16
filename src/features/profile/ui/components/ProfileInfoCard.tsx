@@ -21,6 +21,7 @@ const ROW_CLASS = 'flex justify-between items-baseline gap-3 py-2.5'
 const LABEL_CLASS = 'text-muted-foreground shrink-0 min-w-[8rem]'
 const VALUE_CLASS = 'font-medium text-foreground text-right min-w-0'
 const VALUE_LINK_CLASS = 'font-medium text-primary text-right truncate hover:underline min-w-0'
+const SKILL_SPLIT_LIMIT = 44
 
 interface InfoRowProps {
   label: string
@@ -56,6 +57,41 @@ interface ProfileInfoEmployeeSectionProps {
   employeeProfile: EmployeeProfile | null
 }
 
+const splitLongSkill = (skill: string): string[] => {
+  const normalized = skill.trim()
+  if (normalized.length <= SKILL_SPLIT_LIMIT) return [normalized]
+
+  const chunks: string[] = []
+  let rest = normalized
+
+  while (rest.length > SKILL_SPLIT_LIMIT) {
+    const leftPart = rest.slice(0, SKILL_SPLIT_LIMIT + 1)
+    const splitAt = leftPart.lastIndexOf(' ')
+    const safeSplitAt = splitAt > 0 ? splitAt : SKILL_SPLIT_LIMIT
+    const chunk = rest.slice(0, safeSplitAt).trim()
+    if (!chunk) break
+    chunks.push(chunks.length === 0 ? chunk : `... ${chunk}`)
+    rest = rest.slice(safeSplitAt).trim()
+  }
+
+  if (rest) {
+    chunks.push(chunks.length === 0 ? rest : `... ${rest}`)
+  }
+
+  return chunks.length > 0 ? chunks : [normalized]
+}
+
+const splitSkillByDots = (skill: string): string[] => {
+  const normalized = skill.trim()
+  if (!normalized) return []
+  const dotParts = normalized
+    .split('.')
+    .map(part => part.trim())
+    .filter(Boolean)
+  if (dotParts.length <= 1) return splitLongSkill(normalized)
+  return dotParts.flatMap(splitLongSkill)
+}
+
 const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmployeeSectionProps) => {
   const { t } = useTranslation()
   if (!employeeProfile) return null
@@ -63,6 +99,7 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
   const hasExperience = experience_years !== undefined
   const hasOpenToWork = open_to_work !== undefined
   const skillsList = Array.isArray(skills) ? skills.map(s => s.trim()).filter(Boolean) : []
+  const preparedSkills = skillsList.flatMap(splitSkillByDots)
   const hasSkills = skillsList.length > 0
   if (!hasExperience && !hasOpenToWork && !hasSkills) return null
 
@@ -85,8 +122,8 @@ const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmploye
         >
           <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-[8rem]')}>{t('profile.skills')}</span>
           <div className="flex w-full flex-wrap justify-end gap-2 min-w-0">
-            {skillsList.map(skill => (
-              <Badge key={skill} variant="tag">
+            {preparedSkills.map((skill, index) => (
+              <Badge key={`${skill}-${index}`} variant="tag">
                 {skill}
               </Badge>
             ))}

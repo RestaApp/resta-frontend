@@ -93,6 +93,7 @@
       "accepted": "Employee accepted",
       "rejected": "Application rejected",
       "acceptError": "Failed to accept application",
+      "acceptClosedError": "Shift is no longer open for accepting applications",
       "rejectError": "Failed to reject application",
       "status": {
         "accepted": "Accepted",
@@ -161,8 +162,8 @@
       "shifts": "Shifts"
     },
     "activity": {
-      "list": "List",
-      "calendar": "Calendar"
+      "applications": "Applications",
+      "shifts": "Shifts"
     }
   },
   "greeting": {

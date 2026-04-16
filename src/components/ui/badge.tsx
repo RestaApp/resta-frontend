@@ -21,13 +21,15 @@ interface BadgeProps {
 export const Badge = ({ children, className, variant = 'default' }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+      'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium align-middle',
       BADGE_VARIANTS[variant],
       (variant === 'tag' || variant === 'tagActive') &&
-        'max-w-full overflow-hidden text-ellipsis whitespace-nowrap',
+        'max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
       className
     )}
   >
-    {children}
+    <span className={cn((variant === 'tag' || variant === 'tagActive') && 'relative -top-px')}>
+      {children}
+    </span>
   </span>
 )

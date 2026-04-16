@@ -1,5 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
+import { selectUserData } from '@/features/navigation/model/userSlice'
+import { useAppSelector } from '@/store/hooks'
+import { mapRoleFromApi } from '@/utils/roles'
 import type { VacanciesResponse } from '@/services/api/shiftsApi'
 
 export interface UseAppliedShiftsReturn {
@@ -12,7 +15,14 @@ export interface UseAppliedShiftsReturn {
 }
 
 export const useAppliedShifts = (): UseAppliedShiftsReturn => {
-  const { data } = useGetAppliedShiftsQuery(undefined, { refetchOnMountOrArgChange: true })
+  const userData = useAppSelector(selectUserData)
+  const apiRole = mapRoleFromApi(userData?.role)
+  const shouldSkipAppliedShifts = apiRole === 'restaurant' || apiRole === 'supplier'
+
+  const { data } = useGetAppliedShiftsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    skip: shouldSkipAppliedShifts,
+  })
 
   const serverItems = useMemo(() => {
     const resp: VacanciesResponse | undefined = data

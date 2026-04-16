@@ -47,7 +47,19 @@ export const notificationPreferencesApi = api.injectEndpoints({
         method: 'PATCH',
         body,
       }),
-      invalidatesTags: ['Notification'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: updated } = await queryFulfilled
+          dispatch(
+            api.util.updateQueryData('getNotificationPreferences', undefined, draft => {
+              draft.success = updated.success
+              draft.data = updated.data
+            })
+          )
+        } catch {
+          // Ошибка PATCH будет обработана в UI; кэш не трогаем.
+        }
+      },
     }),
   }),
 })

@@ -21,6 +21,7 @@ import {
 } from '@/services/api/notificationPreferencesApi'
 import { useToast } from '@/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
+import type { ApiRole } from '@/types'
 import type {
   NotificationPreference,
   UpdateNotificationPreferenceRequest,
@@ -55,10 +56,11 @@ const PREFERENCE_I18N: Record<PreferenceKey, { label: string; description: strin
 interface NotificationPreferencesDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  apiRole: ApiRole | null
 }
 
 export const NotificationPreferencesDrawer = memo(
-  ({ open, onOpenChange }: NotificationPreferencesDrawerProps) => {
+  ({ open, onOpenChange, apiRole }: NotificationPreferencesDrawerProps) => {
     const { t } = useTranslation()
     const { showToast } = useToast()
     const { data, isLoading, isError } = useGetNotificationPreferencesQuery(undefined, {
@@ -84,14 +86,15 @@ export const NotificationPreferencesDrawer = memo(
 
     const effectivePrefs = draftPrefs ?? prefsSnapshot
 
+    const visiblePreferenceKeys = useMemo<PreferenceKey[]>(() => {
+      if (apiRole === 'restaurant') return ['application_notifications']
+      return PREFERENCE_KEYS
+    }, [apiRole])
+
     const allEnabled = useMemo(() => {
       if (!effectivePrefs) return false
-      return (
-        effectivePrefs.urgent_notifications &&
-        effectivePrefs.new_shifts_notifications &&
-        effectivePrefs.application_notifications
-      )
-    }, [effectivePrefs])
+      return visiblePreferenceKeys.every(key => effectivePrefs[key])
+    }, [effectivePrefs, visiblePreferenceKeys])
 
     const handleToggle = useCallback(
       (key: PreferenceKey, checked: boolean) => {
@@ -109,15 +112,16 @@ export const NotificationPreferencesDrawer = memo(
         setDraftPrefs(prev => {
           const base = prev ?? prefsSnapshot
           if (!base) return prev
-          return {
-            ...base,
-            urgent_notifications: checked,
-            new_shifts_notifications: checked,
-            application_notifications: checked,
-          }
+          return visiblePreferenceKeys.reduce<Pick<NotificationPreference, PreferenceKey>>(
+            (acc, key) => {
+              acc[key] = checked
+              return acc
+            },
+            { ...base }
+          )
         })
       },
-      [prefsSnapshot]
+      [prefsSnapshot, visiblePreferenceKeys]
     )
 
     const handleApply = useCallback(async () => {
@@ -130,12 +134,15 @@ export const NotificationPreferencesDrawer = memo(
         },
       }
       try {
-        await updatePreferences(payload).unwrap()
+        const response = await updatePreferences(payload).unwrap()
         setDraftPrefs(null)
+        if (response.success) {
+          onOpenChange(false)
+        }
       } catch (error) {
         showToast(getErrorMessage(error) ?? t('saveErrorRetry'), 'error')
       }
-    }, [effectivePrefs, showToast, t, updatePreferences])
+    }, [effectivePrefs, onOpenChange, showToast, t, updatePreferences])
 
     const handleClose = useCallback(
       (next: boolean) => {
@@ -161,20 +168,22 @@ export const NotificationPreferencesDrawer = memo(
           {isError && <p className="text-sm text-destructive py-4">{t('profile.loadError')}</p>}
           {effectivePrefs && (
             <>
-              <div className={`${DRAWER_SETTING_ROW_CLASS} bg-muted/30`}>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium">{t('profile.notifications.all')}</div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {t('profile.notifications.allDescription')}
-                  </p>
+              {visiblePreferenceKeys.length > 1 ? (
+                <div className={`${DRAWER_SETTING_ROW_CLASS} bg-muted/30`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium">{t('profile.notifications.all')}</div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {t('profile.notifications.allDescription')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={allEnabled}
+                    onCheckedChange={handleToggleAll}
+                    disabled={isUpdating}
+                  />
                 </div>
-                <Switch
-                  checked={allEnabled}
-                  onCheckedChange={handleToggleAll}
-                  disabled={isUpdating}
-                />
-              </div>
-              {PREFERENCE_KEYS.map(key => (
+              ) : null}
+              {visiblePreferenceKeys.map(key => (
                 <div key={key} className={DRAWER_SETTING_ROW_CLASS}>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium">{t(PREFERENCE_I18N[key].label)}</div>

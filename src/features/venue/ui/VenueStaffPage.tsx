@@ -7,14 +7,9 @@ import {
 } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { useToast } from '@/hooks/useToast'
+import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
-import { VenueStaffList, type StaffFilter, type StaffItem } from './staff/VenueStaffList'
-
-const normalizeShiftStatus = (status?: string | null): string => {
-  if (!status) return 'active'
-  if (status === 'open') return 'active'
-  return status
-}
+import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'
 
 export function VenueStaffPage() {
   const { t } = useTranslation()
@@ -22,7 +17,6 @@ export function VenueStaffPage() {
   const { data, isLoading, isError, refetch } = useGetReceivedShiftApplicationsQuery()
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
-  const [activeFilter, setActiveFilter] = useState<StaffFilter>('all')
   const [selectedItem, setSelectedItem] = useState<StaffItem | null>(null)
   const [moderatingAction, setModeratingAction] = useState<'accept' | 'reject' | null>(null)
 
@@ -41,7 +35,6 @@ export function VenueStaffPage() {
       list.push({
         shiftId: application.shift_id ?? 0,
         shiftTitle: application.shift_title ?? '',
-        shiftStatus: normalizeShiftStatus(application.shift_status),
         applicationId,
         applicationStatus: application.shift_application_status ?? application.status ?? 'pending',
         person: application,
@@ -51,21 +44,6 @@ export function VenueStaffPage() {
     return list
   }, [applications])
 
-  const filteredItems = useMemo(() => {
-    if (activeFilter === 'all') return staffItems
-    if (activeFilter === 'current') {
-      return staffItems.filter(
-        item => item.applicationStatus === 'accepted' && item.shiftStatus === 'active'
-      )
-    }
-
-    return staffItems.filter(
-      item =>
-        item.applicationStatus === 'accepted' &&
-        (item.shiftStatus === 'completed' || item.shiftStatus === 'cancelled')
-    )
-  }, [activeFilter, staffItems])
-
   const handleAccept = async (applicationId: number, shiftId: number) => {
     try {
       await acceptApplication({
@@ -74,11 +52,29 @@ export function VenueStaffPage() {
       }).unwrap()
       showToast(t('venueUi.staff.accepted', { defaultValue: 'Сотрудник принят' }), 'success')
       await refetch()
-    } catch {
+      return true
+    } catch (error) {
+      const errorMessage = getErrorMessage(error)
+      const isShiftClosedError = errorMessage
+        ?.toLowerCase()
+        .includes('shift is not open for accepting applications')
+
+      if (isShiftClosedError) {
+        showToast(
+          t('venueUi.staff.acceptClosedError', {
+            defaultValue: 'Смена уже закрыта для принятия откликов',
+          }),
+          'error'
+        )
+        return false
+      }
+
       showToast(
-        t('venueUi.staff.acceptError', { defaultValue: 'Не удалось принять заявку' }),
+        errorMessage ??
+          t('venueUi.staff.acceptError', { defaultValue: 'Не удалось принять заявку' }),
         'error'
       )
+      return false
     }
   }
 
@@ -90,11 +86,14 @@ export function VenueStaffPage() {
       }).unwrap()
       showToast(t('venueUi.staff.rejected', { defaultValue: 'Заявка отклонена' }), 'success')
       await refetch()
-    } catch {
+      return true
+    } catch (error) {
       showToast(
-        t('venueUi.staff.rejectError', { defaultValue: 'Не удалось отклонить заявку' }),
+        getErrorMessage(error) ??
+          t('venueUi.staff.rejectError', { defaultValue: 'Не удалось отклонить заявку' }),
         'error'
       )
+      return false
     }
   }
 
@@ -113,8 +112,8 @@ export function VenueStaffPage() {
     if (!selectedItem) return
     try {
       setModeratingAction('accept')
-      await handleAccept(selectedItem.applicationId, selectedItem.shiftId)
-      handleCloseDetails()
+      const isSuccess = await handleAccept(selectedItem.applicationId, selectedItem.shiftId)
+      if (isSuccess) handleCloseDetails()
     } finally {
       setModeratingAction(null)
     }
@@ -124,8 +123,8 @@ export function VenueStaffPage() {
     if (!selectedItem) return
     try {
       setModeratingAction('reject')
-      await handleReject(selectedItem.applicationId, selectedItem.shiftId)
-      handleCloseDetails()
+      const isSuccess = await handleReject(selectedItem.applicationId, selectedItem.shiftId)
+      if (isSuccess) handleCloseDetails()
     } finally {
       setModeratingAction(null)
     }
@@ -147,9 +146,7 @@ export function VenueStaffPage() {
       >
         <VenueStaffList
           isLoading={isLoading}
-          activeFilter={activeFilter}
-          onSetActiveFilter={setActiveFilter}
-          items={filteredItems}
+          items={staffItems}
           isAccepting={isAccepting}
           isRejecting={isRejecting}
           onAccept={handleAccept}

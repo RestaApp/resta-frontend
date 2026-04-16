@@ -3,7 +3,6 @@ import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer
 import { Toast } from '@/components/ui/toast'
 import { ActivityHeader } from './ActivityHeader'
 import { ActivityListTab } from './ActivityListTab'
-import { ActivityCalendarTab } from './ActivityCalendarTab'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
 
 type ActivityPageModel = ReturnType<typeof useActivityPageModel>
@@ -19,37 +18,21 @@ export const EmployeeActivityContent = ({ t, model }: EmployeeActivityContentPro
       <ActivityHeader activeTab={model.activeTab} onChange={model.setActiveTab} />
 
       <div className="ui-density-page ui-density-py">
-        {model.activeTab === 'list' ? (
-          <div className="ui-density-stack">
-            <ActivityListTab
-              isLoading={model.isLoading}
-              isAppliedLoading={model.isAppliedLoading}
-              isError={model.isError}
-              shifts={model.shifts}
-              appliedShifts={model.appliedShifts}
-              isDeleting={model.isDeleting}
-              onEdit={model.handleEdit}
-              onDelete={model.handleDelete}
-              showToast={model.showToast}
-              onRefresh={model.refreshList}
-            />
-          </div>
-        ) : (
-          <ActivityCalendarTab
+        <div className="ui-density-stack">
+          <ActivityListTab
+            activeTab={model.activeTab}
             isLoading={model.isLoading}
+            isAppliedLoading={model.isAppliedLoading}
             isError={model.isError}
-            weekDays={model.weekDays}
-            groupedShifts={model.groupedShiftsForCalendar}
-            selectedDayKey={model.selectedDayKey}
-            onSelectDay={model.setSelectedDayKey}
-            selectedDayShifts={model.selectedDayShiftsForCalendar}
+            shifts={model.shifts}
+            appliedShifts={model.appliedShifts}
+            isDeleting={model.isDeleting}
             onEdit={model.handleEdit}
             onDelete={model.handleDelete}
-            isDeleting={model.isDeleting}
             showToast={model.showToast}
-            onFindShift={model.handleFindShift}
+            onRefresh={model.refreshList}
           />
-        )}
+        </div>
       </div>
 
       <AddShiftDrawer

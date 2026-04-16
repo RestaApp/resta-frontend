@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { MyShiftsSection } from '@/features/activity/ui/components/MyShiftsSection'
 import { MyApplicationsSection } from '@/features/activity/ui/components/MyApplicationsSection'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
+import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
 
 function ActivityListSkeleton() {
   return (
@@ -30,6 +29,7 @@ function ActivityListSkeleton() {
 }
 
 interface ActivityListTabProps {
+  activeTab: ActivityTab
   isLoading: boolean
   isAppliedLoading: boolean
   isError: boolean
@@ -43,6 +43,7 @@ interface ActivityListTabProps {
 }
 
 export function ActivityListTab({
+  activeTab,
   isLoading,
   isAppliedLoading,
   isError,
@@ -63,26 +64,17 @@ export function ActivityListTab({
     content = <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
   } else if (isLoadingAny) {
     content = <ActivityListSkeleton />
-  } else if (shifts.length === 0 && appliedShifts.length === 0) {
+  } else if (activeTab === 'shifts') {
     content = (
-      <EmptyState
-        message={t('activity.emptyList')}
-        description={t('activity.emptyListDescription')}
-        illustration={<EmptyInboxIllustration className="h-24 w-24" />}
+      <MyShiftsSection
+        shifts={shifts}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        isDeleting={isDeleting}
       />
     )
   } else {
-    content = (
-      <div className="ui-density-stack-lg">
-        <MyShiftsSection
-          shifts={shifts}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          isDeleting={isDeleting}
-        />
-        <MyApplicationsSection appliedShifts={appliedShifts} showToast={showToast} />
-      </div>
-    )
+    content = <MyApplicationsSection appliedShifts={appliedShifts} showToast={showToast} />
   }
 
   return (

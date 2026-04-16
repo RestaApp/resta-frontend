@@ -93,6 +93,7 @@
       "accepted": "Сотрудник принят",
       "rejected": "Заявка отклонена",
       "acceptError": "Не удалось принять заявку",
+      "acceptClosedError": "Смена уже закрыта для принятия откликов",
       "rejectError": "Не удалось отклонить заявку",
       "status": {
         "accepted": "Принят",
@@ -161,8 +162,8 @@
       "shifts": "Смены"
     },
     "activity": {
-      "list": "Список",
-      "calendar": "Календарь"
+      "applications": "Отклики",
+      "shifts": "Смены"
     }
   },
   "greeting": {
@@ -197,7 +198,7 @@
     "language": "Язык",
     "languageDescription": "Русский или English",
     "notificationSettings": "Настройки уведомлений",
-    "notificationsDescription": "Управление уведомлениями в Telegram. Уведомления в приложении приходят всегда.",
+    "notificationsDescription": "Управление уведомлениями в Telegram бот.",
     "notifications": {
       "all": "Все уведомления",
       "allDescription": "Включить или выключить все сразу",

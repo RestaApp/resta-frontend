@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileHero } from './components/ProfileHero'
-import { ProfileStats } from './components/ProfileStats'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
@@ -76,13 +75,6 @@ export const ProfilePage = memo(() => {
         }
       />
 
-      <ProfileStats
-        apiRole={m.apiRole}
-        employeeStats={m.employeeStats}
-        myShiftsCount={m.myShiftsCount}
-        appliedShiftsCount={m.appliedShiftsCount}
-      />
-
       {m.apiRole === 'employee' && (
         <ProfileSpecializationsSection specializations={m.specializations} />
       )}
@@ -144,6 +136,7 @@ export const ProfilePage = memo(() => {
       <NotificationPreferencesDrawer
         open={m.isNotificationPrefsDrawerOpen}
         onOpenChange={m.setIsNotificationPrefsDrawerOpen}
+        apiRole={m.apiRole}
       />
     </div>
   )
