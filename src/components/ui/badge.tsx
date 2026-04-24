@@ -10,6 +10,12 @@ const BADGE_VARIANTS = {
   outline: 'border border-border bg-transparent',
   tag: `border ${TAG_INACTIVE_CLASS}`,
   tagActive: `border ${TAG_ACTIVE_CLASS}`,
+  // Resta semantic badges
+  sos: 'bg-primary text-white font-bold tracking-widest',
+  verified: 'bg-success/12 text-success border border-success/25',
+  escrow: 'bg-success/10 text-success border border-success',
+  boost: 'bg-amber/12 text-amber border border-amber/40',
+  pro: 'bg-foreground text-background',
 } as const
 
 interface BadgeProps {

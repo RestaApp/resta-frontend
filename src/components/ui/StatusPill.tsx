@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/utils/cn'
-import { Flame } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 
 export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
 
@@ -9,26 +9,41 @@ export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 const basePill =
   'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium leading-none border'
 
-const urgentInnerPill =
-  'inline-flex items-center whitespace-nowrap px-3 py-1 text-xs font-medium leading-none border-0'
-
 export const UrgentPill = ({ className }: { className?: string }) => {
-  const { t } = useTranslation()
   return (
     <span
       className={cn(
-        'inline-flex max-w-max rounded-full overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.14)]',
+        'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-widest uppercase bg-primary text-white',
         className
       )}
     >
-      {/* Градиент на прямоугольнике; скругление только у обёртки — иначе на стыке дуги и 135°-градиента видны чужие цвета */}
-      <span className={cn(urgentInnerPill, 'gradient-primary text-white')}>
-        <Flame className="w-3 h-3 mr-1.5 shrink-0" />
-        {t('activity.urgent')}
-      </span>
+      SOS
     </span>
   )
 }
+
+export const VerifiedBadge = ({ className }: { className?: string }) => (
+  <span
+    className={cn(
+      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/25',
+      className
+    )}
+  >
+    <ShieldCheck className="w-3 h-3 shrink-0" />
+    VERIFIED
+  </span>
+)
+
+export const EscrowBadge = ({ amount, currency, className }: { amount?: number | string; currency?: string; className?: string }) => (
+  <span
+    className={cn(
+      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-wider border bg-success/10 text-success border-success',
+      className
+    )}
+  >
+    ESCROW{amount ? ` · ${amount}${currency ? ' ' + currency : ''}` : ''}
+  </span>
+)
 
 const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string => {
   if (!status) return ''

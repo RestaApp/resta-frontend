@@ -4,7 +4,9 @@
 
 :root {
   --font-size: 16px;
-  --font-family-base: 'Manrope', 'Segoe UI', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  --font-family-base: 'Inter', 'Segoe UI', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  --font-family-display: 'Instrument Serif', Georgia, serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --ui-density-page-x: 1rem;
   --ui-density-page-y: 1rem;
   --ui-density-stack-sm: 0.75rem;
@@ -17,17 +19,17 @@
   --foreground: #ffffff;
 
   --card: #272635;
-  --card-foreground: #ffffff;
+  --card-foreground: var(--foreground);
   --drawer-surface: #1f1f2a;
-  --input-background: #2c2a3a;
 
   --popover: #272635;
   --popover-foreground: #ffffff;
 
-  /* BRAND: Фиолетовый бренд везде! */
-  --purple-deep: #8f50ed;
+  /* BRAND: Terracotta accent */
+  --terracotta: #E85A2A;
+  --amber: #F4A14B;
   --primary-foreground: #ffffff;
-  --ring: var(--purple-deep);
+  --ring: var(--terracotta);
 
   --surface-subtle: #272635;
   --surface-subtle-foreground: #ffffff;
@@ -50,6 +52,7 @@
 
   --border: var(--surface-border);
   --input: rgba(255, 255, 255, 0.12);
+  --input-background: #2c2a3a;
   --switch-background: var(--surface-border);
   --surface-stroke-soft: rgba(255, 255, 255, 0.06);
   --surface-stroke-soft-hover: rgba(255, 255, 255, 0.1);
@@ -64,15 +67,14 @@
   --overlay-glass: rgba(255, 255, 255, 0.05);
   --overlay-shine: rgba(255, 255, 255, 0.4);
 
-  --radius: 0.625rem;
-  /* ~10px, чуть менее «мягко» */
+  --radius: 0.75rem;
 
   /* Charts */
-  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: var(--success);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
 
   /* Sidebar */
   --sidebar: #171717;
@@ -81,12 +83,13 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #272635;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333147;
+  --sidebar-border: var(--surface-border);
   --sidebar-ring: var(--ring);
 
-  /* App gradients on top of new brand palette */
-  --pink-electric: #EC4899;
-  --blue-cyber: #06B6D4;
+  /* Legacy compat */
+  --purple-deep: var(--terracotta);
+  --pink-electric: var(--amber);
+  --blue-cyber: #5B8DEF;
   --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
   --gradient-glow: linear-gradient(135deg,
       rgba(107, 33, 168, 0.1) 0%,
@@ -104,7 +107,7 @@
   }
 }
 
-/* Контраст инпутов для единой тёмной темы */
+/* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней */
 [data-slot='input'],
 input:not([type='range']):not([type='checkbox']):not([type='radio']),
 textarea {
@@ -126,7 +129,7 @@ textarea:focus,
 textarea:focus-visible {
   border-color: var(--purple-deep);
   outline: none;
-  box-shadow: 0 0 0 1px var(--purple-deep);
+  box-shadow: 0 0 0 1px var(--terracotta);
 }
 
 @theme inline {
@@ -136,8 +139,10 @@ textarea:focus-visible {
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--purple-deep);
+  --color-primary: var(--terracotta);
   --color-primary-foreground: var(--primary-foreground);
+  --color-terracotta: var(--terracotta);
+  --color-amber: var(--amber);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -259,9 +264,19 @@ textarea:focus-visible {
     padding-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom));
   }
 
-  /* Gradient Primary Utility - для кнопок и акцентных элементов */
+  /* Primary accent utility - terracotta */
   .gradient-primary {
-    background: var(--gradient-primary);
+    background: var(--terracotta);
+  }
+
+  /* Display font utility */
+  .font-display {
+    font-family: var(--font-family-display);
+  }
+
+  /* Mono font utility */
+  .font-mono-resta {
+    font-family: var(--font-family-mono);
   }
 
   /* Hide scrollbar but keep functionality */

@@ -21,6 +21,9 @@ export interface Shift {
   location?: string
   duration?: string
   urgent?: boolean
+  verified?: boolean
+  escrow?: boolean
+  escrowAmount?: number
   badges?: string[]
   applicationId?: number | null
   ownerId?: number | null

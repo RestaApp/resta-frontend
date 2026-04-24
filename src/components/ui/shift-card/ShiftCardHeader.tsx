@@ -1,6 +1,6 @@
 import type { Shift } from '@/features/feed/model/types'
 import { Avatar, AvatarFallback, AvatarImage } from '..'
-import { UrgentPill } from '../StatusPill'
+import { UrgentPill, VerifiedBadge } from '../StatusPill'
 import { cn } from '@/utils/cn'
 
 interface ShiftCardHeaderProps {
@@ -19,36 +19,35 @@ export const ShiftCardHeader = ({
   hidePrice = false,
 }: ShiftCardHeaderProps) => {
   return (
-    <div className="flex justify-between items-start gap-3 mb-1.5">
+    <div className="flex justify-between items-start gap-3 mb-2">
       <div className="flex gap-3 min-w-0 flex-1">
-        <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-muted/60 flex items-center justify-center text-2xl border border-border/50 overflow-hidden">
-          <Avatar className="w-12 h-12 rounded-lg">
+        <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-muted/60 flex items-center justify-center text-xl border border-border/50 overflow-hidden">
+          <Avatar className="w-11 h-11 rounded-xl">
             <AvatarImage src={shift.userPhotoUrl} alt="" />
-            <AvatarFallback className="rounded-lg bg-muted/60 text-2xl leading-none">
+            <AvatarFallback className="rounded-xl bg-muted/60 text-xl leading-none">
               <span className="leading-none">{shift.logo}</span>
             </AvatarFallback>
           </Avatar>
         </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="font-bold text-base leading-tight">{displayTitle ?? positionText}</h3>
-          {shift.urgent ? (
-            <div>
-              <UrgentPill />
-            </div>
-          ) : null}
-          {displayTitle != null && shift.rating > 0 ? (
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground mt-0.5">
-              ★ {shift.rating}
-            </div>
-          ) : null}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <h3 className="font-semibold text-[15px] leading-snug tracking-tight">{displayTitle ?? positionText}</h3>
+          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+            {shift.urgent ? <UrgentPill /> : null}
+            {shift.verified ? <VerifiedBadge /> : null}
+            {displayTitle != null && shift.rating > 0 ? (
+              <span className="text-[11px] font-medium text-muted-foreground font-mono-resta">
+                ★ {shift.rating}
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
       {!hidePrice ? (
-        <div className="text-right flex-shrink-0">
+        <div className="text-right flex-shrink-0 pt-0.5">
           <span
             className={cn(
-              'font-semibold text-lg text-primary tracking-tight',
-              shift.urgent && 'dark:font-bold dark:text-[1.0625rem]'
+              'font-display text-2xl leading-none tracking-tight text-foreground',
+              shift.urgent && 'text-primary'
             )}
           >
             {priceContent}

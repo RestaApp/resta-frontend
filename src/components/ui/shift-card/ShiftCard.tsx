@@ -8,7 +8,7 @@ import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/forma
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { StatusPill, type ShiftStatus } from '../StatusPill'
+import { StatusPill, EscrowBadge, type ShiftStatus } from '../StatusPill'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 import { cn } from '@/utils/cn'
@@ -193,7 +193,7 @@ const ShiftCardComponent = ({
         'group relative rounded-xl p-4 border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
         'border-[var(--surface-stroke-soft)] hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
         shift.urgent &&
-          'border-primary/25 hover:border-primary/35 dark:!border-primary/25 dark:hover:border-primary/35 dark:[box-shadow:var(--primary-ring-soft)] dark:hover:[box-shadow:var(--primary-ring-soft-hover)]',
+          'border-primary/30 bg-primary/5 hover:border-primary/45 [box-shadow:var(--primary-ring-soft)] hover:[box-shadow:var(--primary-ring-soft-hover)]',
         !shift.urgent && 'shadow-sm hover:[box-shadow:var(--surface-shadow-soft)]'
       )}
     >
@@ -224,6 +224,9 @@ const ShiftCardComponent = ({
         <div className="flex items-center justify-between gap-2">
           <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
             {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
+            {shift.escrow ? (
+              <EscrowBadge amount={shift.escrowAmount ?? shift.pay} currency={shift.currency} />
+            ) : null}
             {responses ? (
               <span
                 className={cn(
