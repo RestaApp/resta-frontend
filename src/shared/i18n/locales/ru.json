@@ -194,7 +194,7 @@
     "workSummaryExperience": "Опыт работы",
     "settings": "Настройки",
     "theme": "Тема оформления",
-    "themeDescription": "Светлая или темная тема",
+    "themeDescription": "Только тёмная тема",
     "language": "Язык",
     "languageDescription": "Русский или English",
     "notificationSettings": "Настройки уведомлений",
@@ -612,9 +612,6 @@
     "selectSupplierCategory": "Выбрать категорию поставщика: {{label}}",
     "selectType": "Выбрать: {{label}}",
     "determineLocation": "Определить местоположение",
-    "lightTheme": "Выбрать светлую тему",
-    "darkTheme": "Выбрать тёмную тему",
-    "toggleTheme": "Переключить тему",
     "closeNotification": "Закрыть уведомление",
     "viewOnMap": "Посмотреть на карте"
   },

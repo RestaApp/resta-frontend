@@ -194,7 +194,7 @@
     "workSummaryExperience": "Work experience",
     "settings": "Settings",
     "theme": "Theme",
-    "themeDescription": "Light or dark theme",
+    "themeDescription": "Dark theme only",
     "language": "Language",
     "languageDescription": "Russian or English",
     "notificationSettings": "Notification settings",
@@ -612,9 +612,6 @@
     "selectSupplierCategory": "Select supplier category: {{label}}",
     "selectType": "Select: {{label}}",
     "determineLocation": "Determine location",
-    "lightTheme": "Select light theme",
-    "darkTheme": "Select dark theme",
-    "toggleTheme": "Toggle theme",
     "closeNotification": "Close notification",
     "viewOnMap": "View on map"
   },

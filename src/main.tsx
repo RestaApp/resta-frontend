@@ -10,7 +10,7 @@ import { TelegramProvider } from './contexts/TelegramContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { initTheme } from './utils/theme'
 
-// Инициализация темы до рендера (localStorage / prefers-color-scheme)
+// Инициализация единой тёмной темы до рендера
 initTheme()
 
 createRoot(document.getElementById('root')!).render(

@@ -1,9 +1,8 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { Settings, HelpCircle, LogOut, Moon, Languages } from 'lucide-react'
+import { Settings, HelpCircle, LogOut, Languages } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { ThemeToggleCompact } from '@/components/ui/theme-toggle-compact'
 import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
 import type { Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
@@ -43,18 +42,6 @@ export function ProfileSettings({
       </h3>
 
       <div className="space-y-3">
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Moon className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
-              <div>
-                <div className="text-sm font-medium">{t('profile.theme')}</div>
-              </div>
-            </div>
-            <ThemeToggleCompact />
-          </div>
-        </Card>
-
         <Card className="p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
