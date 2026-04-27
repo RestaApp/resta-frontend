@@ -70,7 +70,7 @@
     "done": "Done",
     "continueFormVenue": "Continue filling restaurant form",
     "continueFormSupplier": "Continue filling supplier form",
-    "selectRole": "Select role"
+    "selectRole": "Choose role"
   },
   "nav": {
     "bottomNav": "Bottom navigation",
@@ -470,10 +470,16 @@
     "fillRequired": "Fill in all required fields."
   },
   "roles": {
-    "whoAreYou": "Who are you?",
+    "whoAreYou": "Who are you in the industry?",
     "chooseRole": "Choose your role in the ecosystem",
-    "roleChoiceHint": "This helps us match you with the right jobs and shifts",
-    "mostPopularBadge": "Most popular",
+    "roleChoiceHint": "We ask this once so we can show relevant shifts and contacts.",
+    "mainStep": "STEP {{current}} • {{total}}",
+    "mostPopularBadge": "POPULAR",
+    "roleCards": {
+      "chefAudience": "892 employees online",
+      "venueAudience": "340 venues \u00b7 Minsk",
+      "supplierAudience": "128 suppliers"
+    },
     "loadRolesError": "Failed to load roles",
     "noRoles": "No roles found",
     "positionsError": "Failed to load positions",
