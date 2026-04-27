@@ -37,7 +37,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
 
   const { roles, isLoading, isFetching, error } = useRoles({ skip: !isUnverified })
 
-  const shouldLoadPositions = (draftSelectedRole === 'chef' || showEmployeeSubRoles) && isUnverified
+  const shouldLoadPositions = showEmployeeSubRoles && isUnverified
 
   const {
     positionsApi: employeeSubRoles,
@@ -65,8 +65,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     supplierCategory: selectedSupplierCategory ?? 'products',
   })
 
-  const shouldLoadRestaurantFormats =
-    (draftSelectedRole === 'venue' || showRestaurantFormats) && isUnverified
+  const shouldLoadRestaurantFormats = showRestaurantFormats && isUnverified
 
   const {
     restaurantFormats,
@@ -87,29 +86,30 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     setShowSupplierTypes(true)
   }, [])
 
-  const handleRoleSelect = useCallback(
-    (roleId: UiRole) => {
-      setDraftSelectedRole(roleId)
+  const handleRoleSelect = useCallback((roleId: UiRole) => {
+    setDraftSelectedRole(roleId)
+  }, [])
 
-      if (roleId === 'chef') {
-        setShowEmployeeSubRoles(true)
-        return
-      }
+  const handleRoleContinue = useCallback(() => {
+    if (!draftSelectedRole) return
 
-      if (roleId === 'supplier') {
-        setShowSupplierCategory(true)
-        return
-      }
+    if (draftSelectedRole === 'chef') {
+      setShowEmployeeSubRoles(true)
+      return
+    }
 
-      if (roleId === 'venue') {
-        setShowRestaurantFormats(true)
-        return
-      }
+    if (draftSelectedRole === 'supplier') {
+      setShowSupplierCategory(true)
+      return
+    }
 
-      onSelectRole(roleId)
-    },
-    [onSelectRole]
-  )
+    if (draftSelectedRole === 'venue') {
+      setShowRestaurantFormats(true)
+      return
+    }
+
+    onSelectRole(draftSelectedRole)
+  }, [draftSelectedRole, onSelectRole])
 
   const handleBack = useCallback(() => {
     setDraftSelectedRole(null)
@@ -152,6 +152,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     isLoadingRestaurantFormats,
     isFetchingRestaurantFormats,
     handleRoleSelect,
+    handleRoleContinue,
     handleBack,
     setShowEmployeeSubRoles,
     setShowSupplierTypes,

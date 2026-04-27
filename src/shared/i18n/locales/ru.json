@@ -70,7 +70,7 @@
     "done": "Готово",
     "continueFormVenue": "Продолжить заполнение формы ресторана",
     "continueFormSupplier": "Продолжить заполнение формы поставщика",
-    "selectRole": "Выбрать роль"
+    "selectRole": "Выберите роль"
   },
   "nav": {
     "bottomNav": "Нижняя навигация",
@@ -470,10 +470,16 @@
     "fillRequired": "Заполните все обязательные поля."
   },
   "roles": {
-    "whoAreYou": "Кто вы?",
+    "whoAreYou": "Кто вы в индустрии?",
     "chooseRole": "Выберите вашу роль",
-    "roleChoiceHint": "Это поможет подобрать подходящие вакансии и смены",
-    "mostPopularBadge": "Чаще всего выбирают",
+    "roleChoiceHint": "Это нужно один раз — чтобы мы показывали релевантные смены и контакты.",
+    "mainStep": "ШАГ {{current}} • {{total}}",
+    "mostPopularBadge": "ПОПУЛЯРНО",
+    "roleCards": {
+      "chefAudience": "892 сотрудника в сети",
+      "venueAudience": "340 заведений \u00b7 Минск",
+      "supplierAudience": "128 поставщиков"
+    },
     "loadRolesError": "Не удалось загрузить роли",
     "noRoles": "Роли не найдены",
     "positionsError": "Не удалось загрузить позиции",

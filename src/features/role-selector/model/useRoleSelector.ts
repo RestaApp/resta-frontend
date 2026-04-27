@@ -77,6 +77,7 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     selectedSubRole: subRoleSubmission.selectedSubRole,
 
     handleRoleSelect: roleSelection.handleRoleSelect,
+    handleRoleContinue: roleSelection.handleRoleContinue,
     handleSubRoleSelect: subRoleSubmission.handleSubRoleSelect,
     handleSubRoleContinue: subRoleSubmission.handleSubRoleContinue,
     handleSupplierTypeContinue,
