@@ -52,7 +52,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
   return (
     <div className="bg-background flex flex-col">
       <div className="flex-1 flex flex-col ui-density-page ui-density-py overflow-y-auto">
-        <OnboardingProgress current={2} total={3} className="ui-density-mb-lg" />
+        <OnboardingProgress current={2} total={2} className="ui-density-mb-lg" />
         <SectionHeader
           title={t('roles.supplierCategoryTitle')}
           description={t('roles.supplierCategoryDescription')}

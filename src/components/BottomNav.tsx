@@ -68,8 +68,7 @@ export const BottomNav = ({
                 {isActive && (
                   <motion.span
                     layoutId={layoutId}
-                    className="absolute -inset-2 -z-10 rounded-full"
-                    style={{ background: 'var(--gradient-glow)' }}
+                    className="absolute -inset-2 -z-10 rounded-full bg-primary/8"
                     transition={reduceMotion ? { duration: 0 } : undefined}
                     aria-hidden="true"
                   />

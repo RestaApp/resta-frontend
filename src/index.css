@@ -14,60 +14,60 @@
   --ui-density-stack-lg: 1.5rem;
   --ui-density-section-gap: 1.5rem;
 
-  /* --- Base Colors (Dark Mode / BoomPoker palette) --- */
-  --background: #171717;
-  --foreground: #ffffff;
+  /* --- Base Colors: Charcoal + Cream + Terracotta --- */
+  --background: #0F0E0C;        /* charcoal warm */
+  --foreground: #F5EDE0;        /* cream */
 
-  --card: #272635;
-  --card-foreground: var(--foreground);
-  --drawer-surface: #1f1f2a;
+  --card: #191714;              /* surface warm */
+  --card-foreground: #F5EDE0;
+  --drawer-surface: #141210;
 
-  --popover: #272635;
-  --popover-foreground: #ffffff;
+  --popover: #191714;
+  --popover-foreground: #F5EDE0;
 
-  /* BRAND: Terracotta accent */
+  /* BRAND: Terracotta + Amber */
   --terracotta: #E85A2A;
   --amber: #F4A14B;
   --primary-foreground: #ffffff;
   --ring: var(--terracotta);
 
-  --surface-subtle: #272635;
-  --surface-subtle-foreground: #ffffff;
-  --surface-border: #333147;
+  --surface-subtle: #1D1B18;
+  --surface-subtle-foreground: #F5EDE0;
+  --surface-border: #2A2520;    /* warm border */
 
   --secondary: var(--surface-subtle);
   --secondary-foreground: var(--surface-subtle-foreground);
 
   --muted: var(--surface-subtle);
-  --muted-foreground: #bab7ce;
+  --muted-foreground: #7A7068;  /* warm muted, not purple */
 
   --accent: var(--surface-subtle);
   --accent-foreground: var(--surface-subtle-foreground);
 
-  --destructive: #ea5b68;
+  --destructive: #C63B3B;
   --destructive-foreground: #ffffff;
 
-  --success: #65ba52;
+  --success: #4F9D56;
   --warning: #e9b051;
 
   --border: var(--surface-border);
-  --input: rgba(255, 255, 255, 0.12);
-  --input-background: #2c2a3a;
+  --input: rgba(255, 255, 255, 0.08);
+  --input-background: #1D1B18;
   --switch-background: var(--surface-border);
-  --surface-stroke-soft: rgba(255, 255, 255, 0.06);
-  --surface-stroke-soft-hover: rgba(255, 255, 255, 0.1);
+  --surface-stroke-soft: rgba(255, 255, 255, 0.05);
+  --surface-stroke-soft-hover: rgba(255, 255, 255, 0.09);
   --surface-shadow-soft: none;
-  --primary-ring-soft: 0 0 0 1px rgba(107, 33, 168, 0.12);
-  --primary-ring-soft-hover: 0 0 0 1px rgba(107, 33, 168, 0.18);
-  --primary-hero-shadow: 0 20px 60px rgba(107, 33, 168, 0.4);
-  --input-stroke: rgba(255, 255, 255, 0.1);
-  --input-stroke-hover: rgba(255, 255, 255, 0.14);
-  --overlay-scrim: rgba(0, 0, 0, 0.6);
-  --overlay-scrim-strong: rgba(0, 0, 0, 0.65);
-  --overlay-glass: rgba(255, 255, 255, 0.05);
-  --overlay-shine: rgba(255, 255, 255, 0.4);
+  --primary-ring-soft: 0 0 0 1px rgba(232, 90, 42, 0.15);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(232, 90, 42, 0.25);
+  --primary-hero-shadow: 0 20px 60px rgba(232, 90, 42, 0.35);
+  --input-stroke: rgba(255, 255, 255, 0.08);
+  --input-stroke-hover: rgba(255, 255, 255, 0.13);
+  --overlay-scrim: rgba(0, 0, 0, 0.65);
+  --overlay-scrim-strong: rgba(0, 0, 0, 0.75);
+  --overlay-glass: rgba(255, 255, 255, 0.04);
+  --overlay-shine: rgba(255, 255, 255, 0.35);
 
-  --radius: 0.75rem;
+  --radius: 0.875rem;           /* 14px per spec */
 
   /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -77,23 +77,23 @@
   --chart-5: oklch(0.769 0.188 70.08);
 
   /* Sidebar */
-  --sidebar: #171717;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: var(--purple-deep);
+  --sidebar: #0F0E0C;
+  --sidebar-foreground: #F5EDE0;
+  --sidebar-primary: var(--terracotta);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #272635;
-  --sidebar-accent-foreground: #ffffff;
+  --sidebar-accent: #191714;
+  --sidebar-accent-foreground: #F5EDE0;
   --sidebar-border: var(--surface-border);
   --sidebar-ring: var(--ring);
 
-  /* Legacy compat */
+  /* Legacy compat aliases */
   --purple-deep: var(--terracotta);
   --pink-electric: var(--amber);
   --blue-cyber: #5B8DEF;
-  --gradient-primary: linear-gradient(135deg, var(--purple-deep) 0%, var(--pink-electric) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--terracotta) 0%, var(--amber) 100%);
   --gradient-glow: linear-gradient(135deg,
-      rgba(107, 33, 168, 0.1) 0%,
-      rgba(236, 72, 153, 0.1) 100%);
+      rgba(232, 90, 42, 0.08) 0%,
+      rgba(244, 161, 75, 0.08) 100%);
 }
 
 @media (min-width: 640px) {
@@ -127,7 +127,7 @@ input:not([type='range']):not([type='checkbox']):not([type='radio']):focus,
 input:not([type='range']):not([type='checkbox']):not([type='radio']):focus-visible,
 textarea:focus,
 textarea:focus-visible {
-  border-color: var(--purple-deep);
+  border-color: var(--terracotta);
   outline: none;
   box-shadow: 0 0 0 1px var(--terracotta);
 }
@@ -180,12 +180,9 @@ textarea:focus-visible {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Custom Colors Mapping */
-  --color-purple-deep: var(--purple-deep);
-  --color-pink-electric: var(--pink-electric);
-  --color-blue-cyber: var(--blue-cyber);
-  /* Добавляем градиенты как background-image утилиты */
-  --background-image-gradient-glow: var(--gradient-glow);
+  /* Terracotta/Amber direct utilities */
+  --color-terracotta: var(--terracotta);
+  --color-amber: var(--amber);
 }
 
 @layer base {
@@ -262,11 +259,6 @@ textarea:focus-visible {
 @layer utilities {
   .safe-area-bottom {
     padding-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom));
-  }
-
-  /* Primary accent utility - terracotta */
-  .gradient-primary {
-    background: var(--terracotta);
   }
 
   /* Display font utility */

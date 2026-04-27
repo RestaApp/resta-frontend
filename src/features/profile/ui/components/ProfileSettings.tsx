@@ -37,7 +37,7 @@ export function ProfileSettings({
   return (
     <div>
       <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
-        <Settings className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+        <Settings className="w-5 h-5 text-primary" />
         {t('profile.settings')}
       </h3>
 
@@ -45,7 +45,7 @@ export function ProfileSettings({
         <Card className="p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Languages className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+              <Languages className="w-5 h-5 text-primary" />
               <div>
                 <div className="text-sm font-medium">{t('profile.language')}</div>
               </div>
@@ -65,7 +65,7 @@ export function ProfileSettings({
             disabled={!onNotificationSettingsClick}
           >
             <div className="flex items-center gap-3">
-              <Settings className="w-5 h-5 shrink-0" style={{ color: 'var(--purple-deep)' }} />
+              <Settings className="w-5 h-5 shrink-0 text-primary" />
               <span>{t('profile.notificationSettings')}</span>
             </div>
           </motion.button>
@@ -80,7 +80,7 @@ export function ProfileSettings({
               onClick={() => setIsSupportDrawerOpen(true)}
             >
               <div className="flex items-center gap-3">
-                <HelpCircle className="w-5 h-5 shrink-0" style={{ color: 'var(--purple-deep)' }} />
+                <HelpCircle className="w-5 h-5 shrink-0 text-primary" />
                 <span>{t('profile.support')}</span>
               </div>
             </motion.button>

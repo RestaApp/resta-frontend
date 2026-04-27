@@ -132,7 +132,7 @@ const SupplierCardComponent = ({
       <div className="flex items-center gap-4">
         <Avatar className="h-11 w-11 rounded-xl shrink-0 self-start">
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
-          <AvatarFallback className="gradient-primary text-primary-foreground text-base font-semibold">
+          <AvatarFallback className="bg-primary text-primary-foreground text-base font-semibold">
             {supplier.name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>

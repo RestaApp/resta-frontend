@@ -16,6 +16,8 @@ interface CardSelectBaseProps {
   ariaLabel?: string
   /** Бейдж над карточкой (например, «Чаще всего выбирают») */
   badge?: string
+  /** Строка социального доказательства под описанием */
+  socialProof?: string
 }
 
 export interface CardSelectProps<TId extends string> extends CardSelectBaseProps {
@@ -34,6 +36,7 @@ const CardSelectInner = <TId extends string>({
   className,
   ariaLabel,
   badge,
+  socialProof,
   onSelect,
 }: CardSelectProps<TId>) => {
   const handleClick = useCallback(() => onSelect(id), [id, onSelect])
@@ -62,7 +65,7 @@ const CardSelectInner = <TId extends string>({
         className={cn(
           'w-full rounded-xl border p-4 text-left transition-all',
           isSelected
-            ? 'gradient-primary border-transparent text-white shadow-lg ring-2 ring-primary/30'
+            ? 'bg-primary border-transparent text-white shadow-sm ring-2 ring-primary/25'
             : 'border-border',
           layout === 'vertical' ? 'bg-card shadow-md shadow-black/5' : '',
           layout === 'horizontal' ? 'flex items-center gap-4' : 'flex flex-col items-center gap-3',
@@ -100,6 +103,16 @@ const CardSelectInner = <TId extends string>({
               className={cn('mt-1 text-sm', isSelected ? 'text-white/80' : 'text-muted-foreground')}
             >
               {description}
+            </div>
+          ) : null}
+          {socialProof ? (
+            <div
+              className={cn(
+                'mt-1.5 font-mono-resta text-[11px] font-medium',
+                isSelected ? 'text-white/60' : 'text-muted-foreground/70'
+              )}
+            >
+              {socialProof}
             </div>
           ) : null}
         </div>

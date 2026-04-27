@@ -168,7 +168,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
         )}
       >
         <div className="flex w-full min-h-[44px] items-center justify-between gap-3">
-          <h1 className="text-2xl font-semibold leading-tight truncate">{title}</h1>
+          <h1 className="font-display text-3xl leading-tight tracking-tight truncate">{title}</h1>
 
           {action ? (
             <Button

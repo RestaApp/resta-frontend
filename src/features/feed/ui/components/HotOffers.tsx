@@ -146,18 +146,18 @@ export const HotOffers = memo(
       <div
         className={cn(
           'mx-4 py-3 pl-4 pr-1 rounded-xl',
-          'bg-card/50 border border-primary/15 border-l-2 border-l-primary/40 dark:bg-card'
+          'bg-card border border-primary/20 border-l-[3px] border-l-primary'
         )}
       >
         <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-bold text-lg flex items-center gap-2">
-              <span className="text-lg" aria-hidden>
-                🔥
-              </span>
+            <span className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-widest uppercase bg-primary text-white">
+              SOS
+            </span>
+            <h3 className="font-display text-xl tracking-tight flex items-center gap-2">
               {title}
               {totalCount !== undefined ? (
-                <span className="text-sm font-normal text-muted-foreground">({totalCount})</span>
+                <span className="font-mono-resta text-sm font-normal text-muted-foreground">· {totalCount}</span>
               ) : null}
             </h3>
           </div>

@@ -1,12 +1,7 @@
 {
   "feedFallback": {
     "venue": "Ресторан",
-    "notSpecified": "Не указано",
-    "permanent": "Постоянная",
-    "oneTime": "Одноразовая",
     "vacancy": "Вакансия",
-    "fromRate": "от {{value}} BYN/час",
-    "durationHours": "Длительность: {{value}} ч.",
     "noApplications": "Пока нет заявок",
     "application": "заявка",
     "applications2": "заявки",
@@ -30,8 +25,6 @@
     "close": "Закрыть",
     "reset": "Сбросить",
     "loading": "Загрузка",
-    "pullToRefresh": "Потяните вниз, чтобы обновить",
-    "releaseToRefresh": "Отпустите, чтобы обновить",
     "openProfile": "Открыть профиль",
     "understand": "Понятно",
     "all": "Все",
@@ -46,22 +39,14 @@
     "requirements": "Требования",
     "position": "Позиция",
     "date": "Дата",
-    "time": "Время",
     "location": "Локация",
     "payPerShift": "за смену",
     "payPerMonth": "за месяц",
-    "payPerShiftShort": "/смена",
-    "payPerMonthShort": "/мес",
     "rating": "Рейтинг",
     "notSpecified": "Не указано",
     "aboutVenue": "О заведении",
-    "today": "Сегодня",
     "vacancy": "Вакансия",
     "replacement": "Замена",
-    "myShift": "Моя смена",
-    "myVacancy": "Моя вакансия",
-    "permanent": "Постоянная",
-    "oneTime": "Одноразовая",
     "selectValue": "Выберите значение",
     "nothingFound": "Ничего не найдено",
     "noOptions": "Нет доступных вариантов",
@@ -69,24 +54,15 @@
     "continue": "Продолжить",
     "done": "Готово",
     "continueFormVenue": "Продолжить заполнение формы ресторана",
-    "continueFormSupplier": "Продолжить заполнение формы поставщика",
-    "selectRole": "Выберите роль"
+    "continueFormSupplier": "Продолжить заполнение формы поставщика"
   },
   "nav": {
     "bottomNav": "Нижняя навигация",
     "fillProfileRequired": "Требуется заполнить профиль"
   },
   "venueUi": {
-    "create": "Создать",
-    "createShift": "Создать смену",
-    "createVacancy": "Создать вакансию",
     "profileRequiredToCreate": "Чтобы создавать вакансии и смены, сначала заполните профиль.",
     "staff": {
-      "filters": {
-        "all": "Все",
-        "current": "Текущие",
-        "former": "Бывшие"
-      },
       "emptyTitle": "Сотрудников пока нет",
       "emptyDescription": "Принятые сотрудники появятся здесь после обработки заявок",
       "noPosition": "Без позиции",
@@ -106,22 +82,10 @@
       }
     },
     "suppliers": {
-      "total": "Всего поставщиков",
       "shownCount": "Показано {{shown}} из {{total}}",
-      "showAll": "Показать всех",
       "showActive": "Только активные",
       "emptyTitle": "Поставщики не найдены",
-      "emptyDescription": "Отключите фильтр или добавьте нового поставщика",
-      "status": {
-        "active": "Активен",
-        "paused": "Пауза"
-      }
-    },
-    "createPicker": {
-      "title": "Что создать?",
-      "description": "Выберите тип публикации для вашего заведения",
-      "vacancy": "Создать вакансию",
-      "shift": "Создать смену"
+      "emptyDescription": "Отключите фильтр или добавьте нового поставщика"
     }
   },
   "supplierUi": {
@@ -140,22 +104,9 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Поиск",
-      "activity": "Активность",
-      "profile": "Профиль"
-    },
-    "venue": {
-      "feed": "Поиск",
-      "activity": "Активность",
-      "staff": "Сотрудники",
-      "suppliers": "Поставщики",
-      "profile": "Профиль"
-    },
-    "supplier": {
-      "home": "Главная",
-      "requests": "Запросы",
-      "showcase": "Витрина",
-      "profile": "Профиль"
+      "feed": "Смены",
+      "activity": "Отклики",
+      "profile": "Я"
     },
     "feed": {
       "jobs": "Вакансии",
@@ -166,14 +117,7 @@
       "shifts": "Смены"
     }
   },
-  "greeting": {
-    "hello": "Привет, {{name}}"
-  },
   "profile": {
-    "about": "О себе",
-    "aboutCompany": "О компании",
-    "readMore": "Читать полностью...",
-    "collapse": "Свернуть",
     "achievements": "Достижения",
     "personalInfo": "Личная информация",
     "fillToApply": "Для того, чтобы откликаться на вакансии или смены, необходимо заполнить обязательные поля.",
@@ -193,25 +137,12 @@
     "workSummaryResume": "Резюме",
     "workSummaryExperience": "Опыт работы",
     "settings": "Настройки",
-    "theme": "Тема оформления",
-    "themeDescription": "Только тёмная тема",
     "language": "Язык",
-    "languageDescription": "Русский или English",
     "notificationSettings": "Настройки уведомлений",
     "notificationsDescription": "Управление уведомлениями в Telegram бот.",
     "notifications": {
       "all": "Все уведомления",
-      "allDescription": "Включить или выключить все сразу",
-      "urgent": "Срочные смены",
-      "urgentDescription": "Смены с пометкой «срочно»",
-      "newShifts": "Новые смены",
-      "newShiftsDescription": "Обычные новые смены по вашей позиции",
-      "applications": "Заявки на смены",
-      "applicationsDescription": "Отклики кандидатов на ваши смены",
-      "vacancy": "Вакансии",
-      "vacancyDescription": "Уведомления о вакансиях",
-      "replacement": "Замены",
-      "replacementDescription": "Уведомления о заменах"
+      "allDescription": "Включить или выключить все сразу"
     },
     "support": "Поддержка Resta",
     "supportForm": {
@@ -257,9 +188,7 @@
     "supplierTypesEmpty": "Нет доступных типов для выбранной категории",
     "supplierTypesCount": "Выбрано: {{count}}",
     "businessHours": "Время работы",
-    "businessHoursHint": "Например, по дням недели или одной строкой",
     "addAddress": "Добавить адрес",
-    "copyWeekdaysFromMonday": "Скопировать на будни",
     "set247": "24/7",
     "weekdays": "Будни",
     "saturdayShort": "Сб",
@@ -277,10 +206,8 @@
       "surnamePlaceholder": "Введите фамилию",
       "emailPlaceholder": "Введите email",
       "cityPlaceholder": "Выберите город",
-      "addressesPlaceholder": "Например:\nМинск, ул. Ленина, 1\nМинск, пр-т Победителей, 9",
       "singleAddressPlaceholder": "Город, улица, дом",
       "websitePlaceholder": "https://example.by",
-      "businessHoursPlaceholder": "Пн–чт 12:00–23:00\nПт–сб 12:00–02:00",
       "businessHoursNotesPlaceholder": "Дополнительно: перерыв, праздничные дни, особые условия"
     },
     "subtitle": {
@@ -290,17 +217,11 @@
     },
     "specializationSection": "Специализация",
     "supplierCategorySection": "Категория",
-    "venueName": "Название",
-    "venueType": "Тип",
-    "companyName": "Компания",
     "loadError": "Ошибка загрузки профиля",
-    "stats": "Статистика",
     "completedShifts": "Смен выполнено",
     "activeApplications": "Активные отклики",
     "shiftsCreated": "Смен создано",
-    "activeRequests": "Активные заявки",
-    "views": "Просмотры",
-    "activeClients": "Активные клиенты"
+    "activeRequests": "Активные заявки"
   },
   "feed": {
     "applicationSentSuccess": "Заявка отправлена. Если вас утвердят, бот пришлет сообщение.",
@@ -321,13 +242,9 @@
     "hotVacancies": "Горящие вакансии",
     "showAllHotOffers": "Все горящие",
     "clearHotFilter": "Убрать фильтр",
-    "foundShifts": "Найдено смен",
-    "foundVacancies": "Найдено вакансий",
     "filters": "Фильтры",
     "resetFiltersAria": "Сбросить фильтры",
     "period": "Период",
-    "foundShiftsCount": "Найдено смен: {{count}}",
-    "foundVacanciesCount": "Найдено вакансий: {{count}}",
     "showShiftsCount": "Показать результаты",
     "showVacanciesCount": "Показать результаты",
     "ratePerShift": "Ставка за смену",
@@ -343,8 +260,6 @@
     "networkError": "Ошибка сети. Нажмите, чтобы повторить"
   },
   "shift": {
-    "addTitle": "Добавить смену",
-    "addDescription": "Найдите себе замену.",
     "addVacancyTitle": "Создать вакансию",
     "addVacancyDescription": "Опишите вакансию, чтобы получить отклики подходящих кандидатов.",
     "addReplacementTitle": "Создать смену",
@@ -377,20 +292,16 @@
     "useCoverMessageExample": "Вставить пример",
     "coverMessagePlaceholder": "Напишите работодателю",
     "sending": "Отправка...",
-    "description": "Описание",
-    "requirements": "Требования",
     "workTime": "Время работы",
     "pay": "Оплата",
     "payNegotiable": "договорная",
     "applicationsCount": "Количество заявок",
-    "responsesCount": "Отклики: {{count}}",
     "responsesCountLabel": "Отклики:",
     "noResponses": "Пока нет откликов",
     "applicants": "Откликнувшиеся",
     "applicantSelected": "Выбран",
     "noApplicants": "Пока нет заявок",
     "applicantsPreviewNote": "Показаны {{shown}} из {{total}}",
-    "confirmed": "подтверждена",
     "shiftTitle": "Название смены",
     "shiftTitlePlaceholder": "Например: \"Основная работа\", \"Банкет\"",
     "vacancyTitleLabel": "Название вакансии",
@@ -403,8 +314,6 @@
     "requirementsPlaceholder": "Опыт, навыки, наличие мед. книжки и т.д.",
     "shiftType": "Тип смены",
     "selectShiftType": "Выберите тип смены",
-    "venueCreatesVacancy": "Заведения создают только вакансии.",
-    "employeeCreatesReplacement": "Сотрудники создают только замены.",
     "selectPosition": "Выберите позицию",
     "specialization": "Специализация",
     "selectPositionFirst": "Сначала выберите позицию",
@@ -414,8 +323,6 @@
     "selectSpecialization": "Выберите специализацию",
     "selectSpecializations": "Выберите одну или несколько специализаций",
     "specializationCount": "Выбрано: {{count}} специализация",
-    "specializationCount_plural": "Выбрано: {{count}} специализации",
-    "specializationCount_other": "Выбрано: {{count}} специализаций",
     "saved": "Смена сохранена",
     "created": "Смена успешно создана",
     "createdConfirmation": "Она появилась в разделе «Мои смены».",
@@ -436,8 +343,6 @@
     "addShiftAria": "Добавить смену"
   },
   "activity": {
-    "emptyList": "Пока пусто",
-    "emptyListDescription": "Здесь появятся смены и вакансии, на которые вы откликнулись, и созданные вами смены",
     "addShiftOnboardingText": "Нажмите «+», чтобы создать свободную смену для замены.",
     "addShiftOnboardingTextEmployee": "Нажмите «+», чтобы предложить свою смену и найти замену среди коллег.",
     "myShifts": "Мои смены",
@@ -446,16 +351,11 @@
     "shiftsWillAppearHere": "Созданные смены появятся здесь",
     "noApplicationsYet": "У вас пока нет откликов",
     "applicationsWillAppearHere": "Откликнувшиеся смены появятся здесь",
-    "statusPending": "На рассмотрении",
-    "statusAccepted": "Подтверждённые",
-    "statusRejected": "Отклонённые",
     "statusAcceptedPill": "Подтверждена",
     "statusRejectedPill": "Отклонена",
     "statusPendingPill": "В обработке",
     "day": "День",
-    "duration": "Длительность",
     "durationWithValue": "Длительность: {{value}}",
-    "urgent": "Срочно",
     "freeDay": "Свободный день!",
     "findShift": "Найти смену"
   },
@@ -471,15 +371,8 @@
   },
   "roles": {
     "whoAreYou": "Кто вы в индустрии?",
-    "chooseRole": "Выберите вашу роль",
     "roleChoiceHint": "Это нужно один раз — чтобы мы показывали релевантные смены и контакты.",
-    "mainStep": "ШАГ {{current}} • {{total}}",
-    "mostPopularBadge": "ПОПУЛЯРНО",
-    "roleCards": {
-      "chefAudience": "892 сотрудника в сети",
-      "venueAudience": "340 заведений \u00b7 Минск",
-      "supplierAudience": "128 поставщиков"
-    },
+    "mostPopularBadge": "Популярно",
     "loadRolesError": "Не удалось загрузить роли",
     "noRoles": "Роли не найдены",
     "positionsError": "Не удалось загрузить позиции",
@@ -514,10 +407,6 @@
     "supplierNameLabel": "Название компании",
     "supplierNamePlaceholder": "Введите название компании",
     "supplierTypeLabel": "ставщика",
-    "openToWork": "В активном поиске",
-    "openToWorkHint": "Включите, чтобы работодатели могли писать вам напрямую",
-    "openToWorkAriaOn": "Включить поиск работы",
-    "openToWorkAriaOff": "Отключить поиск работы",
     "yourExperience": "Ваш стаж",
     "positionSearchPlaceholder": "Поиск по профессиям",
     "continuePosition": "Продолжить",
@@ -526,13 +415,7 @@
   },
   "onboarding": {
     "stepOf": "Шаг {{current}} из {{total}}",
-    "doneTitle": "Готово",
-    "doneEmoji": "🎉",
-    "doneTip": "Рекомендуем откликнуться минимум на 3 вакансии",
-    "doneTitleVenue": "Заведение создано",
-    "doneTipVenue": "Полные данные профиля можно заполнить в разделе «Профиль»",
-    "doneTitleSupplier": "Профиль поставщика готов",
-    "doneTipSupplier": "Дополнительную информацию можно добавить в разделе «Профиль»"
+    "doneEmoji": "🎉"
   },
   "drawer": {
     "chef": "Специализация",
@@ -579,7 +462,6 @@
   },
   "citySelect": {
     "placeholder": "Выберите город",
-    "placeholderExample": "Минск",
     "loadMoreHint": "Прокрутите вниз для загрузки еще городов"
   },
   "experience": {
@@ -623,9 +505,7 @@
   },
   "localeRu": "Русский",
   "localeEn": "English",
-  "venue": "Заведение",
   "company": "Компания",
-  "restaurant": "Ресторан",
   "selectCityFromList": "Выберите город из списка",
   "cityNotFound": "Город не найден. Выберите из списка",
   "saveErrorRetry": "Произошла ошибка при сохранении данных. Попробуйте еще раз.",
@@ -706,45 +586,6 @@
       "logistics_provider": "Логистический оператор",
       "warehousing": "Складские услуги"
     },
-    "supplierTypeDesc": {
-      "products": "Поставка продуктов питания и товаров",
-      "equipment": "Поставка оборудования для заведений",
-      "services": "Сервисы и подрядчики для заведений",
-      "logistics": "Логистические и транспортные услуги"
-    },
-    "restaurantFormat": {
-      "restaurant": "Ресторан",
-      "full_service": "Ресторан",
-      "cafe": "Кафе",
-      "sushi_bar": "Суши-бар",
-      "bistro": "Бистро",
-      "fast_food": "Фастфуд",
-      "gastromarket": "Гастромаркет",
-      "club": "Клуб",
-      "canteen": "Столовая",
-      "bar": "Бар",
-      "pub": "Паб",
-      "buffet": "Буфет",
-      "pizzeria": "Пиццерия",
-      "bakery": "Пекарня",
-      "food_truck": "Фудтрак",
-      "catering": "Кейтеринг"
-    },
-    "restaurantFormatDesc": {
-      "full_service": "Ресторан с полным обслуживанием",
-      "cafe": "Кафе с легкими закусками и напитками",
-      "sushi_bar": "Суши-бар с японской кухней",
-      "bistro": "Бистро с быстрым обслуживанием",
-      "fast_food": "Фастфуд с быстрым обслуживанием",
-      "gastromarket": "Гастромаркет с несколькими корнерами",
-      "club": "Клуб с баром и развлекательной программой",
-      "canteen": "Столовая с линией раздачи",
-      "bar": "Бар с напитками и закусками",
-      "pizzeria": "Пиццерия с итальянской кухней",
-      "bakery": "Пекарня со свежей выпечкой",
-      "food_truck": "Фудтрак с мобильным обслуживанием",
-      "catering": "Кейтеринг для мероприятий"
-    },
     "cuisineType": {
       "international": "Интернациональная",
       "european": "Европейская",
@@ -799,23 +640,6 @@
       "manager": "Менеджер",
       "support": "Поддержка"
     },
-    "positionDesc": {
-      "chef": "Готовлю блюда и управляю кухней",
-      "waiter": "Обслуживаю гостей в зале",
-      "bartender": "Готовлю напитки и коктейли",
-      "barista": "Готовлю кофе и кофейные напитки",
-      "hostess": "Встречаю гостей и управляю посадкой",
-      "delivery": "Доставляю заказы гостям",
-      "cashier": "Работаю на кассе и принимаю оплату",
-      "office": "Работаю в офисной команде",
-      "manager": "Управляю заведением и персоналом",
-      "support": "Оказываю техническую поддержку"
-    },
-    "userRole": {
-      "employee": "Сотрудник",
-      "restaurant": "Заведение",
-      "supplier": "Поставщик"
-    },
     "specialization": {
       "general_manager": "Генеральный менеджер",
       "restaurant_manager": "Менеджер ресторана",
@@ -863,32 +687,6 @@
       "delivery_dispatcher": "Менеджер доставки",
       "technologist": "Технолог",
       "accountant": "Бухгалтер"
-    },
-    "roleTitle": {
-      "chef": "Повар",
-      "waiter": "Официант",
-      "bartender": "Бармен",
-      "barista": "Бариста",
-      "hostess": "Хостес",
-      "delivery": "Доставка",
-      "cashier": "Кассир",
-      "office": "Офис",
-      "admin": "Администратор",
-      "manager": "Менеджер",
-      "support": "Поддержка",
-      "venue": "Заведение",
-      "supplier": "Поставщик"
-    },
-    "roleDesc": {
-      "chef": "Готовлю блюда и управляю кухней",
-      "waiter": "Обслуживаю гостей в зале",
-      "bartender": "Готовлю напитки и коктейли",
-      "barista": "Готовлю кофе и кофейные напитки",
-      "hostess": "Встречаю гостей и управляю посадкой",
-      "delivery": "Доставляю заказы гостям",
-      "cashier": "Работаю на кассе и принимаю оплату",
-      "office": "Работаю в офисной команде",
-      "admin": "Управляю заведением и персоналом"
     }
   }
 }

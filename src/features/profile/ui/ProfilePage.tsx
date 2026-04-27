@@ -93,7 +93,7 @@ export const ProfilePage = memo(() => {
       {m.apiRole !== 'supplier' ? (
         <div>
           <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
-            <Award className="w-5 h-5" style={{ color: 'var(--purple-deep)' }} />
+            <Award className="w-5 h-5 text-primary" />
             {t('profile.achievements')}
           </h3>
           <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x pb-1">

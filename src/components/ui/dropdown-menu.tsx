@@ -49,7 +49,7 @@ export const DropdownMenuItem = React.forwardRef<
       'relative flex cursor-pointer select-none items-center gap-3 rounded-md px-3 py-2 text-sm outline-none',
       'transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       'data-[inset]:pl-10 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
-      'hover:bg-gradient-glow/10 focus:bg-gradient-glow/10',
+      'hover:bg-muted focus:bg-muted',
       variant === 'destructive' && 'text-destructive hover:bg-destructive/10',
       className
     )}

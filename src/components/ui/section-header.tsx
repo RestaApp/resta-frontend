@@ -21,7 +21,7 @@ export const SectionHeader = memo(function SectionHeader({
   hint,
   icon: Icon,
   count,
-  align = 'center',
+  align = 'left',
   className,
 }: SectionHeaderProps) {
   const isWithIcon = !!Icon
@@ -50,9 +50,9 @@ export const SectionHeader = memo(function SectionHeader({
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(align === 'center' && 'text-center', className)}
     >
-      <h2 className="mb-2 text-2xl font-semibold text-foreground">{title}</h2>
-      {description ? <p className="text-muted-foreground">{description}</p> : null}
-      {hint ? <p className="mt-1.5 text-sm text-muted-foreground/90">{hint}</p> : null}
+      <h2 className="font-display text-4xl leading-none tracking-tight text-foreground mb-3">{title}</h2>
+      {description ? <p className="text-base text-muted-foreground leading-none">{description}</p> : null}
+      {hint ? <p className="mt-1.5 text-sm text-muted-foreground/70">{hint}</p> : null}
     </motion.div>
   )
 })

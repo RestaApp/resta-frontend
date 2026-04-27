@@ -30,7 +30,7 @@ export const ProfileStats = memo(
         {apiRole === 'employee' && employeeStats ? (
           <>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 stroke-[1.5]" style={{ color: 'var(--purple-deep)' }} />
+              <Calendar className="h-4 w-4 stroke-[1.5] text-primary" />
               <span className="font-bold">{employeeStats.completedShifts}</span>
               <span className="text-muted-foreground">{t('profile.completedShifts')}</span>
             </div>
@@ -53,13 +53,13 @@ export const ProfileStats = memo(
         {apiRole === 'restaurant' ? (
           <>
             <div className="flex items-center gap-2">
-              <User className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
+              <User className="w-4 h-4 text-primary" />
               <span className="font-bold">{myShiftsCount}</span>
               <span className="text-muted-foreground">{t('profile.shiftsCreated')}</span>
             </div>
             <span className="text-border">·</span>
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" style={{ color: 'var(--purple-deep)' }} />
+              <TrendingUp className="w-4 h-4 text-primary" />
               <span className="font-bold">{appliedShiftsCount}</span>
               <span className="text-muted-foreground">{t('profile.activeRequests')}</span>
             </div>

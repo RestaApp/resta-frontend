@@ -1,12 +1,7 @@
 {
   "feedFallback": {
     "venue": "Restaurant",
-    "notSpecified": "Not specified",
-    "permanent": "Permanent",
-    "oneTime": "One-time",
     "vacancy": "Vacancy",
-    "fromRate": "from {{value}} BYN/hr",
-    "durationHours": "Duration: {{value}} h",
     "noApplications": "No applications yet",
     "application": "application",
     "applications2": "applications",
@@ -30,8 +25,6 @@
     "close": "Close",
     "reset": "Reset",
     "loading": "Loading",
-    "pullToRefresh": "Pull to refresh",
-    "releaseToRefresh": "Release to refresh",
     "openProfile": "Open profile",
     "understand": "Got it",
     "all": "All",
@@ -47,21 +40,13 @@
     "position": "Position",
     "rating": "Rating",
     "date": "Date",
-    "time": "Time",
     "location": "Location",
     "payPerShift": "per shift",
     "payPerMonth": "per month",
-    "payPerMonthShort": "/mo",
-    "payPerShiftShort": "/shift",
     "notSpecified": "Not specified",
     "aboutVenue": "About the venue",
-    "today": "Today",
     "vacancy": "Vacancy",
     "replacement": "Replacement",
-    "myShift": "My shift",
-    "myVacancy": "My vacancy",
-    "permanent": "Permanent",
-    "oneTime": "One-time",
     "selectValue": "Select value",
     "nothingFound": "Nothing found",
     "noOptions": "No options available",
@@ -69,24 +54,15 @@
     "continue": "Continue",
     "done": "Done",
     "continueFormVenue": "Continue filling restaurant form",
-    "continueFormSupplier": "Continue filling supplier form",
-    "selectRole": "Choose role"
+    "continueFormSupplier": "Continue filling supplier form"
   },
   "nav": {
     "bottomNav": "Bottom navigation",
     "fillProfileRequired": "Profile needs to be completed"
   },
   "venueUi": {
-    "create": "Create",
-    "createShift": "Create shift",
-    "createVacancy": "Create vacancy",
     "profileRequiredToCreate": "Complete your profile first to create vacancies and shifts.",
     "staff": {
-      "filters": {
-        "all": "All",
-        "current": "Current",
-        "former": "Former"
-      },
       "emptyTitle": "No staff yet",
       "emptyDescription": "Accepted employees will appear here after reviewing applications",
       "noPosition": "No position",
@@ -106,22 +82,10 @@
       }
     },
     "suppliers": {
-      "total": "Total suppliers",
       "shownCount": "Showing {{shown}} of {{total}}",
-      "showAll": "Show all",
       "showActive": "Only active",
       "emptyTitle": "No suppliers found",
-      "emptyDescription": "Disable the filter or add a new supplier",
-      "status": {
-        "active": "Active",
-        "paused": "Paused"
-      }
-    },
-    "createPicker": {
-      "title": "What to create?",
-      "description": "Choose what you want to publish for your venue",
-      "vacancy": "Create vacancy",
-      "shift": "Create shift"
+      "emptyDescription": "Disable the filter or add a new supplier"
     }
   },
   "supplierUi": {
@@ -140,22 +104,9 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Search",
-      "activity": "Activity",
-      "profile": "Profile"
-    },
-    "venue": {
-      "feed": "Search",
-      "activity": "Activity",
-      "staff": "Employees",
-      "suppliers": "Suppliers",
-      "profile": "Profile"
-    },
-    "supplier": {
-      "home": "Home",
-      "requests": "Requests",
-      "showcase": "Showcase",
-      "profile": "Profile"
+      "feed": "Shifts",
+      "activity": "Applied",
+      "profile": "Me"
     },
     "feed": {
       "jobs": "Jobs",
@@ -166,14 +117,7 @@
       "shifts": "Shifts"
     }
   },
-  "greeting": {
-    "hello": "Hello, {{name}}"
-  },
   "profile": {
-    "about": "About",
-    "aboutCompany": "About the company",
-    "readMore": "Read more...",
-    "collapse": "Collapse",
     "achievements": "Achievements",
     "personalInfo": "Personal info",
     "fillToApply": "To apply for jobs or shifts, please fill in the required fields.",
@@ -193,25 +137,12 @@
     "workSummaryResume": "Resume",
     "workSummaryExperience": "Work experience",
     "settings": "Settings",
-    "theme": "Theme",
-    "themeDescription": "Dark theme only",
     "language": "Language",
-    "languageDescription": "Russian or English",
     "notificationSettings": "Notification settings",
     "notificationsDescription": "Manage Telegram notifications. In-app notifications are always on.",
     "notifications": {
       "all": "All notifications",
-      "allDescription": "Turn all on or off",
-      "urgent": "Urgent shifts",
-      "urgentDescription": "Shifts marked as urgent",
-      "newShifts": "New shifts",
-      "newShiftsDescription": "Regular new shifts for your position",
-      "applications": "Shift applications",
-      "applicationsDescription": "Candidate applications for your shifts",
-      "vacancy": "Vacancies",
-      "vacancyDescription": "Vacancy notifications",
-      "replacement": "Replacements",
-      "replacementDescription": "Replacement shift notifications"
+      "allDescription": "Turn all on or off"
     },
     "support": "Resta support",
     "supportForm": {
@@ -257,9 +188,7 @@
     "supplierTypesEmpty": "No available types for selected category",
     "supplierTypesCount": "Selected: {{count}}",
     "businessHours": "Opening hours",
-    "businessHoursHint": "Per weekday or a single line",
     "addAddress": "Add address",
-    "copyWeekdaysFromMonday": "Copy to weekdays",
     "set247": "24/7",
     "weekdays": "Weekdays",
     "saturdayShort": "Sat",
@@ -277,10 +206,8 @@
       "surnamePlaceholder": "Enter surname",
       "emailPlaceholder": "Enter email",
       "cityPlaceholder": "Select city",
-      "addressesPlaceholder": "For example:\nMinsk, Lenina st., 1\nMinsk, Pobediteley ave., 9",
       "singleAddressPlaceholder": "City, street, building",
       "websitePlaceholder": "https://example.com",
-      "businessHoursPlaceholder": "Mon–Thu 12:00–23:00\nFri–Sat 12:00–02:00",
       "businessHoursNotesPlaceholder": "Additional details: break, holidays, special conditions"
     },
     "subtitle": {
@@ -290,17 +217,11 @@
     },
     "specializationSection": "Specialization",
     "supplierCategorySection": "Category",
-    "venueName": "Name",
-    "venueType": "Type",
-    "companyName": "Company",
     "loadError": "Failed to load profile",
-    "stats": "Statistics",
     "completedShifts": "Shifts completed",
     "activeApplications": "Active applications",
     "shiftsCreated": "Shifts created",
-    "activeRequests": "Active requests",
-    "views": "Views",
-    "activeClients": "Active clients"
+    "activeRequests": "Active requests"
   },
   "feed": {
     "applicationSentSuccess": "Application sent. You will be notified if approved.",
@@ -318,13 +239,9 @@
     "hotVacancies": "Hot vacancies",
     "showAllHotOffers": "All hot",
     "clearHotFilter": "Remove filter",
-    "foundShifts": "Shifts found",
-    "foundVacancies": "Vacancies found",
     "filters": "Filters",
     "resetFiltersAria": "Reset filters",
     "period": "Period",
-    "foundShiftsCount": "Shifts found: {{count}}",
-    "foundVacanciesCount": "Vacancies found: {{count}}",
     "showShiftsCount": "Show results",
     "showVacanciesCount": "Show results",
     "ratePerShift": "Rate per shift",
@@ -343,8 +260,6 @@
     "venueEmptyCta": "Create vacancy / shift"
   },
   "shift": {
-    "addTitle": "Add shift",
-    "addDescription": "Find a replacement.",
     "addVacancyTitle": "Create vacancy",
     "addVacancyDescription": "Describe the vacancy to get responses from suitable candidates.",
     "addReplacementTitle": "Create shift",
@@ -377,20 +292,16 @@
     "useCoverMessageExample": "Insert example",
     "coverMessagePlaceholder": "Write to the employer",
     "sending": "Sending...",
-    "description": "Description",
-    "requirements": "Requirements",
     "workTime": "Work time",
     "pay": "Pay",
     "payNegotiable": "negotiable",
     "applicationsCount": "Applications",
-    "responsesCount": "Responses: {{count}}",
     "responsesCountLabel": "Responses:",
     "noResponses": "No responses yet",
     "applicants": "Applicants",
     "noApplicants": "No applications yet",
     "applicantsPreviewNote": "Showing {{shown}} of {{total}}",
     "applicantSelected": "Selected",
-    "confirmed": "confirmed",
     "shiftTitle": "Shift title",
     "shiftTitlePlaceholder": "e.g. \"Main shift\", \"Banquet\"",
     "vacancyTitleLabel": "Vacancy title",
@@ -403,8 +314,6 @@
     "requirementsPlaceholder": "Experience, skills, health certificate, etc.",
     "shiftType": "Shift type",
     "selectShiftType": "Select shift type",
-    "venueCreatesVacancy": "Venues can only create vacancies.",
-    "employeeCreatesReplacement": "Employees can only create replacements.",
     "selectPosition": "Select position",
     "specialization": "Specialization",
     "selectPositionFirst": "Select position first",
@@ -414,8 +323,6 @@
     "selectSpecialization": "Select specialization",
     "selectSpecializations": "Select one or more specializations",
     "specializationCount": "Selected: {{count}} specialization",
-    "specializationCount_plural": "Selected: {{count}} specializations",
-    "specializationCount_other": "Selected: {{count}} specializations",
     "saved": "Shift saved",
     "created": "Shift created successfully",
     "createdConfirmation": "It now appears in “My shifts”.",
@@ -436,8 +343,6 @@
     "addShiftAria": "Add shift"
   },
   "activity": {
-    "emptyList": "Nothing here yet",
-    "emptyListDescription": "Your applications and created shifts will appear here",
     "addShiftOnboardingText": "Tap “+” to create a free shift for replacement.",
     "addShiftOnboardingTextEmployee": "Tap “+” to offer your shift and find a replacement among colleagues.",
     "myShifts": "My shifts",
@@ -446,16 +351,11 @@
     "shiftsWillAppearHere": "Created shifts will appear here",
     "noApplicationsYet": "You have no applications yet",
     "applicationsWillAppearHere": "Applied shifts will appear here",
-    "statusPending": "Pending",
-    "statusAccepted": "Accepted",
-    "statusRejected": "Rejected",
     "statusAcceptedPill": "Accepted",
     "statusRejectedPill": "Rejected",
     "statusPendingPill": "In progress",
     "day": "Day",
-    "duration": "Duration",
     "durationWithValue": "Duration: {{value}}",
-    "urgent": "Urgent",
     "freeDay": "Free day!",
     "findShift": "Find shift"
   },
@@ -470,16 +370,9 @@
     "fillRequired": "Fill in all required fields."
   },
   "roles": {
-    "whoAreYou": "Who are you in the industry?",
-    "chooseRole": "Choose your role in the ecosystem",
-    "roleChoiceHint": "We ask this once so we can show relevant shifts and contacts.",
-    "mainStep": "STEP {{current}} • {{total}}",
-    "mostPopularBadge": "POPULAR",
-    "roleCards": {
-      "chefAudience": "892 employees online",
-      "venueAudience": "340 venues \u00b7 Minsk",
-      "supplierAudience": "128 suppliers"
-    },
+    "whoAreYou": "Who are you?",
+    "roleChoiceHint": "This helps us match you with the right jobs and shifts",
+    "mostPopularBadge": "Most popular",
     "loadRolesError": "Failed to load roles",
     "noRoles": "No roles found",
     "positionsError": "Failed to load positions",
@@ -514,10 +407,6 @@
     "supplierNameLabel": "Company name",
     "supplierNamePlaceholder": "Enter company name",
     "supplierTypeLabel": "Supplier types",
-    "openToWork": "Open to work",
-    "openToWorkHint": "Turn on so employers can contact you directly",
-    "openToWorkAriaOn": "Enable job search",
-    "openToWorkAriaOff": "Disable job search",
     "yourExperience": "Your experience",
     "positionSearchPlaceholder": "Search professions",
     "continuePosition": "Continue",
@@ -526,13 +415,7 @@
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
-    "doneTitle": "All set",
-    "doneEmoji": "🎉",
-    "doneTip": "We recommend applying to at least 3 vacancies",
-    "doneTitleVenue": "Venue created",
-    "doneTipVenue": "You can complete your profile in the Profile section",
-    "doneTitleSupplier": "Supplier profile ready",
-    "doneTipSupplier": "You can add more details in the Profile section"
+    "doneEmoji": "🎉"
   },
   "drawer": {
     "chef": "Specialization",
@@ -579,7 +462,6 @@
   },
   "citySelect": {
     "placeholder": "Select city",
-    "placeholderExample": "Minsk",
     "loadMoreHint": "Scroll down to load more cities"
   },
   "experience": {
@@ -623,9 +505,7 @@
   },
   "localeRu": "Russian",
   "localeEn": "English",
-  "venue": "Venue",
   "company": "Company",
-  "restaurant": "Restaurant",
   "selectCityFromList": "Select city from list",
   "cityNotFound": "City not found. Select from list",
   "saveErrorRetry": "An error occurred while saving. Please try again.",
@@ -706,45 +586,6 @@
       "logistics_provider": "Logistics provider",
       "warehousing": "Warehousing services"
     },
-    "supplierTypeDesc": {
-      "products": "Food and goods supply",
-      "equipment": "Equipment for venues",
-      "services": "Services and contractors for venues",
-      "logistics": "Logistics and transport"
-    },
-    "restaurantFormat": {
-      "restaurant": "Restaurant",
-      "full_service": "Restaurant",
-      "cafe": "Cafe",
-      "sushi_bar": "Sushi bar",
-      "bistro": "Bistro",
-      "fast_food": "Fast food",
-      "gastromarket": "Gastromarket",
-      "club": "Club",
-      "canteen": "Canteen",
-      "bar": "Bar",
-      "pub": "Pub",
-      "buffet": "Buffet",
-      "pizzeria": "Pizzeria",
-      "bakery": "Bakery",
-      "food_truck": "Food truck",
-      "catering": "Catering"
-    },
-    "restaurantFormatDesc": {
-      "full_service": "Full-service restaurant",
-      "cafe": "Cafe with light snacks and drinks",
-      "sushi_bar": "Sushi bar with Japanese cuisine",
-      "bistro": "Bistro with quick service",
-      "fast_food": "Fast food",
-      "gastromarket": "Food hall with multiple food corners",
-      "club": "Club with bar and entertainment program",
-      "canteen": "Self-service canteen",
-      "bar": "Bar with drinks and snacks",
-      "pizzeria": "Pizzeria with Italian cuisine",
-      "bakery": "Bakery with fresh pastries",
-      "food_truck": "Mobile food truck",
-      "catering": "Event catering"
-    },
     "cuisineType": {
       "international": "International",
       "european": "European",
@@ -799,23 +640,6 @@
       "manager": "Manager",
       "support": "Support"
     },
-    "positionDesc": {
-      "chef": "Cook and manage the kitchen",
-      "waiter": "Serve guests in the dining room",
-      "bartender": "Make drinks and cocktails",
-      "barista": "Make coffee and coffee drinks",
-      "hostess": "Welcome guests and manage seating",
-      "delivery": "Deliver orders to guests",
-      "cashier": "Handle checkout and payments",
-      "office": "Work in the office team",
-      "manager": "Manage venue and staff",
-      "support": "Technical support"
-    },
-    "userRole": {
-      "employee": "Employee",
-      "restaurant": "Venue",
-      "supplier": "Supplier"
-    },
     "specialization": {
       "general_manager": "General manager",
       "restaurant_manager": "Restaurant manager",
@@ -863,32 +687,6 @@
       "delivery_dispatcher": "Delivery manager",
       "technologist": "Technologist",
       "accountant": "Accountant"
-    },
-    "roleTitle": {
-      "chef": "Chef",
-      "waiter": "Waiter",
-      "bartender": "Bartender",
-      "barista": "Barista",
-      "hostess": "Hostess",
-      "admin": "Administrator",
-      "delivery": "Delivery",
-      "cashier": "Cashier",
-      "office": "Office",
-      "manager": "Manager",
-      "support": "Support",
-      "venue": "Venue",
-      "supplier": "Supplier"
-    },
-    "roleDesc": {
-      "chef": "Cook and manage the kitchen",
-      "waiter": "Serve guests in the dining room",
-      "bartender": "Make drinks and cocktails",
-      "barista": "Make coffee and coffee drinks",
-      "hostess": "Welcome guests and manage seating",
-      "delivery": "Deliver orders to guests",
-      "cashier": "Handle checkout and payments",
-      "office": "Work in the office team",
-      "admin": "Manage venue and staff"
     }
   }
 }

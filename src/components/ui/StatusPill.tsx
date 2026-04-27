@@ -3,29 +3,28 @@ import { cn } from '@/utils/cn'
 import { ShieldCheck } from 'lucide-react'
 
 export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
-
 export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 
 const basePill =
   'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium leading-none border'
 
-export const UrgentPill = ({ className }: { className?: string }) => {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-widest uppercase bg-primary text-white',
-        className
-      )}
-    >
-      SOS
-    </span>
-  )
-}
+/** SOS — solid terracotta, экстренные смены (<3ч). Опционально: "SOS · {date}" */
+export const UrgentPill = ({ date, className }: { date?: string; className?: string }) => (
+  <span
+    className={cn(
+      'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-widest uppercase bg-primary text-white',
+      className
+    )}
+  >
+    SOS{date ? <><span className="opacity-60 mx-0.5">·</span>{date}</> : null}
+  </span>
+)
 
+/** VERIFIED — subtle green outline, проверенное заведение */
 export const VerifiedBadge = ({ className }: { className?: string }) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/25',
+      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
       className
     )}
   >
@@ -34,14 +33,35 @@ export const VerifiedBadge = ({ className }: { className?: string }) => (
   </span>
 )
 
-export const EscrowBadge = ({ amount, currency, className }: { amount?: number | string; currency?: string; className?: string }) => (
+/** ESCROW — outline green, критический сигнал доверия */
+export const EscrowBadge = ({
+  amount,
+  currency,
+  className,
+}: {
+  amount?: number | string
+  currency?: string
+  className?: string
+}) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-wider border bg-success/10 text-success border-success',
+      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-wider border bg-success/8 text-success border-success/60',
       className
     )}
   >
-    ESCROW{amount ? ` · ${amount}${currency ? ' ' + currency : ''}` : ''}
+    ESCROW{amount ? <><span className="opacity-60 mx-0.5">·</span>{amount}{currency ? ` ${currency}` : ''}</> : null}
+  </span>
+)
+
+/** BOOSTED — amber, монетизация. Опционально: "BOOSTED · #{count}" */
+export const BoostedBadge = ({ count, className }: { count?: number; className?: string }) => (
+  <span
+    className={cn(
+      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-wider border bg-amber/10 text-amber border-amber/40',
+      className
+    )}
+  >
+    BOOSTED{count != null ? <><span className="opacity-60 mx-0.5">·</span>#{count}</> : null}
   </span>
 )
 
@@ -59,12 +79,12 @@ const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string
 const statusToClasses = (status: ShiftStatus): string => {
   switch (status) {
     case 'accepted':
-      return 'border-success/20 bg-success/10 text-success'
+      return 'border-success/25 bg-success/10 text-success'
     case 'rejected':
-      return 'border-destructive/20 bg-destructive/8 text-destructive'
+      return 'border-destructive/25 bg-destructive/8 text-destructive'
     case 'pending':
     case 'processing':
-      return 'border-primary/20 bg-primary/8 text-primary'
+      return 'border-primary/25 bg-primary/8 text-primary'
     default:
       return 'border-border bg-muted/50 text-muted-foreground'
   }

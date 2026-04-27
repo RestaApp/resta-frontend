@@ -44,7 +44,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
 
   return (
     <div className="bg-background flex flex-col min-h-[100dvh] ui-density-page ui-density-py">
-      <OnboardingProgress current={2} total={3} className="ui-density-mb" />
+      <OnboardingProgress current={2} total={2} className="ui-density-mb" />
       <SectionHeader
         title={t('roles.positionScreenTitle')}
         description={t('roles.positionScreenDescription')}

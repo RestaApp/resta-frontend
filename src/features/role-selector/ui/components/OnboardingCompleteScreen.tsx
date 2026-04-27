@@ -45,7 +45,7 @@ export const OnboardingCompleteScreen = memo(function OnboardingCompleteScreen({
       <span className="text-5xl mb-4" role="img" aria-hidden>
         {t('onboarding.doneEmoji')}
       </span>
-      <h2 className="text-2xl font-semibold text-foreground mb-2">{t(titleKey)}</h2>
+      <h2 className="font-display text-3xl leading-tight tracking-tight text-foreground mb-2">{t(titleKey)}</h2>
       <p className="text-sm text-muted-foreground max-w-xs">{t(tipKey)}</p>
     </motion.div>
   )

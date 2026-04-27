@@ -2,7 +2,7 @@
  * Константы для табов Dashboard
  */
 
-import { Home, Package, User, Users, Search, Zap } from 'lucide-react'
+import { Building2, Inbox, Package, Search, User, Users, Zap } from 'lucide-react'
 import type { Tab, UiRole } from '@/types'
 import { isEmployeeRole } from '@/utils/roles'
 
@@ -40,7 +40,7 @@ export const TAB_LABEL_KEYS = {
 export const getEmployeeTabs = (): TabItem[] => {
   return [
     { id: 'feed', label: TAB_LABEL_KEYS.employee.feed, icon: Search },
-    { id: 'activity', label: TAB_LABEL_KEYS.employee.activity, icon: Zap },
+    { id: 'activity', label: TAB_LABEL_KEYS.employee.activity, icon: Inbox },
     { id: 'profile', label: TAB_LABEL_KEYS.employee.profile, icon: User },
   ]
 }
@@ -62,7 +62,7 @@ export const getVenueTabs = (): TabItem[] => {
  */
 export const getSupplierTabs = (): TabItem[] => {
   return [
-    { id: 'home', label: TAB_LABEL_KEYS.supplier.home, icon: Home },
+    { id: 'home', label: TAB_LABEL_KEYS.supplier.home, icon: Building2 },
     { id: 'profile', label: TAB_LABEL_KEYS.supplier.profile, icon: User },
   ]
 }

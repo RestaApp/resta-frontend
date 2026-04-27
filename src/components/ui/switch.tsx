@@ -47,7 +47,7 @@ export const Switch = memo(function Switch({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         checked ? 'focus-visible:ring-primary' : 'focus-visible:ring-muted-foreground/50',
-        checked ? 'gradient-primary' : 'bg-[var(--switch-background)]',
+        checked ? 'bg-primary' : 'bg-[var(--switch-background)]',
         className
       )}
     >

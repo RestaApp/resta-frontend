@@ -50,9 +50,9 @@ export const LoadingPage = memo(function LoadingPage() {
         <svg className="w-32 h-32" viewBox="0 0 100 100">
           <defs>
             <linearGradient id="loading-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--purple-deep)" />
-              <stop offset="50%" stopColor="var(--pink-electric)" />
-              <stop offset="100%" stopColor="var(--blue-cyber)" />
+              <stop offset="0%" stopColor="var(--terracotta)" />
+              <stop offset="50%" stopColor="var(--amber)" />
+              <stop offset="100%" stopColor="var(--terracotta)" stopOpacity="0.6" />
             </linearGradient>
           </defs>
           <circle
@@ -121,7 +121,7 @@ export const LoadingPage = memo(function LoadingPage() {
           }
           className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl"
           style={{
-            background: 'linear-gradient(135deg, var(--blue-cyber) 0%, var(--pink-electric) 100%)',
+            background: 'linear-gradient(135deg, var(--amber) 0%, var(--terracotta) 100%)',
           }}
           aria-hidden="true"
         />
@@ -133,7 +133,7 @@ export const LoadingPage = memo(function LoadingPage() {
           title="Resta"
           subtitle={t('loadingPage.subtitle')}
           iconClassName="mb-0"
-          titleClassName="bg-[image:var(--gradient-primary)] bg-clip-text text-transparent"
+          titleClassName="font-display text-5xl tracking-tight bg-[image:var(--gradient-primary)] bg-clip-text text-transparent"
         />
 
         <div className="w-64">
@@ -199,7 +199,7 @@ export const LoadingPage = memo(function LoadingPage() {
                   : { duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }
               }
               className="h-2 w-2 rounded-full"
-              style={{ background: 'var(--pink-electric)' }}
+              style={{ background: 'var(--amber)' }}
             />
           ))}
         </div>

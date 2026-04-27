@@ -85,7 +85,7 @@ export const FormScreen = memo(function FormScreen({
   })()
 
   return (
-    <div className=" bg-background flex flex-col px-6 py-12">
+    <div className="flex-1 flex flex-col ui-density-page ui-density-py overflow-y-auto">
       {showProgress && <OnboardingProgress current={step} total={totalSteps} className="mb-6" />}
       <SectionHeader title={title} description={description} className="mb-8" />
 

@@ -3,26 +3,34 @@ import { cn } from '@/utils/cn'
 import { Loader } from '@/components/ui/loader'
 
 const SIZE_CLASSES = {
-  sm: 'h-10 px-4 text-sm',
-  md: 'h-10 px-5 text-sm',
-  lg: 'h-10 px-6 text-sm',
+  // 44px inline buttons (spec)
+  sm: 'h-11 px-4 text-sm',
+  md: 'h-11 px-5 text-sm',
+  // 52px sticky CTA (spec)
+  lg: 'h-[52px] px-6 text-base',
 } as const
 
 const LOADER_SLOT = {
   sm: 'w-4',
   md: 'w-4',
-  lg: 'w-4',
+  lg: 'w-5',
 } as const
 
 const VARIANT_CLASSES = {
-  primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  outline: 'border border-border bg-transparent hover:bg-muted',
-  ghost: 'bg-transparent hover:bg-muted',
-  destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-  gradient: 'bg-primary text-white hover:bg-primary/90 shadow-sm border-0 border-transparent',
+  /** Primary — terracotta solid. Only this gets solid fill per spec. */
+  primary: 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80',
+  /** Secondary — outline, no fill */
+  secondary: 'border border-border bg-transparent text-foreground hover:bg-muted/60',
+  /** Outline — same as secondary */
+  outline: 'border border-border bg-transparent text-foreground hover:bg-muted/60',
+  /** Ghost — text only, terracotta color */
+  ghost: 'bg-transparent text-primary hover:bg-primary/8',
+  /** Destructive */
+  destructive: 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
+  /** Gradient alias → solid primary (terracotta) */
+  gradient: 'bg-primary text-white hover:bg-primary/90 active:bg-primary/80 shadow-sm border-0',
   gradientPressed:
-    'bg-secondary text-foreground/70 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
+    'bg-muted text-foreground/60 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
 } as const
 
 export type ButtonProps = {

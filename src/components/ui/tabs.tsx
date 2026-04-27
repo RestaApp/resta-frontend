@@ -106,7 +106,7 @@ export const Tabs = <T extends string>({
             {isActive ? (
               <motion.span
                 layoutId={resolvedIndicatorLayoutId}
-                className="absolute inset-0 rounded-full gradient-primary shadow-sm"
+                className="absolute inset-0 rounded-full bg-primary shadow-sm"
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"
               />

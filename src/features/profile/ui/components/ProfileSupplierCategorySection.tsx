@@ -17,7 +17,7 @@ export const ProfileSupplierCategorySection = memo(
     return (
       <div>
         <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
-          <Boxes className="h-5 w-5 stroke-[1.5]" style={{ color: 'var(--purple-deep)' }} />
+          <Boxes className="h-5 w-5 stroke-[1.5] text-primary" />
           {t('profile.supplierCategorySection', { defaultValue: 'Категория поставщика' })}
         </h3>
         <div className="flex flex-wrap gap-2">

@@ -70,7 +70,7 @@ export const SupplierDetailsScreen = memo(
           <div className="flex items-center gap-3 min-w-0">
             <Avatar className="h-11 w-11">
               <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
-              <AvatarFallback className="gradient-primary text-primary-foreground font-semibold">
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                 {supplier.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

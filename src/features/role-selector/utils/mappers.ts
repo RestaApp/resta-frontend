@@ -28,8 +28,8 @@ const POSITION_ICON_MAP: Partial<
 }
 
 const POSITION_COLOR_MAP: Partial<Record<EmployeeRole, string>> = {
-  manager: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  support: 'from-[var(--muted-foreground)] to-[var(--surface-subtle-foreground)]',
+  manager: 'from-terracotta to-amber',
+  support: 'from-muted-foreground to-foreground',
 }
 
 const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>> = {
@@ -49,19 +49,19 @@ const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>>
 }
 
 const ROLE_COLOR_MAP: Record<UiRole, string> = {
-  chef: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  waiter: 'from-[var(--success)] to-[var(--purple-deep)]',
-  bartender: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  barista: 'from-[var(--warning)] to-[var(--purple-deep)]',
-  hostess: 'from-[var(--success)] to-[var(--purple-deep)]',
-  delivery: 'from-[var(--purple-deep)] to-[var(--success)]',
-  cashier: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  office: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  admin: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  manager: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  support: 'from-[var(--muted-foreground)] to-[var(--surface-subtle-foreground)]',
-  venue: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
-  supplier: 'from-[var(--purple-deep)] to-[var(--purple-deep)]',
+  chef: 'from-terracotta to-amber',
+  waiter: 'from-success to-terracotta',
+  bartender: 'from-terracotta to-amber',
+  barista: 'from-warning to-terracotta',
+  hostess: 'from-success to-terracotta',
+  delivery: 'from-terracotta to-success',
+  cashier: 'from-terracotta to-amber',
+  office: 'from-terracotta to-amber',
+  admin: 'from-terracotta to-amber',
+  manager: 'from-terracotta to-amber',
+  support: 'from-muted-foreground to-foreground',
+  venue: 'from-terracotta to-amber',
+  supplier: 'from-amber to-terracotta',
 }
 
 const ROLE_DESCRIPTION_MAP: Record<UiRole, string> = {
