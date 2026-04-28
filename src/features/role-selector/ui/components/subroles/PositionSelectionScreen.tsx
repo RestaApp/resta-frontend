@@ -60,7 +60,13 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
 
   return (
     <div className="bg-background flex min-h-[100dvh] flex-col">
-      <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto">
+      <div
+        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto ${
+          selectedSubRole
+            ? 'pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
+            : ''
+        }`}
+      >
         <OnboardingProgress current={3} total={3} className="mb-[14px]" />
         <SectionHeader
           title={t('roles.positionScreenTitle')}
@@ -100,7 +106,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
           })}
         </div>
 
-        <div className="mb-[calc(8.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] max-w-md w-full">
+        <div className="max-w-md w-full">
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
               {t('roles.specializationLabel')}

@@ -43,7 +43,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
 
   return (
     <div className="bg-background min-h-[100dvh] flex flex-col">
-      <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto">
+      <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]">
         <OnboardingProgress current={2} total={3} className="mb-[14px]" />
         <SectionHeader
           title={t('onboarding.telegram.title')}
@@ -109,7 +109,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
         </div>
 
-        <div className="mt-[14px] mb-[calc(8.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] rounded-[12px] border border-[#3EC97E4D] bg-[#3EC97E0F] px-3 py-2.5">
+        <div className="mt-[14px] rounded-[12px] border border-[#3EC97E4D] bg-[#3EC97E0F] px-3 py-2.5">
           <p className="text-[11px] leading-[1.45] text-muted-foreground">
             <span className="font-semibold text-foreground">
               {t('onboarding.telegram.shieldTitle')}
