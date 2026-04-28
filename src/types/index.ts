@@ -27,6 +27,7 @@ export type Tab =
   | 'activity'
 
 export type Screen =
+  | 'loading'
   | 'home'
   | 'shifts'
   | 'vacancies'

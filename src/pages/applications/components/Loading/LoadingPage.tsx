@@ -1,28 +1,12 @@
-import { memo, useEffect, useState } from 'react'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
-import { ChefHat } from 'lucide-react'
 import { LogoWithText } from '@/components/ui/logo-with-text'
 
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
-  const [progress, setProgress] = useState(0)
-  const displayedProgress = reduceMotion ? 100 : progress
 
-  useEffect(() => {
-    if (reduceMotion) return
-    const interval = window.setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 98) return 98
-        if (prev < 80) return Math.min(prev + 2, 80)
-        if (prev < 92) return Math.min(prev + 0.6, 92)
-        return Math.min(prev + 0.15, 98)
-      })
-    }, 60)
-
-    return () => window.clearInterval(interval)
-  }, [reduceMotion])
 
   const logoIcon = (
     <div className="relative">
@@ -39,63 +23,44 @@ export const LoadingPage = memo(function LoadingPage() {
         style={{ background: 'var(--gradient-primary)' }}
       />
 
-      <motion.div
-        animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
-        transition={
-          reduceMotion ? { duration: 0 } : { duration: 4, repeat: Infinity, ease: 'linear' }
-        }
-        className="absolute inset-0 -z-10"
-        aria-hidden="true"
-      >
-        <svg className="w-32 h-32" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="loading-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--terracotta)" />
-              <stop offset="50%" stopColor="var(--amber)" />
-              <stop offset="100%" stopColor="var(--terracotta)" stopOpacity="0.6" />
-            </linearGradient>
-          </defs>
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="url(#loading-gradient)"
-            strokeWidth="2"
-            strokeDasharray="10 5"
-            opacity="0.6"
-          />
-        </svg>
-      </motion.div>
 
-      <motion.div
-        initial={reduceMotion ? false : { scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={
-          reduceMotion
-            ? { duration: 0 }
-            : { type: 'spring', stiffness: 200, damping: 20, delay: 0.2 }
-        }
-        className="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-3xl"
-        style={{
-          background: 'var(--gradient-primary)',
-          boxShadow: 'var(--primary-hero-shadow)',
-        }}
-      >
+
+
+      <div className="relative mb-8 h-[88px] w-[88px]">
         <motion.div
-          animate={reduceMotion ? { y: 0 } : { y: [0, -5, 0] }}
+          className="absolute inset-0 grid place-items-center rounded-3xl text-[52px] font-extrabold text-white"
+          style={{
+            boxShadow: '0 24px 48px color-mix(in srgb, var(--terracotta) 40%, transparent)',
+            background: 'linear-gradient(135deg, var(--terracotta), #ff8a5c)',
+          }}
+          initial={reduceMotion ? false : { scale: 0.98 }}
+          animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
           transition={
-            reduceMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+            reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
           }
         >
-          <ChefHat className="h-16 w-16 text-white" strokeWidth={1.5} />
+          R
         </motion.div>
-      </motion.div>
+
+        <motion.div
+          className="absolute -inset-2 rounded-[2rem] border-2"
+          style={{
+            borderColor: 'var(--terracotta)',
+            borderTopColor: 'transparent',
+          }}
+          animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
+          transition={
+            reduceMotion ? { duration: 0 } : { duration: 1, repeat: Infinity, ease: 'linear' }
+          }
+          aria-hidden="true"
+        />
+      </div>
+
     </div>
   )
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background">
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={
@@ -136,73 +101,14 @@ export const LoadingPage = memo(function LoadingPage() {
           titleClassName="font-display text-5xl tracking-tight bg-[image:var(--gradient-primary)] bg-clip-text text-transparent"
         />
 
-        <div className="w-64">
-          <div
-            className="relative h-1.5 overflow-hidden rounded-full border backdrop-blur-xl"
-            style={{
-              background: 'var(--overlay-glass)',
-              borderColor: 'var(--border)',
-            }}
-          >
-            <motion.div
-              className="absolute inset-y-0 left-0 rounded-full"
-              style={{ background: 'var(--gradient-primary)' }}
-              initial={reduceMotion ? false : { width: '0%' }}
-              animate={{ width: `${displayedProgress}%` }}
-              transition={reduceMotion ? { duration: 0 } : { duration: 0.3 }}
-            />
 
-            <motion.div
-              className="absolute inset-y-0 left-0 w-full"
-              style={{
-                background:
-                  'linear-gradient(90deg, transparent 0%, var(--overlay-shine) 50%, transparent 100%)',
-                transform: 'translateX(-100%)',
-              }}
-              animate={
-                reduceMotion
-                  ? { transform: 'translateX(-100%)' }
-                  : { transform: 'translateX(200%)' }
-              }
-              transition={
-                reduceMotion ? { duration: 0 } : { duration: 1.5, repeat: Infinity, ease: 'linear' }
-              }
-              aria-hidden="true"
-            />
-          </div>
 
-          <motion.p
-            className="mt-3 text-center text-xs text-muted-foreground"
-            animate={reduceMotion ? { opacity: 1 } : { opacity: [0.5, 1, 0.5] }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : { duration: 1.5, repeat: Infinity, ease: 'easeInOut' }
-            }
-          >
-            {t('common.loading')}...
-          </motion.p>
-        </div>
 
-        <div className="flex gap-2" aria-hidden="true">
-          {[0, 1, 2].map(i => (
-            <motion.div
-              key={i}
-              animate={
-                reduceMotion
-                  ? { opacity: 0.6, scale: 1 }
-                  : { opacity: [0.3, 1, 0.3], scale: [1, 1.3, 1] }
-              }
-              transition={
-                reduceMotion
-                  ? { duration: 0 }
-                  : { duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }
-              }
-              className="h-2 w-2 rounded-full"
-              style={{ background: 'var(--amber)' }}
-            />
-          ))}
-        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-8 pb-7 text-center">
+        <p className="text-xs font-medium tracking-[0.22em] text-muted-foreground/70">
+          {t('loadingPage.country')}
+        </p>
       </div>
     </div>
   )

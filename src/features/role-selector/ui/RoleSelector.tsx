@@ -10,6 +10,7 @@ import { SupplierCategorySelector } from './components/subroles/SupplierCategory
 import { SupplierTypeSelector } from './components/subroles/SupplierTypeSelector'
 import { RestaurantFormatSelector } from './components/subroles/RestaurantFormatSelector'
 import { LoadingState } from './components/subroles/shared/LoadingState'
+import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 
 import { useRoleSelector } from '../model/useRoleSelector'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
@@ -75,7 +76,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   }
 
   // Loading / Error / Empty
-  if (vm.isLoading || vm.isFetching) return <LoadingState />
+  if (vm.isLoading && vm.mainRoles.length === 0) return <LoadingPage />
   if (vm.error) return <LoadingState message={t('roles.loadRolesError')} />
   if (vm.mainRoles.length === 0) return <LoadingState message={t('roles.noRoles')} />
 

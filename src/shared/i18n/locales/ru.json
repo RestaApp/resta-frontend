@@ -487,7 +487,8 @@
     "loggedOut": "Вы вышли из аккаунта"
   },
   "loadingPage": {
-    "subtitle": "Экосистема HoReCa в твоем кармане"
+    "subtitle": "Подключаемся к Telegram...",
+    "country": "BELARUS"
   },
   "shiftDetails": {
     "openTimeAria": "Открыть выбор времени для {{label}}"

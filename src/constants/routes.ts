@@ -5,6 +5,7 @@
 import type { Screen } from '@/types'
 
 export const ROUTES = {
+  LOADING: 'loading',
   HOME: 'home',
   SHIFTS: 'shifts',
   VACANCIES: 'vacancies',
@@ -19,6 +20,7 @@ export const ROUTES = {
 } as const satisfies Record<string, Screen>
 
 export const VALID_SCREENS: readonly Screen[] = [
+  ROUTES.LOADING,
   ROUTES.SHIFTS,
   ROUTES.VACANCIES,
   ROUTES.CREATE_SHIFT,

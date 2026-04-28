@@ -487,7 +487,8 @@
     "loggedOut": "You have logged out"
   },
   "loadingPage": {
-    "subtitle": "HoReCa ecosystem in your pocket"
+    "subtitle": "Connecting to Telegram...",
+    "country": "BELARUS"
   },
   "shiftDetails": {
     "openTimeAria": "Open time picker for {{label}}"

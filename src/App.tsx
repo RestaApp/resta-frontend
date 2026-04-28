@@ -3,10 +3,8 @@ import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { useTelegram } from '@/contexts/TelegramContext'
 import { cn } from '@/utils/cn'
+import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 
-const RoleSelector = lazy(() =>
-  import('@/features/role-selector/ui/RoleSelector').then(m => ({ default: m.RoleSelector }))
-)
 const OnboardingCompleteScreen = lazy(() =>
   import('@/features/role-selector/ui/components/OnboardingCompleteScreen').then(m => ({
     default: m.OnboardingCompleteScreen,
@@ -41,7 +39,7 @@ const AppBootstrapRoutes = () => {
     content = <Dashboard role={role} onNavigate={navigate} currentScreen={currentScreen} />
   }
 
-  return <Suspense fallback={<LoadingPage />}>{content}</Suspense>
+  return <Suspense fallback={null}>{content}</Suspense>
 }
 
 export const App = () => {

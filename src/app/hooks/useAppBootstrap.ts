@@ -16,6 +16,7 @@ import type { Screen, UiRole } from '@/types'
 import { useUserUpdate } from '@/features/role-selector/model/useUserUpdate'
 import { mapRoleFromApi, mapUiRoleToApiRole } from '@/utils/roles'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
+import { authService } from '@/services/auth'
 
 export type AppScreen = 'loading' | 'role' | 'onboarding_done' | 'dashboard'
 
@@ -57,7 +58,9 @@ export function useAppBootstrap() {
   }, [])
 
   const screen: AppScreen =
-    (isLoading && !userData) || (postLogoutLoading && !selectedRole)
+    (isLoading && !userData) ||
+    (authService.isAuthenticated() && !userData) ||
+    (postLogoutLoading && !selectedRole)
       ? 'loading'
       : !selectedRole
         ? 'role'

@@ -10,6 +10,7 @@ import { isEmployeeRole } from '@/utils/roles'
  * Маппинг экранов на табы для синхронизации
  */
 export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
+  [ROUTES.LOADING]: null,
   [ROUTES.HOME]: 'feed',
   [ROUTES.SHIFTS]: 'activity',
   [ROUTES.VACANCIES]: 'activity',
