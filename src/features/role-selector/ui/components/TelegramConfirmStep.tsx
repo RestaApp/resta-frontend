@@ -28,6 +28,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   const [isRequestingLocation, setIsRequestingLocation] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [manualPhone, setManualPhone] = useState('')
+  const [isPhoneShared, setIsPhoneShared] = useState(false)
   const [selectedCity, setSelectedCity] = useState('')
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [cityError, setCityError] = useState<string | null>(null)
@@ -43,6 +44,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   const userId = user?.id
   const resolvedPhone = phoneFromProfile || manualPhone.trim()
   const isPhoneValid = useMemo(() => validatePhone(resolvedPhone).valid, [resolvedPhone])
+  const isPhoneFilled = isPhoneValid || isPhoneShared
   const { refetch: refetchUser } = useGetUserQuery(userId ?? 0, {
     skip: !userId,
   })
@@ -63,6 +65,12 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     try {
       const shared = await requestTelegramContact()
       if (shared) {
+        setIsPhoneShared(true)
+        if (!phoneFromProfile && !manualPhone.trim()) {
+          setManualPhone(
+            t('onboarding.telegram.phoneFromTelegram', { defaultValue: 'Номер из Telegram' })
+          )
+        }
         if (userId) {
           await refetchUser()
         }
@@ -71,7 +79,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     } finally {
       setIsRequestingPhone(false)
     }
-  }, [isRequestingPhone, refetchUser, userId])
+  }, [isRequestingPhone, manualPhone, phoneFromProfile, refetchUser, t, userId])
 
   useEffect(() => {
     if (hasAutoRequestedPhoneRef.current || phoneFromProfile) return
@@ -109,10 +117,12 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   }
 
   const handleContinue = async () => {
-    const phoneValidation = validatePhone(resolvedPhone)
-    if (!phoneValidation.valid) {
-      setPhoneError(phoneValidation.message ?? t('phone.invalidFormat'))
-      return
+    if (!isPhoneShared) {
+      const phoneValidation = validatePhone(resolvedPhone)
+      if (!phoneValidation.valid) {
+        setPhoneError(phoneValidation.message ?? t('phone.invalidFormat'))
+        return
+      }
     }
     setPhoneError(null)
 
@@ -128,7 +138,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
       const success = await updateUserWithData(
         {
           user: {
-            phone: toE164(resolvedPhone),
+            ...(isPhoneShared ? {} : { phone: toE164(resolvedPhone) }),
             city: finalCity,
           },
         },
@@ -186,7 +196,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
               className="whitespace-nowrap font-mono-resta text-[11px] uppercase tracking-[0.08em] leading-none text-primary disabled:opacity-60"
               disabled={isRequestingPhone}
             >
-              {isPhoneValid ? t('onboarding.telegram.shared') : t('onboarding.telegram.share')}
+              {isPhoneFilled ? t('onboarding.telegram.shared') : t('onboarding.telegram.share')}
             </button>
           </div>
           {phoneError ? <p className="mt-1 text-xs text-destructive">{phoneError}</p> : null}
