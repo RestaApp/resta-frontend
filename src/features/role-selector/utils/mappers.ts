@@ -11,14 +11,10 @@ import {
 } from 'lucide-react'
 import type { RoleOption, EmployeeSubRole, UiRole, EmployeeRole } from '@/shared/types/roles.types'
 import {
-  getEmployeePositionLabel,
-  getEmployeePositionDescription,
-  getUiRoleLabel,
-} from '@/constants/labels'
-import {
   mapApiRoleStringToUiRole,
   mapPositionFromApi as mapPositionToEmployeeRole,
 } from '@/utils/roles'
+import i18n from '@/shared/i18n/config'
 
 const POSITION_ICON_MAP: Partial<
   Record<EmployeeRole, React.ComponentType<{ className?: string }>>
@@ -64,21 +60,17 @@ const ROLE_COLOR_MAP: Record<UiRole, string> = {
   supplier: 'from-amber to-terracotta',
 }
 
-const ROLE_DESCRIPTION_MAP: Record<UiRole, string> = {
-  chef: 'Ищу смены, работу, развитие',
-  waiter: 'Обслуживаю гостей в зале',
-  bartender: 'Готовлю напитки и коктейли',
-  barista: 'Готовлю кофе и кофейные напитки',
-  hostess: 'Встречаю гостей и управляю посадкой',
-  delivery: 'Доставляю заказы гостям',
-  cashier: 'Работаю на кассе и принимаю оплату',
-  office: 'Работаю в офисной команде',
-  admin: 'Управляю заведением и персоналом',
-  manager: 'Управляю командой и процессами',
-  support: 'Оказываю поддержку и помощь',
-  venue: 'Ищу персонал и поставщиков',
-  supplier: 'Предлагаю товары и услуги',
-}
+const tRoleLabel = (roleId: UiRole): string =>
+  i18n.t(`roles.labels.${roleId}`, { defaultValue: roleId })
+
+const tRoleDescription = (roleId: UiRole): string =>
+  i18n.t(`roles.descriptions.${roleId}`, { defaultValue: '' })
+
+const tPositionLabel = (positionId: EmployeeRole): string =>
+  i18n.t(`roles.labels.${positionId}`, { defaultValue: positionId })
+
+const tPositionDescription = (positionId: EmployeeRole): string =>
+  i18n.t(`roles.descriptions.${positionId}`, { defaultValue: '' })
 
 const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
   const roleId = mapApiRoleStringToUiRole(roleValue)
@@ -86,8 +78,8 @@ const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
 
   return {
     id: roleId,
-    title: getUiRoleLabel(roleValue),
-    description: ROLE_DESCRIPTION_MAP[roleId],
+    title: tRoleLabel(roleId),
+    description: tRoleDescription(roleId),
     icon: ROLE_ICON_MAP[roleId],
     color: ROLE_COLOR_MAP[roleId],
   }
@@ -105,8 +97,8 @@ const mapPositionFromApi = (positionValue: string): EmployeeSubRole | null => {
 
   return {
     id: roleId,
-    title: getEmployeePositionLabel(positionValue),
-    description: getEmployeePositionDescription(positionValue) || ROLE_DESCRIPTION_MAP[roleId],
+    title: tPositionLabel(roleId),
+    description: tPositionDescription(roleId) || tRoleDescription(roleId),
     icon,
     color,
     originalValue: positionValue.toLowerCase().trim(),

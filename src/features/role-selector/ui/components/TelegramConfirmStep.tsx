@@ -1,17 +1,14 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/navigation/model/userSlice'
-import { useUserUpdate } from '../../model/useUserUpdate'
-import { useGeolocation, getCityByCoordinates } from '@/hooks/useGeolocation'
-import { requestTelegramContact, requestTelegramLocation } from '@/utils/telegram'
-import { formatPhoneInput, toE164, validatePhone } from '@/utils/phone'
 import { Input } from '@/components/ui/input'
 import { LocationField } from './subroles/shared/LocationField'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from '@/components/ui'
 import { OnboardingProgress } from './OnboardingProgress'
-import { useGetUserQuery } from '@/services/api/usersApi'
+import { useAppSelector } from '@/store/hooks'
+import { selectUserData } from '@/features/navigation/model/userSlice'
+import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
+import { formatPhoneInput } from '@/utils/phone'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
@@ -22,136 +19,25 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
 }: TelegramConfirmStepProps) {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
-  const { updateUserWithData } = useUserUpdate()
-  const { getLocation } = useGeolocation()
-  const [isRequestingPhone, setIsRequestingPhone] = useState(false)
-  const [isRequestingLocation, setIsRequestingLocation] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [manualPhone, setManualPhone] = useState('')
-  const [isPhoneShared, setIsPhoneShared] = useState(false)
-  const [selectedCity, setSelectedCity] = useState('')
-  const [phoneError, setPhoneError] = useState<string | null>(null)
-  const [cityError, setCityError] = useState<string | null>(null)
-  const hasAutoRequestedPhoneRef = useRef(false)
-
-  const displayName =
-    user?.full_name?.trim() || user?.name?.trim() || t('onboarding.telegram.fallbackName')
-  const displayUsername = user?.username?.trim()
-    ? `@${user.username.trim().replace(/^@/, '')}`
-    : t('onboarding.telegram.noUsername')
-  const phoneFromProfile = user?.phone?.trim() || ''
-  const cityFromProfile = user?.city?.trim() || user?.location?.trim() || ''
-  const userId = user?.id
-  const resolvedPhone = phoneFromProfile || manualPhone.trim()
-  const isPhoneValid = useMemo(() => validatePhone(resolvedPhone).valid, [resolvedPhone])
-  const isPhoneFilled = isPhoneValid || isPhoneShared
-  const { refetch: refetchUser } = useGetUserQuery(userId ?? 0, {
-    skip: !userId,
-  })
-
-  useEffect(() => {
-    if (manualPhone || !phoneFromProfile) return
-    setManualPhone(formatPhoneInput(phoneFromProfile))
-  }, [manualPhone, phoneFromProfile])
-
-  useEffect(() => {
-    if (selectedCity || !cityFromProfile) return
-    setSelectedCity(cityFromProfile)
-  }, [cityFromProfile, selectedCity])
-
-  const handlePhoneShare = useCallback(async () => {
-    if (isRequestingPhone) return
-    setIsRequestingPhone(true)
-    try {
-      const shared = await requestTelegramContact()
-      if (shared) {
-        setIsPhoneShared(true)
-        if (!phoneFromProfile && !manualPhone.trim()) {
-          setManualPhone(
-            t('onboarding.telegram.phoneFromTelegram', { defaultValue: 'Номер из Telegram' })
-          )
-        }
-        if (userId) {
-          await refetchUser()
-        }
-        setPhoneError(null)
-      }
-    } finally {
-      setIsRequestingPhone(false)
-    }
-  }, [isRequestingPhone, manualPhone, phoneFromProfile, refetchUser, t, userId])
-
-  useEffect(() => {
-    if (hasAutoRequestedPhoneRef.current || phoneFromProfile) return
-    hasAutoRequestedPhoneRef.current = true
-    void handlePhoneShare()
-  }, [handlePhoneShare, phoneFromProfile])
-
-  const handleLocationShare = async () => {
-    if (isRequestingLocation) return
-    setIsRequestingLocation(true)
-    try {
-      const telegramLocation = await requestTelegramLocation()
-      let city: string | null = null
-
-      if (telegramLocation) {
-        city = await getCityByCoordinates(telegramLocation.latitude, telegramLocation.longitude)
-      }
-
-      if (!city) {
-        city = await getLocation()
-      }
-
-      if (!city) return
-      setSelectedCity(city)
-      setCityError(null)
-
-      await updateUserWithData(
-        { user: { city } },
-        () => void 0,
-        () => void 0
-      )
-    } finally {
-      setIsRequestingLocation(false)
-    }
-  }
-
-  const handleContinue = async () => {
-    if (!isPhoneShared) {
-      const phoneValidation = validatePhone(resolvedPhone)
-      if (!phoneValidation.valid) {
-        setPhoneError(phoneValidation.message ?? t('phone.invalidFormat'))
-        return
-      }
-    }
-    setPhoneError(null)
-
-    const finalCity = selectedCity.trim() || cityFromProfile
-    if (!finalCity) {
-      setCityError(t('validation.requiredField'))
-      return
-    }
-    setCityError(null)
-
-    setIsSaving(true)
-    try {
-      const success = await updateUserWithData(
-        {
-          user: {
-            ...(isPhoneShared ? {} : { phone: toE164(resolvedPhone) }),
-            city: finalCity,
-          },
-        },
-        () => onContinue(),
-        error => {
-          setPhoneError(error)
-        }
-      )
-      if (!success) return
-    } finally {
-      setIsSaving(false)
-    }
-  }
+  const {
+    displayName,
+    displayUsername,
+    manualPhone,
+    selectedCity,
+    phoneError,
+    cityError,
+    isPhoneFilled,
+    isRequestingPhone,
+    isRequestingLocation,
+    isSaving,
+    handlePhoneShare,
+    handleLocationShare,
+    handleContinue,
+    setManualPhone,
+    setSelectedCity,
+    setPhoneError,
+    setCityError,
+  } = useTelegramConfirmStep({ onContinue })
 
   return (
     <div className="bg-background min-h-[100dvh] flex flex-col">
