@@ -7,12 +7,14 @@ import { useGeolocation, getCityByCoordinates } from '@/hooks/useGeolocation'
 import { requestTelegramContact, requestTelegramLocation } from '@/utils/telegram'
 import { formatPhoneInput, toE164, validatePhone } from '@/utils/phone'
 import { useGetUserQuery } from '@/services/api/usersApi'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 interface UseTelegramConfirmStepProps {
   onContinue: () => void
+  onBack: () => void
 }
 
-export const useTelegramConfirmStep = ({ onContinue }: UseTelegramConfirmStepProps) => {
+export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfirmStepProps) => {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
   const { updateUserWithData } = useUserUpdate()
@@ -53,6 +55,13 @@ export const useTelegramConfirmStep = ({ onContinue }: UseTelegramConfirmStepPro
     if (selectedCity || !cityFromProfile) return
     setSelectedCity(cityFromProfile)
   }, [cityFromProfile, selectedCity])
+
+  useEffect(() => {
+    const cleanup = setupTelegramBackButton(() => {
+      onBack()
+    })
+    return cleanup
+  }, [onBack])
 
   const handlePhoneShare = useCallback(async () => {
     if (isRequestingPhone) return

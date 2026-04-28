@@ -42,7 +42,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   }
 
   if (vm.flow === 'telegram_confirm') {
-    return <TelegramConfirmStep onContinue={vm.handleTelegramContinue} />
+    return <TelegramConfirmStep onContinue={vm.handleTelegramContinue} onBack={vm.handleBack} />
   }
 
   if (vm.flow === 'supplier_category') {

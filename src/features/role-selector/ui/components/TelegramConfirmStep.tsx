@@ -12,10 +12,12 @@ import { formatPhoneInput } from '@/utils/phone'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
+  onBack: () => void
 }
 
 export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   onContinue,
+  onBack,
 }: TelegramConfirmStepProps) {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
@@ -37,7 +39,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     setSelectedCity,
     setPhoneError,
     setCityError,
-  } = useTelegramConfirmStep({ onContinue })
+  } = useTelegramConfirmStep({ onContinue, onBack })
 
   return (
     <div className="bg-background min-h-[100dvh] flex flex-col">
