@@ -303,6 +303,37 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     }
   }, [telegram])
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+
+    const html = document.documentElement
+    const body = document.body
+
+    const prevHtmlOverflow = html.style.overflow
+    const prevBodyOverflow = body.style.overflow
+    const prevHtmlOverscroll = html.style.overscrollBehaviorY
+    const prevBodyOverscroll = body.style.overscrollBehaviorY
+
+    if (isFullscreen) {
+      html.style.overflow = 'hidden'
+      body.style.overflow = 'hidden'
+      html.style.overscrollBehaviorY = 'none'
+      body.style.overscrollBehaviorY = 'none'
+    } else {
+      html.style.overflow = prevHtmlOverflow
+      body.style.overflow = prevBodyOverflow
+      html.style.overscrollBehaviorY = prevHtmlOverscroll
+      body.style.overscrollBehaviorY = prevBodyOverscroll
+    }
+
+    return () => {
+      html.style.overflow = prevHtmlOverflow
+      body.style.overflow = prevBodyOverflow
+      html.style.overscrollBehaviorY = prevHtmlOverscroll
+      body.style.overscrollBehaviorY = prevBodyOverscroll
+    }
+  }, [isFullscreen])
+
   const requestFullscreen = useCallback(() => {
     if (!isMobileDevice()) return
     const webApp = telegram ?? getTelegramWebApp()
