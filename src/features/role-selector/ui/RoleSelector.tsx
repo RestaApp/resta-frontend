@@ -89,7 +89,11 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   return (
     <>
       <div className="bg-background flex flex-col min-h-[100dvh]">
-        <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto">
+        <div
+          className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] ${
+            vm.selectedRole ? 'overflow-y-auto' : 'overflow-y-hidden'
+          }`}
+        >
           <OnboardingProgress current={1} total={3} className="mb-[14px]" />
           <SectionHeader
             title={t('roles.whoAreYou')}
@@ -103,7 +107,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
             className={`flex flex-col gap-2.5 ${
               vm.selectedRole
                 ? 'pb-[calc(6rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
-                : 'pb-4'
+                : 'pb-0'
             }`}
           >
             {vm.mainRoles.map((role, index) => (
