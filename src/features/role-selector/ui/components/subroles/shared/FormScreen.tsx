@@ -85,9 +85,11 @@ export const FormScreen = memo(function FormScreen({
   })()
 
   return (
-    <div className="flex-1 flex flex-col ui-density-page ui-density-py overflow-y-auto">
-      {showProgress && <OnboardingProgress current={step} total={totalSteps} className="mb-6" />}
-      <SectionHeader title={title} description={description} className="mb-8" />
+    <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto">
+      {showProgress && (
+        <OnboardingProgress current={step} total={totalSteps} className="mb-[14px]" />
+      )}
+      <SectionHeader title={title} description={description} className="mb-4" />
 
       <div className="flex-1 flex flex-col gap-6 max-w-md mx-auto w-full">
         {/* Поле названия */}

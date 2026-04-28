@@ -15,7 +15,6 @@ import {
 import { usersApi } from '@/services/api/usersApi'
 import { authService } from '@/services/auth'
 import { updateUserDataInStore, dispatchAuthEvent } from '@/utils/userData'
-import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
 import { logger } from '@/utils/logger'
 
 /**
@@ -78,34 +77,27 @@ export const useAuthActions = () => {
           const minimalUserData = createMinimalUserData(result.data)
           updateUserDataInStore(dispatch, minimalUserData)
 
-          // Проверяем роль из ответа sign_in
-          // Если роль не unverified - загружаем полные данные пользователя
-          // Если роль unverified - не загружаем, переходим на RoleSelector
-          const apiRole = mapRoleFromApi(result.data.role)
-          if (isVerifiedRole(apiRole)) {
-            // Роль выбрана (не unverified) - загружаем полные данные пользователя
-            // Это должно происходить перед загрузкой каких-либо других данных
-            const userId = result.data.id
-            if (userId) {
-              const subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
-              try {
-                const userResult = await subscription
+          // После sign_in всегда пытаемся загрузить полный профиль пользователя
+          // Это нужно, чтобы сразу получить актуальные contact-поля (например phone)
+          // и показать их в шагах онбординга без ожидания ручного обновления.
+          const userId = result.data.id
+          if (userId) {
+            const subscription = dispatch(usersApi.endpoints.getUser.initiate(userId))
+            try {
+              const userResult = await subscription
 
-                // RTK Query возвращает объект с полем data при успешном ответе
-                if (userResult && 'data' in userResult && userResult.data?.data) {
-                  updateUserDataInStore(dispatch, userResult.data.data)
-                }
-              } catch (error) {
-                // Игнорируем ошибки загрузки пользователя, минимальные данные уже сохранены
-                logger.error('Ошибка загрузки данных пользователя:', error)
-              } finally {
-                // Отписываемся, чтобы не держать постоянную подписку в store
-                subscription.unsubscribe()
+              // RTK Query возвращает объект с полем data при успешном ответе
+              if (userResult && 'data' in userResult && userResult.data?.data) {
+                updateUserDataInStore(dispatch, userResult.data.data)
               }
+            } catch (error) {
+              // Игнорируем ошибки загрузки пользователя, минимальные данные уже сохранены
+              logger.error('Ошибка загрузки данных пользователя:', error)
+            } finally {
+              // Отписываемся, чтобы не держать постоянную подписку в store
+              subscription.unsubscribe()
             }
           }
-          // Если роль unverified - не загружаем user/, просто сохраняем минимальные данные
-          // и показываем RoleSelector (логика в App.tsx)
         }
 
         // Отправляем событие об успешной авторизации
