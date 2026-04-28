@@ -13,10 +13,17 @@ interface RoleCardProps {
   socialProof?: string
 }
 
-const ROLE_SOCIAL_PROOF: Partial<Record<UiRole, string>> = {
-  chef: '892 сотрудника в сети',
-  venue: '340 заведений · Минск',
-  supplier: '128 поставщиков',
+function defaultSocialProofFromI18n(roleId: UiRole, translate: (key: string) => string): string | undefined {
+  switch (roleId) {
+    case 'chef':
+      return translate('roles.socialProof.chef')
+    case 'venue':
+      return translate('roles.socialProof.venue')
+    case 'supplier':
+      return translate('roles.socialProof.supplier')
+    default:
+      return undefined
+  }
 }
 
 export const RoleCard = memo(function RoleCard({
@@ -28,14 +35,14 @@ export const RoleCard = memo(function RoleCard({
   socialProof,
 }: RoleCardProps) {
   const { t } = useTranslation()
-  const proof = socialProof ?? ROLE_SOCIAL_PROOF[role.id]
+  const proof = socialProof ?? defaultSocialProofFromI18n(role.id, t)
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
   const indexLabel = String(index + 1).padStart(2, '0')
 
   return (
     <div className="relative">
       {showPopularBadge ? (
-        <span className="absolute -top-3 left-3 z-10 inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold tracking-widest uppercase text-white shadow-sm">
+        <span className="absolute -top-2 left-[14px] z-10 inline-flex items-center rounded-[4px] bg-primary px-2 py-[3px] font-mono-resta text-[10px] font-semibold tracking-[0.08em] uppercase text-white">
           {t('roles.mostPopularBadge', { defaultValue: 'Популярно' })}
         </span>
       ) : null}
@@ -47,34 +54,27 @@ export const RoleCard = memo(function RoleCard({
         aria-label={t('aria.selectRole', { label: role.title })}
         aria-pressed={isSelected}
         className={cn(
-          'w-full rounded-2xl border p-4 text-left transition-all duration-150',
-          showPopularBadge ? 'pt-6' : '',
+          'w-full rounded-[14px] border px-[18px] py-[18px] text-left transition-all duration-150',
+          showPopularBadge ? 'pt-7' : '',
           isSelected
-            ? 'border-primary bg-primary/8 shadow-sm'
-            : 'border-border bg-card hover:border-border/80'
+            ? 'border-primary bg-[#171512]'
+            : 'border-[#2F2C28] bg-[#11100F] hover:border-[#46413B]'
         )}
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-baseline justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div
-              className={cn(
-                'text-base font-semibold leading-tight',
-                isSelected ? 'text-foreground' : 'text-foreground'
-              )}
-            >
+            <div className="text-[18px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
               {role.title}
             </div>
             {role.description ? (
-              <div className="mt-1 text-sm text-muted-foreground leading-snug">
-                {role.description}
-              </div>
+              <div className="mt-1 text-[13px] leading-snug text-muted-foreground">{role.description}</div>
             ) : null}
           </div>
 
           <span
             className={cn(
-              'font-mono-resta text-sm font-medium shrink-0 mt-0.5',
-              isSelected ? 'text-primary' : 'text-muted-foreground/50'
+              'font-mono-resta text-[11px] font-medium shrink-0',
+              isSelected ? 'text-primary/90' : 'text-muted-foreground'
             )}
           >
             {indexLabel}
@@ -82,7 +82,7 @@ export const RoleCard = memo(function RoleCard({
         </div>
 
         {proof ? (
-          <div className="mt-3 flex items-center gap-1.5">
+          <div className="mt-3 border-t border-dashed border-[#2F2C28] pt-3 flex items-center gap-1.5">
             <span
               className={cn(
                 'h-1.5 w-1.5 rounded-full shrink-0',
@@ -90,7 +90,9 @@ export const RoleCard = memo(function RoleCard({
               )}
               aria-hidden
             />
-            <span className="font-mono-resta text-xs text-primary/80 font-medium">{proof}</span>
+            <span className="font-mono-resta text-[11px] font-medium tracking-[0.05em] text-primary/75">
+              {proof}
+            </span>
           </div>
         ) : null}
       </motion.button>

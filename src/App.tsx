@@ -5,11 +5,6 @@ import { useTelegram } from '@/contexts/TelegramContext'
 import { cn } from '@/utils/cn'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 
-const OnboardingCompleteScreen = lazy(() =>
-  import('@/features/role-selector/ui/components/OnboardingCompleteScreen').then(m => ({
-    default: m.OnboardingCompleteScreen,
-  }))
-)
 const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })))
 
 const AppShell = ({ children }: { children: ReactNode }) => {
@@ -22,15 +17,12 @@ const AppShell = ({ children }: { children: ReactNode }) => {
 }
 
 const AppBootstrapRoutes = () => {
-  const { screen, role, currentScreen, navigate, onSelectRole, onOnboardingComplete } =
-    useAppBootstrap()
+  const { screen, role, currentScreen, navigate, onSelectRole } = useAppBootstrap()
 
   let content: ReactNode
 
   if (screen === 'loading') {
     content = <LoadingPage />
-  } else if (screen === 'onboarding_done') {
-    content = <OnboardingCompleteScreen role={role} onComplete={onOnboardingComplete} />
   } else if (screen === 'role') {
     content = <RoleSelector onSelectRole={onSelectRole} />
   } else if (!role) {

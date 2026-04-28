@@ -11,9 +11,10 @@ import { SupplierTypeSelector } from './components/subroles/SupplierTypeSelector
 import { RestaurantFormatSelector } from './components/subroles/RestaurantFormatSelector'
 import { LoadingState } from './components/subroles/shared/LoadingState'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
+import { TelegramConfirmStep } from './components/TelegramConfirmStep'
 
 import { useRoleSelector } from '../model/useRoleSelector'
-import type { UiRole, RoleOption } from '@/shared/types/roles.types'
+import type { UiRole } from '@/shared/types/roles.types'
 
 interface RoleSelectorProps {
   onSelectRole: (role: UiRole) => void
@@ -22,6 +23,7 @@ interface RoleSelectorProps {
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
+  const selectedRole = vm.mainRoles.find(role => role.id === vm.selectedRole)
 
   // Sub-flows — early returns AFTER all hooks
   if (vm.flow === 'employee') {
@@ -34,9 +36,12 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         employeeSubRoles={vm.employeeSubRoles}
         isLoading={vm.isLoadingPositions}
         isFetching={vm.isFetchingPositions}
-        errorDialogOpen={vm.errorDialogOpen}
       />
     )
+  }
+
+  if (vm.flow === 'telegram_confirm') {
+    return <TelegramConfirmStep onContinue={vm.handleTelegramContinue} />
   }
 
   if (vm.flow === 'supplier_category') {
@@ -83,16 +88,24 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   return (
     <>
       <div className="bg-background flex flex-col min-h-[100dvh]">
-        <div className="flex-1 flex flex-col ui-density-page ui-density-py overflow-y-auto pb-[calc(5.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]">
-          <OnboardingProgress current={1} total={2} className="ui-density-mb-lg" />
+        <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto">
+          <OnboardingProgress current={1} total={3} className="mb-[14px]" />
           <SectionHeader
             title={t('roles.whoAreYou')}
             description={t('roles.roleChoiceHint')}
-            className="ui-density-mb-lg w-70"
+            className="mb-4 w-[280px]"
+            titleClassName="max-w-[280px] text-[36px] leading-[1.05] tracking-[-0.025em] mb-2"
+            descriptionClassName="max-w-[280px] text-sm leading-[1.4] text-muted-foreground"
           />
 
-          <div className="mt-10 flex flex-col gap-5">
-            {vm.mainRoles.map((role: RoleOption, index: number) => (
+          <div
+            className={`flex flex-col gap-2.5 ${
+              vm.selectedRole
+                ? 'pb-[calc(6rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
+                : 'pb-4'
+            }`}
+          >
+            {vm.mainRoles.map((role, index) => (
               <RoleCard
                 key={role.id}
                 role={role}
@@ -105,6 +118,18 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
           </div>
         </div>
       </div>
+      {vm.selectedRole ? (
+        <div className="fixed left-5 right-5 bottom-[calc(14px+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] z-20">
+          <button
+            type="button"
+            onClick={vm.handleRoleContinue}
+            className="w-full rounded-[14px] border-none bg-primary px-4 py-[18px] text-base font-semibold text-primary-foreground shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+            aria-label={t('roles.continueAsRole', { role: selectedRole?.title ?? '' })}
+          >
+            {t('roles.continueAsRole', { role: selectedRole?.title ?? '' })}
+          </button>
+        </div>
+      ) : null}
 
       <ErrorModal
         isOpen={vm.errorDialogOpen}

@@ -17,10 +17,6 @@ export const OnboardingProgress = memo(function OnboardingProgress({
 
   return (
     <div className={cn('w-full max-w-md mx-auto', className)}>
-      <p className="font-mono-resta text-[11px] tracking-widest uppercase text-muted-foreground mb-2">
-        {t('onboarding.stepLabel', { defaultValue: 'ШАГ' })} {current}{' '}
-        <span className="opacity-40">·</span> {total}
-      </p>
       <div
         className="flex gap-1"
         role="progressbar"
@@ -39,6 +35,10 @@ export const OnboardingProgress = memo(function OnboardingProgress({
           />
         ))}
       </div>
+      <p className="font-mono-resta text-[11px] tracking-widest uppercase text-muted-foreground mt-2">
+        {t('onboarding.stepLabel', { defaultValue: 'ШАГ' })} {current}{' '}
+        <span className="opacity-40">·</span> {total}
+      </p>
     </div>
   )
 })

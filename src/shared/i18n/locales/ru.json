@@ -395,8 +395,11 @@
       "logistics": "Доставка и логистика"
     },
     "restaurantFormatsError": "Не удалось загрузить форматы ресторанов",
-    "positionScreenTitle": "Детали профиля",
-    "positionScreenDescription": "Выберите позицию, затем укажите специализации, опыт и город",
+    "positionScreenTitle": "Кто ты по профессии?",
+    "positionScreenDescription": "Покажем смены под тебя",
+    "shiftsDefault": "Смены",
+    "specializationLabel": "СПЕЦИАЛИЗАЦИЯ",
+    "specializationMultiHint": "можно выбрать несколько",
     "venueInfoTitle": "Информация о заведении",
     "venueInfoDescription": "Заполните данные о вашем заведении",
     "venueNameLabel": "Название заведения",
@@ -410,12 +413,36 @@
     "yourExperience": "Ваш стаж",
     "positionSearchPlaceholder": "Поиск по профессиям",
     "continuePosition": "Продолжить",
+    "continueAsRole": "Продолжить как {{role}}",
     "specializationsMain": "Направления",
-    "specializationsMore": "Ещё направления"
+    "specializationsMore": "Ещё направления",
+    "socialProof": {
+      "chef": "892 сотрудника в сети",
+      "venue": "340 заведений · Минск",
+      "supplier": "128 поставщиков"
+    }
   },
   "onboarding": {
     "stepOf": "Шаг {{current}} из {{total}}",
-    "doneEmoji": "🎉"
+    "doneEmoji": "🎉",
+    "telegram": {
+      "title": "Подтверди контакт",
+      "subtitle": "Рестораны будут писать тебе в Telegram напрямую",
+      "connected": "✓ TELEGRAM ПОДКЛЮЧЁН",
+      "fallbackName": "Пользователь Telegram",
+      "noUsername": "username не указан",
+      "phoneRequiredLabel": "ТЕЛЕФОН",
+      "phoneLabel": "ТЕЛЕФОН (ОПЦ.)",
+      "phonePlaceholder": "Не указан",
+      "share": "Поделиться",
+      "shared": "Поделились ✓",
+      "cityLabel": "ГОРОД",
+      "cityFallback": "Не указан",
+      "cityHint": "по геолокации ✓",
+      "shieldTitle": "Без посредников.",
+      "shieldText": "Resta только сводит. Оплата за смену — напрямую между тобой и рестораном.",
+      "next": "Далее →"
+    }
   },
   "drawer": {
     "chef": "Специализация",

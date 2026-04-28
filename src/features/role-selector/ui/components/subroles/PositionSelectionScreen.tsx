@@ -2,20 +2,20 @@
  * Экран выбора позиции сотрудника
  */
 
-import { memo, useMemo, useState, useCallback } from 'react'
+import { memo, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search } from 'lucide-react'
-import { CardSelect } from '@/components/ui/card-select'
-import { SectionHeader } from '@/components/ui/section-header'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { OnboardingProgress } from '../OnboardingProgress'
+import { useLabels } from '@/shared/i18n/hooks'
+import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import type { EmployeeSubRole, EmployeeRole } from '@/shared/types/roles.types'
 
 interface PositionSelectionScreenProps {
   subRoles: EmployeeSubRole[]
   selectedSubRole: string | null
   onPositionSelect: (role: EmployeeRole, positionValue: string) => void
+  specializations: string[]
+  selectedSpecializations: string[]
+  onSpecializationToggle: (spec: string) => void
   onContinue: () => void
 }
 
@@ -23,16 +23,30 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   subRoles,
   selectedSubRole,
   onPositionSelect,
+  specializations,
+  selectedSpecializations,
+  onSpecializationToggle,
   onContinue,
 }: PositionSelectionScreenProps) {
   const { t } = useTranslation()
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const filteredRoles = useMemo(() => {
-    if (!searchQuery.trim()) return subRoles
-    const q = searchQuery.trim().toLowerCase()
-    return subRoles.filter(r => r.title.toLowerCase().includes(q))
-  }, [subRoles, searchQuery])
+  const { getSpecializationLabel } = useLabels()
+  const visibleRoles = useMemo(() => subRoles, [subRoles])
+  const shiftsByIndex = useMemo(() => ['87 смен', '62 смены', '41 смена', '28 смен'], [])
+  const emojiByRole = useMemo(
+    () =>
+      ({
+        chef: '👨‍🍳',
+        waiter: '🍽',
+        barista: '☕',
+        bartender: '🍸',
+        manager: '📋',
+        support: '🎧',
+        delivery: '🛵',
+        cashier: '💵',
+        office: '💼',
+      }) as Partial<Record<EmployeeRole, string>>,
+    []
+  )
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -43,53 +57,81 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   )
 
   return (
-    <div className="bg-background flex flex-col min-h-[100dvh] ui-density-page ui-density-py">
-      <OnboardingProgress current={2} total={2} className="ui-density-mb" />
-      <SectionHeader
-        title={t('roles.positionScreenTitle')}
-        description={t('roles.positionScreenDescription')}
-        className="ui-density-mb-lg"
-      />
-
-      <div className="relative ui-density-mb max-w-md mx-auto w-full">
-        <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
-          aria-hidden
-        />
-        <Input
-          type="search"
-          placeholder={t('roles.positionSearchPlaceholder')}
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          className="pl-9 rounded-xl bg-input-background"
-          aria-label={t('roles.positionSearchPlaceholder')}
-        />
+    <div className="bg-background flex flex-col min-h-[100dvh] ui-density-page ui-density-py pt-[14px]">
+      <div
+        className="h-[3px] w-full rounded-full bg-muted"
+        role="progressbar"
+        aria-valuenow={3}
+        aria-valuemin={1}
+        aria-valuemax={3}
+        aria-label={t('onboarding.stepOf', { current: 3, total: 3 })}
+      >
+        <div className="h-full w-full rounded-full bg-primary transition-all duration-300" />
       </div>
+      <p className="mt-2 mb-[14px] font-mono-resta text-[11px] uppercase tracking-widest text-muted-foreground">
+        {t('onboarding.stepOf', { current: 3, total: 3 })}
+      </p>
 
-      <div className="grid grid-cols-2 gap-3 max-w-md mx-auto w-full flex-1 content-start pb-[calc(8.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]">
-        {filteredRoles.length === 0 ? (
-          <p className="col-span-2 text-sm text-muted-foreground text-center py-6">
-            {searchQuery.trim() ? t('common.nothingFound') : null}
-          </p>
-        ) : null}
-        {filteredRoles.map((subRole, index) => {
-          const Icon = subRole.icon
+      <h1 className="mb-1.5 text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em] text-foreground">
+        {t('roles.positionScreenTitle')}
+      </h1>
+      <p className="mb-[14px] text-sm leading-[1.35] text-muted-foreground">
+        {t('roles.positionScreenDescription')}
+      </p>
+
+      <div className="grid grid-cols-3 gap-1.5 max-w-md w-full content-start mb-[14px]">
+        {visibleRoles.map((subRole, index) => {
           const isSelected = selectedSubRole === subRole.id
           return (
-            <CardSelect
+            <button
               key={subRole.originalValue || subRole.id}
-              id={subRole.id}
-              title={subRole.title}
-              image={<Icon className="h-7 w-7" aria-hidden="true" />}
-              imageType="icon"
-              isSelected={isSelected}
-              index={index}
-              layout="vertical"
-              onSelect={handleSelect}
-              ariaLabel={t('aria.selectType', { label: subRole.title })}
-            />
+              type="button"
+              onClick={() => handleSelect(subRole.id)}
+              aria-label={t('aria.selectType', { label: subRole.title })}
+              className={[
+                'rounded-[14px] border px-2 py-3 text-center transition-colors',
+                isSelected
+                  ? 'border-primary bg-primary/10'
+                  : 'border-border bg-card hover:border-primary/40',
+              ].join(' ')}
+            >
+              <div className="mb-1 text-xl" aria-hidden>
+                {emojiByRole[subRole.id] ?? '👤'}
+              </div>
+              <div className="text-[11px] font-semibold leading-tight text-foreground">
+                {subRole.title}
+              </div>
+              <div
+                className={`mt-0.5 text-[11px] ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
+              >
+                {shiftsByIndex[index] ?? t('roles.shiftsDefault')}
+              </div>
+            </button>
           )
         })}
+      </div>
+
+      <div className="mb-[calc(8.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] max-w-md w-full">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+            {t('roles.specializationLabel')}
+          </div>
+          <div className="text-[11px] text-muted-foreground">
+            {t('roles.specializationMultiHint')}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {specializations.map(spec => (
+            <SelectableTagButton
+              key={spec}
+              value={spec}
+              label={getSpecializationLabel(spec)}
+              isSelected={selectedSpecializations.includes(spec)}
+              onClick={onSpecializationToggle}
+              ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(spec) })}
+            />
+          ))}
+        </div>
       </div>
 
       {selectedSubRole ? (

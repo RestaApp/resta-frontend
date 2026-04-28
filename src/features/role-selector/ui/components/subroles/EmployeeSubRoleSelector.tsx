@@ -6,7 +6,6 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEmployeeSubRoleSelector } from '../../../model/useEmployeeSubRoleSelector'
 import { PositionSelectionScreen } from './PositionSelectionScreen'
-import { SpecializationDrawer } from './shared/SpecializationDrawer'
 import { LoadingState } from './shared/LoadingState'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import type { EmployeeFormData } from '../../../model/useEmployeeSubRoleSelector'
@@ -19,7 +18,6 @@ interface EmployeeSubRoleSelectorProps {
   employeeSubRoles?: string[]
   isLoading?: boolean
   isFetching?: boolean
-  errorDialogOpen?: boolean
 }
 
 export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
@@ -30,25 +28,15 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   employeeSubRoles,
   isLoading = false,
   isFetching = false,
-  errorDialogOpen = false,
 }: EmployeeSubRoleSelectorProps) {
   const { t } = useTranslation()
   const {
     subRoles,
-    formData,
-    showSpecializationDrawer,
     selectedSpecializations,
     drawerSpecializations,
-    isLoadingDrawerSpecs,
-    drawerTitle,
-    isLoadingLocation,
     handlePositionSelect,
-    openSpecializationDrawer,
     handleSpecializationToggle,
-    handleLocationRequest,
     handleSpecializationDone,
-    updateFormData,
-    setShowSpecializationDrawer,
   } = useEmployeeSubRoleSelector({
     employeeSubRoles,
     selectedSubRole,
@@ -71,23 +59,10 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
         subRoles={subRoles}
         selectedSubRole={selectedSubRole}
         onPositionSelect={handlePositionSelect}
-        onContinue={openSpecializationDrawer}
-      />
-
-      <SpecializationDrawer
-        open={showSpecializationDrawer}
-        onOpenChange={setShowSpecializationDrawer}
-        title={drawerTitle}
         specializations={drawerSpecializations}
-        isLoading={isLoadingDrawerSpecs}
-        isLoadingLocation={isLoadingLocation}
         selectedSpecializations={selectedSpecializations}
-        formData={formData}
         onSpecializationToggle={handleSpecializationToggle}
-        onLocationRequest={handleLocationRequest}
-        onFormDataUpdate={updateFormData}
-        onDone={handleSpecializationDone}
-        errorDialogOpen={errorDialogOpen}
+        onContinue={handleSpecializationDone}
       />
     </>
   )

@@ -14,6 +14,7 @@ import {
 } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { isEmployeeRole } from '@/utils/roles'
+import { getPathForScreen } from '@/constants/routePaths'
 import {
   consumeCommand,
   selectNavigationCommand,
@@ -31,20 +32,18 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
   const navigationCommand = useAppSelector(selectNavigationCommand)
   const tabs = useMemo(() => getTabsForRole(role), [role])
   const [activeTab, setActiveTab] = useState<Tab>(tabs[0]?.id ?? 'home')
-  const scheduleTabUpdate = useCallback((nextTab: Tab) => {
-    queueMicrotask(() => {
-      setActiveTab(prev => (prev === nextTab ? prev : nextTab))
-    })
+  const setTabIfChanged = useCallback((nextTab: Tab) => {
+    setActiveTab(prev => (prev === nextTab ? prev : nextTab))
   }, [])
 
   // Проверка флага для перехода на Feed с вкладкой смен
   useEffect(() => {
     const shouldNavigateToFeed = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     if (shouldNavigateToFeed === 'true') {
-      scheduleTabUpdate('feed')
+      setTabIfChanged('feed')
       removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     }
-  }, [scheduleTabUpdate])
+  }, [setTabIfChanged])
 
   useEffect(() => {
     if (!navigationCommand) return
@@ -52,11 +51,11 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     if (navigationCommand.type === 'NAVIGATE_TAB') {
       const tabAllowed = tabs.some(t => t.id === navigationCommand.tab)
       if (tabAllowed && navigationCommand.tab !== activeTab) {
-        scheduleTabUpdate(navigationCommand.tab)
+        setTabIfChanged(navigationCommand.tab)
       }
       dispatch(consumeCommand())
     }
-  }, [activeTab, dispatch, navigationCommand, role, scheduleTabUpdate, tabs])
+  }, [activeTab, dispatch, navigationCommand, role, setTabIfChanged, tabs])
 
   // Синхронизация внешнего currentScreen -> activeTab (только если таб есть у текущей роли)
   useEffect(() => {
@@ -64,15 +63,23 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     const mappedTab = getTabForScreen(role, currentScreen)
     const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
     if (tabAllowed && mappedTab !== activeTab) {
-      scheduleTabUpdate(mappedTab)
+      setTabIfChanged(mappedTab)
     }
-  }, [activeTab, currentScreen, role, scheduleTabUpdate, tabs])
+  }, [activeTab, currentScreen, role, setTabIfChanged, tabs])
 
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setActiveTab(tab)
       const screen = getScreenForTab(role, tab)
-      if (screen && onNavigate) onNavigate(screen)
+      if (screen) {
+        if (onNavigate) onNavigate(screen)
+        if (typeof window !== 'undefined') {
+          const nextPath = getPathForScreen(role, screen)
+          if (window.location.pathname !== nextPath) {
+            window.history.replaceState(null, '', nextPath)
+          }
+        }
+      }
 
       if (tab === 'activity' && isEmployeeRole(role) && typeof window !== 'undefined') {
         const shown = getLocalStorageItem(STORAGE_KEYS.ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN)

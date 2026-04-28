@@ -5,7 +5,13 @@ import { logger } from '@/utils/logger'
 import type { UiRole } from '@/shared/types/roles.types'
 import type { FormData } from './useFormSelector'
 
-type RoleSelectorFlow = 'main' | 'employee' | 'supplier_category' | 'supplier' | 'restaurant'
+type RoleSelectorFlow =
+  | 'main'
+  | 'telegram_confirm'
+  | 'employee'
+  | 'supplier_category'
+  | 'supplier'
+  | 'restaurant'
 
 interface UseRoleSelectorProps {
   onSelectRole: (role: UiRole) => void
@@ -21,12 +27,14 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
   })
 
   const flow: RoleSelectorFlow = useMemo(() => {
+    if (roleSelection.showTelegramConfirm) return 'telegram_confirm'
     if (roleSelection.showEmployeeSubRoles) return 'employee'
     if (roleSelection.showSupplierCategory) return 'supplier_category'
     if (roleSelection.showSupplierTypes) return 'supplier'
     if (roleSelection.showRestaurantFormats) return 'restaurant'
     return 'main'
   }, [
+    roleSelection.showTelegramConfirm,
     roleSelection.showEmployeeSubRoles,
     roleSelection.showSupplierCategory,
     roleSelection.showSupplierTypes,
@@ -78,6 +86,7 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
 
     handleRoleSelect: roleSelection.handleRoleSelect,
     handleRoleContinue: roleSelection.handleRoleContinue,
+    handleTelegramContinue: roleSelection.handleTelegramContinue,
     handleSubRoleSelect: subRoleSubmission.handleSubRoleSelect,
     handleSubRoleContinue: subRoleSubmission.handleSubRoleContinue,
     handleSupplierTypeContinue,

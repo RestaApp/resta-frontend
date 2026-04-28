@@ -20,6 +20,7 @@ interface UseRoleSelectionProps {
 
 export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const [draftSelectedRole, setDraftSelectedRole] = useState<UiRole | null>(null)
+  const [showTelegramConfirm, setShowTelegramConfirm] = useState(false)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
   /** Шаг 1 поставщика: категория (GET /catalogs/supplier_categories) */
   const [showSupplierCategory, setShowSupplierCategory] = useState(false)
@@ -92,6 +93,13 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
 
   const handleRoleContinue = useCallback(() => {
     if (!draftSelectedRole) return
+    setShowTelegramConfirm(true)
+  }, [draftSelectedRole])
+
+  const handleTelegramContinue = useCallback(() => {
+    if (!draftSelectedRole) return
+
+    setShowTelegramConfirm(false)
 
     if (draftSelectedRole === 'chef') {
       setShowEmployeeSubRoles(true)
@@ -116,6 +124,8 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
 
     if (showEmployeeSubRoles) {
       setShowEmployeeSubRoles(false)
+    } else if (showTelegramConfirm) {
+      setShowTelegramConfirm(false)
     } else if (showSupplierTypes) {
       setShowSupplierTypes(false)
       setShowSupplierCategory(true)
@@ -125,10 +135,17 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     } else if (showRestaurantFormats) {
       setShowRestaurantFormats(false)
     }
-  }, [showEmployeeSubRoles, showSupplierTypes, showSupplierCategory, showRestaurantFormats])
+  }, [
+    showEmployeeSubRoles,
+    showTelegramConfirm,
+    showSupplierTypes,
+    showSupplierCategory,
+    showRestaurantFormats,
+  ])
 
   return {
     selectedRole: draftSelectedRole,
+    showTelegramConfirm,
     showEmployeeSubRoles,
     showSupplierCategory,
     showSupplierTypes,
@@ -153,6 +170,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     isFetchingRestaurantFormats,
     handleRoleSelect,
     handleRoleContinue,
+    handleTelegramContinue,
     handleBack,
     setShowEmployeeSubRoles,
     setShowSupplierTypes,

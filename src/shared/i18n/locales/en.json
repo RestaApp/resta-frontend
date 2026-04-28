@@ -395,8 +395,11 @@
       "logistics": "Delivery and logistics"
     },
     "restaurantFormatsError": "Failed to load restaurant formats",
-    "positionScreenTitle": "Profile details",
-    "positionScreenDescription": "Choose your position, then add specializations, experience, and city",
+    "positionScreenTitle": "What is your profession?",
+    "positionScreenDescription": "We'll match shifts for you",
+    "shiftsDefault": "Shifts",
+    "specializationLabel": "SPECIALIZATION",
+    "specializationMultiHint": "you can select multiple",
     "venueInfoTitle": "Restaurant info",
     "venueInfoDescription": "Fill in your venue details",
     "venueNameLabel": "Venue name",
@@ -410,12 +413,36 @@
     "yourExperience": "Your experience",
     "positionSearchPlaceholder": "Search professions",
     "continuePosition": "Continue",
+    "continueAsRole": "Continue as {{role}}",
     "specializationsMain": "Specializations",
-    "specializationsMore": "More specializations"
+    "specializationsMore": "More specializations",
+    "socialProof": {
+      "chef": "892 staff across the network",
+      "venue": "340 venues · Minsk",
+      "supplier": "128 suppliers"
+    }
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
-    "doneEmoji": "🎉"
+    "doneEmoji": "🎉",
+    "telegram": {
+      "title": "Confirm your contact",
+      "subtitle": "Restaurants will message you directly in Telegram",
+      "connected": "✓ TELEGRAM CONNECTED",
+      "fallbackName": "Telegram user",
+      "noUsername": "username is not set",
+      "phoneRequiredLabel": "PHONE",
+      "phoneLabel": "PHONE (OPTIONAL)",
+      "phonePlaceholder": "Not provided",
+      "share": "Share",
+      "shared": "Shared ✓",
+      "cityLabel": "CITY",
+      "cityFallback": "Not provided",
+      "cityHint": "from geolocation ✓",
+      "shieldTitle": "No middlemen.",
+      "shieldText": "Resta only connects you. Shift payment is handled directly between you and the restaurant.",
+      "next": "Next →"
+    }
   },
   "drawer": {
     "chef": "Specialization",

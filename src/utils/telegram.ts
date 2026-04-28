@@ -48,6 +48,20 @@ interface TelegramWebApp {
       language_code?: string
     }
   }
+  requestContact?: (callback?: (shared: boolean) => void) => void
+  LocationManager?: {
+    isInited?: boolean
+    init?: (callback?: () => void) => void
+    getLocation?: (
+      callback: (
+        location: {
+          latitude: number
+          longitude: number
+        } | null
+      ) => void
+    ) => void
+    openSettings?: () => void
+  }
   BackButton: {
     show: () => void
     hide: () => void
@@ -122,5 +136,47 @@ export const setupTelegramBackButton = (onBack: () => void) => {
     }
   } catch {
     return () => {}
+  }
+}
+
+export const requestTelegramContact = async (): Promise<boolean> => {
+  const webApp = getTelegramWebApp()
+  if (!webApp?.requestContact) return false
+
+  return new Promise(resolve => {
+    try {
+      webApp.requestContact?.(shared => resolve(Boolean(shared)))
+    } catch {
+      resolve(false)
+    }
+  })
+}
+
+export const requestTelegramLocation = async (): Promise<{
+  latitude: number
+  longitude: number
+} | null> => {
+  const webApp = getTelegramWebApp()
+  const manager = webApp?.LocationManager
+  if (!manager?.getLocation) return null
+
+  const getLocation = () =>
+    new Promise<{ latitude: number; longitude: number } | null>(resolve => {
+      try {
+        manager.getLocation?.(location => resolve(location))
+      } catch {
+        resolve(null)
+      }
+    })
+
+  try {
+    if (!manager.isInited && manager.init) {
+      await new Promise<void>(resolve => {
+        manager.init?.(() => resolve())
+      })
+    }
+    return await getLocation()
+  } catch {
+    return null
   }
 }

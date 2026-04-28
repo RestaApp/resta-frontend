@@ -57,7 +57,7 @@ export const useEmployeeSubRoleSelector = ({
   const { specializations: drawerSpecializations = [], isLoading: isLoadingDrawerSpecs } =
     useUserSpecializations({
       position: selectedPositionValueLocal || '',
-      enabled: showSpecializationDrawer && !!selectedPositionValueLocal,
+      enabled: !!selectedPositionValueLocal,
     })
 
   const getDrawerTitleFromI18n = useDrawerTitle()

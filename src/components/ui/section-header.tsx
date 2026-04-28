@@ -1,4 +1,3 @@
-import { memo } from 'react'
 import { motion } from 'motion/react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/utils/cn'
@@ -13,9 +12,11 @@ export interface SectionHeaderProps {
   count?: number
   align?: 'center' | 'left'
   className?: string
+  titleClassName?: string
+  descriptionClassName?: string
 }
 
-export const SectionHeader = memo(function SectionHeader({
+export const SectionHeader = function SectionHeader({
   title,
   description,
   hint,
@@ -23,10 +24,12 @@ export const SectionHeader = memo(function SectionHeader({
   count,
   align = 'left',
   className,
+  titleClassName,
+  descriptionClassName,
 }: SectionHeaderProps) {
   const isWithIcon = !!Icon
 
-  if (isWithIcon && Icon) {
+  if (isWithIcon) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -50,9 +53,20 @@ export const SectionHeader = memo(function SectionHeader({
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(align === 'center' && 'text-center', className)}
     >
-      <h2 className="font-display text-4xl leading-none tracking-tight text-foreground mb-3">{title}</h2>
-      {description ? <p className="text-base text-muted-foreground leading-none">{description}</p> : null}
+      <h2
+        className={cn(
+          'font-display text-4xl leading-none tracking-tight text-foreground mb-3',
+          titleClassName
+        )}
+      >
+        {title}
+      </h2>
+      {description ? (
+        <p className={cn('text-base text-muted-foreground leading-none', descriptionClassName)}>
+          {description}
+        </p>
+      ) : null}
       {hint ? <p className="mt-1.5 text-sm text-muted-foreground/70">{hint}</p> : null}
     </motion.div>
   )
-})
+}

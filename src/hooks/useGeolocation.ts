@@ -112,7 +112,10 @@ function getCurrentPosition(): Promise<GeolocationPosition> {
 /**
  * Получает название города по координатам через Nominatim API
  */
-async function getCityByCoordinates(latitude: number, longitude: number): Promise<string | null> {
+export async function getCityByCoordinates(
+  latitude: number,
+  longitude: number
+): Promise<string | null> {
   const cacheKey = toGeocodeCacheKey(latitude, longitude)
   const cached = geocodeCache.get(cacheKey)
   if (cached && Date.now() - cached.ts < GEOCODE_CACHE_TTL_MS) {
