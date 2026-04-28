@@ -6,7 +6,7 @@
 const BELARUS_MOBILE_CODES = ['29', '33', '44', '25'] as const
 
 /** Извлечь только цифры из строки */
-export function parsePhoneDigits(value: string): string {
+function parsePhoneDigits(value: string): string {
   return value.replace(/\D/g, '')
 }
 

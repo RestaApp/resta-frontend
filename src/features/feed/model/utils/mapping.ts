@@ -17,7 +17,7 @@ const toNumber = (v?: string | number | null): number => {
   return Number.isFinite(n) ? n : 0
 }
 
-export const getLogo = (id: number): string => {
+const getLogo = (id: number): string => {
   const logos = ['🍽️', '☕️', '🍕', '🥖', '🥘', '🍔', '🍣', '🍜']
   return logos[Math.abs(id) % logos.length]
 }

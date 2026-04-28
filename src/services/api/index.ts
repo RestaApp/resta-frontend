@@ -22,6 +22,3 @@ export type * from './notificationPreferencesApi'
 export type * from './notificationsApi'
 export type * from './reviewsApi'
 export type * from './supportTicketsApi'
-
-// Экспортируем общие типы для переиспользования
-export type { UserApi, RestaurantProfileApi } from './shiftsApi'

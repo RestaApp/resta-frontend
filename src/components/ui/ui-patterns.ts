@@ -34,8 +34,6 @@ export const INPUT_FIELD_DISABLED_CLASS =
 
 export const DRAWER_BODY_CLASS = 'ui-density-page ui-density-py ui-density-stack'
 
-export const DRAWER_BODY_COMPACT_CLASS = 'ui-density-page ui-density-py ui-density-stack-sm'
-
 export const DRAWER_HEADER_CLASS = 'border-b border-border/50 ui-density-page'
 
 export const DRAWER_SCROLL_BODY_CLASS =

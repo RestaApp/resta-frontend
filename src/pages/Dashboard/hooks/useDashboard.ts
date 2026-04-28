@@ -55,24 +55,6 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
         scheduleTabUpdate(navigationCommand.tab)
       }
       dispatch(consumeCommand())
-      return
-    }
-
-    if (navigationCommand.type === 'NAVIGATE_SCREEN') {
-      const mappedTab = getTabForScreen(role, navigationCommand.screen)
-      const tabAllowed = mappedTab && tabs.some(t => t.id === mappedTab)
-      if (tabAllowed && mappedTab !== activeTab) {
-        scheduleTabUpdate(mappedTab)
-      }
-      dispatch(consumeCommand())
-      return
-    }
-
-    if (navigationCommand.type === 'RESET_HOME') {
-      if (tabs[0]?.id && tabs[0].id !== activeTab) {
-        scheduleTabUpdate(tabs[0].id)
-      }
-      dispatch(consumeCommand())
     }
   }, [activeTab, dispatch, navigationCommand, role, scheduleTabUpdate, tabs])
 

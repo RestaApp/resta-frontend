@@ -16,7 +16,13 @@ export const UrgentPill = ({ date, className }: { date?: string; className?: str
       className
     )}
   >
-    SOS{date ? <><span className="opacity-60 mx-0.5">·</span>{date}</> : null}
+    SOS
+    {date ? (
+      <>
+        <span className="opacity-60 mx-0.5">·</span>
+        {date}
+      </>
+    ) : null}
   </span>
 )
 
@@ -49,19 +55,14 @@ export const EscrowBadge = ({
       className
     )}
   >
-    ESCROW{amount ? <><span className="opacity-60 mx-0.5">·</span>{amount}{currency ? ` ${currency}` : ''}</> : null}
-  </span>
-)
-
-/** BOOSTED — amber, монетизация. Опционально: "BOOSTED · #{count}" */
-export const BoostedBadge = ({ count, className }: { count?: number; className?: string }) => (
-  <span
-    className={cn(
-      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-wider border bg-amber/10 text-amber border-amber/40',
-      className
-    )}
-  >
-    BOOSTED{count != null ? <><span className="opacity-60 mx-0.5">·</span>#{count}</> : null}
+    ESCROW
+    {amount ? (
+      <>
+        <span className="opacity-60 mx-0.5">·</span>
+        {amount}
+        {currency ? ` ${currency}` : ''}
+      </>
+    ) : null}
   </span>
 )
 

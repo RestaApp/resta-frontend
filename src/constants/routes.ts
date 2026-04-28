@@ -18,16 +18,3 @@ export const ROUTES = {
   WORK_MANAGEMENT: 'work-management',
   APPLICATIONS: 'applications',
 } as const satisfies Record<string, Screen>
-
-export const VALID_SCREENS: readonly Screen[] = [
-  ROUTES.LOADING,
-  ROUTES.SHIFTS,
-  ROUTES.VACANCIES,
-  ROUTES.CREATE_SHIFT,
-  ROUTES.SETTINGS,
-  ROUTES.SUPPLIERS,
-  ROUTES.FIND_REPLACEMENT,
-  ROUTES.WORK_MANAGEMENT,
-  ROUTES.NOTIFICATIONS,
-  ROUTES.APPLICATIONS,
-] as const

@@ -1,16 +1,6 @@
 import i18n from '@/shared/i18n/config'
 import { parseDate } from '@/utils/datetime'
 
-export const formatReviews = (count: number): string => {
-  const n = Math.abs(count)
-  const last = n % 10
-  const last2 = n % 100
-  if (last2 >= 11 && last2 <= 14) return i18n.t('feedFallback.reviews5')
-  if (last === 1) return i18n.t('feedFallback.review')
-  if (last >= 2 && last <= 4) return i18n.t('feedFallback.reviews2')
-  return i18n.t('feedFallback.reviews5')
-}
-
 export const formatMoney = (value: number): string => {
   const v = Number.isFinite(value) ? value : 0
   const fixed = v.toFixed(2)

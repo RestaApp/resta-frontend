@@ -6,7 +6,7 @@ import { Building2, Inbox, Package, Search, User, Users, Zap } from 'lucide-reac
 import type { Tab, UiRole } from '@/types'
 import { isEmployeeRole } from '@/utils/roles'
 
-export interface TabItem {
+interface TabItem {
   id: Tab
   label: string
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
@@ -15,7 +15,7 @@ export interface TabItem {
 /**
  * Ключи переводов для табов (i18n)
  */
-export const TAB_LABEL_KEYS = {
+const TAB_LABEL_KEYS = {
   employee: {
     feed: 'tabs.employee.feed',
     activity: 'tabs.employee.activity',
@@ -37,7 +37,7 @@ export const TAB_LABEL_KEYS = {
 /**
  * Получает список табов для роли сотрудника (label — ключ i18n)
  */
-export const getEmployeeTabs = (): TabItem[] => {
+const getEmployeeTabs = (): TabItem[] => {
   return [
     { id: 'feed', label: TAB_LABEL_KEYS.employee.feed, icon: Search },
     { id: 'activity', label: TAB_LABEL_KEYS.employee.activity, icon: Inbox },
@@ -48,7 +48,7 @@ export const getEmployeeTabs = (): TabItem[] => {
 /**
  * Получает список табов для роли заведения
  */
-export const getVenueTabs = (): TabItem[] => {
+const getVenueTabs = (): TabItem[] => {
   return [
     { id: 'activity', label: TAB_LABEL_KEYS.venue.activity, icon: Zap },
     { id: 'staff', label: TAB_LABEL_KEYS.venue.staff, icon: Users },
@@ -60,7 +60,7 @@ export const getVenueTabs = (): TabItem[] => {
 /**
  * Получает список табов для роли поставщика
  */
-export const getSupplierTabs = (): TabItem[] => {
+const getSupplierTabs = (): TabItem[] => {
   return [
     { id: 'home', label: TAB_LABEL_KEYS.supplier.home, icon: Building2 },
     { id: 'profile', label: TAB_LABEL_KEYS.supplier.profile, icon: User },

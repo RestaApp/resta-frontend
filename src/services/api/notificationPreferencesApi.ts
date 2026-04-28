@@ -28,7 +28,7 @@ export interface UpdateNotificationPreferenceRequest {
   }>
 }
 
-export const notificationPreferencesApi = api.injectEndpoints({
+const notificationPreferencesApi = api.injectEndpoints({
   endpoints: builder => ({
     getNotificationPreferences: builder.query<NotificationPreferencesResponse, void>({
       query: () => ({
@@ -55,8 +55,8 @@ export const notificationPreferencesApi = api.injectEndpoints({
               'getNotificationPreferences',
               undefined,
               draft => {
-              draft.success = updated.success
-              draft.data = updated.data
+                draft.success = updated.success
+                draft.data = updated.data
               }
             )
           )

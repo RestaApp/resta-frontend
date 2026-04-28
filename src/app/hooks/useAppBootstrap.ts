@@ -18,7 +18,7 @@ import { mapRoleFromApi, mapUiRoleToApiRole } from '@/utils/roles'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { authService } from '@/services/auth'
 
-export type AppScreen = 'loading' | 'role' | 'onboarding_done' | 'dashboard'
+type AppScreen = 'loading' | 'role' | 'onboarding_done' | 'dashboard'
 
 const POST_LOGOUT_LOADING_MS = 2000
 

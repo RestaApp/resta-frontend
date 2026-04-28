@@ -9,7 +9,7 @@ import { isEmployeeRole } from '@/utils/roles'
 /**
  * Маппинг экранов на табы для синхронизации
  */
-export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
+const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
   [ROUTES.LOADING]: null,
   [ROUTES.HOME]: 'feed',
   [ROUTES.SHIFTS]: 'activity',
@@ -25,7 +25,7 @@ export const SCREEN_TO_TAB_MAP: Record<Screen, Tab | null> = {
 } as const
 
 /** Обратный маппинг: таб → первый экран (для onNavigate при смене таба) */
-export const TAB_TO_SCREEN_MAP: Partial<Record<Tab, Screen>> = (() => {
+const TAB_TO_SCREEN_MAP: Partial<Record<Tab, Screen>> = (() => {
   const map: Partial<Record<Tab, Screen>> = {}
   for (const [screen, tab] of Object.entries(SCREEN_TO_TAB_MAP) as [Screen, Tab | null][]) {
     if (tab != null && !(tab in map)) map[tab] = screen

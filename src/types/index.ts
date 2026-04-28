@@ -1,15 +1,5 @@
 // Реэкспорт типов ролей для обратной совместимости
-export type {
-  UiRole,
-  EmployeeRole,
-  ApiRole,
-  RoleOption,
-  EmployeeSubRole,
-  RoleOptionApi,
-  EmployeeSubRoleApi,
-} from '@/shared/types/roles.types'
-
-export { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
+export type { UiRole, EmployeeRole, ApiRole } from '@/shared/types/roles.types'
 
 export type Tab =
   | 'home'
@@ -39,8 +29,3 @@ export type Screen =
   | 'find-replacement'
   | 'work-management'
   | 'applications'
-
-export interface NavigationHandler {
-  navigate: (destination: Screen) => void
-  back: () => void
-}

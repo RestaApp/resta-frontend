@@ -1,11 +1,8 @@
 import { createSlice, type PayloadAction, createSelector } from '@reduxjs/toolkit'
 import type { RootState } from '@/store/index'
-import type { Screen, Tab } from '@/types'
+import type { Tab } from '@/types'
 
-type NavigationCommand =
-  | { type: 'NAVIGATE_SCREEN'; screen: Screen }
-  | { type: 'NAVIGATE_TAB'; tab: Tab }
-  | { type: 'RESET_HOME' }
+type NavigationCommand = { type: 'NAVIGATE_TAB'; tab: Tab }
 
 interface NavigationState {
   command: NavigationCommand | null
@@ -19,14 +16,8 @@ const navigationSlice = createSlice({
   name: 'navigation',
   initialState,
   reducers: {
-    navigateToScreen: (state, action: PayloadAction<Screen>) => {
-      state.command = { type: 'NAVIGATE_SCREEN', screen: action.payload }
-    },
     navigateToTab: (state, action: PayloadAction<Tab>) => {
       state.command = { type: 'NAVIGATE_TAB', tab: action.payload }
-    },
-    resetHome: state => {
-      state.command = { type: 'RESET_HOME' }
     },
     consumeCommand: state => {
       state.command = null
@@ -34,8 +25,7 @@ const navigationSlice = createSlice({
   },
 })
 
-export const { navigateToScreen, navigateToTab, resetHome, consumeCommand } =
-  navigationSlice.actions
+export const { navigateToTab, consumeCommand } = navigationSlice.actions
 export default navigationSlice.reducer
 
 const selectNav = (state: RootState) => state.navigation

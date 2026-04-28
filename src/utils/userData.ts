@@ -6,7 +6,6 @@
 import type { AppDispatch } from '@/store'
 import { setUserData } from '@/features/navigation/model/userSlice'
 import type { UserData } from '@/services/api/authApi'
-import { api } from '@/shared/api/api'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 /**
@@ -16,14 +15,6 @@ import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
  */
 export const updateUserDataInStore = (dispatch: AppDispatch, userData: UserData | null): void => {
   dispatch(setUserData(userData))
-}
-
-/**
- * Инвалидирует кэш пользователя в RTK Query
- * @param dispatch - Redux dispatch функция
- */
-export const invalidateUserCache = (dispatch: AppDispatch): void => {
-  dispatch(api.util.invalidateTags(['User']))
 }
 
 /**

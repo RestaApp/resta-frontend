@@ -1,95 +1,9 @@
 /**
- * Хук для работы со сменами
- * Инкапсулирует логику работы со сменами
+ * Хук удаления смены (инкапсуляция мутации RTK Query).
  */
 
-import {
-  useGetShiftsQuery,
-  useGetShiftByIdQuery,
-  useCreateShiftMutation,
-  useUpdateShiftMutation,
-  useDeleteShiftMutation,
-  type CreateShiftRequest,
-  type CreateShiftResponse,
-  type CreateShiftBody,
-  type GetShiftsListParams,
-  type MutateShiftResponse,
-  type VacancyApiItem,
-} from '@/services/api/shiftsApi'
+import { useDeleteShiftMutation } from '@/services/api/shiftsApi'
 
-/**
- * Хук для получения списка смен (GET /api/v1/shifts — параметры как в API.md)
- */
-export const useShifts = (params?: GetShiftsListParams) => {
-  const { data, isLoading, isFetching, error, refetch } = useGetShiftsQuery(params)
-
-  return {
-    shifts: data?.data ?? ([] as VacancyApiItem[]),
-    raw: data,
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  }
-}
-
-/**
- * Хук для получения смены по ID
- */
-export const useShift = (id: string | null) => {
-  const { data, isLoading, isFetching, error, refetch } = useGetShiftByIdQuery(id ?? '', {
-    skip: !id,
-  })
-
-  return {
-    shift: data ?? null,
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  }
-}
-
-/**
- * Хук для создания смены
- */
-export const useCreateShift = () => {
-  const [createShiftMutation, { isLoading, error }] = useCreateShiftMutation()
-
-  const createShift = async (request: CreateShiftRequest): Promise<CreateShiftResponse> => {
-    return await createShiftMutation(request).unwrap()
-  }
-
-  return {
-    createShift,
-    isLoading,
-    error,
-  }
-}
-
-/**
- * Хук для обновления смены
- */
-export const useUpdateShift = () => {
-  const [updateShiftMutation, { isLoading, error }] = useUpdateShiftMutation()
-
-  const updateShift = async (
-    id: string,
-    body: Partial<CreateShiftBody>
-  ): Promise<MutateShiftResponse> => {
-    return await updateShiftMutation({ id, body }).unwrap()
-  }
-
-  return {
-    updateShift,
-    isLoading,
-    error,
-  }
-}
-
-/**
- * Хук для удаления смены
- */
 export const useDeleteShift = () => {
   const [deleteShiftMutation, { isLoading, error }] = useDeleteShiftMutation()
 

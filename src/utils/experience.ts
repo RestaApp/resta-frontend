@@ -7,7 +7,7 @@ import i18n from '@/shared/i18n/config'
 /**
  * Возвращает правильное склонение слова "год" в зависимости от числа
  */
-export const getYearsLabel = (years: number): string => {
+const getYearsLabel = (years: number): string => {
   const mod100 = years % 100
   const mod10 = years % 10
 

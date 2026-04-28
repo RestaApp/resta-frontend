@@ -11,7 +11,7 @@ export const DEFAULT_JOBS_PRICE_RANGE: [number, number] = [0, 5000]
 /**
  * Проверяет, является ли диапазон цен значением по умолчанию
  */
-export const isDefaultPriceRange = (priceRange: [number, number]): boolean => {
+const isDefaultPriceRange = (priceRange: [number, number]): boolean => {
   return priceRange[0] === DEFAULT_PRICE_RANGE[0] && priceRange[1] === DEFAULT_PRICE_RANGE[1]
 }
 
@@ -22,7 +22,7 @@ import { formatMoney } from '@/features/feed/model/utils/formatting'
 /**
  * Форматирует дату для отображения в фильтрах
  */
-export const formatFilterDate = (dateStr: string | null | undefined): string => {
+const formatFilterDate = (dateStr: string | null | undefined): string => {
   if (!dateStr) return ''
   const date = parseDate(dateStr)
   if (!date) return dateStr
@@ -33,7 +33,7 @@ export const formatFilterDate = (dateStr: string | null | undefined): string => 
 /**
  * Форматирует диапазон дат для отображения
  */
-export const formatDateRange = (
+const formatDateRange = (
   startDate: string | null | undefined,
   endDate: string | null | undefined
 ): string | null => {
@@ -58,7 +58,7 @@ const getSpecializationLabel = (spec: string): string =>
 const getEmployeePositionLabel = (value: string): string =>
   i18n.t(`labels.position.${value}`) || i18n.t(`labels.position.${value.toLowerCase()}`) || value
 
-export const formatSpecializations = (specializations: string[]): string[] => {
+const formatSpecializations = (specializations: string[]): string[] => {
   if (specializations.length === 0) return []
   if (specializations.length <= 2) {
     return specializations.map(spec => getSpecializationLabel(spec))

@@ -47,7 +47,7 @@ export interface MarkAllNotificationsReadResponse {
   data?: { updated?: number }
 }
 
-export const notificationsApi = api.injectEndpoints({
+const notificationsApi = api.injectEndpoints({
   endpoints: builder => ({
     getNotifications: builder.query<NotificationsListResponse, GetNotificationsParams | void>({
       query: params => ({

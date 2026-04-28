@@ -60,19 +60,3 @@ export interface EmployeeSubRole {
   color: string
   originalValue?: string
 }
-
-export interface RoleOptionApi {
-  id: UiRole
-  title: string
-  description: string
-  icon_name?: string
-  color: string
-}
-
-export interface EmployeeSubRoleApi {
-  id: EmployeeRole
-  title: string
-  description: string
-  icon_name?: string
-  color: string
-}

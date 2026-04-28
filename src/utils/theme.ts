@@ -1,6 +1,6 @@
 import { setLocalStorageItem } from './localStorage'
 
-export const THEME_KEY = 'resta-theme'
+const THEME_KEY = 'resta-theme'
 
 const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined'
 

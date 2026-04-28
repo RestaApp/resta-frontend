@@ -21,7 +21,7 @@ import {
   type VacancyApiItem,
 } from './shiftsApi.types'
 
-export const shiftsApi = api.injectEndpoints({
+const shiftsApi = api.injectEndpoints({
   endpoints: builder => ({
     // GET /api/v1/shifts — параметры как в API.md (без legacy status/role)
     getShifts: builder.query<VacanciesResponse, GetShiftsListParams | void>({

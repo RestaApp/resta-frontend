@@ -45,7 +45,7 @@ export interface CuisineTypesResponse {
   data: string[]
 }
 
-export const rolesApi = api.injectEndpoints({
+const rolesApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить список доступных ролей для страницы выбора роли
     // Используется только в компоненте RoleSelector

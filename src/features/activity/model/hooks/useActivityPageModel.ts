@@ -4,15 +4,9 @@ import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/sh
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { navigateToTab } from '@/features/navigation/model/navigationSlice'
-import {
-  getLocalStorageItem,
-  removeLocalStorageItem,
-  setLocalStorageItem,
-} from '@/utils/localStorage'
-import { toLocalISODateKey } from '@/utils/datetime'
+import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
@@ -21,29 +15,13 @@ import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 
 export type ActivityTab = 'applications' | 'shifts'
 
-export type GroupedShift = { id: number; type: 'resta' | 'personal'; data: VacancyApiItem }
-
-export type WeekDay = { key: string; short: string; full: string; dayNum: string; dateObj: Date }
-
-const getDateLocale = (lang: string) => (lang === 'en' ? 'en-US' : 'ru-RU')
-const getStartOfWeekMonday = (base: Date) => {
-  const d = new Date(base)
-  const day = d.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  d.setDate(d.getDate() + diff)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
 export const useActivityPageModel = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
-  const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
   const isSupplier = selectedRole === 'supplier'
   const [activeTab, setActiveTab] = useState<ActivityTab>('shifts')
-  const dateLocale = getDateLocale(i18n.language)
 
   const {
     data,
@@ -109,88 +87,6 @@ export const useActivityPageModel = () => {
     await Promise.all([refetchMyShifts(), refetchAppliedShifts()])
   }, [isSupplier, isVenue, refetchMyShifts, refetchAppliedShifts])
 
-  // Calendar state
-  const [selectedDayKey, setSelectedDayKey] = useState<string>(() => toLocalISODateKey(new Date()))
-
-  const weekDays = useMemo<WeekDay[]>(() => {
-    const today = new Date()
-    const days: WeekDay[] = []
-
-    const monday = getStartOfWeekMonday(today)
-
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(monday)
-      date.setDate(monday.getDate() + i)
-
-      const dayNum = String(date.getDate()).padStart(2, '0')
-      const shortDay = date.toLocaleDateString(dateLocale, { weekday: 'short' })
-      const fullDay = date.toLocaleDateString(dateLocale, {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-      })
-
-      days.push({
-        key: toLocalISODateKey(date),
-        short: shortDay.charAt(0).toUpperCase() + shortDay.slice(1),
-        full: fullDay,
-        dayNum,
-        dateObj: date,
-      })
-    }
-
-    return days
-  }, [dateLocale])
-
-  const groupedShifts = useMemo<Record<string, GroupedShift[]>>(() => {
-    const grouped: Record<string, GroupedShift[]> = {}
-
-    const add = (shift: VacancyApiItem, type: GroupedShift['type']) => {
-      if (!shift?.start_time) return
-      const date = new Date(shift.start_time)
-      if (Number.isNaN(date.getTime())) return
-      const dateKey = toLocalISODateKey(date)
-      if (!grouped[dateKey]) grouped[dateKey] = []
-      grouped[dateKey].push({ id: shift.id, type, data: shift })
-    }
-
-    shifts.forEach(s => add(s, 'personal'))
-    appliedShifts.forEach(s => add(s, 'resta'))
-
-    return grouped
-  }, [shifts, appliedShifts])
-
-  /** В календаре — только смены, на которые откликнулся (без «моих смен») */
-  const groupedShiftsForCalendar = useMemo<Record<string, GroupedShift[]>>(() => {
-    const grouped: Record<string, GroupedShift[]> = {}
-    const add = (shift: VacancyApiItem) => {
-      if (!shift?.start_time) return
-      const date = new Date(shift.start_time)
-      if (Number.isNaN(date.getTime())) return
-      const dateKey = toLocalISODateKey(date)
-      if (!grouped[dateKey]) grouped[dateKey] = []
-      grouped[dateKey].push({ id: shift.id, type: 'resta', data: shift })
-    }
-    appliedShifts.forEach(add)
-    return grouped
-  }, [appliedShifts])
-
-  const selectedDayShifts = useMemo<GroupedShift[]>(() => {
-    if (!selectedDayKey) return []
-    return groupedShifts[selectedDayKey] || []
-  }, [selectedDayKey, groupedShifts])
-
-  const selectedDayShiftsForCalendar = useMemo<GroupedShift[]>(() => {
-    if (!selectedDayKey) return []
-    return groupedShiftsForCalendar[selectedDayKey] || []
-  }, [selectedDayKey, groupedShiftsForCalendar])
-
-  const handleFindShift = useCallback(() => {
-    // Сохраняем поведение выбора вкладки "Смены" внутри фида.
-    setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS, 'true')
-    dispatch(navigateToTab('feed'))
-  }, [dispatch])
-
   const closeDrawer = useCallback(() => {
     setIsDrawerOpen(false)
     setEditingShift(null)
@@ -200,7 +96,6 @@ export const useActivityPageModel = () => {
     setIsDrawerOpen(true)
   }, [])
 
-  /** Сотрудники и поставщики: без обязательных полей профиля не открываем создание смены. Заведение обрабатывает VenueAddShiftListener. */
   const handleOpenAddShiftFromEvent = useCallback(() => {
     if (isVenue) return
     if (!profileCompleteness.isFilled) {
@@ -219,7 +114,6 @@ export const useActivityPageModel = () => {
     return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => handleOpenAddShiftFromEvent())
   }, [handleOpenAddShiftFromEvent])
 
-  // Открыть редактирование смены по id из ленты (через EDIT_SHIFT_ID + переход на tab activity)
   useEffect(() => {
     if (isLoading) return
     const editIdRaw = getLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID)
@@ -237,18 +131,13 @@ export const useActivityPageModel = () => {
   }, [shifts, isLoading])
 
   return {
-    // tabs
     activeTab,
     setActiveTab,
-
-    // data/loading
     isLoading,
     isAppliedLoading,
     isError,
     shifts,
     appliedShifts,
-
-    // actions
     handleEdit,
     handleDelete,
     refreshList,
@@ -256,23 +145,11 @@ export const useActivityPageModel = () => {
     showToast,
     toast,
     hideToast,
-
-    // drawer
     isDrawerOpen,
     setIsDrawerOpen,
     editingShift,
     setEditingShift,
     closeDrawer,
     openDrawer,
-
-    // calendar (только отклики, без «моих смен»)
-    weekDays,
-    groupedShifts,
-    groupedShiftsForCalendar,
-    selectedDayKey,
-    setSelectedDayKey,
-    selectedDayShifts,
-    selectedDayShiftsForCalendar,
-    handleFindShift,
   }
 }

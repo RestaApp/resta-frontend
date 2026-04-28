@@ -56,7 +56,7 @@ export interface ApiErrorResponse {
   code?: string
 }
 
-export const supportTicketsApi = api.injectEndpoints({
+const supportTicketsApi = api.injectEndpoints({
   endpoints: builder => ({
     createSupportTicket: builder.mutation<CreateSupportTicketResponse, CreateSupportTicketRequest>({
       query: body => ({

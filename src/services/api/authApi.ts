@@ -102,7 +102,7 @@ export interface RefreshTokenResponse {
   ok: true
 }
 
-export const authApi = api.injectEndpoints({
+const authApi = api.injectEndpoints({
   endpoints: builder => ({
     // Авторизация через Telegram
     authTelegram: builder.mutation<SignInResponse, TelegramAuthRequest>({

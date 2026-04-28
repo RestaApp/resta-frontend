@@ -1,6 +1,3 @@
-import { MOCK_INIT_DATA, USE_MOCK_INIT_DATA } from '@/config/telegram'
-import { logger } from '@/utils/logger'
-
 interface TelegramWebApp {
   version?: string
   isVersionAtLeast?: (version: string) => boolean
@@ -93,29 +90,7 @@ export const getTelegramWebApp = (): TelegramWebApp | null => {
   return telegramWindow.Telegram?.WebApp ?? null
 }
 
-export const initTelegramWebApp = () => {
-  const webApp = getTelegramWebApp()
-  if (!webApp) return
-  try {
-    webApp.ready()
-    try {
-      webApp.expand()
-    } catch {
-      // ignore expand failure
-    }
-  } catch (err) {
-    logger.warn('Failed to init Telegram WebApp', err)
-  }
-}
-
-export const getTelegramInitData = (): string | null => {
-  const webApp = getTelegramWebApp()
-  if (webApp?.initData) return webApp.initData
-  if (USE_MOCK_INIT_DATA) return MOCK_INIT_DATA
-  return null
-}
-
-export const getTelegramUser = () => {
+const getTelegramUser = () => {
   const webApp = getTelegramWebApp()
   return webApp?.initDataUnsafe?.user ?? null
 }
@@ -147,15 +122,5 @@ export const setupTelegramBackButton = (onBack: () => void) => {
     }
   } catch {
     return () => {}
-  }
-}
-
-export const hideTelegramBackButton = () => {
-  const webApp = getTelegramWebApp()
-  if (!webApp) return
-  try {
-    webApp.BackButton.hide()
-  } catch {
-    // ignore
   }
 }

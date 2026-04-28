@@ -16,7 +16,7 @@ export type NormalizedApiError = ProfileIncompleteError | { kind: 'generic'; mes
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 
-export const mapMissingFieldsToLabels = (fields: string[], t: TFunction): string[] =>
+const mapMissingFieldsToLabels = (fields: string[], t: TFunction): string[] =>
   fields.map(f => t(`profileFields.${f}`) || f)
 
 const isNormalizedApiError = (v: unknown): v is NormalizedApiError =>

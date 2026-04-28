@@ -38,7 +38,7 @@ const removeSessionStorageItem = (key: string): void => {
 /**
  * Получает токен авторизации
  */
-export const getToken = (): string | null => {
+const getToken = (): string | null => {
   const sessionToken = getSessionStorageItem(TOKEN_STORAGE_KEY)
   if (sessionToken) return sessionToken
 
@@ -55,7 +55,7 @@ export const getToken = (): string | null => {
 /**
  * Сохраняет токен авторизации
  */
-export const setToken = (token: string): void => {
+const setToken = (token: string): void => {
   setSessionStorageItem(TOKEN_STORAGE_KEY, token)
   removeLocalStorageItem(TOKEN_STORAGE_KEY)
 }
@@ -63,7 +63,7 @@ export const setToken = (token: string): void => {
 /**
  * Получает refresh токен
  */
-export const getRefreshToken = (): string | null => {
+const getRefreshToken = (): string | null => {
   const sessionToken = getSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY)
   if (sessionToken) return sessionToken
 
@@ -80,7 +80,7 @@ export const getRefreshToken = (): string | null => {
 /**
  * Сохраняет refresh токен
  */
-export const setRefreshToken = (token: string): void => {
+const setRefreshToken = (token: string): void => {
   setSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY, token)
   removeLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
 }
@@ -88,7 +88,7 @@ export const setRefreshToken = (token: string): void => {
 /**
  * Удаляет токен авторизации
  */
-export const removeToken = (): void => {
+const removeToken = (): void => {
   removeSessionStorageItem(TOKEN_STORAGE_KEY)
   removeLocalStorageItem(TOKEN_STORAGE_KEY)
 }
@@ -96,7 +96,7 @@ export const removeToken = (): void => {
 /**
  * Удаляет refresh токен
  */
-export const removeRefreshToken = (): void => {
+const removeRefreshToken = (): void => {
   removeSessionStorageItem(REFRESH_TOKEN_STORAGE_KEY)
   removeLocalStorageItem(REFRESH_TOKEN_STORAGE_KEY)
 }
@@ -104,7 +104,7 @@ export const removeRefreshToken = (): void => {
 /**
  * Сохраняет оба токена
  */
-export const setTokens = (accessToken: string, refreshToken: string): void => {
+const setTokens = (accessToken: string, refreshToken: string): void => {
   setToken(accessToken)
   setRefreshToken(refreshToken)
 }
@@ -112,7 +112,7 @@ export const setTokens = (accessToken: string, refreshToken: string): void => {
 /**
  * Выполняет выход (очищает все токены и данные пользователя)
  */
-export const logout = (): void => {
+const logout = (): void => {
   removeToken()
   removeRefreshToken()
   // Очищаем данные пользователя из Redux
@@ -123,7 +123,7 @@ export const logout = (): void => {
 /**
  * Декодирует JWT токен и возвращает payload
  */
-export const decodeToken = (
+const decodeToken = (
   token: string
 ): { exp?: number; id?: number; sub?: number; userId?: number; [key: string]: unknown } | null => {
   try {
@@ -148,7 +148,7 @@ export const decodeToken = (
 /**
  * Получает id пользователя из токена
  */
-export const getUserIdFromToken = (token: string | null): number | null => {
+const getUserIdFromToken = (token: string | null): number | null => {
   if (!token) {
     return null
   }
@@ -163,7 +163,7 @@ export const getUserIdFromToken = (token: string | null): number | null => {
 /**
  * Проверяет, истек ли токен
  */
-export const isTokenExpired = (token: string | null): boolean => {
+const isTokenExpired = (token: string | null): boolean => {
   if (!token) {
     return true
   }
@@ -184,7 +184,7 @@ export const isTokenExpired = (token: string | null): boolean => {
 /**
  * Проверяет, валиден ли токен (существует и не истек)
  */
-export const isTokenValid = (): boolean => {
+const isTokenValid = (): boolean => {
   const token = getToken()
   return token !== null && !isTokenExpired(token)
 }
@@ -192,7 +192,7 @@ export const isTokenValid = (): boolean => {
 /**
  * Проверяет, авторизован ли пользователь
  */
-export const isAuthenticated = (): boolean => {
+const isAuthenticated = (): boolean => {
   return isTokenValid()
 }
 

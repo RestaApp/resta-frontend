@@ -80,7 +80,7 @@ const ROLE_DESCRIPTION_MAP: Record<UiRole, string> = {
   supplier: 'Предлагаю товары и услуги',
 }
 
-export const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
+const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
   const roleId = mapApiRoleStringToUiRole(roleValue)
   if (!roleId) return null
 
@@ -96,7 +96,7 @@ export const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
 export const mapRoleOptionsFromApi = (rolesApi: string[]): RoleOption[] =>
   rolesApi.map(mapRoleOptionFromApi).filter((r): r is RoleOption => r !== null)
 
-export const mapPositionFromApi = (positionValue: string): EmployeeSubRole | null => {
+const mapPositionFromApi = (positionValue: string): EmployeeSubRole | null => {
   const roleId = mapPositionToEmployeeRole(positionValue)
   if (!roleId) return null
 

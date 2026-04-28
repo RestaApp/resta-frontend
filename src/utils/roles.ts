@@ -23,7 +23,7 @@ const EMPLOYEE_POSITIONS_SET = new Set(EMPLOYEE_POSITIONS)
 /**
  * Нормализация строки роли (из API / legacy)
  */
-export const normalizeRole = (value: unknown): string =>
+const normalizeRole = (value: unknown): string =>
   typeof value === 'string' ? value.toLowerCase().trim() : ''
 
 /**
@@ -72,7 +72,7 @@ export const mapUiRoleToApiRole = (uiRole: UiRole): ApiRole => UI_ROLE_TO_API_RO
 /**
  * Проверки verified/unverified (работают строго на ApiRole)
  */
-export const isUnverifiedRole = (role: ApiRole | null | undefined): boolean =>
+const isUnverifiedRole = (role: ApiRole | null | undefined): boolean =>
   !role || role === 'unverified'
 
 export const isVerifiedRole = (role: ApiRole | null | undefined): boolean => !isUnverifiedRole(role)
@@ -99,12 +99,6 @@ export const isEmployeeRole = (role: UiRole | null | undefined): role is Employe
     role === 'support'
   )
 }
-
-export const isVenueRole = (role: UiRole | null | undefined): boolean => role === 'venue'
-export const isSupplierRole = (role: UiRole | null | undefined): boolean => role === 'supplier'
-
-export const canViewShifts = (role: UiRole | null | undefined): boolean =>
-  isEmployeeRole(role) || isVenueRole(role)
 
 /**
  * Преобразует строку из API списка ролей в UI роль

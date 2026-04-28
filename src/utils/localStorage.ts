@@ -75,18 +75,3 @@ export const removeLocalStorageItem = (key: string): void => {
     // Игнорируем ошибки удаления
   }
 }
-
-/**
- * Безопасно очищает весь localStorage
- */
-export const clearLocalStorage = (): void => {
-  if (!isLocalStorageAvailable()) {
-    return
-  }
-
-  try {
-    localStorage.clear()
-  } catch {
-    // Игнорируем ошибки очистки
-  }
-}

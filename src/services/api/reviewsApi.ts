@@ -57,7 +57,7 @@ export interface DestroyReviewResponse {
   data?: { message?: string }
 }
 
-export const reviewsApi = api.injectEndpoints({
+const reviewsApi = api.injectEndpoints({
   endpoints: builder => ({
     getReviews: builder.query<ReviewsListResponse, void>({
       query: () => '/api/v1/reviews',
