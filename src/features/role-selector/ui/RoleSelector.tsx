@@ -12,6 +12,7 @@ import { RestaurantFormatSelector } from './components/subroles/RestaurantFormat
 import { LoadingState } from './components/subroles/shared/LoadingState'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { TelegramConfirmStep } from './components/TelegramConfirmStep'
+import { Button } from '@/components/ui/button'
 
 import { useRoleSelector } from '../model/useRoleSelector'
 import type { UiRole } from '@/shared/types/roles.types'
@@ -119,15 +120,17 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         </div>
       </div>
       {vm.selectedRole ? (
-        <div className="fixed left-5 right-5 bottom-[calc(14px+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] z-20">
-          <button
+        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-[calc(1.25rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] backdrop-blur-sm">
+          <Button
             type="button"
             onClick={vm.handleRoleContinue}
-            className="w-full rounded-[14px] border-none bg-primary px-4 py-[18px] text-base font-semibold text-primary-foreground shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+            variant="gradient"
+            size="lg"
+            className="mx-auto w-full max-w-md"
             aria-label={t('roles.continueAsRole', { role: selectedRole?.title ?? '' })}
           >
             {t('roles.continueAsRole', { role: selectedRole?.title ?? '' })}
-          </button>
+          </Button>
         </div>
       ) : null}
 

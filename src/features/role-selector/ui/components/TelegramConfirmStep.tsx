@@ -8,6 +8,7 @@ import { requestTelegramContact, requestTelegramLocation } from '@/utils/telegra
 import { formatPhoneInput, toE164, validatePhone } from '@/utils/phone'
 import { Input } from '@/components/ui/input'
 import { LocationField } from './subroles/shared/LocationField'
+import { Button } from '@/components/ui/button'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
@@ -218,14 +219,17 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
       </div>
 
       <div className="mt-4 pb-[calc(14px+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]">
-        <button
+        <Button
           type="button"
           onClick={handleContinue}
+          loading={isSaving}
           disabled={isSaving}
-          className="w-full rounded-[14px] border-none bg-primary px-4 py-[18px] text-base font-semibold text-primary-foreground shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+          variant="gradient"
+          size="lg"
+          className="w-full"
         >
           {t('onboarding.telegram.next')}
-        </button>
+        </Button>
       </div>
     </div>
   )
