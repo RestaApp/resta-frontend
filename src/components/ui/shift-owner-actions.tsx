@@ -18,6 +18,8 @@ export const ShiftOwnerActions = memo(function ShiftOwnerActions({
   onDelete,
 }: ShiftOwnerActionsProps) {
   return (
+    /* layout-обёртка с stopPropagation: клик по edit/delete не должен открывать родительскую ShiftCard. */
+    /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
     <div
       className="flex items-center gap-2"
       onClick={e => e.stopPropagation()}

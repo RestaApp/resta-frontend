@@ -2,11 +2,13 @@ import { forwardRef, type ComponentProps } from 'react'
 import { cn } from '@/utils/cn'
 import { Loader } from '@/components/ui/loader'
 
+/** Size scale — фиксированные 44 / 48 / 52 px (touch-target ≥ 44 per WCAG 2.5.5). */
 const SIZE_CLASSES = {
-  // 44px inline buttons (spec)
+  /** sm — 44px, минимальный touch target. Inline‑кнопки в карточках. */
   sm: 'h-11 px-4 text-sm',
-  md: 'h-11 px-5 text-sm',
-  // 52px sticky CTA (spec)
+  /** md — 48px, дефолтная высота для primary inline. */
+  md: 'h-12 px-5 text-sm',
+  /** lg — 52px, sticky CTA / главное действие экрана. */
   lg: 'h-[52px] px-6 text-base',
 } as const
 
@@ -26,7 +28,8 @@ const VARIANT_CLASSES = {
   /** Ghost — text only, terracotta color */
   ghost: 'bg-transparent text-primary hover:bg-primary/8',
   /** Destructive */
-  destructive: 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
+  destructive:
+    'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
   /** Gradient alias → solid primary (terracotta) */
   gradient: 'bg-primary text-white hover:bg-primary/90 active:bg-primary/80 shadow-sm border-0',
   gradientPressed:

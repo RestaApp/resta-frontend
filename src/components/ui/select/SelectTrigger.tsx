@@ -18,6 +18,8 @@ interface SelectTriggerProps {
   value: string
   searchQuery: string
   triggerInputRef: RefObject<HTMLInputElement | null>
+  /** id выпадающего listbox — нужен для `aria-controls` на кнопке-комбобоксе. */
+  listboxId?: string
   onInputChange: (e: ChangeEvent<HTMLInputElement>) => void
   onInputKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void
   onFocusInput: () => void
@@ -34,6 +36,7 @@ export const SelectTrigger = ({
   value,
   searchQuery,
   triggerInputRef,
+  listboxId,
   onInputChange,
   onInputKeyDown,
   onFocusInput,
@@ -70,6 +73,10 @@ export const SelectTrigger = ({
   return (
     <button
       type="button"
+      role="combobox"
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+      aria-controls={listboxId}
       onClick={onToggle}
       disabled={disabled}
       aria-invalid={!!error}

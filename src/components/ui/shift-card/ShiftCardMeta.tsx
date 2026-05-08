@@ -75,11 +75,13 @@ export const ShiftCardMeta = ({
             <span className="flex items-center gap-1.5 min-w-0">
               <MapPin className="h-4 w-4 shrink-0 stroke-[1.5] text-muted-foreground" aria-hidden />
               <span className="min-w-0 flex items-center gap-1.5">
-                <span className="font-mono-resta text-xs font-medium text-foreground truncate">{locationText}</span>
+                <span className="font-mono-resta text-xs font-medium text-foreground truncate">
+                  {locationText}
+                </span>
                 {extraLocationsLabel ? (
                   <Badge
                     variant="tag"
-                    className="shrink-0 px-1.5 py-0 text-[11px] font-semibold text-primary border-primary/30 bg-primary/10"
+                    className="shrink-0 px-1.5 py-0 text-meta font-semibold text-primary border-primary/30 bg-primary/10"
                   >
                     {extraLocationsLabel}
                   </Badge>
@@ -94,7 +96,9 @@ export const ShiftCardMeta = ({
                     className="h-4 w-4 shrink-0 stroke-[1.5] text-muted-foreground"
                     aria-hidden
                   />
-                  <span className="font-mono-resta text-xs font-medium text-foreground truncate">{date}</span>
+                  <span className="font-mono-resta text-xs font-medium text-foreground truncate">
+                    {date}
+                  </span>
                 </span>
               ) : null}
               {hasTime ? (
@@ -103,7 +107,9 @@ export const ShiftCardMeta = ({
                     className="h-4 w-4 shrink-0 stroke-[1.5] text-muted-foreground"
                     aria-hidden
                   />
-                  <span className="font-mono-resta text-xs font-medium text-foreground truncate">{time}</span>
+                  <span className="font-mono-resta text-xs font-medium text-foreground truncate">
+                    {time}
+                  </span>
                 </span>
               ) : null}
             </div>

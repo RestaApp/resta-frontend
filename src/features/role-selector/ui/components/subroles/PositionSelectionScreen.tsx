@@ -2,7 +2,7 @@
  * Экран выбора позиции сотрудника
  */
 
-import { memo, useMemo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from '@/components/ui'
@@ -10,6 +10,20 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { OnboardingProgress } from '../OnboardingProgress'
 import type { EmployeeSubRole, EmployeeRole } from '@/shared/types/roles.types'
+
+const EMOJI_BY_ROLE: Partial<Record<EmployeeRole, string>> = {
+  chef: '👨‍🍳',
+  waiter: '🍽',
+  barista: '☕',
+  bartender: '🍸',
+  manager: '📋',
+  support: '🎧',
+  delivery: '🛵',
+  cashier: '💵',
+  office: '💼',
+}
+
+const SHIFTS_BY_INDEX = ['87 смен', '62 смены', '41 смена', '28 смен']
 
 interface PositionSelectionScreenProps {
   subRoles: EmployeeSubRole[]
@@ -35,23 +49,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const [needsScroll, setNeedsScroll] = useState(false)
-  const visibleRoles = useMemo(() => subRoles, [subRoles])
-  const shiftsByIndex = useMemo(() => ['87 смен', '62 смены', '41 смена', '28 смен'], [])
-  const emojiByRole = useMemo(
-    () =>
-      ({
-        chef: '👨‍🍳',
-        waiter: '🍽',
-        barista: '☕',
-        bartender: '🍸',
-        manager: '📋',
-        support: '🎧',
-        delivery: '🛵',
-        cashier: '💵',
-        office: '💼',
-      }) as Partial<Record<EmployeeRole, string>>,
-    []
-  )
+  const visibleRoles = subRoles
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -115,22 +113,22 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
                   onClick={() => handleSelect(subRole.id)}
                   aria-label={t('aria.selectType', { label: subRole.title })}
                   className={[
-                    'rounded-[14px] border px-2 py-3 text-center transition-colors',
+                    'rounded-lg border px-2 py-3 text-center transition-colors',
                     isSelected
                       ? 'border-primary bg-primary/10'
                       : 'border-border bg-card hover:border-primary/40',
                   ].join(' ')}
                 >
                   <div className="mb-1 text-xl" aria-hidden>
-                    {emojiByRole[subRole.id] ?? '👤'}
+                    {EMOJI_BY_ROLE[subRole.id] ?? '👤'}
                   </div>
-                  <div className="text-[11px] font-semibold leading-tight text-foreground">
+                  <div className="text-meta font-semibold leading-tight text-foreground">
                     {subRole.title}
                   </div>
                   <div
-                    className={`mt-0.5 text-[11px] ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
+                    className={`mt-0.5 text-meta ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
                   >
-                    {shiftsByIndex[index] ?? t('roles.shiftsDefault')}
+                    {SHIFTS_BY_INDEX[index] ?? t('roles.shiftsDefault')}
                   </div>
                 </button>
               )
@@ -139,10 +137,10 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
 
           <div className="max-w-md w-full">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <div className="font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+              <div className="font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
                 {t('roles.specializationLabel')}
               </div>
-              <div className="text-[11px] text-muted-foreground">
+              <div className="text-meta text-muted-foreground">
                 {t('roles.specializationMultiHint')}
               </div>
             </div>
@@ -165,7 +163,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
       </div>
 
       {selectedSubRole ? (
-        <div className="fixed bottom-0 left-0 right-0 px-4 pt-3 pb-[calc(1.25rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] bg-background/95 backdrop-blur-sm border-t border-border">
+        <div className="fixed bottom-0 left-0 right-0 px-4 pt-3 pb-safe-cta bg-background/95 backdrop-blur-sm border-t border-border">
           <Button
             type="button"
             onClick={onContinue}

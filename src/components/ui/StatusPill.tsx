@@ -12,7 +12,7 @@ const basePill =
 export const UrgentPill = ({ date, className }: { date?: string; className?: string }) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-widest uppercase bg-primary text-white',
+      'inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-micro font-bold leading-none tracking-widest uppercase bg-primary text-white',
       className
     )}
   >
@@ -30,7 +30,7 @@ export const UrgentPill = ({ date, className }: { date?: string; className?: str
 export const VerifiedBadge = ({ className }: { className?: string }) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
+      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-micro font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
       className
     )}
   >
@@ -39,23 +39,28 @@ export const VerifiedBadge = ({ className }: { className?: string }) => (
   </span>
 )
 
-/** ESCROW — outline green, критический сигнал доверия */
-export const EscrowBadge = ({
+/**
+ * DIRECT PAY — оплата напрямую, без комиссии Resta.
+ * См. Resta Wireframes E04, E07, R03 — этот бейдж заменил ESCROW.
+ */
+export const DirectPayBadge = ({
   amount,
   currency,
+  short,
   className,
 }: {
   amount?: number | string
   currency?: string
+  short?: boolean
   className?: string
 }) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold leading-none tracking-wider border bg-success/8 text-success border-success/60',
+      'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-micro font-bold leading-none tracking-wider border bg-success/10 text-success border-success/40',
       className
     )}
   >
-    ESCROW
+    {short ? 'DIRECT' : 'DIRECT PAY'}
     {amount ? (
       <>
         <span className="opacity-60 mx-0.5">·</span>
@@ -65,6 +70,12 @@ export const EscrowBadge = ({
     ) : null}
   </span>
 )
+
+/**
+ * @deprecated Resta больше не держит деньги — используйте `DirectPayBadge`.
+ * Алиас оставлен для обратной совместимости со старыми вызовами.
+ */
+export const EscrowBadge = DirectPayBadge
 
 const getStatusLabel = (status: ShiftStatus, t: (key: string) => string): string => {
   if (!status) return ''

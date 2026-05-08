@@ -1,5 +1,5 @@
-import { Suspense, lazy, type ComponentType } from 'react'
-import { Loader } from '@/components/ui/loader'
+import { lazy, type ComponentType } from 'react'
+import { PageSuspense } from '@/components/ui/PageSuspense'
 import type { Tab } from '@/types'
 
 const FeedPage = lazy(() =>
@@ -38,14 +38,8 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
   if (!Component) return null
 
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center ui-density-page ui-density-py">
-          <Loader size="lg" />
-        </div>
-      }
-    >
+    <PageSuspense>
       <Component />
-    </Suspense>
+    </PageSuspense>
   )
 }

@@ -30,12 +30,14 @@ export const ShiftCardHeader = ({
           </Avatar>
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
-          <h3 className="font-semibold text-[15px] leading-snug tracking-tight">{displayTitle ?? positionText}</h3>
+          <h3 className="font-semibold text-base leading-snug tracking-tight">
+            {displayTitle ?? positionText}
+          </h3>
           <div className="flex items-center gap-1.5 mt-1 flex-wrap">
             {shift.urgent ? <UrgentPill /> : null}
             {shift.verified ? <VerifiedBadge /> : null}
             {displayTitle != null && shift.rating > 0 ? (
-              <span className="text-[11px] font-medium text-muted-foreground font-mono-resta">
+              <span className="text-meta font-medium text-muted-foreground font-mono-resta">
                 ★ {shift.rating}
               </span>
             ) : null}

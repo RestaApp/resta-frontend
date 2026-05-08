@@ -35,7 +35,7 @@ export const OnboardingProgress = memo(function OnboardingProgress({
           />
         ))}
       </div>
-      <p className="font-mono-resta text-[11px] tracking-widest uppercase text-muted-foreground mt-2">
+      <p className="font-mono-resta text-meta tracking-widest uppercase text-muted-foreground mt-2">
         {t('onboarding.stepLabel', { defaultValue: 'ШАГ' })} {current}{' '}
         <span className="opacity-40">·</span> {total}
       </p>

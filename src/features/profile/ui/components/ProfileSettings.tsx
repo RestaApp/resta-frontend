@@ -1,8 +1,9 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { Settings, HelpCircle, LogOut, Languages } from 'lucide-react'
+import { Settings, HelpCircle, LogOut, Languages, Palette } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
 import type { Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
@@ -53,6 +54,16 @@ export function ProfileSettings({
 
             {/* ✅ currentLocale берём из i18n напрямую */}
             <LanguageToggle currentLocale={i18n.language} onLocaleChange={handleLanguageChange} />
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Palette className="w-5 h-5 text-primary" />
+              <div className="text-sm font-medium">{t('profile.theme', 'Тема')}</div>
+            </div>
+            <ThemeToggle />
           </div>
         </Card>
 

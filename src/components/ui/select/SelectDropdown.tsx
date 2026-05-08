@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { Check, Search } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { ChangeEvent, KeyboardEvent, RefObject } from 'react'
 import type { SelectOption } from './types'
 import { INPUT_FIELD_INTERACTIVE_CLASS, INPUT_FIELD_BASE_CLASS } from '@/components/ui/ui-patterns'
@@ -64,7 +65,8 @@ export const SelectDropdown = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-[60] bg-black/20"
+            style={{ zIndex: Z_INDEX.popover }}
+            className="fixed inset-0 bg-black/20"
             onPointerDown={e => {
               if (e.target === e.currentTarget) onClose()
             }}
@@ -76,8 +78,9 @@ export const SelectDropdown = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: dropdownPosition.opensUp ? 8 : -8, scale: 0.98 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed z-[61] overflow-hidden rounded-xl border border-border/30 bg-card shadow-lg backdrop-blur-sm"
+            className="fixed overflow-hidden rounded-xl border border-border/30 bg-card shadow-lg backdrop-blur-sm"
             style={{
+              zIndex: Z_INDEX.popover + 1,
               maxHeight: `${maxHeight}px`,
               left: `${dropdownPosition.left}px`,
               top: `${dropdownPosition.top}px`,

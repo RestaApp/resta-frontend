@@ -1,6 +1,19 @@
 import { cn } from '@/utils/cn'
 import { TAG_ACTIVE_CLASS, TAG_INACTIVE_CLASS } from '@/components/ui/ui-patterns'
 
+/**
+ * Resta semantic badges — соответствуют легенде из Resta Wireframes.
+ * Каждый вариант — отдельная зона ответственности (SRP):
+ *   sos       — экстренная смена <3ч
+ *   urgent    — менее срочная (amber outline)
+ *   verified  — проверенное заведение/сотрудник
+ *   direct    — DIRECT PAY (без комиссии Resta)
+ *   boost     — платное продвижение смены
+ *   pro       — подписка PRO
+ *   stars     — Telegram Stars
+ *   pending   — ожидание / в работе
+ *   ok / rej  — итоговый статус
+ */
 const BADGE_VARIANTS = {
   default: 'bg-muted text-muted-foreground',
   primary: 'bg-primary text-primary-foreground',
@@ -10,21 +23,21 @@ const BADGE_VARIANTS = {
   outline: 'border border-border bg-transparent text-foreground',
   tag: `border ${TAG_INACTIVE_CLASS}`,
   tagActive: `border ${TAG_ACTIVE_CLASS}`,
-  // Resta semantic badges — spec: UI-система · Бейджи
-  /** SOS — solid terracotta, только экстренные смены <3ч */
-  sos: 'bg-primary text-white font-bold tracking-widest rounded-md',
-  /** URGENT — subtle amber outline, менее срочное */
-  urgent: 'bg-amber/8 text-amber border border-amber/35 font-semibold tracking-wider',
-  /** VERIFIED — subtle green, проверенное заведение */
+
+  sos: 'bg-terracotta text-white font-bold tracking-widest',
+  urgent: 'bg-terracotta/15 text-terracotta border border-transparent font-semibold tracking-wider',
   verified: 'bg-success/10 text-success border border-success/30 font-semibold tracking-wider',
-  /** ESCROW — outline green, критический сигнал доверия */
-  escrow: 'bg-success/8 text-success border border-success/60 font-semibold tracking-wider',
-  /** BOOSTED — amber, монетизация */
-  boost: 'bg-amber/10 text-amber border border-amber/40 font-semibold tracking-wider',
-  /** PRO — solid charcoal/foreground, подписка */
-  pro: 'bg-foreground text-background font-bold tracking-widest',
-  /** Warning soft */
+  direct: 'bg-success/10 text-success border border-success/40 font-semibold tracking-wider',
+  boost: 'bg-amber/10 text-amber border border-amber/30 font-semibold tracking-wider',
+  pro: 'bg-[image:var(--gradient-pro)] text-white font-bold tracking-widest',
+  stars: 'bg-[image:var(--gradient-stars)] text-white font-bold tracking-widest',
+  pending: 'bg-muted-foreground/15 text-muted-foreground font-semibold tracking-wider',
+  ok: 'bg-success/15 text-success font-semibold tracking-wider',
+  rej: 'bg-destructive/15 text-destructive font-semibold tracking-wider',
+
   warning: 'bg-warning/10 text-warning border border-warning/25',
+  /** @deprecated — оплата теперь DIRECT, эскроу убран. Используйте `direct`. */
+  escrow: 'bg-success/8 text-success border border-success/60 font-semibold tracking-wider',
 } as const
 
 interface BadgeProps {
@@ -36,10 +49,10 @@ interface BadgeProps {
 export const Badge = ({ children, className, variant = 'default' }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium align-middle whitespace-nowrap',
+      'inline-flex items-center rounded-md px-2 py-0.5 text-micro font-mono-resta font-semibold uppercase tracking-wider align-middle whitespace-nowrap',
       BADGE_VARIANTS[variant],
       (variant === 'tag' || variant === 'tagActive') &&
-        'max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
+        'rounded-full px-2.5 text-xs normal-case tracking-normal max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
       className
     )}
   >

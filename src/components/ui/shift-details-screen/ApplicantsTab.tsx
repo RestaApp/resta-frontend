@@ -76,16 +76,28 @@ export const ApplicantsTab = memo(
               const key = appId || index
               const userId = app.user_id || app.user?.id
 
+              const handleSelect = () => {
+                if (!userId) return
+                onSelectApplicant(userId, appId ?? null)
+              }
+
               return (
                 <div
                   key={key}
-                  onClick={() => {
-                    if (!userId) return
-                    onSelectApplicant(userId, appId ?? null)
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t('applicants.openProfileAria', { name }) || name}
+                  onClick={handleSelect}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleSelect()
+                    }
                   }}
                   className={cn(
                     'rounded-lg p-3 -mx-1 transition-colors cursor-pointer',
-                    'hover:bg-muted/40 active:bg-muted/60',
+                    'hover:bg-muted/40 active:bg-muted/60 outline-none',
+                    'focus-visible:ring-2 focus-visible:ring-primary',
                     isAccepted && 'ring-2 ring-primary/30 bg-primary/5'
                   )}
                 >
@@ -143,7 +155,7 @@ export const ApplicantsTab = memo(
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-10 w-10 min-w-10 p-0 shrink-0"
+                            className="h-11 w-11 min-w-11 p-0 shrink-0"
                             aria-label={t('shift.rejectApplication')}
                             loading={moderating?.id === appId && moderating.action === 'reject'}
                             disabled={moderating?.id === appId}
@@ -159,7 +171,7 @@ export const ApplicantsTab = memo(
                           <Button
                             variant="gradient"
                             size="sm"
-                            className="h-10 w-10 min-w-10 p-0 shrink-0"
+                            className="h-11 w-11 min-w-11 p-0 shrink-0"
                             aria-label={t('shift.acceptApplication')}
                             loading={moderating?.id === appId && moderating.action === 'accept'}
                             disabled={moderating?.id === appId}

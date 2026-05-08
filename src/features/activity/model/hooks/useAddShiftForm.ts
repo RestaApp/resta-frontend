@@ -1,25 +1,15 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  useCreateShiftMutation,
-  useUpdateShiftMutation,
   useGetMyShiftsQuery,
   type CreateShiftResponse,
   type VacancyApiItem,
 } from '@/services/api/shiftsApi'
-import { useToast } from '@/hooks/useToast'
-import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
 import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
 import { useAuth } from '@/contexts/auth'
-import {
-  getInitialPay,
-  getInitialShiftDate,
-  getInitialShiftTime,
-  getInitialSpecializations,
-} from '@/features/activity/model/utils/addShiftFormInitialization'
-import { parseMoneyInput } from '@/features/feed/model/utils/formatting'
-
-export type ShiftType = 'vacancy' | 'replacement'
+import { findDuplicatePosition, validateDate, validateTimeRange } from '../utils/addShiftValidation'
+import { useAddShiftFormState, type ShiftType } from './useAddShiftFormState'
+import { useAddShiftFormSubmission } from './useAddShiftFormSubmission'
 
 type UseAddShiftFormOptions = {
   initialShiftType?: ShiftType | null
@@ -28,6 +18,20 @@ type UseAddShiftFormOptions = {
   initialLocation?: string | null
 }
 
+export type { ShiftType }
+
+/**
+ * Контроллер формы добавления/редактирования смены.
+ *
+ * Композиция:
+ *  • `useAddShiftFormState`     — controlled state + reset;
+ *  • derived валидации          — `validateTimeRange`, `validateDate`,
+ *                                 `findDuplicatePosition` (pure functions);
+ *  • `useAddShiftFormSubmission` — RTK Query мутации, server‑error mapping;
+ *
+ * Public API возвращаемого объекта **не изменён** — потребители (`AddShiftDrawer`,
+ * `useAddShiftDrawerController`) работают как раньше.
+ */
 export const useAddShiftForm = ({
   initialShiftType = 'vacancy',
   onSave,
@@ -36,456 +40,85 @@ export const useAddShiftForm = ({
 }: UseAddShiftFormOptions = {}) => {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
-  const { showToast } = useToast()
-  const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
-  const [updateShiftMutation] = useUpdateShiftMutation()
 
-  // Получаем существующие смены для валидации
+  // Источники данных для duplicate‑position валидации.
   const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
-    skip: !!initialValues?.id || !isAuthenticated, // Не загружаем при редактировании и до авторизации
+    skip: !!initialValues?.id || !isAuthenticated,
   })
   const existingShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
 
-  const [title, setTitle] = useState(() => initialValues?.title || '')
-  const [description, setDescription] = useState(() => initialValues?.description || '')
-  const [date, setDate] = useState<string | null>(() => getInitialShiftDate(initialValues))
-  const [startTime, setStartTime] = useState(() => getInitialShiftTime(initialValues, 'start_time'))
-  const [endTime, setEndTime] = useState(() => getInitialShiftTime(initialValues, 'end_time'))
-  const [pay, setPay] = useState(() => getInitialPay(initialValues))
-  const [location, setLocation] = useState(() => initialValues?.location || initialLocation || '')
-  const [requirements, setRequirements] = useState(() => initialValues?.requirements || '')
-  const [shiftType, setShiftType] = useState<ShiftType>(() => {
-    const v = initialValues?.shift_type
-    if (v === 'vacancy' || v === 'replacement') return v
-    return initialShiftType ?? 'vacancy'
+  // Form state (controlled).
+  const state = useAddShiftFormState({
+    initialShiftType,
+    initialValues,
+    initialLocation,
   })
-  const [urgent, setUrgent] = useState(() => !!initialValues?.urgent)
-  const [position, setPosition] = useState(() => initialValues?.position || '')
-  const [specializations, setSpecializations] = useState<string[]>(() =>
-    getInitialSpecializations(initialValues)
-  )
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  type FieldErrors = Partial<
-    Record<'location' | 'requirements' | 'description' | 'specializations', string>
-  >
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
-  const clearSubmitError = useCallback(() => {
-    setSubmitError(null)
-    setFieldErrors({})
-  }, [])
 
-  const timeRangeError = useMemo(() => {
-    if (!startTime || !endTime) return null
-    const startMinutes = toMinutes(startTime)
-    const endMinutes = toMinutes(endTime)
-    if (startMinutes === null || endMinutes === null) return t('validation.invalidTime')
-    // Ночная смена: конец < начала — допустимо (конец на след. день)
-    if (endMinutes < startMinutes) return null
-    if (endMinutes === startMinutes) return t('validation.timeEndAfterStart')
-    return null
-  }, [startTime, endTime, t])
-
-  const dateError = useMemo(() => {
-    if (!date) return null
-
-    const selectedDate = new Date(date + 'T00:00:00')
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-
-    // Проверяем, что дата не в прошлом
-    if (selectedDate < today) {
-      return t('validation.dateInFuture')
-    }
-
-    // Если выбрана сегодняшняя дата, проверяем время
-    if (selectedDate.getTime() === today.getTime() && startTime) {
-      const [hours, minutes] = startTime.split(':').map(Number)
-      if (!isNaN(hours) && !isNaN(minutes)) {
-        const selectedDateTime = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          hours,
-          minutes,
-          0,
-          0
-        )
-
-        if (selectedDateTime <= now) {
-          return t('validation.timeInFuture')
-        }
-      }
-    }
-
-    return null
-  }, [date, startTime, t])
-
-  // Валидация: проверка на существующую смену с такой же позицией
-  const positionError = useMemo(() => {
-    // При редактировании не проверяем
-    if (initialValues?.id) return null
-    if (!position) return null
-    if (existingShifts.length === 0) return null
-
-    // Проверяем, есть ли уже активная смена с такой же позицией
-    const hasActiveShiftWithSamePosition = existingShifts.some(shift => {
-      // Пропускаем редактируемую смену (если есть)
-      if (initialValues?.id && shift.id === initialValues.id) return false
-
-      // Проверяем, что позиция совпадает
-      if (shift.position !== position) return false
-
-      // Проверяем, что смена еще не прошла (активная)
-      if (!shift.start_time) return false
-
-      try {
-        const shiftStartDate = new Date(shift.start_time)
-        const now = new Date()
-
-        // Смена считается активной, если она в будущем или сегодня (еще не началась или идет)
-        // Также проверяем end_time - если смена еще не закончилась, она активна
-        if (shift.end_time) {
-          const shiftEndDate = new Date(shift.end_time)
-          // Смена активна, если она еще не закончилась
-          return shiftEndDate >= now
-        }
-
-        // Если нет end_time, проверяем только start_time
-        return shiftStartDate >= now
-      } catch {
-        // Если не удалось распарсить дату, считаем смену активной
-        return true
-      }
-    })
-
-    if (hasActiveShiftWithSamePosition) {
-      return t('validation.duplicatePosition')
-    }
-
-    return null
-  }, [position, existingShifts, initialValues, t])
+  // Derived валидации — считаем при каждом рендере, без useMemo.
+  // Стоимость каждой функции — единицы микросекунд.
+  const timeRangeError = validateTimeRange(state.startTime, state.endTime, t)
+  const dateError = validateDate(state.date, state.startTime, t)
+  const positionError = !initialValues?.id
+    ? findDuplicatePosition(existingShifts, state.position, undefined)
+      ? t('validation.duplicatePosition')
+      : null
+    : null
 
   const isFormInvalid =
-    !title ||
-    !location ||
-    !description ||
-    !requirements ||
-    !position ||
-    specializations.length === 0 ||
-    (shiftType === 'replacement' && (!date || !startTime || !endTime)) ||
-    (shiftType === 'replacement' && !!timeRangeError) ||
-    (shiftType === 'replacement' && !!dateError) ||
+    !state.title ||
+    !state.location ||
+    !state.description ||
+    !state.requirements ||
+    !state.position ||
+    state.specializations.length === 0 ||
+    (state.shiftType === 'replacement' && (!state.date || !state.startTime || !state.endTime)) ||
+    (state.shiftType === 'replacement' && !!timeRangeError) ||
+    (state.shiftType === 'replacement' && !!dateError) ||
     !!positionError
 
-  const translateError = useCallback(
-    (error: string): string => {
-      const lowerError = error.toLowerCase()
-      if (
-        lowerError.includes("specialization can't be blank") ||
-        lowerError.includes('specialization is required') ||
-        lowerError.includes('специализация обязательна')
-      ) {
-        return t('validation.specializationRequired')
-      }
-      if (lowerError.includes("description can't be blank") || lowerError.includes('описание')) {
-        return t('validation.requiredField')
-      }
-      if (
-        lowerError.includes("requirements can't be blank") ||
-        lowerError.includes('требования') ||
-        lowerError.includes('requirements')
-      ) {
-        return t('validation.requiredField')
-      }
-      if (lowerError.includes("location can't be blank") || lowerError.includes('локац')) {
-        return t('validation.requiredField')
-      }
-      if (
-        lowerError.includes('active shift') ||
-        lowerError.includes('позицией') ||
-        lowerError.includes('position')
-      ) {
-        return t('validation.duplicatePosition')
-      }
-      if (lowerError.includes("can't be blank") || lowerError.includes('is required')) {
-        return t('validation.fillRequired')
-      }
-      return error
-    },
-    [t]
-  )
+  const canSubmit = useCallback(() => !isFormInvalid, [isFormInvalid])
 
-  const resetForm = useCallback(() => {
-    setTitle('')
-    setDescription('')
-    setDate(null)
-    setStartTime('')
-    setEndTime('')
-    setPay('')
-    setLocation(initialLocation || '')
-    setRequirements('')
-    setShiftType(initialShiftType ?? 'vacancy')
-    setUrgent(false)
-    setPosition('')
-    setSpecializations([])
-    setSubmitError(null)
-    setFieldErrors({})
-  }, [initialShiftType, initialLocation])
-
-  const applyServerErrors = useCallback(
-    (errors: string[]) => {
-      const nextFieldErrors: FieldErrors = {}
-      const generalMessages: string[] = []
-
-      for (const raw of errors) {
-        const msg = String(raw || '').trim()
-        if (!msg) continue
-        const lower = msg.toLowerCase()
-
-        if (lower.includes('specialization')) {
-          nextFieldErrors.specializations = t('validation.specializationRequired')
-          continue
-        }
-        if (lower.includes('description')) {
-          nextFieldErrors.description = t('validation.requiredField')
-          continue
-        }
-        if (lower.includes('requirements')) {
-          nextFieldErrors.requirements = t('validation.requiredField')
-          continue
-        }
-        if (lower.includes('location')) {
-          nextFieldErrors.location = t('validation.requiredField')
-          continue
-        }
-
-        generalMessages.push(translateError(msg))
-      }
-
-      setFieldErrors(nextFieldErrors)
-      const uniqueGeneral = Array.from(new Set(generalMessages)).filter(Boolean)
-      const joined = uniqueGeneral.join('; ')
-      setSubmitError(joined || null)
-      return { hasFieldErrors: Object.keys(nextFieldErrors).length > 0, message: joined }
-    },
-    [t, translateError]
-  )
-
-  const handleSave = useCallback(async (): Promise<boolean> => {
-    setSubmitError(null)
-    setFieldErrors({})
-    if (
-      !title ||
-      !location ||
-      !description ||
-      !requirements ||
-      !position ||
-      specializations.length === 0 ||
-      (shiftType === 'replacement' && (!date || !startTime || !endTime)) ||
-      (shiftType === 'replacement' && !!timeRangeError) ||
-      (shiftType === 'replacement' && !!dateError) ||
-      positionError
-    ) {
-      return false
-    }
-
-    try {
-      let response: CreateShiftResponse | null = null
-      const requiresSchedule = shiftType === 'replacement'
-
-      const startM = toMinutes(startTime)
-      const endM = toMinutes(endTime)
-      const isNightShift = startM !== null && endM !== null && endM <= startM
-      const endDate = date ? (isNightShift ? addDaysToISODate(date, 1) : date) : null
-
-      const payload = {
-        shift: {
-          title,
-          description,
-          ...(requiresSchedule
-            ? {
-                start_time: buildDateTime(date!, startTime),
-                end_time: buildDateTime(endDate!, endTime),
-              }
-            : {}),
-          payment: parseMoneyInput(pay) ?? undefined,
-          location,
-          requirements,
-          shift_type: shiftType,
-          urgent,
-          position,
-          specializations: specializations.length > 0 ? specializations : undefined,
-        },
-      }
-
-      if (initialValues?.id) {
-        // update existing shift
-        const updateResult = await updateShiftMutation({
-          id: String(initialValues.id),
-          body: payload.shift,
-        }).unwrap()
-        // сервер может вернуть { success: false, errors: [...] } even with 200
-        if (updateResult && typeof updateResult === 'object') {
-          const r = updateResult as unknown as Record<string, unknown>
-          const hasErrors =
-            r.success === false || (Array.isArray(r.errors) && r.errors.length > 0) || !!r.errors
-          if (hasErrors) {
-            const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
-            const errorMessages = Array.isArray(errs) ? errs.map(String) : [String(errs)]
-            const { hasFieldErrors, message } = applyServerErrors(errorMessages)
-            if (message) showToast?.(message, 'error')
-            if (hasFieldErrors) return false
-            return false
-          }
-        }
-        showToast?.(t('shift.updated'), 'success')
-        response = null
-      } else {
-        try {
-          const createResult = await createShift(payload).unwrap()
-          if (createResult && typeof createResult === 'object') {
-            const r = createResult as unknown as Record<string, unknown>
-            const hasErrors =
-              r.success === false || (Array.isArray(r.errors) && r.errors.length > 0) || !!r.errors
-            if (hasErrors) {
-              const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
-              const errorMessages = Array.isArray(errs) ? errs.map(String) : [String(errs)]
-              const { hasFieldErrors, message } = applyServerErrors(errorMessages)
-              if (message) showToast?.(message, 'error')
-              if (hasFieldErrors) return false
-              return false
-            }
-          }
-          response = createResult
-          showToast?.(t('shift.created'), 'success')
-        } catch (error: unknown) {
-          // Обработка ошибок от сервера
-          let errorMessage = t('shift.createError')
-
-          if (error && typeof error === 'object' && 'data' in error) {
-            const data = (error as { data?: unknown }).data
-            // Проверяем разные форматы ошибок
-            if (data && typeof data === 'object') {
-              const dataObj = data as Record<string, unknown>
-              const errors = dataObj.errors
-              const message = dataObj.message
-              const messageAlt = dataObj.error
-
-              if (Array.isArray(errors)) {
-                const errorMessages = errors.map(e => String(e))
-                const { message } = applyServerErrors(errorMessages)
-                if (message) showToast?.(message, 'error')
-                return false
-              } else if (typeof message === 'string') {
-                errorMessage = translateError(message)
-              } else if (typeof messageAlt === 'string') {
-                errorMessage = translateError(messageAlt)
-              }
-            }
-          } else if (error instanceof Error) {
-            errorMessage = translateError(error.message)
-          }
-
-          setSubmitError(errorMessage)
-          showToast?.(errorMessage, 'error')
-          return false
-        }
-      }
-
-      onSave?.(response ?? null)
-      resetForm()
-      return true
-    } catch (error: unknown) {
-      let errorMessage = t('shift.updateError')
-
-      if (error && typeof error === 'object' && 'data' in error) {
-        const data = (error as { data?: unknown }).data
-        if (data && typeof data === 'object') {
-          const dataObj = data as Record<string, unknown>
-          const errors = dataObj.errors
-          const message = dataObj.message
-          const messageAlt = dataObj.error
-
-          if (Array.isArray(errors)) {
-            const errorMessages = errors.map(e => String(e))
-            const { message } = applyServerErrors(errorMessages)
-            if (message) showToast?.(message, 'error')
-            return false
-          } else if (typeof message === 'string') {
-            errorMessage = translateError(message)
-          } else if (typeof messageAlt === 'string') {
-            errorMessage = translateError(messageAlt)
-          }
-        }
-      } else if (error instanceof Error) {
-        errorMessage = translateError(error.message)
-      }
-
-      setSubmitError(errorMessage)
-      showToast?.(errorMessage, 'error')
-      return false
-    }
-  }, [
-    title,
-    description,
-    date,
-    startTime,
-    endTime,
-    pay,
-    location,
-    requirements,
-    shiftType,
-    urgent,
-    position,
-    specializations,
-    createShift,
-    onSave,
-    resetForm,
-    showToast,
-    timeRangeError,
-    dateError,
-    positionError,
+  const { handleSave, isCreating } = useAddShiftFormSubmission({
+    state,
     initialValues,
-    updateShiftMutation,
-    applyServerErrors,
-    translateError,
-    t,
-  ])
+    onSave,
+    canSubmit,
+  })
 
   return {
-    title,
-    setTitle,
-    description,
-    setDescription,
-    date,
-    setDate,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    pay,
-    setPay,
-    location,
-    setLocation,
-    requirements,
-    setRequirements,
-    shiftType,
-    setShiftType,
-    urgent,
-    setUrgent,
-    position,
-    setPosition,
-    specializations,
-    setSpecializations,
-    submitError,
-    clearSubmitError,
+    title: state.title,
+    setTitle: state.setTitle,
+    description: state.description,
+    setDescription: state.setDescription,
+    date: state.date,
+    setDate: state.setDate,
+    startTime: state.startTime,
+    setStartTime: state.setStartTime,
+    endTime: state.endTime,
+    setEndTime: state.setEndTime,
+    pay: state.pay,
+    setPay: state.setPay,
+    location: state.location,
+    setLocation: state.setLocation,
+    requirements: state.requirements,
+    setRequirements: state.setRequirements,
+    shiftType: state.shiftType,
+    setShiftType: state.setShiftType,
+    urgent: state.urgent,
+    setUrgent: state.setUrgent,
+    position: state.position,
+    setPosition: state.setPosition,
+    specializations: state.specializations,
+    setSpecializations: state.setSpecializations,
+    submitError: state.submitError,
+    clearSubmitError: state.clearSubmitError,
     isCreating,
     isFormInvalid,
     timeRangeError,
     dateError,
     positionError,
-    fieldErrors,
+    fieldErrors: state.fieldErrors,
     handleSave,
-    resetForm,
+    resetForm: state.resetForm,
   } as const
 }

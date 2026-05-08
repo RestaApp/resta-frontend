@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -7,21 +7,8 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/ui/drawer'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { FormField } from '@/components/ui/form-field'
-import { Textarea } from '@/components/ui/textarea'
-import { RangeSlider } from '@/components/ui'
-import { CitySelect } from '@/components/ui/city-select'
-import { Loader } from '@/components/ui/loader'
-import { Badge } from '@/components/ui/badge'
-import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
-import {
-  DRAWER_BODY_CLASS,
-  DRAWER_FOOTER_CLASS,
-  DRAWER_SETTING_ROW_CLASS,
-} from '@/components/ui/ui-patterns'
+import { DRAWER_BODY_CLASS, DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,99 +19,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { formatExperienceText } from '@/utils/experience'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
-import { useLabels, useProfileFormLabels } from '@/shared/i18n/hooks'
-import type { ProfileFormData } from '../../model/utils/buildUpdateUserRequest'
-import {
-  BusinessAddressesField,
-  BusinessHoursField,
-} from '@/features/profile/ui/components/BusinessStructuredFields'
-
-interface EmployeeFieldsSectionProps {
-  experienceYearsValue: number
-  openToWork: boolean
-  skills: string
-  updateField: <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => void
-  disabled: boolean
-}
-
-const EmployeeFieldsSection = memo(
-  ({
-    experienceYearsValue,
-    openToWork,
-    skills,
-    updateField,
-    disabled,
-  }: EmployeeFieldsSectionProps) => {
-    const { t } = useTranslation()
-    const skillsList = useMemo(() => {
-      const parts = skills
-        .split(/[,;\n]+/g)
-        .map(item => item.trim())
-        .filter(Boolean)
-      const seen = new Set<string>()
-      return parts.filter(item => {
-        const key = item.toLowerCase()
-        if (seen.has(key)) return false
-        seen.add(key)
-        return true
-      })
-    }, [skills])
-
-    return (
-      <>
-        <FormField label={t('profile.experienceYearsLabel')}>
-          <div className="mb-3">
-            <span className="text-lg font-semibold text-gradient">
-              {formatExperienceText(experienceYearsValue)}
-            </span>
-          </div>
-          <RangeSlider
-            min={0}
-            max={5}
-            step={1}
-            value={experienceYearsValue}
-            onChange={value => updateField('experienceYears', value)}
-            showTicks={true}
-            tickCount={5}
-          />
-        </FormField>
-        <div className={DRAWER_SETTING_ROW_CLASS}>
-          <div>
-            <p className="block text-sm font-medium mb-1">{t('profile.openToWork')}</p>
-            <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
-          </div>
-          <Switch
-            checked={openToWork}
-            onCheckedChange={checked => updateField('openToWork', checked)}
-            disabled={disabled}
-          />
-        </div>
-        <FormField label={t('profile.skills')} hint={t('profile.skillsExample')}>
-          <Textarea
-            value={skills}
-            onChange={e => updateField('skills', e.target.value)}
-            placeholder={t('profile.form.skillsPlaceholder')}
-            disabled={disabled}
-            rows={3}
-            className="resize-none"
-          />
-          {skillsList.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {skillsList.map(skill => (
-                <Badge key={skill} variant="tag">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          )}
-        </FormField>
-      </>
-    )
-  }
-)
-EmployeeFieldsSection.displayName = 'EmployeeFieldsSection'
+import { useProfileFormLabels } from '@/shared/i18n/hooks'
+import { BasicProfileFields } from './edit-profile/BasicProfileFields'
+import { EmployeeFieldsSection } from './edit-profile/EmployeeFieldsSection'
+import { BusinessFieldsSection } from './edit-profile/BusinessFieldsSection'
 
 interface EditProfileDrawerProps {
   open: boolean
@@ -132,11 +31,20 @@ interface EditProfileDrawerProps {
   onSuccess?: () => void
 }
 
+/**
+ * Drawer редактирования профиля — оркестратор:
+ *  • header / описание (роль‑зависимое);
+ *  • `BasicProfileFields` — общие поля (имя/фамилия/bio/email/phone/city);
+ *  • `EmployeeFieldsSection` — только для employee;
+ *  • `BusinessFieldsSection` — только для restaurant/supplier;
+ *  • footer CTA + диалог подтверждения для save без города.
+ *
+ * Public API (`EditProfileDrawerProps`) и поведение reset/save сохранены 1:1.
+ */
 export const EditProfileDrawer = memo(
   ({ open, onOpenChange, onSuccess }: EditProfileDrawerProps) => {
     const { t } = useTranslation()
     const { getBioLabelSuffix } = useProfileFormLabels()
-    const { getSupplierTypeLabel } = useLabels()
     const {
       userProfile,
       apiRole,
@@ -185,70 +93,16 @@ export const EditProfileDrawer = memo(
         </DrawerHeader>
 
         <div className={DRAWER_BODY_CLASS}>
-          <FormField
-            label={`${t('profile.nameLabel')} ${apiRole === 'restaurant' || apiRole === 'supplier' ? t('profile.nameOrTitle') : ''}`.trim()}
-            required
-            error={fieldErrors.name}
-          >
-            <Input
-              value={formData.name}
-              onChange={e => updateField('name', e.target.value)}
-              placeholder={t('profile.form.namePlaceholder')}
-              disabled={isLoading}
-              aria-invalid={fieldErrors.name ? true : undefined}
-            />
-          </FormField>
-
-          {apiRole === 'employee' && (
-            <FormField label={t('profile.surnameRequired')} required error={fieldErrors.lastName}>
-              <Input
-                value={formData.lastName}
-                onChange={e => updateField('lastName', e.target.value)}
-                placeholder={t('profile.form.surnamePlaceholder')}
-                disabled={isLoading}
-                aria-invalid={fieldErrors.lastName ? true : undefined}
-              />
-            </FormField>
-          )}
-
-          <FormField label={`${t('common.description')} ${bioSuffix}`.trim()}>
-            <Textarea
-              value={formData.bio}
-              onChange={e => updateField('bio', e.target.value)}
-              placeholder={t('profile.bioPlaceholder', { suffix: bioSuffix })}
-              disabled={isLoading}
-              rows={4}
-              className="resize-none"
-            />
-          </FormField>
-
-          <FormField label={t('profile.email')}>
-            <Input
-              type="email"
-              value={formData.email}
-              onChange={e => updateField('email', e.target.value)}
-              placeholder={t('profile.form.emailPlaceholder')}
-              disabled={isLoading}
-            />
-          </FormField>
-
-          <FormField
-            label={t('profile.phoneRequired')}
-            hint={t('profile.phoneHint')}
-            required
-            error={fieldErrors.phone}
-          >
-            <Input
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              value={formData.phone}
-              onChange={e => updateField('phone', e.target.value)}
-              placeholder={t('phone.placeholderExample')}
-              disabled={isLoading}
-              aria-invalid={fieldErrors.phone ? true : undefined}
-            />
-          </FormField>
+          <BasicProfileFields
+            apiRole={apiRole}
+            formData={formData}
+            fieldErrors={fieldErrors}
+            cities={cities}
+            isCitiesLoading={isCitiesLoading}
+            isLoading={isLoading}
+            bioSuffix={bioSuffix}
+            updateField={updateField}
+          />
 
           {apiRole === 'employee' && (
             <EmployeeFieldsSection
@@ -260,109 +114,15 @@ export const EditProfileDrawer = memo(
             />
           )}
 
-          <FormField label={t('profile.cityRequired')} required error={fieldErrors.city}>
-            {isCitiesLoading ? (
-              <div className="flex items-center gap-2 py-2">
-                <Loader size="sm" />
-              </div>
-            ) : (
-              <CitySelect
-                value={formData.city}
-                onChange={value => updateField('city', value)}
-                options={cities}
-                placeholder={t('profile.form.cityPlaceholder')}
-                disabled={isLoading}
-                error={fieldErrors.city}
-              />
-            )}
-          </FormField>
-
           {isBusinessRole && (
-            <>
-              {apiRole === 'supplier' && (
-                <FormField
-                  label={t('profile.supplierTypesLabel', { defaultValue: 'Типы поставщика' })}
-                  hint={t('profile.supplierTypesHint', {
-                    defaultValue: 'Можно выбрать несколько направлений',
-                  })}
-                >
-                  {isSupplierTypesLoading ? (
-                    <div className="flex items-center gap-2 py-2">
-                      <Loader size="sm" />
-                    </div>
-                  ) : supplierTypeOptions.length === 0 ? (
-                    <div className="text-sm text-muted-foreground py-2">
-                      {t('profile.supplierTypesEmpty', {
-                        defaultValue: 'Нет доступных типов для выбранной категории',
-                      })}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex flex-wrap gap-2">
-                        {supplierTypeOptions.map(type => (
-                          <SelectableTagButton
-                            key={type}
-                            value={type}
-                            label={getSupplierTypeLabel(type)}
-                            isSelected={formData.supplierTypes.includes(type)}
-                            onClick={value => {
-                              const next = formData.supplierTypes.includes(value)
-                                ? formData.supplierTypes.filter(item => item !== value)
-                                : [...formData.supplierTypes, value]
-                              updateField('supplierTypes', next)
-                            }}
-                            disabled={isLoading}
-                            ariaLabel={t('aria.selectType', {
-                              label: getSupplierTypeLabel(type),
-                            })}
-                          />
-                        ))}
-                      </div>
-                      {formData.supplierTypes.length > 0 && (
-                        <div className="text-xs text-muted-foreground mt-2">
-                          {t('profile.supplierTypesCount', {
-                            defaultValue: 'Выбрано: {{count}}',
-                            count: formData.supplierTypes.length,
-                          })}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </FormField>
-              )}
-            </>
-          )}
-
-          {isBusinessRole && (
-            <BusinessAddressesField
-              value={formData.location}
-              disabled={isLoading}
-              isRestaurant={apiRole === 'restaurant'}
-              onChange={next => updateField('location', next)}
+            <BusinessFieldsSection
+              apiRole={apiRole}
+              formData={formData}
+              isLoading={isLoading}
+              supplierTypeOptions={supplierTypeOptions}
+              isSupplierTypesLoading={isSupplierTypesLoading}
+              updateField={updateField}
             />
-          )}
-
-          {isBusinessRole && (
-            <>
-              {isBusinessRole && (
-                <FormField label={t('profile.venueWebsite')} hint={t('profile.venueWebsiteHint')}>
-                  <Input
-                    type="url"
-                    inputMode="url"
-                    autoComplete="url"
-                    value={formData.website}
-                    onChange={e => updateField('website', e.target.value)}
-                    placeholder={t('profile.form.websitePlaceholder')}
-                    disabled={isLoading}
-                  />
-                </FormField>
-              )}
-              <BusinessHoursField
-                value={formData.businessHours}
-                disabled={isLoading}
-                onChange={next => updateField('businessHours', next)}
-              />
-            </>
           )}
         </div>
 

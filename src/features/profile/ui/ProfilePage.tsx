@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileHero } from './components/ProfileHero'
+import { ProfileKpiCard } from './components/ProfileKpiCard'
 import { ProfileInfoCard } from './components/ProfileInfoCard'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
@@ -74,6 +75,14 @@ export const ProfilePage = memo(() => {
           m.profileCompleteness?.isFilled ? undefined : () => m.setIsEditDrawerOpen(true)
         }
       />
+
+      {m.apiRole === 'employee' && (
+        <ProfileKpiCard
+          completedShifts={m.employeeStats?.completedShifts ?? 0}
+          earnedTotal={null}
+          rating={null}
+        />
+      )}
 
       {m.apiRole === 'employee' && (
         <ProfileSpecializationsSection specializations={m.specializations} />

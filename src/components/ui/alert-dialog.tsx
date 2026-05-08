@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { cn } from '@/utils/cn'
 import { Button } from './button'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 
 interface AlertDialogProps {
   open: boolean
@@ -90,7 +91,11 @@ export const AlertDialog = memo(function AlertDialog({
 
   const node = (
     <AlertDialogRefContext.Provider value={contentRef}>
-      <div className="fixed inset-0 z-[60] flex items-center justify-center" role="presentation">
+      <div
+        className="fixed inset-0 flex items-center justify-center"
+        role="presentation"
+        style={{ zIndex: Z_INDEX.alertDialog }}
+      >
         <div className="fixed inset-0 bg-black/50" onClick={onOverlayClick} aria-hidden="true" />
         {children}
       </div>
@@ -115,6 +120,10 @@ export const AlertDialogContent = memo(function AlertDialogContent({
 
   return (
     <AlertDialogA11yContext.Provider value={{ titleId, descriptionId }}>
+      {/* alertdialog — фокус-ловушка диалога; pointerdown/click stopPropagation
+          нужен чтобы клик внутри окна не закрывал dialog (overlay click handler выше).
+          Сам элемент не интерактивный, события обрабатывает только для bubbling‑guard. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div
         ref={contentRef}
         role="alertdialog"
