@@ -31,7 +31,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5174,
+    port: process.env.PORT ? Number(process.env.PORT) : 5174,
   },
   build: {
     chunkSizeWarningLimit: 650,

@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
+import { Check } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
 
@@ -13,7 +14,16 @@ interface RoleCardProps {
   socialProof?: string
 }
 
-function defaultSocialProofFromI18n(roleId: UiRole, translate: (key: string) => string): string | undefined {
+const ROLE_EMOJI: Record<UiRole, string> = {
+  chef: '👨‍🍳',
+  venue: '🏪',
+  supplier: '🚚',
+}
+
+function defaultSocialProofFromI18n(
+  roleId: UiRole,
+  translate: (key: string) => string
+): string | undefined {
   switch (roleId) {
     case 'chef':
       return translate('roles.socialProof.chef')
@@ -29,15 +39,14 @@ function defaultSocialProofFromI18n(roleId: UiRole, translate: (key: string) => 
 export const RoleCard = memo(function RoleCard({
   role,
   isSelected,
-  index,
   onSelect,
   showPopularBadge = false,
   socialProof,
 }: RoleCardProps) {
   const { t } = useTranslation()
   const proof = socialProof ?? defaultSocialProofFromI18n(role.id, t)
+  const emoji = ROLE_EMOJI[role.id] ?? '👤'
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
-  const indexLabel = String(index + 1).padStart(2, '0')
 
   return (
     <div className="relative">
@@ -54,45 +63,54 @@ export const RoleCard = memo(function RoleCard({
         aria-label={t('aria.selectRole', { label: role.title })}
         aria-pressed={isSelected}
         className={cn(
-          'w-full rounded-[14px] border px-[18px] py-[18px] text-left transition-all duration-150',
-          showPopularBadge ? 'pt-7' : '',
+          'w-full rounded-[14px] border p-[14px] text-left transition-colors duration-150',
+          showPopularBadge ? 'pt-5' : '',
           isSelected
-            ? 'border-primary bg-[#171512]'
+            ? 'border-primary bg-primary/[0.08]'
             : 'border-[#2F2C28] bg-[#11100F] hover:border-[#46413B]'
         )}
       >
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-center gap-3 mb-2">
+          <div
+            className={cn(
+              'flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[10px] text-[22px] leading-none',
+              isSelected ? 'bg-primary/15' : 'bg-[#1B1A18]'
+            )}
+            aria-hidden
+          >
+            {emoji}
+          </div>
+
           <div className="min-w-0 flex-1">
-            <div className="text-[18px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
+            <div className="text-[14px] font-semibold leading-tight text-foreground">
               {role.title}
             </div>
             {role.description ? (
-              <div className="mt-1 text-[13px] leading-snug text-muted-foreground">{role.description}</div>
+              <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                {role.description}
+              </div>
             ) : null}
           </div>
 
-          <span
+          <div
             className={cn(
-              'font-mono-resta text-[11px] font-medium shrink-0',
-              isSelected ? 'text-primary/90' : 'text-muted-foreground'
+              'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
+              isSelected ? 'border-primary bg-primary text-white' : 'border-[#2F2C28] bg-transparent'
             )}
+            aria-hidden
           >
-            {indexLabel}
-          </span>
+            {isSelected ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
+          </div>
         </div>
 
         {proof ? (
-          <div className="mt-3 border-t border-dashed border-[#2F2C28] pt-3 flex items-center gap-1.5">
-            <span
-              className={cn(
-                'h-1.5 w-1.5 rounded-full shrink-0',
-                isSelected ? 'bg-primary' : 'bg-primary/50'
-              )}
-              aria-hidden
-            />
-            <span className="font-mono-resta text-[11px] font-medium tracking-[0.05em] text-primary/75">
-              {proof}
-            </span>
+          <div
+            className={cn(
+              'font-mono-resta text-[11px] tracking-[0.05em]',
+              isSelected ? 'text-primary' : 'text-muted-foreground'
+            )}
+          >
+            {proof}
           </div>
         ) : null}
       </motion.button>

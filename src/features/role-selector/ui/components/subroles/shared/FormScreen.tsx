@@ -2,7 +2,7 @@
  * Переиспользуемый экран формы для ресторана и поставщика
  */
 
-import { memo, useEffect } from 'react'
+import { memo, useEffect, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { SectionHeader } from '@/components/ui/section-header'
@@ -40,6 +40,8 @@ interface FormScreenProps {
   /** Индикатор шага онбординга (например, шаг 2 из 3) */
   step?: number
   totalSteps?: number
+  /** Доп. карточка-плашка под формой (например, DIRECT-режим / PRO trial) */
+  footerCard?: ReactNode
 }
 
 export const FormScreen = memo(function FormScreen({
@@ -60,6 +62,7 @@ export const FormScreen = memo(function FormScreen({
   isMultiType = false,
   step,
   totalSteps,
+  footerCard,
 }: FormScreenProps) {
   const { t } = useTranslation()
   const showProgress = step != null && totalSteps != null && totalSteps > 0
@@ -153,6 +156,16 @@ export const FormScreen = memo(function FormScreen({
             isLoading={isLoadingLocation}
           />
         </motion.div>
+
+        {footerCard ? (
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            {footerCard}
+          </motion.div>
+        ) : null}
       </div>
 
       {/* Кнопка продолжения */}

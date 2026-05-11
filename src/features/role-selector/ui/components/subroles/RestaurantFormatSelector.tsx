@@ -63,6 +63,24 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
       continueButtonAriaLabel={t('common.continueFormVenue')}
       step={2}
       totalSteps={2}
+      footerCard={
+        <div className="rounded-[12px] border border-[#3EC97E4D] bg-[#3EC97E0F] px-3 py-2.5">
+          <div className="flex items-start gap-2">
+            <span className="text-[14px] leading-none text-[#3EC97E]" aria-hidden>
+              ✓
+            </span>
+            <p className="text-[11px] leading-[1.45] text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                {t('roles.venueDirectTitle', { defaultValue: 'DIRECT-режим включён.' })}
+              </span>{' '}
+              {t('roles.venueDirectText', {
+                defaultValue:
+                  'Ты платишь сотрудникам напрямую. Resta не берёт комиссии.',
+              })}
+            </p>
+          </div>
+        </div>
+      }
     />
   )
 })
