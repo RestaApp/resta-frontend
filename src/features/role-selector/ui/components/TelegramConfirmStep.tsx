@@ -9,18 +9,23 @@ import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/utils/phone'
+import type { UiRole } from '@/shared/types/roles.types'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
   onBack: () => void
+  selectedRole: UiRole | null
 }
 
 export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   onContinue,
   onBack,
+  selectedRole,
 }: TelegramConfirmStepProps) {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
+  const copyRole =
+    selectedRole === 'venue' || selectedRole === 'supplier' ? selectedRole : 'employee'
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const [needsScroll, setNeedsScroll] = useState(false)
@@ -70,15 +75,14 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     <div className="bg-background min-h-[100dvh] flex flex-col">
       <div
         ref={scrollContainerRef}
-        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${
-          needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
-        }`}
+        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
+          }`}
       >
         <div ref={contentRef}>
           <OnboardingProgress current={2} total={3} className="mb-[14px]" />
           <SectionHeader
             title={t('onboarding.telegram.title')}
-            description={t('onboarding.telegram.subtitle')}
+            description={t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
             className="mb-4"
           />
 

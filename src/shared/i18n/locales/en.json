@@ -469,8 +469,23 @@
       "cityLabel": "CITY",
       "cityFallback": "Not provided",
       "cityHint": "from geolocation ✓",
-      "shieldTitle": "No middlemen.",
-      "shieldText": "Resta only connects you. Shift payment is handled directly between you and the restaurant.",
+      "copy": {
+        "employee": {
+          "subtitle": "Restaurants will message you directly in Telegram",
+          "shieldTitle": "No middlemen.",
+          "shieldText": "Resta only connects you. Shift payment is handled directly between you and the restaurant."
+        },
+        "venue": {
+          "subtitle": "Staff and suppliers will message you directly in Telegram",
+          "shieldTitle": "Direct contact.",
+          "shieldText": "Resta helps you find people and suppliers. Terms and payment are handled directly between you."
+        },
+        "supplier": {
+          "subtitle": "Restaurants will contact you directly in Telegram",
+          "shieldTitle": "Direct orders.",
+          "shieldText": "Resta helps you find venues. Orders and payment are handled directly between you and the restaurant."
+        }
+      },
       "next": "Next →"
     }
   },
