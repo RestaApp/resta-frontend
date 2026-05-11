@@ -26,11 +26,13 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
   const [manualPhone, setManualPhone] = useState('')
   const [isPhoneShared, setIsPhoneShared] = useState(false)
   const [selectedCity, setSelectedCity] = useState('')
+  const [editedName, setEditedName] = useState('')
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [cityError, setCityError] = useState<string | null>(null)
 
-  const displayName =
+  const tgName =
     user?.full_name?.trim() || user?.name?.trim() || t('onboarding.telegram.fallbackName')
+  const displayName = editedName || tgName
   const displayUsername = user?.username?.trim()
     ? `@${user.username.trim().replace(/^@/, '')}`
     : t('onboarding.telegram.noUsername')
@@ -133,11 +135,14 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
 
     setIsSaving(true)
     try {
+      const trimmedName = editedName.trim()
+      const nameChanged = trimmedName.length > 0 && trimmedName !== tgName
       await updateUserWithData(
         {
           user: {
             ...(isPhoneShared ? {} : { phone: toE164(resolvedPhone) }),
             city: finalCity,
+            ...(nameChanged ? { name: trimmedName } : {}),
           },
         },
         () => onContinue(),
@@ -150,16 +155,20 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     }
   }, [
     cityFromProfile,
+    editedName,
     isPhoneShared,
     onContinue,
     resolvedPhone,
     selectedCity,
     t,
+    tgName,
     updateUserWithData,
   ])
 
   return {
     displayName,
+    editedName,
+    setEditedName,
     displayUsername,
     manualPhone,
     selectedCity,

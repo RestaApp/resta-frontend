@@ -85,18 +85,17 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
       const selectedSupplierTypes =
         formData.types.length > 0 ? formData.types : formData.type ? [formData.type] : []
 
-      if (selectedSupplierTypes.length === 0) {
-        return false
-      }
-
       const updateData: UpdateUserRequest = {
         user: {
           role: 'supplier',
           supplier_category: supplierCategory,
-          supplier_types: selectedSupplierTypes,
           // ROLES_FRONTEND_SPEC: supplier_profile.delivery_available (boolean)
           delivery_available: false,
         },
+      }
+
+      if (selectedSupplierTypes.length > 0) {
+        updateData.user.supplier_types = selectedSupplierTypes
       }
 
       if (formData.name && formData.name.trim() !== '') {

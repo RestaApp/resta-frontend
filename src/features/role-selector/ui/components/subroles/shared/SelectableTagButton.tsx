@@ -13,6 +13,15 @@ import {
   TAG_INACTIVE_CLASS,
 } from '@/components/ui/ui-patterns'
 
+type TagTone = 'primary' | 'employee' | 'restaurant' | 'supplier'
+
+const TONE_ACTIVE: Record<TagTone, string> = {
+  primary: TAG_ACTIVE_CLASS,
+  employee: 'border-transparent bg-role-employee text-white shadow-sm',
+  restaurant: 'border-transparent bg-role-restaurant text-white shadow-sm',
+  supplier: 'border-transparent bg-role-supplier text-white shadow-sm',
+}
+
 interface SelectableTagButtonProps {
   value: string
   label: string
@@ -20,6 +29,8 @@ interface SelectableTagButtonProps {
   onClick: (value: string) => void
   ariaLabel?: string
   disabled?: boolean
+  /** Цвет активного состояния — по роли. */
+  tone?: TagTone
 }
 
 export const SelectableTagButton = memo(function SelectableTagButton({
@@ -29,6 +40,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
   onClick,
   ariaLabel,
   disabled = false,
+  tone = 'primary',
 }: SelectableTagButtonProps) {
   const { t } = useTranslation()
   return (
@@ -39,7 +51,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
       className={cn(
         TAG_BASE_CLASS,
         disabled && TAG_DISABLED_CLASS,
-        isSelected ? TAG_ACTIVE_CLASS : TAG_INACTIVE_CLASS
+        isSelected ? TONE_ACTIVE[tone] : TAG_INACTIVE_CLASS
       )}
       aria-pressed={isSelected}
       aria-label={ariaLabel || t('aria.selectType', { label })}

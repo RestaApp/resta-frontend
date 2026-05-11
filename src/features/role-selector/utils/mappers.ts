@@ -66,8 +66,12 @@ const tRoleLabel = (roleId: UiRole): string =>
 const tRoleDescription = (roleId: UiRole): string =>
   i18n.t(`roles.descriptions.${roleId}`, { defaultValue: '' })
 
-const tPositionLabel = (positionId: EmployeeRole): string =>
-  i18n.t(`roles.labels.${positionId}`, { defaultValue: positionId })
+const tPositionLabel = (positionId: EmployeeRole): string => {
+  const key = `labels.position.${positionId}`
+  const translated = i18n.t(key)
+  if (translated && translated !== key) return translated
+  return i18n.t(`roles.labels.${positionId}`, { defaultValue: positionId })
+}
 
 const tPositionDescription = (positionId: EmployeeRole): string =>
   i18n.t(`roles.descriptions.${positionId}`, { defaultValue: '' })

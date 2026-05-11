@@ -1,13 +1,11 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SectionHeader } from '@/components/ui'
 import { OnboardingProgress } from './components/OnboardingProgress'
 import { RoleCard } from './components/RoleCard'
 import { ErrorModal } from './components/subroles/shared/ErrorModal'
 
 import { EmployeeSubRoleSelector } from './components/subroles/EmployeeSubRoleSelector'
 import { SupplierCategorySelector } from './components/subroles/SupplierCategorySelector'
-import { SupplierTypeSelector } from './components/subroles/SupplierTypeSelector'
 import { RestaurantFormatSelector } from './components/subroles/RestaurantFormatSelector'
 import { LoadingState } from './components/subroles/shared/LoadingState'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
@@ -24,7 +22,6 @@ interface RoleSelectorProps {
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
-  const selectedRole = vm.mainRoles.find(role => role.id === vm.selectedRole)
 
   // Sub-flows — early returns AFTER all hooks
   if (vm.flow === 'employee') {
@@ -63,18 +60,6 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
     )
   }
 
-  if (vm.flow === 'supplier') {
-    return (
-      <SupplierTypeSelector
-        onContinue={vm.handleSupplierTypeContinue}
-        onBack={vm.handleBack}
-        supplierTypes={vm.supplierTypes}
-        isLoading={vm.isLoadingSupplierTypes}
-        isFetching={vm.isFetchingSupplierTypes}
-      />
-    )
-  }
-
   if (vm.flow === 'restaurant') {
     return (
       <RestaurantFormatSelector
@@ -101,13 +86,14 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
           }`}
         >
           <OnboardingProgress current={1} total={3} className="mb-[14px]" />
-          <SectionHeader
-            title={t('roles.whoAreYou')}
-            description={t('roles.roleChoiceHint')}
-            className="mb-4 w-[280px]"
-            titleClassName="max-w-[280px] text-[36px] leading-[1.05] tracking-[-0.025em] mb-2"
-            descriptionClassName="max-w-[280px] text-sm leading-[1.4] text-muted-foreground"
-          />
+          <div className="mb-4 w-[280px]">
+            <h1 className="max-w-[280px] font-sans font-extrabold text-display leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
+              {t('roles.whoAreYou')}
+            </h1>
+            <p className="max-w-[280px] text-meta leading-snug text-muted-foreground">
+              {t('roles.roleChoiceHint')}
+            </p>
+          </div>
 
           <div
             className={`flex flex-col gap-2.5 ${
@@ -123,7 +109,6 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
                 isSelected={vm.selectedRole === role.id}
                 index={index}
                 onSelect={vm.handleRoleSelect}
-                showPopularBadge={role.id === 'chef'}
               />
             ))}
           </div>
@@ -131,16 +116,18 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
       </div>
       {vm.selectedRole ? (
         <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
-          <Button
-            type="button"
-            onClick={vm.handleRoleContinue}
-            variant="gradient"
-            size="lg"
-            className="mx-auto w-full max-w-md"
-            aria-label={t('roles.continueAsRole', { role: selectedRole?.title ?? '' })}
-          >
-            {t('roles.continueAsRole', { role: selectedRole?.title ?? '' })}
-          </Button>
+          <div className="mx-auto w-full max-w-md">
+            <Button
+              type="button"
+              onClick={vm.handleRoleContinue}
+              variant="gradient"
+              size="lg"
+              className="w-full"
+              aria-label={t('common.continue')}
+            >
+              {t('common.continue')} →
+            </Button>
+          </div>
         </div>
       ) : null}
 

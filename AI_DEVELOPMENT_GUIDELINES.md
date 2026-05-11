@@ -155,6 +155,32 @@ export const Z_INDEX = {
 'bg-success/10 border-success/40'
 ```
 
+### 2.6. Палитра ролей
+
+Каждой роли (`employee`, `restaurant`, `supplier`) соответствует **один набор токенов** в `src/index.css`:
+
+| CSS-переменная                  | Tailwind utility               | Назначение                       |
+| ------------------------------- | ------------------------------ | -------------------------------- |
+| `--role-<kind>`                 | `bg-role-<kind>` / `text-…`    | основной цвет роли               |
+| `--role-<kind>-foreground`      | `text-role-<kind>-foreground`  | контрастный текст поверх primary |
+| `--role-<kind>-soft`            | `bg-role-<kind>-soft`          | подложка badge / выбранной карты |
+| `--role-<kind>-surface`         | `bg-role-<kind>-surface`       | очень светлая подложка секции    |
+| `--role-<kind>-border`          | `border-role-<kind>`           | акцентная рамка                  |
+
+Применять через helper `getRoleTheme(role)` из [`@/shared/lib/role-theme`](src/shared/lib/role-theme.ts) — принимает `UiRole | ApiRole`, возвращает готовый набор класс-нейм.
+
+```tsx
+// ✅
+import { getRoleTheme } from '@/shared/lib/role-theme'
+const theme = getRoleTheme(role)
+<button className={cn(theme.classes.bg, theme.classes.textOn)}>CTA</button>
+
+// ❌ — не вводить новые хардкоды legacy-токенов
+'bg-emp border-emp text-sup'
+```
+
+Все три темы (dark / light) уже определены в `:root` и `[data-theme='light']` — добавление новой роли = расширить оба блока и `@theme inline`.
+
 ---
 
 ## 3. Component architecture

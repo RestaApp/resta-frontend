@@ -1,15 +1,30 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Pencil } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LocationField } from './subroles/shared/LocationField'
 import { Button } from '@/components/ui/button'
-import { Card, Callout, SectionHeader } from '@/components/ui'
+import { Card } from '@/components/ui'
 import { OnboardingProgress } from './OnboardingProgress'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
+import { getRoleKind, getRoleTheme } from '@/shared/lib/role-theme'
+import { cn } from '@/utils/cn'
+
+const ROLE_AVATAR_GRADIENT: Record<ReturnType<typeof getRoleKind>, string> = {
+  employee: 'from-[#0088CC] to-[#005C8C]',
+  restaurant: 'from-[#0088CC] to-[#005C8C]',
+  supplier: 'from-[#7E5BD4] to-[#5A3FB0]',
+}
+
+const ROLE_SHIELD_ICON: Record<ReturnType<typeof getRoleKind>, string> = {
+  employee: '🛡',
+  restaurant: '⚡',
+  supplier: '⭐',
+}
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
@@ -26,11 +41,16 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   const user = useAppSelector(selectUserData)
   const copyRole =
     selectedRole === 'venue' || selectedRole === 'supplier' ? selectedRole : 'employee'
+  const roleKind = getRoleKind(selectedRole ?? 'chef')
+  const roleTheme = getRoleTheme(selectedRole ?? 'chef')
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const [needsScroll, setNeedsScroll] = useState(false)
+  const [isEditingName, setIsEditingName] = useState(false)
   const {
     displayName,
+    editedName,
+    setEditedName,
     displayUsername,
     manualPhone,
     selectedCity,
@@ -75,19 +95,28 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     <div className="bg-background min-h-[100dvh] flex flex-col">
       <div
         ref={scrollContainerRef}
-        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
-          }`}
+        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${
+          needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
+        }`}
       >
         <div ref={contentRef}>
-          <OnboardingProgress current={2} total={3} className="mb-[14px]" />
-          <SectionHeader
-            title={t('onboarding.telegram.title')}
-            description={t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
-            className="mb-4"
-          />
+          <OnboardingProgress current={2} total={3} tone={roleKind} className="mb-[14px]" />
+          <div className="mb-4">
+            <h1 className="font-sans font-extrabold text-[22px] leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
+              {t('onboarding.telegram.title')}
+            </h1>
+            <p className="text-meta leading-snug text-muted-foreground">
+              {t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
+            </p>
+          </div>
 
           <Card className="text-center">
-            <div className="mx-auto mb-3 h-14 w-14 overflow-hidden rounded-full bg-gradient-to-br from-[#0088CC] to-[#005C8C]">
+            <div
+              className={cn(
+                'mx-auto mb-3 h-14 w-14 overflow-hidden rounded-full bg-gradient-to-br',
+                ROLE_AVATAR_GRADIENT[roleKind]
+              )}
+            >
               {user?.photo_url ? (
                 <img
                   src={user.photo_url}
@@ -96,7 +125,29 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
                 />
               ) : null}
             </div>
-            <div className="text-sm font-semibold text-foreground">{displayName}</div>
+            {isEditingName ? (
+              <Input
+                autoFocus
+                value={editedName || displayName}
+                onChange={e => setEditedName(e.target.value)}
+                onBlur={() => setIsEditingName(false)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === 'Escape') setIsEditingName(false)
+                }}
+                className="mx-auto h-8 max-w-[220px] text-center text-sm font-semibold"
+                aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditingName(true)}
+                className="mx-auto inline-flex items-center gap-1.5 text-sm font-semibold text-foreground"
+                aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
+              >
+                {displayName}
+                <Pencil className="h-3 w-3 text-muted-foreground" aria-hidden />
+              </button>
+            )}
             <div className="mt-0.5 text-meta text-muted-foreground">{displayUsername}</div>
             <div className="mt-2.5 font-mono-resta text-meta uppercase tracking-[0.08em] text-success">
               {t('onboarding.telegram.connected')}
@@ -120,7 +171,10 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
               <button
                 type="button"
                 onClick={handlePhoneShare}
-                className="whitespace-nowrap font-mono-resta text-meta uppercase tracking-[0.08em] leading-none text-primary disabled:opacity-60"
+                className={cn(
+                  'whitespace-nowrap font-mono-resta text-[10px] uppercase leading-none tracking-[0.05em] disabled:opacity-60',
+                  roleTheme.classes.text
+                )}
                 disabled={isRequestingPhone}
               >
                 {isPhoneFilled ? t('onboarding.telegram.shared') : t('onboarding.telegram.share')}
@@ -148,12 +202,26 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
           </div>
 
-          <Callout tone="success" className="mt-3.5">
-            <span className="font-semibold text-foreground">
-              {t('onboarding.telegram.shieldTitle')}
-            </span>{' '}
-            {t('onboarding.telegram.shieldText')}
-          </Callout>
+          <div
+            role="note"
+            className={cn(
+              'mt-3.5 rounded-xl border px-3 py-2.5',
+              roleTheme.classes.border,
+              roleTheme.classes.bgSurface
+            )}
+          >
+            <div className="flex items-start gap-2">
+              <span aria-hidden className={cn('shrink-0 mt-0.5 text-sm', roleTheme.classes.text)}>
+                {ROLE_SHIELD_ICON[roleKind]}
+              </span>
+              <div className="flex-1 text-meta leading-snug text-muted-foreground">
+                <span className="font-semibold text-foreground">
+                  {t(`onboarding.telegram.copy.${copyRole}.shieldTitle`)}
+                </span>{' '}
+                {t(`onboarding.telegram.copy.${copyRole}.shieldText`)}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -165,7 +233,13 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           disabled={isSaving}
           variant="gradient"
           size="lg"
-          className="mx-auto w-full max-w-md"
+          className={cn(
+            'mx-auto w-full max-w-md',
+            roleKind === 'employee' &&
+              'bg-role-employee hover:bg-role-employee/90 active:bg-role-employee/80',
+            roleKind === 'supplier' &&
+              'bg-role-supplier hover:bg-role-supplier/90 active:bg-role-supplier/80'
+          )}
         >
           {t('onboarding.telegram.next')}
         </Button>

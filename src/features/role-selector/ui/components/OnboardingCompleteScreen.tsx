@@ -67,7 +67,7 @@ export const OnboardingCompleteScreen = memo(function OnboardingCompleteScreen({
         </div>
         <div className="flex items-center justify-between rounded-md border border-border bg-input-background px-3 py-3 text-sm">
           <span className="text-foreground">{displayPhone}</span>
-          <span className="font-mono-resta text-meta uppercase tracking-[0.08em] text-primary">
+          <span className="font-mono-resta text-[10px] uppercase tracking-[0.05em] text-primary">
             {t('onboarding.telegram.share')}
           </span>
         </div>

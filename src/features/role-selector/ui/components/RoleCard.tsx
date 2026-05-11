@@ -4,6 +4,23 @@ import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
+import { getRoleTheme } from '@/shared/lib/role-theme'
+
+const ROLE_EMOJI: Record<UiRole, string> = {
+  chef: '👨‍🍳',
+  waiter: '🍽️',
+  bartender: '🍸',
+  barista: '☕',
+  hostess: '🙋',
+  delivery: '🚚',
+  cashier: '💳',
+  office: '💼',
+  admin: '🧑‍💼',
+  manager: '📋',
+  support: '🎧',
+  venue: '🏪',
+  supplier: '🚚',
+}
 
 interface RoleCardProps {
   role: RoleOption
@@ -40,6 +57,7 @@ export const RoleCard = memo(function RoleCard({
   const { t } = useTranslation()
   const proof = socialProof ?? defaultSocialProofFromI18n(role.id, t)
   const emoji = ROLE_EMOJI[role.id] ?? '👤'
+  const theme = getRoleTheme(role.id)
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
 
   return (
@@ -57,18 +75,17 @@ export const RoleCard = memo(function RoleCard({
         aria-label={t('aria.selectRole', { label: role.title })}
         aria-pressed={isSelected}
         className={cn(
-          'w-full rounded-lg border px-[18px] py-[18px] text-left transition-all duration-150',
+          'w-full rounded-[20px] border px-[22px] py-[18px] text-left transition-all duration-150',
           showPopularBadge ? 'pt-7' : '',
-          isSelected
-            ? 'border-primary bg-primary/5'
-            : 'border-border bg-card hover:border-foreground/20'
+          isSelected ? cn(theme.classes.border, theme.classes.bgSoft) : 'border-border bg-card hover:border-foreground/20'
         )}
       >
         <div className="flex items-center gap-3 mb-2">
           <div
             className={cn(
               'flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[10px] text-[22px] leading-none',
-              isSelected ? 'bg-primary/15' : 'bg-[#1B1A18]'
+              theme.classes.bg,
+              theme.classes.textOn
             )}
             aria-hidden
           >
@@ -76,11 +93,11 @@ export const RoleCard = memo(function RoleCard({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="text-title-md font-semibold leading-tight tracking-[-0.01em] text-foreground">
+            <div className="text-body-lg font-semibold leading-tight tracking-[-0.01em] text-foreground">
               {role.title}
             </div>
             {role.description ? (
-              <div className="mt-1 text-body-md leading-snug text-muted-foreground">
+              <div className="mt-1 text-meta leading-snug text-muted-foreground">
                 {role.description}
               </div>
             ) : null}
@@ -88,25 +105,25 @@ export const RoleCard = memo(function RoleCard({
 
           <div
             className={cn(
-              'font-mono-resta text-meta font-medium shrink-0',
-              isSelected ? 'text-primary/90' : 'text-muted-foreground'
+              'grid h-7 w-7 shrink-0 place-items-center rounded-full border-2',
+              isSelected
+                ? cn(theme.classes.border, theme.classes.bg, theme.classes.textOn)
+                : 'border-border text-transparent'
             )}
             aria-hidden
           >
-            {isSelected ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
+            {isSelected ? <Check className="h-4 w-4" strokeWidth={3} /> : null}
           </div>
         </div>
 
         {proof ? (
-          <div className="mt-3 border-t border-dashed border-border pt-3 flex items-center gap-1.5">
+          <div className="mt-3 flex items-center gap-1.5 text-micro">
             <span
               className={cn(
-                'h-1.5 w-1.5 rounded-full shrink-0',
-                isSelected ? 'bg-primary' : 'bg-primary/50'
+                'font-mono-resta font-medium tracking-[0.12em]',
+                isSelected ? theme.classes.text : 'text-muted-foreground'
               )}
-              aria-hidden
-            />
-            <span className="font-mono-resta text-meta font-medium tracking-[0.05em] text-primary/75">
+            >
               {proof}
             </span>
           </div>

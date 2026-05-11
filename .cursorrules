@@ -87,6 +87,7 @@
 
 - **Вёрстка:** mobile-first; среда — Telegram WebView (safe area, высота viewport, touch).
 - **Стили:** конфликт классов Tailwind снимать через `cn` (или утилиту файла).
+- **Палитра ролей:** у каждой роли (`employee` / `restaurant` / `supplier`) — отдельный набор токенов в `src/index.css` (`--role-<kind>`, `-foreground`, `-soft`, `-surface`, `-border`), доступных как `bg-role-<kind>`, `text-role-<kind>`, `bg-role-<kind>-soft`, `border-role-<kind>` и т. п. Для применения в коде использовать helper `getRoleTheme(role)` из `@/shared/lib/role-theme` — он возвращает готовый набор класс-нейм для роли. Не вводить новые `bg-emp`/`bg-sup`/`bg-rest` хардкоды в новых компонентах.
 - **Запросы:** обрабатывать загрузку (`isLoading` / `isFetching`), ошибки и пустые списки — скелетоны и тексты по паттернам проекта.
 - **Telegram:** WebApp — через существующие контексты/хуки; не размазывать `window.Telegram` по коду.
 - **i18n:** строки интерфейса — ключи; новые ключи — во всех актуальных локалях.

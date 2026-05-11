@@ -35,6 +35,8 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
     handleContinue,
   } = useFormSelector({
     onContinue,
+    skipNameValidation: true,
+    skipCityValidation: true,
   })
 
   if (isLoading || isFetching) {
@@ -61,8 +63,11 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
       onBack={onBack}
       isLoadingLocation={isLoadingLocation}
       continueButtonAriaLabel={t('common.continueFormVenue')}
-      step={2}
-      totalSteps={2}
+      step={3}
+      totalSteps={3}
+      tone="restaurant"
+      hideName
+      hideCity
       footerCard={
         <div className="rounded-[12px] border border-[#3EC97E4D] bg-[#3EC97E0F] px-3 py-2.5">
           <div className="flex items-start gap-2">

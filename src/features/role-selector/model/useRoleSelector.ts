@@ -10,7 +10,6 @@ type RoleSelectorFlow =
   | 'telegram_confirm'
   | 'employee'
   | 'supplier_category'
-  | 'supplier'
   | 'restaurant'
 
 interface UseRoleSelectorProps {
@@ -30,14 +29,12 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     if (roleSelection.showTelegramConfirm) return 'telegram_confirm'
     if (roleSelection.showEmployeeSubRoles) return 'employee'
     if (roleSelection.showSupplierCategory) return 'supplier_category'
-    if (roleSelection.showSupplierTypes) return 'supplier'
     if (roleSelection.showRestaurantFormats) return 'restaurant'
     return 'main'
   }, [
     roleSelection.showTelegramConfirm,
     roleSelection.showEmployeeSubRoles,
     roleSelection.showSupplierCategory,
-    roleSelection.showSupplierTypes,
     roleSelection.showRestaurantFormats,
   ])
 
@@ -47,13 +44,25 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
   }, [roleSelection, subRoleSubmission])
 
   const handleSupplierTypeContinue = useCallback(
-    async (formData?: FormData) => {
-      return subRoleSubmission.handleSupplierTypeContinue(
-        formData,
-        roleSelection.selectedSupplierCategory ?? undefined
+    async (formData?: FormData, supplierCategory?: string) => {
+      return subRoleSubmission.handleSupplierTypeContinue(formData, supplierCategory)
+    },
+    [subRoleSubmission]
+  )
+
+  const handleSupplierCategoryContinue = useCallback(
+    async (category: string, supplierTypes: string[]) => {
+      return handleSupplierTypeContinue(
+        {
+          name: '',
+          type: null,
+          types: supplierTypes,
+          city: '',
+        },
+        category
       )
     },
-    [subRoleSubmission, roleSelection.selectedSupplierCategory]
+    [handleSupplierTypeContinue]
   )
 
   return {
@@ -72,11 +81,6 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     supplierCategories: roleSelection.supplierCategories,
     isLoadingSupplierCategories: roleSelection.isLoadingSupplierCategories,
     isFetchingSupplierCategories: roleSelection.isFetchingSupplierCategories,
-    handleSupplierCategoryContinue: roleSelection.handleSupplierCategoryContinue,
-
-    supplierTypes: roleSelection.supplierTypes,
-    isLoadingSupplierTypes: roleSelection.isLoadingSupplierTypes,
-    isFetchingSupplierTypes: roleSelection.isFetchingSupplierTypes,
 
     restaurantFormats: roleSelection.restaurantFormats,
     isLoadingRestaurantFormats: roleSelection.isLoadingRestaurantFormats,
@@ -89,7 +93,7 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     handleTelegramContinue: roleSelection.handleTelegramContinue,
     handleSubRoleSelect: subRoleSubmission.handleSubRoleSelect,
     handleSubRoleContinue: subRoleSubmission.handleSubRoleContinue,
-    handleSupplierTypeContinue,
+    handleSupplierCategoryContinue,
     handleRestaurantFormatContinue: subRoleSubmission.handleRestaurantFormatContinue,
 
     handleBack,

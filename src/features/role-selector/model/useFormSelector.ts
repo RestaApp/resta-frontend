@@ -5,6 +5,8 @@
 import { useState, useCallback } from 'react'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { isPromise } from '@/utils/promise'
+import { useAppSelector } from '@/store/hooks'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 
 export interface FormData {
   name: string
@@ -16,14 +18,24 @@ export interface FormData {
 interface UseFormSelectorProps {
   onContinue?: (formData: FormData) => Promise<boolean> | void
   multiType?: boolean
+  /** Не требовать поле name (используется существующее значение из профиля). */
+  skipNameValidation?: boolean
+  /** Не требовать поле city (значение берётся из профиля). */
+  skipCityValidation?: boolean
 }
 
-export const useFormSelector = ({ onContinue, multiType = false }: UseFormSelectorProps) => {
+export const useFormSelector = ({
+  onContinue,
+  multiType = false,
+  skipNameValidation = false,
+  skipCityValidation = false,
+}: UseFormSelectorProps) => {
+  const user = useAppSelector(selectUserData)
   const [formData, setFormData] = useState<FormData>({
-    name: '',
+    name: user?.full_name?.trim() || user?.name?.trim() || '',
     type: null,
     types: [],
-    city: '',
+    city: user?.city?.trim() || user?.location?.trim() || '',
   })
 
   // Хук для геолокации
@@ -45,7 +57,9 @@ export const useFormSelector = ({ onContinue, multiType = false }: UseFormSelect
 
   const handleContinue = useCallback(async (): Promise<boolean> => {
     const hasType = multiType ? formData.types.length > 0 : !!formData.type
-    if (!formData.name.trim() || !hasType || !formData.city.trim()) {
+    const nameOk = skipNameValidation || formData.name.trim() !== ''
+    const cityOk = skipCityValidation || formData.city.trim() !== ''
+    if (!nameOk || !hasType || !cityOk) {
       return false
     }
 
@@ -66,7 +80,7 @@ export const useFormSelector = ({ onContinue, multiType = false }: UseFormSelect
       console.error('Ошибка при сохранении:', error)
       return false
     }
-  }, [formData, onContinue, multiType])
+  }, [formData, onContinue, multiType, skipNameValidation, skipCityValidation])
 
   return {
     formData,

@@ -43,7 +43,9 @@ export const configureTelegram = (
   let fullscreenRequested = fullscreenAlreadyRequested
   try {
     webApp.ready()
-    webApp.disableVerticalSwipes?.()
+    if (webApp.disableVerticalSwipes && isVersionAtLeast(webApp, '7.7')) {
+      webApp.disableVerticalSwipes()
+    }
     webApp.expand()
     if (!fullscreenRequested) {
       fullscreenRequested = true

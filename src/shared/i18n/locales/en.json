@@ -370,8 +370,8 @@
     "fillRequired": "Fill in all required fields."
   },
   "roles": {
-    "whoAreYou": "Who are you?",
-    "roleChoiceHint": "This helps us match you with the right jobs and shifts",
+    "whoAreYou": "Who are you in HoReCa?",
+    "roleChoiceHint": "Choose one role — navigation and features are different",
     "mostPopularBadge": "Most popular",
     "loadRolesError": "Failed to load roles",
     "noRoles": "No roles found",
@@ -379,7 +379,7 @@
     "supplierTypesError": "Failed to load supplier types",
     "categoriesError": "Failed to load supplier categories",
     "supplierCategoryTitle": "What do you supply?",
-    "supplierCategoryDescription": "Choose a category — we'll show matching supplier types next",
+    "supplierCategoryDescription": "We'll show you to restaurants that need this",
     "supplierCategories": {
       "products": "Products",
       "equipment": "Equipment",
@@ -417,7 +417,7 @@
     "specializationsMain": "Specializations",
     "specializationsMore": "More specializations",
     "labels": {
-      "chef": "Staff",
+      "chef": "I work",
       "waiter": "Waiter",
       "bartender": "Bartender",
       "barista": "Barista",
@@ -428,11 +428,11 @@
       "admin": "Admin",
       "manager": "Manager",
       "support": "Support",
-      "venue": "Venue",
-      "supplier": "Supplier"
+      "venue": "I have a venue",
+      "supplier": "I am a supplier"
     },
     "descriptions": {
-      "chef": "Looking for shifts, work, growth",
+      "chef": "Chef · waiter · barista · bartender",
       "waiter": "I serve guests in the dining room",
       "bartender": "I make drinks and cocktails",
       "barista": "I make coffee and coffee drinks",
@@ -443,13 +443,13 @@
       "admin": "I manage the venue and staff",
       "manager": "I lead teams and operations",
       "support": "I provide support and help",
-      "venue": "Looking for staff and suppliers",
-      "supplier": "I offer goods and services"
+      "venue": "Restaurant · cafe · bar · chain",
+      "supplier": "Products · equipment · services"
     },
     "socialProof": {
-      "chef": "892 staff across the network",
-      "venue": "340 venues · Minsk",
-      "supplier": "128 suppliers"
+      "chef": "892 online · 234 shifts now",
+      "venue": "340 venues · 4.2K shifts covered",
+      "supplier": "128 suppliers · B2B catalog"
     }
   },
   "onboarding": {
@@ -476,14 +476,14 @@
           "shieldText": "Resta only connects you. Shift payment is handled directly between you and the restaurant."
         },
         "venue": {
-          "subtitle": "Staff and suppliers will message you directly in Telegram",
-          "shieldTitle": "Direct contact.",
-          "shieldText": "Resta helps you find people and suppliers. Terms and payment are handled directly between you."
+          "subtitle": "Candidates will message your manager in Telegram",
+          "shieldTitle": "First shift is free.",
+          "shieldText": "No verification, no deposit. Publish in 60 seconds."
         },
         "supplier": {
-          "subtitle": "Restaurants will contact you directly in Telegram",
-          "shieldTitle": "Direct orders.",
-          "shieldText": "Resta helps you find venues. Orders and payment are handled directly between you and the restaurant."
+          "subtitle": "Restaurants will message your sales manager in Telegram",
+          "shieldTitle": "7-day PRO trial.",
+          "shieldText": "Access to 230+ restaurants in Minsk. No card — pay later with Telegram Stars."
         }
       },
       "next": "Next →"
@@ -658,6 +658,21 @@
       "cold_chain_delivery": "Cold-chain delivery",
       "logistics_provider": "Logistics provider",
       "warehousing": "Warehousing services"
+    },
+    "restaurantFormat": {
+      "full_service": "Full service",
+      "cafe": "Cafe",
+      "bistro": "Bistro",
+      "fast_food": "Fast food",
+      "sushi_bar": "Sushi bar",
+      "bar": "Bar",
+      "pizzeria": "Pizzeria",
+      "bakery": "Bakery",
+      "food_truck": "Food truck",
+      "catering": "Catering",
+      "gastromarket": "Gastromarket",
+      "club": "Club",
+      "canteen": "Canteen"
     },
     "cuisineType": {
       "international": "International",

@@ -36,6 +36,27 @@
   --rest: var(--terracotta);
   --sup: #b38cff;
 
+  /* Role palettes — основные цвета каждой роли + варианты для UI.
+     Используются как `bg-role-employee`, `text-role-employee-foreground`,
+     `bg-role-employee-soft`, `border-role-employee` (через @theme inline). */
+  --role-employee: var(--emp);
+  --role-employee-foreground: #ffffff;
+  --role-employee-soft: rgba(90, 180, 255, 0.14);
+  --role-employee-surface: rgba(90, 180, 255, 0.08);
+  --role-employee-border: rgba(90, 180, 255, 0.4);
+
+  --role-restaurant: var(--rest);
+  --role-restaurant-foreground: #ffffff;
+  --role-restaurant-soft: rgba(255, 107, 44, 0.14);
+  --role-restaurant-surface: rgba(255, 107, 44, 0.08);
+  --role-restaurant-border: rgba(255, 107, 44, 0.4);
+
+  --role-supplier: var(--sup);
+  --role-supplier-foreground: #ffffff;
+  --role-supplier-soft: rgba(179, 140, 255, 0.14);
+  --role-supplier-surface: rgba(179, 140, 255, 0.08);
+  --role-supplier-border: rgba(179, 140, 255, 0.4);
+
   --surface-subtle: #1c1c22; /* p-surface2 */
   --surface-subtle-foreground: #f5f5f7;
   --surface-border: rgba(255, 255, 255, 0.06); /* p-line */
@@ -137,6 +158,25 @@
   --emp: #2e80d9;
   --rest: #e85a1f;
   --sup: #7e5bd4;
+
+  /* Role palettes — light theme overrides */
+  --role-employee: var(--emp);
+  --role-employee-foreground: #ffffff;
+  --role-employee-soft: rgba(46, 128, 217, 0.12);
+  --role-employee-surface: rgba(46, 128, 217, 0.06);
+  --role-employee-border: rgba(46, 128, 217, 0.4);
+
+  --role-restaurant: var(--rest);
+  --role-restaurant-foreground: #ffffff;
+  --role-restaurant-soft: rgba(232, 90, 31, 0.12);
+  --role-restaurant-surface: rgba(232, 90, 31, 0.06);
+  --role-restaurant-border: rgba(232, 90, 31, 0.4);
+
+  --role-supplier: var(--sup);
+  --role-supplier-foreground: #ffffff;
+  --role-supplier-soft: rgba(126, 91, 212, 0.12);
+  --role-supplier-surface: rgba(126, 91, 212, 0.06);
+  --role-supplier-border: rgba(126, 91, 212, 0.4);
 
   --surface-subtle: #ebe9e3;
   --surface-subtle-foreground: #0f1115;
@@ -252,6 +292,25 @@ textarea:focus-visible {
   --color-emp: var(--emp);
   --color-rest: var(--rest);
   --color-sup: var(--sup);
+
+  /* Role palette utilities — bg-role-employee, text-role-restaurant-foreground, etc. */
+  --color-role-employee: var(--role-employee);
+  --color-role-employee-foreground: var(--role-employee-foreground);
+  --color-role-employee-soft: var(--role-employee-soft);
+  --color-role-employee-surface: var(--role-employee-surface);
+  --color-role-employee-border: var(--role-employee-border);
+
+  --color-role-restaurant: var(--role-restaurant);
+  --color-role-restaurant-foreground: var(--role-restaurant-foreground);
+  --color-role-restaurant-soft: var(--role-restaurant-soft);
+  --color-role-restaurant-surface: var(--role-restaurant-surface);
+  --color-role-restaurant-border: var(--role-restaurant-border);
+
+  --color-role-supplier: var(--role-supplier);
+  --color-role-supplier-foreground: var(--role-supplier-foreground);
+  --color-role-supplier-soft: var(--role-supplier-soft);
+  --color-role-supplier-surface: var(--role-supplier-surface);
+  --color-role-supplier-border: var(--role-supplier-border);
 
   /* Typography utilities exposed to Tailwind via @theme inline.
      Using `text-{name}` создаёт font-size + line-height одной утилитой. */

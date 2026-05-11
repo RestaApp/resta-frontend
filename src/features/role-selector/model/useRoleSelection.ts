@@ -8,7 +8,6 @@ import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useRoles } from './hooks/useRoles'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useSupplierCategories } from './hooks/useSupplierCategories'
-import { useSupplierTypes } from './hooks/useSupplierTypes'
 import { useRestaurantFormats } from './hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../utils/mappers'
 import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
@@ -22,12 +21,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   const [draftSelectedRole, setDraftSelectedRole] = useState<UiRole | null>(null)
   const [showTelegramConfirm, setShowTelegramConfirm] = useState(false)
   const [showEmployeeSubRoles, setShowEmployeeSubRoles] = useState(false)
-  /** Шаг 1 поставщика: категория (GET /catalogs/supplier_categories) */
   const [showSupplierCategory, setShowSupplierCategory] = useState(false)
-  /** Выбранная категория — для GET /catalogs/supplier_types?supplier_category= */
-  const [selectedSupplierCategory, setSelectedSupplierCategory] = useState<string | null>(null)
-  /** Шаг 2 поставщика: типы и форма */
-  const [showSupplierTypes, setShowSupplierTypes] = useState(false)
   const [showRestaurantFormats, setShowRestaurantFormats] = useState(false)
 
   const userData = useAppSelector(selectUserData)
@@ -54,18 +48,6 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     isFetching: isFetchingSupplierCategories,
   } = useSupplierCategories({ enabled: shouldLoadSupplierCategories })
 
-  const shouldLoadSupplierTypes =
-    showSupplierTypes && isUnverified && selectedSupplierCategory !== null
-
-  const {
-    supplierTypes,
-    isLoading: isLoadingSupplierTypes,
-    isFetching: isFetchingSupplierTypes,
-  } = useSupplierTypes({
-    enabled: shouldLoadSupplierTypes,
-    supplierCategory: selectedSupplierCategory ?? 'products',
-  })
-
   const shouldLoadRestaurantFormats = showRestaurantFormats && isUnverified
 
   const {
@@ -80,12 +62,6 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     }
     return mapRoleOptionsFromApi(roles)
   }, [roles])
-
-  const handleSupplierCategoryContinue = useCallback((category: string) => {
-    setSelectedSupplierCategory(category)
-    setShowSupplierCategory(false)
-    setShowSupplierTypes(true)
-  }, [])
 
   const handleRoleSelect = useCallback((roleId: UiRole) => {
     setDraftSelectedRole(roleId)
@@ -126,29 +102,18 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
       setShowEmployeeSubRoles(false)
     } else if (showTelegramConfirm) {
       setShowTelegramConfirm(false)
-    } else if (showSupplierTypes) {
-      setShowSupplierTypes(false)
-      setShowSupplierCategory(true)
     } else if (showSupplierCategory) {
       setShowSupplierCategory(false)
-      setSelectedSupplierCategory(null)
     } else if (showRestaurantFormats) {
       setShowRestaurantFormats(false)
     }
-  }, [
-    showEmployeeSubRoles,
-    showTelegramConfirm,
-    showSupplierTypes,
-    showSupplierCategory,
-    showRestaurantFormats,
-  ])
+  }, [showEmployeeSubRoles, showTelegramConfirm, showSupplierCategory, showRestaurantFormats])
 
   return {
     selectedRole: draftSelectedRole,
     showTelegramConfirm,
     showEmployeeSubRoles,
     showSupplierCategory,
-    showSupplierTypes,
     showRestaurantFormats,
     mainRoles,
     isLoading,
@@ -160,11 +125,6 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     supplierCategories,
     isLoadingSupplierCategories,
     isFetchingSupplierCategories,
-    selectedSupplierCategory,
-    handleSupplierCategoryContinue,
-    supplierTypes,
-    isLoadingSupplierTypes,
-    isFetchingSupplierTypes,
     restaurantFormats,
     isLoadingRestaurantFormats,
     isFetchingRestaurantFormats,
@@ -173,7 +133,6 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     handleTelegramContinue,
     handleBack,
     setShowEmployeeSubRoles,
-    setShowSupplierTypes,
     setShowRestaurantFormats,
   }
 }
