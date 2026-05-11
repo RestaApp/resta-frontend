@@ -65,6 +65,26 @@ export const SupplierTypeSelector = memo(function SupplierTypeSelector({
       isMultiType={true}
       step={2}
       totalSteps={2}
+      footerCard={
+        <div className="rounded-[12px] border border-[#7E5BD44D] bg-[#7E5BD40F] px-3 py-2.5">
+          <div className="flex items-start gap-2">
+            <span className="text-[14px] leading-none text-[#7E5BD4]" aria-hidden>
+              📋
+            </span>
+            <p className="text-[11px] leading-[1.45] text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                {t('roles.supplierLaterTitle', {
+                  defaultValue: 'Прайс можно загрузить позже.',
+                })}
+              </span>{' '}
+              {t('roles.supplierLaterText', {
+                defaultValue:
+                  'Сейчас покажем рестораны, которым нужны твои категории.',
+              })}
+            </p>
+          </div>
+        </div>
+      }
     />
   )
 })

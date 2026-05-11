@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
+import { Check } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
 
@@ -32,15 +33,14 @@ function defaultSocialProofFromI18n(
 export const RoleCard = memo(function RoleCard({
   role,
   isSelected,
-  index,
   onSelect,
   showPopularBadge = false,
   socialProof,
 }: RoleCardProps) {
   const { t } = useTranslation()
   const proof = socialProof ?? defaultSocialProofFromI18n(role.id, t)
+  const emoji = ROLE_EMOJI[role.id] ?? '👤'
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
-  const indexLabel = String(index + 1).padStart(2, '0')
 
   return (
     <div className="relative">
@@ -64,7 +64,17 @@ export const RoleCard = memo(function RoleCard({
             : 'border-border bg-card hover:border-foreground/20'
         )}
       >
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-center gap-3 mb-2">
+          <div
+            className={cn(
+              'flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[10px] text-[22px] leading-none',
+              isSelected ? 'bg-primary/15' : 'bg-[#1B1A18]'
+            )}
+            aria-hidden
+          >
+            {emoji}
+          </div>
+
           <div className="min-w-0 flex-1">
             <div className="text-title-md font-semibold leading-tight tracking-[-0.01em] text-foreground">
               {role.title}
@@ -76,14 +86,15 @@ export const RoleCard = memo(function RoleCard({
             ) : null}
           </div>
 
-          <span
+          <div
             className={cn(
               'font-mono-resta text-meta font-medium shrink-0',
               isSelected ? 'text-primary/90' : 'text-muted-foreground'
             )}
+            aria-hidden
           >
-            {indexLabel}
-          </span>
+            {isSelected ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
+          </div>
         </div>
 
         {proof ? (

@@ -103,7 +103,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
             className="mb-4"
           />
 
-          <div className="grid grid-cols-3 gap-1.5 max-w-md w-full content-start mb-[14px]">
+          <div className="grid grid-cols-2 gap-1.5 max-w-md w-full content-start mb-[14px]">
             {visibleRoles.map((subRole, index) => {
               const isSelected = selectedSubRole === subRole.id
               return (
@@ -116,7 +116,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
                     'rounded-lg border px-2 py-3 text-center transition-colors',
                     isSelected
                       ? 'border-primary bg-primary/10'
-                      : 'border-border bg-card hover:border-primary/40',
+                      : 'border-[#2F2C28] bg-[#11100F] hover:border-[#46413B]',
                   ].join(' ')}
                 >
                   <div className="mb-1 text-xl" aria-hidden>
