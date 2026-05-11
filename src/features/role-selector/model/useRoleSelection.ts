@@ -96,18 +96,39 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
   }, [draftSelectedRole, onSelectRole])
 
   const handleBack = useCallback(() => {
-    setDraftSelectedRole(null)
-
     if (showEmployeeSubRoles) {
       setShowEmployeeSubRoles(false)
-    } else if (showTelegramConfirm) {
-      setShowTelegramConfirm(false)
-    } else if (showSupplierCategory) {
-      setShowSupplierCategory(false)
-    } else if (showRestaurantFormats) {
-      setShowRestaurantFormats(false)
+      setShowTelegramConfirm(true)
+      return
     }
-  }, [showEmployeeSubRoles, showTelegramConfirm, showSupplierCategory, showRestaurantFormats])
+
+    if (showSupplierCategory) {
+      setShowSupplierCategory(false)
+      setShowTelegramConfirm(true)
+      return
+    }
+
+    if (showRestaurantFormats) {
+      setShowRestaurantFormats(false)
+      setShowTelegramConfirm(true)
+      return
+    }
+
+    if (showTelegramConfirm) {
+      setShowTelegramConfirm(false)
+      return
+    }
+
+    if (draftSelectedRole) {
+      setDraftSelectedRole(null)
+    }
+  }, [
+    draftSelectedRole,
+    showEmployeeSubRoles,
+    showSupplierCategory,
+    showRestaurantFormats,
+    showTelegramConfirm,
+  ])
 
   return {
     selectedRole: draftSelectedRole,

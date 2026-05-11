@@ -10,9 +10,10 @@ import { RestaurantFormatSelector } from './components/subroles/RestaurantFormat
 import { LoadingState } from './components/subroles/shared/LoadingState'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { TelegramConfirmStep } from './components/TelegramConfirmStep'
-import { Button } from '@/components/ui/button'
+import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './components/OnboardingBottomCta'
 
 import { useRoleSelector } from '../model/useRoleSelector'
+import { useSwipeBack } from '../model/useSwipeBack'
 import type { UiRole } from '@/shared/types/roles.types'
 
 interface RoleSelectorProps {
@@ -22,6 +23,8 @@ interface RoleSelectorProps {
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
+  const canSwipeBack = vm.flow !== 'main' || vm.selectedRole !== null
+  useSwipeBack({ enabled: canSwipeBack, onBack: vm.handleBack })
 
   // Sub-flows — early returns AFTER all hooks
   if (vm.flow === 'employee') {
@@ -97,9 +100,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
 
           <div
             className={`flex flex-col gap-2.5 ${
-              vm.selectedRole
-                ? 'pb-[calc(6rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
-                : 'pb-0'
+              vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : 'pb-0'
             }`}
           >
             {vm.mainRoles.map((role, index) => (
@@ -115,20 +116,9 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         </div>
       </div>
       {vm.selectedRole ? (
-        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
-          <div className="mx-auto w-full max-w-md">
-            <Button
-              type="button"
-              onClick={vm.handleRoleContinue}
-              variant="gradient"
-              size="lg"
-              className="w-full"
-              aria-label={t('common.continue')}
-            >
-              {t('common.continue')} →
-            </Button>
-          </div>
-        </div>
+        <OnboardingBottomCta onClick={vm.handleRoleContinue} ariaLabel={t('common.continue')}>
+          {t('common.continue')} →
+        </OnboardingBottomCta>
       ) : null}
 
       <ErrorModal

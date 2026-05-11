@@ -4,12 +4,12 @@
 
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
-import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
+import { TagGroup } from '@/shared/ui/TagGroup'
 import { OnboardingProgress } from '../OnboardingProgress'
 import { LoadingState } from './shared/LoadingState'
 import { useSupplierTypes } from '../../../model/hooks/useSupplierTypes'
 import { useLabels } from '@/shared/i18n/hooks'
+import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT } from '../OnboardingBottomCta'
 
 const CATEGORY_EMOJI: Record<string, string> = {
   products: '📦',
@@ -66,6 +66,15 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
     )
   }, [])
 
+  const getCategoryLabel = useCallback(
+    (category: string) => {
+      const label = t(`roles.supplierCategories.${category}`, { defaultValue: category })
+      const emoji = CATEGORY_EMOJI[category] ?? '📦'
+      return `${emoji} ${label}`
+    },
+    [t]
+  )
+
   const handleConfirm = useCallback(async () => {
     if (!selected) return
     setIsSubmitting(true)
@@ -94,7 +103,9 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
 
   return (
     <div className="bg-background flex min-h-[100dvh] flex-col">
-      <div className="flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] overflow-y-auto">
+      <div
+        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] ${ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT} overflow-y-auto`}
+      >
         <OnboardingProgress current={3} total={3} tone="supplier" className="mb-[14px]" />
         <div className="mb-4">
           <h1 className="font-sans font-extrabold text-[22px] leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
@@ -109,23 +120,18 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
           <div className="mb-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
             {t('roles.supplierCategoriesLabel', { defaultValue: 'КАТЕГОРИИ' })}
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map(category => {
-              const label = t(`roles.supplierCategories.${category}`, { defaultValue: category })
-              const emoji = CATEGORY_EMOJI[category] ?? '📦'
-              return (
-                <SelectableTagButton
-                  key={category}
-                  value={category}
-                  label={`${emoji} ${label}`}
-                  tone="supplier"
-                  isSelected={selected === category}
-                  onClick={handleToggle}
-                  ariaLabel={t('aria.selectSupplierCategory', { label })}
-                />
-              )
-            })}
-          </div>
+          <TagGroup
+            values={categories}
+            selectedValues={selected ? [selected] : []}
+            onToggle={handleToggle}
+            getLabel={getCategoryLabel}
+            getAriaLabel={(category, label) =>
+              t('aria.selectSupplierCategory', {
+                label: label.replace(`${CATEGORY_EMOJI[category] ?? '📦'} `, ''),
+              })
+            }
+            tone="supplier"
+          />
         </div>
 
         {selected ? (
@@ -143,19 +149,14 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
             {isTypesLoading ? (
               <div className="text-meta text-muted-foreground">{t('common.loading')}...</div>
             ) : supplierTypes.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {supplierTypes.map(type => (
-                  <SelectableTagButton
-                    key={type}
-                    value={type}
-                    label={getSupplierTypeLabel(type)}
-                    tone="supplier"
-                    isSelected={selectedTypes.includes(type)}
-                    onClick={handleTypeToggle}
-                    ariaLabel={t('aria.selectType', { label: getSupplierTypeLabel(type) })}
-                  />
-                ))}
-              </div>
+              <TagGroup
+                values={supplierTypes}
+                selectedValues={selectedTypes}
+                onToggle={handleTypeToggle}
+                getLabel={getSupplierTypeLabel}
+                getAriaLabel={(_, label) => t('aria.selectType', { label })}
+                tone="supplier"
+              />
             ) : (
               <div className="text-meta text-muted-foreground">
                 {t('profile.supplierTypesEmpty')}
@@ -165,24 +166,15 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
         ) : null}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
-        <div className="mx-auto w-full max-w-md">
-          <Button
-            type="button"
-            onClick={handleConfirm}
-            loading={isSubmitting}
-            disabled={!canContinue}
-            variant="gradient"
-            size="lg"
-            className="w-full bg-role-supplier hover:bg-role-supplier/90 active:bg-role-supplier/80"
-          >
-            {t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны →' })}
-          </Button>
-          <p className="mt-3 text-center text-xs text-muted-foreground opacity-70">
-            {t('profile.fillLaterHint')}
-          </p>
-        </div>
-      </div>
+      <OnboardingBottomCta
+        onClick={handleConfirm}
+        loading={isSubmitting}
+        disabled={!canContinue}
+        tone="supplier"
+        showFillLaterHint
+      >
+        {t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны →' })}
+      </OnboardingBottomCta>
     </div>
   )
 })

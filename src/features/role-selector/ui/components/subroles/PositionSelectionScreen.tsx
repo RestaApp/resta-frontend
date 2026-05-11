@@ -4,10 +4,10 @@
 
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
 import { useLabels } from '@/shared/i18n/hooks'
-import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
+import { TagGroup } from '@/shared/ui/TagGroup'
 import { OnboardingProgress } from '../OnboardingProgress'
+import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT } from '../OnboardingBottomCta'
 import type { EmployeeSubRole, EmployeeRole } from '@/shared/types/roles.types'
 
 const EMOJI_BY_ROLE: Partial<Record<EmployeeRole, string>> = {
@@ -86,11 +86,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
         ref={scrollContainerRef}
         className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] ${
           needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
-        } ${
-          needsScroll && selectedSubRole
-            ? 'pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
-            : 'pb-0'
-        }`}
+        } ${selectedSubRole ? ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT : 'pb-0'}`}
       >
         <div ref={contentRef}>
           <OnboardingProgress current={3} total={3} tone="employee" className="mb-[14px]" />
@@ -107,19 +103,20 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
             <div className="mb-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
               {t('roles.positionLabel', { defaultValue: 'ПОЗИЦИЯ' })}
             </div>
-            <div className="flex flex-wrap gap-2">
-              {visibleRoles.map(subRole => (
-                <SelectableTagButton
-                  key={subRole.originalValue || subRole.id}
-                  value={subRole.id}
-                  label={`${EMOJI_BY_ROLE[subRole.id] ?? '👤'} ${subRole.title}`}
-                  isSelected={selectedSubRole === subRole.id}
-                  onClick={handleSelect}
-                  tone="employee"
-                  ariaLabel={t('aria.selectType', { label: subRole.title })}
-                />
-              ))}
-            </div>
+            <TagGroup
+              values={visibleRoles.map(subRole => subRole.id)}
+              selectedValues={selectedSubRole ? [selectedSubRole] : []}
+              onToggle={handleSelect}
+              getLabel={id => {
+                const subRole = visibleRoles.find(role => role.id === id)
+                return `${EMOJI_BY_ROLE[id as EmployeeRole] ?? '👤'} ${subRole?.title ?? id}`
+              }}
+              getAriaLabel={id => {
+                const subRole = visibleRoles.find(role => role.id === id)
+                return t('aria.selectType', { label: subRole?.title ?? id })
+              }}
+              tone="employee"
+            />
           </div>
 
           <div className="max-w-md w-full">
@@ -131,42 +128,22 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
                 {t('roles.specializationMultiHint')}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {specializations.map(spec => (
-                <SelectableTagButton
-                  key={spec}
-                  value={spec}
-                  label={getSpecializationLabel(spec)}
-                  isSelected={selectedSpecializations.includes(spec)}
-                  onClick={onSpecializationToggle}
-                  tone="employee"
-                  ariaLabel={t('aria.selectSpecialization', {
-                    label: getSpecializationLabel(spec),
-                  })}
-                />
-              ))}
-            </div>
+            <TagGroup
+              values={specializations}
+              selectedValues={selectedSpecializations}
+              onToggle={onSpecializationToggle}
+              getLabel={getSpecializationLabel}
+              getAriaLabel={(_, label) => t('aria.selectSpecialization', { label })}
+              tone="employee"
+            />
           </div>
         </div>
       </div>
 
       {selectedSubRole ? (
-        <div className="fixed bottom-0 left-0 right-0 px-4 pt-3 pb-safe-cta bg-background/95 backdrop-blur-sm border-t border-border">
-          <div className="mx-auto w-full max-w-md">
-            <Button
-              type="button"
-              onClick={onContinue}
-              variant="gradient"
-              size="lg"
-              className="w-full bg-role-employee hover:bg-role-employee/90 active:bg-role-employee/80"
-            >
-              {t('roles.continuePosition')}
-            </Button>
-            <p className="mt-3 text-center text-xs text-muted-foreground opacity-70">
-              {t('profile.fillLaterHint')}
-            </p>
-          </div>
-        </div>
+        <OnboardingBottomCta onClick={onContinue} tone="employee" showFillLaterHint>
+          {t('roles.continuePosition')}
+        </OnboardingBottomCta>
       ) : null}
     </div>
   )

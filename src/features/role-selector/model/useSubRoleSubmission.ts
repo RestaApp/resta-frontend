@@ -11,6 +11,11 @@ import { mapApiRoleToDefaultUiRole } from '@/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
 import type { FormData } from './useFormSelector'
 
+export interface SupplierOnboardingData {
+  category: string
+  types: string[]
+}
+
 interface UseSubRoleSubmissionProps {
   onSelectRole: (role: UiRole) => void
   onError: (message: string) => void
@@ -76,35 +81,22 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
     [selectedSubRole, selectedPositionValue, onSelectRole, updateUserWithData, onError]
   )
 
-  const handleSupplierTypeContinue = useCallback(
-    async (formData?: FormData, supplierCategory?: string): Promise<boolean> => {
-      if (!formData || !supplierCategory) {
+  const handleSupplierContinue = useCallback(
+    async (supplierData?: SupplierOnboardingData): Promise<boolean> => {
+      if (!supplierData?.category) {
         return false
       }
-
-      const selectedSupplierTypes =
-        formData.types.length > 0 ? formData.types : formData.type ? [formData.type] : []
 
       const updateData: UpdateUserRequest = {
         user: {
           role: 'supplier',
-          supplier_category: supplierCategory,
+          supplier_category: supplierData.category,
           // ROLES_FRONTEND_SPEC: supplier_profile.delivery_available (boolean)
           delivery_available: false,
         },
       }
 
-      if (selectedSupplierTypes.length > 0) {
-        updateData.user.supplier_types = selectedSupplierTypes
-      }
-
-      if (formData.name && formData.name.trim() !== '') {
-        updateData.user.name = formData.name.trim()
-      }
-
-      if (formData.city && formData.city.trim() !== '') {
-        updateData.user.city = formData.city.trim()
-      }
+      if (supplierData.types.length > 0) updateData.user.supplier_types = supplierData.types
 
       const success = await updateUserWithData(
         updateData,
@@ -176,7 +168,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
     selectedSubRole,
     handleSubRoleSelect,
     handleSubRoleContinue,
-    handleSupplierTypeContinue,
+    handleSupplierContinue,
     handleRestaurantFormatContinue,
     errorDialogOpen,
     errorMessage,

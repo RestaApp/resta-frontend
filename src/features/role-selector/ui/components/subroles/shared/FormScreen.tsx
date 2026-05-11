@@ -8,20 +8,17 @@ import { motion } from 'motion/react'
 import { FormField } from '@/components/ui/form-field'
 import { OnboardingProgress } from '../../OnboardingProgress'
 import { LocationField } from './LocationField'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
+import { TagGroup } from '@/shared/ui/TagGroup'
 import { setupTelegramBackButton } from '@/utils/telegram'
 import { cn } from '@/utils/cn'
+import {
+  OnboardingBottomCta,
+  ONBOARDING_BOTTOM_CTA_SPACE,
+  ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT,
+} from '../../OnboardingBottomCta'
 
 type FormScreenTone = 'primary' | 'employee' | 'restaurant' | 'supplier'
-
-const TONE_CTA: Record<FormScreenTone, string> = {
-  primary: '',
-  employee: 'bg-role-employee hover:bg-role-employee/90 active:bg-role-employee/80',
-  restaurant: 'bg-role-restaurant hover:bg-role-restaurant/90 active:bg-role-restaurant/80',
-  supplier: 'bg-role-supplier hover:bg-role-supplier/90 active:bg-role-supplier/80',
-}
 
 interface FormScreenData {
   name: string
@@ -110,14 +107,24 @@ export const FormScreen = memo(function FormScreen({
     return nameOk && hasType && cityOk
   })()
 
+  const handleTypeToggle = (value: string) => {
+    if (!isMultiType) {
+      onFormDataUpdate({ type: value })
+      return
+    }
+
+    const nextTypes = formData.types.includes(value)
+      ? formData.types.filter(item => item !== value)
+      : [...formData.types, value]
+    onFormDataUpdate({ types: nextTypes })
+  }
+
   return (
     <div className="bg-background min-h-[100dvh] flex flex-col">
       <div
         className={cn(
           'flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] overflow-y-auto',
-          showFillLaterHint
-            ? 'pb-[calc(8.75rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
-            : 'pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
+          showFillLaterHint ? ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT : ONBOARDING_BOTTOM_CTA_SPACE
         )}
       >
         {showProgress && (
@@ -161,29 +168,14 @@ export const FormScreen = memo(function FormScreen({
             transition={{ delay: 0.2 }}
           >
             <FormField label={typeLabel}>
-              <div className="flex flex-wrap gap-2">
-                {types.map(type => (
-                  <SelectableTagButton
-                    key={type}
-                    value={type}
-                    label={getTypeLabel(type)}
-                    tone={tone}
-                    isSelected={isMultiType ? formData.types.includes(type) : formData.type === type}
-                    onClick={value => {
-                      if (!isMultiType) {
-                        onFormDataUpdate({ type: value })
-                        return
-                      }
-
-                      const nextTypes = formData.types.includes(value)
-                        ? formData.types.filter(item => item !== value)
-                        : [...formData.types, value]
-                      onFormDataUpdate({ types: nextTypes })
-                    }}
-                    ariaLabel={t('aria.selectType', { label: getTypeLabel(type) })}
-                  />
-                ))}
-              </div>
+              <TagGroup
+                values={types}
+                selectedValues={isMultiType ? formData.types : formData.type ? [formData.type] : []}
+                onToggle={handleTypeToggle}
+                getLabel={getTypeLabel}
+                getAriaLabel={(_, label) => t('aria.selectType', { label })}
+                tone={tone}
+              />
             </FormField>
           </motion.div>
 
@@ -215,25 +207,15 @@ export const FormScreen = memo(function FormScreen({
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
-        <div className="mx-auto w-full max-w-md">
-          <Button
-            onClick={handleContinue}
-            disabled={!isFormValid}
-            variant="gradient"
-            className={cn('w-full shadow-lg disabled:opacity-40', TONE_CTA[tone])}
-            size="lg"
-            aria-label={continueButtonAriaLabel}
-          >
-            {t('common.continue')}
-          </Button>
-          {showFillLaterHint ? (
-            <p className="text-center text-xs text-muted-foreground mt-3 opacity-70">
-              {t('profile.fillLaterHint')}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <OnboardingBottomCta
+        onClick={handleContinue}
+        disabled={!isFormValid}
+        tone={tone}
+        ariaLabel={continueButtonAriaLabel}
+        showFillLaterHint={showFillLaterHint}
+      >
+        {t('common.continue')}
+      </OnboardingBottomCta>
     </div>
   )
 })

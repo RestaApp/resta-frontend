@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Pencil } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LocationField } from './subroles/shared/LocationField'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui'
 import { OnboardingProgress } from './OnboardingProgress'
 import { useAppSelector } from '@/store/hooks'
@@ -13,6 +12,7 @@ import { formatPhoneInput } from '@/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
 import { getRoleKind, getRoleTheme } from '@/shared/lib/role-theme'
 import { cn } from '@/utils/cn'
+import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
 
 const ROLE_AVATAR_GRADIENT: Record<ReturnType<typeof getRoleKind>, string> = {
   employee: 'from-[#0088CC] to-[#005C8C]',
@@ -95,7 +95,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     <div className="bg-background min-h-[100dvh] flex flex-col">
       <div
         ref={scrollContainerRef}
-        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${
+        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] ${ONBOARDING_BOTTOM_CTA_SPACE} ${
           needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
         }`}
       >
@@ -225,25 +225,14 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
-        <Button
-          type="button"
-          onClick={handleContinue}
-          loading={isSaving}
-          disabled={isSaving}
-          variant="gradient"
-          size="lg"
-          className={cn(
-            'mx-auto w-full max-w-md',
-            roleKind === 'employee' &&
-              'bg-role-employee hover:bg-role-employee/90 active:bg-role-employee/80',
-            roleKind === 'supplier' &&
-              'bg-role-supplier hover:bg-role-supplier/90 active:bg-role-supplier/80'
-          )}
-        >
-          {t('onboarding.telegram.next')}
-        </Button>
-      </div>
+      <OnboardingBottomCta
+        onClick={handleContinue}
+        loading={isSaving}
+        disabled={isSaving}
+        tone={roleKind}
+      >
+        {t('onboarding.telegram.next')}
+      </OnboardingBottomCta>
     </div>
   )
 })

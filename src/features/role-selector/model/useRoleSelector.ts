@@ -3,7 +3,6 @@ import { useRoleSelection } from './useRoleSelection'
 import { useSubRoleSubmission } from './useSubRoleSubmission'
 import { logger } from '@/utils/logger'
 import type { UiRole } from '@/shared/types/roles.types'
-import type { FormData } from './useFormSelector'
 
 type RoleSelectorFlow =
   | 'main'
@@ -43,26 +42,11 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     subRoleSubmission.resetSubRoleSelection()
   }, [roleSelection, subRoleSubmission])
 
-  const handleSupplierTypeContinue = useCallback(
-    async (formData?: FormData, supplierCategory?: string) => {
-      return subRoleSubmission.handleSupplierTypeContinue(formData, supplierCategory)
-    },
-    [subRoleSubmission]
-  )
-
   const handleSupplierCategoryContinue = useCallback(
     async (category: string, supplierTypes: string[]) => {
-      return handleSupplierTypeContinue(
-        {
-          name: '',
-          type: null,
-          types: supplierTypes,
-          city: '',
-        },
-        category
-      )
+      return subRoleSubmission.handleSupplierContinue({ category, types: supplierTypes })
     },
-    [handleSupplierTypeContinue]
+    [subRoleSubmission]
   )
 
   return {
