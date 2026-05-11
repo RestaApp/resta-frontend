@@ -30,6 +30,8 @@ export const AvatarImage = ({
   if (!src || hasError) return null
 
   return (
+    /* onError — load‑error handler у <img>, не интерактивный listener. */
+    /* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */
     <img
       src={src}
       alt={alt}

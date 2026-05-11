@@ -1,139 +1,28 @@
-import { memo, type ReactNode, useState } from 'react'
+import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
+import { Briefcase, ChevronDown, ArrowRight } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Briefcase, ChevronDown, ArrowRight } from 'lucide-react'
 import type { ApiRole } from '@/types'
-import type { UserData, EmployeeProfile } from '@/services/api/authApi'
-import { formatExperienceText } from '@/utils/experience'
+import type { UserData } from '@/services/api/authApi'
 import { formatPhoneDisplay, toE164 } from '@/utils/phone'
 import { getProfileCompleteness } from '../../model/utils/profileCompleteness'
 import { businessHoursRecordToFormValue } from '../../model/utils/businessHoursForm'
 import { normalizeExternalUrl } from '@/utils/externalUrl'
 import { useLabels, useProfileFormLabels } from '@/shared/i18n/hooks'
+import {
+  InfoRow,
+  LABEL_CLASS,
+  ROW_CLASS,
+  VALUE_CLASS,
+  VALUE_LINK_CLASS,
+} from './profile-info/InfoRow'
+import { ProfileInfoEmployeeSection } from './profile-info/ProfileInfoEmployeeSection'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
-
-const ROW_CLASS = 'flex justify-between items-baseline gap-3 py-2.5'
-const LABEL_CLASS = 'text-muted-foreground shrink-0 min-w-[8rem]'
-const VALUE_CLASS = 'font-medium text-foreground text-right min-w-0'
-const VALUE_LINK_CLASS = 'font-medium text-primary text-right truncate hover:underline min-w-0'
-const SKILL_SPLIT_LIMIT = 44
-
-interface InfoRowProps {
-  label: string
-  children: ReactNode
-  href?: string
-  valueClassName?: string
-}
-
-const InfoRow = memo(({ label, children, href, valueClassName = VALUE_CLASS }: InfoRowProps) => (
-  <div className={ROW_CLASS}>
-    <span className={LABEL_CLASS}>{label}</span>
-    {href ? (
-      <a
-        href={href}
-        className={cn(valueClassName, 'min-w-0 truncate')}
-        title={typeof children === 'string' ? children : undefined}
-      >
-        {children}
-      </a>
-    ) : (
-      <span
-        className={cn(valueClassName, 'min-w-0 truncate')}
-        title={typeof children === 'string' ? children : undefined}
-      >
-        {children}
-      </span>
-    )}
-  </div>
-))
-InfoRow.displayName = 'InfoRow'
-
-interface ProfileInfoEmployeeSectionProps {
-  employeeProfile: EmployeeProfile | null
-}
-
-const splitLongSkill = (skill: string): string[] => {
-  const normalized = skill.trim()
-  if (normalized.length <= SKILL_SPLIT_LIMIT) return [normalized]
-
-  const chunks: string[] = []
-  let rest = normalized
-
-  while (rest.length > SKILL_SPLIT_LIMIT) {
-    const leftPart = rest.slice(0, SKILL_SPLIT_LIMIT + 1)
-    const splitAt = leftPart.lastIndexOf(' ')
-    const safeSplitAt = splitAt > 0 ? splitAt : SKILL_SPLIT_LIMIT
-    const chunk = rest.slice(0, safeSplitAt).trim()
-    if (!chunk) break
-    chunks.push(chunks.length === 0 ? chunk : `... ${chunk}`)
-    rest = rest.slice(safeSplitAt).trim()
-  }
-
-  if (rest) {
-    chunks.push(chunks.length === 0 ? rest : `... ${rest}`)
-  }
-
-  return chunks.length > 0 ? chunks : [normalized]
-}
-
-const splitSkillByDots = (skill: string): string[] => {
-  const normalized = skill.trim()
-  if (!normalized) return []
-  const dotParts = normalized
-    .split('.')
-    .map(part => part.trim())
-    .filter(Boolean)
-  if (dotParts.length <= 1) return splitLongSkill(normalized)
-  return dotParts.flatMap(splitLongSkill)
-}
-
-const ProfileInfoEmployeeSection = memo(({ employeeProfile }: ProfileInfoEmployeeSectionProps) => {
-  const { t } = useTranslation()
-  if (!employeeProfile) return null
-  const { experience_years, open_to_work, skills } = employeeProfile
-  const hasExperience = experience_years !== undefined
-  const hasOpenToWork = open_to_work !== undefined
-  const skillsList = Array.isArray(skills) ? skills.map(s => s.trim()).filter(Boolean) : []
-  const preparedSkills = skillsList.flatMap(splitSkillByDots)
-  const hasSkills = skillsList.length > 0
-  if (!hasExperience && !hasOpenToWork && !hasSkills) return null
-
-  return (
-    <>
-      {hasExperience && (
-        <InfoRow label={t('profile.experience')}>{formatExperienceText(experience_years)}</InfoRow>
-      )}
-      {hasOpenToWork && (
-        <InfoRow label={t('profile.openToWork')}>
-          {open_to_work ? t('common.yes') : t('common.no')}
-        </InfoRow>
-      )}
-      {hasSkills && (
-        <div
-          className={cn(
-            ROW_CLASS,
-            'flex-col items-start justify-start gap-2 sm:flex-row sm:items-start sm:justify-between'
-          )}
-        >
-          <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-[8rem]')}>{t('profile.skills')}</span>
-          <div className="flex w-full flex-wrap justify-end gap-2 min-w-0">
-            {preparedSkills.map((skill, index) => (
-              <Badge key={`${skill}-${index}`} variant="tag">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
-    </>
-  )
-})
-ProfileInfoEmployeeSection.displayName = 'ProfileInfoEmployeeSection'
 
 interface ProfileInfoCardProps {
   userProfile: UserData
@@ -158,6 +47,7 @@ export const ProfileInfoCard = memo(
     const { t } = useTranslation()
     const { getSupplierTypeLabel } = useLabels()
     const { getWorkSummaryLabel } = useProfileFormLabels()
+
     const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
     const isSupplierRole = apiRole === 'supplier'
     const isFilled = completeness?.isFilled ?? false
@@ -213,7 +103,7 @@ export const ProfileInfoCard = memo(
     ) : null
 
     const incompleteCallout = !isFilled ? (
-      <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center shadow-[0_14px_28px_-24px_rgba(124,58,237,0.8)]">
+      <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center shadow-sm">
         <p className="text-sm leading-relaxed text-foreground/80">{fillRequiredText}</p>
         {fillActionButton ? (
           <div className="mt-4 flex justify-center">{fillActionButton}</div>

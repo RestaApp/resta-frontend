@@ -26,7 +26,7 @@ function SearchFiltersComponent({ activeFiltersList, onResetFilters }: SearchFil
           variant="ghost"
           size="sm"
           aria-label="Сбросить фильтры"
-          className="h-10 w-10 min-w-10 rounded-full p-0 shrink-0 text-muted-foreground hover:text-foreground"
+          className="h-11 w-11 min-w-11 rounded-full p-0 shrink-0 text-muted-foreground hover:text-foreground"
         >
           <X className="w-4 h-4 shrink-0" />
         </Button>

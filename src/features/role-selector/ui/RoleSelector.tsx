@@ -42,7 +42,13 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   }
 
   if (vm.flow === 'telegram_confirm') {
-    return <TelegramConfirmStep onContinue={vm.handleTelegramContinue} onBack={vm.handleBack} />
+    return (
+      <TelegramConfirmStep
+        selectedRole={vm.selectedRole}
+        onContinue={vm.handleTelegramContinue}
+        onBack={vm.handleBack}
+      />
+    )
   }
 
   if (vm.flow === 'supplier_category') {
@@ -124,7 +130,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         </div>
       </div>
       {vm.selectedRole ? (
-        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-[calc(1.25rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] backdrop-blur-sm">
+        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
           <Button
             type="button"
             onClick={vm.handleRoleContinue}

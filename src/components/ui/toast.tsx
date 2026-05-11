@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
 
@@ -57,8 +58,9 @@ export const Toast = memo(function Toast({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.96 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
+          style={{ zIndex: Z_INDEX.toast }}
           className={cn(
-            'fixed left-1/2 top-4 z-[60] -translate-x-1/2',
+            'fixed left-1/2 top-4 -translate-x-1/2',
             'min-w-[280px] max-w-[90vw] rounded-2xl border border-border bg-card p-4 shadow-xl',
             className
           )}

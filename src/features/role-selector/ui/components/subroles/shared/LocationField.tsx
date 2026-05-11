@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
@@ -103,7 +104,8 @@ export const LocationField = memo(function LocationField({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 w-full mt-1 bg-background border border-border rounded-xl shadow-lg max-h-[200px] overflow-y-auto"
+            style={{ zIndex: Z_INDEX.popover }}
+            className="absolute w-full mt-1 bg-background border border-border rounded-xl shadow-lg max-h-[200px] overflow-y-auto"
           >
             {isLoadingCities ? (
               <div className="flex items-center justify-center gap-2 px-4 py-3">

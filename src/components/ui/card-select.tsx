@@ -108,7 +108,7 @@ const CardSelectInner = <TId extends string>({
           {socialProof ? (
             <div
               className={cn(
-                'mt-1.5 font-mono-resta text-[11px] font-medium',
+                'mt-1.5 font-mono-resta text-meta font-medium',
                 isSelected ? 'text-white/60' : 'text-muted-foreground/70'
               )}
             >

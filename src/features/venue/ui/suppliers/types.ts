@@ -68,12 +68,7 @@ export const DEFAULT_SERVICE_CATEGORY_OPTIONS = [
   'maintenance_service',
 ]
 
-export const DEFAULT_SUPPLIER_TYPES = [
-  'products',
-  'equipment',
-  'services',
-  'logistics',
-]
+export const DEFAULT_SUPPLIER_TYPES = ['products', 'equipment', 'services', 'logistics']
 
 export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
   products: [
@@ -86,16 +81,9 @@ export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
     'alcohol_supplier',
     'coffee_supplier',
   ],
-  equipment: [
-    'kitchen_equipment_supplier',
-    'furniture_supplier',
-    'tableware_supplier',
-  ],
+  equipment: ['kitchen_equipment_supplier', 'furniture_supplier', 'tableware_supplier'],
   // Legacy category, поддерживаем только для корректной фильтрации старых профилей.
-  consumables: [
-    'tableware_supplier',
-    'cleaning_service',
-  ],
+  consumables: ['tableware_supplier', 'cleaning_service'],
   services: [
     'cleaning_service',
     'maintenance_service',

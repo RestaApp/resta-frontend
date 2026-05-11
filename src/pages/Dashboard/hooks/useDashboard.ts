@@ -36,7 +36,13 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     setActiveTab(prev => (prev === nextTab ? prev : nextTab))
   }, [])
 
-  // Проверка флага для перехода на Feed с вкладкой смен
+  /* eslint-disable react-hooks/set-state-in-effect --
+     Все три эффекта ниже — external sync (localStorage flag, Redux navigation command,
+     prop currentScreen из роутера). setState внутри effect здесь осознанный pattern:
+     внешний источник истины меняется → синхронизируем activeTab. Альтернатива через
+     useSyncExternalStore требует обёрток для каждого источника и не упрощает код. */
+
+  // External sync: localStorage flag → activeTab (mount‑once handler).
   useEffect(() => {
     const shouldNavigateToFeed = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
     if (shouldNavigateToFeed === 'true') {
@@ -45,6 +51,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     }
   }, [setTabIfChanged])
 
+  // External sync: Redux navigation command → activeTab + consumeCommand для очистки.
   useEffect(() => {
     if (!navigationCommand) return
 
@@ -57,7 +64,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     }
   }, [activeTab, dispatch, navigationCommand, role, setTabIfChanged, tabs])
 
-  // Синхронизация внешнего currentScreen -> activeTab (только если таб есть у текущей роли)
+  // External sync: prop currentScreen (из роутера/URL) → activeTab.
   useEffect(() => {
     if (!currentScreen) return
     const mappedTab = getTabForScreen(role, currentScreen)
@@ -66,6 +73,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
       setTabIfChanged(mappedTab)
     }
   }, [activeTab, currentScreen, role, setTabIfChanged, tabs])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleTabChange = useCallback(
     (tab: Tab) => {

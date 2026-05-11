@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { ModalA11yContext } from './modal-a11y'
 
 interface ModalProps {
@@ -115,7 +116,8 @@ export const Modal = memo(function Modal({
       {isOpen && (
         <ModalA11yContext.Provider value={a11yValue}>
           <motion.div
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+            style={{ zIndex: Z_INDEX.modal }}
+            className="fixed inset-0 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -137,7 +139,8 @@ export const Modal = memo(function Modal({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
-              className={cn('relative z-[61] w-full max-w-md outline-none', className)}
+              className={cn('relative w-full max-w-md outline-none', className)}
+              style={{ zIndex: Z_INDEX.modal + 1 }}
             >
               {children}
             </motion.div>

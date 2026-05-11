@@ -3,24 +3,29 @@ import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { LocationField } from './subroles/shared/LocationField'
 import { Button } from '@/components/ui/button'
-import { SectionHeader } from '@/components/ui'
+import { Card, Callout, SectionHeader } from '@/components/ui'
 import { OnboardingProgress } from './OnboardingProgress'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/utils/phone'
+import type { UiRole } from '@/shared/types/roles.types'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
   onBack: () => void
+  selectedRole: UiRole | null
 }
 
 export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   onContinue,
   onBack,
+  selectedRole,
 }: TelegramConfirmStepProps) {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
+  const copyRole =
+    selectedRole === 'venue' || selectedRole === 'supplier' ? selectedRole : 'employee'
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const [needsScroll, setNeedsScroll] = useState(false)
@@ -70,19 +75,18 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     <div className="bg-background min-h-[100dvh] flex flex-col">
       <div
         ref={scrollContainerRef}
-        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${
-          needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
-        }`}
+        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] ${needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
+          }`}
       >
         <div ref={contentRef}>
           <OnboardingProgress current={2} total={3} className="mb-[14px]" />
           <SectionHeader
             title={t('onboarding.telegram.title')}
-            description={t('onboarding.telegram.subtitle')}
+            description={t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
             className="mb-4"
           />
 
-          <div className="rounded-[16px] border border-border bg-[#141310] p-4 text-center">
+          <Card className="text-center">
             <div className="mx-auto mb-3 h-14 w-14 overflow-hidden rounded-full bg-gradient-to-br from-[#0088CC] to-[#005C8C]">
               {user?.photo_url ? (
                 <img
@@ -93,30 +97,30 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
               ) : null}
             </div>
             <div className="text-sm font-semibold text-foreground">{displayName}</div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">{displayUsername}</div>
-            <div className="mt-2.5 font-mono-resta text-[11px] uppercase tracking-[0.08em] text-[#3EC97E]">
+            <div className="mt-0.5 text-meta text-muted-foreground">{displayUsername}</div>
+            <div className="mt-2.5 font-mono-resta text-meta uppercase tracking-[0.08em] text-success">
               {t('onboarding.telegram.connected')}
             </div>
-          </div>
+          </Card>
 
           <div className="mt-3">
-            <div className="mb-2 font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+            <div className="mb-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
               {t('onboarding.telegram.phoneRequiredLabel')}
             </div>
-            <div className="flex h-11 items-center gap-2 rounded-[12px] border border-border bg-input-background px-3 text-sm">
+            <div className="flex h-11 items-center gap-2 rounded-md border border-border bg-input-background px-3 text-sm">
               <Input
+                variant="inline"
                 value={manualPhone}
                 onChange={e => {
                   setManualPhone(formatPhoneInput(e.target.value))
                   setPhoneError(null)
                 }}
                 placeholder={t('phone.placeholderExample')}
-                className="!border-0 !ring-0 !shadow-none bg-transparent px-0 py-0 text-sm focus-visible:!ring-0 focus-visible:!border-0 focus-visible:!shadow-none"
               />
               <button
                 type="button"
                 onClick={handlePhoneShare}
-                className="whitespace-nowrap font-mono-resta text-[11px] uppercase tracking-[0.08em] leading-none text-primary disabled:opacity-60"
+                className="whitespace-nowrap font-mono-resta text-meta uppercase tracking-[0.08em] leading-none text-primary disabled:opacity-60"
                 disabled={isRequestingPhone}
               >
                 {isPhoneFilled ? t('onboarding.telegram.shared') : t('onboarding.telegram.share')}
@@ -126,7 +130,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           </div>
 
           <div className="mt-3">
-            <div className="mb-2 font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+            <div className="mb-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
               {t('onboarding.telegram.cityLabel')}
             </div>
             <div className="w-full">
@@ -144,18 +148,16 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
           </div>
 
-          <div className="mt-[14px] rounded-[12px] border border-[#3EC97E4D] bg-[#3EC97E0F] px-3 py-2.5">
-            <p className="text-[11px] leading-[1.45] text-muted-foreground">
-              <span className="font-semibold text-foreground">
-                {t('onboarding.telegram.shieldTitle')}
-              </span>{' '}
-              {t('onboarding.telegram.shieldText')}
-            </p>
-          </div>
+          <Callout tone="success" className="mt-3.5">
+            <span className="font-semibold text-foreground">
+              {t('onboarding.telegram.shieldTitle')}
+            </span>{' '}
+            {t('onboarding.telegram.shieldText')}
+          </Callout>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-[calc(1.25rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] backdrop-blur-sm">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
         <Button
           type="button"
           onClick={handleContinue}

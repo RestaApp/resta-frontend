@@ -14,45 +14,54 @@
   --ui-density-stack-lg: 1.5rem;
   --ui-density-section-gap: 1.5rem;
 
-  /* --- Base Colors: Charcoal + Cream + Terracotta --- */
-  --background: #0F0E0C;        /* charcoal warm */
-  --foreground: #F5EDE0;        /* cream */
+  /* --- Base Colors: Resta Wireframes Spec (Dark Premium) --- */
+  --background: #0a0a0d; /* p-bg */
+  --foreground: #f5f5f7; /* p-ink */
 
-  --card: #191714;              /* surface warm */
-  --card-foreground: #F5EDE0;
-  --drawer-surface: #141210;
+  --card: #141418; /* p-surface */
+  --card-foreground: #f5f5f7;
+  --drawer-surface: #141418;
 
-  --popover: #191714;
-  --popover-foreground: #F5EDE0;
+  --popover: #141418;
+  --popover-foreground: #f5f5f7;
 
-  /* BRAND: Terracotta + Amber */
-  --terracotta: #E85A2A;
-  --amber: #F4A14B;
+  /* BRAND: Terracotta + Amber + Stars */
+  --terracotta: #ff6b2c; /* accent */
+  --amber: #f5b142; /* warn / Telegram Stars */
+  --stars: #f5b142;
   --primary-foreground: #ffffff;
   --ring: var(--terracotta);
 
-  --surface-subtle: #1D1B18;
-  --surface-subtle-foreground: #F5EDE0;
-  --surface-border: #2A2520;    /* warm border */
+  --emp: #5ab4ff;
+  --rest: var(--terracotta);
+  --sup: #b38cff;
+
+  --surface-subtle: #1c1c22; /* p-surface2 */
+  --surface-subtle-foreground: #f5f5f7;
+  --surface-border: rgba(255, 255, 255, 0.06); /* p-line */
 
   --secondary: var(--surface-subtle);
   --secondary-foreground: var(--surface-subtle-foreground);
 
   --muted: var(--surface-subtle);
-  --muted-foreground: #7A7068;  /* warm muted, not purple */
+  --muted-foreground: #7a7068; /* warm muted, not purple */
 
   --accent: var(--surface-subtle);
   --accent-foreground: var(--surface-subtle-foreground);
 
-  --destructive: #C63B3B;
+  --destructive: #f24d4d;
   --destructive-foreground: #ffffff;
+  --destructive-soft: rgba(242, 77, 77, 0.14);
 
-  --success: #4F9D56;
-  --warning: #e9b051;
+  --success: #3ec97e;
+  --success-soft: rgba(62, 201, 126, 0.14);
+  --warning: #f5b142;
+  --warning-soft: rgba(245, 177, 66, 0.14);
+  --accent-soft: rgba(255, 107, 44, 0.14);
 
   --border: var(--surface-border);
   --input: rgba(255, 255, 255, 0.08);
-  --input-background: #1D1B18;
+  --input-background: var(--surface-subtle);
   --switch-background: var(--surface-border);
   --surface-stroke-soft: rgba(255, 255, 255, 0.05);
   --surface-stroke-soft-hover: rgba(255, 255, 255, 0.09);
@@ -67,7 +76,7 @@
   --overlay-glass: rgba(255, 255, 255, 0.04);
   --overlay-shine: rgba(255, 255, 255, 0.35);
 
-  --radius: 0.875rem;           /* 14px per spec */
+  --radius: 0.875rem; /* 14px per spec */
 
   /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -77,23 +86,76 @@
   --chart-5: oklch(0.769 0.188 70.08);
 
   /* Sidebar */
-  --sidebar: #0F0E0C;
-  --sidebar-foreground: #F5EDE0;
+  --sidebar: #0f0e0c;
+  --sidebar-foreground: #f5ede0;
   --sidebar-primary: var(--terracotta);
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #191714;
-  --sidebar-accent-foreground: #F5EDE0;
+  --sidebar-accent-foreground: #f5ede0;
   --sidebar-border: var(--surface-border);
   --sidebar-ring: var(--ring);
 
   /* Legacy compat aliases */
   --purple-deep: var(--terracotta);
   --pink-electric: var(--amber);
-  --blue-cyber: #5B8DEF;
+  --blue-cyber: #5b8def;
   --gradient-primary: linear-gradient(135deg, var(--terracotta) 0%, var(--amber) 100%);
-  --gradient-glow: linear-gradient(135deg,
-      rgba(232, 90, 42, 0.08) 0%,
-      rgba(244, 161, 75, 0.08) 100%);
+  --gradient-glow: linear-gradient(
+    135deg,
+    rgba(232, 90, 42, 0.08) 0%,
+    rgba(244, 161, 75, 0.08) 100%
+  );
+
+  /* Brand gradients used in CTAs/paywalls — единый источник истины. */
+  --gradient-stars: linear-gradient(135deg, #f5b142, #ff8a2c);
+  --gradient-pro: linear-gradient(135deg, #b38cff, #8a66d4);
+  --gradient-emp: linear-gradient(135deg, #5ab4ff, #3a8ecc);
+  --gradient-stars-glow: radial-gradient(
+    circle at 50% 0%,
+    rgba(245, 177, 66, 0.16),
+    transparent 60%
+  );
+  --shadow-stars-cta: 0 10px 30px rgba(245, 177, 66, 0.4);
+}
+
+/* LIGHT THEME OVERRIDE — see Resta Wireframes spec */
+[data-theme='light'] {
+  --background: #ffffff;
+  --foreground: #0f1115;
+
+  --card: #f5f4f0;
+  --card-foreground: #0f1115;
+  --drawer-surface: #ffffff;
+
+  --popover: #f5f4f0;
+  --popover-foreground: #0f1115;
+
+  --terracotta: #e85a1f;
+  --amber: #d89422;
+  --stars: #d89422;
+
+  --emp: #2e80d9;
+  --rest: #e85a1f;
+  --sup: #7e5bd4;
+
+  --surface-subtle: #ebe9e3;
+  --surface-subtle-foreground: #0f1115;
+  --surface-border: rgba(0, 0, 0, 0.08);
+
+  --destructive: #d63838;
+  --destructive-soft: rgba(214, 56, 56, 0.12);
+  --success: #1fa968;
+  --success-soft: rgba(31, 169, 104, 0.12);
+  --warning: #d89422;
+  --warning-soft: rgba(216, 148, 34, 0.12);
+  --accent-soft: rgba(232, 90, 31, 0.12);
+
+  --input: rgba(0, 0, 0, 0.08);
+  --input-background: #ffffff;
+  --input-stroke: rgba(0, 0, 0, 0.08);
+  --input-stroke-hover: rgba(0, 0, 0, 0.13);
+  --overlay-scrim: rgba(20, 20, 30, 0.4);
+  --overlay-glass: rgba(0, 0, 0, 0.04);
 }
 
 @media (min-width: 640px) {
@@ -107,24 +169,27 @@
   }
 }
 
-/* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней */
-[data-slot='input'],
-input:not([type='range']):not([type='checkbox']):not([type='radio']),
+/* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней.
+   Не применяется к Input variant="inline" (data-variant="inline") — там нужен прозрачный chrome. */
+[data-slot='input']:not([data-variant='inline']),
+input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']),
 textarea {
   background-color: var(--input-background) !important;
   border: 1px solid var(--input-stroke);
 }
 
-[data-slot='input']:hover,
-input:not([type='range']):not([type='checkbox']):not([type='radio']):hover,
+[data-slot='input']:not([data-variant='inline']):hover,
+input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']):hover,
 textarea:hover {
   border-color: var(--input-stroke-hover);
 }
 
-[data-slot='input']:focus,
-[data-slot='input']:focus-visible,
-input:not([type='range']):not([type='checkbox']):not([type='radio']):focus,
-input:not([type='range']):not([type='checkbox']):not([type='radio']):focus-visible,
+[data-slot='input']:not([data-variant='inline']):focus,
+[data-slot='input']:not([data-variant='inline']):focus-visible,
+input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']):focus,
+input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not(
+    [type='radio']
+  ):focus-visible,
 textarea:focus,
 textarea:focus-visible {
   border-color: var(--terracotta);
@@ -180,9 +245,34 @@ textarea:focus-visible {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Terracotta/Amber direct utilities */
+  /* Terracotta/Amber/Stars direct utilities */
   --color-terracotta: var(--terracotta);
   --color-amber: var(--amber);
+  --color-stars: var(--stars);
+  --color-emp: var(--emp);
+  --color-rest: var(--rest);
+  --color-sup: var(--sup);
+
+  /* Typography utilities exposed to Tailwind via @theme inline.
+     Using `text-{name}` создаёт font-size + line-height одной утилитой. */
+  --text-micro: 10px;
+  --text-micro--line-height: 14px;
+  --text-meta: 11px;
+  --text-meta--line-height: 15px;
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 17px;
+  --text-body-md: 13px;
+  --text-body-md--line-height: 18px;
+  --text-body-lg: 14px;
+  --text-body-lg--line-height: 20px;
+  --text-title-sm: 16px;
+  --text-title-sm--line-height: 22px;
+  --text-title-md: 18px;
+  --text-title-md--line-height: 24px;
+  --text-display: 24px;
+  --text-display--line-height: 30px;
+  --text-display-lg: 34px;
+  --text-display-lg--line-height: 38px;
 }
 
 @layer base {
@@ -221,11 +311,15 @@ textarea:focus-visible {
     width: 100%;
   }
 
-  /* Keep background and borders smooth to avoid blinking; everything else is instant. */
-  * {
-    transition-property: background-color, border-color, outline-color !important;
-    transition-duration: 0.3s !important;
-    transition-timing-function: ease !important;
+  /* Theme transition — на корневых поверхностях, без глобального селектора.
+     Дочерние узлы наследуют новые `--color-*` без собственного transition,
+     визуально это всё равно мгновенная смена темы. */
+  body,
+  .themed-surface {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   /* FIX: Используем Tailwind классы для применения размеров */
@@ -257,6 +351,23 @@ textarea:focus-visible {
 }
 
 @layer utilities {
+  /* Safe-area: единые утилиты вместо разных calc(env(...)) по проекту.
+     - pb-safe — для скроллящегося контента (минимум 16px, иначе env);
+     - pb-safe-cta — для sticky‑CTA контейнеров (20px поверх env). */
+  .pb-safe {
+    padding-bottom: max(var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)), 16px);
+  }
+  .pb-safe-cta {
+    padding-bottom: calc(1.25rem + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)));
+  }
+  .pt-safe {
+    padding-top: max(var(--tg-safe-area-inset-top, env(safe-area-inset-top)), 0px);
+  }
+  .bottom-safe {
+    bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom));
+  }
+
+  /* Legacy alias — не использовать в новом коде. */
   .safe-area-bottom {
     padding-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom));
   }
@@ -326,13 +437,16 @@ textarea:focus-visible {
   }
 }
 
-/* Global scrollbar: hidden, scroll behavior remains available */
-* {
+/* Hide scrollbar только у корневых скроллеров приложения.
+   Нативные скроллы у вложенных элементов (карты, видео, dev-панели) не трогаем. */
+html,
+body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-*::-webkit-scrollbar {
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
   width: 0;
   height: 0;
   display: none;

@@ -8,7 +8,7 @@ import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/forma
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { StatusPill, EscrowBadge, type ShiftStatus } from '../StatusPill'
+import { StatusPill, DirectPayBadge, type ShiftStatus } from '../StatusPill'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 import { cn } from '@/utils/cn'
@@ -225,7 +225,11 @@ const ShiftCardComponent = ({
           <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
             {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
             {shift.escrow ? (
-              <EscrowBadge amount={shift.escrowAmount ?? shift.pay} currency={shift.currency} />
+              <DirectPayBadge
+                amount={shift.escrowAmount ?? shift.pay}
+                currency={shift.currency}
+                short
+              />
             ) : null}
             {responses ? (
               <span

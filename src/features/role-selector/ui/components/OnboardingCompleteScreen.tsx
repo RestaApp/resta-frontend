@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
+import { Button, Card, Callout } from '@/components/ui'
 
 interface OnboardingCompleteScreenProps {
   onComplete: () => void
@@ -34,20 +35,20 @@ export const OnboardingCompleteScreen = memo(function OnboardingCompleteScreen({
       >
         <div className="h-full w-2/3 rounded-full bg-primary transition-all duration-300" />
       </div>
-      <p className="mt-2 font-mono-resta text-[11px] uppercase tracking-widest text-muted-foreground">
+      <p className="mt-2 font-mono-resta text-meta uppercase tracking-widest text-muted-foreground">
         {t('onboarding.stepOf', { current: 2, total: 3 })}
       </p>
 
       <div className="mt-4">
-        <h1 className="text-[34px] leading-[1.05] tracking-[-0.025em] font-bold text-foreground">
+        <h1 className="text-display-lg leading-[1.05] tracking-[-0.025em] font-bold text-foreground">
           {t('onboarding.telegram.title')}
         </h1>
-        <p className="mt-2 max-w-[320px] text-sm leading-[1.4] text-[#7B7570]">
+        <p className="mt-2 max-w-[320px] text-sm leading-[1.4] text-muted-foreground">
           {t('onboarding.telegram.subtitle')}
         </p>
       </div>
 
-      <div className="mt-5 rounded-[18px] border border-border bg-[#141310] p-4 text-center">
+      <Card className="mt-5 text-center">
         <div className="mx-auto mb-3 h-14 w-14 overflow-hidden rounded-full bg-gradient-to-br from-[#0088CC] to-[#005C8C]">
           {user?.photo_url ? (
             <img src={user.photo_url} alt={displayName} className="h-full w-full object-cover" />
@@ -55,52 +56,46 @@ export const OnboardingCompleteScreen = memo(function OnboardingCompleteScreen({
         </div>
         <div className="text-sm font-semibold text-foreground">{displayName}</div>
         <div className="mt-0.5 text-xs text-muted-foreground">{displayUsername}</div>
-        <div className="mt-2 font-mono-resta text-[11px] uppercase tracking-[0.08em] text-[#3EC97E]">
+        <div className="mt-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-success">
           {t('onboarding.telegram.connected')}
         </div>
-      </div>
+      </Card>
 
       <div className="mt-4">
-        <div className="mb-2 font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+        <div className="mb-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
           {t('onboarding.telegram.phoneLabel')}
         </div>
-        <div className="flex items-center justify-between rounded-[12px] border border-border bg-input-background px-3 py-3 text-sm">
+        <div className="flex items-center justify-between rounded-md border border-border bg-input-background px-3 py-3 text-sm">
           <span className="text-foreground">{displayPhone}</span>
-          <span className="font-mono-resta text-[11px] uppercase tracking-[0.08em] text-primary">
+          <span className="font-mono-resta text-meta uppercase tracking-[0.08em] text-primary">
             {t('onboarding.telegram.share')}
           </span>
         </div>
       </div>
 
       <div className="mt-3">
-        <div className="mb-2 font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+        <div className="mb-2 font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
           {t('onboarding.telegram.cityLabel')}
         </div>
-        <div className="flex items-center justify-between rounded-[12px] border border-border bg-input-background px-3 py-3 text-sm">
+        <div className="flex items-center justify-between rounded-md border border-border bg-input-background px-3 py-3 text-sm">
           <span className="text-foreground">{displayCity}</span>
-          <span className="font-mono-resta text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+          <span className="font-mono-resta text-meta uppercase tracking-[0.08em] text-muted-foreground">
             {t('onboarding.telegram.cityHint')}
           </span>
         </div>
       </div>
 
-      <div className="mt-4 rounded-[12px] border border-[#3EC97E4D] bg-[#3EC97E0F] p-3">
-        <p className="text-[11px] leading-[1.45] text-muted-foreground">
-          <span className="font-semibold text-foreground">
-            {t('onboarding.telegram.shieldTitle')}
-          </span>{' '}
-          {t('onboarding.telegram.shieldText')}
-        </p>
-      </div>
+      <Callout tone="success" className="mt-4">
+        <span className="font-semibold text-foreground">
+          {t('onboarding.telegram.shieldTitle')}
+        </span>{' '}
+        {t('onboarding.telegram.shieldText')}
+      </Callout>
 
-      <div className="mt-auto pb-[calc(14px+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))] pt-4">
-        <button
-          type="button"
-          onClick={onComplete}
-          className="w-full rounded-[14px] border-none bg-primary px-4 py-[18px] text-base font-semibold text-primary-foreground shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-        >
+      <div className="mt-auto pt-4 pb-safe">
+        <Button onClick={onComplete} variant="gradient" size="lg" className="w-full">
           {t('common.continue')}
-        </button>
+        </Button>
       </div>
     </div>
   )

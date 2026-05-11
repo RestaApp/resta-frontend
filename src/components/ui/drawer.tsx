@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 
 export type DrawerProps = {
   open: boolean
@@ -121,7 +122,7 @@ const DrawerContent = memo(function DrawerContent({
   )
 
   return (
-    <div className="fixed inset-0 z-[60] pointer-events-none">
+    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
       <DrawerOverlay onClick={handleOverlayClick} />
       <motion.div
         initial={{ y: '100%' }}

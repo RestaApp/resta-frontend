@@ -22,7 +22,7 @@ export const IconAction = memo(function IconAction({
       aria-label={title}
       onClick={onClick}
       disabled={disabled}
-      className="w-10 h-10 p-0"
+      className="w-11 h-11 p-0"
     >
       {children}
     </Button>

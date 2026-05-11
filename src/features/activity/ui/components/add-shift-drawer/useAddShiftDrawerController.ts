@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
 import {
@@ -8,6 +8,8 @@ import {
   type AddShiftDrawerFormState,
   type StepIndex,
 } from './validation'
+import { useAddShiftDrawerHandlers } from './useAddShiftDrawerHandlers'
+import { useAddShiftDrawerSubmit } from './useAddShiftDrawerSubmit'
 
 type UseAddShiftDrawerControllerParams = {
   open: boolean
@@ -53,6 +55,15 @@ type UseAddShiftDrawerControllerParams = {
   }
 }
 
+/**
+ * Контроллер add‑shift drawer'а: оркестрирует step state, валидацию,
+ * input handlers и submit flow. Public API сохранён 1:1 с предыдущей версией.
+ *
+ * Композиция:
+ *  • `useAddShiftDrawerHandlers` — wrapped setters (clear errors before write);
+ *  • `useAddShiftDrawerSubmit`   — submit + auto‑close success + scroll on fail;
+ *  • shape возврата (`refs/state/derived/actions`) — без изменений.
+ */
 export const useAddShiftDrawerController = ({
   open,
   onOpenChange,
@@ -76,7 +87,6 @@ export const useAddShiftDrawerController = ({
     false,
   ])
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false)
 
   const requiredFieldError = t('validation.requiredField')
   const drawerFormState = form as AddShiftDrawerFormState
@@ -91,24 +101,6 @@ export const useAddShiftDrawerController = ({
       }),
     [attemptedSteps, didAttemptSubmit, drawerFormState, requiredFieldError, t]
   )
-  const {
-    showErrors,
-    showStep0Errors,
-    showStep1Errors,
-    showStep2Errors,
-    bannerError,
-    errors: {
-      titleError,
-      dateFieldError,
-      startTimeError,
-      endTimeError,
-      locationFieldError,
-      positionFieldError,
-      specializationFieldError,
-      descriptionFieldError,
-      requirementsFieldError,
-    },
-  } = derivedState
 
   const clearAllErrorsAfterChange = useCallback(() => {
     form.clearSubmitError()
@@ -118,82 +110,7 @@ export const useAddShiftDrawerController = ({
     }
   }, [attemptedSteps, didAttemptSubmit, form])
 
-  const wrapStringSetter = useCallback(
-    (setValue: (value: string) => void) => (next: string) => {
-      clearAllErrorsAfterChange()
-      setValue(next)
-    },
-    [clearAllErrorsAfterChange]
-  )
-
-  const wrapBooleanSetter = useCallback(
-    (setValue: (value: boolean) => void) => (next: boolean) => {
-      clearAllErrorsAfterChange()
-      setValue(next)
-    },
-    [clearAllErrorsAfterChange]
-  )
-
-  const wrapArraySetter = useCallback(
-    (setValue: (value: string[]) => void) => (next: string[]) => {
-      clearAllErrorsAfterChange()
-      setValue(next)
-    },
-    [clearAllErrorsAfterChange]
-  )
-
-  const handleTitleChange = useMemo(
-    () => wrapStringSetter(form.setTitle),
-    [form.setTitle, wrapStringSetter]
-  )
-  const handleStartTimeChange = useMemo(
-    () => wrapStringSetter(form.setStartTime),
-    [form.setStartTime, wrapStringSetter]
-  )
-  const handleEndTimeChange = useMemo(
-    () => wrapStringSetter(form.setEndTime),
-    [form.setEndTime, wrapStringSetter]
-  )
-  const handlePayChange = useMemo(
-    () => wrapStringSetter(form.setPay),
-    [form.setPay, wrapStringSetter]
-  )
-  const handleLocationChange = useMemo(
-    () => wrapStringSetter(form.setLocation),
-    [form.setLocation, wrapStringSetter]
-  )
-  const handleDescriptionChange = useMemo(
-    () => wrapStringSetter(form.setDescription),
-    [form.setDescription, wrapStringSetter]
-  )
-  const handleRequirementsChange = useMemo(
-    () => wrapStringSetter(form.setRequirements),
-    [form.setRequirements, wrapStringSetter]
-  )
-  const handleUrgentChange = useMemo(
-    () => wrapBooleanSetter(form.setUrgent),
-    [form.setUrgent, wrapBooleanSetter]
-  )
-  const handleSpecializationsChange = useMemo(
-    () => wrapArraySetter(form.setSpecializations),
-    [form.setSpecializations, wrapArraySetter]
-  )
-
-  const handleDateChange = useCallback(
-    (next: string | null) => {
-      clearAllErrorsAfterChange()
-      form.setDate(next)
-    },
-    [clearAllErrorsAfterChange, form]
-  )
-
-  const handleShiftTypeChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      form.setShiftType(next as ShiftType)
-    },
-    [clearAllErrorsAfterChange, form]
-  )
+  const handlers = useAddShiftDrawerHandlers({ form, clearAllErrorsAfterChange })
 
   const scrollToFirstInvalidInStep = useCallback(
     (targetStep: StepIndex) => {
@@ -240,17 +157,25 @@ export const useAddShiftDrawerController = ({
       }
       onOpenChange(next)
     },
+    // setIsSuccessOpen ниже — стабильная ссылка из useState внутри useAddShiftDrawerSubmit;
+    // включён в deps для ESLint exhaustive-deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [form, onOpenChange]
   )
 
   const close = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
 
-  useEffect(() => {
-    if (!open) return
-    if (!isSuccessOpen) return
-    const id = window.setTimeout(() => close(), 3000)
-    return () => window.clearTimeout(id)
-  }, [close, isSuccessOpen, open])
+  const { isSuccessOpen, setIsSuccessOpen, handleSubmit } = useAddShiftDrawerSubmit({
+    open,
+    drawerFormState,
+    initialValues,
+    onSave: form.handleSave,
+    close,
+    setStep,
+    setAttemptedSteps,
+    setDidAttemptSubmit,
+    scrollToFirstInvalidInStep,
+  })
 
   const handleContinue = useCallback(() => {
     setAttemptedSteps(prev => {
@@ -272,36 +197,12 @@ export const useAddShiftDrawerController = ({
     setStep(prev => (prev > 0 ? ((prev - 1) as StepIndex) : prev))
   }, [clearAllErrorsAfterChange, close, step])
 
-  const handlePositionChange = useCallback(
-    (next: string) => {
-      clearAllErrorsAfterChange()
-      if (next !== form.position && form.specializations.length > 0) form.setSpecializations([])
-      if (!next && form.specializations.length > 0) form.setSpecializations([])
-      form.setPosition(next)
-    },
-    [clearAllErrorsAfterChange, form]
-  )
-
-  const handleSubmit = useCallback(async () => {
-    setDidAttemptSubmit(true)
-    const ok = await form.handleSave()
-    if (ok) {
-      if (initialValues?.id) close()
-      else setIsSuccessOpen(true)
-      return
-    }
-    const invalidStep = findInvalidStep()
-    setStep(invalidStep)
-    setAttemptedSteps([true, true, true])
-    setTimeout(() => scrollToFirstInvalidInStep(invalidStep), 0)
-  }, [close, findInvalidStep, form, initialValues?.id, scrollToFirstInvalidInStep])
-
   const handleCreateAnother = useCallback(() => {
     setIsSuccessOpen(false)
     setStep(0)
     setAttemptedSteps([false, false, false])
     setDidAttemptSubmit(false)
-  }, [])
+  }, [setIsSuccessOpen])
 
   return {
     refs: {
@@ -321,22 +222,12 @@ export const useAddShiftDrawerController = ({
       didAttemptSubmit,
     },
     derived: {
-      showErrors,
-      showStep0Errors,
-      showStep1Errors,
-      showStep2Errors,
-      bannerError,
-      errors: {
-        titleError,
-        dateFieldError,
-        startTimeError,
-        endTimeError,
-        locationFieldError,
-        positionFieldError,
-        specializationFieldError,
-        descriptionFieldError,
-        requirementsFieldError,
-      },
+      showErrors: derivedState.showErrors,
+      showStep0Errors: derivedState.showStep0Errors,
+      showStep1Errors: derivedState.showStep1Errors,
+      showStep2Errors: derivedState.showStep2Errors,
+      bannerError: derivedState.bannerError,
+      errors: derivedState.errors,
     },
     actions: {
       setStep,
@@ -353,18 +244,7 @@ export const useAddShiftDrawerController = ({
       scrollToFirstInvalidInStep,
       findFirstInvalidStep: findInvalidStep,
       isStepValid: isCurrentStepValid,
-      handleTitleChange,
-      handleDateChange,
-      handleStartTimeChange,
-      handleEndTimeChange,
-      handlePayChange,
-      handleLocationChange,
-      handleShiftTypeChange,
-      handlePositionChange,
-      handleSpecializationsChange,
-      handleDescriptionChange,
-      handleRequirementsChange,
-      handleUrgentChange,
+      ...handlers,
     },
   } as const
 }

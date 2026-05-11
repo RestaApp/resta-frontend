@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AlertCircle, Briefcase, CheckCircle2, Link2, MapPin } from 'lucide-react'
+import { AlertCircle, Briefcase, Link2, MapPin, ShieldCheck } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { ApiRole } from '@/types'
@@ -21,6 +21,8 @@ interface ProfileHeroProps {
   roleLabel: string
   apiRole: ApiRole | null
   isProfileFilled: boolean
+  /** Активная PRO-подписка — рендерит бейдж `PRO` рядом с `VERIFIED`. Бэк-источник: GET /billing/subscription. */
+  hasProSubscription?: boolean
   /** Своё профиль: открыть форму заполнения (если профиль неполный) */
   onFillProfile?: () => void
   /** В drawer профиля кандидата — без карточки, только контент */
@@ -34,6 +36,7 @@ export const ProfileHero = memo(
     roleLabel,
     apiRole,
     isProfileFilled,
+    hasProSubscription = false,
     onFillProfile,
     wrapInCard = true,
   }: ProfileHeroProps) => {
@@ -56,7 +59,9 @@ export const ProfileHero = memo(
             </div>
 
             <div className="min-w-0">
-              <h2 className="font-display text-2xl leading-tight tracking-tight truncate">{userName}</h2>
+              <h2 className="font-display text-2xl leading-tight tracking-tight truncate">
+                {userName}
+              </h2>
               <div className="text-sm text-muted-foreground truncate">{roleLabel}</div>
               {cityOrLocation ? (
                 <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground truncate font-mono-resta">
@@ -64,24 +69,27 @@ export const ProfileHero = memo(
                   <span className="truncate">{cityOrLocation}</span>
                 </div>
               ) : null}
+              {isProfileFilled || hasProSubscription ? (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  {isProfileFilled ? (
+                    <Badge variant="verified">
+                      <ShieldCheck className="w-3 h-3 shrink-0" />
+                      VERIFIED
+                    </Badge>
+                  ) : null}
+                  {hasProSubscription ? <Badge variant="pro">PRO</Badge> : null}
+                </div>
+              ) : null}
             </div>
           </div>
 
-          {openToWork || isProfileFilled ? (
+          {openToWork ? (
             <div className="flex items-center gap-2 shrink-0 pt-0.5">
-              {openToWork ? (
-                <span title={t('profile.openToWork')} aria-label={t('profile.openToWork')}>
-                  <Badge variant="success" className="h-9 w-9 px-0 py-0 justify-center">
-                    <Briefcase className="w-4 h-4" />
-                  </Badge>
-                </span>
-              ) : null}
-              {isProfileFilled ? (
-                <CheckCircle2
-                  className="w-5 h-5 shrink-0 text-primary"
-                  aria-label={t('common.completed')}
-                />
-              ) : null}
+              <span title={t('profile.openToWork')} aria-label={t('profile.openToWork')}>
+                <Badge variant="success" className="h-9 w-9 px-0 py-0 justify-center">
+                  <Briefcase className="w-4 h-4" />
+                </Badge>
+              </span>
             </div>
           ) : null}
         </div>

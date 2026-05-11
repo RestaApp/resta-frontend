@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
 import { isEmployeeRole } from '@/utils/roles'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { UiRole, Tab } from '@/types'
 
 interface BottomNavProps {
@@ -28,8 +29,9 @@ export const BottomNav = ({
   return (
     <nav
       aria-label={t('nav.bottomNav')}
+      style={{ zIndex: Z_INDEX.bottomNav }}
       className={[
-        'fixed bottom-0 left-0 right-0 z-50 border-t border-border safe-area-bottom',
+        'fixed bottom-0 left-0 right-0 border-t border-border pb-safe',
         isEmployee ? 'bg-background/80 backdrop-blur-xl' : 'bg-background',
       ].join(' ')}
     >

@@ -7,7 +7,6 @@ export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
 
-
   const logoIcon = (
     <div className="relative">
       <motion.div
@@ -22,9 +21,6 @@ export const LoadingPage = memo(function LoadingPage() {
         className="absolute inset-0 -z-10 blur-3xl"
         style={{ background: 'var(--gradient-primary)' }}
       />
-
-
-
 
       <div className="relative mb-8 h-[88px] w-[88px]">
         <motion.div
@@ -55,12 +51,14 @@ export const LoadingPage = memo(function LoadingPage() {
           aria-hidden="true"
         />
       </div>
-
     </div>
   )
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background">
+    <div
+      className="fixed inset-0 flex flex-col items-center justify-center bg-background"
+      style={{ zIndex: 100 }}
+    >
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={
@@ -100,10 +98,6 @@ export const LoadingPage = memo(function LoadingPage() {
           iconClassName="mb-0"
           titleClassName="font-display text-5xl tracking-tight bg-[image:var(--gradient-primary)] bg-clip-text text-transparent"
         />
-
-
-
-
       </div>
       <div className="absolute bottom-0 left-0 right-0 z-10 px-8 pb-7 text-center">
         <p className="text-xs font-medium tracking-[0.22em] text-muted-foreground/70">

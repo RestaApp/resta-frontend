@@ -149,7 +149,7 @@ const SupplierCardComponent = ({
                 {extraLocationsLabel ? (
                   <Badge
                     variant="tag"
-                    className="shrink-0 px-1.5 py-0 text-[11px] font-semibold text-primary border-primary/30 bg-primary/10"
+                    className="shrink-0 px-1.5 py-0 text-meta font-semibold text-primary border-primary/30 bg-primary/10"
                   >
                     {extraLocationsLabel}
                   </Badge>

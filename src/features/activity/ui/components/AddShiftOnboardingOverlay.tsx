@@ -1,6 +1,8 @@
 import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 
 interface AddShiftOnboardingOverlayProps {
   visible: boolean
@@ -71,8 +73,18 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
       : Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, rect.right - tooltipWidth))
 
   return (
-    <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-[var(--overlay-scrim)]" onClick={onClose} />
+    <div
+      className="fixed inset-0"
+      role="dialog"
+      aria-modal="true"
+      style={{ zIndex: Z_INDEX.alertDialog }}
+    >
+      <button
+        type="button"
+        aria-label={t('common.close', { defaultValue: 'Закрыть' })}
+        className="absolute inset-0 bg-[var(--overlay-scrim)] cursor-default"
+        onClick={onClose}
+      />
 
       <div
         className="absolute rounded-full"
@@ -109,14 +121,14 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
           width: tooltipWidth,
         }}
       >
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-lg">
+        <Card className="shadow-lg">
           <p className="text-sm font-medium text-foreground">{resolvedTooltip}</p>
           <div className="mt-3 flex justify-end">
             <Button variant="ghost" size="sm" onClick={onClose}>
               {t('common.understand')}
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )

@@ -50,11 +50,8 @@ export const SupplierDetailsScreen = memo(
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`
     }, [locationText])
 
-    const websiteValue = useMemo(() => supplier?.website?.trim() || '', [supplier?.website])
-    const websiteHref = useMemo(
-      () => (websiteValue ? normalizeExternalUrl(websiteValue) : null),
-      [websiteValue]
-    )
+    const websiteValue = supplier?.website?.trim() || ''
+    const websiteHref = websiteValue ? normalizeExternalUrl(websiteValue) : null
 
     if (!supplier) return null
 
