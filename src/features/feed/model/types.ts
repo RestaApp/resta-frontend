@@ -14,6 +14,8 @@ export interface Shift {
   specialization?: string | null
   cuisineTypes?: string[]
   date: string
+  /** YYYY-MM-DD локальная дата старта смены, если есть. */
+  dateKey?: string | null
   time: string
   pay: number
   currency: string
@@ -36,6 +38,8 @@ export interface Shift {
 
   /** Город (для отображения в карточке). Из user.city / restaurant_profile */
   city?: string | null
+  /** Дистанция от пользователя, если список запрошен с геолокацией. */
+  distanceKm?: number | null
   /** Тип: вакансия — без даты/времени на карточке */
   shiftType?: 'vacancy' | 'replacement'
 }

@@ -248,6 +248,9 @@ export interface VacancyApiItem {
   applications_count?: number
   applications_preview?: ApplicationPreviewApiItem[]
   can_apply?: boolean
+  distance?: string | number | null
+  distance_km?: string | number | null
+  distance_meters?: string | number | null
   created_at?: string
   updated_at?: string
   user?: UserApi

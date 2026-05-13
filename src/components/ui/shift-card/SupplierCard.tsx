@@ -89,16 +89,16 @@ const SupplierCardComponent = ({
         }
       }}
       className={cn(
-        'group relative border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'rounded-lg p-4  border-[var(--surface-stroke-soft)] hover:[box-shadow:var(--surface-shadow-soft)]',
+        'shift-compact-card group relative cursor-pointer transition-all duration-200 active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'hover:[box-shadow:var(--surface-shadow-soft)]',
         'hover:border-[var(--surface-stroke-soft-hover)] dark:shadow-none'
       )}
     >
       {!isRestaurantsMode ? (
-        <div className="absolute top-3 right-3">
+        <div className="absolute right-[13px] top-[13px]">
           <span
             className={cn(
-              'relative inline-flex h-8 w-8 items-center justify-center rounded-full border',
+              'relative inline-flex h-8 w-8 items-center justify-center rounded-md border',
               supplier.deliveryAvailable
                 ? 'text-primary border-primary/30 bg-primary/10'
                 : 'text-muted-foreground border-border bg-muted/30'
@@ -129,35 +129,35 @@ const SupplierCardComponent = ({
         </div>
       ) : null}
 
-      <div className="flex items-center gap-4">
-        <Avatar className="h-11 w-11 rounded-md shrink-0 self-start">
+      <div className="flex items-start gap-[10px]">
+        <Avatar className="shift-compact-logo shrink-0 self-start p-0">
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-base font-semibold">
+          <AvatarFallback className="bg-primary text-primary-foreground text-sm font-extrabold">
             {supplier.name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-foreground">{supplier.name}</p>
-          <p className="mt-1 text-muted-foreground">{subtitleText}</p>
+        <div className={cn('min-w-0 flex-1', !isRestaurantsMode && 'pr-9')}>
+          <p className="shift-compact-title truncate">{supplier.name}</p>
+          <p className="shift-compact-sub truncate">{subtitleText}</p>
 
-          <div className="mt-2 space-y-1.5 text-sm text-muted-foreground">
-            <p className="inline-flex items-center gap-2.5 w-full">
-              <MapPin className="h-4 w-4 shrink-0" />
+          <div className="shift-compact-meta">
+            <p className="inline-flex min-w-0 items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
               <span className="min-w-0 flex items-center gap-1.5">
                 <span className="truncate">{locationText}</span>
                 {extraLocationsLabel ? (
                   <Badge
                     variant="tag"
-                    className="shrink-0 px-1.5 py-0 text-meta font-semibold text-primary border-primary/30 bg-primary/10"
+                    className="shrink-0 px-1.5 py-0 text-meta font-bold text-primary border-primary/30 bg-primary/10"
                   >
                     {extraLocationsLabel}
                   </Badge>
                 ) : null}
               </span>
             </p>
-            <p className="inline-flex items-center gap-2.5 w-full">
-              <Phone className="h-4 w-4 shrink-0" />
+            <p className="inline-flex min-w-0 items-center gap-1.5">
+              <Phone className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{phoneText}</span>
             </p>
           </div>

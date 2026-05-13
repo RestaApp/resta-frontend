@@ -7,6 +7,7 @@ import {
   parseApiDateTime,
   stripMinskPrefix,
 } from '../utils/formatting'
+import { toLocalISODateKey } from '@/utils/datetime'
 import type { HotOffer } from '../../ui/components/HotOffers'
 import i18n from '@/shared/i18n/config'
 
@@ -80,6 +81,17 @@ const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
   return null
 }
 
+const getDistanceKm = (item: VacancyApiItem): number | null => {
+  const rawDistance = item.distance_km ?? item.distance
+  const distance = toNumber(rawDistance)
+  if (distance > 0) return distance
+
+  const meters = toNumber(item.distance_meters)
+  if (meters > 0) return meters / 1000
+
+  return null
+}
+
 /**
  * Оплата за период: для вакансии без конкретного окна времени — «за месяц»;
  * если указаны начало и конец смены — сумма относится к этой смене («за смену»).
@@ -121,6 +133,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     cuisineTypes,
 
     date,
+    dateKey: start ? toLocalISODateKey(start) : null,
     time,
 
     pay: toNumber(item.payment),
@@ -139,6 +152,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     applicationsCount: item.applications_count,
 
     city: getCityFromUser(item) ?? null,
+    distanceKm: getDistanceKm(item),
     shiftType: item.shift_type,
   }
 }
@@ -151,13 +165,19 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
     photoUrl: s.userPhotoUrl ?? null,
     payment: s.pay,
     currency: s.currency,
+    rating: s.rating,
     time: s.time || s.date,
     date: s.date || undefined,
+    dateKey: s.dateKey ?? null,
     payPeriod: s.payPeriod,
     restaurant: s.restaurant,
+    title: s.title,
     position: s.position,
     specialization: s.specialization ?? null,
     city: s.city ?? null,
+    location: s.location ?? null,
+    distanceKm: s.distanceKm ?? null,
+    applicationsCount: s.applicationsCount ?? null,
     shiftType: v.shift_type,
   }
 }
@@ -191,6 +211,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     cuisineTypes,
 
     date,
+    dateKey: start ? toLocalISODateKey(start) : null,
     time,
 
     pay: toNumber(pay),
@@ -207,6 +228,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     applicationStatus,
 
     city: getCityFromUser(v) ?? null,
+    distanceKm: getDistanceKm(v),
     shiftType: v.shift_type,
   }
 }

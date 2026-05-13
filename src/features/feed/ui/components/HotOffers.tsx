@@ -1,12 +1,10 @@
 import { memo, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLabels } from '@/shared/i18n/hooks'
-import { formatMoney } from '../../model/utils/formatting'
-import { Badge } from '@/components/ui/badge'
+import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { BynIcon } from '@/components/ui/byn-icon'
 import { cn } from '@/utils/cn'
+import { toLocalISODateKey } from '@/utils/datetime'
 
 export interface HotOffer {
   id: number
@@ -14,16 +12,22 @@ export interface HotOffer {
   photoUrl?: string | null
   payment: number
   currency?: string
+  rating?: number
   /** В сменах — дата; в вакансиях не используется в карточке */
   time: string
   /** Дата смены (для replacement) */
   date?: string
+  dateKey?: string | null
   /** Период оплаты для подписи "за смену" / "за месяц" */
   payPeriod?: 'shift' | 'month'
   restaurant: string
+  title?: string | null
   position: string
   specialization?: string | null
   city?: string | null
+  location?: string | null
+  distanceKm?: number | null
+  applicationsCount?: number | null
   shiftType?: 'vacancy' | 'replacement'
 }
 
@@ -38,6 +42,20 @@ interface HotOffersProps {
 interface HotOfferCardProps {
   item: HotOffer
   onClick: (item: HotOffer) => void
+}
+
+const stripHotTitlePrefix = (title: string): string => {
+  return title.replace(/^(?:\s|🔥)+/u, '').trim()
+}
+
+const formatHotDistanceKm = (distanceKm?: number | null): string | null => {
+  if (distanceKm == null || !Number.isFinite(distanceKm) || distanceKm <= 0) return null
+  const rounded = distanceKm < 10 ? Math.round(distanceKm * 10) / 10 : Math.round(distanceKm)
+  return `${rounded} км`
+}
+
+const isTodayDateKey = (dateKey?: string | null): boolean => {
+  return Boolean(dateKey) && dateKey === toLocalISODateKey(new Date())
 }
 
 const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
@@ -57,59 +75,55 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
     return formatMoney(item.payment)
   }, [item.payment])
 
-  const placeLine = useMemo(() => {
-    const parts = [item.restaurant]
-    if (item.city?.trim()) parts.push(item.city.trim())
-    return parts.join(', ')
-  }, [item.restaurant, item.city])
+  const title = stripHotTitlePrefix(item.title?.trim() || positionText)
+  const subtitle =
+    item.shiftType === 'replacement' && positionText
+      ? `${item.restaurant} · ${positionText}`
+      : item.restaurant
+  const distanceText = formatHotDistanceKm(item.distanceKm)
+  const locationText = distanceText ?? item.location ?? item.city ?? null
+  const metaTime = [item.date, item.time && item.time !== item.date ? item.time : '']
+    .filter(Boolean)
+    .join(' ')
+  const isToday = isTodayDateKey(item.dateKey)
 
   return (
     <button
       type="button"
       onClick={handleClick}
       className={cn(
-        'snap-center flex-shrink-0 w-[105px] min-h-[108px] relative overflow-hidden rounded-xl bg-card border border-border p-2 flex flex-col items-start text-left  cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
-        'border-[var(--surface-stroke-soft)] hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
-        'dark:border-primary/20 dark:hover:border-primary/30 dark:[box-shadow:var(--primary-ring-soft)] dark:hover:[box-shadow:var(--primary-ring-soft-hover)]'
+        'shift-compact-card shift-compact-card-sos snap-center w-[220px] shrink-0 text-left outline-none transition-all duration-150 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring'
       )}
     >
-      <span className="absolute inset-0 bg-gradient-to-b from-primary/5 to-primary/5 group-hover:from-primary/8 group-hover:to-primary/8 transition-colors pointer-events-none" />
+      <div className="shift-compact-row">
+        <div className="min-w-0 flex-1">
+          <div className="shift-compact-badge-row">
+            <span className="shift-compact-badge">🔥 SOS{isToday ? ' · СЕГОДНЯ' : ''}</span>
+          </div>
+          <h3 className="shift-compact-title line-clamp-2">{title}</h3>
+          <p className="shift-compact-sub truncate">{subtitle}</p>
+        </div>
 
-      {paymentText ? (
-        <Badge
-          variant="primary"
-          className="absolute top-0 right-0 rounded-bl-lg text-xs px-1.5 py-0.5 dark:font-semibold z-10 inline-flex items-center gap-0.5 whitespace-nowrap"
-        >
-          <span>{paymentText}</span>
-          <BynIcon className="h-[0.72em] w-[0.72em] text-primary-foreground/95" />
-        </Badge>
-      ) : null}
+        <div className="shrink-0 text-right leading-none tabular-nums text-foreground">
+          {paymentText ? (
+            <>
+              <span className="shift-compact-price font-display">{paymentText}</span>
+              <span className="shift-compact-currency">{item.currency ?? 'BYN'}</span>
+            </>
+          ) : null}
+        </div>
+      </div>
 
-      <Avatar className="w-8 h-8 z-10 border border-border/50 bg-primary/10">
-        <AvatarImage src={item.photoUrl ?? undefined} alt="" />
-        <AvatarFallback className="bg-primary/10 text-base">
-          <span
-            className="drop- transform group-hover:scale-105 transition-transform duration-200"
-            aria-hidden
-          >
-            {item.emoji}
-          </span>
-        </AvatarFallback>
-      </Avatar>
-
-      <div className="mt-1 w-full flex flex-col min-w-0 z-10 gap-1 flex-1">
-        <span className="block text-sm leading-4 font-semibold text-foreground overflow-hidden line-clamp-2">
-          {positionText}
-        </span>
-        <span className="block text-xs text-muted-foreground leading-tight break-words line-clamp-2 overflow-hidden">
-          {placeLine}
-        </span>
-        {item.shiftType === 'replacement' ? (
-          item.date ? (
-            <span className="mt-auto block text-xs text-primary font-semibold truncate pt-0.5">
-              {item.date}
-            </span>
-          ) : null
+      <div className="shift-compact-meta min-w-0">
+        {metaTime ? <span className="shrink-0">⏱ {metaTime}</span> : null}
+        {locationText ? (
+          <span className="min-w-[4rem] flex-1 truncate">📍 {locationText}</span>
+        ) : null}
+        {item.rating && item.rating > 0 ? (
+          <span className="shrink-0 text-success">★ {item.rating.toFixed(1)}</span>
+        ) : null}
+        {item.applicationsCount ? (
+          <span className="shrink-0 text-muted-foreground">👤 {item.applicationsCount}</span>
         ) : null}
       </div>
     </button>

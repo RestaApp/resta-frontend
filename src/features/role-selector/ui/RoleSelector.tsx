@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PageHeader } from '@/components/ui/PageHeader'
-import { OnboardingProgress } from './components/OnboardingProgress'
+import { OnboardingStepLayout } from './components/OnboardingStepLayout'
 import { RoleCard } from './components/RoleCard'
 import { ErrorModal } from './components/subroles/shared/ErrorModal'
 
@@ -83,34 +82,26 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
 
   return (
     <>
-      <div className="bg-background flex flex-col min-h-[100dvh]">
-        <PageHeader
-          progress={<OnboardingProgress current={1} total={3} />}
-          title={t('roles.whoAreYou')}
-          subtitle={t('roles.roleChoiceHint')}
-        />
-        <div
-          className={`flex-1 flex flex-col ui-density-page ${
-            vm.selectedRole ? 'overflow-y-auto' : 'overflow-y-hidden'
-          }`}
-        >
-          <div
-            className={`flex flex-col gap-2.5 ${
-              vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : 'pb-0'
-            }`}
-          >
-            {vm.mainRoles.map((role, index) => (
-              <RoleCard
-                key={role.id}
-                role={role}
-                isSelected={vm.selectedRole === role.id}
-                index={index}
-                onSelect={vm.handleRoleSelect}
-              />
-            ))}
-          </div>
+      <OnboardingStepLayout
+        currentStep={1}
+        totalSteps={3}
+        title={t('roles.whoAreYou')}
+        subtitle={t('roles.roleChoiceHint')}
+        bottomSpace={vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : undefined}
+        scrollable={Boolean(vm.selectedRole)}
+      >
+        <div className="flex flex-col gap-2.5">
+          {vm.mainRoles.map((role, index) => (
+            <RoleCard
+              key={role.id}
+              role={role}
+              isSelected={vm.selectedRole === role.id}
+              index={index}
+              onSelect={vm.handleRoleSelect}
+            />
+          ))}
         </div>
-      </div>
+      </OnboardingStepLayout>
       {vm.selectedRole ? (
         <OnboardingBottomCta onClick={vm.handleRoleContinue} ariaLabel={t('common.continue')}>
           {t('common.continue')} →

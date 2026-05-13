@@ -95,11 +95,11 @@ export const RoleCard = memo(function RoleCard({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="text-body-lg font-semibold leading-tight tracking-[-0.01em] text-foreground">
+            <div className="text-title-md font-semibold leading-tight tracking-[-0.01em] text-foreground">
               {role.title}
             </div>
             {role.description ? (
-              <div className="mt-1 text-meta leading-snug text-muted-foreground">
+              <div className="mt-1 text-body-lg leading-snug text-muted-foreground">
                 {role.description}
               </div>
             ) : null}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { SelectableTagButton } from './SelectableTagButton'
 
 type TagTone = 'primary' | 'employee' | 'restaurant' | 'supplier'
+type TagSize = 'md' | 'lg'
 
 interface TagGroupProps {
   values: string[]
@@ -11,6 +12,7 @@ interface TagGroupProps {
   getLabel: (value: string) => string
   getAriaLabel?: (value: string, label: string) => string
   tone?: TagTone
+  size?: TagSize
 }
 
 export const TagGroup = memo(function TagGroup({
@@ -20,6 +22,7 @@ export const TagGroup = memo(function TagGroup({
   getLabel,
   getAriaLabel,
   tone = 'primary',
+  size = 'md',
 }: TagGroupProps) {
   const { t } = useTranslation()
 
@@ -33,6 +36,7 @@ export const TagGroup = memo(function TagGroup({
             value={value}
             label={label}
             tone={tone}
+            size={size}
             isSelected={selectedValues.includes(value)}
             onClick={onToggle}
             ariaLabel={getAriaLabel?.(value, label) ?? t('aria.selectType', { label })}
