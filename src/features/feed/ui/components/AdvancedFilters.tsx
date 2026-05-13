@@ -1,25 +1,32 @@
-import { Loader2 } from 'lucide-react'
+import { Loader } from '@/components/ui/loader'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { Drawer, DrawerCloseButton } from '@/components/ui/drawer'
-import { RangeSlider, DatePicker } from '@/components/ui'
+import { RangeSlider } from '@/components/ui/range-slider'
 import { Button } from '@/components/ui/button'
-import { BynIcon } from '@/components/ui/byn-icon'
-import { Input } from '@/components/ui/input'
-import { DRAWER_FOOTER_CLASS, DRAWER_HEADER_CLASS } from '@/components/ui/ui-patterns'
 import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
-import { formatMoney } from '../../model/utils/formatting'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { getRoleKind, getRoleTheme } from '@/shared/lib/role-theme'
+import { cn } from '@/utils/cn'
+import { saveFeedFilterTemplate } from '../../model/utils/feedFilterTemplates'
+import type { WhenPreset } from '../../model/utils/feedFilterWhen'
+
+export type { WhenPreset }
 
 export interface AdvancedFiltersData {
-  priceRange: [number, number] | null
   selectedCity?: string | null
   selectedPosition?: string | null
   selectedSpecializations?: string[]
-  startDate?: string | null // YYYY-MM-DD
-  endDate?: string | null // YYYY-MM-DD
+  startDate?: string | null
+  endDate?: string | null
+  whenPreset?: WhenPreset | null
+  geoLat?: number | null
+  geoLon?: number | null
+  radiusKm?: number | null
 }
 
 interface AdvancedFiltersProps {
@@ -30,7 +37,6 @@ interface AdvancedFiltersProps {
   filteredCount?: number
   searchQuery?: string
   activeFilter?: string
-  /** Флаг для вакансий (скрыть период, изменить текст и расширить максимум диапазона). */
   isVacancy?: boolean
 }
 
@@ -53,6 +59,17 @@ export const AdvancedFilters = ({
   </Drawer>
 )
 
+/** Совпадает с панелью `Drawer`: светлая — background, тёмная — drawer-surface (без «шва» у футера). */
+const SHEET_SURFACE_CLASS = 'bg-background dark:bg-[var(--drawer-surface)]'
+
+/** Как `.input-lbl` в E03: мелкий капс, приглушённый цвет. */
+const SECTION_LABEL_CLASS =
+  'text-[10px] font-semibold uppercase tracking-widest text-muted-foreground'
+
+const FilterSectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className={SECTION_LABEL_CLASS}>{children}</p>
+)
+
 const AdvancedFiltersSheet = ({
   onClose,
   onApply,
@@ -62,6 +79,11 @@ const AdvancedFiltersSheet = ({
 }: Omit<AdvancedFiltersProps, 'isOpen'>) => {
   const { t } = useTranslation()
   const { getSpecializationLabel } = useLabels()
+  const selectedRole = useAppSelector(selectSelectedRole)
+  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
+  const roleKind = getRoleKind(selectedRole ?? 'employee')
+  const tagTone = roleKind
+
   const c = useAdvancedFiltersSheet({
     initialFilters: initialFilters || null,
     onApply,
@@ -69,24 +91,52 @@ const AdvancedFiltersSheet = ({
     filteredCount,
   })
 
+  const whenOptions: { id: WhenPreset; labelKey: string }[] = [
+    { id: 'today', labelKey: 'feed.whenPreset.today' },
+    { id: 'tomorrow', labelKey: 'feed.whenPreset.tomorrow' },
+    { id: 'week', labelKey: 'feed.whenPreset.week' },
+  ]
+
+  const handleSaveTemplate = () => {
+    saveFeedFilterTemplate(isVacancy ? 'jobs' : 'shifts', c.currentFilters)
+  }
+
+  const handleShowResults = () => {
+    c.handleApply()
+    onClose()
+  }
+
+  const selectWhenPreset = (preset: WhenPreset) => {
+    if (c.whenPreset === preset) {
+      c.setWhenPresetAndDates(null)
+    } else {
+      c.setWhenPresetAndDates(preset)
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div className={cn('flex min-h-0 flex-1 flex-col', SHEET_SURFACE_CLASS)}>
       <div
-        className={`${DRAWER_HEADER_CLASS} sticky top-0 z-10 flex flex-shrink-0 items-center justify-between bg-background`}
+        className={cn(
+          'sticky top-0 z-10 flex shrink-0 items-center justify-between px-4 pt-2 pb-0 mb-3.5',
+          SHEET_SURFACE_CLASS
+        )}
       >
-        <h2 className="text-xl font-bold">{t('feed.filters')}</h2>
+        <h2 className="font-display text-xl font-semibold leading-tight tracking-tight">
+          {t('feed.filters')}
+        </h2>
         <div className="flex items-center gap-2">
-          {c.hasActiveFilters && (
-            <Button
-              onClick={c.handleReset}
-              variant="secondary"
-              size="sm"
-              aria-label={t('feed.resetFiltersAria')}
-              className="rounded-full px-3 py-1.5"
-            >
-              {t('common.reset')}
-            </Button>
-          )}
+          <button
+            type="button"
+            onClick={c.handleReset}
+            disabled={!c.hasActiveFilters}
+            className={cn(
+              'text-sm font-medium transition-opacity disabled:opacity-40',
+              roleTheme.classes.text
+            )}
+          >
+            {t('feed.resetFiltersSheet')}
+          </button>
           <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} className="-mr-2" />
         </div>
       </div>
@@ -94,55 +144,11 @@ const AdvancedFiltersSheet = ({
       <motion.div
         layout
         transition={{ layout: { duration: 0.25, ease: 'easeInOut' } }}
-        className="ui-density-page ui-density-stack-lg overflow-y-auto flex-1 min-h-0 pb-4"
+        className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto px-4 pb-4"
       >
-        <BudgetRangeSection
-          isVacancy={!!isVacancy}
-          maxRateLimit={c.maxRateLimit}
-          displayPriceRange={c.displayPriceRange}
-          onRangeChange={c.handleRangeChange}
-          onMinInputChange={c.handleMinInputChange}
-          onMaxInputChange={c.handleMaxInputChange}
-        />
-
-        {!isVacancy && (
-          <div className="space-y-3">
-            <h3 className="font-semibold text-base">{t('feed.period')}</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="min-w-0">
-                <DatePicker
-                  value={c.startDate}
-                  onChange={c.setStartDate}
-                  minDate={c.getMinStartDate()}
-                  label={t('common.from')}
-                />
-              </div>
-              <div className="min-w-0">
-                <DatePicker
-                  value={c.endDate}
-                  onChange={c.setEndDate}
-                  minDate={c.getMinEndDate()}
-                  label={t('common.to')}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          <h3 className="font-semibold text-base">{t('profile.city')}</h3>
-          <LocationField
-            value={c.selectedCity}
-            onChange={c.setSelectedCity}
-            onLocationRequest={c.handleLocationRequest}
-            clearOnFocus
-            hideLabel
-          />
-        </div>
-
-        {c.positions.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="font-semibold text-base">{t('common.position')}</h3>
+        {c.positions.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            <FilterSectionLabel>{t('feed.sectionPosition')}</FilterSectionLabel>
             <div className="flex flex-wrap gap-2">
               {c.positions.map(position => {
                 const positionValue = position.originalValue || position.id
@@ -154,32 +160,79 @@ const AdvancedFiltersSheet = ({
                     isSelected={c.selectedPosition === positionValue}
                     onClick={() => c.handlePositionClick(positionValue)}
                     ariaLabel={t('aria.selectPosition', { label: position.title })}
+                    tone={tagTone}
                   />
                 )
               })}
             </div>
           </div>
-        )}
+        ) : null}
+
+        {!isVacancy ? (
+          <div className="flex flex-col gap-2">
+            <FilterSectionLabel>{t('feed.sectionWhen')}</FilterSectionLabel>
+            <div className="flex flex-wrap gap-2">
+              {whenOptions.map(opt => (
+                <SelectableTagButton
+                  key={opt.id}
+                  value={opt.id}
+                  label={t(opt.labelKey)}
+                  isSelected={c.whenPreset === opt.id}
+                  onClick={v => selectWhenPreset(v as WhenPreset)}
+                  ariaLabel={t(opt.labelKey)}
+                  tone={tagTone}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {c.hasSharedGeo ? (
+          <div className="flex flex-col gap-2 py-2">
+            <FilterSectionLabel>{t('feed.sectionRadius')}</FilterSectionLabel>
+            <RangeSlider
+              min={0}
+              max={10}
+              step={1}
+              value={c.radiusKm}
+              onChange={v => c.setRadiusKm(v)}
+              accentClassName={roleTheme.classes.bg}
+            />
+            <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
+              <span>{t('feed.radiusMin')}</span>
+              <span className="font-mono-resta tabular-nums">
+                {t('feed.radiusCurrent', { km: c.radiusKm })}
+              </span>
+              <span>{t('feed.radiusMax')}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => c.setSharedCoordinates(null, null)}
+              className={cn('text-sm font-medium', roleTheme.classes.text)}
+            >
+              {t('feed.clearGeoUseCity')}
+            </button>
+          </div>
+        ) : null}
 
         <AnimatePresence initial={false}>
           {c.selectedPosition &&
             (c.displaySpecializations.length > 0 || c.isSpecializationsLoading) && (
               <motion.div
                 key={`specializations-${c.selectedPosition}`}
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                layout
-                className="space-y-3 overflow-hidden relative"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="relative flex shrink-0 flex-col gap-2 overflow-visible"
               >
-                <h3 className="font-semibold text-base">{t('shift.specialization')}</h3>
-                <div className="flex flex-wrap gap-2 relative">
-                  {c.isSpecializationsLoading && (
-                    <div className="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
-                      <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                <FilterSectionLabel>{t('shift.specialization')}</FilterSectionLabel>
+                <div className="relative flex flex-wrap gap-2">
+                  {c.isSpecializationsLoading ? (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/50 backdrop-blur-sm">
+                      <Loader size="md" />
                     </div>
-                  )}
+                  ) : null}
                   {c.displaySpecializations.map(specialization => (
                     <SelectableTagButton
                       key={specialization}
@@ -191,97 +244,61 @@ const AdvancedFiltersSheet = ({
                         label: getSpecializationLabel(specialization),
                       })}
                       disabled={c.isSpecializationsLoading}
+                      tone={tagTone}
                     />
                   ))}
                 </div>
               </motion.div>
             )}
         </AnimatePresence>
+
+        {!c.hasSharedGeo ? (
+          <div className="flex flex-col gap-2">
+            <FilterSectionLabel>{t('feed.sectionCity')}</FilterSectionLabel>
+            <LocationField
+              value={c.selectedCity}
+              onChange={c.setSelectedCity}
+              onLocationRequest={c.handleLocationRequest}
+              clearOnFocus
+              hideLabel
+              isLoading={c.isGeoLoading}
+              focusAccentClass={roleTheme.classes.inputFocus}
+              focusRoleCssVar={roleTheme.cssVar}
+            />
+          </div>
+        ) : null}
       </motion.div>
 
-      <div className={`${DRAWER_FOOTER_CLASS} flex-shrink-0`}>
+      <div
+        className={cn(
+          'flex shrink-0 gap-2 border-t border-border/50 px-4 py-3',
+          SHEET_SURFACE_CLASS
+        )}
+      >
         <Button
           type="button"
-          onClick={() => {
-            c.handleApply()
-            onClose()
-          }}
-          variant="gradient"
+          variant="outline"
           size="md"
-          className="w-full"
+          className={cn('min-w-0 flex-1', roleTheme.classes.ring)}
+          onClick={handleSaveTemplate}
         >
-          {isVacancy
-            ? t('feed.showVacanciesCount', { count: c.previewCount })
-            : t('feed.showShiftsCount', { count: c.previewCount })}
+          {t('feed.saveFilterTemplate')}
         </Button>
-      </div>
-    </div>
-  )
-}
-
-interface BudgetRangeSectionProps {
-  isVacancy: boolean
-  maxRateLimit: number
-  displayPriceRange: [number, number]
-  onRangeChange: (range: [number, number]) => void
-  onMinInputChange: React.ChangeEventHandler<HTMLInputElement>
-  onMaxInputChange: React.ChangeEventHandler<HTMLInputElement>
-}
-
-const BudgetRangeSection = ({
-  isVacancy,
-  maxRateLimit,
-  displayPriceRange,
-  onRangeChange,
-  onMinInputChange,
-  onMaxInputChange,
-}: BudgetRangeSectionProps) => {
-  const { t } = useTranslation()
-  return (
-    <div className="ui-density-stack">
-      <div className="py-2 flex flex-wrap justify-between items-center gap-x-3 gap-y-2">
-        <h3 className="font-semibold text-base">
-          {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
-        </h3>
-        <div className="flex items-center gap-1.5 min-w-0 ml-auto">
-          <Input
-            type="text"
-            inputMode="numeric"
-            min={0}
-            max={maxRateLimit}
-            step={1}
-            value={formatMoney(displayPriceRange[0])}
-            onChange={onMinInputChange}
-            aria-label={t('feed.filterRateMinAria')}
-            className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"
-          />
-          <span className="text-muted-foreground shrink-0" aria-hidden>
-            —
-          </span>
-          <Input
-            type="text"
-            inputMode="numeric"
-            min={0}
-            max={maxRateLimit}
-            step={1}
-            value={formatMoney(displayPriceRange[1])}
-            onChange={onMaxInputChange}
-            aria-label={t('feed.filterRateMaxAria')}
-            className="h-9 w-[4.5rem] min-w-0 px-2 text-center text-sm font-semibold tabular-nums"
-          />
-          <BynIcon className="text-primary text-sm shrink-0" />
-        </div>
-      </div>
-      <RangeSlider
-        min={0}
-        max={maxRateLimit}
-        step={isVacancy ? 50 : 5}
-        range={displayPriceRange}
-        onRangeChange={onRangeChange}
-      />
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>{t('feed.filterScaleMin')}</span>
-        <span>{isVacancy ? t('feed.filterScaleMaxVacancy') : t('feed.filterScaleMaxShift')}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="md"
+          className={cn(
+            'min-w-0 shrink-0 flex-[1.35] border-0 font-semibold shadow-sm hover:opacity-95',
+            roleTheme.classes.bg,
+            roleTheme.classes.textOn,
+            roleTheme.classes.solidHover,
+            roleTheme.classes.ring
+          )}
+          onClick={handleShowResults}
+        >
+          {isVacancy ? t('feed.showVacanciesCta') : t('feed.showShiftsCountDetailed', { count: c.previewCount })}
+        </Button>
       </div>
     </div>
   )

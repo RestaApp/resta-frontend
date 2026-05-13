@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
-import { isEmployeeRole } from '@/utils/roles'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { UiRole, Tab } from '@/types'
+import { getRoleTheme } from '@/shared/lib/role-theme'
 
 interface BottomNavProps {
   activeTab: Tab
@@ -23,19 +23,32 @@ export const BottomNav = ({
 }: BottomNavProps) => {
   const { t } = useTranslation()
   const tabs = useMemo(() => getTabsForRole(role), [role])
-  const isEmployee = isEmployeeRole(role)
+  const roleTheme = getRoleTheme(role)
   const reduceMotion = useReducedMotion()
+  const activeColorClass = roleTheme.classes.text
+  const activeDotClass = roleTheme.classes.bg
+  const focusRingClass =
+    roleTheme.classes.ring === 'ring-role-employee'
+      ? 'focus-visible:ring-role-employee'
+      : roleTheme.classes.ring === 'ring-role-restaurant'
+        ? 'focus-visible:ring-role-restaurant'
+        : 'focus-visible:ring-role-supplier'
 
   return (
     <nav
       aria-label={t('nav.bottomNav')}
-      style={{ zIndex: Z_INDEX.bottomNav }}
-      className={[
-        'fixed bottom-0 left-0 right-0 border-t border-border pb-safe',
-        isEmployee ? 'bg-background/80 backdrop-blur-xl' : 'bg-background',
-      ].join(' ')}
+      style={{
+        zIndex: Z_INDEX.bottomNav,
+        paddingBottom: 'var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom))',
+      }}
+      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/80 backdrop-blur-xl"
     >
-      <div className="mx-auto flex max-w-2xl items-center justify-around ui-density-page ui-density-py-sm">
+      <div
+        className={[
+          'mx-auto grid max-w-2xl items-center ui-density-page py-2',
+          tabs.length === 4 ? 'grid-cols-4' : 'grid-cols-2',
+        ].join(' ')}
+      >
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = activeTab === id
           const showProfileDot = id === 'profile' && hasIncompleteProfile
@@ -53,15 +66,18 @@ export const BottomNav = ({
               whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
               className={[
-                'relative flex min-h-[44px] min-w-[72px] flex-col items-center justify-center rounded-xl px-3 py-2',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'relative flex flex-col items-center justify-center rounded-xl px-2 py-1',
+                'min-h-[56px] gap-[3px]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                focusRingClass,
               ].join(' ')}
             >
-              <span className="relative">
+              <span className="relative flex h-[22px] w-[22px] items-center justify-center">
                 <Icon
                   className={[
-                    'h-6 w-6 transition-colors',
-                    isActive ? 'text-primary' : 'text-muted-foreground',
+                    'transition-colors',
+                    'h-[22px] w-[22px]',
+                    isActive ? activeColorClass : 'text-muted-foreground',
                   ].join(' ')}
                   strokeWidth={isActive ? 2.5 : 2}
                   aria-hidden="true"
@@ -70,15 +86,23 @@ export const BottomNav = ({
                 {isActive && (
                   <motion.span
                     layoutId={layoutId}
-                    className="absolute -inset-2 -z-10 rounded-full bg-primary/8"
-                    transition={reduceMotion ? { duration: 0 } : undefined}
+                    className={[
+                      'absolute -top-[9px] h-1.5 w-1.5 rounded-full',
+                      activeDotClass,
+                    ].join(' ')}
+                    transition={
+                      reduceMotion ? { duration: 0 } : { duration: 0.28, ease: 'easeOut' }
+                    }
                     aria-hidden="true"
                   />
                 )}
 
                 {showProfileDot && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-primary"
+                    className={[
+                      'absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background',
+                      activeDotClass,
+                    ].join(' ')}
                     aria-hidden="true"
                   />
                 )}
@@ -86,8 +110,9 @@ export const BottomNav = ({
 
               <span
                 className={[
-                  'mt-1 text-xs transition-colors',
-                  isActive ? 'text-primary' : 'text-muted-foreground',
+                  'font-semibold uppercase leading-none tracking-normal transition-colors',
+                  'text-[9px]',
+                  isActive ? activeColorClass : 'text-muted-foreground',
                 ].join(' ')}
               >
                 {labelText}

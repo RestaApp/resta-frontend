@@ -37,7 +37,7 @@ const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
     animate={{ opacity: 1, pointerEvents: 'auto' }}
     exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
-    className={cn('fixed inset-0 bg-black/50', className)}
+    className={cn('fixed inset-0 bg-[var(--overlay-scrim)]', className)}
     onClick={onClick}
     aria-hidden="true"
   />
@@ -147,7 +147,7 @@ const DrawerContent = memo(function DrawerContent({
         style={{
           y,
           bottom: bottomOffsetPx,
-          maxHeight: `min(85vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
+          maxHeight: `min(80vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
         }}
         role="dialog"
         aria-modal="true"
@@ -155,8 +155,9 @@ const DrawerContent = memo(function DrawerContent({
       >
         <div
           className={cn(
-            'sticky top-0 z-20 flex justify-center pt-4 pb-2 touch-none select-none',
+            'sticky top-0 z-20 flex justify-center pt-3 pb-1.5 touch-none select-none',
             'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm',
+            'dark:bg-[var(--drawer-surface)]',
             preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
           )}
           onPointerDown={e => {

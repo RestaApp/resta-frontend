@@ -53,6 +53,8 @@
     "unknownFields": "неизвестные поля",
     "continue": "Продолжить",
     "done": "Готово",
+    "todayLower": "сегодня",
+    "locationNotSet": "Локация не указана",
     "continueFormVenue": "Продолжить заполнение формы ресторана",
     "continueFormSupplier": "Продолжить заполнение формы поставщика"
   },
@@ -104,8 +106,9 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Смены",
+      "feed": "Лента",
       "activity": "Отклики",
+      "my": "Мои",
       "profile": "Я"
     },
     "feed": {
@@ -224,6 +227,7 @@
     "activeRequests": "Активные заявки"
   },
   "feed": {
+    "headerTitle": "Лента",
     "applicationSentSuccess": "Заявка отправлена. Если вас утвердят, бот пришлет сообщение.",
     "openFilters": "Открыть фильтры",
     "emptyByFilters": "По вашим фильтрам ничего не найдено",
@@ -244,6 +248,24 @@
     "clearHotFilter": "Убрать фильтр",
     "filters": "Фильтры",
     "resetFiltersAria": "Сбросить фильтры",
+    "resetFiltersSheet": "Сбросить",
+    "sectionPosition": "Позиция",
+    "sectionWhen": "Когда",
+    "sectionRadius": "Радиус",
+    "sectionCity": "Город",
+    "clearGeoUseCity": "Искать по городу",
+    "radiusMin": "0 км",
+    "radiusMax": "10 км",
+    "radiusCurrent": "{{km}} км",
+    "saveFilterTemplate": "Сохранить шаблон",
+    "showShiftsCountDetailed": "Показать {{count}} смен",
+    "showVacanciesCta": "Показать вакансии",
+    "filterRadiusSummary": "Радиус {{km}} км",
+    "whenPreset": {
+      "today": "Сегодня",
+      "tomorrow": "Завтра",
+      "week": "Эта неделя"
+    },
     "period": "Период",
     "showShiftsCount": "Показать результаты",
     "showVacanciesCount": "Показать результаты",
@@ -255,6 +277,14 @@
     "filterScaleMaxShift": "1 000+ BYN",
     "filterScaleMaxVacancy": "5 000+ BYN",
     "resetFilters": "Сбросить фильтры",
+    "quickFilters": {
+      "all": "Все",
+      "today": "Сегодня",
+      "urgent": "🔥 Срочные",
+      "highPay": ">120 BYN",
+      "nearby": "<2 км",
+      "myRole": "Моя роль"
+    },
     "applicationNotSent": "Заявка не отправлена",
     "sawAll": "Вы посмотрели все предложения",
     "networkError": "Ошибка сети. Нажмите, чтобы повторить"

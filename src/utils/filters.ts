@@ -3,21 +3,8 @@
  */
 
 import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
-import type { QuickFilter } from '@/features/feed/model/utils/clientFilters'
-
-export const DEFAULT_PRICE_RANGE: [number, number] = [0, 1000]
-export const DEFAULT_JOBS_PRICE_RANGE: [number, number] = [0, 5000]
-
-/**
- * Проверяет, является ли диапазон цен значением по умолчанию
- */
-const isDefaultPriceRange = (priceRange: [number, number]): boolean => {
-  return priceRange[0] === DEFAULT_PRICE_RANGE[0] && priceRange[1] === DEFAULT_PRICE_RANGE[1]
-}
-
 import { parseDate } from './datetime'
 import i18n from '@/shared/i18n/config'
-import { formatMoney } from '@/features/feed/model/utils/formatting'
 
 /**
  * Форматирует дату для отображения в фильтрах
@@ -49,10 +36,6 @@ const formatDateRange = (
   return null
 }
 
-/**
- * Форматирует специализации для отображения
- * Показывает первые 2, остальные как "+N"
- */
 const getSpecializationLabel = (spec: string): string =>
   i18n.t(`labels.specialization.${spec}`) || spec
 const getEmployeePositionLabel = (value: string): string =>
@@ -69,72 +52,55 @@ const formatSpecializations = (specializations: string[]): string[] => {
   ]
 }
 
-const QUICK_FILTER_LABELS: Record<Exclude<QuickFilter, 'all'>, { ru: string; en: string }> = {
-  urgent: { ru: '🔥 Срочные', en: '🔥 Urgent' },
-  high_pay: { ru: '💰 Высокая оплата', en: '💰 High pay' },
-  nearby: { ru: '📍 Рядом', en: '📍 Nearby' },
-  my_role: { ru: '🧑‍🍳 Моя роль', en: '🧑‍🍳 My role' },
-}
-
-const getQuickFilterLabel = (value: QuickFilter): string | null => {
-  if (value === 'all') return null
-  const label = QUICK_FILTER_LABELS[value]
-  if (!label) return value
-  return i18n.language === 'en' ? label.en : label.ru
-}
-
 /**
  * Преобразует фильтры в список строк для отображения
  */
-export const formatFiltersForDisplay = (
-  filters: AdvancedFiltersData | null,
-  quickFilter?: QuickFilter
-): string[] => {
+export const formatFiltersForDisplay = (filters: AdvancedFiltersData | null): string[] => {
   const result: string[] = []
-
-  if (quickFilter) {
-    const quickLabel = getQuickFilterLabel(quickFilter)
-    if (quickLabel) result.push(quickLabel)
-  }
 
   if (!filters) return result
 
-  // Позиция
+  if (filters.whenPreset) {
+    result.push(i18n.t(`feed.whenPreset.${filters.whenPreset}`))
+  }
+
   if (filters.selectedPosition) {
     result.push(getEmployeePositionLabel(filters.selectedPosition))
   }
 
-  // Город
   if (filters.selectedCity) {
     result.push(filters.selectedCity)
   }
 
-  // Специализации
+  if (
+    filters.geoLat != null &&
+    filters.geoLon != null &&
+    typeof filters.radiusKm === 'number' &&
+    Number.isFinite(filters.radiusKm)
+  ) {
+    result.push(i18n.t('feed.filterRadiusSummary', { km: filters.radiusKm }))
+  }
+
   if (filters.selectedSpecializations && filters.selectedSpecializations.length > 0) {
     result.push(...formatSpecializations(filters.selectedSpecializations))
   }
 
-  // Диапазон цен (если не по умолчанию и не null)
-  if (filters.priceRange && !isDefaultPriceRange(filters.priceRange)) {
-    result.push(`${formatMoney(filters.priceRange[0])}-${formatMoney(filters.priceRange[1])} BYN`)
-  }
-
-  // Даты
-  const dateRange = formatDateRange(filters.startDate, filters.endDate)
-  if (dateRange) {
-    result.push(dateRange)
+  if (!filters.whenPreset) {
+    const dateRange = formatDateRange(filters.startDate, filters.endDate)
+    if (dateRange) {
+      result.push(dateRange)
+    }
   }
 
   return result
 }
 
 /**
- * Проверяет, есть ли активные фильтры (кроме значений по умолчанию)
+ * Проверяет, есть ли активные фильтры
  */
 export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean => {
   if (!filters) return false
 
-  const hasNonDefaultPrice = filters.priceRange !== null && !isDefaultPriceRange(filters.priceRange)
   const hasPosition = filters.selectedPosition !== null && filters.selectedPosition !== undefined
   const hasCity =
     filters.selectedCity !== null &&
@@ -142,6 +108,12 @@ export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean =
     filters.selectedCity !== ''
   const hasSpecializations = (filters.selectedSpecializations?.length ?? 0) > 0
   const hasDates = filters.startDate !== null || filters.endDate !== null
+  const hasWhenPreset = Boolean(filters.whenPreset)
+  const hasGeo =
+    filters.geoLat != null &&
+    filters.geoLon != null &&
+    Number.isFinite(filters.geoLat) &&
+    Number.isFinite(filters.geoLon)
 
-  return hasNonDefaultPrice || hasPosition || hasCity || hasSpecializations || hasDates
+  return hasPosition || hasCity || hasSpecializations || hasDates || hasWhenPreset || hasGeo
 }

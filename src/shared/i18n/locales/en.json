@@ -53,6 +53,8 @@
     "unknownFields": "unknown fields",
     "continue": "Continue",
     "done": "Done",
+    "todayLower": "today",
+    "locationNotSet": "Location not set",
     "continueFormVenue": "Continue filling restaurant form",
     "continueFormSupplier": "Continue filling supplier form"
   },
@@ -106,6 +108,7 @@
     "employee": {
       "feed": "Shifts",
       "activity": "Applied",
+      "my": "Mine",
       "profile": "Me"
     },
     "feed": {
@@ -224,6 +227,7 @@
     "activeRequests": "Active requests"
   },
   "feed": {
+    "headerTitle": "Feed",
     "applicationSentSuccess": "Application sent. You will be notified if approved.",
     "openFilters": "Open filters",
     "emptyByFilters": "Nothing found for your filters",
@@ -241,6 +245,24 @@
     "clearHotFilter": "Remove filter",
     "filters": "Filters",
     "resetFiltersAria": "Reset filters",
+    "resetFiltersSheet": "Reset",
+    "sectionPosition": "Position",
+    "sectionWhen": "When",
+    "sectionRadius": "Radius",
+    "sectionCity": "City",
+    "clearGeoUseCity": "Search by city",
+    "radiusMin": "0 km",
+    "radiusMax": "10 km",
+    "radiusCurrent": "{{km}} km",
+    "saveFilterTemplate": "Save template",
+    "showShiftsCountDetailed": "Show {{count}} shifts",
+    "showVacanciesCta": "Show vacancies",
+    "filterRadiusSummary": "{{km}} km radius",
+    "whenPreset": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "week": "This week"
+    },
     "period": "Period",
     "showShiftsCount": "Show results",
     "showVacanciesCount": "Show results",
@@ -252,6 +274,14 @@
     "filterScaleMaxShift": "1 000+ BYN",
     "filterScaleMaxVacancy": "5 000+ BYN",
     "resetFilters": "Reset filters",
+    "quickFilters": {
+      "all": "All",
+      "today": "Today",
+      "urgent": "🔥 Urgent",
+      "highPay": ">120 BYN",
+      "nearby": "<2 km",
+      "myRole": "My role"
+    },
     "applicationNotSent": "Application not sent",
     "sawAll": "You've seen all offers",
     "networkError": "Network error. Tap to retry",

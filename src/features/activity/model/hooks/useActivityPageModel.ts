@@ -15,13 +15,13 @@ import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 
 export type ActivityTab = 'applications' | 'shifts'
 
-export const useActivityPageModel = () => {
+export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') => {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
   const isSupplier = selectedRole === 'supplier'
-  const [activeTab, setActiveTab] = useState<ActivityTab>('shifts')
+  const [activeTab, setActiveTab] = useState<ActivityTab>(defaultTab)
 
   const {
     data,

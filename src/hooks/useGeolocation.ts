@@ -8,6 +8,8 @@ import { logger } from '@/utils/logger'
 
 interface UseGeolocationReturn {
   getLocation: () => Promise<string | null>
+  /** Координаты без геокодинга города (для радиуса в фильтрах). */
+  getCoordinates: () => Promise<{ latitude: number; longitude: number } | null>
   isLoading: boolean
 }
 
@@ -173,6 +175,25 @@ export const useGeolocation = (): UseGeolocationReturn => {
   const [isLoading, setIsLoading] = useState(false)
   const isLoadingRef = useRef(false)
 
+  const getCoordinates = useCallback(async (): Promise<{ latitude: number; longitude: number } | null> => {
+    if (isLoadingRef.current) return null
+    isLoadingRef.current = true
+    setIsLoading(true)
+    try {
+      const position = await getCurrentPosition()
+      const { latitude, longitude } = position.coords
+      return { latitude, longitude }
+    } catch (error) {
+      if (!isGeolocationError(error)) {
+        logger.warn('Ошибка получения координат:', error)
+      }
+      return null
+    } finally {
+      isLoadingRef.current = false
+      setIsLoading(false)
+    }
+  }, [])
+
   const getLocation = useCallback(async (): Promise<string | null> => {
     // Защита от повторных запросов
     if (isLoadingRef.current) {
@@ -210,6 +231,7 @@ export const useGeolocation = (): UseGeolocationReturn => {
 
   return {
     getLocation,
+    getCoordinates,
     isLoading,
   }
 }

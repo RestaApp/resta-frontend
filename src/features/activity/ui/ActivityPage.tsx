@@ -11,9 +11,13 @@ import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 type VenueTab = 'vacancies' | 'shifts'
 
-export const ActivityPage = () => {
+interface ActivityPageProps {
+  employeeDefaultTab?: 'applications' | 'shifts'
+}
+
+export const ActivityPage = ({ employeeDefaultTab = 'applications' }: ActivityPageProps) => {
   const { t } = useTranslation()
-  const m = useActivityPageModel()
+  const m = useActivityPageModel(employeeDefaultTab)
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
   const [venueTab, setVenueTab] = useState<VenueTab>('vacancies')

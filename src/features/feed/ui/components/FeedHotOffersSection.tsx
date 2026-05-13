@@ -9,7 +9,6 @@ type Props = {
   onItemClick: (item: HotOffer) => void
   isLoading: boolean
   isVacancy?: boolean
-  isUrgentFilterActive?: boolean
 }
 
 export const FeedHotOffersSection = memo((props: Props) => {
@@ -20,10 +19,7 @@ export const FeedHotOffersSection = memo((props: Props) => {
     onItemClick,
     isLoading,
     isVacancy,
-    isUrgentFilterActive,
   } = props
-
-  if (isUrgentFilterActive) return null
 
   if (isLoading && hotOffers.length === 0) {
     return (
@@ -51,7 +47,6 @@ export const FeedHotOffersSection = memo((props: Props) => {
       onShowAll={onShowAll}
       onItemClick={onItemClick}
       isVacancy={isVacancy}
-      isUrgentFilterActive={isUrgentFilterActive}
     />
   )
 })

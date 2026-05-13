@@ -1,12 +1,10 @@
 /** Параметры GET /api/v1/shifts — см. SEARCH_FILTERS_SPEC.md § Shifts */
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
-import type { QuickFilter } from './clientFilters'
 
 export type ShiftType = 'replacement' | 'vacancy'
 
 export interface BaseQueryParams {
-  activeQuickFilter?: QuickFilter
   advanced?: AdvancedFiltersData | null
   shiftType?: ShiftType
 }
@@ -16,15 +14,8 @@ export const buildVacanciesBaseParams = (
 ): Omit<GetVacanciesParams, 'page' | 'per_page' | 'shift_type'> => {
   const params: Omit<GetVacanciesParams, 'page' | 'per_page' | 'shift_type'> = {}
 
-  if (options.activeQuickFilter === 'urgent') params.urgent = true
-
   const adv = options.advanced
   if (adv) {
-    if (adv.priceRange && Array.isArray(adv.priceRange)) {
-      params.min_payment = adv.priceRange[0]
-      params.max_payment = adv.priceRange[1]
-    }
-
     if (adv.selectedPosition) params.position = adv.selectedPosition
 
     if (adv.selectedSpecializations?.length) {
@@ -50,13 +41,12 @@ export const buildVacanciesQueryParams = (args: {
   page: number
   perPage: number
   urgent?: boolean
-  activeQuickFilter?: QuickFilter
   advanced?: AdvancedFiltersData | null
 }): GetVacanciesParams => {
-  const { shiftType, page, perPage, urgent, activeQuickFilter, advanced } = args
+  const { shiftType, page, perPage, urgent, advanced } = args
 
   const params: GetVacanciesParams = {
-    ...buildVacanciesBaseParams({ activeQuickFilter, advanced, shiftType }),
+    ...buildVacanciesBaseParams({ advanced, shiftType }),
     shift_type: shiftType,
     page,
     per_page: perPage,

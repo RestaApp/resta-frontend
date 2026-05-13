@@ -32,30 +32,32 @@
   --primary-foreground: #ffffff;
   --ring: var(--terracotta);
 
-  --emp: #5ab4ff;
+  /* Единая палитра ролей: все роли используют цвет заведений (terracotta).
+     Алиасы --emp/--sup сохранены для обратной совместимости. */
   --rest: var(--terracotta);
-  --sup: #b38cff;
+  --emp: var(--rest);
+  --sup: var(--rest);
 
-  /* Role palettes — основные цвета каждой роли + варианты для UI.
+  /* Role palettes — единый цвет для всех ролей.
      Используются как `bg-role-employee`, `text-role-employee-foreground`,
      `bg-role-employee-soft`, `border-role-employee` (через @theme inline). */
-  --role-employee: var(--emp);
-  --role-employee-foreground: #ffffff;
-  --role-employee-soft: rgba(90, 180, 255, 0.14);
-  --role-employee-surface: rgba(90, 180, 255, 0.08);
-  --role-employee-border: rgba(90, 180, 255, 0.4);
-
   --role-restaurant: var(--rest);
   --role-restaurant-foreground: #ffffff;
   --role-restaurant-soft: rgba(255, 107, 44, 0.14);
   --role-restaurant-surface: rgba(255, 107, 44, 0.08);
   --role-restaurant-border: rgba(255, 107, 44, 0.4);
 
-  --role-supplier: var(--sup);
-  --role-supplier-foreground: #ffffff;
-  --role-supplier-soft: rgba(179, 140, 255, 0.14);
-  --role-supplier-surface: rgba(179, 140, 255, 0.08);
-  --role-supplier-border: rgba(179, 140, 255, 0.4);
+  --role-employee: var(--role-restaurant);
+  --role-employee-foreground: var(--role-restaurant-foreground);
+  --role-employee-soft: var(--role-restaurant-soft);
+  --role-employee-surface: var(--role-restaurant-surface);
+  --role-employee-border: var(--role-restaurant-border);
+
+  --role-supplier: var(--role-restaurant);
+  --role-supplier-foreground: var(--role-restaurant-foreground);
+  --role-supplier-soft: var(--role-restaurant-soft);
+  --role-supplier-surface: var(--role-restaurant-surface);
+  --role-supplier-border: var(--role-restaurant-border);
 
   --surface-subtle: #1c1c22; /* p-surface2 */
   --surface-subtle-foreground: #f5f5f7;
@@ -130,7 +132,7 @@
   /* Brand gradients used in CTAs/paywalls — единый источник истины. */
   --gradient-stars: linear-gradient(135deg, #f5b142, #ff8a2c);
   --gradient-pro: linear-gradient(135deg, #b38cff, #8a66d4);
-  --gradient-emp: linear-gradient(135deg, #5ab4ff, #3a8ecc);
+  --gradient-emp: var(--gradient-primary);
   --gradient-stars-glow: radial-gradient(
     circle at 50% 0%,
     rgba(245, 177, 66, 0.16),
@@ -155,16 +157,10 @@
   --amber: #d89422;
   --stars: #d89422;
 
-  --emp: #2e80d9;
+  /* Единая палитра ролей (light): все роли используют цвет заведений. */
   --rest: #e85a1f;
-  --sup: #7e5bd4;
-
-  /* Role palettes — light theme overrides */
-  --role-employee: var(--emp);
-  --role-employee-foreground: #ffffff;
-  --role-employee-soft: rgba(46, 128, 217, 0.12);
-  --role-employee-surface: rgba(46, 128, 217, 0.06);
-  --role-employee-border: rgba(46, 128, 217, 0.4);
+  --emp: var(--rest);
+  --sup: var(--rest);
 
   --role-restaurant: var(--rest);
   --role-restaurant-foreground: #ffffff;
@@ -172,11 +168,17 @@
   --role-restaurant-surface: rgba(232, 90, 31, 0.06);
   --role-restaurant-border: rgba(232, 90, 31, 0.4);
 
-  --role-supplier: var(--sup);
-  --role-supplier-foreground: #ffffff;
-  --role-supplier-soft: rgba(126, 91, 212, 0.12);
-  --role-supplier-surface: rgba(126, 91, 212, 0.06);
-  --role-supplier-border: rgba(126, 91, 212, 0.4);
+  --role-employee: var(--role-restaurant);
+  --role-employee-foreground: var(--role-restaurant-foreground);
+  --role-employee-soft: var(--role-restaurant-soft);
+  --role-employee-surface: var(--role-restaurant-surface);
+  --role-employee-border: var(--role-restaurant-border);
+
+  --role-supplier: var(--role-restaurant);
+  --role-supplier-foreground: var(--role-restaurant-foreground);
+  --role-supplier-soft: var(--role-restaurant-soft);
+  --role-supplier-surface: var(--role-restaurant-surface);
+  --role-supplier-border: var(--role-restaurant-border);
 
   --surface-subtle: #ebe9e3;
   --surface-subtle-foreground: #0f1115;
@@ -224,8 +226,8 @@ textarea:hover {
   border-color: var(--input-stroke-hover);
 }
 
-[data-slot='input']:not([data-variant='inline']):focus,
-[data-slot='input']:not([data-variant='inline']):focus-visible,
+[data-slot='input']:not([data-variant='inline']):not([data-role-accent]):focus,
+[data-slot='input']:not([data-variant='inline']):not([data-role-accent]):focus-visible,
 input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']):focus,
 input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not(
     [type='radio']
@@ -235,6 +237,14 @@ textarea:focus-visible {
   border-color: var(--terracotta);
   outline: none;
   box-shadow: 0 0 0 1px var(--terracotta);
+}
+
+/* Фокус по палитре роли (перебивает terracotta из блока выше; цвет задаётся inline). */
+[data-slot='input'][data-role-accent]:focus,
+[data-slot='input'][data-role-accent]:focus-visible {
+  border-color: var(--resta-role-input-focus);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--resta-role-input-focus);
 }
 
 @theme inline {
@@ -330,6 +340,8 @@ textarea:focus-visible {
   --text-title-md--line-height: 24px;
   --text-display: 24px;
   --text-display--line-height: 30px;
+  --text-screen-title: 26px;
+  --text-screen-title--line-height: 32px;
   --text-display-lg: 34px;
   --text-display-lg--line-height: 38px;
 }

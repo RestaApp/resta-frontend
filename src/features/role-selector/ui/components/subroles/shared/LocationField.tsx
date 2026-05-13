@@ -2,7 +2,7 @@
  * Поле выбора города с автодополнением
  */
 
-import { memo } from 'react'
+import { memo, type CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
@@ -12,6 +12,7 @@ import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
 import { AnimatedField } from './AnimatedField'
+import { cn } from '@/utils/cn'
 
 interface LocationFieldProps {
   value: string
@@ -24,6 +25,13 @@ interface LocationFieldProps {
   clearOnFocus?: boolean
   /** Не показывать подпись (заголовок задаётся снаружи, напр. в фильтрах) */
   hideLabel?: boolean
+  /** Перебить глобальный `primary` у поля (фокус) — напр. `getRoleTheme(role).classes.inputFocus` */
+  focusAccentClass?: string
+  /**
+   * Имя CSS-переменной палитры роли без `var()` (как `getRoleTheme().cssVar`), напр. `--role-employee`.
+   * Вместе с `focusAccentClass` отключает terracotta из `index.css` для `[data-slot=input]`.
+   */
+  focusRoleCssVar?: string
 }
 
 export const LocationField = memo(function LocationField({
@@ -35,6 +43,8 @@ export const LocationField = memo(function LocationField({
   isLoading = false,
   clearOnFocus = false,
   hideLabel = false,
+  focusAccentClass,
+  focusRoleCssVar,
 }: LocationFieldProps) {
   const { t } = useTranslation()
   const {
@@ -75,9 +85,17 @@ export const LocationField = memo(function LocationField({
             }}
             onBlur={handleInputBlur}
             placeholder={t('citySelect.placeholder')}
-            className="pr-12"
+            className={cn('pr-12', focusAccentClass)}
             autoComplete="off"
             aria-invalid={!isValid}
+            {...(focusRoleCssVar
+              ? {
+                  'data-role-accent': true,
+                  style: {
+                    ['--resta-role-input-focus' as string]: `var(${focusRoleCssVar})`,
+                  } as CSSProperties,
+                }
+              : {})}
           />
           <button
             onClick={onLocationRequest}
@@ -87,7 +105,7 @@ export const LocationField = memo(function LocationField({
             type="button"
           >
             {isLoading ? (
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <Loader size="sm" />
             ) : (
               <MapPin className="w-4 h-4 text-muted-foreground" />
             )}
@@ -99,20 +117,22 @@ export const LocationField = memo(function LocationField({
       <AnimatePresence>
         {hasSuggestions && (
           <motion.div
-            ref={listRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             style={{ zIndex: Z_INDEX.popover }}
-            className="absolute w-full mt-1 bg-background border border-border rounded-xl shadow-lg max-h-[200px] overflow-y-auto"
+            className="absolute w-full mt-1 overflow-hidden rounded-xl border border-border bg-background shadow-lg"
           >
             {isLoadingCities ? (
               <div className="flex items-center justify-center gap-2 px-4 py-3">
                 <Loader size="sm" />
               </div>
             ) : (
-              <>
+              <div
+                ref={listRef}
+                className="max-h-[200px] overflow-y-auto overflow-x-hidden overscroll-contain"
+              >
                 <ul className="py-1">
                   {filteredCities.map((city: string) => (
                     <li key={city}>
@@ -126,12 +146,12 @@ export const LocationField = memo(function LocationField({
                     </li>
                   ))}
                 </ul>
-                {hasMore && (
-                  <div className="px-4 py-2 text-xs text-muted-foreground text-center border-t border-border">
+                {hasMore ? (
+                  <div className="border-t border-border px-4 py-2 text-center text-xs text-muted-foreground">
                     {t('citySelect.loadMoreHint')}
                   </div>
-                )}
-              </>
+                ) : null}
+              </div>
             )}
           </motion.div>
         )}

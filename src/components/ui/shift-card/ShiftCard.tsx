@@ -8,6 +8,7 @@ import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/forma
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { getRoleTheme } from '@/shared/lib/role-theme'
 import { StatusPill, DirectPayBadge, type ShiftStatus } from '../StatusPill'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
@@ -15,6 +16,7 @@ import { cn } from '@/utils/cn'
 import { splitLocationPoints } from '@/shared/utils/location'
 import { ShiftCardHeader } from './ShiftCardHeader'
 import { ShiftCardMeta } from './ShiftCardMeta'
+import { isEmployeeRole } from '@/utils/roles'
 
 interface ShiftCardOwnerActions {
   onEdit: (id: number) => void
@@ -53,6 +55,8 @@ const ShiftCardComponent = ({
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const currentUserId = useCurrentUserId()
   const selectedRole = useAppSelector(selectSelectedRole)
+  const isEmployeeCard = isEmployeeRole(selectedRole)
+  const accentRole = getRoleTheme(selectedRole ?? 'employee')
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const isOwner = useMemo(
@@ -102,7 +106,9 @@ const ShiftCardComponent = ({
     return (
       <>
         {formatMoney(shift.pay)}{' '}
-        <span className="text-sm font-normal text-muted-foreground">{shift.currency}</span>
+        <span className="font-display text-sm font-normal tracking-normal text-muted-foreground">
+          {shift.currency}
+        </span>
       </>
     )
   }, [shift.pay, shift.currency, t])
@@ -179,8 +185,9 @@ const ShiftCardComponent = ({
   const shouldHideOwnerMetaForVenue = isOwner && selectedRole === 'venue'
   const shouldShowMetaRow = useMemo(() => {
     if (isVacancyCard) return !isOwner && Boolean(locationText)
+    if (isEmployeeCard) return hasTime || Boolean(locationText)
     return hasDate || hasTime
-  }, [isVacancyCard, isOwner, locationText, hasDate, hasTime])
+  }, [isVacancyCard, isOwner, locationText, hasDate, hasTime, isEmployeeCard])
 
   return (
     <div
@@ -190,11 +197,15 @@ const ShiftCardComponent = ({
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
       className={cn(
-        'group relative rounded-xl p-4 border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'border-[var(--surface-stroke-soft)] hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
-        shift.urgent &&
-          'border-primary/30 bg-primary/5 hover:border-primary/45 [box-shadow:var(--primary-ring-soft)] hover:[box-shadow:var(--primary-ring-soft-hover)]',
-        !shift.urgent && 'shadow-sm hover:[box-shadow:var(--surface-shadow-soft)]'
+        'group relative cursor-pointer rounded-2xl border p-4 outline-none transition-all duration-200 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring',
+        'hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
+        !isSupplierVariant && accentRole.classes.shiftCardGradient,
+        isSupplierVariant && 'border-border/80 bg-card shadow-sm',
+        !isSupplierVariant &&
+          (shift.urgent
+            ? cn('border-2 shadow-sm', accentRole.classes.border, accentRole.classes.bgSurface)
+            : 'border border-border/60 shadow-sm'),
+        !shift.urgent && !isSupplierVariant && 'hover:[box-shadow:var(--surface-shadow-soft)]'
       )}
     >
       <ShiftCardHeader
@@ -203,6 +214,8 @@ const ShiftCardComponent = ({
         positionText={positionText}
         priceContent={priceContent}
         hidePrice={isSupplierVariant}
+        isEmployeeCard={isEmployeeCard}
+        accentRole={accentRole}
       />
 
       <ShiftCardMeta
@@ -218,12 +231,18 @@ const ShiftCardComponent = ({
         hasTime={hasTime}
         date={shift.date}
         time={shift.time}
+        isEmployeeCard={isEmployeeCard}
+        accentRole={accentRole}
       />
+
+      {!isSupplierVariant ? <div className="my-3 h-px w-full bg-border/55" aria-hidden /> : null}
 
       {!isSupplierVariant ? (
         <div className="flex items-center justify-between gap-2">
           <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-            {applicationStatus != null ? <StatusPill status={applicationStatus} /> : null}
+            {isEmployeeCard ? null : applicationStatus != null ? (
+              <StatusPill status={applicationStatus} />
+            ) : null}
             {shift.escrow ? (
               <DirectPayBadge
                 amount={shift.escrowAmount ?? shift.pay}
@@ -231,12 +250,21 @@ const ShiftCardComponent = ({
                 short
               />
             ) : null}
+            {isEmployeeCard && shift.verified ? (
+              <span className="font-mono-resta text-xs font-semibold tracking-wide text-success">
+                ✓ VERIFIED
+              </span>
+            ) : null}
             {responses ? (
               <span
                 className={cn(
-                  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium tabular-nums border',
+                  'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium tabular-nums',
                   responses.hasResponses
-                    ? 'border-primary/25 bg-primary/5 text-primary dark:bg-primary/10'
+                    ? cn(
+                        accentRole.classes.border,
+                        accentRole.classes.bgSurface,
+                        accentRole.classes.text
+                      )
                     : 'border-border bg-muted/40 text-muted-foreground'
                 )}
               >
@@ -265,10 +293,21 @@ const ShiftCardComponent = ({
 
           {!isOwner && canShowApply ? (
             <Button
-              variant={isApplied ? 'outline' : 'gradient'}
+              variant={isApplied ? 'outline' : 'ghost'}
               loading={isLoading}
               onClick={isApplied ? handleCancelClick : handleApplyClick}
               disabled={isLoading || (!canApply && !isApplied)}
+              className={
+                isApplied
+                  ? undefined
+                  : cn(
+                      'border-0 font-semibold shadow-sm',
+                      accentRole.classes.bg,
+                      accentRole.classes.textOn,
+                      accentRole.classes.solidHover,
+                      accentRole.classes.ring
+                    )
+              }
             >
               {actionLabel}
             </Button>

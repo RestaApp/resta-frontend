@@ -48,6 +48,12 @@ export const getTabForScreen = (role: UiRole, screen: Screen): Tab | null => {
   if (role === 'supplier') {
     return SUPPLIER_SCREEN_TO_TAB_MAP[screen] ?? null
   }
+  if (isEmployeeRole(role)) {
+    if (screen === ROUTES.SHIFTS) return 'activity'
+    if (screen === ROUTES.VACANCIES) return 'myshifts'
+    if (screen === ROUTES.HOME) return 'feed'
+    if (screen === ROUTES.PROFILE || screen === ROUTES.SETTINGS) return 'profile'
+  }
   return SCREEN_TO_TAB_MAP[screen]
 }
 
@@ -59,6 +65,12 @@ export const getScreenForTab = (role: UiRole, tab: Tab): Screen | null => {
   // Для employee явно направляем "feed" в home экран.
   if (tab === 'feed' && isEmployeeRole(role)) {
     return ROUTES.HOME
+  }
+  if (tab === 'activity' && isEmployeeRole(role)) {
+    return ROUTES.SHIFTS
+  }
+  if (tab === 'myshifts' && isEmployeeRole(role)) {
+    return ROUTES.VACANCIES
   }
 
   return TAB_TO_SCREEN_MAP[tab] ?? null

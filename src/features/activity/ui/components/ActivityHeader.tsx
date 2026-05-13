@@ -4,6 +4,10 @@ import { Briefcase, Send } from 'lucide-react'
 import { Tabs } from '@/components/ui/tabs'
 import type { TabOption } from '@/components/ui/tabs'
 import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { getRoleTheme } from '@/shared/lib/role-theme'
+import { cn } from '@/utils/cn'
 
 type Props = {
   activeTab: ActivityTab
@@ -12,6 +16,8 @@ type Props = {
 
 export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
   const { t } = useTranslation()
+  const selectedRole = useAppSelector(selectSelectedRole)
+  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
   const tabOptions = useMemo<TabOption<ActivityTab>[]>(
     () => [
       { id: 'applications', label: t('tabs.activity.applications'), icon: Send },
@@ -23,7 +29,13 @@ export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
   return (
     <div className="top-0 z-10 bg-background/95 backdrop-blur-sm transition-all border-border/50">
       <div className="ui-density-page ui-density-py-sm">
-        <Tabs options={tabOptions} activeId={activeTab} onChange={onChange} />
+        <Tabs
+          options={tabOptions}
+          activeId={activeTab}
+          onChange={onChange}
+          activeIndicatorClassName={cn('shadow-sm', roleTheme.classes.bg)}
+          activeTriggerClassName={roleTheme.classes.textOn}
+        />
       </div>
     </div>
   )

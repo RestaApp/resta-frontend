@@ -15,6 +15,10 @@ import { DetailsTab } from './DetailsTab'
 import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { getRoleTheme } from '@/shared/lib/role-theme'
+import { cn } from '@/utils/cn'
 
 interface ShiftDetailsScreenProps {
   shift: Shift | null
@@ -65,6 +69,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     hourlyRate,
     t,
   })
+
+  const selectedRole = useAppSelector(selectSelectedRole)
+  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
 
   const showVenueBadges = useMemo(
     () =>
@@ -147,6 +154,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             activeId={controller.activeTab}
             onChange={id => controller.setActiveTab(id as 'applicants' | 'details')}
             className="mb-4"
+            activeIndicatorClassName={cn('shadow-sm', roleTheme.classes.bg)}
+            activeTriggerClassName={roleTheme.classes.textOn}
           />
         ) : null}
 

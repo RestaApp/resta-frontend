@@ -2,7 +2,16 @@
  * Константы для табов Dashboard
  */
 
-import { Building2, Inbox, Package, Search, User, Users, Zap } from 'lucide-react'
+import {
+  ArrowDown,
+  Briefcase,
+  Building2,
+  Clock3,
+  Package,
+  UserRound,
+  Users,
+  Zap,
+} from 'lucide-react'
 import type { Tab, UiRole } from '@/types'
 import { isEmployeeRole } from '@/utils/roles'
 
@@ -19,6 +28,7 @@ const TAB_LABEL_KEYS = {
   employee: {
     feed: 'tabs.employee.feed',
     activity: 'tabs.employee.activity',
+    my: 'tabs.employee.my',
     profile: 'tabs.employee.profile',
   },
   venue: {
@@ -39,9 +49,10 @@ const TAB_LABEL_KEYS = {
  */
 const getEmployeeTabs = (): TabItem[] => {
   return [
-    { id: 'feed', label: TAB_LABEL_KEYS.employee.feed, icon: Search },
-    { id: 'activity', label: TAB_LABEL_KEYS.employee.activity, icon: Inbox },
-    { id: 'profile', label: TAB_LABEL_KEYS.employee.profile, icon: User },
+    { id: 'feed', label: TAB_LABEL_KEYS.employee.feed, icon: Briefcase },
+    { id: 'activity', label: TAB_LABEL_KEYS.employee.activity, icon: ArrowDown },
+    { id: 'myshifts', label: TAB_LABEL_KEYS.employee.my, icon: Clock3 },
+    { id: 'profile', label: TAB_LABEL_KEYS.employee.profile, icon: UserRound },
   ]
 }
 
@@ -53,7 +64,7 @@ const getVenueTabs = (): TabItem[] => {
     { id: 'activity', label: TAB_LABEL_KEYS.venue.activity, icon: Zap },
     { id: 'staff', label: TAB_LABEL_KEYS.venue.staff, icon: Users },
     { id: 'suppliers', label: TAB_LABEL_KEYS.venue.suppliers, icon: Package },
-    { id: 'profile', label: TAB_LABEL_KEYS.venue.profile, icon: User },
+    { id: 'profile', label: TAB_LABEL_KEYS.venue.profile, icon: UserRound },
   ]
 }
 
@@ -63,7 +74,7 @@ const getVenueTabs = (): TabItem[] => {
 const getSupplierTabs = (): TabItem[] => {
   return [
     { id: 'home', label: TAB_LABEL_KEYS.supplier.home, icon: Building2 },
-    { id: 'profile', label: TAB_LABEL_KEYS.supplier.profile, icon: User },
+    { id: 'profile', label: TAB_LABEL_KEYS.supplier.profile, icon: UserRound },
   ]
 }
 

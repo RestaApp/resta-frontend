@@ -6,6 +6,7 @@ import { LogoWithText } from '@/components/ui/logo-with-text'
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
+  const roleColorVar = 'var(--primary)'
 
   const logoIcon = (
     <div className="relative">
@@ -19,15 +20,17 @@ export const LoadingPage = memo(function LoadingPage() {
           reduceMotion ? { duration: 0 } : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
         }
         className="absolute inset-0 -z-10 blur-3xl"
-        style={{ background: 'var(--gradient-primary)' }}
+        style={{
+          background: `color-mix(in srgb, ${roleColorVar} 55%, transparent)`,
+        }}
       />
 
       <div className="relative mb-8 h-[88px] w-[88px]">
         <motion.div
           className="absolute inset-0 grid place-items-center rounded-3xl text-[52px] font-extrabold text-white"
           style={{
-            boxShadow: '0 24px 48px color-mix(in srgb, var(--terracotta) 40%, transparent)',
-            background: 'linear-gradient(135deg, var(--terracotta), #ff8a5c)',
+            boxShadow: `0 24px 48px color-mix(in srgb, ${roleColorVar} 40%, transparent)`,
+            background: `linear-gradient(135deg, ${roleColorVar}, color-mix(in srgb, ${roleColorVar} 75%, white))`,
           }}
           initial={reduceMotion ? false : { scale: 0.98 }}
           animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
@@ -41,7 +44,7 @@ export const LoadingPage = memo(function LoadingPage() {
         <motion.div
           className="absolute -inset-2 rounded-[2rem] border-2"
           style={{
-            borderColor: 'var(--terracotta)',
+            borderColor: roleColorVar,
             borderTopColor: 'transparent',
           }}
           animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}

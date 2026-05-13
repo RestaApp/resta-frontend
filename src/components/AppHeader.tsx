@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/button'
+import {
+  APP_HEADER_ACTION_BUTTON_CLASS,
+  APP_HEADER_ACTION_ICON_CLASS,
+  APP_HEADER_TITLE_CLASS,
+} from '@/components/ui/ui-patterns'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
 import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab, UiRole } from '@/types'
@@ -23,11 +28,10 @@ type HeaderAction = {
 
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string
 
-const HEADER_ACTION_BUTTON_CLASS = 'min-w-[44px] min-h-[44px] p-0 rounded-full flex-shrink-0'
-
 const getHeaderTitle = (activeTab: Tab | undefined, t: TranslateFn) => {
-  if (activeTab === 'feed') return t('tabs.employee.feed', { defaultValue: 'Поиск' })
+  if (activeTab === 'feed') return t('feed.headerTitle', { defaultValue: 'Лента' })
   if (activeTab === 'activity') return t('tabs.employee.activity', { defaultValue: 'Активность' })
+  if (activeTab === 'myshifts') return t('tabs.employee.my', { defaultValue: 'Мои' })
   if (activeTab === 'profile') return t('tabs.employee.profile', { defaultValue: 'Профиль' })
   if (!activeTab) return ''
 
@@ -75,7 +79,7 @@ const getHeaderAction = (params: {
     }
   }
 
-  if (activeTab === 'activity') {
+  if (activeTab === 'activity' || activeTab === 'myshifts') {
     if (role === 'venue') {
       return venueAddShiftAction()
     }
@@ -123,7 +127,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   const actionButtonRef = useRef<HTMLButtonElement | null>(null)
   const isEmployeeFlow = role != null && UI_ROLE_TO_API_ROLE[role] === 'employee'
 
-  const isActivity = activeTab === 'activity'
+  const isActivity = activeTab === 'activity' || activeTab === 'myshifts'
 
   const title = useMemo(() => getHeaderTitle(activeTab, t), [activeTab, t])
   const action = useMemo(
@@ -167,19 +171,19 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
           'border-b border-[var(--surface-stroke-soft)]'
         )}
       >
-        <div className="flex w-full min-h-[44px] items-center justify-between gap-3">
-          <h1 className="font-display text-3xl leading-tight tracking-tight truncate">{title}</h1>
+        <div className="flex w-full min-h-12 items-center justify-between gap-3">
+          <h1 className={APP_HEADER_TITLE_CLASS}>{title}</h1>
 
           {action ? (
             <Button
               ref={actionButtonRef}
-              variant="gradient"
+              variant="outline"
               size="sm"
               onClick={action.onClick}
               aria-label={action.ariaLabel}
-              className={HEADER_ACTION_BUTTON_CLASS}
+              className={APP_HEADER_ACTION_BUTTON_CLASS}
             >
-              <action.Icon className="h-5 w-5" />
+              <action.Icon className={APP_HEADER_ACTION_ICON_CLASS} />
             </Button>
           ) : null}
         </div>

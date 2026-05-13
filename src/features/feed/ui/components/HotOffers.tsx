@@ -33,8 +33,6 @@ interface HotOffersProps {
   totalCount?: number
   onShowAll?: () => void
   isVacancy?: boolean
-  /** Фильтр «срочные» активен — показываем «Убрать фильтр» */
-  isUrgentFilterActive?: boolean
 }
 
 interface HotOfferCardProps {
@@ -126,7 +124,6 @@ export const HotOffers = memo(
     totalCount,
     onShowAll,
     isVacancy,
-    isUrgentFilterActive,
   }: HotOffersProps) => {
     const { t } = useTranslation()
     const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
@@ -137,10 +134,10 @@ export const HotOffers = memo(
       return t('feed.hotOffers')
     }, [isVacancy, t])
 
-    const showAllLabel = useMemo(() => {
-      if (isUrgentFilterActive) return t('feed.clearHotFilter')
-      return t('feed.showAllHotOffers') || t('common.all')
-    }, [t, isUrgentFilterActive])
+    const showAllLabel = useMemo(
+      () => t('feed.showAllHotOffers') || t('common.all'),
+      [t]
+    )
 
     return (
       <div

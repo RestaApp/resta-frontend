@@ -9,7 +9,6 @@ export const createInitialFilters = (
   if (!hasPosition && !hasCity) return null
 
   return {
-    priceRange: null,
     selectedCity: userCity?.trim() || null,
     selectedPosition: userPosition || null,
     selectedSpecializations: [],
@@ -24,16 +23,29 @@ export const syncFiltersPositionAndSpecializations = (
 ): AdvancedFiltersData | null => {
   if (!sourceFilters) return targetFilters
 
-  const { selectedCity, selectedPosition, selectedSpecializations } = sourceFilters
+  const {
+    selectedCity,
+    selectedPosition,
+    selectedSpecializations,
+    whenPreset,
+    startDate,
+    endDate,
+    geoLat,
+    geoLon,
+    radiusKm,
+  } = sourceFilters
 
   if (!targetFilters) {
     return {
-      priceRange: null,
       selectedCity: selectedCity || null,
       selectedPosition,
       selectedSpecializations: selectedSpecializations || [],
-      startDate: null,
-      endDate: null,
+      startDate: startDate ?? null,
+      endDate: endDate ?? null,
+      whenPreset: whenPreset ?? undefined,
+      geoLat: geoLat ?? undefined,
+      geoLon: geoLon ?? undefined,
+      radiusKm: radiusKm ?? undefined,
     }
   }
 
@@ -42,5 +54,11 @@ export const syncFiltersPositionAndSpecializations = (
     selectedCity: selectedCity || null,
     selectedPosition,
     selectedSpecializations: selectedSpecializations || [],
+    whenPreset: whenPreset ?? targetFilters.whenPreset,
+    startDate: startDate ?? targetFilters.startDate,
+    endDate: endDate ?? targetFilters.endDate,
+    geoLat: geoLat ?? targetFilters.geoLat,
+    geoLon: geoLon ?? targetFilters.geoLon,
+    radiusKm: radiusKm ?? targetFilters.radiusKm,
   }
 }

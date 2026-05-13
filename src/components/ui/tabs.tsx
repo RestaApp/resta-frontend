@@ -22,6 +22,10 @@ interface TabsProps<T extends string> {
   ariaLabel?: string
   /** Позволяет принудительно задать layoutId индикатора */
   indicatorLayoutId?: string
+  /** Фон «таблетки» активной вкладки. По умолчанию — палитра primary. */
+  activeIndicatorClassName?: string
+  /** Цвет текста и иконки активной вкладки. По умолчанию — primary-foreground. */
+  activeTriggerClassName?: string
 }
 
 export const Tabs = <T extends string>({
@@ -31,6 +35,8 @@ export const Tabs = <T extends string>({
   className,
   ariaLabel = 'Tabs',
   indicatorLayoutId,
+  activeIndicatorClassName = 'bg-primary shadow-sm',
+  activeTriggerClassName = SEGMENTED_TRIGGER_ACTIVE_CLASS,
 }: TabsProps<T>) => {
   const tabRefs = useRef(new Map<T, HTMLButtonElement>())
   const reduceMotion = useReducedMotion()
@@ -100,13 +106,13 @@ export const Tabs = <T extends string>({
               'relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-1.5 text-sm transition-colors duration-300',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
               SEGMENTED_TRIGGER_CLASS,
-              isActive ? SEGMENTED_TRIGGER_ACTIVE_CLASS : SEGMENTED_TRIGGER_INACTIVE_CLASS
+              isActive ? activeTriggerClassName : SEGMENTED_TRIGGER_INACTIVE_CLASS
             )}
           >
             {isActive ? (
               <motion.span
                 layoutId={resolvedIndicatorLayoutId}
-                className="absolute inset-0 rounded-full bg-primary shadow-sm"
+                className={cn('absolute inset-0 rounded-full', activeIndicatorClassName)}
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"
               />

@@ -1,6 +1,10 @@
 import type { TFunction } from 'i18next'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { Tabs, type TabOption } from '@/components/ui/tabs'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { getRoleTheme } from '@/shared/lib/role-theme'
+import { cn } from '@/utils/cn'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
@@ -37,11 +41,19 @@ export const VenueActivityContent = ({
   venueEmptyContent,
 }: VenueActivityContentProps) => {
   const handleOpenCreate = () => emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)
+  const selectedRole = useAppSelector(selectSelectedRole)
+  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
 
   return (
     <>
       <div className="top-0 z-10 bg-background/95 backdrop-blur-sm transition-all border-border/50 ui-density-page ui-density-py-sm">
-        <Tabs options={venueTabOptions} activeId={venueTab} onChange={setVenueTab} />
+        <Tabs
+          options={venueTabOptions}
+          activeId={venueTab}
+          onChange={setVenueTab}
+          activeIndicatorClassName={cn('shadow-sm', roleTheme.classes.bg)}
+          activeTriggerClassName={roleTheme.classes.textOn}
+        />
       </div>
 
       <div className="ui-density-page ui-density-py">

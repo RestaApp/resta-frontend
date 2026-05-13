@@ -15,7 +15,6 @@ import { STORAGE_KEYS } from '@/constants/storage'
 import { useFeedFiltersState } from '../hooks/useFeedFiltersState'
 import { useVacanciesInfiniteList } from '../hooks/useVacanciesInfiniteList'
 import { buildVacanciesBaseParams } from '../utils/queryParams'
-import { applyClientQuickFilters } from '../utils/clientFilters'
 import { useHotOffers } from '../hooks/useHotOffers'
 import { useShiftActions } from '../hooks/useShiftActions'
 import { useFeedApplyFlow } from '../hooks/useFeedApplyFlow'
@@ -53,8 +52,6 @@ export const useFeedPageModel = () => {
   const {
     feedType,
     setFeedType,
-    quickFilter,
-    setQuickFilter,
     advancedFilters,
     setAdvancedFilters,
     shiftsAdvancedFilters,
@@ -66,7 +63,6 @@ export const useFeedPageModel = () => {
     isFiltersOpen,
     setIsFiltersOpen,
     resetFilters: resetFeedFilters,
-    userPosition,
   } = useFeedFiltersState()
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
 
@@ -129,21 +125,19 @@ export const useFeedPageModel = () => {
   const shiftsBaseQuery = useMemo(
     () =>
       buildVacanciesBaseParams({
-        activeQuickFilter: quickFilter,
         advanced: shiftsAdvancedFilters,
         shiftType: 'replacement',
       }),
-    [quickFilter, shiftsAdvancedFilters]
+    [shiftsAdvancedFilters]
   )
 
   const jobsBaseQuery = useMemo(
     () =>
       buildVacanciesBaseParams({
-        activeQuickFilter: quickFilter,
         advanced: jobsAdvancedFilters,
         shiftType: 'vacancy',
       }),
-    [quickFilter, jobsAdvancedFilters]
+    [jobsAdvancedFilters]
   )
 
   const shiftsList = useVacanciesInfiniteList({
@@ -178,14 +172,7 @@ export const useFeedPageModel = () => {
     return m
   }, [hotVacancies])
 
-  // Клиентские quick filters — только для отображения списка
-  const filteredShifts = useMemo(() => {
-    return applyClientQuickFilters({
-      shifts: activeList.items,
-      quickFilter,
-      userPosition,
-    })
-  }, [activeList.items, quickFilter, userPosition])
+  const filteredShifts = activeList.items
 
   // IMPORTANT: для деталей лучше иметь lookup по исходным items (не по отфильтрованному списку)
   const shiftsById = useMemo(() => {
@@ -226,13 +213,8 @@ export const useFeedPageModel = () => {
   )
 
   const showAllHotShifts = useCallback(() => {
-    if (quickFilter === 'urgent') {
-      setQuickFilter('all')
-    } else {
-      setQuickFilter('urgent')
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }, [quickFilter, setQuickFilter])
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
   const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
 
@@ -266,21 +248,16 @@ export const useFeedPageModel = () => {
     ]
   )
 
-  const hasActiveQuick = useMemo(() => quickFilter !== 'all', [quickFilter])
   const hasActiveAdvanced = useMemo(
     () => (advancedFilters ? hasActiveFilters(advancedFilters) : false),
     [advancedFilters]
   )
-  const hasActiveAny = useMemo(
-    () => hasActiveQuick || hasActiveAdvanced,
-    [hasActiveQuick, hasActiveAdvanced]
-  )
+  const hasActiveAny = hasActiveAdvanced
 
   const activeFiltersList = useMemo(
-    () => formatFiltersForDisplay(advancedFilters, quickFilter),
-    [advancedFilters, quickFilter]
+    () => formatFiltersForDisplay(advancedFilters),
+    [advancedFilters]
   )
-
   const emptyMessage = useMemo(
     () =>
       hasActiveAny
@@ -346,6 +323,7 @@ export const useFeedPageModel = () => {
     emptyMessage,
     emptyDescription,
     activeFiltersList,
+    totalCount: Math.max(0, activeList.totalCount),
     openFilters,
 
     // hot offers
@@ -358,7 +336,6 @@ export const useFeedPageModel = () => {
     filteredShifts,
     activeList,
     onRefresh: handleRefresh,
-    quickFilter,
     advancedFilters,
     resetFilters,
     openShiftDetails,

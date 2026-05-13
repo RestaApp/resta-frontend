@@ -7,16 +7,13 @@ import { useAppSelector } from '@/store/hooks'
 import { selectUserCity, selectUserPosition } from '@/features/navigation/model/userSlice'
 import type { FeedType } from '../types'
 import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
-import type { QuickFilter } from '../utils/clientFilters'
+import { hasActiveFilters } from '@/utils/filters'
 import { createInitialFilters } from '../utils/filterSync'
-import { getLocalStorageItem } from '@/utils/localStorage'
-import { STORAGE_KEYS } from '@/constants/storage'
+import { loadFeedFilterTemplate } from '../utils/feedFilterTemplates'
 
 export interface UseFeedFiltersStateReturn {
   feedType: FeedType
   setFeedType: (type: FeedType) => void
-  quickFilter: QuickFilter
-  setQuickFilter: (filter: QuickFilter) => void
   advancedFilters: AdvancedFiltersData | null // Активные фильтры для текущего типа (shifts/jobs)
   setAdvancedFilters: (filters: AdvancedFiltersData | null) => void
   shiftsAdvancedFilters: AdvancedFiltersData | null // Фильтры для смен
@@ -28,16 +25,11 @@ export interface UseFeedFiltersStateReturn {
   isFiltersOpen: boolean
   setIsFiltersOpen: (open: boolean) => void
   resetFilters: () => void
-  userPosition: string | null | undefined
   hasAdvancedFilters: boolean
 }
 
 export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
-  const [feedType, setFeedType] = useState<FeedType>(() => {
-    const shouldShowShifts = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
-    return shouldShowShifts === 'true' ? 'shifts' : 'jobs'
-  })
-  const [quickFilter, setQuickFilter] = useState<QuickFilter>('all')
+  const [feedType, setFeedType] = useState<FeedType>('jobs')
   const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
@@ -57,10 +49,19 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
     AdvancedFiltersData | null | undefined
   >(undefined)
 
-  const shiftsAdvancedFilters =
-    shiftsAdvancedFiltersState === undefined ? derivedInitialFilters : shiftsAdvancedFiltersState
-  const jobsAdvancedFilters =
-    jobsAdvancedFiltersState === undefined ? derivedInitialFilters : jobsAdvancedFiltersState
+  const shiftsAdvancedFilters = useMemo(() => {
+    if (shiftsAdvancedFiltersState !== undefined) return shiftsAdvancedFiltersState
+    const saved = loadFeedFilterTemplate('shifts')
+    if (saved && hasActiveFilters(saved)) return saved
+    return derivedInitialFilters
+  }, [shiftsAdvancedFiltersState, derivedInitialFilters])
+
+  const jobsAdvancedFilters = useMemo(() => {
+    if (jobsAdvancedFiltersState !== undefined) return jobsAdvancedFiltersState
+    const saved = loadFeedFilterTemplate('jobs')
+    if (saved && hasActiveFilters(saved)) return saved
+    return derivedInitialFilters
+  }, [jobsAdvancedFiltersState, derivedInitialFilters])
 
   // Активные фильтры для текущего типа фида (вычисляемое значение)
   const advancedFilters = useMemo(() => {
@@ -79,13 +80,11 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
     [feedType]
   )
 
-  // Синхронизация позиций и специализаций выполняется через утилиту syncFiltersPositionAndSpecializations
-  // Это позволяет сохранять отдельные значения для цены и дат между сменами и вакансиями
+  // Синхронизация позиций и специализаций — syncFiltersPositionAndSpecializations
 
   const hasAdvancedFilters = useMemo(() => !!advancedFilters, [advancedFilters])
 
   const resetFilters = useCallback(() => {
-    setQuickFilter('all')
     setShiftsAdvancedFiltersState(null)
     setJobsAdvancedFiltersState(null)
     setSelectedShiftId(null)
@@ -102,8 +101,6 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
   return {
     feedType,
     setFeedType,
-    quickFilter,
-    setQuickFilter,
     advancedFilters,
     setAdvancedFilters,
     shiftsAdvancedFilters,
@@ -115,7 +112,6 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
     isFiltersOpen,
     setIsFiltersOpen,
     resetFilters,
-    userPosition,
     hasAdvancedFilters,
   }
 }

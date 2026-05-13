@@ -13,4 +13,8 @@ export const STORAGE_KEYS = {
   EDIT_SHIFT_ID: 'edit_shift_id',
   ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN: 'activity_add_shift_onboarding_shown',
   LOCALE: 'resta_locale',
+  /** Сохранённый шаблон фильтров ленты (смены) */
+  FEED_FILTER_TEMPLATE_SHIFTS: 'resta_feed_filter_template_shifts',
+  /** Сохранённый шаблон фильтров ленты (вакансии) */
+  FEED_FILTER_TEMPLATE_JOBS: 'resta_feed_filter_template_jobs',
 } as const

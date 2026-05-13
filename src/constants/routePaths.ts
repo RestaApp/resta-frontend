@@ -4,7 +4,7 @@ import { isEmployeeRole } from '@/utils/roles'
 const EMPLOYEE_SCREEN_PATHS: Partial<Record<Screen, string>> = {
   home: '/feed',
   shifts: '/applications',
-  vacancies: '/applications',
+  vacancies: '/my-shifts',
   profile: '/me',
   settings: '/settings',
 }

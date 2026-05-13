@@ -20,6 +20,13 @@ export const SEGMENTED_TRIGGER_ACTIVE_CLASS = 'text-primary-foreground'
 
 export const SEGMENTED_TRIGGER_INACTIVE_CLASS = 'text-muted-foreground'
 
+export const APP_HEADER_TITLE_CLASS =
+  'font-display text-screen-title leading-none tracking-normal truncate'
+
+export const APP_HEADER_ACTION_BUTTON_CLASS = 'h-12 w-12 min-w-12 rounded-2xl p-0 flex-shrink-0'
+
+export const APP_HEADER_ACTION_ICON_CLASS = 'h-6 w-6'
+
 export const INPUT_FIELD_BASE_CLASS =
   'w-full min-w-0 rounded-xl border bg-input-background text-foreground caret-foreground'
 

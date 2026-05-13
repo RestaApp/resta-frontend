@@ -60,24 +60,43 @@ export const useLocationField = ({
 
   const hasMore = allFilteredCities.length > visibleCount
 
-  // Обработчик скролла для подгрузки дополнительных городов
+  /** Актуальная длина списка для обработчика скролла (без устаревшего замыкания). */
+  const filteredTotalRef = useRef(0)
+  filteredTotalRef.current = allFilteredCities.length
+
+  // Подгрузка порциями при скролле. Зависимость от `showSuggestions`: при закрытии списка
+  // DOM снимается, а старый listener оставался на отсоединённом узле — новый список не подгружался.
+  // `isLoadingCities`: пока скелетон, `listRef` на скролл-контейнере ещё нет — подписаться после загрузки.
   useEffect(() => {
+    if (!showSuggestions || !hasMore || isLoadingCities) return
+
     const listElement = listRef.current
-    if (!listElement || !hasMore) return
+    if (!listElement) return
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = listElement
-      // Подгружаем когда пользователь прокрутил до указанного порога
-      if (scrollTop + clientHeight >= scrollHeight * loadMoreThreshold) {
-        setVisibleCount(prev => Math.min(prev + loadMoreStep, allFilteredCities.length))
+      if (scrollHeight <= clientHeight) return
+
+      const fromBottom = scrollHeight - scrollTop - clientHeight
+      const thresholdPx = Math.max(48, scrollHeight * (1 - loadMoreThreshold))
+      if (fromBottom <= thresholdPx) {
+        const cap = filteredTotalRef.current
+        setVisibleCount(prev => Math.min(prev + loadMoreStep, cap))
       }
     }
 
-    listElement.addEventListener('scroll', handleScroll)
+    listElement.addEventListener('scroll', handleScroll, { passive: true })
     return () => {
       listElement.removeEventListener('scroll', handleScroll)
     }
-  }, [hasMore, allFilteredCities.length, loadMoreThreshold, loadMoreStep])
+  }, [
+    hasMore,
+    allFilteredCities.length,
+    loadMoreThreshold,
+    loadMoreStep,
+    showSuggestions,
+    isLoadingCities,
+  ])
 
   // Закрываем список при клике вне компонента
   useEffect(() => {
