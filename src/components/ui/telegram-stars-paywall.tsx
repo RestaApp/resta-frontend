@@ -149,13 +149,10 @@ export const TelegramStarsPaywall = ({
 
       <Button
         size="lg"
+        variant="stars"
         onClick={() => onPay(selectedPlan)}
         loading={isPaying}
         className="mt-2 w-full"
-        style={{
-          background: 'var(--gradient-stars)',
-          boxShadow: 'var(--shadow-stars-cta)',
-        }}
       >
         <Star className="h-4 w-4 fill-current" /> Оплатить{' '}
         {selectedPlan.stars.toLocaleString('ru-RU')} Stars

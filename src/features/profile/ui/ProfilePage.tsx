@@ -12,6 +12,7 @@ import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
 import { ProfileSpecializationsSection } from './components/ProfileSpecializationsSection'
 import { ProfileSupplierCategorySection } from './components/ProfileSupplierCategorySection'
 import { Loader } from '@/components/ui/loader'
+import { ErrorState } from '@/components/ui/states'
 import { Card } from '@/components/ui/card'
 import { Award } from 'lucide-react'
 import { buildProfileAchievements } from './utils/profileAchievements'
@@ -58,7 +59,7 @@ export const ProfilePage = memo(() => {
   if (!m.userProfile) {
     return (
       <div className="pb-24 ui-density-page ui-density-py">
-        <div className="text-center py-8 text-destructive">{t('profile.loadError')}</div>
+        <ErrorState title={t('profile.loadError')} />
       </div>
     )
   }

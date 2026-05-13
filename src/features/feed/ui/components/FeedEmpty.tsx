@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/states'
 import type { FeedType } from '@/features/feed/model/types'
 import {
   EmptyFiltersIllustration,
@@ -79,9 +80,9 @@ export function FeedListArea({
 
   if (error) {
     return (
-      <div className="py-8 text-center text-destructive">
-        {feedType === 'shifts' ? t('feed.loadErrorShifts') : t('feed.loadErrorVacancies')}
-      </div>
+      <ErrorState
+        title={feedType === 'shifts' ? t('feed.loadErrorShifts') : t('feed.loadErrorVacancies')}
+      />
     )
   }
 

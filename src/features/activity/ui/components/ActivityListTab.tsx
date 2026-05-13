@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { ErrorState } from '@/components/ui/states'
 import { MyShiftsSection } from '@/features/activity/ui/components/MyShiftsSection'
 import { MyApplicationsSection } from '@/features/activity/ui/components/MyApplicationsSection'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
@@ -61,7 +62,13 @@ export function ActivityListTab({
   let content: ReactNode
 
   if (isError) {
-    content = <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
+    content = (
+      <ErrorState
+        title={t('feed.loadErrorShifts')}
+        onRetry={() => void onRefresh()}
+        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+      />
+    )
   } else if (isLoadingAny) {
     content = <ActivityListSkeleton />
   } else if (activeTab === 'shifts') {

@@ -6,6 +6,7 @@ import {
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
+import { ErrorState } from '@/components/ui/states'
 import { useToast } from '@/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
@@ -132,9 +133,11 @@ export function VenueStaffPage() {
 
   if (isError) {
     return (
-      <div className="ui-density-page ui-density-py text-center text-destructive">
-        {t('feed.loadErrorShifts', { defaultValue: 'Ошибка загрузки' })}
-      </div>
+      <ErrorState
+        title={t('feed.loadErrorShifts', { defaultValue: 'Ошибка загрузки' })}
+        onRetry={() => void refetch()}
+        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+      />
     )
   }
 
