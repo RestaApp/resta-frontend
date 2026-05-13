@@ -13,8 +13,17 @@ const TONE_CLASSES = {
   success: 'border-success/30 bg-success/8',
   warning: 'border-warning/30 bg-warning/8',
   destructive: 'border-destructive/30 bg-destructive/8',
+  /** Alias to `destructive` per spec naming. */
+  danger: 'border-destructive/30 bg-destructive/8',
   info: 'border-emp/30 bg-emp/8',
   neutral: 'border-border bg-card',
+  /**
+   * DIRECT — Resta не удерживает деньги. Зелёный, но с акцентом на
+   * институциональной seriousness (sub-text про комиссии).
+   */
+  direct: 'border-success/40 bg-success/10',
+  /** PRO — фиолетовый gradient soft под фоном `--gradient-pro`. */
+  pro: 'border-[rgba(179,140,255,0.4)] bg-[linear-gradient(160deg,rgba(179,140,255,0.12),transparent)]',
 } as const
 
 export type CalloutTone = keyof typeof TONE_CLASSES

@@ -111,10 +111,7 @@ export const ApplicantsTab = memo(
                           {name}
                         </div>
                         {isAccepted ? (
-                          <Badge
-                            variant="default"
-                            className="shrink-0 text-xs font-medium bg-primary text-primary-foreground"
-                          >
+                          <Badge variant="accepted" className="shrink-0">
                             {t('shift.applicantSelected')}
                           </Badge>
                         ) : null}
@@ -169,7 +166,7 @@ export const ApplicantsTab = memo(
                         ) : null}
                         {canAccept ? (
                           <Button
-                            variant="gradient"
+                            variant="success"
                             size="sm"
                             className="h-11 w-11 min-w-11 p-0 shrink-0"
                             aria-label={t('shift.acceptApplication')}

@@ -33,7 +33,13 @@ const BADGE_VARIANTS = {
   stars: 'bg-[image:var(--gradient-stars)] text-white font-bold tracking-widest',
   pending: 'bg-muted-foreground/15 text-muted-foreground font-semibold tracking-wider',
   ok: 'bg-success/15 text-success font-semibold tracking-wider',
+  /** Алиас для `ok` — статус «Принят» в UI кандидатов / откликов. */
+  accepted: 'bg-success/15 text-success font-semibold tracking-wider',
   rej: 'bg-destructive/15 text-destructive font-semibold tracking-wider',
+  /** Алиас для `rej` — статус «Отклонён». */
+  rejected: 'bg-destructive/15 text-destructive font-semibold tracking-wider',
+  /** Match-score — числовой бейдж совпадения кандидата/смены. Без слова AI (см. .cursorrules + chat2). */
+  match: 'bg-primary/15 text-primary border border-primary/30 font-semibold tracking-wider',
 
   warning: 'bg-warning/10 text-warning border border-warning/25',
   /** @deprecated — оплата теперь DIRECT, эскроу убран. Используйте `direct`. */

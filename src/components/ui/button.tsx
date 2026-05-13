@@ -2,10 +2,13 @@ import { forwardRef, type ComponentProps } from 'react'
 import { cn } from '@/utils/cn'
 import { Loader } from '@/components/ui/loader'
 
-/** Size scale aligned to the production board: compact inline buttons, 52px primary CTA. */
+/**
+ * Size scale per AI_DEVELOPMENT_GUIDELINES §1.4 (44 / 48 / 52 px).
+ * Все размеры удовлетворяют WCAG 2.5.5 touch target ≥ 44 px.
+ */
 const SIZE_CLASSES = {
-  sm: 'h-9 px-3 text-body-sm',
-  md: 'h-11 px-4 text-body-md',
+  sm: 'h-11 px-3 text-body-sm',
+  md: 'h-12 px-4 text-body-md',
   lg: 'h-[52px] px-5 text-body-lg',
 } as const
 
@@ -27,9 +30,17 @@ const VARIANT_CLASSES = {
   /** Ghost — text only, terracotta color */
   ghost:
     'bg-transparent text-muted-foreground hover:bg-[var(--surface-subtle)] hover:text-foreground',
-  /** Destructive */
+  /** Destructive — soft red. */
   destructive:
     'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
+  /** Alias to `destructive` for spec naming alignment. */
+  danger: 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
+  /** Success — зелёный solid CTA (например, «Нанять на смену»). */
+  success:
+    'bg-success text-white hover:bg-success/90 active:bg-success/80 shadow-[0_12px_32px_rgba(62,201,126,0.25)]',
+  /** Telegram Stars — золотой gradient (для платных шагов и paywall CTA). */
+  stars:
+    'bg-[image:var(--gradient-stars)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[0_12px_32px_rgba(245,177,66,0.28)]',
   /** Gradient alias → solid primary (terracotta) */
   gradient:
     'bg-[image:var(--gradient-primary)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[0_12px_32px_rgba(255,107,44,0.28)]',

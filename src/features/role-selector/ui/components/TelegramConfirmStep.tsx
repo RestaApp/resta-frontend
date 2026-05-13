@@ -4,6 +4,7 @@ import { Pencil } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { LocationField } from './subroles/shared/LocationField'
 import { Card } from '@/components/ui'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { OnboardingProgress } from './OnboardingProgress'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
@@ -93,23 +94,18 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
 
   return (
     <div className="bg-background min-h-[100dvh] flex flex-col">
+      <PageHeader
+        progress={<OnboardingProgress current={2} total={3} tone={roleKind} />}
+        title={t('onboarding.telegram.title')}
+        subtitle={t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
+      />
       <div
         ref={scrollContainerRef}
-        className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] ${ONBOARDING_BOTTOM_CTA_SPACE} ${
+        className={`flex-1 flex flex-col ui-density-page ${ONBOARDING_BOTTOM_CTA_SPACE} ${
           needsScroll ? 'overflow-y-auto' : 'overflow-y-hidden'
         }`}
       >
         <div ref={contentRef}>
-          <OnboardingProgress current={2} total={3} tone={roleKind} className="mb-[14px]" />
-          <div className="mb-4">
-            <h1 className="font-sans font-extrabold text-display leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
-              {t('onboarding.telegram.title')}
-            </h1>
-            <p className="text-meta leading-snug text-muted-foreground">
-              {t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
-            </p>
-          </div>
-
           <Card className="text-center">
             <div
               className={cn(

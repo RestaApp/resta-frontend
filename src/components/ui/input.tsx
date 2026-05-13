@@ -15,21 +15,31 @@ import {
  *              с иконкой/кнопкой). Заменяет ad‑hoc `!border-0 !ring-0 !shadow-none`
  *              хаки.
  */
+const DEFAULT_INPUT_CLASS = cn(
+  INPUT_FIELD_BASE_CLASS,
+  'flex px-3 py-3 text-body-md transition-all',
+  'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium',
+  INPUT_FIELD_INTERACTIVE_CLASS,
+  'selection:bg-primary selection:text-primary-foreground',
+  'border-border/50 focus-visible:ring-offset-0',
+  'dark:focus-visible:ring-0 dark:focus-visible:ring-offset-0',
+  `${INPUT_FIELD_DISABLED_CLASS} md:text-sm`,
+  `${INPUT_FIELD_INVALID_CLASS} dark:aria-invalid:ring-destructive/40`
+)
+
 const INPUT_VARIANT = {
-  default: cn(
-    INPUT_FIELD_BASE_CLASS,
-    'flex px-3 py-3 text-body-md transition-all',
-    'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium',
-    INPUT_FIELD_INTERACTIVE_CLASS,
-    'selection:bg-primary selection:text-primary-foreground',
-    'border-border/50 focus-visible:ring-offset-0',
-    'dark:focus-visible:ring-0 dark:focus-visible:ring-offset-0',
-    `${INPUT_FIELD_DISABLED_CLASS} md:text-sm`,
-    `${INPUT_FIELD_INVALID_CLASS} dark:aria-invalid:ring-destructive/40`
-  ),
+  default: DEFAULT_INPUT_CLASS,
   inline:
     'flex w-full bg-transparent border-0 outline-none px-0 py-0 text-sm placeholder:text-muted-foreground ' +
     'focus-visible:ring-0 focus-visible:outline-none disabled:opacity-60',
+  /**
+   * Error — те же геометрия и шрифты, но красный border + ring постоянно
+   * (не зависит от `aria-invalid`). Удобно когда ошибку держит внешний state.
+   */
+  error: cn(
+    DEFAULT_INPUT_CLASS,
+    'border-destructive/60 ring-1 ring-destructive/40 focus-visible:border-destructive focus-visible:ring-destructive/40'
+  ),
 } as const
 
 export type InputVariant = keyof typeof INPUT_VARIANT
@@ -45,6 +55,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       type={type}
       data-slot="input"
       data-variant={variant}
+      aria-invalid={variant === 'error' ? true : props['aria-invalid']}
       className={cn(INPUT_VARIANT[variant], className)}
       {...props}
     />

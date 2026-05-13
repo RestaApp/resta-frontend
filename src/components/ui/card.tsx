@@ -27,20 +27,33 @@ interface CardProps {
   children?: React.ReactNode
   className?: string
   padding?: CardPadding
-  /** Подсветить как highlighted (более тёмный surface, как E04 hl). */
+  /** Подсветить как highlighted (более тёмный surface, как E04 hl). Alias: elevated. */
   emphasis?: boolean
-  /** Выделение role/status — границей слева. */
-  accent?: 'success' | 'warning' | 'destructive' | 'primary'
+  /** Выделение role/status — границей слева. `sos` = primary terracotta для срочных смен. */
+  accent?: 'success' | 'warning' | 'destructive' | 'primary' | 'sos'
+  /** Выбранное состояние (Role/Format/Specialization селекторы): primary border + soft fill. */
+  selected?: boolean
+  /** PRO-карта: фиолетовый gradient border + лёгкая подложка (BOARD 09). */
+  pro?: boolean
 }
 
 const ACCENT_BORDER: Record<NonNullable<CardProps['accent']>, string> = {
   primary: 'border-l-2 border-l-primary',
+  sos: 'border-l-2 border-l-primary',
   success: 'border-l-2 border-l-success',
   warning: 'border-l-2 border-l-warning',
   destructive: 'border-l-2 border-l-destructive',
 }
 
-export function Card({ children, className, padding = 'md', emphasis, accent }: CardProps) {
+export function Card({
+  children,
+  className,
+  padding = 'md',
+  emphasis,
+  accent,
+  selected,
+  pro,
+}: CardProps) {
   return (
     <div
       className={cn(
@@ -48,6 +61,9 @@ export function Card({ children, className, padding = 'md', emphasis, accent }: 
         PADDING_CLASSES[padding],
         emphasis && 'bg-[var(--surface-raised)]',
         accent && ACCENT_BORDER[accent],
+        selected && 'border-primary/60 bg-primary/[0.06]',
+        pro &&
+          'border-[rgba(179,140,255,0.4)] bg-[linear-gradient(160deg,rgba(179,140,255,0.10),var(--card)_70%)]',
         className
       )}
     >

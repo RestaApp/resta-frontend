@@ -6,6 +6,7 @@ import type { TabOption } from '@/components/ui/tabs'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 import { getRoleTheme } from '@/shared/lib/role-theme'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/utils/cn'
 
 type Props = {
@@ -23,7 +24,10 @@ export const FeedHeader = memo((props: Props) => {
   const roleTheme = getRoleTheme(selectedRole ?? 'employee')
 
   return (
-    <div className="top-0 z-20 border-border/50 bg-background/95 backdrop-blur-sm transition-all">
+    <div
+      className="top-0 border-border/50 bg-background/95 backdrop-blur-sm transition-all"
+      style={{ zIndex: Z_INDEX.stickyHeader }}
+    >
       <div className="ui-density-page ui-density-py-sm">
         <Tabs
           options={options}

@@ -1,5 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { OnboardingProgress } from './components/OnboardingProgress'
 import { RoleCard } from './components/RoleCard'
 import { ErrorModal } from './components/subroles/shared/ErrorModal'
@@ -83,21 +84,16 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   return (
     <>
       <div className="bg-background flex flex-col min-h-[100dvh]">
+        <PageHeader
+          progress={<OnboardingProgress current={1} total={3} />}
+          title={t('roles.whoAreYou')}
+          subtitle={t('roles.roleChoiceHint')}
+        />
         <div
-          className={`flex-1 flex flex-col ui-density-page ui-density-py pt-[14px] ${
+          className={`flex-1 flex flex-col ui-density-page ${
             vm.selectedRole ? 'overflow-y-auto' : 'overflow-y-hidden'
           }`}
         >
-          <OnboardingProgress current={1} total={3} className="mb-[14px]" />
-          <div className="mb-4 w-[280px]">
-            <h1 className="max-w-[280px] font-sans font-extrabold text-display leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
-              {t('roles.whoAreYou')}
-            </h1>
-            <p className="max-w-[280px] text-meta leading-snug text-muted-foreground">
-              {t('roles.roleChoiceHint')}
-            </p>
-          </div>
-
           <div
             className={`flex flex-col gap-2.5 ${
               vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : 'pb-0'

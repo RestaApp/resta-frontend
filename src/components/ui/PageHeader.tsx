@@ -1,0 +1,112 @@
+import type { ReactNode } from 'react'
+import { ArrowLeft, X } from 'lucide-react'
+import { cn } from '@/utils/cn'
+import { Z_INDEX } from '@/shared/ui/zIndex'
+
+type LeadingActionKind = 'back' | 'close'
+
+interface PageHeaderProps {
+  /** Основной заголовок страницы. */
+  title?: ReactNode
+  /** Подзаголовок (например, «Минск · сегодня», город + дата). */
+  subtitle?: ReactNode
+  /**
+   * Мета-лейбл слева сверху над title (моноширинный, маленький, uppercase).
+   * Используется для прогресс-меток «BOARD 04 · 02 / 15», «Шаг 2 из 3» и т.п.
+   */
+  meta?: ReactNode
+  /** Стрелка «назад» или крестик «закрыть». При отсутствии — слот пустой. */
+  leadingAction?: LeadingActionKind
+  /** Обработчик leading-action. Обязателен, если `leadingAction` задан. */
+  onLeadingAction?: () => void
+  /** ARIA-label для leading-action (i18n). */
+  leadingAriaLabel?: string
+  /** Правый слот: кнопки/иконки (Edit, Filters, More, ThemeToggle…). */
+  rightActions?: ReactNode
+  /** Прогресс-бар или другой контент под title/subtitle. */
+  progress?: ReactNode
+  /** Прилипать к верху страницы (для длинных списков). */
+  sticky?: boolean
+  className?: string
+}
+
+const LEADING_ICON: Record<LeadingActionKind, typeof ArrowLeft> = {
+  back: ArrowLeft,
+  close: X,
+}
+
+/**
+ * Универсальная шапка страницы (BOARD-04…08 в Resta Production).
+ *
+ * SRP: только презентация. Никакой бизнес-логики, никакой router-зависимости.
+ * Любые «куда вести назад» / «что закрывать» решает родительская страница.
+ *
+ * Layout:
+ *   ┌──────────────────────────────────────────────┐
+ *   │ [meta]                                       │
+ *   │ [◀]  Заголовок              [actions ▸]      │
+ *   │      Подзаголовок                            │
+ *   │ [progress]                                   │
+ *   └──────────────────────────────────────────────┘
+ *
+ * Touch targets ≥ 44px для leading-action и любых right-actions.
+ */
+export const PageHeader = ({
+  title,
+  subtitle,
+  meta,
+  leadingAction,
+  onLeadingAction,
+  leadingAriaLabel,
+  rightActions,
+  progress,
+  sticky = false,
+  className,
+}: PageHeaderProps) => {
+  const LeadingIcon = leadingAction ? LEADING_ICON[leadingAction] : null
+
+  return (
+    <header
+      className={cn(
+        'bg-background/92 px-4 pt-3 pb-3 backdrop-blur-xl',
+        sticky && 'sticky top-0',
+        className
+      )}
+      style={sticky ? { zIndex: Z_INDEX.stickyHeader } : undefined}
+    >
+      {meta ? (
+        <div className="mb-1 font-mono-resta text-micro uppercase tracking-widest text-muted-foreground">
+          {meta}
+        </div>
+      ) : null}
+
+      <div className="flex min-h-[44px] items-center gap-2">
+        {LeadingIcon ? (
+          <button
+            type="button"
+            onClick={onLeadingAction}
+            aria-label={leadingAriaLabel}
+            className="-ml-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <LeadingIcon className="h-5 w-5" aria-hidden />
+          </button>
+        ) : null}
+
+        <div className="min-w-0 flex-1">
+          {title ? (
+            <h1 className="truncate text-title-md font-extrabold leading-tight tracking-tight text-foreground">
+              {title}
+            </h1>
+          ) : null}
+          {subtitle ? <p className="truncate text-meta text-muted-foreground">{subtitle}</p> : null}
+        </div>
+
+        {rightActions ? (
+          <div className="flex shrink-0 items-center gap-1">{rightActions}</div>
+        ) : null}
+      </div>
+
+      {progress ? <div className="mt-3">{progress}</div> : null}
+    </header>
+  )
+}

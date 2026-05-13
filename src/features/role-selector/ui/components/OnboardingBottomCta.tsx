@@ -2,6 +2,7 @@ import { memo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/utils/cn'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { RoleKind } from '@/shared/lib/role-theme'
 
 export const ONBOARDING_BOTTOM_CTA_SPACE = 'pb-onboarding-cta'
@@ -39,7 +40,10 @@ export const OnboardingBottomCta = memo(function OnboardingBottomCta({
   const { t } = useTranslation()
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm">
+    <div
+      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm"
+      style={{ zIndex: Z_INDEX.stickyHeader }}
+    >
       <div className="mx-auto w-full max-w-md">
         <Button
           type="button"

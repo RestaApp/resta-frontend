@@ -6,7 +6,7 @@ import { LogoWithText } from '@/components/ui/logo-with-text'
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
-  const roleColorVar = 'var(--primary)'
+  const roleColorVar = 'var(--terracotta)'
 
   const logoIcon = (
     <div className="relative">

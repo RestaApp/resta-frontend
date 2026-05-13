@@ -1,21 +1,19 @@
 import { Suspense, lazy, type ReactNode } from 'react'
 import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
-import { useTelegram } from '@/contexts/TelegramContext'
-import { cn } from '@/utils/cn'
+import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 
 const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })))
 
-const AppShell = ({ children }: { children: ReactNode }) => {
-  const { isFullscreen } = useTelegram()
-  return (
-    <div className={cn('bg-background min-h-[100dvh]', isFullscreen ? 'mt-[80px]' : 'mt-0')}>
-      {children}
-    </div>
-  )
-}
-
+/**
+ * Маршрутизация bootstrap:
+ *   loading  → LoadingPage (Telegram-init, auth, post-logout)
+ *   role     → RoleSelector  (он же «role pending / unverified»: пользователь
+ *              авторизован в TG, но роль ещё не выбрана — CTA «Выбрать роль»
+ *              ведёт по веткам онбординга)
+ *   dashboard → role-specific Dashboard
+ */
 const AppBootstrapRoutes = () => {
   const { screen, role, currentScreen, navigate, onSelectRole } = useAppBootstrap()
 
@@ -36,8 +34,8 @@ const AppBootstrapRoutes = () => {
 
 export const App = () => {
   return (
-    <AppShell>
+    <TelegramMiniAppShell>
       <AppBootstrapRoutes />
-    </AppShell>
+    </TelegramMiniAppShell>
   )
 }

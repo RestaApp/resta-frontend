@@ -8,7 +8,9 @@ import { cn } from '@/utils/cn'
 import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
+import { ErrorState } from '@/components/ui/states'
 import { Button } from '@/components/ui/button'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { PersonalShiftCard } from './PersonalShiftCard'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
@@ -46,7 +48,10 @@ export const VenueActivityContent = ({
 
   return (
     <>
-      <div className="top-0 z-10 bg-background/95 backdrop-blur-sm transition-all border-border/50 ui-density-page ui-density-py-sm">
+      <div
+        className="top-0 bg-background/95 backdrop-blur-sm transition-all border-border/50 ui-density-page ui-density-py-sm"
+        style={{ zIndex: Z_INDEX.stickyHeader }}
+      >
         <Tabs
           options={venueTabOptions}
           activeId={venueTab}
@@ -59,7 +64,11 @@ export const VenueActivityContent = ({
       <div className="ui-density-page ui-density-py">
         <PullToRefresh onRefresh={model.refreshList} disabled={model.isLoading}>
           {model.isError ? (
-            <div className="text-center py-8 text-destructive">{t('feed.loadErrorShifts')}</div>
+            <ErrorState
+              title={t('feed.loadErrorShifts')}
+              onRetry={model.refreshList}
+              retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+            />
           ) : model.isLoading ? (
             <div className="ui-density-stack">
               {Array.from({ length: 3 }).map((_, idx) => (

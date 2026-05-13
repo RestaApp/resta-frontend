@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
 import { formatMoney } from '@/features/feed/model/utils/formatting'
-import { DirectPayBadge } from '@/components/ui/StatusPill'
+import { DirectPaymentInfo } from '@/components/ui/states'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
 import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
@@ -173,27 +173,13 @@ export const DetailsTab = memo(
         </Card>
 
         {pay != null && Number(pay) > 0 ? (
-          <Card className={cn(DETAIL_CARD_CLASS, 'border-success/30 bg-success/5')}>
-            <div className="flex items-start gap-3">
-              <span aria-hidden className="text-base">
-                💰
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <DirectPayBadge />
-                </div>
-                <p className="text-body-sm leading-snug text-muted-foreground">
-                  <span className="font-semibold text-foreground">
-                    {t('shift.directPay.title', 'Оплата напрямую от заведения.')}
-                  </span>{' '}
-                  {t(
-                    'shift.directPay.body',
-                    'Resta не берёт комиссии и не держит твои деньги — расчёт идёт между сторонами.'
-                  )}
-                </p>
-              </div>
-            </div>
-          </Card>
+          <DirectPaymentInfo
+            title={t('shift.directPay.title', 'Оплата напрямую от заведения.')}
+            description={t(
+              'shift.directPay.body',
+              'Resta не берёт комиссии и не держит твои деньги — расчёт идёт между сторонами.'
+            )}
+          />
         ) : null}
 
         {description ? (
