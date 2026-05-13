@@ -6,7 +6,9 @@ import type { ActivityTab } from '@/features/activity/model/hooks/useActivityPag
 const FeedPage = lazy(() =>
   import('@/features/feed/ui/FeedPage').then(m => ({ default: m.FeedPage }))
 )
-const ActivityPage = lazy(() => import('@/features/activity/ui/ActivityPage').then(m => ({ default: m.ActivityPage })))
+const ActivityPage = lazy(() =>
+  import('@/features/activity/ui/ActivityPage').then(m => ({ default: m.ActivityPage }))
+)
 const ProfilePage = lazy(() =>
   import('@/features/profile/ui/ProfilePage').then(m => ({ default: m.ProfilePage }))
 )
@@ -39,10 +41,7 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
   if (activeTab === 'activity' || activeTab === 'myshifts') {
     return (
       <PageSuspense>
-        <ActivityPage
-          key={activeTab}
-          employeeDefaultTab={employeeActivityDefaultTab}
-        />
+        <ActivityPage key={activeTab} employeeDefaultTab={employeeActivityDefaultTab} />
       </PageSuspense>
     )
   }

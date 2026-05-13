@@ -62,7 +62,9 @@ export const useLocationField = ({
 
   /** Актуальная длина списка для обработчика скролла (без устаревшего замыкания). */
   const filteredTotalRef = useRef(0)
-  filteredTotalRef.current = allFilteredCities.length
+  useEffect(() => {
+    filteredTotalRef.current = allFilteredCities.length
+  }, [allFilteredCities.length])
 
   // Подгрузка порциями при скролле. Зависимость от `showSuggestions`: при закрытии списка
   // DOM снимается, а старый listener оставался на отсоединённом узле — новый список не подгружался.

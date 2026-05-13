@@ -1,5 +1,9 @@
 import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
-import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
+import {
+  getLocalStorageItem,
+  removeLocalStorageItem,
+  setLocalStorageItem,
+} from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
@@ -19,7 +23,9 @@ export const parseFeedFilterTemplate = (raw: string | null): AdvancedFiltersData
 
 export const loadFeedFilterTemplate = (kind: 'shifts' | 'jobs'): AdvancedFiltersData | null => {
   const key =
-    kind === 'shifts' ? STORAGE_KEYS.FEED_FILTER_TEMPLATE_SHIFTS : STORAGE_KEYS.FEED_FILTER_TEMPLATE_JOBS
+    kind === 'shifts'
+      ? STORAGE_KEYS.FEED_FILTER_TEMPLATE_SHIFTS
+      : STORAGE_KEYS.FEED_FILTER_TEMPLATE_JOBS
   return parseFeedFilterTemplate(getLocalStorageItem(key))
 }
 
@@ -28,7 +34,9 @@ export const saveFeedFilterTemplate = (
   filters: AdvancedFiltersData | null
 ): void => {
   const key =
-    kind === 'shifts' ? STORAGE_KEYS.FEED_FILTER_TEMPLATE_SHIFTS : STORAGE_KEYS.FEED_FILTER_TEMPLATE_JOBS
+    kind === 'shifts'
+      ? STORAGE_KEYS.FEED_FILTER_TEMPLATE_SHIFTS
+      : STORAGE_KEYS.FEED_FILTER_TEMPLATE_JOBS
   if (!filters) {
     removeLocalStorageItem(key)
     return

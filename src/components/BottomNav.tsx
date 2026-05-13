@@ -66,7 +66,7 @@ export const BottomNav = ({
               whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
               className={[
-                'relative flex min-h-[52px] flex-col items-center justify-center rounded-[10px] px-2 py-1 gap-[3px]',
+                'relative flex min-h-[52px] flex-col items-center justify-center rounded-md px-2 py-1 gap-[3px]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 focusRingClass,
               ].join(' ')}
@@ -85,7 +85,7 @@ export const BottomNav = ({
                 {isActive && (
                   <motion.span
                     layoutId={layoutId}
-                    className={['absolute -top-[7px] h-1.5 w-4 rounded-[3px]', activeDotClass].join(
+                    className={['absolute -top-[7px] h-1.5 w-4 rounded-[4px]', activeDotClass].join(
                       ' '
                     )}
                     transition={

@@ -17,13 +17,7 @@ type Props = {
 }
 
 export const FeedHeader = memo((props: Props) => {
-  const {
-    options,
-    feedType,
-    onChangeFeedType,
-    activeFiltersList,
-    onResetFilters,
-  } = props
+  const { options, feedType, onChangeFeedType, activeFiltersList, onResetFilters } = props
 
   const selectedRole = useAppSelector(selectSelectedRole)
   const roleTheme = getRoleTheme(selectedRole ?? 'employee')

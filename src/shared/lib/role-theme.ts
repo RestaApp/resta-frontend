@@ -76,9 +76,9 @@ export const ROLE_THEME: Record<RoleKind, RoleTheme> = {
 }
 
 export function getRoleKind(role: UiRole | ApiRole): RoleKind {
-  const apiRole = (role in UI_ROLE_TO_API_ROLE
-    ? UI_ROLE_TO_API_ROLE[role as UiRole]
-    : role) as ApiRole
+  const apiRole = (
+    role in UI_ROLE_TO_API_ROLE ? UI_ROLE_TO_API_ROLE[role as UiRole] : role
+  ) as ApiRole
   return apiRole === 'restaurant' ? 'restaurant' : apiRole === 'supplier' ? 'supplier' : 'employee'
 }
 

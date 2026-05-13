@@ -64,7 +64,7 @@ const SHEET_SURFACE_CLASS = 'bg-background dark:bg-[var(--drawer-surface)]'
 
 /** Как `.input-lbl` в E03: мелкий капс, приглушённый цвет. */
 const SECTION_LABEL_CLASS =
-  'text-[10px] font-semibold uppercase tracking-widest text-muted-foreground'
+  'text-micro font-semibold uppercase tracking-widest text-muted-foreground'
 
 const FilterSectionLabel = ({ children }: { children: React.ReactNode }) => (
   <p className={SECTION_LABEL_CLASS}>{children}</p>
@@ -198,7 +198,7 @@ const AdvancedFiltersSheet = ({
               onChange={v => c.setRadiusKm(v)}
               accentClassName={roleTheme.classes.bg}
             />
-            <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
+            <div className="mt-1.5 flex justify-between text-micro text-muted-foreground">
               <span>{t('feed.radiusMin')}</span>
               <span className="font-mono-resta tabular-nums">
                 {t('feed.radiusCurrent', { km: c.radiusKm })}
@@ -297,7 +297,9 @@ const AdvancedFiltersSheet = ({
           )}
           onClick={handleShowResults}
         >
-          {isVacancy ? t('feed.showVacanciesCta') : t('feed.showShiftsCountDetailed', { count: c.previewCount })}
+          {isVacancy
+            ? t('feed.showVacanciesCta')
+            : t('feed.showShiftsCountDetailed', { count: c.previewCount })}
         </Button>
       </div>
     </div>

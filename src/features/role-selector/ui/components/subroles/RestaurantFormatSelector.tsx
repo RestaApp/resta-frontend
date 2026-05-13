@@ -69,12 +69,12 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
       hideName
       hideCity
       footerCard={
-        <div className="rounded-[11px] border border-success/30 bg-[var(--success-soft)] px-3 py-2.5">
+        <div className="rounded-md border border-success/30 bg-[var(--success-soft)] px-3 py-2.5">
           <div className="flex items-start gap-2">
-            <span className="text-[14px] leading-none text-success" aria-hidden>
+            <span className="text-body-lg leading-none text-success" aria-hidden>
               ✓
             </span>
-            <p className="text-[11px] leading-[1.45] text-muted-foreground">
+            <p className="text-meta leading-[1.45] text-muted-foreground">
               <span className="font-semibold text-foreground">
                 {t('roles.venueDirectTitle', { defaultValue: 'DIRECT-режим включён.' })}
               </span>{' '}

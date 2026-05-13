@@ -175,7 +175,10 @@ export const useGeolocation = (): UseGeolocationReturn => {
   const [isLoading, setIsLoading] = useState(false)
   const isLoadingRef = useRef(false)
 
-  const getCoordinates = useCallback(async (): Promise<{ latitude: number; longitude: number } | null> => {
+  const getCoordinates = useCallback(async (): Promise<{
+    latitude: number
+    longitude: number
+  } | null> => {
     if (isLoadingRef.current) return null
     isLoadingRef.current = true
     setIsLoading(true)

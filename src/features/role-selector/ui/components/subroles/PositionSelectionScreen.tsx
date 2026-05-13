@@ -91,7 +91,7 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
         <div ref={contentRef}>
           <OnboardingProgress current={3} total={3} tone="employee" className="mb-[14px]" />
           <div className="mb-4">
-            <h1 className="font-sans font-extrabold text-[22px] leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
+            <h1 className="font-sans font-extrabold text-display leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
               {t('roles.positionScreenTitle')}
             </h1>
             <p className="text-meta leading-snug text-muted-foreground">

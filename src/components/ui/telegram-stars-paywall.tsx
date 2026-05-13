@@ -94,7 +94,7 @@ export const TelegramStarsPaywall = ({
               type="button"
               onClick={() => onSelectPlan(plan.id)}
               className={cn(
-                'flex w-full items-start justify-between gap-3 rounded-[14px] border p-4 text-left transition-colors',
+                'flex w-full items-start justify-between gap-3 rounded-lg border p-4 text-left transition-colors',
                 active
                   ? 'border-[rgba(179,140,255,0.4)] bg-[linear-gradient(160deg,rgba(179,140,255,0.10),var(--card)_70%)]'
                   : 'border-border bg-card'
@@ -138,7 +138,7 @@ export const TelegramStarsPaywall = ({
       <div className="text-micro font-mono-resta uppercase tracking-wider text-muted-foreground mt-1">
         Всё включено
       </div>
-      <ul className="rounded-[14px] border border-border bg-card p-3 flex flex-col gap-1">
+      <ul className="rounded-lg border border-border bg-card p-3 flex flex-col gap-1">
         {features.map(f => (
           <li key={f.id} className="flex items-center gap-2 text-xs">
             <span className="text-terracotta font-bold">✓</span>

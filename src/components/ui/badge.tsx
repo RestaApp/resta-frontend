@@ -49,10 +49,10 @@ interface BadgeProps {
 export const Badge = ({ children, className, variant = 'default' }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center rounded-[5px] px-1.5 py-0.5 text-micro font-mono-resta font-bold uppercase tracking-wider align-middle whitespace-nowrap leading-none',
+      'inline-flex items-center rounded-[4px] px-1.5 py-0.5 text-micro font-mono-resta font-bold uppercase tracking-wider align-middle whitespace-nowrap leading-none',
       BADGE_VARIANTS[variant],
       (variant === 'tag' || variant === 'tagActive') &&
-        'rounded-[14px] px-2.5 text-xs normal-case tracking-normal max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
+        'rounded-lg px-2.5 text-xs normal-case tracking-normal max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
       className
     )}
   >

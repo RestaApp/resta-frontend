@@ -103,7 +103,7 @@ export const ProfileInfoCard = memo(
     ) : null
 
     const incompleteCallout = !isFilled ? (
-      <div className="rounded-[14px] border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center ">
+      <div className="rounded-lg border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center ">
         <p className="text-sm leading-relaxed text-foreground/80">{fillRequiredText}</p>
         {fillActionButton ? (
           <div className="mt-4 flex justify-center">{fillActionButton}</div>

@@ -30,10 +30,10 @@ export const ShiftCardHeader = ({
     <div className="mb-2 flex items-start justify-between gap-3">
       <div className="flex min-w-0 flex-1 gap-3">
         {showAvatar ? (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-border/50 bg-muted/60 text-xl">
-            <Avatar className="h-11 w-11 rounded-[10px]">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border/50 bg-muted/60 text-xl">
+            <Avatar className="h-11 w-11 rounded-md">
               <AvatarImage src={shift.userPhotoUrl} alt="" />
-              <AvatarFallback className="rounded-[10px] bg-muted/60 text-xl leading-none">
+              <AvatarFallback className="rounded-md bg-muted/60 text-xl leading-none">
                 <span className="leading-none">{shift.logo}</span>
               </AvatarFallback>
             </Avatar>
@@ -50,7 +50,7 @@ export const ShiftCardHeader = ({
               )}
             />
           ) : null}
-          <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-foreground">
+          <h3 className="text-title-sm font-semibold leading-snug tracking-tight text-foreground">
             {displayTitle ?? positionText}
           </h3>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -67,7 +67,7 @@ export const ShiftCardHeader = ({
         <div className="shrink-0 pt-0.5 text-right">
           <span
             className={cn(
-              'font-display text-[1.65rem] leading-none tracking-[-0.02em] tabular-nums text-foreground',
+              'font-display text-display leading-none tracking-[-0.02em] tabular-nums text-foreground',
               shift.urgent && (accentRole ? accentRole.classes.text : 'text-primary')
             )}
           >

@@ -95,7 +95,7 @@ export const ShiftCardMeta = ({
       ) : null}
 
       {shouldShowMetaRow ? (
-        <div className="mb-0 flex min-h-[1.25rem] items-center gap-4 text-[13px] text-muted-foreground">
+        <div className="mb-0 flex min-h-[1.25rem] items-center gap-4 text-body-md text-muted-foreground">
           {isVacancyCard ? (
             <span className="flex items-center gap-1.5 min-w-0">
               <MapPin className="h-4 w-4 shrink-0 stroke-[1.5] text-muted-foreground" aria-hidden />

@@ -102,7 +102,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         <div ref={contentRef}>
           <OnboardingProgress current={2} total={3} tone={roleKind} className="mb-[14px]" />
           <div className="mb-4">
-            <h1 className="font-sans font-extrabold text-[22px] leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
+            <h1 className="font-sans font-extrabold text-display leading-[1.15] tracking-[-0.025em] mb-1.5 text-foreground">
               {t('onboarding.telegram.title')}
             </h1>
             <p className="text-meta leading-snug text-muted-foreground">
@@ -113,7 +113,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           <Card className="text-center">
             <div
               className={cn(
-                'mx-auto mb-3 h-14 w-14 overflow-hidden rounded-[16px]',
+                'mx-auto mb-3 h-14 w-14 overflow-hidden rounded-xl',
                 ROLE_AVATAR_GRADIENT[roleKind]
               )}
             >
@@ -172,7 +172,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
                 type="button"
                 onClick={handlePhoneShare}
                 className={cn(
-                  'whitespace-nowrap font-mono-resta text-[10px] uppercase leading-none tracking-[0.05em] disabled:opacity-60',
+                  'whitespace-nowrap font-mono-resta text-micro uppercase leading-none tracking-[0.05em] disabled:opacity-60',
                   roleTheme.classes.text
                 )}
                 disabled={isRequestingPhone}

@@ -106,7 +106,7 @@ const ShiftCardComponent = ({
     return (
       <>
         {formatMoney(shift.pay)}{' '}
-        <span className="font-mono-resta text-[10px] font-medium tracking-normal text-muted-foreground">
+        <span className="font-mono-resta text-micro font-medium tracking-normal text-muted-foreground">
           {shift.currency}
         </span>
       </>
@@ -160,15 +160,15 @@ const ShiftCardComponent = ({
     [ownerActions, shift.id]
   )
 
-  const handleDelete = useCallback((e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
     setConfirmOpen(true)
-  }, [])
+  }
 
-  const confirmDelete = useCallback(() => {
+  const confirmDelete = () => {
     ownerActions?.onDelete(shift.id)
     setConfirmOpen(false)
-  }, [ownerActions, shift.id])
+  }
 
   const actionLabel = useMemo(() => {
     if (isLoading) return isApplied ? t('shift.cancelling') : t('shift.sending')
@@ -197,7 +197,7 @@ const ShiftCardComponent = ({
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
       className={cn(
-        'group relative cursor-pointer rounded-[14px] border p-4 outline-none transition-all duration-200 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring',
+        'group relative cursor-pointer rounded-lg border p-4 outline-none transition-all duration-200 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring',
         'hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
         !isSupplierVariant && accentRole.classes.shiftCardGradient,
         isSupplierVariant && 'border-border/80 bg-card ',

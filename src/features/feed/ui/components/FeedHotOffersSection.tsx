@@ -22,10 +22,10 @@ export const FeedHotOffersSection = memo((props: Props) => {
           <Skeleton className="h-5 w-16 rounded-md" />
         </div>
         <div className="ui-density-page flex gap-3 overflow-x-auto scrollbar-hide snap-x">
-          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
-          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
-          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
-          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
+          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
+          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
+          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
+          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
         </div>
       </div>
     )

@@ -133,7 +133,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({
         tabIndex={-1}
         className={cn(
           'relative z-10 outline-none',
-          'bg-card border border-border shadow-[0_14px_40px_rgba(0,0,0,0.4)] rounded-[20px] p-6 w-full max-w-md max-w-[90vw]',
+          'bg-card border border-border shadow-[0_14px_40px_rgba(0,0,0,0.4)] rounded-2xl p-6 w-full max-w-md max-w-[90vw]',
           className
         )}
         onPointerDown={e => e.stopPropagation()}

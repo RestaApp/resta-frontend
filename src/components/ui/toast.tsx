@@ -61,7 +61,7 @@ export const Toast = memo(function Toast({
           style={{ zIndex: Z_INDEX.toast }}
           className={cn(
             'fixed left-1/2 top-4 -translate-x-1/2',
-            'min-w-[280px] max-w-[90vw] rounded-[14px] border border-border bg-card p-4 shadow-[0_14px_40px_rgba(0,0,0,0.45)]',
+            'min-w-[280px] max-w-[90vw] rounded-lg border border-border bg-card p-4 shadow-[0_14px_40px_rgba(0,0,0,0.45)]',
             className
           )}
         >

@@ -75,15 +75,17 @@ export const RoleCard = memo(function RoleCard({
         aria-label={t('aria.selectRole', { label: role.title })}
         aria-pressed={isSelected}
         className={cn(
-          'w-full rounded-[20px] border px-[22px] py-[18px] text-left transition-all duration-150',
+          'w-full rounded-2xl border px-[22px] py-[18px] text-left transition-all duration-150',
           showPopularBadge ? 'pt-7' : '',
-          isSelected ? cn(theme.classes.border, theme.classes.bgSoft) : 'border-border bg-card hover:border-foreground/20'
+          isSelected
+            ? cn(theme.classes.border, theme.classes.bgSoft)
+            : 'border-border bg-card hover:border-foreground/20'
         )}
       >
         <div className="flex items-center gap-3 mb-2">
           <div
             className={cn(
-              'flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[10px] text-[22px] leading-none',
+              'flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-md text-display leading-none',
               theme.classes.bg,
               theme.classes.textOn
             )}

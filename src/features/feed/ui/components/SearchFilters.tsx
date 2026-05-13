@@ -21,7 +21,7 @@ function SearchFiltersComponent({ activeFiltersList, onResetFilters }: SearchFil
           <Badge
             key={index}
             variant="tag"
-            className="shrink-0 whitespace-nowrap px-2 py-0 text-[11px] leading-tight"
+            className="shrink-0 whitespace-nowrap px-2 py-0 text-meta leading-tight"
           >
             {filter}
           </Badge>

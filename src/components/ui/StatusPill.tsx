@@ -30,7 +30,7 @@ export const UrgentPill = ({ date, className }: { date?: string; className?: str
 export const VerifiedBadge = ({ className }: { className?: string }) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-[5px] px-1.5 py-0.5 text-micro font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
+      'inline-flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-micro font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
       className
     )}
   >

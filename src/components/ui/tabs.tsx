@@ -103,7 +103,7 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative flex flex-1 items-center justify-center gap-2 rounded-[8px] px-3 py-2 text-[11px] transition-colors duration-300',
+              'relative flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-meta transition-colors duration-300',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
               SEGMENTED_TRIGGER_CLASS,
               isActive ? activeTriggerClassName : SEGMENTED_TRIGGER_INACTIVE_CLASS
@@ -112,7 +112,7 @@ export const Tabs = <T extends string>({
             {isActive ? (
               <motion.span
                 layoutId={resolvedIndicatorLayoutId}
-                className={cn('absolute inset-0 rounded-[8px]', activeIndicatorClassName)}
+                className={cn('absolute inset-0 rounded-md', activeIndicatorClassName)}
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"
               />

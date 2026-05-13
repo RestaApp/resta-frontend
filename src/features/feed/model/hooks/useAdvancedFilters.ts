@@ -9,7 +9,7 @@ const initialDatesFromFilters = (
   isVacancy: boolean
 ): { start: string | null; end: string | null; when: WhenPreset | null } => {
   if (!initial) return { start: null, end: null, when: null }
-  const when = !isVacancy ? initial.whenPreset ?? null : null
+  const when = !isVacancy ? (initial.whenPreset ?? null) : null
   if (when && !initial.startDate) {
     const r = getWhenPresetRange(when)
     return { start: r.startDate, end: r.endDate, when }
@@ -45,6 +45,10 @@ export const useAdvancedFilters = ({
   const [endDate, setEndDate] = useState<string | null>(initialSnap.end)
   const [whenPreset, setWhenPreset] = useState<WhenPreset | null>(initialSnap.when)
 
+  const [geoLat, setGeoLat] = useState<number | null>(() => initialFilters?.geoLat ?? null)
+  const [geoLon, setGeoLon] = useState<number | null>(() => initialFilters?.geoLon ?? null)
+  const [radiusKm, setRadiusKm] = useState<number>(() => initialFilters?.radiusKm ?? 2)
+
   useEffect(() => {
     const d = initialDatesFromFilters(initialFilters, isVacancy)
     setStartDate(d.start)
@@ -58,11 +62,8 @@ export const useAdvancedFilters = ({
     setRadiusKm(initialFilters?.radiusKm ?? 2)
   }, [initialFilters, isVacancy])
 
-  const [geoLat, setGeoLat] = useState<number | null>(() => initialFilters?.geoLat ?? null)
-  const [geoLon, setGeoLon] = useState<number | null>(() => initialFilters?.geoLon ?? null)
-  const [radiusKm, setRadiusKm] = useState<number>(() => initialFilters?.radiusKm ?? 2)
-
-  const hasSharedGeo = geoLat !== null && geoLon !== null && Number.isFinite(geoLat) && Number.isFinite(geoLon)
+  const hasSharedGeo =
+    geoLat !== null && geoLon !== null && Number.isFinite(geoLat) && Number.isFinite(geoLon)
 
   const handleStartDateChange = useCallback((value: string | null) => {
     setStartDate(value)
@@ -141,8 +142,8 @@ export const useAdvancedFilters = ({
       startDate: startDate || undefined,
       endDate: endDate || undefined,
       whenPreset: !isVacancy && whenPreset ? whenPreset : undefined,
-      geoLat: hasSharedGeo ? geoLat ?? undefined : undefined,
-      geoLon: hasSharedGeo ? geoLon ?? undefined : undefined,
+      geoLat: hasSharedGeo ? (geoLat ?? undefined) : undefined,
+      geoLon: hasSharedGeo ? (geoLon ?? undefined) : undefined,
       radiusKm: hasSharedGeo ? radiusKm : undefined,
     }
     return checkHasActiveFilters(draft) ? draft : null
