@@ -121,7 +121,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
           width: tooltipWidth,
         }}
       >
-        <Card className="shadow-lg">
+        <Card className="shadow-[0_14px_40px_rgba(0,0,0,0.4)]">
           <p className="text-sm font-medium text-foreground">{resolvedTooltip}</p>
           <div className="mt-3 flex justify-end">
             <Button variant="ghost" size="sm" onClick={onClose}>

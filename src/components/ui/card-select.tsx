@@ -65,7 +65,7 @@ const CardSelectInner = <TId extends string>({
         className={cn(
           'w-full rounded-xl border p-4 text-left transition-all',
           isSelected
-            ? 'bg-primary border-transparent text-white shadow-sm ring-2 ring-primary/25'
+            ? 'bg-primary border-transparent text-white  ring-2 ring-primary/25'
             : 'border-border',
           layout === 'vertical' ? 'bg-card shadow-md shadow-black/5' : '',
           layout === 'horizontal' ? 'flex items-center gap-4' : 'flex flex-col items-center gap-3',

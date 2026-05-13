@@ -4,11 +4,9 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/utils/cn'
 import type { RoleKind } from '@/shared/lib/role-theme'
 
-export const ONBOARDING_BOTTOM_CTA_SPACE =
-  'pb-[calc(6.5rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
+export const ONBOARDING_BOTTOM_CTA_SPACE = 'pb-onboarding-cta'
 
-export const ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT =
-  'pb-[calc(8.75rem+var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom)))]'
+export const ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT = 'pb-onboarding-cta-with-hint'
 
 const TONE_CTA: Record<RoleKind | 'primary', string> = {
   primary: '',
@@ -50,7 +48,11 @@ export const OnboardingBottomCta = memo(function OnboardingBottomCta({
           disabled={disabled}
           variant="gradient"
           size="lg"
-          className={cn('w-full shadow-lg disabled:opacity-40', TONE_CTA[tone], className)}
+          className={cn(
+            'w-full shadow-[0_14px_40px_rgba(0,0,0,0.4)] disabled:opacity-40',
+            TONE_CTA[tone],
+            className
+          )}
           aria-label={ariaLabel}
         >
           {children}

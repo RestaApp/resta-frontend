@@ -30,10 +30,10 @@ export const ShiftCardHeader = ({
     <div className="mb-2 flex items-start justify-between gap-3">
       <div className="flex min-w-0 flex-1 gap-3">
         {showAvatar ? (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-muted/60 text-xl">
-            <Avatar className="h-11 w-11 rounded-xl">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-border/50 bg-muted/60 text-xl">
+            <Avatar className="h-11 w-11 rounded-[10px]">
               <AvatarImage src={shift.userPhotoUrl} alt="" />
-              <AvatarFallback className="rounded-xl bg-muted/60 text-xl leading-none">
+              <AvatarFallback className="rounded-[10px] bg-muted/60 text-xl leading-none">
                 <span className="leading-none">{shift.logo}</span>
               </AvatarFallback>
             </Avatar>

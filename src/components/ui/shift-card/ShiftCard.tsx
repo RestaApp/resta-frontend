@@ -106,7 +106,7 @@ const ShiftCardComponent = ({
     return (
       <>
         {formatMoney(shift.pay)}{' '}
-        <span className="font-display text-sm font-normal tracking-normal text-muted-foreground">
+        <span className="font-mono-resta text-[10px] font-medium tracking-normal text-muted-foreground">
           {shift.currency}
         </span>
       </>
@@ -197,14 +197,14 @@ const ShiftCardComponent = ({
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
       className={cn(
-        'group relative cursor-pointer rounded-2xl border p-4 outline-none transition-all duration-200 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring',
+        'group relative cursor-pointer rounded-[14px] border p-4 outline-none transition-all duration-200 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring',
         'hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
         !isSupplierVariant && accentRole.classes.shiftCardGradient,
-        isSupplierVariant && 'border-border/80 bg-card shadow-sm',
+        isSupplierVariant && 'border-border/80 bg-card ',
         !isSupplierVariant &&
           (shift.urgent
-            ? cn('border-2 shadow-sm', accentRole.classes.border, accentRole.classes.bgSurface)
-            : 'border border-border/60 shadow-sm'),
+            ? cn('border-2 ', accentRole.classes.border, accentRole.classes.bgSurface)
+            : 'border border-border/60 '),
         !shift.urgent && !isSupplierVariant && 'hover:[box-shadow:var(--surface-shadow-soft)]'
       )}
     >
@@ -301,7 +301,7 @@ const ShiftCardComponent = ({
                 isApplied
                   ? undefined
                   : cn(
-                      'border-0 font-semibold shadow-sm',
+                      'border-0 font-semibold ',
                       accentRole.classes.bg,
                       accentRole.classes.textOn,
                       accentRole.classes.solidHover,

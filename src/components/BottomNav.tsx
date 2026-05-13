@@ -41,11 +41,11 @@ export const BottomNav = ({
         zIndex: Z_INDEX.bottomNav,
         paddingBottom: 'var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom))',
       }}
-      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/80 backdrop-blur-xl"
+      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/92 backdrop-blur-xl"
     >
       <div
         className={[
-          'mx-auto grid max-w-2xl items-center ui-density-page py-2',
+          'mx-auto grid max-w-2xl items-center px-1.5 pt-1.5 pb-2',
           tabs.length === 4 ? 'grid-cols-4' : 'grid-cols-2',
         ].join(' ')}
       >
@@ -66,8 +66,7 @@ export const BottomNav = ({
               whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
               className={[
-                'relative flex flex-col items-center justify-center rounded-xl px-2 py-1',
-                'min-h-[56px] gap-[3px]',
+                'relative flex min-h-[52px] flex-col items-center justify-center rounded-[10px] px-2 py-1 gap-[3px]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 focusRingClass,
               ].join(' ')}
@@ -86,10 +85,9 @@ export const BottomNav = ({
                 {isActive && (
                   <motion.span
                     layoutId={layoutId}
-                    className={[
-                      'absolute -top-[9px] h-1.5 w-1.5 rounded-full',
-                      activeDotClass,
-                    ].join(' ')}
+                    className={['absolute -top-[7px] h-1.5 w-4 rounded-[3px]', activeDotClass].join(
+                      ' '
+                    )}
                     transition={
                       reduceMotion ? { duration: 0 } : { duration: 0.28, ease: 'easeOut' }
                     }
@@ -110,8 +108,7 @@ export const BottomNav = ({
 
               <span
                 className={[
-                  'font-semibold uppercase leading-none tracking-normal transition-colors',
-                  'text-[9px]',
+                  'font-semibold uppercase leading-none tracking-[0.04em] transition-colors text-[9px]',
                   isActive ? activeColorClass : 'text-muted-foreground',
                 ].join(' ')}
               >

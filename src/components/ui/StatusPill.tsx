@@ -6,7 +6,7 @@ export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected
 export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
 
 const basePill =
-  'inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium leading-none border'
+  'inline-flex items-center whitespace-nowrap rounded-[6px] px-2 py-1 text-micro font-mono-resta font-semibold uppercase tracking-wider leading-none border'
 
 /** SOS — solid terracotta, экстренные смены (<3ч). Опционально: "SOS · {date}" */
 export const UrgentPill = ({ date, className }: { date?: string; className?: string }) => (
@@ -30,7 +30,7 @@ export const UrgentPill = ({ date, className }: { date?: string; className?: str
 export const VerifiedBadge = ({ className }: { className?: string }) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-micro font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
+      'inline-flex items-center gap-1 rounded-[5px] px-1.5 py-0.5 text-micro font-semibold leading-none tracking-wider border bg-success/10 text-success border-success/30',
       className
     )}
   >

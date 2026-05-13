@@ -17,9 +17,9 @@ type TagTone = 'primary' | 'employee' | 'restaurant' | 'supplier'
 
 const TONE_ACTIVE: Record<TagTone, string> = {
   primary: TAG_ACTIVE_CLASS,
-  employee: 'border-transparent bg-role-employee text-white shadow-sm',
-  restaurant: 'border-transparent bg-role-restaurant text-white shadow-sm',
-  supplier: 'border-transparent bg-role-supplier text-white shadow-sm',
+  employee: TAG_ACTIVE_CLASS,
+  restaurant: TAG_ACTIVE_CLASS,
+  supplier: TAG_ACTIVE_CLASS,
 }
 
 interface SelectableTagButtonProps {

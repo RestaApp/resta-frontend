@@ -15,9 +15,9 @@ import { cn } from '@/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
 
 const ROLE_AVATAR_GRADIENT: Record<ReturnType<typeof getRoleKind>, string> = {
-  employee: 'from-[#0088CC] to-[#005C8C]',
-  restaurant: 'from-[#0088CC] to-[#005C8C]',
-  supplier: 'from-[#7E5BD4] to-[#5A3FB0]',
+  employee: 'bg-[image:var(--gradient-emp)]',
+  restaurant: 'bg-[image:var(--gradient-primary)]',
+  supplier: 'bg-[image:var(--gradient-primary)]',
 }
 
 const ROLE_SHIELD_ICON: Record<ReturnType<typeof getRoleKind>, string> = {
@@ -113,7 +113,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           <Card className="text-center">
             <div
               className={cn(
-                'mx-auto mb-3 h-14 w-14 overflow-hidden rounded-full bg-gradient-to-br',
+                'mx-auto mb-3 h-14 w-14 overflow-hidden rounded-[16px]',
                 ROLE_AVATAR_GRADIENT[roleKind]
               )}
             >

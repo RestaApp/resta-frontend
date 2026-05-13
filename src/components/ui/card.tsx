@@ -11,12 +11,13 @@ import { cn } from '@/utils/cn'
  *
  * Все ad‑hoc `rounded-xl bg-card border` div‑ы должны мигрировать на `<Card />`.
  */
-const BASE_CARD = 'rounded-xl border bg-card transition-colors border-[var(--surface-stroke-soft)]'
+const BASE_CARD =
+  'rounded-[14px] border border-[var(--surface-stroke-soft)] bg-card transition-colors'
 
 const PADDING_CLASSES = {
   none: '',
   sm: 'p-3',
-  md: 'p-4',
+  md: 'p-[13px]',
   lg: 'p-5',
 } as const
 
@@ -45,7 +46,7 @@ export function Card({ children, className, padding = 'md', emphasis, accent }: 
       className={cn(
         BASE_CARD,
         PADDING_CLASSES[padding],
-        emphasis && 'bg-[var(--surface-subtle)]',
+        emphasis && 'bg-[var(--surface-raised)]',
         accent && ACCENT_BORDER[accent],
         className
       )}

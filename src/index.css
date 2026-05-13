@@ -4,9 +4,10 @@
 
 :root {
   --font-size: 16px;
-  --font-family-base: 'Inter', 'Segoe UI', 'SF Pro Text', 'Helvetica Neue', sans-serif;
-  --font-family-display: 'Instrument Serif', Georgia, serif;
+  --font-family-base: 'Inter', system-ui, sans-serif;
+  --font-family-display: 'Inter', system-ui, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
   --ui-density-page-x: 1rem;
   --ui-density-page-y: 1rem;
   --ui-density-stack-sm: 0.75rem;
@@ -14,33 +15,49 @@
   --ui-density-stack-lg: 1.5rem;
   --ui-density-section-gap: 1.5rem;
 
-  /* --- Base Colors: Resta Wireframes Spec (Dark Premium) --- */
-  --background: #0a0a0d; /* p-bg */
-  --foreground: #f5f5f7; /* p-ink */
+  /* Resta production board v2.1 */
+  --canvas: #0a0a0d;
+  --canvas-2: #0d0d11;
+  --grid: rgba(255, 255, 255, 0.022);
+  --background: #0a0a0d;
+  --foreground: #f5f5f7;
+  --ink: #f4f4f6;
+  --dim: #8e8e99;
+  --muted-ink: #5e5e6b;
 
-  --card: #141418; /* p-surface */
+  --card: #15151a;
   --card-foreground: #f5f5f7;
-  --drawer-surface: #141418;
-
-  --popover: #141418;
+  --drawer-surface: #15151a;
+  --popover: #15151a;
   --popover-foreground: #f5f5f7;
+  --surface-subtle: #1d1d23;
+  --surface-subtle-foreground: #f5f5f7;
+  --surface-raised: #27272f;
+  --surface-border: rgba(255, 255, 255, 0.06);
+  --surface-border-strong: rgba(255, 255, 255, 0.1);
+  --surface-stroke-soft: rgba(255, 255, 255, 0.06);
+  --surface-stroke-soft-hover: rgba(255, 255, 255, 0.12);
+  --surface-shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.36);
 
-  /* BRAND: Terracotta + Amber + Stars */
-  --terracotta: #ff6b2c; /* accent */
-  --amber: #f5b142; /* warn / Telegram Stars */
-  --stars: #f5b142;
+  --terracotta: #ff6b2c;
+  --terracotta-2: #ff8a4c;
+  --accent-soft: rgba(255, 107, 44, 0.14);
   --primary-foreground: #ffffff;
   --ring: var(--terracotta);
 
-  /* Единая палитра ролей: все роли используют цвет заведений (terracotta).
-     Алиасы --emp/--sup сохранены для обратной совместимости. */
-  --rest: var(--terracotta);
+  --success: #3ec97e;
+  --success-soft: rgba(62, 201, 126, 0.14);
+  --warning: #f5b142;
+  --warning-soft: rgba(245, 177, 66, 0.14);
+  --destructive: #f24d4d;
+  --destructive-foreground: #ffffff;
+  --destructive-soft: rgba(242, 77, 77, 0.14);
+  --stars: #f5b142;
+
+  --rest: #ff6b2c;
   --emp: var(--rest);
   --sup: var(--rest);
 
-  /* Role palettes — единый цвет для всех ролей.
-     Используются как `bg-role-employee`, `text-role-employee-foreground`,
-     `bg-role-employee-soft`, `border-role-employee` (через @theme inline). */
   --role-restaurant: var(--rest);
   --role-restaurant-foreground: #ffffff;
   --role-restaurant-soft: rgba(255, 107, 44, 0.14);
@@ -59,145 +76,88 @@
   --role-supplier-surface: var(--role-restaurant-surface);
   --role-supplier-border: var(--role-restaurant-border);
 
-  --surface-subtle: #1c1c22; /* p-surface2 */
-  --surface-subtle-foreground: #f5f5f7;
-  --surface-border: rgba(255, 255, 255, 0.06); /* p-line */
-
   --secondary: var(--surface-subtle);
   --secondary-foreground: var(--surface-subtle-foreground);
-
   --muted: var(--surface-subtle);
-  --muted-foreground: #7a7068; /* warm muted, not purple */
-
+  --muted-foreground: var(--dim);
   --accent: var(--surface-subtle);
   --accent-foreground: var(--surface-subtle-foreground);
-
-  --destructive: #f24d4d;
-  --destructive-foreground: #ffffff;
-  --destructive-soft: rgba(242, 77, 77, 0.14);
-
-  --success: #3ec97e;
-  --success-soft: rgba(62, 201, 126, 0.14);
-  --warning: #f5b142;
-  --warning-soft: rgba(245, 177, 66, 0.14);
-  --accent-soft: rgba(255, 107, 44, 0.14);
-
   --border: var(--surface-border);
   --input: rgba(255, 255, 255, 0.08);
-  --input-background: var(--surface-subtle);
-  --switch-background: var(--surface-border);
-  --surface-stroke-soft: rgba(255, 255, 255, 0.05);
-  --surface-stroke-soft-hover: rgba(255, 255, 255, 0.09);
-  --surface-shadow-soft: none;
-  --primary-ring-soft: 0 0 0 1px rgba(232, 90, 42, 0.15);
-  --primary-ring-soft-hover: 0 0 0 1px rgba(232, 90, 42, 0.25);
-  --primary-hero-shadow: 0 20px 60px rgba(232, 90, 42, 0.35);
+  --input-background: #0a0a0d;
   --input-stroke: rgba(255, 255, 255, 0.08);
   --input-stroke-hover: rgba(255, 255, 255, 0.13);
-  --overlay-scrim: rgba(0, 0, 0, 0.65);
-  --overlay-scrim-strong: rgba(0, 0, 0, 0.75);
+  --switch-background: rgba(255, 255, 255, 0.12);
+  --overlay-scrim: rgba(0, 0, 0, 0.55);
+  --overlay-scrim-strong: rgba(0, 0, 0, 0.72);
   --overlay-glass: rgba(255, 255, 255, 0.04);
   --overlay-shine: rgba(255, 255, 255, 0.35);
 
-  --radius: 0.875rem; /* 14px per spec */
+  --radius: 0.875rem;
+  --radius-chip: 0.875rem;
+  --radius-input: 0.625rem;
+  --radius-sheet: 1.25rem;
 
-  /* Charts */
-  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-1: var(--terracotta);
   --chart-2: var(--success);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --chart-3: var(--role-employee);
+  --chart-4: var(--warning);
+  --chart-5: var(--role-supplier);
 
-  /* Sidebar */
-  --sidebar: #0f0e0c;
-  --sidebar-foreground: #f5ede0;
+  --sidebar: #0a0a0d;
+  --sidebar-foreground: #f5f5f7;
   --sidebar-primary: var(--terracotta);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #191714;
-  --sidebar-accent-foreground: #f5ede0;
+  --sidebar-accent: #15151a;
+  --sidebar-accent-foreground: #f5f5f7;
   --sidebar-border: var(--surface-border);
   --sidebar-ring: var(--ring);
 
-  /* Legacy compat aliases */
-  --purple-deep: var(--terracotta);
-  --pink-electric: var(--amber);
-  --blue-cyber: #5b8def;
-  --gradient-primary: linear-gradient(135deg, var(--terracotta) 0%, var(--amber) 100%);
-  --gradient-glow: linear-gradient(
-    135deg,
-    rgba(232, 90, 42, 0.08) 0%,
-    rgba(244, 161, 75, 0.08) 100%
-  );
-
-  /* Brand gradients used in CTAs/paywalls — единый источник истины. */
+  --gradient-primary: linear-gradient(135deg, var(--terracotta), var(--terracotta-2));
   --gradient-stars: linear-gradient(135deg, #f5b142, #ff8a2c);
   --gradient-pro: linear-gradient(135deg, #b38cff, #8a66d4);
   --gradient-emp: var(--gradient-primary);
+  --gradient-glow: linear-gradient(135deg, rgba(255, 107, 44, 0.1), rgba(179, 140, 255, 0.08));
   --gradient-stars-glow: radial-gradient(
     circle at 50% 0%,
     rgba(245, 177, 66, 0.16),
     transparent 60%
   );
-  --shadow-stars-cta: 0 10px 30px rgba(245, 177, 66, 0.4);
+  --shadow-stars-cta: 0 12px 32px rgba(245, 177, 66, 0.28);
+  --primary-ring-soft: 0 0 0 1px rgba(255, 107, 44, 0.2);
+  --primary-ring-soft-hover: 0 0 0 1px rgba(255, 107, 44, 0.32);
+  --primary-hero-shadow: 0 24px 48px rgba(255, 107, 44, 0.4);
+
+  /* Legacy aliases kept only for compatibility with existing imports/classes. */
+  --purple-deep: var(--sup);
+  --pink-electric: var(--warning);
+  --blue-cyber: var(--emp);
 }
 
-/* LIGHT THEME OVERRIDE — see Resta Wireframes spec */
 [data-theme='light'] {
-  --background: #ffffff;
-  --foreground: #0f1115;
-
-  --card: #f5f4f0;
-  --card-foreground: #0f1115;
+  --background: #f4f4f6;
+  --foreground: #0a0a0d;
+  --ink: #0a0a0d;
+  --dim: #5e5e6b;
+  --muted-ink: #8e8e99;
+  --card: #ffffff;
+  --card-foreground: #0a0a0d;
   --drawer-surface: #ffffff;
-
-  --popover: #f5f4f0;
-  --popover-foreground: #0f1115;
-
-  --terracotta: #e85a1f;
-  --amber: #d89422;
-  --stars: #d89422;
-
-  /* Единая палитра ролей (light): все роли используют цвет заведений. */
-  --rest: #e85a1f;
-  --emp: var(--rest);
-  --sup: var(--rest);
-
-  --role-restaurant: var(--rest);
-  --role-restaurant-foreground: #ffffff;
-  --role-restaurant-soft: rgba(232, 90, 31, 0.12);
-  --role-restaurant-surface: rgba(232, 90, 31, 0.06);
-  --role-restaurant-border: rgba(232, 90, 31, 0.4);
-
-  --role-employee: var(--role-restaurant);
-  --role-employee-foreground: var(--role-restaurant-foreground);
-  --role-employee-soft: var(--role-restaurant-soft);
-  --role-employee-surface: var(--role-restaurant-surface);
-  --role-employee-border: var(--role-restaurant-border);
-
-  --role-supplier: var(--role-restaurant);
-  --role-supplier-foreground: var(--role-restaurant-foreground);
-  --role-supplier-soft: var(--role-restaurant-soft);
-  --role-supplier-surface: var(--role-restaurant-surface);
-  --role-supplier-border: var(--role-restaurant-border);
-
-  --surface-subtle: #ebe9e3;
-  --surface-subtle-foreground: #0f1115;
-  --surface-border: rgba(0, 0, 0, 0.08);
-
-  --destructive: #d63838;
-  --destructive-soft: rgba(214, 56, 56, 0.12);
-  --success: #1fa968;
-  --success-soft: rgba(31, 169, 104, 0.12);
-  --warning: #d89422;
-  --warning-soft: rgba(216, 148, 34, 0.12);
-  --accent-soft: rgba(232, 90, 31, 0.12);
-
-  --input: rgba(0, 0, 0, 0.08);
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0d;
+  --surface-subtle: #ececf1;
+  --surface-subtle-foreground: #0a0a0d;
+  --surface-raised: #e4e4ea;
+  --surface-border: rgba(10, 10, 13, 0.08);
+  --surface-border-strong: rgba(10, 10, 13, 0.14);
+  --surface-stroke-soft: rgba(10, 10, 13, 0.08);
+  --surface-stroke-soft-hover: rgba(10, 10, 13, 0.14);
+  --muted: var(--surface-subtle);
+  --muted-foreground: #5e5e6b;
+  --border: var(--surface-border);
   --input-background: #ffffff;
-  --input-stroke: rgba(0, 0, 0, 0.08);
-  --input-stroke-hover: rgba(0, 0, 0, 0.13);
-  --overlay-scrim: rgba(20, 20, 30, 0.4);
-  --overlay-glass: rgba(0, 0, 0, 0.04);
+  --input-stroke: rgba(10, 10, 13, 0.1);
+  --input-stroke-hover: rgba(10, 10, 13, 0.16);
 }
 
 @media (min-width: 640px) {
@@ -211,8 +171,6 @@
   }
 }
 
-/* Dark: контраст инпутов — тонкая граница, hover, focus без тяжёлых теней.
-   Не применяется к Input variant="inline" (data-variant="inline") — там нужен прозрачный chrome. */
 [data-slot='input']:not([data-variant='inline']),
 input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']),
 textarea {
@@ -239,7 +197,6 @@ textarea:focus-visible {
   box-shadow: 0 0 0 1px var(--terracotta);
 }
 
-/* Фокус по палитре роли (перебивает terracotta из блока выше; цвет задаётся inline). */
 [data-slot='input'][data-role-accent]:focus,
 [data-slot='input'][data-role-accent]:focus-visible {
   border-color: var(--resta-role-input-focus);
@@ -256,8 +213,6 @@ textarea:focus-visible {
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--terracotta);
   --color-primary-foreground: var(--primary-foreground);
-  --color-terracotta: var(--terracotta);
-  --color-amber: var(--amber);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -274,18 +229,36 @@ textarea:focus-visible {
   --color-switch-background: var(--switch-background);
   --color-drawer-surface: var(--drawer-surface);
   --color-ring: var(--ring);
-
+  --color-terracotta: var(--terracotta);
+  --color-amber: var(--warning);
+  --color-stars: var(--stars);
+  --color-emp: var(--emp);
+  --color-rest: var(--rest);
+  --color-sup: var(--sup);
+  --color-role-employee: var(--role-employee);
+  --color-role-employee-foreground: var(--role-employee-foreground);
+  --color-role-employee-soft: var(--role-employee-soft);
+  --color-role-employee-surface: var(--role-employee-surface);
+  --color-role-employee-border: var(--role-employee-border);
+  --color-role-restaurant: var(--role-restaurant);
+  --color-role-restaurant-foreground: var(--role-restaurant-foreground);
+  --color-role-restaurant-soft: var(--role-restaurant-soft);
+  --color-role-restaurant-surface: var(--role-restaurant-surface);
+  --color-role-restaurant-border: var(--role-restaurant-border);
+  --color-role-supplier: var(--role-supplier);
+  --color-role-supplier-foreground: var(--role-supplier-foreground);
+  --color-role-supplier-soft: var(--role-supplier-soft);
+  --color-role-supplier-surface: var(--role-supplier-surface);
+  --color-role-supplier-border: var(--role-supplier-border);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -294,36 +267,6 @@ textarea:focus-visible {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  /* Terracotta/Amber/Stars direct utilities */
-  --color-terracotta: var(--terracotta);
-  --color-amber: var(--amber);
-  --color-stars: var(--stars);
-  --color-emp: var(--emp);
-  --color-rest: var(--rest);
-  --color-sup: var(--sup);
-
-  /* Role palette utilities — bg-role-employee, text-role-restaurant-foreground, etc. */
-  --color-role-employee: var(--role-employee);
-  --color-role-employee-foreground: var(--role-employee-foreground);
-  --color-role-employee-soft: var(--role-employee-soft);
-  --color-role-employee-surface: var(--role-employee-surface);
-  --color-role-employee-border: var(--role-employee-border);
-
-  --color-role-restaurant: var(--role-restaurant);
-  --color-role-restaurant-foreground: var(--role-restaurant-foreground);
-  --color-role-restaurant-soft: var(--role-restaurant-soft);
-  --color-role-restaurant-surface: var(--role-restaurant-surface);
-  --color-role-restaurant-border: var(--role-restaurant-border);
-
-  --color-role-supplier: var(--role-supplier);
-  --color-role-supplier-foreground: var(--role-supplier-foreground);
-  --color-role-supplier-soft: var(--role-supplier-soft);
-  --color-role-supplier-surface: var(--role-supplier-surface);
-  --color-role-supplier-border: var(--role-supplier-border);
-
-  /* Typography utilities exposed to Tailwind via @theme inline.
-     Using `text-{name}` создаёт font-size + line-height одной утилитой. */
   --text-micro: 10px;
   --text-micro--line-height: 14px;
   --text-meta: 11px;
@@ -360,6 +303,16 @@ textarea:focus-visible {
 
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at 15% 5%, rgba(255, 107, 44, 0.05), transparent 45%),
+      radial-gradient(circle at 85% 65%, rgba(179, 140, 255, 0.04), transparent 50%),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:
+      auto,
+      auto,
+      44px 44px,
+      44px 44px;
     font-family: var(--font-family-base);
     margin: 0;
     padding: 0;
@@ -370,10 +323,9 @@ textarea:focus-visible {
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
-    /* FIX: Убрали глобальную анимацию. 
-       Анимируем только фон и цвет текста, чтобы не лагали кнопки.
-    */
-    transition: background-color 0.3s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 
   #root {
@@ -382,9 +334,6 @@ textarea:focus-visible {
     width: 100%;
   }
 
-  /* Theme transition — на корневых поверхностях, без глобального селектора.
-     Дочерние узлы наследуют новые `--color-*` без собственного transition,
-     визуально это всё равно мгновенная смена темы. */
   body,
   .themed-surface {
     transition:
@@ -393,25 +342,24 @@ textarea:focus-visible {
       border-color 0.2s ease;
   }
 
-  /* FIX: Используем Tailwind классы для применения размеров */
   h1 {
-    @apply text-2xl font-medium leading-tight tracking-tight;
+    @apply text-screen-title font-extrabold leading-tight tracking-tight;
   }
 
   h2 {
-    @apply text-xl font-medium leading-snug tracking-tight;
+    @apply text-title-md font-bold leading-snug tracking-tight;
   }
 
   h3 {
-    @apply text-lg font-medium leading-snug;
+    @apply text-title-sm font-bold leading-snug;
   }
 
   h4 {
-    @apply text-base font-medium leading-snug;
+    @apply text-body-lg font-semibold leading-snug;
   }
 
   label {
-    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+    @apply text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
   }
 
   button,
@@ -422,9 +370,6 @@ textarea:focus-visible {
 }
 
 @layer utilities {
-  /* Safe-area: единые утилиты вместо разных calc(env(...)) по проекту.
-     - pb-safe — для скроллящегося контента (минимум 16px, иначе env);
-     - pb-safe-cta — для sticky‑CTA контейнеров (20px поверх env). */
   .pb-safe {
     padding-bottom: max(var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)), 16px);
   }
@@ -437,79 +382,57 @@ textarea:focus-visible {
   .bottom-safe {
     bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom));
   }
-
-  /* Legacy alias — не использовать в новом коде. */
   .safe-area-bottom {
     padding-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom));
   }
-
-  /* Display font utility */
   .font-display {
     font-family: var(--font-family-display);
   }
-
-  /* Mono font utility */
   .font-mono-resta {
     font-family: var(--font-family-mono);
   }
-
-  /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
   }
-
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-    /* Chrome, Safari and Opera */
   }
-
   .ui-density-page {
     padding-left: var(--ui-density-page-x);
     padding-right: var(--ui-density-page-x);
   }
-
   .ui-density-py {
     padding-top: var(--ui-density-page-y);
     padding-bottom: var(--ui-density-page-y);
   }
-
   .ui-density-py-sm {
     padding-top: calc(var(--ui-density-page-y) * 0.5);
     padding-bottom: calc(var(--ui-density-page-y) * 0.5);
   }
-
   .ui-density-stack-sm {
     display: flex;
     flex-direction: column;
     gap: var(--ui-density-stack-sm);
   }
-
   .ui-density-stack {
     display: flex;
     flex-direction: column;
     gap: var(--ui-density-stack);
   }
-
   .ui-density-stack-lg {
     display: flex;
     flex-direction: column;
     gap: var(--ui-density-stack-lg);
   }
-
   .ui-density-mb {
     margin-bottom: var(--ui-density-stack);
   }
-
   .ui-density-mb-lg {
     margin-bottom: var(--ui-density-section-gap);
   }
 }
 
-/* Hide scrollbar только у корневых скроллеров приложения.
-   Нативные скроллы у вложенных элементов (карты, видео, dev-панели) не трогаем. */
 html,
 body {
   -ms-overflow-style: none;
@@ -523,13 +446,11 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* Animation Utils */
 @keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(5px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -540,7 +461,6 @@ body::-webkit-scrollbar {
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* Range Slider */
 input[type='range'] {
   @apply h-2 bg-secondary rounded-lg appearance-none cursor-pointer;
 }
@@ -553,7 +473,6 @@ input[type='range']:active::-webkit-slider-thumb {
   @apply scale-110;
 }
 
-/* Dual Range Slider Fix */
 .range-slider-input {
   pointer-events: none;
 }
@@ -570,7 +489,6 @@ input[type='range']:active::-webkit-slider-thumb {
   z-index: 50;
 }
 
-/* Hide native time input picker indicator but keep input clickable */
 input[type='time']::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
@@ -579,4 +497,13 @@ input[type='time']::-webkit-calendar-picker-indicator {
 input[type='time']::-ms-clear,
 input[type='time']::-ms-expand {
   display: none;
+}
+
+@layer utilities {
+  .pb-onboarding-cta {
+    padding-bottom: calc(6.5rem + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)));
+  }
+  .pb-onboarding-cta-with-hint {
+    padding-bottom: calc(8.75rem + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)));
+  }
 }

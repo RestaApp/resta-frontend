@@ -90,7 +90,7 @@ const SupplierCardComponent = ({
       }}
       className={cn(
         'group relative border bg-card transition-all duration-200 cursor-pointer active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'rounded-3xl p-4 shadow-sm border-[var(--surface-stroke-soft)] hover:[box-shadow:var(--surface-shadow-soft)]',
+        'rounded-[14px] p-4  border-[var(--surface-stroke-soft)] hover:[box-shadow:var(--surface-shadow-soft)]',
         'hover:border-[var(--surface-stroke-soft-hover)] dark:shadow-none'
       )}
     >
@@ -130,7 +130,7 @@ const SupplierCardComponent = ({
       ) : null}
 
       <div className="flex items-center gap-4">
-        <Avatar className="h-11 w-11 rounded-xl shrink-0 self-start">
+        <Avatar className="h-11 w-11 rounded-[10px] shrink-0 self-start">
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
           <AvatarFallback className="bg-primary text-primary-foreground text-base font-semibold">
             {supplier.name.charAt(0).toUpperCase()}

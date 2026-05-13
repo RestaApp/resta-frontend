@@ -2,14 +2,11 @@ import { forwardRef, type ComponentProps } from 'react'
 import { cn } from '@/utils/cn'
 import { Loader } from '@/components/ui/loader'
 
-/** Size scale — фиксированные 44 / 48 / 52 px (touch-target ≥ 44 per WCAG 2.5.5). */
+/** Size scale aligned to the production board: compact inline buttons, 52px primary CTA. */
 const SIZE_CLASSES = {
-  /** sm — 44px, минимальный touch target. Inline‑кнопки в карточках. */
-  sm: 'h-11 px-4 text-sm',
-  /** md — 48px, дефолтная высота для primary inline. */
-  md: 'h-12 px-5 text-sm',
-  /** lg — 52px, sticky CTA / главное действие экрана. */
-  lg: 'h-[52px] px-6 text-base',
+  sm: 'h-9 px-3 text-body-sm',
+  md: 'h-11 px-4 text-body-md',
+  lg: 'h-[52px] px-5 text-body-lg',
 } as const
 
 const LOADER_SLOT = {
@@ -20,18 +17,22 @@ const LOADER_SLOT = {
 
 const VARIANT_CLASSES = {
   /** Primary — terracotta solid. Only this gets solid fill per spec. */
-  primary: 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80',
+  primary:
+    'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-[0_12px_32px_rgba(255,107,44,0.28)]',
   /** Secondary — outline, no fill */
-  secondary: 'border border-border bg-transparent text-foreground hover:bg-muted/60',
+  secondary:
+    'border border-border bg-[var(--surface-subtle)] text-foreground hover:bg-[var(--surface-raised)]',
   /** Outline — same as secondary */
-  outline: 'border border-border bg-transparent text-foreground hover:bg-muted/60',
+  outline: 'border border-border bg-transparent text-foreground hover:bg-[var(--surface-subtle)]',
   /** Ghost — text only, terracotta color */
-  ghost: 'bg-transparent text-primary hover:bg-primary/8',
+  ghost:
+    'bg-transparent text-muted-foreground hover:bg-[var(--surface-subtle)] hover:text-foreground',
   /** Destructive */
   destructive:
     'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
   /** Gradient alias → solid primary (terracotta) */
-  gradient: 'bg-primary text-white hover:bg-primary/90 active:bg-primary/80 shadow-sm border-0',
+  gradient:
+    'bg-[image:var(--gradient-primary)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[0_12px_32px_rgba(255,107,44,0.28)]',
   gradientPressed:
     'bg-muted text-foreground/60 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
 } as const
@@ -70,7 +71,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         aria-pressed={pressed || undefined}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all whitespace-nowrap',
+          'inline-flex items-center justify-center gap-1.5 rounded-[11px] font-semibold transition-all whitespace-nowrap',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
           'disabled:opacity-50 disabled:cursor-not-allowed',
           SIZE_CLASSES[size],

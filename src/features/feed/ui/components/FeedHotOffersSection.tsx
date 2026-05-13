@@ -12,14 +12,7 @@ type Props = {
 }
 
 export const FeedHotOffersSection = memo((props: Props) => {
-  const {
-    hotOffers,
-    totalCount,
-    onShowAll,
-    onItemClick,
-    isLoading,
-    isVacancy,
-  } = props
+  const { hotOffers, totalCount, onShowAll, onItemClick, isLoading, isVacancy } = props
 
   if (isLoading && hotOffers.length === 0) {
     return (
@@ -29,10 +22,10 @@ export const FeedHotOffersSection = memo((props: Props) => {
           <Skeleton className="h-5 w-16 rounded-md" />
         </div>
         <div className="ui-density-page flex gap-3 overflow-x-auto scrollbar-hide snap-x">
-          <Skeleton className="w-[110px] h-[135px] rounded-2xl" />
-          <Skeleton className="w-[110px] h-[135px] rounded-2xl" />
-          <Skeleton className="w-[110px] h-[135px] rounded-2xl" />
-          <Skeleton className="w-[110px] h-[135px] rounded-2xl" />
+          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
+          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
+          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
+          <Skeleton className="w-[110px] h-[135px] rounded-[14px]" />
         </div>
       </div>
     )

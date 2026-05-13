@@ -68,7 +68,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
       type="button"
       onClick={handleClick}
       className={cn(
-        'snap-center flex-shrink-0 w-[105px] min-h-[108px] relative overflow-hidden rounded-xl bg-card border border-border p-2 flex flex-col items-start text-left shadow-sm cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
+        'snap-center flex-shrink-0 w-[105px] min-h-[108px] relative overflow-hidden rounded-xl bg-card border border-border p-2 flex flex-col items-start text-left  cursor-pointer group active:scale-[0.99] transition-all duration-150 motion-reduce:!transition-none motion-reduce:active:scale-100',
         'border-[var(--surface-stroke-soft)] hover:border-[var(--surface-stroke-soft-hover)] active:border-[var(--surface-stroke-soft-hover)] dark:shadow-none',
         'dark:border-primary/20 dark:hover:border-primary/30 dark:[box-shadow:var(--primary-ring-soft)] dark:hover:[box-shadow:var(--primary-ring-soft-hover)]'
       )}
@@ -89,7 +89,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
         <AvatarImage src={item.photoUrl ?? undefined} alt="" />
         <AvatarFallback className="bg-primary/10 text-base">
           <span
-            className="drop-shadow-sm transform group-hover:scale-105 transition-transform duration-200"
+            className="drop- transform group-hover:scale-105 transition-transform duration-200"
             aria-hidden
           >
             {item.emoji}
@@ -118,13 +118,7 @@ const HotOfferCard = memo(({ item, onClick }: HotOfferCardProps) => {
 HotOfferCard.displayName = 'HotOfferCard'
 
 export const HotOffers = memo(
-  ({
-    items,
-    onItemClick,
-    totalCount,
-    onShowAll,
-    isVacancy,
-  }: HotOffersProps) => {
+  ({ items, onItemClick, totalCount, onShowAll, isVacancy }: HotOffersProps) => {
     const { t } = useTranslation()
     const handleItemClick = useCallback((item: HotOffer) => onItemClick?.(item), [onItemClick])
 
@@ -134,10 +128,7 @@ export const HotOffers = memo(
       return t('feed.hotOffers')
     }, [isVacancy, t])
 
-    const showAllLabel = useMemo(
-      () => t('feed.showAllHotOffers') || t('common.all'),
-      [t]
-    )
+    const showAllLabel = useMemo(() => t('feed.showAllHotOffers') || t('common.all'), [t])
 
     return (
       <div

@@ -35,7 +35,7 @@ export const Tabs = <T extends string>({
   className,
   ariaLabel = 'Tabs',
   indicatorLayoutId,
-  activeIndicatorClassName = 'bg-primary shadow-sm',
+  activeIndicatorClassName = 'bg-[var(--surface-raised)]',
   activeTriggerClassName = SEGMENTED_TRIGGER_ACTIVE_CLASS,
 }: TabsProps<T>) => {
   const tabRefs = useRef(new Map<T, HTMLButtonElement>())
@@ -83,7 +83,7 @@ export const Tabs = <T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       onKeyDown={onKeyDown}
-      className={cn(SEGMENTED_CONTAINER_CLASS, 'flex', className)}
+      className={cn(SEGMENTED_CONTAINER_CLASS, 'flex gap-1', className)}
     >
       {options.map(option => {
         const isActive = option.id === activeId
@@ -103,7 +103,7 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-1.5 text-sm transition-colors duration-300',
+              'relative flex flex-1 items-center justify-center gap-2 rounded-[8px] px-3 py-2 text-[11px] transition-colors duration-300',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
               SEGMENTED_TRIGGER_CLASS,
               isActive ? activeTriggerClassName : SEGMENTED_TRIGGER_INACTIVE_CLASS
@@ -112,7 +112,7 @@ export const Tabs = <T extends string>({
             {isActive ? (
               <motion.span
                 layoutId={resolvedIndicatorLayoutId}
-                className={cn('absolute inset-0 rounded-full', activeIndicatorClassName)}
+                className={cn('absolute inset-0 rounded-[8px]', activeIndicatorClassName)}
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"
               />

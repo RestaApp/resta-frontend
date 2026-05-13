@@ -143,7 +143,7 @@ export const Z_INDEX = {
 .bottom-safe   /* bottom: env(safe-area-inset-bottom) */
 ```
 
-Не плодить ручные `pb-[calc(1rem+env(...))]` — используй утилиту.
+Не плодить ручные arbitrary safe-area padding-классы — используй утилиту.
 
 ### 2.5. Semantic tokens вместо raw values
 

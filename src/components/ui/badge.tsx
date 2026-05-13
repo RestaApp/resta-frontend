@@ -15,9 +15,9 @@ import { TAG_ACTIVE_CLASS, TAG_INACTIVE_CLASS } from '@/components/ui/ui-pattern
  *   ok / rej  — итоговый статус
  */
 const BADGE_VARIANTS = {
-  default: 'bg-muted text-muted-foreground',
+  default: 'bg-muted-foreground/15 text-muted-foreground',
   primary: 'bg-primary text-primary-foreground',
-  secondary: 'bg-secondary text-secondary-foreground',
+  secondary: 'bg-[var(--surface-subtle)] text-secondary-foreground border border-border',
   success: 'bg-success text-white',
   destructive: 'bg-destructive text-destructive-foreground',
   outline: 'border border-border bg-transparent text-foreground',
@@ -49,10 +49,10 @@ interface BadgeProps {
 export const Badge = ({ children, className, variant = 'default' }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center rounded-md px-2 py-0.5 text-micro font-mono-resta font-semibold uppercase tracking-wider align-middle whitespace-nowrap',
+      'inline-flex items-center rounded-[5px] px-1.5 py-0.5 text-micro font-mono-resta font-bold uppercase tracking-wider align-middle whitespace-nowrap leading-none',
       BADGE_VARIANTS[variant],
       (variant === 'tag' || variant === 'tagActive') &&
-        'rounded-full px-2.5 text-xs normal-case tracking-normal max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
+        'rounded-[14px] px-2.5 text-xs normal-case tracking-normal max-w-full justify-center overflow-hidden text-ellipsis whitespace-nowrap leading-none',
       className
     )}
   >

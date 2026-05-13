@@ -21,7 +21,7 @@ export const ShiftSkeleton = memo(function ShiftSkeleton({
   return (
     <div
       className={cn(
-        'space-y-4 rounded-xl border border-[var(--surface-stroke-soft)] bg-card p-4',
+        'space-y-4 rounded-[10px] border border-[var(--surface-stroke-soft)] bg-card p-4',
         VARIANT_CONTAINER_CLASSES[variant]
       )}
     >
