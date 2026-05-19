@@ -325,7 +325,7 @@
     "coverMessagePlaceholderShort": "Ready to start by 15:45, grill experience — yes.",
     "applyPrivacyTitle": "The manager will see the message",
     "applyPrivacyDescription": "Contacts open after the application is accepted.",
-    "sendApplication": "Send application →",
+    "sendApplication": "Send application",
     "sending": "Sending...",
     "workTime": "Work time",
     "pay": "Pay",
@@ -525,7 +525,7 @@
           "shieldText": "Access to 230+ restaurants in Minsk. No card — pay later with Telegram Stars."
         }
       },
-      "next": "Next →"
+      "next": "Next"
     }
   },
   "drawer": {

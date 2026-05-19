@@ -124,7 +124,7 @@ function ApplyCoverLetterModalContent({
         >
           {isSubmitting
             ? t('shift.sending')
-            : t('shift.sendApplication', { defaultValue: 'Отправить отклик →' })}
+            : t('shift.sendApplication', { defaultValue: 'Отправить отклик' })}
         </Button>
       </div>
     </Drawer>

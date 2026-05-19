@@ -103,7 +103,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
       </OnboardingStepLayout>
       {vm.selectedRole ? (
         <OnboardingBottomCta onClick={vm.handleRoleContinue} ariaLabel={t('common.continue')}>
-          {t('common.continue')} →
+          {t('common.continue')}
         </OnboardingBottomCta>
       ) : null}
 

@@ -153,7 +153,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
         disabled={!canContinue}
         showFillLaterHint
       >
-        {t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны →' })}
+        {t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны' })}
       </OnboardingBottomCta>
     </OnboardingStepLayout>
   )
