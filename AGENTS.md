@@ -1,5 +1,11 @@
 # AGENTS.md
 
-**Конвенции проекта Resta описаны в одном файле:** [`.cursorrules`](./.cursorrules).
+Документация Resta — три файла, без дублей:
 
-Дублирующий текст здесь намеренно не ведётся — правьте только `.cursorrules`.
+| Файл | Назначение |
+|------|------------|
+| [`.cursorrules`](./.cursorrules) | Канон: стек, структура, Redux, общие принципы |
+| [`AI_DEVELOPMENT_GUIDELINES.md`](./AI_DEVELOPMENT_GUIDELINES.md) | UI, design system, hooks, verification |
+| [`HANDOFF.md`](./HANDOFF.md) | Контракты бэкенда для интеграции фич |
+
+Приоритет при конфликте — см. таблицу в `.cursorrules`.

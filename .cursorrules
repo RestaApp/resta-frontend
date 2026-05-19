@@ -1,6 +1,20 @@
 # Resta — единый свод правил (канон)
 
-**Единственный источник конвенций для ИИ и разработчиков.** Файлы `AGENTS.md` и прочие дубли не поддерживаются; при расхождении правьте только этот документ.
+**Короткий закон проекта.** Детали UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md). Контракты бэкенда — [`HANDOFF.md`](HANDOFF.md). `AGENTS.md` — только указатель сюда.
+
+---
+
+## Иерархия документов и приоритет
+
+| # | Источник | Зона ответственности |
+|---|----------|----------------------|
+| 1 | Задача пользователя (чат / PR) | — |
+| 2 | **`.cursorrules`** (этот файл) | Стек, структура, Redux, TypeScript, общие принципы |
+| 3a | **`AI_DEVELOPMENT_GUIDELINES.md`** | Design system, UI-примитивы, hooks, forms, a11y, verification |
+| 3b | **`HANDOFF.md`** | Эндпоинты и контракты для интеграции с бэкендом |
+| 4 | Паттерны целевых файлов | Локальные соглашения модуля |
+
+**При расхождении между документами:** `.cursorrules` > специализированный документ **в его зоне** > код. Между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта нет — разные зоны.
 
 ---
 
@@ -8,7 +22,7 @@
 
 **Resta** — Telegram Mini App (Web App). Приоритеты: мобильная вёрстка, предсказуемое состояние, строгий TypeScript, фичи по доменам.
 
-**Роль ИИ:** senior frontend / архитектор React-стека; соблюдать этот свод; менять только то, что нужно для задачи; комментарии и пользовательский текст по умолчанию на **русском**.
+**Роль ИИ:** senior frontend / архитектор React-стека; менять только то, что нужно для задачи; комментарии и пользовательский текст по умолчанию на **русском**.
 
 ---
 
@@ -17,105 +31,84 @@
 | Слой | Технологии |
 |------|------------|
 | Сборка | Vite 7, `@vitejs/plugin-react`, `@tailwindcss/vite` |
-| UI | React 19 (только FC + хуки), Tailwind 4, `cn` (`clsx` + `tailwind-merge`) |
-| Язык | TypeScript 5.x, `strict`, `verbatimModuleSyntax` → `import type` для типов |
-| Состояние | Redux Toolkit, `react-redux`, `redux-persist` (конфиг в `store`) |
-| Данные с сервера | RTK Query — один `createApi` в `shared/api/api.ts` |
-| API-модули | `services/api/*Api.ts`, регистрация через `services/api/index.ts` |
-| Локализация | `i18next`, `react-i18next`, `shared/i18n/` |
+| UI | React 19 (FC + хуки), Tailwind 4, `cn` |
+| Язык | TypeScript 5.x, `strict`, `import type` для типов |
+| Состояние | Redux Toolkit, `redux-persist` |
+| Данные | RTK Query — один `createApi` в `shared/api/api.ts` |
+| API | `services/api/*Api.ts` + регистрация в `services/api/index.ts` |
+| i18n | `i18next`, `react-i18next`, `shared/i18n/` |
 | UI-kit | Radix UI, `lucide-react`, `motion` |
-| Качество | ESLint 9 (flat), Prettier — `npm run lint`, `npm run format` |
+| Качество | ESLint 9, Prettier — `npm run lint`, `npm run format:check` |
 
-**Алиас:** `@/*` → `src/*` (`tsconfig.app.json`, `vite.config.ts`).
+**Алиас:** `@/*` → `src/*`.
 
 ---
 
-## Структура репозитория
+## Структура
 
 | Назначение | Путь |
 |------------|------|
-| Bootstrap приложения | `src/app/` |
+| Bootstrap | `src/app/` |
 | Страницы | `src/pages/` |
-| Фичи | `src/features/<домен>/` — `model/` (слайсы, селекторы, хуки), `ui/` |
-| Общие компоненты | `src/components/` |
-| Store, middleware, persist | `src/store/` |
-| Инстанс RTK Query, baseQuery, `tagTypes` | `src/shared/api/` |
-| Endpoints (`injectEndpoints`) | `src/services/api/` |
-| Утилиты, типы, константы | `src/shared/` |
-| React Context | `src/contexts/` |
-| Общие хуки | `src/hooks/` |
+| Фичи | `src/features/<домен>/` — `model/`, `ui/` |
+| UI-kit | `src/components/ui/` |
+| Store | `src/store/` |
+| RTK Query | `src/shared/api/` |
+| Endpoints | `src/services/api/` |
+| Shared | `src/shared/` |
 
-Новые импорты — через `@/...`, не через длинные `../../../`.
+Импорты — через `@/...`.
 
 ---
 
 ## Принципы кода
 
-1. **SRP** — компонент/модуль с одной зоной ответственности; логику отделять в хуки (`use*`).
-2. **Композиция** — расширять через props и детей, не копипастой.
-3. **DRY** — повторы выносить в хуки или `shared` / `features/*/model`.
-4. **Иммутабельность** — Redux только через RTK/Immer; не мутировать state вручную.
-5. **Типы** — без `any`; внешние данные типизировать явно; узкие `as` только с причиной.
-6. **Ранний выход** — `if (!x) return ...` вместо глубокой вложенности.
-7. **Эффекты** — минимум `useEffect`; побочники в обработчиках и явной инициализации; производные данные считать при рендере.
-8. **Перфоманс** — `memo` / `useMemo` / `useCallback` при реальной нужде, не по умолчанию.
+1. **SRP** — логика в хуки (`use*`), UI декларативный.
+2. **Композиция** — props и children, не копипаста.
+3. **DRY** — повторы в `shared` / `features/*/model`.
+4. **Иммутабельность** — Redux только через RTK/Immer.
+5. **Типы** — без `any`; узкие `as` только с причиной.
+6. **Ранний выход** — guard clauses вместо глубокой вложенности.
+7. **Эффекты** — минимум `useEffect`; derived state — при рендере.
+8. **Перфоманс** — `memo` / `useMemo` / `useCallback` только при реальной нужде.
 
----
-
-## TypeScript и React
-
-- Неиспользуемые переменные и параметры убирать; мёртвый код не копить.
-- Компоненты: **именованный экспорт** `export const Name = ...`.
-- Пропсы: интерфейс `NameProps`, деструктуризация в сигнатуре.
-- Списки: ключи — стабильные `id`, не индекс (если порядок/состав меняется).
+**React:** именованный экспорт `export const Name = ...`; пропсы — `NameProps`; ключи списков — стабильные `id`.
 
 ---
 
 ## Redux и RTK Query
 
-- **Один** инстанс `api` из `shared/api/api.ts`; новые эндпоинты — `injectEndpoints` в `services/api/*Api.ts`.
-- Каждый новый файл API добавить импортом в `services/api/index.ts`, иначе endpoints не зарегистрируются.
-- `providesTags` / `invalidatesTags` согласовать с `tagTypes` — не ломать инвалидацию; не плодить дублирующие запросы, если хватает тегов.
-- Селекторы для производных данных — `createSelector`; не ходить в сырой `state` без принятого селектора/хука.
-- Не использовать `createAsyncThunk` для запросов, которые закрывает RTK Query.
-- **Persist:** не менять `storage` / `whitelist` без понимания влияния на сессию и авторизацию.
-- **Сессия / auth:** события истечения сессии и сброс пользователя — через существующие actions и middleware (`authEvents` и т.д.), не плодить параллельные каналы.
+- Один `api`; новые endpoints — `injectEndpoints`; файл — в `services/api/index.ts`.
+- `providesTags` / `invalidatesTags` согласованы с `tagTypes`.
+- Селекторы — `createSelector`; не ходить в сырой `state` без хука/селектора.
+- Не `createAsyncThunk` для того, что закрывает RTK Query.
+- Auth / persist — только через существующие actions и middleware.
 
 ---
 
-## UI, Telegram, i18n, доступность
+## UI, Telegram, i18n
 
-- **Вёрстка:** mobile-first; среда — Telegram WebView (safe area, высота viewport, touch).
-- **Стили:** конфликт классов Tailwind снимать через `cn` (или утилиту файла).
-- **Палитра ролей:** у каждой роли (`employee` / `restaurant` / `supplier`) — отдельный набор токенов в `src/index.css` (`--role-<kind>`, `-foreground`, `-soft`, `-surface`, `-border`), доступных как `bg-role-<kind>`, `text-role-<kind>`, `bg-role-<kind>-soft`, `border-role-<kind>` и т. п. Для применения в коде использовать helper `getRoleTheme(role)` из `@/shared/lib/role-theme` — он возвращает готовый набор класс-нейм для роли. Не вводить новые `bg-emp`/`bg-sup`/`bg-rest` хардкоды в новых компонентах.
-- **Запросы:** обрабатывать загрузку (`isLoading` / `isFetching`), ошибки и пустые списки — скелетоны и тексты по паттернам проекта.
-- **Telegram:** WebApp — через существующие контексты/хуки; не размазывать `window.Telegram` по коду.
-- **i18n:** строки интерфейса — ключи; новые ключи — во всех актуальных локалях.
-- **a11y:** семантика, label/input, модалки — по существующим хелперам (`modal-a11y` и др.) и паттернам Radix.
+Детали design system, примитивы, типографика, touch targets, verification — **только** в [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md).
+
+Здесь — минимум:
+
+- **Mobile-first**, Telegram WebView (safe area, touch).
+- **i18n** — ключи; новые строки во всех локалях.
+- **Telegram** — через контексты/хуки, не `window.Telegram` по коду.
+- **Интеграции с бэком** — по [`HANDOFF.md`](HANDOFF.md); не додумывать контракты.
 
 ---
 
 ## Окружение и проверки
 
-- Секреты только в `.env`; не коммитить ключи. Клиентские переменные Vite — префикс `VITE_`.
-- Перед коммитом по возможности: `npm run lint`, `npm run format:check`, `npm run build` (`tsc -b` + `vite build`).
-- После правок в TS/TSX — проверить линтер на затронутых файлах.
+- Секреты в `.env`; клиентские переменные — префикс `VITE_`.
+- Перед коммитом: `npm run lint`, `npm run format:check`, `npm run build`.
 
 ---
 
-## Антипаттерны
+## Антипаттерны (канон)
 
-- `any`, необоснованные приведения типов.
-- Второй store или второй слой `createApi` без крайней необходимости.
-- Прямая мутация Redux-state вне RTK/Immer.
-- Игнор ошибок сети и пустых состояний в UI.
-- Хардкод пользовательских строк вместо i18n.
-- Косметический рефакторинг соседних файлов без запроса пользователя.
-
----
-
-## Приоритет при конфликте требований
-
-1. Явная задача пользователя в текущем чате.  
-2. Этот файл (`.cursorrules`).  
-3. Существующие паттерны в целевых файлах репозитория.
+- `any`, второй store / второй `createApi`, мутация Redux вне RTK.
+- Хардкод строк вместо i18n; игнор loading/error/empty в UI.
+- Косметический рефакторинг вне задачи.
+- UI/design-system нарушения — см. [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md) §12.
