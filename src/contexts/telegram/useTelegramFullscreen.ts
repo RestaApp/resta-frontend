@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react'
 import { getTelegramWebApp } from '@/utils/telegram'
-import { isMobileDevice, isVersionAtLeast, type TelegramWebApp } from './utils'
+import { isIosDevice, type TelegramWebApp } from './utils'
 
 interface UseTelegramFullscreenResult {
   isFullscreen: boolean
@@ -10,7 +10,7 @@ interface UseTelegramFullscreenResult {
 const NO_OP_UNSUBSCRIBE = () => {}
 
 /**
- * Подписка на `fullscreenChanged` / `fullscreenFailed` через
+ * Подписка на `viewportChanged` (как в эталонной реализации) через
  * `useSyncExternalStore` — концерн "external state mirroring"
  * не требует useEffect/useState и автоматически работает с concurrent rendering.
  */
@@ -21,15 +21,13 @@ export const useTelegramFullscreen = (
     (notify: () => void) => {
       if (!telegram?.onEvent) return NO_OP_UNSUBSCRIBE
       try {
-        telegram.onEvent('fullscreenChanged', notify)
-        telegram.onEvent('fullscreenFailed', notify)
+        telegram.onEvent('viewportChanged', notify)
       } catch {
         return NO_OP_UNSUBSCRIBE
       }
       return () => {
         try {
-          telegram.offEvent?.('fullscreenChanged', notify)
-          telegram.offEvent?.('fullscreenFailed', notify)
+          telegram.offEvent?.('viewportChanged', notify)
         } catch {
           /* ignore */
         }
@@ -43,13 +41,11 @@ export const useTelegramFullscreen = (
   const isFullscreen = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
   const requestFullscreen = useCallback(() => {
-    if (!isMobileDevice()) return
+    if (!isIosDevice()) return
     const webApp = telegram ?? getTelegramWebApp()
     if (!webApp) return
     try {
-      if (webApp.requestFullscreen && isVersionAtLeast(webApp, '6.1')) {
-        webApp.requestFullscreen()
-      }
+      webApp.requestFullscreen?.()
     } catch {
       /* ignore */
     }

@@ -11,6 +11,7 @@ interface TelegramWebApp {
     eventType:
       | 'activated'
       | 'deactivated'
+      | 'viewportChanged'
       | 'safeAreaChanged'
       | 'contentSafeAreaChanged'
       | 'fullscreenChanged'
@@ -21,6 +22,7 @@ interface TelegramWebApp {
     eventType:
       | 'activated'
       | 'deactivated'
+      | 'viewportChanged'
       | 'safeAreaChanged'
       | 'contentSafeAreaChanged'
       | 'fullscreenChanged'

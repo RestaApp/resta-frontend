@@ -30,6 +30,11 @@ export const isMobileDevice = (): boolean => {
   return /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
 }
 
+export const isIosDevice = (): boolean => {
+  if (typeof navigator === 'undefined') return false
+  return /iP(hone|ad|od)/i.test(navigator.userAgent || '')
+}
+
 /**
  * Конфигурация WebApp при старте: `ready()`, отключение vertical swipes,
  * `expand()`, попытка fullscreen на mobile (только один раз благодаря
@@ -49,13 +54,12 @@ export const configureTelegram = (
     webApp.expand()
     if (!fullscreenRequested) {
       fullscreenRequested = true
-      if (
-        isMobileDevice() &&
-        !webApp.isFullscreen &&
-        webApp.requestFullscreen &&
-        isVersionAtLeast(webApp, '6.1')
-      ) {
-        webApp.requestFullscreen()
+      if (isIosDevice() && !webApp.isFullscreen) {
+        try {
+          webApp.requestFullscreen?.()
+        } catch {
+          /* ignore unsupported/fullscreen failure */
+        }
       }
     }
   } catch {
