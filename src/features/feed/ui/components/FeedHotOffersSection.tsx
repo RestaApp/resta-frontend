@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import { HotOffers, type HotOffer } from './HotOffers'
 import { Skeleton } from '@/components/ui/skeleton'
+import { FEED_CARD_SKELETON_COUNT } from '@/components/ui/shift-skeleton'
 
 type Props = {
   hotOffers: HotOffer[]
@@ -22,10 +23,9 @@ export const FeedHotOffersSection = memo((props: Props) => {
           <Skeleton className="h-5 w-16 rounded-md" />
         </div>
         <div className="ui-density-page flex gap-3 overflow-x-auto scrollbar-hide snap-x">
-          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
-          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
-          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
-          <Skeleton className="w-[110px] h-[135px] rounded-lg" />
+          {Array.from({ length: FEED_CARD_SKELETON_COUNT }, (_, index) => (
+            <Skeleton key={index} className="h-[135px] w-[110px] shrink-0 rounded-lg" />
+          ))}
         </div>
       </div>
     )

@@ -5,10 +5,9 @@ import { getLogoByPosition } from '@/features/feed/model/utils/mapping'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
-import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { useLabels } from '@/shared/i18n/hooks'
 
 export interface StaffItem {
@@ -88,11 +87,7 @@ export const VenueStaffList = ({
   return (
     <div className="ui-density-page ui-density-py">
       {isLoading ? (
-        <div className="ui-density-stack-sm">
-          <ShiftSkeleton variant="staff" />
-          <ShiftSkeleton variant="staff" />
-          <ShiftSkeleton variant="staff" />
-        </div>
+        <FeedCardSkeletonList variant="staff" className="ui-density-stack-sm" />
       ) : items.length === 0 ? (
         <EmptyState
           message={t('venueUi.staff.emptyTitle', { defaultValue: 'Сотрудников пока нет' })}
@@ -128,12 +123,12 @@ export const VenueStaffList = ({
                     item.person.user?.photo_url ?? item.person.user?.profile_photo_url ?? null
 
                   return (
-                    <Card
+                    <div
                       key={`${item.shiftId}-${item.applicationId}`}
-                      className="ui-density-stack-sm p-4"
+                      className="shift-compact-card ui-density-stack-sm"
                     >
                       <div
-                        className="flex items-start gap-3 cursor-pointer rounded-lg transition-colors hover:bg-muted/30"
+                        className="flex cursor-pointer items-start gap-[10px] rounded-lg transition-colors"
                         role="button"
                         tabIndex={0}
                         onClick={() => onOpenDetails(item)}
@@ -143,7 +138,7 @@ export const VenueStaffList = ({
                           onOpenDetails(item)
                         }}
                       >
-                        <Avatar className="h-11 w-11">
+                        <Avatar className="shift-compact-logo h-9 w-9 shrink-0 self-start p-0">
                           <AvatarImage src={photoUrl} alt={fullName} />
                           <AvatarFallback>
                             {getLogoByPosition(
@@ -154,9 +149,9 @@ export const VenueStaffList = ({
                         </Avatar>
 
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium text-foreground">{fullName}</p>
-                          <p className="text-sm text-muted-foreground">{positionLabel}</p>
-                          <p className="truncate text-xs text-muted-foreground">
+                          <p className="shift-compact-title truncate">{fullName}</p>
+                          <p className="shift-compact-sub truncate">{positionLabel}</p>
+                          <p className="mt-1 truncate text-meta text-muted-foreground">
                             {item.shiftTitle}
                           </p>
                         </div>
@@ -181,7 +176,7 @@ export const VenueStaffList = ({
                       </div>
 
                       {isPending ? (
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 border-t border-border/40 pt-3">
                           <Button
                             className="flex-1"
                             size="md"
@@ -208,7 +203,7 @@ export const VenueStaffList = ({
                           </Button>
                         </div>
                       ) : null}
-                    </Card>
+                    </div>
                   )
                 })}
               </div>

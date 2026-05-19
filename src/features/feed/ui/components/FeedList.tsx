@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
+import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
 import type { Shift } from '@/features/feed/model/types'
 import type { UseVacanciesInfiniteListReturn } from '@/features/feed/model/hooks/useVacanciesInfiniteList'
@@ -65,24 +65,21 @@ export function FeedList({
 
   return (
     <>
-      {sortedShifts.map(shift => {
-        return (
-          <div key={shift.id}>
-            <ShiftCard
-              shift={shift}
-              applicationId={getApplicationId(shift.id) ?? null}
-              applicationStatus={getApplicationStatus(shift.id) ?? null}
-              isApplied={isApplied(shift.id)}
-              onOpenDetails={onOpenDetails}
-              onOpenRestaurant={onOpenRestaurant}
-              onApply={onApplyWithModal}
-              onCancel={onCancel}
-              isLoading={isShiftLoading(shift.id)}
-              ownerActions={ownerActions}
-            />
-          </div>
-        )
-      })}
+      {sortedShifts.map(shift => (
+        <FeedCard
+          key={shift.id}
+          shift={shift}
+          applicationId={getApplicationId(shift.id) ?? null}
+          applicationStatus={getApplicationStatus(shift.id) ?? null}
+          isApplied={isApplied(shift.id)}
+          onOpenDetails={onOpenDetails}
+          onOpenRestaurant={onOpenRestaurant}
+          onApply={onApplyWithModal}
+          onCancel={onCancel}
+          isLoading={isShiftLoading(shift.id)}
+          ownerActions={ownerActions}
+        />
+      ))}
 
       {shifts.length > 0 ? (
         <InfiniteScrollTrigger

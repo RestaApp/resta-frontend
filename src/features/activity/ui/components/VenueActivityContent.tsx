@@ -5,7 +5,7 @@ import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 import { getRoleTheme } from '@/shared/lib/role-theme'
 import { cn } from '@/utils/cn'
-import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { ErrorState } from '@/components/ui/states'
@@ -70,22 +70,18 @@ export const VenueActivityContent = ({
               retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
             />
           ) : model.isLoading ? (
-            <div className="ui-density-stack">
-              {Array.from({ length: 3 }).map((_, idx) => (
-                <ShiftSkeleton key={idx} />
-              ))}
-            </div>
+            <FeedCardSkeletonList />
           ) : venueItems.length === 0 ? (
-            <div className="flex flex-col items-center">
-              <EmptyState
-                message={venueEmptyContent.title}
-                description={venueEmptyContent.description}
-                illustration={<EmptyInboxIllustration className="h-24 w-24" />}
-              />
-              <Button variant="gradient" size="lg" className="mt-2 px-6" onClick={handleOpenCreate}>
-                {t('feed.venueEmptyCta')}
-              </Button>
-            </div>
+            <EmptyState
+              message={venueEmptyContent.title}
+              description={venueEmptyContent.description}
+              illustration={<EmptyInboxIllustration className="h-24 w-24" />}
+              action={
+                <Button variant="gradient" size="lg" className="px-6" onClick={handleOpenCreate}>
+                  {t('feed.venueEmptyCta')}
+                </Button>
+              }
+            />
           ) : (
             <div className="ui-density-stack">
               {venueItems.map(shift => (

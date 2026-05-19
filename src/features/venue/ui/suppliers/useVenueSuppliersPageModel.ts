@@ -172,8 +172,6 @@ export const useVenueSuppliersPageModel = () => {
     selectedRestaurantId !== null ? (suppliersMap.get(selectedRestaurantId) ?? null) : null
 
   const pagination = data?.pagination || data?.meta
-  const totalCount =
-    typeof pagination?.total_count === 'number' ? pagination.total_count : suppliers.length
 
   const hasMore = (() => {
     if (!pagination) return false
@@ -297,7 +295,6 @@ export const useVenueSuppliersPageModel = () => {
     list,
     suppliers,
     suppliersCount: suppliers.length,
-    totalCount,
     hasMore,
     activeFiltersList,
     onlyActive,

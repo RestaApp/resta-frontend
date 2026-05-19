@@ -408,6 +408,7 @@ textarea:focus-visible {
     gap: 10px;
   }
   .shift-compact-badge-row {
+    margin-top: -7px;
     margin-bottom: 6px;
   }
   .shift-compact-badge {

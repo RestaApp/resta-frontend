@@ -1,14 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
-import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
-import type { Shift } from '@/features/feed/model/types'
-import { getLogoByPosition, resolvePayPeriodFromVacancy } from '@/features/feed/model/utils/mapping'
-import {
-  parseApiDateTime,
-  formatDateRU,
-  formatTimeRangeRU,
-} from '@/features/feed/model/utils/formatting'
+import { mapOwnerVacancyToCardShift } from '@/features/feed/model/utils/mapping'
+import { VacancyCardWithDetails } from './VacancyCardWithDetails'
 
 interface PersonalShiftCardProps {
   shift: VacancyApiItem
@@ -17,84 +9,28 @@ interface PersonalShiftCardProps {
   isDeleting?: boolean
 }
 
-export const PersonalShiftCard: React.FC<PersonalShiftCardProps> = ({
+export const PersonalShiftCard = ({
   shift,
   onEdit,
   onDelete,
   isDeleting,
-}) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const handleEdit = useCallback((id: number) => onEdit(id), [onEdit])
-  const handleDelete = useCallback((id: number) => onDelete(id), [onDelete])
-  const handleOpenDetails = useCallback(() => setIsOpen(true), [])
-  const handleCloseDetails = useCallback(() => setIsOpen(false), [])
-
-  const mappedShift = useMemo<Shift>(() => {
-    const start = parseApiDateTime(shift.start_time ?? undefined)
-    const end = parseApiDateTime(shift.end_time ?? undefined)
-    const dateText = start ? formatDateRU(start) : ''
-    const timeText =
-      start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
-
-    const rawPay = shift.payment ?? shift.hourly_rate ?? 0
-    const pay = typeof rawPay === 'string' ? Number(rawPay) : rawPay
-    const userPhotoUrl = shift.user?.photo_url ?? shift.user?.profile_photo_url ?? null
-    return {
-      id: shift.id,
-      logo: getLogoByPosition(shift.position, shift.id),
-      userPhotoUrl:
-        typeof userPhotoUrl === 'string' && userPhotoUrl.trim().length > 0 ? userPhotoUrl : null,
-      title: shift.title?.trim() || null,
-      restaurant: '',
-      rating: 0,
-
-      position: shift.position ?? 'chef',
-      specialization: shift.specialization ?? null,
-
-      date: dateText,
-      time: timeText,
-
-      pay: Number.isFinite(pay) ? pay : 0,
-      currency: 'BYN',
-      payPeriod: resolvePayPeriodFromVacancy(shift),
-      shiftType: shift.shift_type,
-
-      location: shift.shift_type === 'vacancy' ? undefined : (shift.location ?? undefined),
-      urgent: Boolean(shift.urgent),
-
-      applicationId: null,
-      ownerId: shift.user?.id ?? null,
-      canApply: false,
-
-      applicationsCount: shift.applications_count ?? 0,
-
-      isMine: true,
-    }
-  }, [shift])
-
+}: PersonalShiftCardProps) => {
   return (
-    <>
-      <ShiftCard
-        shift={mappedShift}
-        onOpenDetails={handleOpenDetails}
-        onApply={() => {}}
-        onCancel={() => {}}
-        ownerActions={{ onEdit: handleEdit, onDelete: handleDelete, isDeleting }}
-      />
-
-      <ShiftDetailsScreen
-        shift={mappedShift}
-        vacancyData={shift}
-        applicationId={null}
-        isOpen={isOpen}
-        onClose={handleCloseDetails}
-        onApply={async () => {}}
-        isApplied={false}
-        onCancel={async () => {}}
-        isLoading={false}
-      />
-    </>
+    <VacancyCardWithDetails
+      vacancy={shift}
+      mapToShift={mapOwnerVacancyToCardShift}
+      feedCardProps={{
+        onApply: () => {},
+        onCancel: () => {},
+        ownerActions: { onEdit, onDelete, isDeleting },
+      }}
+      detailsProps={{
+        applicationId: null,
+        onApply: async () => {},
+        isApplied: false,
+        onCancel: async () => {},
+        isLoading: false,
+      }}
+    />
   )
 }
-
-PersonalShiftCard.displayName = 'PersonalShiftCard'

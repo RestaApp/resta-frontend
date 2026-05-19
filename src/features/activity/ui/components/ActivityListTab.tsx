@@ -1,33 +1,12 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { ErrorState } from '@/components/ui/states'
 import { MyShiftsSection } from '@/features/activity/ui/components/MyShiftsSection'
 import { MyApplicationsSection } from '@/features/activity/ui/components/MyApplicationsSection'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
-
-function ActivityListSkeleton() {
-  return (
-    <div className="ui-density-stack-lg">
-      <div>
-        <div className="h-9 w-48 bg-muted/50 rounded-xl mb-3" />
-        <div className="ui-density-stack">
-          <ShiftSkeleton />
-          <ShiftSkeleton />
-        </div>
-      </div>
-      <div>
-        <div className="h-9 w-40 bg-muted/50 rounded-xl mb-3" />
-        <div className="ui-density-stack">
-          <ShiftSkeleton />
-          <ShiftSkeleton />
-        </div>
-      </div>
-    </div>
-  )
-}
 
 interface ActivityListTabProps {
   activeTab: ActivityTab
@@ -70,7 +49,7 @@ export function ActivityListTab({
       />
     )
   } else if (isLoadingAny) {
-    content = <ActivityListSkeleton />
+    content = <FeedCardSkeletonList />
   } else if (activeTab === 'shifts') {
     content = (
       <MyShiftsSection

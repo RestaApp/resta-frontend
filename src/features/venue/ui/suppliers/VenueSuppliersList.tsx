@@ -4,7 +4,7 @@ import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
 import { SearchFilters } from '@/features/feed/ui/components/SearchFilters'
 import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
-import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/utils/cn'
 import type { SupplierItem } from './types'
@@ -14,7 +14,6 @@ interface VenueSuppliersListProps {
   isLoading: boolean
   isFetching: boolean
   suppliersCount: number
-  totalCount: number
   activeFiltersList: string[]
   onlyActive: boolean
   onOnlyActiveChange: (value: boolean) => void
@@ -30,7 +29,6 @@ export const VenueSuppliersList = ({
   isLoading,
   isFetching,
   suppliersCount,
-  totalCount,
   activeFiltersList,
   onlyActive,
   onOnlyActiveChange,
@@ -41,10 +39,7 @@ export const VenueSuppliersList = ({
   onOpenDetails,
 }: VenueSuppliersListProps) => {
   const { t } = useTranslation()
-  const isRestaurantsMode =
-    mode === 'restaurants'
-      ? t('supplierUi.restaurants.shownCount', { shown: list.length, total: totalCount })
-      : t('venueUi.suppliers.shownCount', { shown: list.length, total: totalCount })
+  const isRestaurantsMode = mode === 'restaurants'
 
   return (
     <div>
@@ -68,11 +63,7 @@ export const VenueSuppliersList = ({
       ) : null}
       <div className="ui-density-page ui-density-py">
         {isLoading && suppliersCount === 0 ? (
-          <div className="ui-density-stack-sm">
-            <ShiftSkeleton variant="supplier" />
-            <ShiftSkeleton variant="supplier" />
-            <ShiftSkeleton variant="supplier" />
-          </div>
+          <FeedCardSkeletonList className="ui-density-stack-sm" />
         ) : list.length === 0 ? (
           <EmptyState
             message={

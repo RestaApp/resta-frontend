@@ -38,7 +38,6 @@ export function VenueSuppliersPage() {
         isLoading={m.isLoading}
         isFetching={m.isFetching}
         suppliersCount={m.suppliersCount}
-        totalCount={m.totalCount}
         activeFiltersList={m.activeFiltersList}
         onlyActive={m.onlyActive}
         onOnlyActiveChange={m.setOnlyActive}

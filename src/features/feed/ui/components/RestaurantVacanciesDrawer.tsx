@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
-import { ShiftCard } from '@/components/ui/shift-card/ShiftCard'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
+import { ErrorState } from '@/components/ui/states'
+import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import { DetailsScreenFrame } from '@/components/ui/shift-details-screen/DetailsScreenFrame'
 import { useLazyGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import { useGetUserQuery } from '@/services/api/usersApi'
@@ -49,7 +50,7 @@ export const RestaurantVacanciesDrawer = ({
 
   const shouldSkip = !open || restaurantId === null
 
-  const { data: userResponse, isLoading: isUserLoading } = useGetUserQuery(restaurantId ?? 0, {
+  const { data: userResponse } = useGetUserQuery(restaurantId ?? 0, {
     skip: shouldSkip,
   })
 
@@ -137,6 +138,62 @@ export const RestaurantVacanciesDrawer = ({
     [onClose, onOpenVacancy]
   )
 
+  const handleRetry = useCallback(() => {
+    void loadPage(1, true)
+  }, [loadPage])
+
+  let listContent: React.ReactNode = null
+
+  if (isVacanciesError) {
+    listContent = (
+      <ErrorState
+        title={t('errors.loadError')}
+        description={t('feed.tryAgainLater', { defaultValue: 'Попробуйте позже' })}
+        onRetry={handleRetry}
+        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+      />
+    )
+  } else if (isInitialLoading && items.length === 0) {
+    listContent = <FeedCardSkeletonList />
+  } else if (!isInitialLoading && shifts.length === 0) {
+    listContent = (
+      <EmptyState
+        message={t('feed.noVacancies')}
+        description={t('feed.noVacanciesDescription')}
+      />
+    )
+  } else if (shifts.length > 0) {
+    listContent = (
+      <div className="ui-density-stack">
+        {shifts.map(shift => (
+          <FeedCard
+            key={shift.id}
+            shift={shift}
+            applicationId={getApplicationId(shift.id) ?? null}
+            applicationStatus={getApplicationStatus(shift.id) ?? null}
+            isApplied={isApplied(shift.id)}
+            onOpenDetails={handleOpenVacancy}
+            onApply={onApply}
+            onCancel={onCancel}
+            isLoading={isShiftLoading(shift.id)}
+          />
+        ))}
+
+        {hasMore ? (
+          <Button
+            variant="outline"
+            onClick={() => void loadPage(page + 1, false)}
+            loading={isVacanciesFetching || isLoadingMore}
+            disabled={isVacanciesFetching || isLoadingMore}
+            className="w-full"
+          >
+            {t('common.loadMore', { defaultValue: 'Показать ещё' })}
+          </Button>
+        ) : null}
+      </div>
+    )
+  }
+
   return (
     <DetailsScreenFrame
       open={open}
@@ -153,61 +210,7 @@ export const RestaurantVacanciesDrawer = ({
         </span>
       }
     >
-      {isVacanciesError ? (
-        <EmptyState
-          message={t('errors.loadError')}
-          description={t('feed.tryAgainLater', { defaultValue: 'Попробуйте позже' })}
-        />
-      ) : null}
-
-      {!isVacanciesError && isInitialLoading && items.length === 0 ? (
-        <div className="space-y-3">
-          <ShiftSkeleton />
-          <ShiftSkeleton />
-          <ShiftSkeleton />
-        </div>
-      ) : null}
-
-      {!isVacanciesError && !isInitialLoading && shifts.length === 0 ? (
-        <EmptyState
-          message={t('feed.noVacancies')}
-          description={t('feed.noVacanciesDescription')}
-        />
-      ) : null}
-
-      {shifts.length > 0 ? (
-        <div className="space-y-3">
-          {shifts.map(shift => (
-            <ShiftCard
-              key={shift.id}
-              shift={shift}
-              applicationId={getApplicationId(shift.id) ?? null}
-              applicationStatus={getApplicationStatus(shift.id) ?? null}
-              isApplied={isApplied(shift.id)}
-              onOpenDetails={handleOpenVacancy}
-              onApply={onApply}
-              onCancel={onCancel}
-              isLoading={isShiftLoading(shift.id)}
-            />
-          ))}
-
-          {hasMore ? (
-            <Button
-              variant="outline"
-              onClick={() => void loadPage(page + 1, false)}
-              loading={isVacanciesFetching || isLoadingMore}
-              disabled={isVacanciesFetching || isLoadingMore}
-              className="w-full"
-            >
-              {t('common.loadMore', { defaultValue: 'Показать ещё' })}
-            </Button>
-          ) : null}
-        </div>
-      ) : null}
-
-      {isUserLoading && !isInitialLoading && shifts.length === 0 ? (
-        <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
-      ) : null}
+      {listContent}
     </DetailsScreenFrame>
   )
 }

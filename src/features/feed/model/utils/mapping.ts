@@ -104,6 +104,18 @@ export const resolvePayPeriodFromVacancy = (item: VacancyApiItem): PayPeriod => 
   return 'month'
 }
 
+const getVacancyScheduleFields = (item: VacancyApiItem) => {
+  const start = parseApiDateTime(item.start_time ?? undefined)
+  const end = parseApiDateTime(item.end_time ?? undefined)
+
+  return {
+    date: start ? formatDateRU(start) : '',
+    dateKey: start ? toLocalISODateKey(start) : null,
+    time:
+      start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : '',
+  }
+}
+
 export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const start = parseApiDateTime(item.start_time ?? undefined)
   const end = parseApiDateTime(item.end_time ?? undefined)
@@ -182,21 +194,40 @@ export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
   }
 }
 
+/** Карточка «моя смена/вакансия» в activity venue — без названия ресторана, isMine */
+export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
+  const { date, dateKey, time } = getVacancyScheduleFields(item)
+
+  return {
+    id: item.id,
+    logo: getLogoByPosition(item.position, item.id),
+    userPhotoUrl: getUserPhotoUrl(item),
+    title: item.title?.trim() || null,
+    restaurant: '',
+    rating: 0,
+    position: item.position ?? 'chef',
+    specialization: item.specialization ?? null,
+    date,
+    dateKey,
+    time,
+    pay: toNumber(item.payment ?? item.hourly_rate ?? 0),
+    currency: 'BYN',
+    payPeriod: resolvePayPeriodFromVacancy(item),
+    shiftType: item.shift_type,
+    location: item.shift_type === 'vacancy' ? undefined : (item.location ?? undefined),
+    urgent: Boolean(item.urgent),
+    applicationId: null,
+    ownerId: item.user?.id ?? null,
+    canApply: false,
+    applicationsCount: item.applications_count ?? 0,
+    isMine: true,
+  }
+}
+
 export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
+  const { date, dateKey, time } = getVacancyScheduleFields(v)
   const restaurant = v.user?.name || v.user?.full_name || v.title || i18n.t('feedFallback.venue')
   const applicationId = v.my_application?.id ?? null
-  const applicationStatus = v.my_application?.status ?? v.status ?? null
-  const cuisineTypes = v.user?.restaurant_profile?.cuisine_types ?? undefined
-
-  const pay = v.payment ?? 0
-
-  // Используем parseApiDateTime для корректного парсинга формата API
-  const start = parseApiDateTime(v.start_time ?? undefined)
-  const end = parseApiDateTime(v.end_time ?? undefined)
-
-  const date = start ? formatDateRU(start) : ''
-  const time =
-    start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : ''
 
   return {
     id: v.id,
@@ -205,28 +236,22 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     title: v.title?.trim() || null,
     restaurant,
     rating: 0,
-
     position: v.position ?? 'chef',
     specialization: v.specialization ?? null,
-    cuisineTypes,
-
+    cuisineTypes: v.user?.restaurant_profile?.cuisine_types ?? undefined,
     date,
-    dateKey: start ? toLocalISODateKey(start) : null,
+    dateKey,
     time,
-
-    pay: toNumber(pay),
+    pay: toNumber(v.payment),
     currency: 'BYN',
     payPeriod: resolvePayPeriodFromVacancy(v),
-
     location: v.location ?? v.user?.restaurant_profile?.city ?? undefined,
     urgent: Boolean(v.urgent),
-
     applicationId,
     ownerId: v.user?.id ?? null,
     canApply: Boolean(v.can_apply),
-
-    applicationStatus,
-
+    applicationStatus: v.my_application?.status ?? v.status ?? null,
+    applicationsCount: v.applications_count ?? 0,
     city: getCityFromUser(v) ?? null,
     distanceKm: getDistanceKm(v),
     shiftType: v.shift_type,

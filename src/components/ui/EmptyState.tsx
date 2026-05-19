@@ -8,6 +8,8 @@ interface EmptyStateProps {
   /** Пояснение под заголовком (почему пусто, что делать) */
   description?: string
   illustration?: ReactNode
+  /** Дополнительное действие под текстом (кнопка CTA и т.п.) */
+  action?: ReactNode
   onReset?: () => void
   showResetButton?: boolean
 }
@@ -16,34 +18,39 @@ export const EmptyState = ({
   message,
   description,
   illustration,
+  action,
   onReset,
   showResetButton = false,
 }: EmptyStateProps) => {
   const { t } = useTranslation()
   const displayMessage = message ?? t('feed.noShifts')
+  const resetButton =
+    showResetButton && onReset ? (
+      <Button
+        className="h-14 rounded-2xl px-8 text-title-md font-semibold"
+        variant="outline"
+        onClick={onReset}
+      >
+        {t('feed.resetFilters')}
+      </Button>
+    ) : null
 
   return (
-    <div className="flex flex-col items-center justify-center py-10 px-4">
+    <div className="flex flex-col items-center justify-center gap-4 px-4 py-12">
       {illustration ? (
-        <div className="mb-3 text-muted-foreground">{illustration}</div>
+        <div className="text-muted-foreground">{illustration}</div>
       ) : (
-        <div className="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-3">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary/50">
           <CookingPot className="h-8 w-8 stroke-[1.5] text-muted-foreground" />
         </div>
       )}
-      <p className="text-foreground font-medium text-center mb-1">{displayMessage}</p>
-      {description ? (
-        <p className="text-muted-foreground text-sm text-center max-w-[280px] mb-4">
-          {description}
-        </p>
-      ) : (
-        <p className="mb-4" />
-      )}
-      {showResetButton && onReset && (
-        <Button variant="outline" onClick={onReset}>
-          {t('feed.resetFilters')}
-        </Button>
-      )}
+      <div className="flex flex-col items-center gap-2 text-center">
+        <p className="text-title-md font-semibold text-foreground">{displayMessage}</p>
+        {description ? (
+          <p className="max-w-[320px] text-body-lg text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      {action ?? resetButton}
     </div>
   )
 }

@@ -1,5 +1,6 @@
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ShiftSkeleton } from '@/components/ui/shift-skeleton'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/states'
 import type { FeedType } from '@/features/feed/model/types'
@@ -7,38 +8,6 @@ import {
   EmptyFiltersIllustration,
   EmptySearchIllustration,
 } from '@/components/ui/empty-illustrations'
-
-interface FeedEmptyProps {
-  emptyMessage: string
-  emptyDescription: string
-  onReset: () => void
-  showResetButton: boolean
-  hasActiveFilters: boolean
-}
-
-function FeedEmptyState({
-  emptyMessage,
-  emptyDescription,
-  onReset,
-  showResetButton,
-  hasActiveFilters,
-}: FeedEmptyProps) {
-  return (
-    <EmptyState
-      message={emptyMessage}
-      description={emptyDescription}
-      illustration={
-        hasActiveFilters ? (
-          <EmptyFiltersIllustration className="h-24 w-24" />
-        ) : (
-          <EmptySearchIllustration className="h-24 w-24" />
-        )
-      }
-      onReset={onReset}
-      showResetButton={showResetButton}
-    />
-  )
-}
 
 interface FeedListAreaProps {
   isInitialLoading: boolean
@@ -50,7 +19,7 @@ interface FeedListAreaProps {
   emptyMessage: string
   emptyDescription: string
   onResetFilters: () => void
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /** Обёртка: скелетоны / ошибка / empty / loading after empty / контент */
@@ -69,13 +38,7 @@ export function FeedListArea({
   const { t } = useTranslation()
 
   if (isInitialLoading) {
-    return (
-      <div className="ui-density-stack">
-        <ShiftSkeleton />
-        <ShiftSkeleton />
-        <ShiftSkeleton />
-      </div>
-    )
+    return <FeedCardSkeletonList />
   }
 
   if (error) {
@@ -88,24 +51,24 @@ export function FeedListArea({
 
   if (showEmptyState) {
     return (
-      <FeedEmptyState
-        emptyMessage={emptyMessage}
-        emptyDescription={emptyDescription}
+      <EmptyState
+        message={emptyMessage}
+        description={emptyDescription}
+        illustration={
+          hasActiveFilters ? (
+            <EmptyFiltersIllustration className="h-24 w-24" />
+          ) : (
+            <EmptySearchIllustration className="h-24 w-24" />
+          )
+        }
         onReset={onResetFilters}
         showResetButton={hasActiveFilters}
-        hasActiveFilters={hasActiveFilters}
       />
     )
   }
 
   if (showLoadingAfterEmpty) {
-    return (
-      <div className="ui-density-stack">
-        <ShiftSkeleton />
-        <ShiftSkeleton />
-        <ShiftSkeleton />
-      </div>
-    )
+    return <FeedCardSkeletonList />
   }
 
   return <>{children}</>
