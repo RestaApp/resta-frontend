@@ -257,6 +257,11 @@ textarea:focus-visible {
   .font-mono-resta {
     font-family: var(--font-family-mono);
   }
+  .price-xl {
+    font-size: 44px;
+    font-weight: 900;
+    letter-spacing: -0.045em;
+  }
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

@@ -103,38 +103,39 @@ export const DetailsTab = memo(
           </div>
         ) : null}
 
-        <div className="flex flex-col">
-          <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
-          <div className="flex min-w-0 items-center gap-2">
-            <div className={SHIFT_CARD_LOGO_CLASS}>
-              {positionInitial(positionLabel || shift.position)}
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
+            <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
+            <div className="flex min-w-0 items-center gap-2">
+              <div className={SHIFT_CARD_LOGO_CLASS}>
+                {positionInitial(positionLabel || shift.position)}
+              </div>
+              <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
             </div>
-            <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
           </div>
-        </div>
 
-        <div className="flex items-center gap-6">
-          <div className={cn(DISPLAY_PRICE_CLASS, 'text-5xl')}>
-            {payValue}
-            {payCurrency ? (
-              <span className="ml-1 text-base font-semibold text-muted-foreground">
-                {payCurrency}
-              </span>
-            ) : null}
-          </div>
-          <div className="min-w-0 text-sm">
-            <p className="text-muted-foreground">
-              {t('common.payPerShift', { defaultValue: 'за смену' })}
-              {displayDuration ? ` ${displayDuration}` : ''}
-            </p>
-            {hourlyRate ? (
-              <p className="text-primary">
-                ≈ {hourlyRate} {currency}/час
+          <div className="flex items-center gap-6">
+            <div className={cn(DISPLAY_PRICE_CLASS, 'price-xl')}>
+              {payValue}
+              {payCurrency ? (
+                <span className="ml-1 text-base font-semibold text-muted-foreground">
+                  {payCurrency}
+                </span>
+              ) : null}
+            </div>
+            <div className="min-w-0 text-sm">
+              <p className="text-muted-foreground">
+                {t('common.payPerShift', { defaultValue: 'за смену' })}
+                {displayDuration ? ` ${displayDuration}` : ''}
               </p>
-            ) : null}
+              {hourlyRate ? (
+                <p className="text-primary">
+                  ≈ {hourlyRate} {currency}/час
+                </p>
+              ) : null}
+            </div>
           </div>
         </div>
-
         <Card padding="md" className="dark:shadow-none">
           <div className="flex flex-col gap-1">
             {schedule ? (
