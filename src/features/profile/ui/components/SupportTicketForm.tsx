@@ -82,7 +82,7 @@ export function SupportTicketForm({
       >
         <Textarea
           id="support-ticket-message"
-          className="min-h-[120px] resize-none"
+          className="min-h-30 resize-none"
           value={message}
           onChange={e => setMessage(e.target.value)}
           placeholder={t('profile.supportForm.messagePlaceholder')}

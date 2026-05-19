@@ -11,7 +11,7 @@ export const AddShiftDrawerProgress = ({
   const progress = useMemo(() => `${((step + 1) / totalSteps) * 100}%`, [step, totalSteps])
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
           {t('shift.addStepLabel', { current: step + 1, total: totalSteps })}

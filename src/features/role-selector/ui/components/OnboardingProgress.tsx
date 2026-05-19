@@ -18,7 +18,7 @@ export const OnboardingProgress = memo(function OnboardingProgress({
   const progress = `${Math.min(Math.max(current / total, 0), 1) * 100}%`
 
   return (
-    <div className={cn('w-full max-w-md mx-auto', className)}>
+    <div className={cn('mx-auto flex w-full max-w-md flex-col gap-2', className)}>
       <div
         className="h-1 overflow-hidden rounded-full bg-secondary"
         role="progressbar"
@@ -32,7 +32,7 @@ export const OnboardingProgress = memo(function OnboardingProgress({
           style={{ width: progress }}
         />
       </div>
-      <p className={cn(META_MONO_CLASS, 'mt-2')}>{t('onboarding.stepOf', { current, total })}</p>
+      <p className={META_MONO_CLASS}>{t('onboarding.stepOf', { current, total })}</p>
     </div>
   )
 })

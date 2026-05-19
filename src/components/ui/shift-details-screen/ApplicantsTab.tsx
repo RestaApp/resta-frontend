@@ -38,7 +38,7 @@ export const ApplicantsTab = memo(
     return (
       <Card padding="md" className={DETAIL_CARD_CLASS}>
         {applicants.length ? (
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {applicants.map((app, index) => {
               const user = app.user
               const name =
@@ -132,7 +132,7 @@ export const ApplicantsTab = memo(
                               <Star
                                 key={i}
                                 className={cn(
-                                  'h-3.5 w-3.5 shrink-0',
+                                  'h3 w3 shrink-0',
                                   normalizedRating >= i + 0.5
                                     ? 'fill-warning text-warning'
                                     : 'fill-muted text-muted-foreground/40'

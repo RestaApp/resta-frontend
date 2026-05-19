@@ -76,11 +76,9 @@ export const ErrorState = ({
       <p className={SUBSECTION_TITLE_CLASS}>
         {title ?? t('common.error', { defaultValue: 'Не удалось загрузить' })}
       </p>
-      {description ? (
-        <p className="max-w-[300px] text-sm text-muted-foreground">{description}</p>
-      ) : null}
+      {description ? <p className="max-w-xs text-sm text-muted-foreground">{description}</p> : null}
       {onRetry ? (
-        <Button variant="secondary" size="md" onClick={onRetry} className="mt-2">
+        <Button variant="secondary" size="md" onClick={onRetry}>
           {retryLabel ?? t('common.retry', { defaultValue: 'Повторить' })}
         </Button>
       ) : null}
@@ -119,11 +117,9 @@ export const SuccessState = ({
       <CheckCircle2 className="h-8 w-8 text-success" aria-hidden />
     </div>
     <p className={STATE_TITLE_CLASS}>{title}</p>
-    {description ? (
-      <p className="max-w-[320px] text-sm text-muted-foreground">{description}</p>
-    ) : null}
+    {description ? <p className="max-w-xs text-sm text-muted-foreground">{description}</p> : null}
     {primaryAction || secondaryAction ? (
-      <div className="mt-2 flex flex-col items-stretch gap-2 w-full max-w-[280px]">
+      <div className="flex w-full max-w-70 flex-col items-stretch gap-2">
         {primaryAction}
         {secondaryAction}
       </div>
@@ -167,10 +163,8 @@ export const AccessLockedState = ({
       {icon ?? <Lock className="h-6 w-6 text-muted-foreground" aria-hidden />}
     </div>
     <p className={SUBSECTION_TITLE_CLASS}>{title}</p>
-    {description ? (
-      <p className="max-w-[320px] text-sm text-muted-foreground">{description}</p>
-    ) : null}
-    {cta ? <div className="mt-1 w-full max-w-[280px]">{cta}</div> : null}
+    {description ? <p className="max-w-xs text-sm text-muted-foreground">{description}</p> : null}
+    {cta ? <div className="w-full max-w-70">{cta}</div> : null}
   </Card>
 )
 
@@ -193,16 +187,18 @@ export const DirectPaymentInfo = ({ title, description, className }: DirectPayme
   const { t } = useTranslation()
   return (
     <Callout tone="direct" className={className}>
-      <p className="text-xs font-semibold uppercase tracking-wider text-success">
-        {t('payments.directBadge', { defaultValue: 'DIRECT' })}
-      </p>
-      <p className="mt-1 text-sm leading-snug text-foreground">
-        {title ??
-          t('payments.directTitle', {
-            defaultValue: 'Resta не удерживает деньги — оплата напрямую между сторонами.',
-          })}
-      </p>
-      {description ? <p className="mt-1 text-xs text-muted-foreground">{description}</p> : null}
+      <div className="flex flex-col gap-1">
+        <p className="text-xs font-semibold uppercase tracking-wider text-success">
+          {t('payments.directBadge', { defaultValue: 'DIRECT' })}
+        </p>
+        <p className="text-sm leading-snug text-foreground">
+          {title ??
+            t('payments.directTitle', {
+              defaultValue: 'Resta не удерживает деньги — оплата напрямую между сторонами.',
+            })}
+        </p>
+        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
+      </div>
     </Callout>
   )
 }

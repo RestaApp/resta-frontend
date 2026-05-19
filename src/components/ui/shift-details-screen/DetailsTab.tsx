@@ -4,11 +4,15 @@ import type { Shift } from '@/features/feed/model/types'
 import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
-import { DISPLAY_PRICE_CLASS } from '@/components/ui/ui-patterns'
+import {
+  BODY_MUTED_CLASS,
+  DISPLAY_PRICE_CLASS,
+  LABEL_CAPS_CLASS,
+  SCREEN_TITLE_CLASS,
+} from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_SUB_CLASS,
-  SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 
 interface DetailsTabProps {
@@ -51,6 +55,18 @@ const stripVacancyPrefix = (title: string): string => {
     .trim()
 }
 
+interface LabeledTextSectionProps {
+  label: string
+  text: string
+}
+
+const LabeledTextSection = ({ label, text }: LabeledTextSectionProps) => (
+  <div className="flex flex-col gap-1">
+    <p className={LABEL_CAPS_CLASS}>{label}</p>
+    <p className={cn(BODY_MUTED_CLASS, 'leading-relaxed')}>{text}</p>
+  </div>
+)
+
 export const DetailsTab = memo(
   ({
     shift,
@@ -70,7 +86,6 @@ export const DetailsTab = memo(
     const displayDuration = normalizeDuration(duration)
     const displayLocation = locationPoints[0] ?? shift.location ?? ''
     const distance = formatDistanceKm(shift.distanceKm)
-    const requirementsText = requirements || ''
     const payValue =
       pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : formatMoney(Number(pay))
     const payCurrency = pay == null || Number(pay) === 0 ? '' : (currency ?? '')
@@ -79,29 +94,27 @@ export const DetailsTab = memo(
     const compactSubtitle = shift.restaurant || positionLabel || ''
 
     return (
-      <div className="space-y-5">
-        <div className="flex flex-wrap items-center gap-2">
-          {shift.urgent ? (
+      <div className="flex flex-col gap-5">
+        {shift.urgent ? (
+          <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
               🔥 SOS
             </span>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
-        <div className="pt-0.5">
-          <div className="flex min-w-0 items-start gap-[10px]">
+        <div className="flex flex-col">
+          <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
+          <div className="flex min-w-0 items-center gap-2">
             <div className={SHIFT_CARD_LOGO_CLASS}>
               {positionInitial(positionLabel || shift.position)}
             </div>
-            <div className="min-w-0 flex-1">
-              <h1 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h1>
-              <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
-            </div>
+            <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-5">
-          <div className={DISPLAY_PRICE_CLASS}>
+        <div className="flex items-center gap-6">
+          <div className={cn(DISPLAY_PRICE_CLASS, 'text-5xl')}>
             {payValue}
             {payCurrency ? (
               <span className="ml-1 text-base font-semibold text-muted-foreground">
@@ -123,7 +136,7 @@ export const DetailsTab = memo(
         </div>
 
         <Card padding="md" className="dark:shadow-none">
-          <div className="space-y-4">
+          <div className="flex flex-col gap-1">
             {schedule ? (
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-3">
@@ -151,22 +164,12 @@ export const DetailsTab = memo(
           </div>
         </Card>
 
-        {requirementsText ? (
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('common.requirements')}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{requirementsText}</p>
-          </div>
+        {requirements ? (
+          <LabeledTextSection label={t('common.requirements')} text={requirements} />
         ) : null}
 
         {description && requirements ? (
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('common.description')}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
-          </div>
+          <LabeledTextSection label={t('common.description')} text={description} />
         ) : null}
       </div>
     )

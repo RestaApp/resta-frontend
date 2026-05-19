@@ -71,43 +71,47 @@ function ApplyCoverLetterModalContent({
 
   return (
     <Drawer open onOpenChange={open => !open && onClose()} overlayClassName="bg-black/60">
-      <div className="px-6 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-5">
-        <h2 className={MODAL_TITLE_CLASS}>
-          {t('shift.applyNow', { defaultValue: 'Откликнуться' })}
-        </h2>
-        {shiftSummary ? (
-          <p className="mt-2 text-sm leading-snug text-muted-foreground">{shiftSummary}</p>
-        ) : null}
+      <div className="flex flex-col gap-5 px-6 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-5">
+        <div className="flex flex-col gap-2">
+          <h2 className={MODAL_TITLE_CLASS}>
+            {t('shift.applyNow', { defaultValue: 'Откликнуться' })}
+          </h2>
+          {shiftSummary ? (
+            <p className="text-sm leading-snug text-muted-foreground">{shiftSummary}</p>
+          ) : null}
+        </div>
 
-        <label
-          htmlFor="apply-cover-message"
-          className="mt-6 block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-        >
-          {t('shift.coverMessageOptional', { defaultValue: 'Сообщение (опц.)' })}
-        </label>
-        <Textarea
-          id="apply-cover-message"
-          value={message}
-          onChange={e => setMessage(e.target.value)}
-          placeholder={t('shift.coverMessagePlaceholderShort', {
-            defaultValue: 'Готова выйти к 15:45, опыт работы с грилем — да.',
-          })}
-          className={cn(
-            'mt-2 min-h-20 resize-none rounded-lg border-border bg-input-background p-3',
-            'text-sm leading-snug text-foreground placeholder:text-muted-foreground'
-          )}
-          maxLength={2000}
-        />
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="apply-cover-message"
+            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            {t('shift.coverMessageOptional', { defaultValue: 'Сообщение (опц.)' })}
+          </label>
+          <Textarea
+            id="apply-cover-message"
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            placeholder={t('shift.coverMessagePlaceholderShort', {
+              defaultValue: 'Готова выйти к 15:45, опыт работы с грилем — да.',
+            })}
+            className={cn(
+              'min-h-20 resize-none rounded-lg border-border bg-input-background p-3',
+              'text-sm leading-snug text-foreground placeholder:text-muted-foreground'
+            )}
+            maxLength={2000}
+          />
+        </div>
 
-        <div className="mt-5 flex gap-3 rounded-lg border border-success/50 bg-success/10 p-4">
+        <div className="flex gap-3 rounded-lg border border-success/50 bg-success/10 p-4">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-success text-base font-bold text-white">
             i
           </div>
-          <div>
+          <div className="flex flex-col gap-1">
             <p className="text-sm font-semibold leading-tight text-success">
               {t('shift.applyPrivacyTitle', { defaultValue: 'Сообщение увидит менеджер' })}
             </p>
-            <p className="mt-1 text-sm leading-snug text-muted-foreground">
+            <p className="text-sm leading-snug text-muted-foreground">
               {t('shift.applyPrivacyDescription', {
                 defaultValue: 'Контакты откроются после принятия отклика.',
               })}
@@ -119,7 +123,7 @@ function ApplyCoverLetterModalContent({
           onClick={handleSubmit}
           variant="gradient"
           size="lg"
-          className="mt-5 w-full"
+          className="w-full"
           disabled={isSubmitting}
         >
           {isSubmitting

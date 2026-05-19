@@ -61,39 +61,38 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
       subtitle={t('roles.positionScreenDescription')}
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT}
     >
-      <OnboardingSection
-        label={t('roles.positionLabel', { defaultValue: 'ПОЗИЦИЯ' })}
-        className="mb-[14px]"
-      >
-        <TagGroup
-          values={visibleRoles.map(subRole => subRole.id)}
-          selectedValues={selectedSubRole ? [selectedSubRole] : []}
-          onToggle={handleSelect}
-          getLabel={id => {
-            const subRole = visibleRoles.find(role => role.id === id)
-            return `${EMOJI_BY_ROLE[id as EmployeeRole] ?? '👤'} ${subRole?.title ?? id}`
-          }}
-          getAriaLabel={id => {
-            const subRole = visibleRoles.find(role => role.id === id)
-            return t('aria.selectType', { label: subRole?.title ?? id })
-          }}
-          size="lg"
-        />
-      </OnboardingSection>
+      <div className="flex w-full max-w-md flex-col gap-3">
+        <OnboardingSection label={t('roles.positionLabel', { defaultValue: 'ПОЗИЦИЯ' })}>
+          <TagGroup
+            values={visibleRoles.map(subRole => subRole.id)}
+            selectedValues={selectedSubRole ? [selectedSubRole] : []}
+            onToggle={handleSelect}
+            getLabel={id => {
+              const subRole = visibleRoles.find(role => role.id === id)
+              return `${EMOJI_BY_ROLE[id as EmployeeRole] ?? '👤'} ${subRole?.title ?? id}`
+            }}
+            getAriaLabel={id => {
+              const subRole = visibleRoles.find(role => role.id === id)
+              return t('aria.selectType', { label: subRole?.title ?? id })
+            }}
+            size="lg"
+          />
+        </OnboardingSection>
 
-      <OnboardingSection
-        label={t('roles.specializationLabel')}
-        hint={t('roles.specializationMultiHint')}
-      >
-        <TagGroup
-          values={specializations}
-          selectedValues={selectedSpecializations}
-          onToggle={onSpecializationToggle}
-          getLabel={getSpecializationLabel}
-          getAriaLabel={(_, label) => t('aria.selectSpecialization', { label })}
-          size="lg"
-        />
-      </OnboardingSection>
+        <OnboardingSection
+          label={t('roles.specializationLabel')}
+          hint={t('roles.specializationMultiHint')}
+        >
+          <TagGroup
+            values={specializations}
+            selectedValues={selectedSpecializations}
+            onToggle={onSpecializationToggle}
+            getLabel={getSpecializationLabel}
+            getAriaLabel={(_, label) => t('aria.selectSpecialization', { label })}
+            size="lg"
+          />
+        </OnboardingSection>
+      </div>
 
       <OnboardingBottomCta onClick={onContinue} disabled={!selectedSubRole} showFillLaterHint>
         {t('roles.continuePosition')}

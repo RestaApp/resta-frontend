@@ -62,7 +62,7 @@ export const RoleCard = memo(function RoleCard({
   return (
     <div className="relative">
       {showPopularBadge ? (
-        <span className="absolute -top-2 left-[14px] z-10 inline-flex items-center rounded-[4px] bg-primary px-2 py-[3px] font-mono-resta text-xs font-semibold tracking-[0.08em] uppercase text-white">
+        <span className="absolute -top-2 left3 z-10 inline-flex items-center rounded-[4px] bg-primary px-2 py-1 font-mono-resta text-xs font-semibold uppercase tracking-[0.08em] text-white">
           {t('roles.mostPopularBadge', { defaultValue: 'Популярно' })}
         </span>
       ) : null}
@@ -74,27 +74,25 @@ export const RoleCard = memo(function RoleCard({
         aria-label={t('aria.selectRole', { label: role.title })}
         aria-pressed={isSelected}
         className={cn(
-          'w-full rounded-2xl border px-[22px] py-[18px] text-left transition-all duration-150',
+          'flex w-full flex-col gap-3 rounded-2xl border px-5 py-5 text-left transition-all duration-150',
           showPopularBadge ? 'pt-7' : '',
           isSelected
             ? 'border-primary bg-primary/14'
             : 'border-border bg-card hover:border-foreground/20'
         )}
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-3">
           <div
-            className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-2xl leading-none"
+            className="flex size-10.5 shrink-0 items-center justify-center rounded-md bg-primary text-2xl leading-none text-primary-foreground"
             aria-hidden
           >
             {emoji}
           </div>
 
-          <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
             <div className={BLOCK_TITLE_CLASS}>{role.title}</div>
             {role.description ? (
-              <div className="mt-1 text-sm leading-snug text-muted-foreground">
-                {role.description}
-              </div>
+              <div className="text-sm leading-snug text-muted-foreground">{role.description}</div>
             ) : null}
           </div>
 
@@ -112,7 +110,7 @@ export const RoleCard = memo(function RoleCard({
         </div>
 
         {proof ? (
-          <div className="mt-3 flex items-center gap-1.5 text-xs">
+          <div className="flex items-center gap-1 text-xs">
             <span
               className={cn(
                 'font-mono-resta font-medium tracking-[0.12em]',

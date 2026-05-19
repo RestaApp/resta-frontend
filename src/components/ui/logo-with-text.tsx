@@ -38,7 +38,7 @@ export const LogoWithText = memo(function LogoWithText({
       initial={logoAnimation.initial}
       animate={logoAnimation.animate}
       transition={logoTransition}
-      className={cn('flex flex-col items-center', className)}
+      className={cn('flex flex-col items-center gap-3', className)}
     >
       <div className={iconClassName}>{icon}</div>
 
@@ -46,7 +46,7 @@ export const LogoWithText = memo(function LogoWithText({
         initial={textAnimation.initial}
         animate={textAnimation.animate}
         transition={createTextTransition(ANIMATION_DELAY_STEP * titleDelay)}
-        className={cn('mb-3 text-center text-foreground', titleClassName)}
+        className={cn('text-center text-foreground', titleClassName)}
       >
         {title}
       </motion.h1>

@@ -78,29 +78,28 @@ export const ModalContent = memo(function ModalContent({
   const descriptionId = a11y?.descriptionId ?? fallbackDescId
 
   return (
-    <div className={cn(MODAL_SURFACE_CLASS, 'p-6', className)}>
-      {icon && (
-        <div className="mb-4 flex justify-center">
+    <div className={cn(MODAL_SURFACE_CLASS, 'flex flex-col gap-4 p-6', className)}>
+      {icon ? (
+        <div className="flex justify-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary/50">
             {icon}
           </div>
         </div>
-      )}
+      ) : null}
 
-      <h2 id={titleId} className={cn('mb-2 text-center', MODAL_TITLE_CLASS)}>
-        {title}
-      </h2>
+      <div className="flex flex-col gap-2 text-center">
+        <h2 id={titleId} className={MODAL_TITLE_CLASS}>
+          {title}
+        </h2>
 
-      {description ? (
-        <p
-          id={descriptionId}
-          className="mb-6 whitespace-pre-line text-center text-sm text-muted-foreground"
-        >
-          {description}
-        </p>
-      ) : (
-        <span id={descriptionId} className="sr-only" />
-      )}
+        {description ? (
+          <p id={descriptionId} className="whitespace-pre-line text-sm text-muted-foreground">
+            {description}
+          </p>
+        ) : (
+          <span id={descriptionId} className="sr-only" />
+        )}
+      </div>
 
       {(primaryButton || secondaryButton) && (
         <div className="flex gap-3">

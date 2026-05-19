@@ -94,21 +94,24 @@ const CardSelectInner = <TId extends string>({
           </div>
         ) : null}
 
-        <div className={cn(layout === 'horizontal' ? 'min-w-0 flex-1' : 'text-center')}>
+        <div
+          className={cn(
+            'flex flex-col gap-1',
+            layout === 'horizontal' ? 'min-w-0 flex-1' : 'text-center'
+          )}
+        >
           <div className={cn('font-semibold', isSelected ? 'text-white' : 'text-foreground')}>
             {title}
           </div>
           {description ? (
-            <div
-              className={cn('mt-1 text-sm', isSelected ? 'text-white/80' : 'text-muted-foreground')}
-            >
+            <div className={cn('text-sm', isSelected ? 'text-white/80' : 'text-muted-foreground')}>
               {description}
             </div>
           ) : null}
           {socialProof ? (
             <div
               className={cn(
-                'mt-1.5 font-mono-resta text-xs font-medium',
+                'font-mono-resta text-xs font-medium',
                 isSelected ? 'text-white/60' : 'text-muted-foreground/70'
               )}
             >

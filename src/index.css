@@ -297,12 +297,6 @@ textarea:focus-visible {
     flex-direction: column;
     gap: var(--ui-density-stack-lg);
   }
-  .ui-density-mb {
-    margin-bottom: var(--ui-density-stack);
-  }
-  .ui-density-mb-lg {
-    margin-bottom: var(--ui-density-section-gap);
-  }
   .pb-onboarding-cta {
     padding-bottom: calc(6.5rem + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)));
   }

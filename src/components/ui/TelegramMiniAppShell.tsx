@@ -22,7 +22,11 @@ export const TelegramMiniAppShell = ({ children, className }: TelegramMiniAppShe
 
   return (
     <div
-      className={cn('bg-background flex flex-col overflow-hidden', isFullscreen && 'mt-[80px]', className)}
+      className={cn(
+        'bg-background flex flex-col overflow-hidden',
+        isFullscreen && 'mt-20',
+        className
+      )}
       style={{
         height: isFullscreen
           ? `calc(var(--tg-viewport-stable-height, 100dvh) - ${FULLSCREEN_TOP_OFFSET_PX}px)`

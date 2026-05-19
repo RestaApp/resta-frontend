@@ -21,7 +21,7 @@ export const DayDetailRow = memo(
   ({ day, label, enabled, from, to, disabled, onChange }: DayDetailRowProps) => (
     <div className="grid grid-cols-[42px_1fr] items-center gap-2">
       <div className="text-xs font-semibold text-muted-foreground">{label}</div>
-      <div className="grid grid-cols-[auto_1fr_auto_1fr] items-center gap-1.5">
+      <div className="grid grid-cols-[auto_1fr_auto_1fr] items-center gap-1">
         <Switch
           checked={enabled}
           disabled={disabled}

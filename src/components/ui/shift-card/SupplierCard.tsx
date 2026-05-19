@@ -133,7 +133,7 @@ const SupplierCardComponent = ({
         </div>
       ) : null}
 
-      <div className="flex items-start gap-[10px]">
+      <div className="flex items-start gap-2">
         <Avatar className={cn(SHIFT_CARD_LOGO_CLASS, 'shrink-0 self-start p-0')}>
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
           <AvatarFallback className="bg-primary text-primary-foreground text-sm font-extrabold">
@@ -146,9 +146,9 @@ const SupplierCardComponent = ({
           <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{subtitleText}</p>
 
           <div className={SHIFT_CARD_META_CLASS}>
-            <p className="inline-flex min-w-0 items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 shrink-0" />
-              <span className="min-w-0 flex items-center gap-1.5">
+            <p className="inline-flex min-w-0 items-center gap-1">
+              <MapPin className="h3 w3 shrink-0" />
+              <span className="min-w-0 flex items-center gap-1">
                 <span className="truncate">{locationText}</span>
                 {extraLocationsLabel ? (
                   <Badge
@@ -160,8 +160,8 @@ const SupplierCardComponent = ({
                 ) : null}
               </span>
             </p>
-            <p className="inline-flex min-w-0 items-center gap-1.5">
-              <Phone className="h-3.5 w-3.5 shrink-0" />
+            <p className="inline-flex min-w-0 items-center gap-1">
+              <Phone className="h3 w3 shrink-0" />
               <span className="truncate">{phoneText}</span>
             </p>
           </div>

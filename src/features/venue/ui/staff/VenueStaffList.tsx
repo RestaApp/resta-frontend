@@ -135,7 +135,7 @@ export const VenueStaffList = ({
                       className={cn(SHIFT_CARD_CLASS, 'ui-density-stack-sm')}
                     >
                       <div
-                        className="flex cursor-pointer items-start gap-[10px] rounded-lg transition-colors"
+                        className="flex cursor-pointer items-start gap-2 rounded-lg transition-colors"
                         role="button"
                         tabIndex={0}
                         onClick={() => onOpenDetails(item)}
@@ -179,8 +179,8 @@ export const VenueStaffList = ({
                             : item.applicationStatus === 'rejected'
                               ? t('venueUi.staff.status.rejected', { defaultValue: 'Отклонён' })
                               : t('venueUi.staff.status.pending', {
-                                  defaultValue: 'На рассмотрении',
-                                })}
+                                defaultValue: 'На рассмотрении',
+                              })}
                         </Badge>
                       </div>
 

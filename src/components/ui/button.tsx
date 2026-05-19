@@ -9,7 +9,7 @@ import { Loader } from '@/components/ui/loader'
 const SIZE_CLASSES = {
   sm: 'h-11 px-3 text-xs',
   md: 'h-12 px-4 text-sm',
-  lg: 'h-[52px] px-5 text-sm',
+  lg: 'h-13 px-5 text-sm',
 } as const
 
 const LOADER_SLOT = {
@@ -80,7 +80,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         aria-pressed={pressed || undefined}
         className={cn(
-          'inline-flex min-w-fit items-center justify-center gap-1.5 rounded-md text-center font-semibold whitespace-nowrap transition-all',
+          'inline-flex min-w-fit items-center justify-center gap-1 rounded-md text-center font-semibold whitespace-nowrap transition-all',
           'cursor-pointer [-webkit-tap-highlight-color:transparent] active:opacity-85',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
           'disabled:opacity-50 disabled:cursor-not-allowed',

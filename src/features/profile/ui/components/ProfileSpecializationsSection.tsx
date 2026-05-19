@@ -17,8 +17,8 @@ export const ProfileSpecializationsSection = memo(
     if (specializations.length === 0) return null
 
     return (
-      <div>
-        <h3 className={cn(BLOCK_TITLE_CLASS, 'ui-density-mb flex items-center gap-2')}>
+      <div className="ui-density-stack">
+        <h3 className={cn(BLOCK_TITLE_CLASS, 'flex items-center gap-2')}>
           <CookingPot className="h-5 w-5 stroke-[1.5] text-primary" />
           {t('profile.specializationSection')}
         </h3>

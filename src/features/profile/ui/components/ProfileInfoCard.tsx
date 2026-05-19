@@ -81,22 +81,16 @@ export const ProfileInfoCard = memo(
     const [isOpen, setIsOpen] = useState(defaultOpen || !isFilled)
     const hasBusinessInfoData = Boolean(
       (userProfile.bio && userProfile.bio.trim()) ||
-        (cityDisplay && cityDisplay.trim()) ||
-        (locationValue && locationValue.trim()) ||
-        (isBusinessRole && userProfile.website?.trim()) ||
-        venueHoursDisplay ||
-        (isSupplierRole && supplierTypes.length > 0)
+      (cityDisplay && cityDisplay.trim()) ||
+      (locationValue && locationValue.trim()) ||
+      (isBusinessRole && userProfile.website?.trim()) ||
+      venueHoursDisplay ||
+      (isSupplierRole && supplierTypes.length > 0)
     )
 
     const fillActionButton = onFill ? (
       <motion.div whileTap={{ scale: 0.98 }}>
-        <Button
-          onClick={onFill}
-          variant="gradient"
-          size="md"
-          className="min-w-[156px]"
-          type="button"
-        >
+        <Button onClick={onFill} variant="gradient" size="md" className="min-w-39" type="button">
           {t('common.fill')}
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -104,11 +98,9 @@ export const ProfileInfoCard = memo(
     ) : null
 
     const incompleteCallout = !isFilled ? (
-      <div className="rounded-lg border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center ">
+      <div className="flex flex-col gap-4 rounded-lg border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-4 py-5 text-center">
         <p className="text-sm leading-relaxed text-foreground/80">{fillRequiredText}</p>
-        {fillActionButton ? (
-          <div className="mt-4 flex justify-center">{fillActionButton}</div>
-        ) : null}
+        {fillActionButton ? <div className="flex justify-center">{fillActionButton}</div> : null}
       </div>
     ) : null
 
@@ -121,14 +113,14 @@ export const ProfileInfoCard = memo(
     }
 
     const content = (
-      <>
+      <div className="flex flex-col gap-5">
         <button
           type="button"
           onClick={() => setIsOpen(v => !v)}
           className="w-full -mx-2 -my-1 flex items-center gap-2 rounded-xl transition-colors hover:bg-secondary/35"
         >
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-            <Briefcase className="h-[18px] w-[18px] text-primary" />
+            <Briefcase className="size-4.5 text-primary" />
           </span>
 
           <h4
@@ -143,7 +135,7 @@ export const ProfileInfoCard = memo(
               transition={{ duration: 0.2 }}
               className="rounded-md bg-secondary/60 p-1"
             >
-              <ChevronDown className="h-[18px] w-[18px] text-muted-foreground" />
+              <ChevronDown className="size-4.5 text-muted-foreground" />
             </motion.div>
           </div>
         </button>
@@ -153,18 +145,16 @@ export const ProfileInfoCard = memo(
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-5 space-y-0 text-sm overflow-hidden"
+            className="overflow-hidden text-sm"
           >
             {!isFilled && !isSupplierRole ? (
               <div className="py-3">{incompleteCallout}</div>
             ) : (
               <>
-                {!isFilled && isSupplierRole ? (
-                  <div className="mb-4">{incompleteCallout}</div>
-                ) : null}
+                {!isFilled && isSupplierRole ? <div>{incompleteCallout}</div> : null}
                 {userProfile.bio && (
-                  <div className="pb-3 border-b border-border/50">
-                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-1.5">
+                  <div className="flex flex-col gap-1 border-b border-border/50 pb-3">
+                    <span className="block text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       {t('common.description')}
                     </span>
                     <p className="text-foreground leading-relaxed break-words">{userProfile.bio}</p>
@@ -203,7 +193,7 @@ export const ProfileInfoCard = memo(
                   ) : null}
                   {isSupplierRole && supplierTypes.length > 0 ? (
                     <div className={cn(ROW_CLASS, 'items-start')}>
-                      <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-[8rem]')}>
+                      <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-32')}>
                         {t('profile.supplierTypesLabel', { defaultValue: 'Типы поставщика' })}
                       </span>
                       <div className="flex min-w-0 flex-1 flex-wrap justify-end gap-2">
@@ -236,8 +226,8 @@ export const ProfileInfoCard = memo(
                     </InfoRow>
                   )}
                   {userProfile.work_experience_summary && (
-                    <div className="py-2.5">
-                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground block mb-1.5">
+                    <div className="flex flex-col gap-1 py-2.5">
+                      <span className="block text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         {workSummaryLabel}
                       </span>
                       <p className="text-foreground leading-relaxed">
@@ -253,7 +243,7 @@ export const ProfileInfoCard = memo(
             )}
           </motion.div>
         ) : null}
-      </>
+      </div>
     )
     return variant === 'section' ? (
       <div className="py-2">{content}</div>

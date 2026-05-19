@@ -29,11 +29,11 @@ export const FormField = ({
   const hasMessage = Boolean(errorText || hintText)
 
   return (
-    <div className={className}>
+    <div className={cn('flex flex-col gap-2', className)}>
       {label ? (
         <label
           htmlFor={htmlFor}
-          className={cn('mb-2 block text-sm font-medium text-muted-foreground', labelClassName)}
+          className={cn('block text-sm font-medium text-muted-foreground', labelClassName)}
         >
           {label}
           {required ? ' *' : ''}
@@ -45,7 +45,7 @@ export const FormField = ({
       {hasMessage ? (
         <p
           className={cn(
-            'mt-1 text-xs',
+            'text-xs',
             errorText ? 'text-destructive' : 'text-muted-foreground',
             messageClassName
           )}

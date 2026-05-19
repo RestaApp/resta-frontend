@@ -26,21 +26,21 @@ export const ExperienceField = memo(function ExperienceField({
 }: ExperienceFieldProps) {
   const { t } = useTranslation()
   const content = (
-    <FormField label={t('roles.yourExperience')} labelClassName="mb-1">
-      <div className="mb-3">
+    <FormField label={t('roles.yourExperience')}>
+      <div className="flex flex-col gap-3">
         <span className={cn(BLOCK_TITLE_CLASS, 'text-gradient')}>
           {formatExperienceText(value)}
         </span>
+        <RangeSlider
+          min={0}
+          max={5}
+          step={1}
+          value={value}
+          onChange={onChange}
+          showTicks={true}
+          tickCount={5}
+        />
       </div>
-      <RangeSlider
-        min={0}
-        max={5}
-        step={1}
-        value={value}
-        onChange={onChange}
-        showTicks={true}
-        tickCount={5}
-      />
     </FormField>
   )
 

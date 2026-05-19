@@ -37,13 +37,13 @@ export function ProfileSettings({
   )
 
   return (
-    <div>
-      <h3 className={cn(BLOCK_TITLE_CLASS, 'ui-density-mb flex items-center gap-2')}>
+    <div className="ui-density-stack">
+      <h3 className={cn(BLOCK_TITLE_CLASS, 'flex items-center gap-2')}>
         <Settings className="w-5 h-5 text-primary" />
         {t('profile.settings')}
       </h3>
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         <Card className="p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">

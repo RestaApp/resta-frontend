@@ -9,7 +9,7 @@ export const SHIFT_CARD_INTERACTIVE_CLASS =
 
 export const SHIFT_CARD_SOS_CLASS = 'border-primary/40 bg-gradient-to-br from-primary/15 to-card'
 
-export const SHIFT_CARD_ROW_CLASS = 'flex items-start justify-between gap-2.5'
+export const SHIFT_CARD_ROW_CLASS = 'flex items-start justify-between gap-2'
 
 export const SHIFT_CARD_BADGE_ROW_CLASS = '-mt-1.5 mb-1.5'
 
@@ -21,7 +21,7 @@ export const SHIFT_CARD_LOGO_CLASS =
 
 export const SHIFT_CARD_TITLE_CLASS = 'text-sm font-semibold leading-snug text-foreground'
 
-export const SHIFT_CARD_SUB_CLASS = 'mt-0.5 truncate text-xs leading-snug text-muted-foreground'
+export const SHIFT_CARD_SUB_CLASS = 'truncate text-xs leading-snug text-muted-foreground'
 
 export const SHIFT_CARD_PRICE_CLASS = CARD_PRICE_CLASS
 
@@ -29,4 +29,4 @@ export const SHIFT_CARD_CURRENCY_CLASS =
   'ml-0.5 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground'
 
 export const SHIFT_CARD_META_CLASS =
-  'mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-xs tracking-wide text-muted-foreground'
+  'flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-xs tracking-wide text-muted-foreground'

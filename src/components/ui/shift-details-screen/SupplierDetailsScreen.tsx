@@ -74,13 +74,13 @@ export const SupplierDetailsScreen = memo(
           </div>
         }
         headerMeta={
-          <div className="space-y-1 text-sm text-muted-foreground">
+          <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <p className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5" />
+              <Star className="h3 w3" />
               {supplier.averageRating.toFixed(1)} · {supplier.totalReviews}
             </p>
             <p className="inline-flex items-center gap-1">
-              <Truck className="h-3.5 w-3.5" />
+              <Truck className="h3 w3" />
               {supplier.deliveryAvailable == null
                 ? t('common.notSpecified', { defaultValue: 'Не указано' })
                 : supplier.deliveryAvailable
@@ -91,7 +91,7 @@ export const SupplierDetailsScreen = memo(
         }
       >
         <Card padding="md" className={DETAIL_CARD_CLASS}>
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <DetailRow
               icon={Building2}
               iconVariant="section"

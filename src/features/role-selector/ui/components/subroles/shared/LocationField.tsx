@@ -116,7 +116,7 @@ export const LocationField = memo(function LocationField({
             ) : (
               <div
                 ref={listRef}
-                className="max-h-[200px] overflow-y-auto overflow-x-hidden overscroll-contain"
+                className="max-h-50 overflow-y-auto overflow-x-hidden overscroll-contain"
               >
                 <ul className="py-1">
                   {filteredCities.map((city: string) => (

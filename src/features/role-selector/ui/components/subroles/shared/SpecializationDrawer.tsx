@@ -90,9 +90,9 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
         ) : (
           <>
             {specializations.length > 0 ? (
-              <div className="ui-density-stack mb-6">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">
+              <div className="ui-density-stack">
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs font-medium text-muted-foreground">
                     {t('roles.specializationsMain')}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -116,15 +116,15 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
                       type="button"
                       onClick={() => setAdditionalExpanded(v => !v)}
                       className={cn(
-                        'flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors'
+                        'flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors'
                       )}
                       aria-expanded={additionalExpanded}
                     >
                       {t('roles.specializationsMore')}
                       {additionalExpanded ? (
-                        <ChevronUp className="h-3.5 w-3.5" />
+                        <ChevronUp className="h3 w3" />
                       ) : (
-                        <ChevronDown className="h-3.5 w-3.5" />
+                        <ChevronDown className="h3 w3" />
                       )}
                     </button>
                     <AnimatePresence initial={false}>
@@ -159,7 +159,7 @@ export const SpecializationDrawer = memo(function SpecializationDrawer({
             ) : null}
 
             <div
-              className={`space-y-5 ${specializations.length > 0 ? 'pt-4 border-t border-border' : ''}`}
+              className={`flex flex-col gap-5 ${specializations.length > 0 ? 'border-t border-border pt-4' : ''}`}
             >
               <ExperienceField
                 value={formData.experienceYears}

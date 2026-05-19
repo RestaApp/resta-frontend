@@ -201,6 +201,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
       className={cn(
         SHIFT_CARD_CLASS,
         SHIFT_CARD_INTERACTIVE_CLASS,
+        'flex flex-col gap-2',
         shift.urgent && SHIFT_CARD_SOS_CLASS
       )}
     >
@@ -213,11 +214,11 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
               </span>
             </div>
           ) : null}
-          <div className={cn('flex min-w-0 items-start gap-[10px]', shift.urgent && 'gap-0')}>
+          <div className={cn('flex min-w-0 items-start gap-2', shift.urgent && 'gap-0')}>
             {!shift.urgent ? (
               <div className={SHIFT_CARD_LOGO_CLASS}>{positionInitial(shift.position)}</div>
             ) : null}
-            <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <h3 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h3>
               <p className={SHIFT_CARD_SUB_CLASS}>{compactSubtitle}</p>
             </div>
@@ -240,16 +241,14 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
 
       <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0')}>
         {compactSchedule ? <span className="shrink-0">⏱ {compactSchedule}</span> : null}
-        {locationMeta ? (
-          <span className="min-w-[5rem] flex-1 truncate">📍 {locationMeta}</span>
-        ) : null}
+        {locationMeta ? <span className="min-w-20 flex-1 truncate">📍 {locationMeta}</span> : null}
         {compactApplications ? (
           <span className="shrink-0 text-muted-foreground">👤 {compactApplications}</span>
         ) : null}
       </div>
 
       {isOwner && ownerActions ? (
-        <div className="mt-3 flex justify-end border-t border-border/40 pt-3">
+        <div className="flex justify-end border-t border-border/40 pt-3">
           <ShiftOwnerActions
             editLabel={t('common.edit')}
             deleteLabel={t('common.delete')}

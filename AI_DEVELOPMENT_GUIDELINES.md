@@ -69,8 +69,10 @@ className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-primary-cta)]
 
 - Спрашивай: «Этот размер уже есть в scale?» Если нет — это либо ошибка дизайна,
   либо новый токен (обсудить).
-- **Padding / margin / gap:** только из Tailwind дефолтной шкалы (`p-2`, `p-3`, `p-4`,
-  `gap-1.5`). Внутри `<Card />` дефолтный padding — `p-4` через `padding="md"`.
+- **Padding / margin / gap / size:** только из Tailwind дефолтной шкалы (`p-4`,
+  `gap-2`, `min-h-11`, `max-w-xs`). Запрещены arbitrary вроде `px-[22px]`,
+  `gap-[10px]`, `h-[42px]` — округляй до ближайшего токена (`px-5`, `gap-2`,
+  `size-10.5`). Внутри `<Card />` дефолтный padding — `p-4` через `padding="md"`.
 
 ### 1.3. Mobile‑first
 
@@ -238,6 +240,32 @@ export const Z_INDEX = {
 
 // ❌ — удалено
 'bg-role-employee' | 'getRoleTheme' | 'bg-emp'
+```
+
+### 2.7. Отступы между элементами — `gap`, не margin
+
+Для вертикальных/горизонтальных стеков и сеток — **`gap` на flex/grid-контейнере**, не `margin` на дочерних элементах.
+
+| ❌ Запрещено для стеков | ✅ Используй |
+|-------------------------|--------------|
+| `space-y-*` | `flex flex-col gap-*` или `ui-density-stack` / `ui-density-stack-sm` / `ui-density-stack-lg` |
+| `mt-*` / `mb-*` между соседними блоками в колонке | `gap` на родителе |
+| `ui-density-mb` на заголовках секций | `ui-density-stack` на обёртке секции |
+
+**Margin допустим** только для: позиционирования (`absolute`, overlay), оптического выравнивания иконки (`mt-0.5` у inline-иконки), отрицательных overlap (`-mt-*`), внешних отступов компонента от соседей снаружи (если родитель не flex/grid-стек).
+
+```tsx
+// ❌
+<div>
+  <h3 className="mb-4">Заголовок</h3>
+  <Card />
+</div>
+
+// ✅
+<div className="ui-density-stack">
+  <h3>Заголовок</h3>
+  <Card />
+</div>
 ```
 
 ---

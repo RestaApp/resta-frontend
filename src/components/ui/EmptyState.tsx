@@ -48,7 +48,7 @@ export const EmptyState = ({
       <div className="flex flex-col items-center gap-2 text-center">
         <p className={BLOCK_TITLE_CLASS}>{displayMessage}</p>
         {description ? (
-          <p className="max-w-[320px] text-sm text-muted-foreground">{description}</p>
+          <p className="max-w-xs text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {action ?? resetButton}

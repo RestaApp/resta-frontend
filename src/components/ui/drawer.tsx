@@ -217,7 +217,7 @@ export const Drawer = ({
 // ----- Subcomponents (чтобы импорты не ломались) -----
 
 export const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div className={cn('flex flex-col gap-1.5 p-4', className)} {...props} />
+  return <div className={cn('flex flex-col gap-1 p-4', className)} {...props} />
 }
 
 export const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {

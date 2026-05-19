@@ -35,7 +35,7 @@ export const CompactTimeRow = memo(
         <Switch checked={enabled} disabled={disabled} onCheckedChange={onToggle} />
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
         <Input
           type="time"
           inputMode="numeric"

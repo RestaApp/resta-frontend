@@ -83,14 +83,14 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             onKeyDown={e => {
               if (e.key === 'Enter' || e.key === 'Escape') setIsEditingName(false)
             }}
-            className={cn(BLOCK_TITLE_CLASS, 'mx-auto h-8 max-w-[240px] text-center')}
+            className={cn(BLOCK_TITLE_CLASS, 'mx-auto h-8 max-w-60 text-center')}
             aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
           />
         ) : (
           <button
             type="button"
             onClick={() => setIsEditingName(true)}
-            className={cn(BLOCK_TITLE_CLASS, 'mx-auto inline-flex items-center gap-1.5')}
+            className={cn(BLOCK_TITLE_CLASS, 'mx-auto inline-flex items-center gap-1')}
             aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
           >
             {displayName}
@@ -142,7 +142,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
       </OnboardingSection>
 
-      <div role="note" className="mt-3.5 rounded-xl border border-primary bg-primary/8 px-3 py-2.5">
+      <div role="note" className="mt3 rounded-xl border border-primary bg-primary/8 px-3 py-2.5">
         <div className="flex items-start gap-2">
           <span aria-hidden className="shrink-0 mt-0.5 text-sm text-primary">
             {ROLE_SHIELD_ICON[roleCategory]}

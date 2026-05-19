@@ -36,7 +36,7 @@ export const SectionHeader = function SectionHeader({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className={cn('flex items-center gap-2 mb-3', className)}
+        className={cn('flex items-center gap-2', className)}
       >
         <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
           <Icon className="w-4 h-4" />
@@ -52,15 +52,19 @@ export const SectionHeader = function SectionHeader({
       initial={{ y: -12, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className={cn(align === 'center' && 'text-center', className)}
+      className={cn('flex flex-col gap-3', align === 'center' && 'text-center', className)}
     >
-      <h2 className={cn(HERO_TITLE_CLASS, 'mb-3', titleClassName)}>{title}</h2>
-      {description ? (
-        <p className={cn('text-base text-muted-foreground leading-snug', descriptionClassName)}>
-          {description}
-        </p>
+      <h2 className={cn(HERO_TITLE_CLASS, titleClassName)}>{title}</h2>
+      {description || hint ? (
+        <div className="flex flex-col gap-1">
+          {description ? (
+            <p className={cn('text-base text-muted-foreground leading-snug', descriptionClassName)}>
+              {description}
+            </p>
+          ) : null}
+          {hint ? <p className="text-sm text-muted-foreground/70">{hint}</p> : null}
+        </div>
       ) : null}
-      {hint ? <p className="mt-1.5 text-sm text-muted-foreground/70">{hint}</p> : null}
     </motion.div>
   )
 }

@@ -24,15 +24,13 @@ export const ProfileBusinessInfoCard = memo(
     if (!value) return null
 
     const content = (
-      <>
-        <h4 className="font-semibold ui-density-mb">{t(TITLE_BY_KIND[kind])}</h4>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between gap-3">
-            <span className="text-muted-foreground">{t(LABEL_BY_KIND[kind])}</span>
-            <span className="text-right">{value}</span>
-          </div>
+      <div className="flex flex-col gap-0.5">
+        <h4 className="font-semibold">{t(TITLE_BY_KIND[kind])}</h4>
+        <div className="flex justify-between gap-3 text-sm">
+          <span className="text-muted-foreground">{t(LABEL_BY_KIND[kind])}</span>
+          <span className="text-right">{value}</span>
         </div>
-      </>
+      </div>
     )
 
     if (variant === 'section') return <div className="py-2">{content}</div>

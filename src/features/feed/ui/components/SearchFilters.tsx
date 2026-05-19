@@ -15,7 +15,7 @@ function SearchFiltersComponent({ activeFiltersList, onResetFilters }: SearchFil
   if (activeFiltersList.length === 0) return null
 
   return (
-    <div className="ui-density-page flex items-center gap-1.5 border-b border-border/70 bg-background py-1">
+    <div className="ui-density-page flex items-center gap-1 border-b border-border/70 bg-background py-1">
       <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto scrollbar-hide">
         {activeFiltersList.map((filter, index) => (
           <Badge

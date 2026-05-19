@@ -62,7 +62,7 @@ export const LocationField = memo(function LocationField({
   return (
     <Field label={label} error={error}>
       <div className={cn('flex gap-2 items-stretch')}>
-        <div className="flex-shrink-0 w-[180px] sm:w-[140px]">
+        <div className="w-45 shrink-0 sm:w-35">
           <CitySelect
             value={city}
             onChange={handleCityChange}

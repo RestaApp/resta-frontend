@@ -16,32 +16,34 @@ export type FeedCardSkeletonProps = ShiftSkeletonProps
 
 const VARIANT_CONTAINER_CLASSES: Record<NonNullable<ShiftSkeletonProps['variant']>, string> = {
   default: '',
-  staff: 'p-3.5',
+  staff: 'p3',
 }
 
 export const FeedCardSkeleton = memo(function FeedCardSkeleton({
   variant = 'default',
 }: ShiftSkeletonProps) {
   return (
-    <div className={cn(SHIFT_CARD_CLASS, 'space-y-2.5', VARIANT_CONTAINER_CLASSES[variant])}>
+    <div
+      className={cn(SHIFT_CARD_CLASS, 'flex flex-col gap-2', VARIANT_CONTAINER_CLASSES[variant])}
+    >
       <div className={SHIFT_CARD_ROW_CLASS}>
-        <div className="flex min-w-0 flex-1 items-start gap-2.5">
+        <div className="flex min-w-0 flex-1 items-start gap-2">
           <Skeleton className="h-9 w-9 shrink-0 rounded-sm" />
-          <div className="min-w-0 flex-1 space-y-2 pt-px">
+          <div className="flex min-w-0 flex-1 flex-col gap-2 pt-px">
             <Skeleton className="h-4 w-3/4 rounded-md" />
             <Skeleton className="h-3 w-1/2 rounded-md" />
           </div>
         </div>
 
-        <div className="shrink-0 space-y-1.5 pt-px text-right">
-          <Skeleton className="ml-auto h-5 w-[88px] rounded-md" />
+        <div className="flex shrink-0 flex-col gap-1 pt-px text-right">
+          <Skeleton className="ml-auto h-5 w-22 rounded-md" />
           <Skeleton className="ml-auto h-2.5 w-10 rounded-sm" />
         </div>
       </div>
 
       <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0 gap-2')}>
-        <Skeleton className="h-3 w-[106px] rounded-sm" />
-        <Skeleton className="h-3 min-w-[92px] flex-1 rounded-sm" />
+        <Skeleton className="h-3 w-27 rounded-sm" />
+        <Skeleton className="h-3 min-w-23 flex-1 rounded-sm" />
       </div>
     </div>
   )

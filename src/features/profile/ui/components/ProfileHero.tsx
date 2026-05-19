@@ -49,28 +49,28 @@ export const ProfileHero = memo(
       apiRole === 'employee' ? userProfile.employee_profile?.open_to_work : undefined
 
     const content = (
-      <>
+      <div className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-primary shrink-0 overflow-hidden">
+          <div className="flex min-w-0 flex-1 items-center gap-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary">
               {photoUrl ? (
-                <img src={photoUrl} alt={userName} className="w-full h-full object-cover" />
+                <img src={photoUrl} alt={userName} className="h-full w-full object-cover" />
               ) : (
                 <span className="text-xl font-bold text-white">{userName.charAt(0)}</span>
               )}
             </div>
 
-            <div className="min-w-0">
+            <div className="flex min-w-0 flex-col gap-1">
               <h1 className={cn(SCREEN_TITLE_CLASS, 'truncate')}>{userName}</h1>
-              <div className="text-sm text-muted-foreground truncate">{roleLabel}</div>
+              <div className="truncate text-sm text-muted-foreground">{roleLabel}</div>
               {cityOrLocation ? (
-                <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground truncate font-mono-resta">
-                  <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <div className="flex items-center gap-1 truncate font-mono-resta text-xs text-muted-foreground">
+                  <MapPin className="h3 w3 shrink-0" />
                   <span className="truncate">{cityOrLocation}</span>
                 </div>
               ) : null}
               {isProfileFilled || hasProSubscription ? (
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1">
                   {hasProSubscription ? <Badge variant="pro">PRO</Badge> : null}
                 </div>
               ) : null}
@@ -78,10 +78,13 @@ export const ProfileHero = memo(
           </div>
 
           {openToWork ? (
-            <div className="flex items-center gap-2 shrink-0 pt-0.5">
+            <div className="flex shrink-0 items-center gap-2 pt-0.5">
               <span title={t('profile.openToWork')} aria-label={t('profile.openToWork')}>
-                <Badge variant="success" className="h-11 w-11 px-0 py-0 justify-center">
-                  <Briefcase className="w-4 h-4" />
+                <Badge
+                  variant="success"
+                  className="flex h-11 w-11 items-center justify-center px-0 py-0"
+                >
+                  <Briefcase className="h-4 w-4" />
                 </Badge>
               </span>
             </div>
@@ -89,19 +92,19 @@ export const ProfileHero = memo(
         </div>
 
         {apiRole === 'employee' && isProfileFilled ? (
-          <div className="mt-3 flex items-center gap-1.5">
-            <Link2 className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="font-mono-resta text-xs text-primary truncate">
+          <div className="flex items-center gap-1">
+            <Link2 className="h3 w3 shrink-0 text-primary" />
+            <span className="truncate font-mono-resta text-xs text-primary">
               resta.me/{userName.toLowerCase().replace(/\s+/g, '-')}
             </span>
           </div>
         ) : null}
 
         {!isProfileFilled ? (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge className="border border-warning/25 bg-warning/10 text-warning">
               <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <AlertCircle className="h3 w3 shrink-0" />
                 <span>{t('common.needToFill')}</span>
               </span>
             </Badge>
@@ -116,7 +119,7 @@ export const ProfileHero = memo(
             ) : null}
           </div>
         ) : null}
-      </>
+      </div>
     )
     return wrapInCard ? (
       <Card className="relative p-4">{content}</Card>

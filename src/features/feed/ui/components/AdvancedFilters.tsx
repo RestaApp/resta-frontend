@@ -69,7 +69,7 @@ const AdvancedFiltersSheet = ({
     <div className={cn('flex min-h-0 flex-1 flex-col', SHEET_SURFACE_CLASS)}>
       <div
         className={cn(
-          'sticky top-0 z-10 flex shrink-0 items-center justify-between px-4 pt-2 pb-0 mb-3.5',
+          'sticky top-0 z-10 flex shrink-0 items-center justify-between px-4 pt-2 pb-0 mb3',
           SHEET_SURFACE_CLASS
         )}
       >
@@ -87,7 +87,7 @@ const AdvancedFiltersSheet = ({
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto px-4 pb-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4">
         {c.positions.length > 0 ? (
           <div className="flex flex-col gap-2">
             <FilterSectionLabel>{t('feed.sectionPosition')}</FilterSectionLabel>

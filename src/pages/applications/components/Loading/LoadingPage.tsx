@@ -27,7 +27,7 @@ export const LoadingPage = memo(function LoadingPage() {
         }}
       />
 
-      <div className="relative mb-8 h-[88px] w-[88px]">
+      <div className="relative mb-8 size-22">
         <motion.div
           className="absolute inset-0 grid place-items-center rounded-2xl text-[52px] font-extrabold text-white"
           style={{

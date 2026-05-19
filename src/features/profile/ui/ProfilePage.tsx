@@ -103,8 +103,8 @@ export const ProfilePage = memo(() => {
       ) : null}
 
       {m.apiRole !== 'supplier' ? (
-        <div>
-          <h3 className={cn(BLOCK_TITLE_CLASS, 'ui-density-mb flex items-center gap-2')}>
+        <div className="ui-density-stack">
+          <h3 className={cn(BLOCK_TITLE_CLASS, 'flex items-center gap-2')}>
             <Award className="w-5 h-5 text-primary" />
             {t('profile.achievements')}
           </h3>
@@ -119,7 +119,7 @@ export const ProfilePage = memo(() => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.06 }}
               >
-                <Card className="flex h-[125px] w-[125px] flex-col items-center justify-center gap-2 p-3 text-center">
+                <Card className="flex h-32 w-32 flex-col items-center justify-center gap-2 p-3 text-center">
                   <div className="text-3xl leading-none">{a.emoji}</div>
                   <div className="text-sm font-medium leading-tight">{a.title}</div>
                   <p className="text-xs text-muted-foreground leading-tight">{a.value}</p>

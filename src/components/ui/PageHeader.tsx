@@ -75,14 +75,14 @@ export const PageHeader = ({
       )}
       style={sticky ? { zIndex: Z_INDEX.stickyHeader } : undefined}
     >
-      <div className="ui-app-frame">
+      <div className="ui-app-frame flex flex-col gap-3">
         {meta ? (
-          <div className="mb-1 font-mono-resta text-xs uppercase tracking-widest text-muted-foreground">
+          <div className="font-mono-resta text-xs uppercase tracking-widest text-muted-foreground">
             {meta}
           </div>
         ) : null}
 
-        <div className="flex min-h-[44px] items-center gap-2">
+        <div className="flex min-h-11 items-center gap-2">
           {LeadingIcon ? (
             <button
               type="button"
@@ -94,7 +94,7 @@ export const PageHeader = ({
             </button>
           ) : null}
 
-          <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             {title ? <h1 className={SCREEN_TITLE_CLASS}>{title}</h1> : null}
             {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
           </div>
@@ -104,7 +104,7 @@ export const PageHeader = ({
           ) : null}
         </div>
 
-        {progress ? <div className="mt-3">{progress}</div> : null}
+        {progress ? <div>{progress}</div> : null}
       </div>
     </header>
   )

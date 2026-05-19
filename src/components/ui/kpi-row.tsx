@@ -35,13 +35,17 @@ const TONE_CLASS: Record<NonNullable<KpiItem['tone']>, string> = {
  */
 export const KpiRow = ({ items, className }: KpiRowProps) => (
   <div
-    className={cn('grid gap-1.5', className)}
+    className={cn('grid gap-1', className)}
     style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
   >
     {items.map(({ id, value, label, tone = 'default' }) => (
-      <Card key={id} padding="none" className="rounded-xl border-border/40 px-2 py-2.5 text-center">
+      <Card
+        key={id}
+        padding="none"
+        className="flex flex-col gap-1 rounded-xl border-border/40 px-2 py-2.5 text-center"
+      >
         <div className={cn(KPI_VALUE_CLASS, TONE_CLASS[tone])}>{value}</div>
-        <div className={cn('mt-1', META_MONO_CLASS)}>{label}</div>
+        <div className={META_MONO_CLASS}>{label}</div>
       </Card>
     ))}
   </div>

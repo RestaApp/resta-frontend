@@ -85,7 +85,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
 
   return (
     <FormField label={t('profile.businessHours')}>
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <CompactTimeRow
           label={t('profile.weekdays', { defaultValue: 'Будни' })}
           enabled={weekdaysSummary.enabled}
@@ -120,7 +120,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
         />
 
         {(showDetailedDays || hasWeekdayCustomPattern) && (
-          <div className="space-y-1.5 rounded-xl border border-dashed border-border/60 p-2">
+          <div className="flex flex-col gap-1 rounded-xl border border-dashed border-border/60 p-2">
             {DAY_ORDER.map(day => {
               const row = parsed.schedule.find(item => item.day === day)
               if (!row) return null
@@ -182,7 +182,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
           })}
           disabled={disabled}
           rows={2}
-          className="resize-y min-h-[3.5rem]"
+          className="min-h-14 resize-y"
         />
       </div>
     </FormField>

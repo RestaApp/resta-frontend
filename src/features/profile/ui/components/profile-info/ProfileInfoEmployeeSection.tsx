@@ -46,9 +46,7 @@ export const ProfileInfoEmployeeSection = memo(
               'flex-col items-start justify-start gap-2 sm:flex-row sm:items-start sm:justify-between'
             )}
           >
-            <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-[8rem]')}>
-              {t('profile.skills')}
-            </span>
+            <span className={cn(LABEL_CLASS, 'min-w-0 sm:min-w-32')}>{t('profile.skills')}</span>
             <div className="flex w-full flex-wrap justify-end gap-2 min-w-0">
               {preparedSkills.map((skill, index) => (
                 <Badge key={`${skill}-${index}`} variant="tag">

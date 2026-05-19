@@ -53,7 +53,7 @@ export const BusinessAddressesField = ({
           : undefined
       }
     >
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {addresses.map((address, index) => (
           <div key={`address-${index}`} className="flex items-center gap-2">
             <Input

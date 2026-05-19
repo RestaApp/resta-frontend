@@ -63,7 +63,7 @@ export const Toast = memo(function Toast({
           style={{ zIndex: Z_INDEX.toast }}
           className={cn('fixed left-1/2 top-4 -translate-x-1/2', className)}
         >
-          <Card padding="md" className={cn('min-w-[280px] max-w-[90vw]', SHADOW_MODAL_CLASS)}>
+          <Card padding="md" className={cn('min-w-70 max-w-[90vw]', SHADOW_MODAL_CLASS)}>
             <div className="flex items-start gap-3">
               <div
                 className={cn(

@@ -134,7 +134,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({
         tabIndex={-1}
         padding="none"
         className={cn(
-          'relative z-10 outline-none rounded-2xl p-6 w-full max-w-md max-w-[90vw]',
+          'relative z-10 flex flex-col gap-4 outline-none rounded-2xl p-6 w-full max-w-md max-w-[90vw]',
           SHADOW_MODAL_CLASS,
           className
         )}
@@ -152,7 +152,7 @@ export const AlertDialogHeader = memo(function AlertDialogHeader({
 }: {
   children: React.ReactNode
 }) {
-  return <div className="mb-4">{children}</div>
+  return <div className="flex flex-col gap-2">{children}</div>
 })
 
 export const AlertDialogTitle = memo(function AlertDialogTitle({
@@ -166,7 +166,7 @@ export const AlertDialogTitle = memo(function AlertDialogTitle({
   const fallbackId = useId()
   const id = ctx?.titleId ?? fallbackId
   return (
-    <h2 id={id} className={cn(MODAL_TITLE_CLASS, 'mb-2', className)}>
+    <h2 id={id} className={cn(MODAL_TITLE_CLASS, className)}>
       {children}
     </h2>
   )
@@ -196,7 +196,7 @@ export const AlertDialogFooter = memo(function AlertDialogFooter({
   children: React.ReactNode
   className?: string
 }) {
-  return <div className={cn('flex gap-3 justify-end mt-6', className)}>{children}</div>
+  return <div className={cn('flex gap-3 justify-end', className)}>{children}</div>
 })
 
 export const AlertDialogAction = memo(function AlertDialogAction({

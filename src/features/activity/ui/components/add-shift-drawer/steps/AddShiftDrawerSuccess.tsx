@@ -10,7 +10,7 @@ export const AddShiftDrawerSuccess = () => {
         <CheckCircle2 className="w-9 h-9 text-success" strokeWidth={1.6} />
       </div>
       <p className="text-foreground font-semibold text-center mb-1">{t('shift.created')}</p>
-      <p className="text-muted-foreground text-sm text-center max-w-[320px]">
+      <p className="max-w-xs text-center text-sm text-muted-foreground">
         {t('shift.createdConfirmation')}
       </p>
     </div>

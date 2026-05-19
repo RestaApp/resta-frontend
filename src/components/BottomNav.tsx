@@ -39,7 +39,7 @@ export const BottomNav = ({
       <div className="ui-app-frame pointer-events-none">
         <div
           className={cn(
-            'pointer-events-auto relative mx-auto flex h-[60px] w-full max-w-[520px] items-center overflow-hidden rounded-full border border-border/60 bg-background/65 p-0.5 backdrop-blur-xl',
+            'pointer-events-auto relative mx-auto flex h-15 w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 bg-background/65 p-0.5 backdrop-blur-xl',
             tabs.length === 4 ? 'grid grid-cols-4' : 'grid grid-cols-2'
           )}
         >
@@ -70,14 +70,14 @@ export const BottomNav = ({
                 whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                 onClick={() => onTabChange(id)}
                 className={cn(
-                  'relative z-10 flex h-full min-h-[52px] flex-col items-center justify-center gap-[3px] rounded-full px-2 py-1',
+                  'relative z-10 flex h-full min-h-13 flex-col items-center justify-center gap-1 rounded-full px-2 py-1',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
                 )}
               >
-                <span className="relative flex h-[22px] w-[22px] items-center justify-center">
+                <span className="relative flex size-5.5 items-center justify-center">
                   <Icon
                     className={cn(
-                      'h-[22px] w-[22px] transition-colors',
+                      'size-5.5 transition-colors',
                       isActive ? 'text-primary' : 'text-muted-foreground'
                     )}
                     strokeWidth={isActive ? 2.5 : 2}

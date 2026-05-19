@@ -41,7 +41,7 @@ export const MultiSelectSpecializations = ({
 
   return (
     <Field label={label} hint={hint} error={error}>
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         {isLoading ? (
           <div className="flex items-center gap-2 py-2">
             <Loader size="sm" />

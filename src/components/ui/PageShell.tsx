@@ -51,10 +51,10 @@ export const PageShell = ({
   //   • ничего                 → safe-area
   const bottomPaddingClass = bottomNav
     ? stickyCTA
-      ? 'pb-[168px]'
-      : 'pb-[96px]'
+      ? 'pb-42'
+      : 'pb-24'
     : stickyCTA
-      ? 'pb-[96px]'
+      ? 'pb-24'
       : 'pb-safe'
 
   return (

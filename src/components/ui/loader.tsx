@@ -36,7 +36,7 @@ export const Loader = memo(function Loader({ size = 'md', className }: LoaderPro
           }}
         />
         <motion.div
-          className="absolute inset-[2px] rounded-full border-2 border-transparent border-r-primary"
+          className="absolute inset-0.5 rounded-full border-2 border-transparent border-r-primary"
           animate={{ rotate: -360 }}
           transition={{
             duration: 1.2,

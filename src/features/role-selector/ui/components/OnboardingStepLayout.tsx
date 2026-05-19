@@ -49,8 +49,8 @@ export const OnboardingSection = memo(function OnboardingSection({
   className,
 }: OnboardingSectionProps) {
   return (
-    <section className={cn('max-w-md w-full', className)}>
-      <div className="mb-2 flex items-center justify-between gap-2">
+    <section className={cn('flex w-full max-w-md flex-col gap-2', className)}>
+      <div className="flex items-center justify-between gap-2">
         <div className={META_MONO_CLASS}>{label}</div>
         {hint ? <div className="text-sm text-muted-foreground">{hint}</div> : null}
       </div>
