@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import {
   APP_HEADER_ACTION_BUTTON_CLASS,
   APP_HEADER_ACTION_ICON_CLASS,
-  APP_HEADER_TITLE_CLASS,
+  SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
 import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
@@ -168,16 +168,16 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
         animate={{ y: 0, opacity: 1 }}
         className={cn(
           'flex items-center bg-background/95 backdrop-blur-xl ui-density-page ui-density-py-sm',
-          'border-b border-[var(--surface-stroke-soft)]'
+          'border-b border-border'
         )}
       >
         <div className="ui-app-frame flex min-h-12 items-center justify-between gap-3">
-          <h1 className={APP_HEADER_TITLE_CLASS}>{title}</h1>
+          <h1 className={SCREEN_TITLE_CLASS}>{title}</h1>
 
           {action ? (
             <Button
               ref={actionButtonRef}
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={action.onClick}
               aria-label={action.ariaLabel}

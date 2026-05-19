@@ -3,11 +3,8 @@ import { Tabs } from '@/components/ui/tabs'
 import { SearchFilters } from './SearchFilters'
 import type { FeedType } from '../../model/types'
 import type { TabOption } from '@/components/ui/tabs'
-import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { getRoleTheme } from '@/shared/lib/role-theme'
+import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import { cn } from '@/utils/cn'
 
 type Props = {
   options: TabOption<FeedType>[]
@@ -20,9 +17,6 @@ type Props = {
 export const FeedHeader = memo((props: Props) => {
   const { options, feedType, onChangeFeedType, activeFiltersList, onResetFilters } = props
 
-  const selectedRole = useAppSelector(selectSelectedRole)
-  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
-
   return (
     <div
       className="top-0 border-border/50 bg-background/95 backdrop-blur-sm transition-all"
@@ -33,8 +27,8 @@ export const FeedHeader = memo((props: Props) => {
           options={options}
           activeId={feedType}
           onChange={onChangeFeedType}
-          activeIndicatorClassName={cn('shadow-sm', roleTheme.classes.bg)}
-          activeTriggerClassName={roleTheme.classes.textOn}
+          activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
+          activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
         />
       </div>
 

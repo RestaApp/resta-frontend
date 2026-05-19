@@ -59,7 +59,6 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
       totalSteps={3}
       title={t('roles.positionScreenTitle')}
       subtitle={t('roles.positionScreenDescription')}
-      tone="employee"
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT}
     >
       <OnboardingSection
@@ -78,7 +77,6 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
             const subRole = visibleRoles.find(role => role.id === id)
             return t('aria.selectType', { label: subRole?.title ?? id })
           }}
-          tone="employee"
           size="lg"
         />
       </OnboardingSection>
@@ -93,17 +91,11 @@ export const PositionSelectionScreen = memo(function PositionSelectionScreen({
           onToggle={onSpecializationToggle}
           getLabel={getSpecializationLabel}
           getAriaLabel={(_, label) => t('aria.selectSpecialization', { label })}
-          tone="employee"
           size="lg"
         />
       </OnboardingSection>
 
-      <OnboardingBottomCta
-        onClick={onContinue}
-        disabled={!selectedSubRole}
-        tone="employee"
-        showFillLaterHint
-      >
+      <OnboardingBottomCta onClick={onContinue} disabled={!selectedSubRole} showFillLaterHint>
         {t('roles.continuePosition')}
       </OnboardingBottomCta>
     </OnboardingStepLayout>

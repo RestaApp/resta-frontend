@@ -17,8 +17,6 @@ import {
 } from '../../OnboardingBottomCta'
 import { OnboardingSection, OnboardingStepLayout } from '../../OnboardingStepLayout'
 
-type FormScreenTone = 'primary' | 'employee' | 'restaurant' | 'supplier'
-
 interface FormScreenData {
   name: string
   type: string | null
@@ -47,8 +45,6 @@ interface FormScreenProps {
   totalSteps?: number
   /** Доп. карточка-плашка под формой (например, DIRECT-режим / PRO trial) */
   footerCard?: ReactNode
-  /** Цвет роли для активных тегов и CTA. */
-  tone?: FormScreenTone
   /** Скрыть поле названия (если оно уже введено ранее). */
   hideName?: boolean
   /** Скрыть поле города (если уже введён на предыдущем шаге). */
@@ -74,7 +70,6 @@ export const FormScreen = memo(function FormScreen({
   step,
   totalSteps,
   footerCard,
-  tone = 'primary',
   hideName = false,
   hideCity = false,
 }: FormScreenProps) {
@@ -123,7 +118,6 @@ export const FormScreen = memo(function FormScreen({
       totalSteps={totalSteps ?? 1}
       title={title}
       subtitle={description}
-      tone={tone}
       bottomSpace={
         showFillLaterHint ? ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT : ONBOARDING_BOTTOM_CTA_SPACE
       }
@@ -160,7 +154,6 @@ export const FormScreen = memo(function FormScreen({
               onToggle={handleTypeToggle}
               getLabel={getTypeLabel}
               getAriaLabel={(_, label) => t('aria.selectType', { label })}
-              tone={tone}
               size="lg"
             />
           </OnboardingSection>
@@ -196,7 +189,6 @@ export const FormScreen = memo(function FormScreen({
       <OnboardingBottomCta
         onClick={handleContinue}
         disabled={!isFormValid}
-        tone={tone}
         ariaLabel={continueButtonAriaLabel}
         showFillLaterHint={showFillLaterHint}
       >

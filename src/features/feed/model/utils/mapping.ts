@@ -189,8 +189,7 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     currency: 'BYN',
     payPeriod: resolvePayPeriodFromVacancy(item),
     shiftType: item.shift_type,
-    location:
-      item.shift_type === 'vacancy' ? undefined : normalizeApiLocation(item.location),
+    location: item.shift_type === 'vacancy' ? undefined : normalizeApiLocation(item.location),
     urgent: Boolean(item.urgent),
     applicationId: null,
     ownerId: item.user?.id ?? null,

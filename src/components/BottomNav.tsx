@@ -4,115 +4,106 @@ import { motion, useReducedMotion } from 'motion/react'
 import { getTabsForRole } from '@/constants/tabs'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { UiRole, Tab } from '@/types'
-import { getRoleTheme } from '@/shared/lib/role-theme'
 import { cn } from '@/utils/cn'
 
 interface BottomNavProps {
   activeTab: Tab
   onTabChange: (tab: Tab) => void
   role: UiRole
-  layoutId?: string
   hasIncompleteProfile?: boolean
 }
-
-const focusRingFromRoleRing = (ringClass: string) =>
-  ringClass.replace(/^ring-/, 'focus-visible:ring-')
 
 export const BottomNav = ({
   activeTab,
   onTabChange,
   role,
-  layoutId = 'bottom-nav-active-tab',
   hasIncompleteProfile = false,
 }: BottomNavProps) => {
   const { t } = useTranslation()
   const tabs = useMemo(() => getTabsForRole(role), [role])
-  const roleTheme = getRoleTheme(role)
   const reduceMotion = useReducedMotion()
-  const activeColorClass = roleTheme.classes.text
-  const activeDotClass = roleTheme.classes.bg
-  const focusRingClass = focusRingFromRoleRing(roleTheme.classes.ring)
+  const activeIndex = Math.max(
+    tabs.findIndex(tab => tab.id === activeTab),
+    0
+  )
 
   return (
     <nav
       aria-label={t('nav.bottomNav')}
       style={{
         zIndex: Z_INDEX.bottomNav,
-        paddingBottom: 'var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom))',
+        paddingBottom: 'calc(var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)) + 12px)',
       }}
-      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/92 backdrop-blur-xl"
+      className="fixed bottom-0 left-0 right-0 px-2.5"
     >
-      <div
-        className={cn(
-          'ui-app-frame grid items-center px-1.5 pt-1.5 pb-2',
-          tabs.length === 4 ? 'grid-cols-4' : 'grid-cols-2'
-        )}
-      >
-        {tabs.map(({ id, icon: Icon, label }) => {
-          const isActive = activeTab === id
-          const showProfileDot = id === 'profile' && hasIncompleteProfile
-          const labelText = t(label)
-          const ariaLabel = showProfileDot
-            ? `${labelText}. ${t('nav.fillProfileRequired')}`
-            : labelText
+      <div className="ui-app-frame pointer-events-none">
+        <div
+          className={cn(
+            'pointer-events-auto relative mx-auto flex h-[60px] w-full max-w-[520px] items-center overflow-hidden rounded-full border border-border/60 bg-background/65 p-0.5 backdrop-blur-xl',
+            tabs.length === 4 ? 'grid grid-cols-4' : 'grid grid-cols-2'
+          )}
+        >
+          <motion.span
+            className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-elevated/95 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18),inset_0_-1px_1px_rgba(0,0,0,0.2)]"
+            style={{ width: `${100 / tabs.length}%` }}
+            animate={{ x: `${activeIndex * 100}%` }}
+            transition={
+              reduceMotion ? { duration: 0 } : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }
+            }
+            aria-hidden="true"
+          />
 
-          return (
-            <motion.button
-              key={id}
-              type="button"
-              aria-label={ariaLabel}
-              aria-current={isActive ? 'page' : undefined}
-              whileTap={reduceMotion ? undefined : { scale: 0.95 }}
-              onClick={() => onTabChange(id)}
-              className={cn(
-                'relative flex min-h-[52px] flex-col items-center justify-center gap-[3px] rounded-md px-2 py-1',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                focusRingClass
-              )}
-            >
-              <span className="relative flex h-[22px] w-[22px] items-center justify-center">
-                <Icon
-                  className={cn(
-                    'h-[22px] w-[22px] transition-colors',
-                    isActive ? activeColorClass : 'text-muted-foreground'
-                  )}
-                  strokeWidth={isActive ? 2.5 : 2}
-                  aria-hidden="true"
-                />
+          {tabs.map(({ id, icon: Icon, label }) => {
+            const isActive = activeTab === id
+            const showProfileDot = id === 'profile' && hasIncompleteProfile
+            const labelText = t(label)
+            const ariaLabel = showProfileDot
+              ? `${labelText}. ${t('nav.fillProfileRequired')}`
+              : labelText
 
-                {isActive && (
-                  <motion.span
-                    layoutId={layoutId}
-                    className={cn('absolute -top-[7px] h-1.5 w-4 rounded-[4px]', activeDotClass)}
-                    transition={
-                      reduceMotion ? { duration: 0 } : { duration: 0.28, ease: 'easeOut' }
-                    }
-                    aria-hidden="true"
-                  />
-                )}
-
-                {showProfileDot && (
-                  <span
-                    className={cn(
-                      'absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background',
-                      activeDotClass
-                    )}
-                    aria-hidden="true"
-                  />
-                )}
-              </span>
-
-              <span
+            return (
+              <motion.button
+                key={id}
+                type="button"
+                aria-label={ariaLabel}
+                aria-current={isActive ? 'page' : undefined}
+                whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+                onClick={() => onTabChange(id)}
                 className={cn(
-                  'text-[9px] font-semibold uppercase leading-none tracking-[0.04em] transition-colors',
-                  isActive ? activeColorClass : 'text-muted-foreground'
+                  'relative z-10 flex h-full min-h-[52px] flex-col items-center justify-center gap-[3px] rounded-full px-2 py-1',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
                 )}
               >
-                {labelText}
-              </span>
-            </motion.button>
-          )
-        })}
+                <span className="relative flex h-[22px] w-[22px] items-center justify-center">
+                  <Icon
+                    className={cn(
+                      'h-[22px] w-[22px] transition-colors',
+                      isActive ? 'text-primary' : 'text-muted-foreground'
+                    )}
+                    strokeWidth={isActive ? 2.5 : 2}
+                    aria-hidden="true"
+                  />
+
+                  {showProfileDot && (
+                    <span
+                      className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-primary"
+                      aria-hidden="true"
+                    />
+                  )}
+                </span>
+
+                <span
+                  className={cn(
+                    'text-xs font-semibold uppercase leading-none tracking-[0.04em] transition-colors',
+                    isActive ? 'text-primary' : 'text-muted-foreground'
+                  )}
+                >
+                  {labelText}
+                </span>
+              </motion.button>
+            )
+          })}
+        </div>
       </div>
     </nav>
   )

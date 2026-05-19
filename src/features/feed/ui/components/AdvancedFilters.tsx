@@ -6,9 +6,7 @@ import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
 import type { AdvancedFiltersData } from '@/features/feed/model/types'
-import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { getRoleKind, getRoleTheme } from '@/shared/lib/role-theme'
+import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 
 interface AdvancedFiltersProps {
@@ -32,6 +30,7 @@ export const AdvancedFilters = ({
     overlayClassName="bg-[rgba(5,7,14,0.78)] backdrop-blur-[2px]"
   >
     <AdvancedFiltersSheet
+      key={isOpen ? JSON.stringify(initialFilters ?? null) : 'closed'}
       onClose={onClose}
       onApply={onApply}
       initialFilters={initialFilters}
@@ -40,10 +39,9 @@ export const AdvancedFilters = ({
   </Drawer>
 )
 
-const SHEET_SURFACE_CLASS = 'bg-background dark:bg-[var(--drawer-surface)]'
+const SHEET_SURFACE_CLASS = 'bg-background dark:bg-card'
 
-const SECTION_LABEL_CLASS =
-  'text-micro font-semibold uppercase tracking-widest text-muted-foreground'
+const SECTION_LABEL_CLASS = 'text-xs font-semibold uppercase tracking-widest text-muted-foreground'
 
 const FilterSectionLabel = ({ children }: { children: React.ReactNode }) => (
   <p className={SECTION_LABEL_CLASS}>{children}</p>
@@ -57,11 +55,6 @@ const AdvancedFiltersSheet = ({
 }: Omit<AdvancedFiltersProps, 'isOpen'>) => {
   const { t } = useTranslation()
   const { getSpecializationLabel } = useLabels()
-  const selectedRole = useAppSelector(selectSelectedRole)
-  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
-  const roleKind = getRoleKind(selectedRole ?? 'employee')
-  const tagTone = roleKind
-
   const c = useAdvancedFiltersSheet({
     initialFilters: initialFilters || null,
     onApply,
@@ -80,18 +73,13 @@ const AdvancedFiltersSheet = ({
           SHEET_SURFACE_CLASS
         )}
       >
-        <h2 className="font-display text-xl font-semibold leading-tight tracking-tight">
-          {t('feed.filters')}
-        </h2>
+        <h2 className={MODAL_TITLE_CLASS}>{t('feed.filters')}</h2>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={c.handleReset}
             disabled={!c.hasActiveFilters}
-            className={cn(
-              'text-sm font-medium transition-opacity disabled:opacity-40',
-              roleTheme.classes.text
-            )}
+            className="text-sm font-medium text-primary transition-opacity disabled:opacity-40"
           >
             {t('feed.resetFiltersSheet')}
           </button>
@@ -114,7 +102,6 @@ const AdvancedFiltersSheet = ({
                     isSelected={c.selectedPosition === positionValue}
                     onClick={() => c.handlePositionSelect(positionValue)}
                     ariaLabel={t('aria.selectPosition', { label: position.title })}
-                    tone={tagTone}
                   />
                 )
               })}
@@ -136,7 +123,6 @@ const AdvancedFiltersSheet = ({
                   ariaLabel={t('aria.selectSpecialization', {
                     label: getSpecializationLabel(specialization),
                   })}
-                  tone={tagTone}
                 />
               ))}
             </div>
@@ -153,8 +139,6 @@ const AdvancedFiltersSheet = ({
             clearOnFocus
             hideLabel
             isLoading={false}
-            focusAccentClass={roleTheme.classes.inputFocus}
-            focusRoleCssVar={roleTheme.cssVar}
           />
         </div>
       </div>
@@ -164,13 +148,7 @@ const AdvancedFiltersSheet = ({
           type="button"
           variant="ghost"
           size="md"
-          className={cn(
-            'w-full min-w-0 border-0 font-semibold shadow-sm hover:opacity-95',
-            roleTheme.classes.bg,
-            roleTheme.classes.textOn,
-            roleTheme.classes.solidHover,
-            roleTheme.classes.ring
-          )}
+          className="w-full min-w-0 border-0 bg-primary font-semibold text-primary-foreground shadow-sm ring-primary hover:bg-primary/92 hover:opacity-95 active:bg-primary/85"
           onClick={handleShowResults}
         >
           {isVacancy ? t('feed.showVacanciesCta') : t('feed.showShiftsCount')}

@@ -74,7 +74,7 @@ export const TimeField = ({ label, value, onChange, error }: TimeFieldProps) => 
             if (normalized === null) return
             onChange(normalized)
           }}
-          className="pl-11 py-0 leading-none text-[16px] [appearance:none] [-webkit-appearance:none]"
+          className="pl-11 py-0 leading-none text-base [appearance:none] [-webkit-appearance:none]"
           aria-invalid={!!error}
         />
       </div>

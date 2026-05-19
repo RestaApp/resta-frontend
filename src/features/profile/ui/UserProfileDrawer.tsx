@@ -145,7 +145,7 @@ export const UserProfileDrawer = memo(
           >
             <DrawerHeader className="pb-2 border-b border-border shrink-0">
               <div className="flex items-center justify-between gap-2">
-                <DrawerTitle className="text-lg font-semibold">{drawerTitle}</DrawerTitle>
+                <DrawerTitle>{drawerTitle}</DrawerTitle>
                 <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
               </div>
             </DrawerHeader>

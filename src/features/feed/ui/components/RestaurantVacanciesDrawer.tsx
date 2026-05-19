@@ -157,10 +157,7 @@ export const RestaurantVacanciesDrawer = ({
     listContent = <FeedCardSkeletonList />
   } else if (!isInitialLoading && shifts.length === 0) {
     listContent = (
-      <EmptyState
-        message={t('feed.noVacancies')}
-        description={t('feed.noVacanciesDescription')}
-      />
+      <EmptyState message={t('feed.noVacancies')} description={t('feed.noVacanciesDescription')} />
     )
   } else if (shifts.length > 0) {
     listContent = (

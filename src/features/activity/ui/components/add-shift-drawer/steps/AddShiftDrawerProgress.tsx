@@ -18,7 +18,7 @@ export const AddShiftDrawerProgress = ({
         </p>
         <p className="text-sm font-medium">{stepTitle}</p>
       </div>
-      <div className="h-1 w-full rounded-full bg-muted">
+      <div className="h-1 w-full rounded-full bg-secondary">
         <div
           className="h-1 rounded-full bg-primary transition-[width]"
           style={{ width: progress }}

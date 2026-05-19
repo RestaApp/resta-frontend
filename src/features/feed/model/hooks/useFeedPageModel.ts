@@ -17,7 +17,11 @@ import { useDeleteShift } from '@/features/activity/model/hooks/useShifts'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
 import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
-import { formatFiltersForDisplay, hasActiveFilters, normalizeAdvancedFilters } from '@/utils/filters'
+import {
+  formatFiltersForDisplay,
+  hasActiveFilters,
+  normalizeAdvancedFilters,
+} from '@/utils/filters'
 import { vacancyToShift } from '../utils/mapping'
 
 import { Briefcase, Flame } from 'lucide-react'
@@ -207,10 +211,7 @@ export const useFeedPageModel = () => {
     ]
   )
 
-  const hasActiveFiltersFlag = useMemo(
-    () => hasActiveFilters(advancedFilters),
-    [advancedFilters]
-  )
+  const hasActiveFiltersFlag = useMemo(() => hasActiveFilters(advancedFilters), [advancedFilters])
 
   const activeFiltersList = useMemo(
     () => formatFiltersForDisplay(advancedFilters),

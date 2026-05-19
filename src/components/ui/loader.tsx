@@ -1,9 +1,6 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '@/utils/cn'
-import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { getRoleLoaderClasses } from '@/shared/lib/role-theme'
 
 interface LoaderProps {
   size?: 'sm' | 'md' | 'lg'
@@ -17,11 +14,8 @@ const SIZE_CLASSES: Record<NonNullable<LoaderProps['size']>, string> = {
 }
 
 export const Loader = memo(function Loader({ size = 'md', className }: LoaderProps) {
-  const selectedRole = useAppSelector(selectSelectedRole)
-  const spin = getRoleLoaderClasses(selectedRole ?? 'employee')
-
   return (
-    <div className={cn('flex items-center justify-center', className)}>
+    <motion.div className={cn('flex items-center justify-center', className)}>
       <motion.div
         className={cn('relative', SIZE_CLASSES[size])}
         animate={{ rotate: 360 }}
@@ -31,12 +25,9 @@ export const Loader = memo(function Loader({ size = 'md', className }: LoaderPro
           ease: 'linear',
         }}
       >
-        <div className={cn('absolute inset-0 rounded-full border-2', spin.track)} />
+        <motion.div className="absolute inset-0 rounded-full border-2 border-primary/20" />
         <motion.div
-          className={cn(
-            'absolute inset-0 rounded-full border-2 border-transparent',
-            spin.borderTop
-          )}
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary"
           animate={{ rotate: 360 }}
           transition={{
             duration: 0.8,
@@ -45,10 +36,7 @@ export const Loader = memo(function Loader({ size = 'md', className }: LoaderPro
           }}
         />
         <motion.div
-          className={cn(
-            'absolute inset-[2px] rounded-full border-2 border-transparent',
-            spin.borderRight
-          )}
+          className="absolute inset-[2px] rounded-full border-2 border-transparent border-r-primary"
           animate={{ rotate: -360 }}
           transition={{
             duration: 1.2,
@@ -57,6 +45,6 @@ export const Loader = memo(function Loader({ size = 'md', className }: LoaderPro
           }}
         />
       </motion.div>
-    </div>
+    </motion.div>
   )
 })

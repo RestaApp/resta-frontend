@@ -55,7 +55,7 @@ className="text-success bg-success/10"
 
 // ❌ запрещено
 className="bg-[#141418] text-[#F5F5F7]"
-className="bg-[var(--surface-subtle)]"           // legacy, удалено
+// legacy arbitrary bg через --surface-subtle (удалено)
 className="bg-emp border-emp"                    // legacy → primary
 ```
 
@@ -147,7 +147,7 @@ ESLint правило `no-restricted-syntax` блокирует:
 | `text-[Npx]` (вне allowlist 9/16/36/52) | Шкала Tailwind: `text-xs` / `text-sm` / `text-base` / `text-lg` / `text-xl` / `text-2xl` / `text-3xl` / `text-4xl` |
 | `text-body-*`, `text-meta`, `text-micro`, `text-title-*`, `text-display*` | Удалённые кастомные токены → ближайший Tailwind (см. §2.2) |
 | `bg-[#hex]` | `bg-primary` / `bg-card` / `bg-secondary` / `bg-success/10` |
-| `bg-[var(--surface-*)]` | `bg-secondary` / `bg-elevated` / `border-border` |
+| legacy `--surface-*` arbitrary bg | `bg-secondary` / `bg-elevated` / `border-border` |
 | `z-[N]` | `style={{ zIndex: Z_INDEX.modal }}` (см. [`src/shared/ui/zIndex.ts`](src/shared/ui/zIndex.ts)) |
 | `!important` (вне `motion-reduce:`) | Расширь API примитива через `variant` |
 | `rounded-[Npx]` (вне allowlist 4px/2rem) | `rounded-sm` (10) / `rounded-md` (12) / `rounded-lg` (14) / `rounded-xl` (18) / `rounded-2xl` (20) |

@@ -7,9 +7,9 @@ import { Loader } from '@/components/ui/loader'
  * Все размеры удовлетворяют WCAG 2.5.5 touch target ≥ 44 px.
  */
 const SIZE_CLASSES = {
-  sm: 'h-11 px-3 text-body-sm',
-  md: 'h-12 px-4 text-body-md',
-  lg: 'h-[52px] px-5 text-body-lg',
+  sm: 'h-11 px-3 text-xs',
+  md: 'h-12 px-4 text-sm',
+  lg: 'h-[52px] px-5 text-sm',
 } as const
 
 const LOADER_SLOT = {
@@ -19,17 +19,15 @@ const LOADER_SLOT = {
 } as const
 
 const VARIANT_CLASSES = {
-  /** Primary — terracotta solid. Only this gets solid fill per spec. */
+  /** Primary — сплошная заливка brand-цветом. */
   primary:
-    'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-[0_12px_32px_rgba(255,107,44,0.28)]',
+    'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-[var(--shadow-primary-cta)]',
   /** Secondary — outline, no fill */
-  secondary:
-    'border border-border bg-[var(--surface-subtle)] text-foreground hover:bg-[var(--surface-raised)]',
+  secondary: 'border border-border bg-secondary text-foreground hover:bg-elevated',
   /** Outline — same as secondary */
-  outline: 'border border-border bg-transparent text-foreground hover:bg-[var(--surface-subtle)]',
-  /** Ghost — text only, terracotta color */
-  ghost:
-    'bg-transparent text-muted-foreground hover:bg-[var(--surface-subtle)] hover:text-foreground',
+  outline: 'border border-border bg-transparent text-foreground hover:bg-secondary',
+  /** Ghost — без заливки, при hover — secondary. */
+  ghost: 'bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground',
   /** Destructive — soft red. */
   destructive:
     'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
@@ -37,15 +35,15 @@ const VARIANT_CLASSES = {
   danger: 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
   /** Success — зелёный solid CTA (например, «Нанять на смену»). */
   success:
-    'bg-success text-white hover:bg-success/90 active:bg-success/80 shadow-[0_12px_32px_rgba(62,201,126,0.25)]',
+    'bg-success text-white hover:bg-success/90 active:bg-success/80 shadow-[var(--shadow-success-cta)]',
   /** Telegram Stars — золотой gradient (для платных шагов и paywall CTA). */
   stars:
-    'bg-[image:var(--gradient-stars)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[0_12px_32px_rgba(245,177,66,0.28)]',
-  /** Gradient alias → solid primary (terracotta) */
+    'bg-[image:var(--gradient-stars)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[var(--shadow-stars-cta)]',
+  /** Gradient CTA — primary gradient. */
   gradient:
-    'bg-[image:var(--gradient-primary)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[0_12px_32px_rgba(255,107,44,0.28)]',
+    'bg-[image:var(--gradient-primary)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[var(--shadow-primary-cta)]',
   gradientPressed:
-    'bg-muted text-foreground/60 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
+    'bg-secondary text-foreground/60 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
 } as const
 
 export type ButtonProps = {

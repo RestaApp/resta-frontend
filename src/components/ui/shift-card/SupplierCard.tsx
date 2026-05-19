@@ -4,6 +4,14 @@ import { MapPin, Phone, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/cn'
+import {
+  SHIFT_CARD_CLASS,
+  SHIFT_CARD_INTERACTIVE_CLASS,
+  SHIFT_CARD_LOGO_CLASS,
+  SHIFT_CARD_META_CLASS,
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 
 export interface SupplierCardData {
   id: number
@@ -88,20 +96,16 @@ const SupplierCardComponent = ({
           onOpenDetails(supplier.id)
         }
       }}
-      className={cn(
-        'shift-compact-card group relative cursor-pointer transition-all duration-200 active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'hover:[box-shadow:var(--surface-shadow-soft)]',
-        'hover:border-[var(--surface-stroke-soft-hover)] dark:shadow-none'
-      )}
+      className={cn(SHIFT_CARD_CLASS, SHIFT_CARD_INTERACTIVE_CLASS, 'relative dark:shadow-none')}
     >
       {!isRestaurantsMode ? (
-        <div className="absolute right-[13px] top-[13px]">
+        <div className="absolute right-3 top-3">
           <span
             className={cn(
               'relative inline-flex h-8 w-8 items-center justify-center rounded-md border',
               supplier.deliveryAvailable
                 ? 'text-primary border-primary/30 bg-primary/10'
-                : 'text-muted-foreground border-border bg-muted/30'
+                : 'text-muted-foreground border-border bg-secondary/30'
             )}
             title={
               supplier.deliveryAvailable == null
@@ -130,7 +134,7 @@ const SupplierCardComponent = ({
       ) : null}
 
       <div className="flex items-start gap-[10px]">
-        <Avatar className="shift-compact-logo shrink-0 self-start p-0">
+        <Avatar className={cn(SHIFT_CARD_LOGO_CLASS, 'shrink-0 self-start p-0')}>
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
           <AvatarFallback className="bg-primary text-primary-foreground text-sm font-extrabold">
             {supplier.name.charAt(0).toUpperCase()}
@@ -138,10 +142,10 @@ const SupplierCardComponent = ({
         </Avatar>
 
         <div className={cn('min-w-0 flex-1', !isRestaurantsMode && 'pr-9')}>
-          <p className="shift-compact-title truncate">{supplier.name}</p>
-          <p className="shift-compact-sub truncate">{subtitleText}</p>
+          <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{supplier.name}</p>
+          <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{subtitleText}</p>
 
-          <div className="shift-compact-meta">
+          <div className={SHIFT_CARD_META_CLASS}>
             <p className="inline-flex min-w-0 items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 shrink-0" />
               <span className="min-w-0 flex items-center gap-1.5">
@@ -149,7 +153,7 @@ const SupplierCardComponent = ({
                 {extraLocationsLabel ? (
                   <Badge
                     variant="tag"
-                    className="shrink-0 px-1.5 py-0 text-meta font-bold text-primary border-primary/30 bg-primary/10"
+                    className="shrink-0 px-1.5 py-0 text-xs font-bold text-primary border-primary/30 bg-primary/10"
                   >
                     {extraLocationsLabel}
                   </Badge>

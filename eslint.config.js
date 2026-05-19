@@ -66,7 +66,7 @@ export default defineConfig([
         {
           selector: `JSXAttribute[name.name='className'] Literal[value=/text-\\[\\d+(?:\\.\\d+)?(?:px|rem)\\]/]:not([value=/${TEXT_SIZE_ALLOWLIST_REGEX.source.replace(/\//g, '')}/])`,
           message:
-            'Arbitrary text size запрещён. Используйте typography‑токены: text-micro/-meta/-body-sm/-body-md/-body-lg/-title-sm/-title-md/-display/-display-lg.',
+            'Arbitrary text size запрещён. Используйте шкалу Tailwind: text-xs, text-sm, text-base, text-lg, text-xl, text-2xl, …',
         },
         // bg-[#hex]
         {

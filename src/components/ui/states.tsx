@@ -2,8 +2,11 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AlertTriangle, CheckCircle2, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Callout } from '@/components/ui/callout'
 import { Loader } from '@/components/ui/loader'
+import { STATE_TITLE_CLASS, SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
 
 /**
  * Общесистемные состояния страниц (BOARD-10 в Resta Production).
@@ -33,7 +36,7 @@ export const LoadingState = ({ message, className }: LoadingStateProps) => {
       aria-live="polite"
     >
       <Loader size="lg" />
-      <p className="text-body-md text-muted-foreground text-center">
+      <p className="text-sm text-muted-foreground text-center">
         {message ?? t('common.loading', { defaultValue: 'Загружаем…' })}
       </p>
     </div>
@@ -70,11 +73,11 @@ export const ErrorState = ({
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
         <AlertTriangle className="h-7 w-7 text-destructive" aria-hidden />
       </div>
-      <p className="text-title-sm font-semibold text-foreground">
+      <p className={SUBSECTION_TITLE_CLASS}>
         {title ?? t('common.error', { defaultValue: 'Не удалось загрузить' })}
       </p>
       {description ? (
-        <p className="max-w-[300px] text-body-md text-muted-foreground">{description}</p>
+        <p className="max-w-[300px] text-sm text-muted-foreground">{description}</p>
       ) : null}
       {onRetry ? (
         <Button variant="secondary" size="md" onClick={onRetry} className="mt-2">
@@ -115,9 +118,9 @@ export const SuccessState = ({
     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/15">
       <CheckCircle2 className="h-8 w-8 text-success" aria-hidden />
     </div>
-    <p className="text-title-md font-extrabold text-foreground">{title}</p>
+    <p className={STATE_TITLE_CLASS}>{title}</p>
     {description ? (
-      <p className="max-w-[320px] text-body-md text-muted-foreground">{description}</p>
+      <p className="max-w-[320px] text-sm text-muted-foreground">{description}</p>
     ) : null}
     {primaryAction || secondaryAction ? (
       <div className="mt-2 flex flex-col items-stretch gap-2 w-full max-w-[280px]">
@@ -154,20 +157,21 @@ export const AccessLockedState = ({
   icon,
   className,
 }: AccessLockedStateProps) => (
-  <div
-    className={`flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-6 text-center ${className ?? ''}`}
+  <Card
     role="region"
     aria-label={title}
+    padding="none"
+    className={cn('flex flex-col items-center gap-3 rounded-2xl p-6 text-center', className)}
   >
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-subtle)]">
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
       {icon ?? <Lock className="h-6 w-6 text-muted-foreground" aria-hidden />}
     </div>
-    <p className="text-title-sm font-semibold text-foreground">{title}</p>
+    <p className={SUBSECTION_TITLE_CLASS}>{title}</p>
     {description ? (
-      <p className="max-w-[320px] text-body-md text-muted-foreground">{description}</p>
+      <p className="max-w-[320px] text-sm text-muted-foreground">{description}</p>
     ) : null}
     {cta ? <div className="mt-1 w-full max-w-[280px]">{cta}</div> : null}
-  </div>
+  </Card>
 )
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -189,16 +193,16 @@ export const DirectPaymentInfo = ({ title, description, className }: DirectPayme
   const { t } = useTranslation()
   return (
     <Callout tone="direct" className={className}>
-      <p className="text-meta font-semibold uppercase tracking-wider text-success">
+      <p className="text-xs font-semibold uppercase tracking-wider text-success">
         {t('payments.directBadge', { defaultValue: 'DIRECT' })}
       </p>
-      <p className="mt-1 text-body-md leading-snug text-foreground">
+      <p className="mt-1 text-sm leading-snug text-foreground">
         {title ??
           t('payments.directTitle', {
             defaultValue: 'Resta не удерживает деньги — оплата напрямую между сторонами.',
           })}
       </p>
-      {description ? <p className="mt-1 text-meta text-muted-foreground">{description}</p> : null}
+      {description ? <p className="mt-1 text-xs text-muted-foreground">{description}</p> : null}
     </Callout>
   )
 }

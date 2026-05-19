@@ -15,7 +15,7 @@ const TONE_CLASSES = {
   destructive: 'border-destructive/30 bg-destructive/8',
   /** Alias to `destructive` per spec naming. */
   danger: 'border-destructive/30 bg-destructive/8',
-  info: 'border-emp/30 bg-emp/8',
+  info: 'border-border bg-secondary',
   neutral: 'border-border bg-card',
   /**
    * DIRECT — Resta не удерживает деньги. Зелёный, но с акцентом на
@@ -23,7 +23,7 @@ const TONE_CLASSES = {
    */
   direct: 'border-success/40 bg-success/10',
   /** PRO — фиолетовый gradient soft под фоном `--gradient-pro`. */
-  pro: 'border-[rgba(179,140,255,0.4)] bg-[linear-gradient(160deg,rgba(179,140,255,0.12),transparent)]',
+  pro: 'border-pro-border bg-[linear-gradient(160deg,var(--pro-soft),transparent)]',
 } as const
 
 export type CalloutTone = keyof typeof TONE_CLASSES
@@ -44,7 +44,7 @@ export const Callout = ({ children, tone = 'info', icon, className }: CalloutPro
           {icon}
         </span>
       ) : null}
-      <div className="flex-1 text-meta leading-snug text-muted-foreground">{children}</div>
+      <div className="flex-1 text-xs leading-snug text-muted-foreground">{children}</div>
     </div>
   </div>
 )

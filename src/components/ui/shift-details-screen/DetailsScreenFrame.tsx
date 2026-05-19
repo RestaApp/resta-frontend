@@ -29,22 +29,8 @@ export function DetailsScreenFrame({
     if (!open) return null
     return (
       <section className="fixed inset-0 z-50 flex flex-col bg-background">
-        <header className={`${DRAWER_HEADER_CLASS} shrink-0 border-b border-border/50 pb-4 pt-3`}>
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <DrawerTitle className="text-xl font-semibold break-words text-foreground">
-                {title}
-              </DrawerTitle>
-            </div>
-            <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel} />
-          </div>
-          {headerMeta ? (
-            <div className="flex items-center gap-2 flex-wrap mt-3">{headerMeta}</div>
-          ) : null}
-        </header>
-
         <div
-          className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} ui-density-stack bg-background pb-5`}
+          className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} bg-background pb-24 pt-5`}
         >
           {children}
         </div>
@@ -56,16 +42,11 @@ export function DetailsScreenFrame({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <div
-        className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
-        style={{ height: 'calc(85vh - 52px)' }}
-      >
+      <div className="flex min-h-0 flex-col rounded-t-2xl bg-background">
         <DrawerHeader className={`${DRAWER_HEADER_CLASS} shrink-0 pb-4 pt-1`}>
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <DrawerTitle className="text-xl font-semibold break-words text-foreground">
-                {title}
-              </DrawerTitle>
+              <DrawerTitle className="break-words">{title}</DrawerTitle>
             </div>
             <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel} />
           </div>

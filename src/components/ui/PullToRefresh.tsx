@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import type { TouchEvent, ReactNode } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { cn } from '@/utils/cn'
+import { getAppScrollTop } from '@/shared/ui/appScroll'
 
 interface PullToRefreshProps {
   children: ReactNode
@@ -28,7 +29,7 @@ export function PullToRefresh({
   const isDraggingRef = useRef(false)
 
   const canStartPull = useCallback(() => {
-    return !disabled && !isRefreshing && window.scrollY <= 0
+    return !disabled && !isRefreshing && getAppScrollTop() <= 0
   }, [disabled, isRefreshing])
 
   const handleTouchStart = useCallback(

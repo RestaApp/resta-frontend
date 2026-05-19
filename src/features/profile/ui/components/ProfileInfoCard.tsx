@@ -2,6 +2,7 @@ import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Briefcase, ChevronDown, ArrowRight } from 'lucide-react'
+import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -124,13 +125,15 @@ export const ProfileInfoCard = memo(
         <button
           type="button"
           onClick={() => setIsOpen(v => !v)}
-          className="w-full -mx-2 -my-1 flex items-center gap-2 rounded-xl transition-colors hover:bg-muted/35"
+          className="w-full -mx-2 -my-1 flex items-center gap-2 rounded-xl transition-colors hover:bg-secondary/35"
         >
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
             <Briefcase className="h-[18px] w-[18px] text-primary" />
           </span>
 
-          <h4 className="min-w-0 flex-1 truncate text-left text-lg font-semibold leading-tight text-foreground whitespace-nowrap">
+          <h4
+            className={cn(BLOCK_TITLE_CLASS, 'min-w-0 flex-1 truncate text-left whitespace-nowrap')}
+          >
             {infoSectionTitle}
           </h4>
 
@@ -138,7 +141,7 @@ export const ProfileInfoCard = memo(
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="rounded-md bg-muted/60 p-1"
+              className="rounded-md bg-secondary/60 p-1"
             >
               <ChevronDown className="h-[18px] w-[18px] text-muted-foreground" />
             </motion.div>

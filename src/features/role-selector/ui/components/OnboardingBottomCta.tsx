@@ -1,20 +1,13 @@
 import { memo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import type { RoleKind } from '@/shared/lib/role-theme'
 
 export const ONBOARDING_BOTTOM_CTA_SPACE = 'pb-onboarding-cta'
 
 export const ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT = 'pb-onboarding-cta-with-hint'
-
-const TONE_CTA: Record<RoleKind | 'primary', string> = {
-  primary: '',
-  employee: 'bg-role-employee hover:bg-role-employee/90 active:bg-role-employee/80',
-  restaurant: 'bg-role-restaurant hover:bg-role-restaurant/90 active:bg-role-restaurant/80',
-  supplier: 'bg-role-supplier hover:bg-role-supplier/90 active:bg-role-supplier/80',
-}
 
 interface OnboardingBottomCtaProps {
   children: ReactNode
@@ -22,7 +15,6 @@ interface OnboardingBottomCtaProps {
   ariaLabel?: string
   disabled?: boolean
   loading?: boolean
-  tone?: RoleKind | 'primary'
   showFillLaterHint?: boolean
   className?: string
 }
@@ -33,7 +25,6 @@ export const OnboardingBottomCta = memo(function OnboardingBottomCta({
   ariaLabel,
   disabled = false,
   loading = false,
-  tone = 'primary',
   showFillLaterHint = false,
   className,
 }: OnboardingBottomCtaProps) {
@@ -52,11 +43,7 @@ export const OnboardingBottomCta = memo(function OnboardingBottomCta({
           disabled={disabled}
           variant="gradient"
           size="lg"
-          className={cn(
-            'w-full shadow-[0_14px_40px_rgba(0,0,0,0.4)] disabled:opacity-40',
-            TONE_CTA[tone],
-            className
-          )}
+          className={cn('w-full', SHADOW_MODAL_CLASS, 'disabled:opacity-40', className)}
           aria-label={ariaLabel}
         >
           {children}

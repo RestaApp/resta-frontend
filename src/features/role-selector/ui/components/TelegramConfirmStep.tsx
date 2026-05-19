@@ -10,17 +10,12 @@ import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
-import { getRoleKind, getRoleTheme } from '@/shared/lib/role-theme'
+import { getRoleCategory, type RoleCategory } from '@/shared/types/roles.types'
+import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
 
-const ROLE_AVATAR_GRADIENT: Record<ReturnType<typeof getRoleKind>, string> = {
-  employee: 'bg-[image:var(--gradient-emp)]',
-  restaurant: 'bg-[image:var(--gradient-primary)]',
-  supplier: 'bg-[image:var(--gradient-primary)]',
-}
-
-const ROLE_SHIELD_ICON: Record<ReturnType<typeof getRoleKind>, string> = {
+const ROLE_SHIELD_ICON: Record<RoleCategory, string> = {
   employee: '🛡',
   restaurant: '⚡',
   supplier: '⭐',
@@ -41,8 +36,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   const user = useAppSelector(selectUserData)
   const copyRole =
     selectedRole === 'venue' || selectedRole === 'supplier' ? selectedRole : 'employee'
-  const roleKind = getRoleKind(selectedRole ?? 'chef')
-  const roleTheme = getRoleTheme(selectedRole ?? 'chef')
+  const roleCategory = getRoleCategory(selectedRole ?? 'chef')
   const [isEditingName, setIsEditingName] = useState(false)
   const {
     displayName,
@@ -72,16 +66,10 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
       totalSteps={3}
       title={t('onboarding.telegram.title')}
       subtitle={t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
-      tone={roleKind}
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE}
     >
       <Card className="text-center">
-        <div
-          className={cn(
-            'mx-auto mb-3 h-14 w-14 overflow-hidden rounded-xl',
-            ROLE_AVATAR_GRADIENT[roleKind]
-          )}
-        >
+        <div className="mx-auto mb-3 h-14 w-14 overflow-hidden rounded-xl bg-[image:var(--gradient-primary)]">
           {user?.photo_url ? (
             <img src={user.photo_url} alt={displayName} className="h-full w-full object-cover" />
           ) : null}
@@ -95,22 +83,22 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             onKeyDown={e => {
               if (e.key === 'Enter' || e.key === 'Escape') setIsEditingName(false)
             }}
-            className="mx-auto h-8 max-w-[240px] text-center text-title-md font-semibold"
+            className={cn(BLOCK_TITLE_CLASS, 'mx-auto h-8 max-w-[240px] text-center')}
             aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
           />
         ) : (
           <button
             type="button"
             onClick={() => setIsEditingName(true)}
-            className="mx-auto inline-flex items-center gap-1.5 text-title-md font-semibold text-foreground"
+            className={cn(BLOCK_TITLE_CLASS, 'mx-auto inline-flex items-center gap-1.5')}
             aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
           >
             {displayName}
             <Pencil className="h-3 w-3 text-muted-foreground" aria-hidden />
           </button>
         )}
-        <div className="mt-0.5 text-body-lg text-muted-foreground">{displayUsername}</div>
-        <div className="mt-2.5 font-mono-resta text-body-sm uppercase tracking-[0.08em] text-success">
+        <div className="mt-0.5 text-sm text-muted-foreground">{displayUsername}</div>
+        <div className="mt-2.5 font-mono-resta text-xs uppercase tracking-[0.08em] text-success">
           {t('onboarding.telegram.connected')}
         </div>
       </Card>
@@ -129,10 +117,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           <button
             type="button"
             onClick={handlePhoneShare}
-            className={cn(
-              'whitespace-nowrap text-body-lg font-semibold leading-none disabled:opacity-60',
-              roleTheme.classes.text
-            )}
+            className="whitespace-nowrap text-sm font-semibold leading-none text-primary disabled:opacity-60"
             disabled={isRequestingPhone}
           >
             {isPhoneFilled ? t('onboarding.telegram.shared') : t('onboarding.telegram.share')}
@@ -157,19 +142,12 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
       </OnboardingSection>
 
-      <div
-        role="note"
-        className={cn(
-          'mt-3.5 rounded-xl border px-3 py-2.5',
-          roleTheme.classes.border,
-          roleTheme.classes.bgSurface
-        )}
-      >
+      <div role="note" className="mt-3.5 rounded-xl border border-primary bg-primary/8 px-3 py-2.5">
         <div className="flex items-start gap-2">
-          <span aria-hidden className={cn('shrink-0 mt-0.5 text-sm', roleTheme.classes.text)}>
-            {ROLE_SHIELD_ICON[roleKind]}
+          <span aria-hidden className="shrink-0 mt-0.5 text-sm text-primary">
+            {ROLE_SHIELD_ICON[roleCategory]}
           </span>
-          <div className="flex-1 text-meta leading-snug text-muted-foreground">
+          <div className="flex-1 text-xs leading-snug text-muted-foreground">
             <span className="font-semibold text-foreground">
               {t(`onboarding.telegram.copy.${copyRole}.shieldTitle`)}
             </span>{' '}
@@ -178,12 +156,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         </div>
       </div>
 
-      <OnboardingBottomCta
-        onClick={handleContinue}
-        loading={isSaving}
-        disabled={isSaving}
-        tone={roleKind}
-      >
+      <OnboardingBottomCta onClick={handleContinue} loading={isSaving} disabled={isSaving}>
         {t('onboarding.telegram.next')}
       </OnboardingBottomCta>
     </OnboardingStepLayout>

@@ -27,7 +27,9 @@ export const syncFiltersPositionAndSpecializations = (
     return {
       selectedCity: selectedCity?.trim() || undefined,
       selectedPosition,
-      selectedSpecializations: selectedSpecializations?.length ? selectedSpecializations : undefined,
+      selectedSpecializations: selectedSpecializations?.length
+        ? selectedSpecializations
+        : undefined,
     }
   }
 

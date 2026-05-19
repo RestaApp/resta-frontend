@@ -1,3 +1,5 @@
+import { Card } from '@/components/ui/card'
+import { KPI_VALUE_CLASS, META_MONO_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 
 export interface KpiItem {
@@ -7,8 +9,8 @@ export interface KpiItem {
   value: React.ReactNode
   /** Подпись маленьким моноширинным шрифтом. */
   label: string
-  /** Опц. цвет значения (success / warning / danger / accent). */
-  tone?: 'default' | 'success' | 'warning' | 'danger' | 'accent' | 'muted'
+  /** Опц. цвет значения (success / warning / danger / primary). */
+  tone?: 'default' | 'success' | 'warning' | 'danger' | 'primary' | 'muted'
 }
 
 interface KpiRowProps {
@@ -21,7 +23,7 @@ const TONE_CLASS: Record<NonNullable<KpiItem['tone']>, string> = {
   success: 'text-success',
   warning: 'text-warning',
   danger: 'text-destructive',
-  accent: 'text-terracotta',
+  primary: 'text-primary',
   muted: 'text-muted-foreground',
 }
 
@@ -37,14 +39,10 @@ export const KpiRow = ({ items, className }: KpiRowProps) => (
     style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
   >
     {items.map(({ id, value, label, tone = 'default' }) => (
-      <div key={id} className="rounded-xl bg-card px-2 py-2.5 text-center border border-border/40">
-        <div className={cn('text-lg font-bold tracking-tight leading-none', TONE_CLASS[tone])}>
-          {value}
-        </div>
-        <div className="mt-1 text-micro uppercase tracking-wider font-mono-resta text-muted-foreground">
-          {label}
-        </div>
-      </div>
+      <Card key={id} padding="none" className="rounded-xl border-border/40 px-2 py-2.5 text-center">
+        <div className={cn(KPI_VALUE_CLASS, TONE_CLASS[tone])}>{value}</div>
+        <div className={cn('mt-1', META_MONO_CLASS)}>{label}</div>
+      </Card>
     ))}
   </div>
 )

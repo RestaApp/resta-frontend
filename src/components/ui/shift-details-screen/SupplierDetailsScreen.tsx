@@ -90,7 +90,7 @@ export const SupplierDetailsScreen = memo(
           </div>
         }
       >
-        <Card className={DETAIL_CARD_CLASS}>
+        <Card padding="md" className={DETAIL_CARD_CLASS}>
           <div className="space-y-4">
             <DetailRow
               icon={Building2}
@@ -176,7 +176,7 @@ export const SupplierDetailsScreen = memo(
         </Card>
 
         {supplier.serviceCategories.length > 0 ? (
-          <Card className={DETAIL_CARD_CLASS}>
+          <Card padding="md" className={DETAIL_CARD_CLASS}>
             <h2 className="text-base font-medium text-foreground mb-3">
               {t('venueUi.suppliers.filters.categories', {
                 defaultValue: 'Категории товаров и услуг',

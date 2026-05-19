@@ -28,6 +28,18 @@ export type EmployeeRole =
 
 export type ApiRole = 'employee' | 'supplier' | 'restaurant' | 'unverified'
 
+/** Категория аккаунта для копирайта онбординга (не цветовая тема). */
+export type RoleCategory = 'employee' | 'restaurant' | 'supplier'
+
+export function getRoleCategory(role: UiRole | ApiRole): RoleCategory {
+  const apiRole = (
+    role in UI_ROLE_TO_API_ROLE ? UI_ROLE_TO_API_ROLE[role as UiRole] : role
+  ) as ApiRole
+  if (apiRole === 'restaurant') return 'restaurant'
+  if (apiRole === 'supplier') return 'supplier'
+  return 'employee'
+}
+
 export const UI_ROLE_TO_API_ROLE: Record<UiRole, ApiRole> = {
   chef: 'employee',
   waiter: 'employee',

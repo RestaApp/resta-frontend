@@ -2,6 +2,8 @@ import { memo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
@@ -24,10 +26,10 @@ const TOAST_ICONS = {
 } as const
 
 const TOAST_COLORS = {
-  success: 'bg-chart-2',
+  success: 'bg-success',
   error: 'bg-destructive',
   info: 'bg-primary',
-  warning: 'bg-chart-5',
+  warning: 'bg-warning',
 } as const
 
 export const Toast = memo(function Toast({
@@ -59,33 +61,31 @@ export const Toast = memo(function Toast({
           exit={{ opacity: 0, y: -20, scale: 0.96 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
           style={{ zIndex: Z_INDEX.toast }}
-          className={cn(
-            'fixed left-1/2 top-4 -translate-x-1/2',
-            'min-w-[280px] max-w-[90vw] rounded-lg border border-border bg-card p-4 shadow-[0_14px_40px_rgba(0,0,0,0.45)]',
-            className
-          )}
+          className={cn('fixed left-1/2 top-4 -translate-x-1/2', className)}
         >
-          <div className="flex items-start gap-3">
-            <div
-              className={cn(
-                'flex h-5 w-5 shrink-0 items-center justify-center rounded-full',
-                colorClass
-              )}
-            >
-              <Icon className="h-3 w-3 text-white" />
+          <Card padding="md" className={cn('min-w-[280px] max-w-[90vw]', SHADOW_MODAL_CLASS)}>
+            <div className="flex items-start gap-3">
+              <div
+                className={cn(
+                  'flex h-5 w-5 shrink-0 items-center justify-center rounded-full',
+                  colorClass
+                )}
+              >
+                <Icon className="h-3 w-3 text-white" />
+              </div>
+
+              <p className="flex-1 pr-2 text-sm font-medium text-foreground">{message}</p>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                aria-label={t('aria.closeNotification')}
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-
-            <p className="flex-1 pr-2 text-sm font-medium text-foreground">{message}</p>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-              aria-label={t('aria.closeNotification')}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
+          </Card>
         </motion.div>
       )}
     </AnimatePresence>

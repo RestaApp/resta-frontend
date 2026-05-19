@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 
@@ -28,7 +29,7 @@ export const CompactTimeRow = memo(
     onFromChange,
     onToChange,
   }: CompactTimeRowProps) => (
-    <div className="rounded-xl border border-border/60 bg-card/20 px-2.5 py-2">
+    <Card padding="none" className="rounded-xl border-border/60 bg-card/20 px-2.5 py-2">
       <div className="mb-1.5 flex items-center justify-between">
         <div className="text-sm font-semibold text-foreground">{label}</div>
         <Switch checked={enabled} disabled={disabled} onCheckedChange={onToggle} />
@@ -41,7 +42,7 @@ export const CompactTimeRow = memo(
           value={from}
           disabled={disabled || !enabled}
           onChange={e => onFromChange(e.target.value)}
-          className="h-9 min-w-0 px-2 text-center text-sm font-medium tabular-nums"
+          className="min-h-11 min-w-0 px-2 py-2 text-center text-sm font-medium tabular-nums"
         />
         <span className="text-xs font-medium text-muted-foreground">-</span>
         <Input
@@ -50,10 +51,10 @@ export const CompactTimeRow = memo(
           value={to}
           disabled={disabled || !enabled}
           onChange={e => onToChange(e.target.value)}
-          className="h-9 min-w-0 px-2 text-center text-sm font-medium tabular-nums"
+          className="min-h-11 min-w-0 px-2 py-2 text-center text-sm font-medium tabular-nums"
         />
       </div>
-    </div>
+    </Card>
   )
 )
 CompactTimeRow.displayName = 'CompactTimeRow'

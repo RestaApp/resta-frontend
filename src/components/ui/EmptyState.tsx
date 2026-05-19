@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CookingPot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import type { ReactNode } from 'react'
 
 interface EmptyStateProps {
@@ -27,7 +28,7 @@ export const EmptyState = ({
   const resetButton =
     showResetButton && onReset ? (
       <Button
-        className="h-14 rounded-2xl px-8 text-title-md font-semibold"
+        className="h-14 rounded-2xl px-8 text-lg font-semibold"
         variant="outline"
         onClick={onReset}
       >
@@ -45,9 +46,9 @@ export const EmptyState = ({
         </div>
       )}
       <div className="flex flex-col items-center gap-2 text-center">
-        <p className="text-title-md font-semibold text-foreground">{displayMessage}</p>
+        <p className={BLOCK_TITLE_CLASS}>{displayMessage}</p>
         {description ? (
-          <p className="max-w-[320px] text-body-lg text-muted-foreground">{description}</p>
+          <p className="max-w-[320px] text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {action ?? resetButton}

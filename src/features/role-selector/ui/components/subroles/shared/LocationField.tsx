@@ -2,7 +2,7 @@
  * Поле выбора города с автодополнением
  */
 
-import { memo, type CSSProperties } from 'react'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MapPin } from 'lucide-react'
@@ -12,8 +12,6 @@ import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
 import { AnimatedField } from './AnimatedField'
-import { cn } from '@/utils/cn'
-
 interface LocationFieldProps {
   value: string
   onChange: (value: string) => void
@@ -26,13 +24,6 @@ interface LocationFieldProps {
   clearOnFocus?: boolean
   /** Не показывать подпись (заголовок задаётся снаружи, напр. в фильтрах) */
   hideLabel?: boolean
-  /** Перебить глобальный `primary` у поля (фокус) — напр. `getRoleTheme(role).classes.inputFocus` */
-  focusAccentClass?: string
-  /**
-   * Имя CSS-переменной палитры роли без `var()` (как `getRoleTheme().cssVar`), напр. `--role-employee`.
-   * Вместе с `focusAccentClass` отключает terracotta из `index.css` для `[data-slot=input]`.
-   */
-  focusRoleCssVar?: string
 }
 
 export const LocationField = memo(function LocationField({
@@ -45,8 +36,6 @@ export const LocationField = memo(function LocationField({
   isLoading = false,
   clearOnFocus = false,
   hideLabel = false,
-  focusAccentClass,
-  focusRoleCssVar,
 }: LocationFieldProps) {
   const { t } = useTranslation()
   const {
@@ -87,23 +76,15 @@ export const LocationField = memo(function LocationField({
             }}
             onBlur={handleInputBlur}
             placeholder={t('citySelect.placeholder')}
-            className={cn('pr-12', focusAccentClass)}
+            className="pr-12"
             autoComplete="off"
             aria-invalid={!isValid}
-            {...(focusRoleCssVar
-              ? {
-                  'data-role-accent': true,
-                  style: {
-                    ['--resta-role-input-focus' as string]: `var(${focusRoleCssVar})`,
-                  } as CSSProperties,
-                }
-              : {})}
           />
           {showLocationButton ? (
             <button
               onClick={onLocationRequest}
               disabled={isLoading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-secondary/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={t('aria.determineLocation')}
               type="button"
             >
@@ -143,7 +124,7 @@ export const LocationField = memo(function LocationField({
                       <button
                         type="button"
                         onClick={() => handleCitySelect(city)}
-                        className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted/50 transition-colors focus:outline-none focus:bg-muted/50"
+                        className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-secondary/50 transition-colors focus:outline-none focus:bg-secondary/50"
                       >
                         {city}
                       </button>

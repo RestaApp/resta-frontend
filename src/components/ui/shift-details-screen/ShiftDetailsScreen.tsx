@@ -14,10 +14,7 @@ import { DetailsTab } from './DetailsTab'
 import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
-import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { getRoleTheme } from '@/shared/lib/role-theme'
-import { cn } from '@/utils/cn'
+import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
 
 interface ShiftDetailsScreenProps {
   shift: Shift | null
@@ -39,7 +36,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     applicationId = null,
     isOpen,
     onClose,
-    onOpenRestaurant,
     onApply,
     isApplied,
     onCancel,
@@ -47,16 +43,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   } = props
 
   const { t } = useTranslation()
-  const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
-  const {
-    aboutVenue,
-    hourlyRate,
-    shiftTypeLabel,
-    vacancyTitle,
-    positionLabel,
-    specializations,
-    applicationsInfo,
-  } = useShiftDetails(shift, vacancyData)
+  const { getEmployeePositionLabel } = useLabels()
+  const { hourlyRate, shiftTypeLabel, vacancyTitle, positionLabel } = useShiftDetails(
+    shift,
+    vacancyData
+  )
 
   const controller = useShiftDetailsScreenController({
     shift,
@@ -68,11 +59,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     hourlyRate,
     t,
   })
-
-  const selectedRole = useAppSelector(selectSelectedRole)
-  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
-
-  const restaurantOwnerId = typeof shift?.ownerId === 'number' ? shift.ownerId : null
 
   if (!shift) return null
 
@@ -86,29 +72,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         }}
         onClose={controller.handleClose}
         closeAriaLabel={t('common.close')}
-        title={<span className="capitalize">{vacancyTitle}</span>}
-        headerMeta={
-          <>
-            <p className="w-full text-sm text-muted-foreground">
-              {[shiftTypeLabel, shift.date, shift.time].filter(Boolean).join(' · ')}
-            </p>
-            {restaurantOwnerId !== null && onOpenRestaurant ? (
-              <button
-                type="button"
-                className="text-sm text-primary hover:underline"
-                onClick={() => onOpenRestaurant(restaurantOwnerId)}
-              >
-                {shift.restaurant}
-              </button>
-            ) : (
-              <p className="text-sm text-muted-foreground">{shift.restaurant}</p>
-            )}
-          </>
-        }
+        title={shiftTypeLabel || t('shift.shift', { defaultValue: 'Смена' })}
         footer={
           !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
-            <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0`}>
-              <div className="flex gap-3">
+            <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0 border-border/30`}>
+              <div className="flex gap-4">
                 {isApplied ? (
                   <Button
                     onClick={controller.handleCancel}
@@ -122,14 +90,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 ) : (
                   <Button
                     variant="gradient"
-                    size="md"
+                    size="lg"
                     onClick={controller.handleApply}
                     disabled={isLoading}
                     className="flex-1"
                   >
                     {isLoading
                       ? t('shift.sending')
-                      : t('shift.applyNow', { defaultValue: 'Откликнуться' })}
+                      : t('shift.applyNow', { defaultValue: 'Откликнуться →' })}
                   </Button>
                 )}
               </div>
@@ -146,30 +114,26 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             activeId={controller.activeTab}
             onChange={id => controller.setActiveTab(id as 'applicants' | 'details')}
             className="mb-4"
-            activeIndicatorClassName={cn('shadow-sm', roleTheme.classes.bg)}
-            activeTriggerClassName={roleTheme.classes.textOn}
+            activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
+            activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
           />
         ) : null}
 
         {!controller.showTabs || controller.activeTab === 'details' ? (
           <DetailsTab
+            shift={shift}
+            vacancyTitle={vacancyTitle}
             positionLabel={positionLabel ?? ''}
-            specializations={specializations}
-            getSpecializationLabel={value => getSpecializationLabel(value ?? '')}
-            hasDate={controller.hasDate}
-            hasTime={controller.hasTime}
             shiftDate={shift.date}
             shiftTime={shift.time}
             duration={shift.duration}
             locationPoints={controller.locationPoints}
-            onOpenMap={controller.handleOpenMap}
             pay={shift.pay}
             currency={shift.currency}
-            paySuffix={controller.paySuffix}
-            applicationsInfo={applicationsInfo}
+            hourlyRate={hourlyRate}
             description={controller.description}
             requirements={controller.requirements}
-            aboutVenue={aboutVenue}
+            managerName={vacancyData?.user?.name ?? vacancyData?.user?.full_name ?? null}
             t={t}
           />
         ) : null}

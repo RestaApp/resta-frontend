@@ -1,5 +1,7 @@
 import { Star } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import { Card } from './card'
+import { META_MONO_CLASS, MODAL_TITLE_CLASS, PRICE_EMPHASIS_CLASS } from './ui-patterns'
 import { Badge } from './badge'
 import { Button } from './button'
 
@@ -73,12 +75,12 @@ export const TelegramStarsPaywall = ({
       style={{ backgroundImage: 'var(--gradient-stars-glow)' }}
     >
       <div className="text-center">
-        <Badge variant="stars" className="px-3 py-1.5 text-meta">
+        <Badge variant="stars" className="px-3 py-1.5 text-xs">
           <Star className="h-3 w-3 fill-current" /> TELEGRAM STARS
         </Badge>
       </div>
 
-      <h2 className="text-center text-2xl font-extrabold tracking-tight leading-tight">
+      <h2 className={cn('text-center', MODAL_TITLE_CLASS)}>
         {title.split(' PRO')[0]} <span style={{ color: 'var(--stars)' }}>PRO</span>
       </h2>
       {subtitle ? (
@@ -103,8 +105,8 @@ export const TelegramStarsPaywall = ({
               <div>
                 <div
                   className={cn(
-                    'text-micro font-mono-resta uppercase tracking-wider',
-                    plan.highlighted ? 'text-amber' : 'text-muted-foreground'
+                    META_MONO_CLASS,
+                    plan.highlighted ? 'text-warning' : 'text-muted-foreground'
                   )}
                 >
                   {plan.period}
@@ -117,17 +119,16 @@ export const TelegramStarsPaywall = ({
               <div className="text-right">
                 <div
                   className={cn(
-                    'text-xl font-extrabold tracking-tight inline-flex items-center gap-1',
-                    plan.highlighted ? 'text-amber' : 'text-foreground'
+                    PRICE_EMPHASIS_CLASS,
+                    'inline-flex items-center gap-1',
+                    plan.highlighted ? 'text-warning' : 'text-foreground'
                   )}
                 >
                   <Star className="h-4 w-4 fill-current" />
                   {plan.stars.toLocaleString('ru-RU')}
                 </div>
                 {plan.fiatHint ? (
-                  <div className="text-micro font-mono-resta text-muted-foreground mt-0.5">
-                    {plan.fiatHint}
-                  </div>
+                  <div className={cn(META_MONO_CLASS, 'normal-case mt-0.5')}>{plan.fiatHint}</div>
                 ) : null}
               </div>
             </button>
@@ -135,17 +136,17 @@ export const TelegramStarsPaywall = ({
         })}
       </div>
 
-      <div className="text-micro font-mono-resta uppercase tracking-wider text-muted-foreground mt-1">
-        Всё включено
-      </div>
-      <ul className="rounded-lg border border-border bg-card p-3 flex flex-col gap-1">
-        {features.map(f => (
-          <li key={f.id} className="flex items-center gap-2 text-xs">
-            <span className="text-terracotta font-bold">✓</span>
-            <span>{f.text}</span>
-          </li>
-        ))}
-      </ul>
+      <div className={cn(META_MONO_CLASS, 'mt-1')}>Всё включено</div>
+      <Card padding="sm" className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-1">
+          {features.map(f => (
+            <li key={f.id} className="flex items-center gap-2 text-xs">
+              <span className="text-primary font-bold">✓</span>
+              <span>{f.text}</span>
+            </li>
+          ))}
+        </ul>
+      </Card>
 
       <Button
         size="lg"

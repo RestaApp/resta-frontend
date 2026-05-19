@@ -4,7 +4,8 @@ import { motion } from 'motion/react'
 import { Settings, HelpCircle, LogOut, Languages, Palette } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import { BLOCK_TITLE_CLASS, DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
 import type { Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'
@@ -37,7 +38,7 @@ export function ProfileSettings({
 
   return (
     <div>
-      <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
+      <h3 className={cn(BLOCK_TITLE_CLASS, 'ui-density-mb flex items-center gap-2')}>
         <Settings className="w-5 h-5 text-primary" />
         {t('profile.settings')}
       </h3>
@@ -71,7 +72,7 @@ export function ProfileSettings({
           <motion.button
             type="button"
             whileTap={{ scale: 0.98 }}
-            className={`w-full text-left transition-colors hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-50 ${DRAWER_SETTING_ROW_CLASS}`}
+            className={`w-full text-left transition-colors hover:bg-secondary/50 disabled:pointer-events-none disabled:opacity-50 ${DRAWER_SETTING_ROW_CLASS}`}
             onClick={onNotificationSettingsClick}
             disabled={!onNotificationSettingsClick}
           >
@@ -87,7 +88,7 @@ export function ProfileSettings({
             <motion.button
               type="button"
               whileTap={{ scale: 0.98 }}
-              className={`w-full text-left transition-colors hover:bg-muted/50 ${DRAWER_SETTING_ROW_CLASS}`}
+              className={`w-full text-left transition-colors hover:bg-secondary/50 ${DRAWER_SETTING_ROW_CLASS}`}
               onClick={() => setIsSupportDrawerOpen(true)}
             >
               <div className="flex items-center gap-3">

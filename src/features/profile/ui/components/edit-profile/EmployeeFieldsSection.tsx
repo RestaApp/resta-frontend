@@ -5,7 +5,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { RangeSlider } from '@/components/ui'
 import { Badge } from '@/components/ui/badge'
 import { FormField } from '@/components/ui/form-field'
-import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import { BLOCK_TITLE_CLASS, DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
 import { formatExperienceText } from '@/utils/experience'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 
@@ -49,7 +50,7 @@ export const EmployeeFieldsSection = memo(
       <>
         <FormField label={t('profile.experienceYearsLabel')}>
           <div className="mb-3">
-            <span className="text-lg font-semibold text-gradient">
+            <span className={cn(BLOCK_TITLE_CLASS, 'text-gradient')}>
               {formatExperienceText(experienceYearsValue)}
             </span>
           </div>

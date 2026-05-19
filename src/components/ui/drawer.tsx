@@ -10,6 +10,7 @@ import {
 } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
@@ -38,7 +39,7 @@ const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
     animate={{ opacity: 1, pointerEvents: 'auto' }}
     exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
-    className={cn('fixed inset-0 bg-[var(--overlay-scrim)]', className)}
+    className={cn('fixed inset-0 bg-overlay-scrim', className)}
     onClick={onClick}
     aria-hidden="true"
   />
@@ -142,9 +143,9 @@ const DrawerContent = memo(function DrawerContent({
         dragMomentum={false}
         onDragEnd={handleDragEnd}
         className={cn(
-          'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col overflow-y-auto overscroll-contain',
-          'rounded-t-2xl border-t border-border bg-background shadow-[0_14px_40px_rgba(0,0,0,0.4)] dark:shadow-none',
-          'dark:bg-[var(--drawer-surface)] border-t-[var(--surface-stroke-soft)]',
+          'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col min-h-0 overflow-y-auto overscroll-contain',
+          'rounded-t-2xl border-t border-border bg-background shadow-[var(--shadow-modal)] dark:shadow-none',
+          'dark:bg-card border-t-border',
           className
         )}
         style={{
@@ -160,7 +161,7 @@ const DrawerContent = memo(function DrawerContent({
           className={cn(
             'sticky top-0 z-20 flex justify-center pt-3 pb-1.5 touch-none select-none',
             'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm',
-            'dark:bg-[var(--drawer-surface)]',
+            'dark:bg-card',
             preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
           )}
           onPointerDown={e => {
@@ -224,7 +225,7 @@ export const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLD
 }
 
 export const DrawerTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
-  return <h2 className={cn('text-lg font-semibold text-foreground', className)} {...props} />
+  return <h2 className={cn(MODAL_TITLE_CLASS, className)} {...props} />
 }
 
 export const DrawerDescription = ({
@@ -248,7 +249,7 @@ export const DrawerCloseButton = ({ onClick, ariaLabel, className }: DrawerClose
       aria-label={ariaLabel}
       className={cn(
         'p-1 text-muted-foreground transition-colors',
-        'hover:bg-muted/50 hover:text-foreground',
+        'hover:bg-secondary/50 hover:text-foreground',
         className
       )}
     >

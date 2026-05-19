@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import type { LucideIcon } from 'lucide-react'
+import { HERO_TITLE_CLASS, SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { Badge } from '@/components/ui/badge'
 
@@ -40,7 +41,7 @@ export const SectionHeader = function SectionHeader({
         <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
           <Icon className="w-4 h-4" />
         </div>
-        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+        <h2 className={SUBSECTION_TITLE_CLASS}>{title}</h2>
         {count != null && count > 0 ? <Badge variant="outline">{count}</Badge> : null}
       </motion.div>
     )
@@ -53,16 +54,9 @@ export const SectionHeader = function SectionHeader({
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(align === 'center' && 'text-center', className)}
     >
-      <h2
-        className={cn(
-          'font-display text-4xl leading-none tracking-tight text-foreground mb-3',
-          titleClassName
-        )}
-      >
-        {title}
-      </h2>
+      <h2 className={cn(HERO_TITLE_CLASS, 'mb-3', titleClassName)}>{title}</h2>
       {description ? (
-        <p className={cn('text-base text-muted-foreground leading-none', descriptionClassName)}>
+        <p className={cn('text-base text-muted-foreground leading-snug', descriptionClassName)}>
           {description}
         </p>
       ) : null}

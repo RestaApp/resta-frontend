@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next'
 import { RangeSlider } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { formatExperienceText } from '@/utils/experience'
+import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
 import { AnimatedField } from './AnimatedField'
 
 interface ExperienceFieldProps {
@@ -26,7 +28,9 @@ export const ExperienceField = memo(function ExperienceField({
   const content = (
     <FormField label={t('roles.yourExperience')} labelClassName="mb-1">
       <div className="mb-3">
-        <span className="text-lg font-semibold text-gradient">{formatExperienceText(value)}</span>
+        <span className={cn(BLOCK_TITLE_CLASS, 'text-gradient')}>
+          {formatExperienceText(value)}
+        </span>
       </div>
       <RangeSlider
         min={0}

@@ -4,11 +4,8 @@ import { Briefcase, Send } from 'lucide-react'
 import { Tabs } from '@/components/ui/tabs'
 import type { TabOption } from '@/components/ui/tabs'
 import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
-import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
-import { getRoleTheme } from '@/shared/lib/role-theme'
+import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import { cn } from '@/utils/cn'
 
 type Props = {
   activeTab: ActivityTab
@@ -17,8 +14,6 @@ type Props = {
 
 export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
   const { t } = useTranslation()
-  const selectedRole = useAppSelector(selectSelectedRole)
-  const roleTheme = getRoleTheme(selectedRole ?? 'employee')
   const tabOptions = useMemo<TabOption<ActivityTab>[]>(
     () => [
       { id: 'applications', label: t('tabs.activity.applications'), icon: Send },
@@ -37,8 +32,8 @@ export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
           options={tabOptions}
           activeId={activeTab}
           onChange={onChange}
-          activeIndicatorClassName={cn('shadow-sm', roleTheme.classes.bg)}
-          activeTriggerClassName={roleTheme.classes.textOn}
+          activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
+          activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
         />
       </div>
     </div>

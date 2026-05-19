@@ -1,5 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
-import { hasActiveFilters as checkHasActiveFilters, normalizeAdvancedFilters } from '@/utils/filters'
+import { useState, useCallback, useMemo } from 'react'
+import {
+  hasActiveFilters as checkHasActiveFilters,
+  normalizeAdvancedFilters,
+} from '@/utils/filters'
 import type { AdvancedFiltersData } from '../types'
 
 interface UseAdvancedFiltersOptions {
@@ -18,12 +21,6 @@ export const useAdvancedFilters = ({
   const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>(
     () => initialFilters?.selectedSpecializations ?? []
   )
-
-  useEffect(() => {
-    setSelectedCity(initialFilters?.selectedCity ?? '')
-    setSelectedPosition(initialFilters?.selectedPosition ?? null)
-    setSelectedSpecializations(initialFilters?.selectedSpecializations ?? [])
-  }, [initialFilters])
 
   const handlePositionSelect = useCallback(
     (position: string) => {

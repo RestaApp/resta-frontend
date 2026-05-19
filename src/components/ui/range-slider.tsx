@@ -22,7 +22,7 @@ interface RangeSliderProps {
   showTicks?: boolean
   tickCount?: number
   /** Цвет активной части трека и бегунка (по умолчанию primary). */
-  accentClassName?: string
+  fillClassName?: string
 }
 
 export const RangeSlider = memo(function RangeSlider({
@@ -36,7 +36,7 @@ export const RangeSlider = memo(function RangeSlider({
   className,
   showTicks = false,
   tickCount,
-  accentClassName = 'bg-primary',
+  fillClassName = 'bg-primary',
 }: RangeSliderProps) {
   const isRangeMode = range !== undefined && onRangeChange !== undefined
 
@@ -113,11 +113,11 @@ export const RangeSlider = memo(function RangeSlider({
     [rangeMin, onRangeChange]
   )
 
-  const trackBg = 'bg-muted'
-  const tickInactive = 'bg-muted'
+  const trackBg = 'bg-secondary'
+  const tickInactive = 'bg-secondary'
   const thumbClass = cn(
     'absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full pointer-events-none z-20 shadow-lg',
-    accentClassName
+    fillClassName
   )
 
   if (isRangeMode) {
@@ -125,7 +125,7 @@ export const RangeSlider = memo(function RangeSlider({
       <div className={cn('relative', className)} style={{ height: '6px' }}>
         <div className={cn('w-full h-1.5 rounded-full relative overflow-visible', trackBg)}>
           <motion.div
-            className={cn('absolute top-0 h-full rounded-full', accentClassName)}
+            className={cn('absolute top-0 h-full rounded-full', fillClassName)}
             style={{ left: rangeLeft, width: rangeWidth }}
           />
         </div>
@@ -164,7 +164,7 @@ export const RangeSlider = memo(function RangeSlider({
                 key={index}
                 className={cn(
                   'w-1 h-1.5 rounded-full transition-colors duration-300',
-                  animatedMin <= tick && tick <= animatedMax ? accentClassName : tickInactive
+                  animatedMin <= tick && tick <= animatedMax ? fillClassName : tickInactive
                 )}
               />
             ))}
@@ -178,7 +178,7 @@ export const RangeSlider = memo(function RangeSlider({
     <div className={cn('relative', className)} style={{ height: '6px' }}>
       <div className={cn('w-full h-1.5 rounded-full relative overflow-visible', trackBg)}>
         <motion.div
-          className={cn('absolute top-0 left-0 h-full rounded-full', accentClassName)}
+          className={cn('absolute top-0 left-0 h-full rounded-full', fillClassName)}
           style={{ width: singleWidth }}
         />
       </div>
@@ -209,7 +209,7 @@ export const RangeSlider = memo(function RangeSlider({
               key={index}
               className={cn(
                 'w-1 h-1.5 rounded-full transition-colors duration-300',
-                singleValue >= tick ? accentClassName : tickInactive
+                singleValue >= tick ? fillClassName : tickInactive
               )}
             />
           ))}

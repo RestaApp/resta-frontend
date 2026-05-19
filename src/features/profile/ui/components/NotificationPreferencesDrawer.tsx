@@ -169,7 +169,7 @@ export const NotificationPreferencesDrawer = memo(
           {effectivePrefs && (
             <>
               {visiblePreferenceKeys.length > 1 ? (
-                <div className={`${DRAWER_SETTING_ROW_CLASS} bg-muted/30`}>
+                <div className={`${DRAWER_SETTING_ROW_CLASS} bg-secondary/30`}>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium">{t('profile.notifications.all')}</div>
                     <p className="text-xs text-muted-foreground mt-0.5">

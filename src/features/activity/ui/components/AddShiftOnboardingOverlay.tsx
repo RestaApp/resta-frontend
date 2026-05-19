@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
 interface AddShiftOnboardingOverlayProps {
@@ -82,7 +83,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
       <button
         type="button"
         aria-label={t('common.close', { defaultValue: 'Закрыть' })}
-        className="absolute inset-0 bg-[var(--overlay-scrim)] cursor-default"
+        className="absolute inset-0 bg-overlay-scrim cursor-default"
         onClick={onClose}
       />
 
@@ -121,7 +122,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
           width: tooltipWidth,
         }}
       >
-        <Card className="shadow-[0_14px_40px_rgba(0,0,0,0.4)]">
+        <Card className={SHADOW_MODAL_CLASS}>
           <p className="text-sm font-medium text-foreground">{resolvedTooltip}</p>
           <div className="mt-3 flex justify-end">
             <Button variant="ghost" size="sm" onClick={onClose}>

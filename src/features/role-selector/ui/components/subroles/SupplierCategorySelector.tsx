@@ -107,7 +107,6 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
       totalSteps={3}
       title={t('roles.supplierCategoryTitle')}
       subtitle={t('roles.supplierCategoryDescription')}
-      tone="supplier"
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT}
     >
       <OnboardingSection label={t('roles.supplierCategoriesLabel', { defaultValue: 'КАТЕГОРИИ' })}>
@@ -121,7 +120,6 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
               label: label.replace(`${CATEGORY_EMOJI[category] ?? '📦'} `, ''),
             })
           }
-          tone="supplier"
           size="lg"
         />
       </OnboardingSection>
@@ -133,7 +131,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
           className="mt-5"
         >
           {isTypesLoading ? (
-            <div className="text-body-lg text-muted-foreground">{t('common.loading')}...</div>
+            <div className="text-sm text-muted-foreground">{t('common.loading')}...</div>
           ) : supplierTypes.length > 0 ? (
             <TagGroup
               values={supplierTypes}
@@ -141,13 +139,10 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
               onToggle={handleTypeToggle}
               getLabel={getSupplierTypeLabel}
               getAriaLabel={(_, label) => t('aria.selectType', { label })}
-              tone="supplier"
               size="lg"
             />
           ) : (
-            <div className="text-body-lg text-muted-foreground">
-              {t('profile.supplierTypesEmpty')}
-            </div>
+            <div className="text-sm text-muted-foreground">{t('profile.supplierTypesEmpty')}</div>
           )}
         </OnboardingSection>
       ) : null}
@@ -156,7 +151,6 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
         onClick={handleConfirm}
         loading={isSubmitting}
         disabled={!canContinue}
-        tone="supplier"
         showFillLaterHint
       >
         {t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны →' })}

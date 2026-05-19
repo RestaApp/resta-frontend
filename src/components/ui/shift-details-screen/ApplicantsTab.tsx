@@ -36,7 +36,7 @@ export const ApplicantsTab = memo(
     const [rejectApplicationId, setRejectApplicationId] = useState<number | null>(null)
 
     return (
-      <Card className={DETAIL_CARD_CLASS}>
+      <Card padding="md" className={DETAIL_CARD_CLASS}>
         {applicants.length ? (
           <div className="space-y-3">
             {applicants.map((app, index) => {
@@ -96,7 +96,7 @@ export const ApplicantsTab = memo(
                   }}
                   className={cn(
                     'rounded-lg p-3 -mx-1 transition-colors cursor-pointer',
-                    'hover:bg-muted/40 active:bg-muted/60 outline-none',
+                    'hover:bg-secondary/40 active:bg-secondary/60 outline-none',
                     'focus-visible:ring-2 focus-visible:ring-primary',
                     isAccepted && 'ring-2 ring-primary/30 bg-primary/5'
                   )}

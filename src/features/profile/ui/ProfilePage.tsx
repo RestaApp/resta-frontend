@@ -15,6 +15,8 @@ import { Loader } from '@/components/ui/loader'
 import { ErrorState } from '@/components/ui/states'
 import { Card } from '@/components/ui/card'
 import { Award } from 'lucide-react'
+import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
 import { buildProfileAchievements } from './utils/profileAchievements'
 
 export const ProfilePage = memo(() => {
@@ -102,7 +104,7 @@ export const ProfilePage = memo(() => {
 
       {m.apiRole !== 'supplier' ? (
         <div>
-          <h3 className="text-lg font-semibold ui-density-mb flex items-center gap-2">
+          <h3 className={cn(BLOCK_TITLE_CLASS, 'ui-density-mb flex items-center gap-2')}>
             <Award className="w-5 h-5 text-primary" />
             {t('profile.achievements')}
           </h3>

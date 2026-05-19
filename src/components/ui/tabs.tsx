@@ -35,7 +35,7 @@ export const Tabs = <T extends string>({
   className,
   ariaLabel = 'Tabs',
   indicatorLayoutId,
-  activeIndicatorClassName = 'bg-[var(--surface-raised)]',
+  activeIndicatorClassName = 'bg-elevated',
   activeTriggerClassName = SEGMENTED_TRIGGER_ACTIVE_CLASS,
 }: TabsProps<T>) => {
   const tabRefs = useRef(new Map<T, HTMLButtonElement>())
@@ -103,7 +103,7 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-meta transition-colors duration-300',
+              'relative flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-xs transition-colors duration-300',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring',
               SEGMENTED_TRIGGER_CLASS,
               isActive ? activeTriggerClassName : SEGMENTED_TRIGGER_INACTIVE_CLASS

@@ -4,7 +4,7 @@ import { Button } from './button'
 import { Loader } from './loader'
 import { cn } from '@/utils/cn'
 import { useModalA11y } from './modal-a11y'
-import { MODAL_SURFACE_CLASS } from './ui-patterns'
+import { MODAL_SURFACE_CLASS, MODAL_TITLE_CLASS } from './ui-patterns'
 import type { ButtonProps } from './button'
 
 export type ModalButton = {
@@ -81,13 +81,13 @@ export const ModalContent = memo(function ModalContent({
     <div className={cn(MODAL_SURFACE_CLASS, 'p-6', className)}>
       {icon && (
         <div className="mb-4 flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted/50">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary/50">
             {icon}
           </div>
         </div>
       )}
 
-      <h2 id={titleId} className="mb-2 text-center text-xl font-semibold text-foreground">
+      <h2 id={titleId} className={cn('mb-2 text-center', MODAL_TITLE_CLASS)}>
         {title}
       </h2>
 

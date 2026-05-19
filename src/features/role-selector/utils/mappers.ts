@@ -24,7 +24,7 @@ const POSITION_ICON_MAP: Partial<
 }
 
 const POSITION_COLOR_MAP: Partial<Record<EmployeeRole, string>> = {
-  manager: 'from-terracotta to-amber',
+  manager: 'from-primary to-amber',
   support: 'from-muted-foreground to-foreground',
 }
 
@@ -45,19 +45,19 @@ const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>>
 }
 
 const ROLE_COLOR_MAP: Record<UiRole, string> = {
-  chef: 'from-terracotta to-amber',
-  waiter: 'from-success to-terracotta',
-  bartender: 'from-terracotta to-amber',
-  barista: 'from-warning to-terracotta',
-  hostess: 'from-success to-terracotta',
-  delivery: 'from-terracotta to-success',
-  cashier: 'from-terracotta to-amber',
-  office: 'from-terracotta to-amber',
-  admin: 'from-terracotta to-amber',
-  manager: 'from-terracotta to-amber',
+  chef: 'from-primary to-amber',
+  waiter: 'from-success to-primary',
+  bartender: 'from-primary to-amber',
+  barista: 'from-warning to-primary',
+  hostess: 'from-success to-primary',
+  delivery: 'from-primary to-success',
+  cashier: 'from-primary to-amber',
+  office: 'from-primary to-amber',
+  admin: 'from-primary to-amber',
+  manager: 'from-primary to-amber',
   support: 'from-muted-foreground to-foreground',
-  venue: 'from-terracotta to-amber',
-  supplier: 'from-amber to-terracotta',
+  venue: 'from-primary to-amber',
+  supplier: 'from-amber to-primary',
 }
 
 const tRoleLabel = (roleId: UiRole): string =>

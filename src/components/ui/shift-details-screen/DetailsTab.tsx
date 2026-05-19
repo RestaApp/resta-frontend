@@ -1,215 +1,174 @@
 import { memo } from 'react'
-import {
-  Banknote,
-  Briefcase,
-  Building2,
-  Calendar,
-  CookingPot,
-  Clock,
-  FileText,
-  MapPin,
-  Users,
-} from 'lucide-react'
 import type { TFunction } from 'i18next'
-import { Button } from '@/components/ui/button'
+import type { Shift } from '@/features/feed/model/types'
+import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
-import { formatMoney } from '@/features/feed/model/utils/formatting'
-import { DetailRow } from './DetailRow'
-import { TextCard } from './TextCard'
-import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
-import { formatServiceCategory } from './formatServiceCategory'
-
-interface AboutVenue {
-  bio?: string | null
-  city?: string | null
-  formatKey?: string | null
-  cuisineTypes: string[]
-}
+import { DISPLAY_PRICE_CLASS } from '@/components/ui/ui-patterns'
+import {
+  SHIFT_CARD_LOGO_CLASS,
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 
 interface DetailsTabProps {
+  shift: Shift
+  vacancyTitle: string
   positionLabel: string
-  specializations: string[]
-  getSpecializationLabel: (value?: string | null) => string
-  hasDate: boolean
-  hasTime: boolean
   shiftDate?: string | null
   shiftTime?: string | null
   duration?: string | null
   locationPoints: string[]
-  onOpenMap: () => void
   pay: string | number | null | undefined
   currency?: string | null
-  paySuffix: string
-  applicationsInfo: { value: string } | null
+  hourlyRate: string | null
   description: string
   requirements: string
-  aboutVenue: AboutVenue | null
+  managerName?: string | null
   t: TFunction
+}
+
+const formatDistanceKm = (distanceKm?: number | null): string | null => {
+  if (distanceKm == null || !Number.isFinite(distanceKm) || distanceKm <= 0) return null
+  const value = distanceKm < 10 ? Math.round(distanceKm * 10) / 10 : Math.round(distanceKm)
+  return `${String(value).replace('.', ',')} км`
+}
+
+const normalizeDuration = (duration?: string | null): string | null => {
+  const value = duration?.trim().replace(/\.$/, '') ?? ''
+  return value || null
+}
+
+const positionInitial = (position: string): string => {
+  const normalized = position.trim()
+  return (normalized[0] ?? 'R').toUpperCase()
+}
+
+const stripVacancyPrefix = (title: string): string => {
+  return title
+    .replace(/^вакансия:\s*/i, '')
+    .replace(/^(?:\s|🔥)+/u, '')
+    .trim()
 }
 
 export const DetailsTab = memo(
   ({
+    shift,
+    vacancyTitle,
     positionLabel,
-    specializations,
-    getSpecializationLabel,
-    hasDate,
-    hasTime,
     shiftDate,
     shiftTime,
     duration,
     locationPoints,
-    onOpenMap,
     pay,
     currency,
-    paySuffix,
-    applicationsInfo,
+    hourlyRate,
     description,
     requirements,
-    aboutVenue,
     t,
   }: DetailsTabProps) => {
+    const displayDuration = normalizeDuration(duration)
+    const displayLocation = locationPoints[0] ?? shift.location ?? ''
+    const distance = formatDistanceKm(shift.distanceKm)
+    const requirementsText = requirements || ''
+    const payValue =
+      pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : formatMoney(Number(pay))
+    const payCurrency = pay == null || Number(pay) === 0 ? '' : (currency ?? '')
+    const schedule = [shiftDate, shiftTime].filter(Boolean).join(' · ')
+    const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
+    const compactSubtitle = shift.restaurant || positionLabel || ''
+
     return (
-      <>
-        <Card className={DETAIL_CARD_CLASS}>
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center gap-2">
+          {shift.urgent ? (
+            <span className="inline-flex items-center rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              🔥 SOS
+            </span>
+          ) : null}
+        </div>
+
+        <div className="pt-0.5">
+          <div className="flex min-w-0 items-start gap-[10px]">
+            <div className={SHIFT_CARD_LOGO_CLASS}>
+              {positionInitial(positionLabel || shift.position)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h1>
+              <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-5">
+          <div className={DISPLAY_PRICE_CLASS}>
+            {payValue}
+            {payCurrency ? (
+              <span className="ml-1 text-base font-semibold text-muted-foreground">
+                {payCurrency}
+              </span>
+            ) : null}
+          </div>
+          <div className="min-w-0 text-sm">
+            <p className="text-muted-foreground">
+              {t('common.payPerShift', { defaultValue: 'за смену' })}
+              {displayDuration ? ` ${displayDuration}` : ''}
+            </p>
+            {hourlyRate ? (
+              <p className="text-primary">
+                ≈ {hourlyRate} {currency}/час
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        <Card padding="md" className="dark:shadow-none">
           <div className="space-y-4">
-            {positionLabel ? (
-              <DetailRow
-                icon={Briefcase}
-                iconVariant="section"
-                label={t('common.position')}
-                value={positionLabel}
-              />
+            {schedule ? (
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span aria-hidden>⏱</span>
+                  <span className="truncate text-sm font-semibold text-foreground">{schedule}</span>
+                </div>
+                {displayDuration ? (
+                  <span className="shrink-0 text-sm text-muted-foreground">{displayDuration}</span>
+                ) : null}
+              </div>
             ) : null}
-
-            {specializations.length > 0 ? (
-              <DetailRow
-                icon={CookingPot}
-                iconVariant="section"
-                label={t('profile.specializationSection')}
-                value={specializations.map(spec => getSpecializationLabel(spec)).join(', ')}
-              />
-            ) : null}
-
-            {hasDate ? (
-              <DetailRow
-                icon={Calendar}
-                iconVariant="section"
-                label={t('common.date')}
-                value={shiftDate}
-              />
-            ) : null}
-
-            {hasTime ? (
-              <DetailRow
-                icon={Clock}
-                iconVariant="section"
-                label={t('shift.workTime')}
-                value={shiftTime}
-                subValue={
-                  duration ? t('activity.durationWithValue', { value: duration }) : undefined
-                }
-              />
-            ) : null}
-
-            {locationPoints.length > 0 ? (
-              <DetailRow
-                icon={MapPin}
-                iconVariant="section"
-                label={t('common.location')}
-                value={
-                  locationPoints.length === 1 ? (
-                    locationPoints[0]
-                  ) : (
-                    <div className="space-y-1">
-                      {locationPoints.map((point, index) => (
-                        <p key={`${point}-${index}`}>{point}</p>
-                      ))}
-                    </div>
-                  )
-                }
-                action={
-                  <Button
-                    onClick={onOpenMap}
-                    variant="ghost"
-                    size="sm"
-                    className="mt-1 px-0 text-primary hover:underline"
-                  >
-                    {t('aria.viewOnMap')}
-                  </Button>
-                }
-              />
-            ) : null}
-
-            <DetailRow
-              icon={Banknote}
-              iconVariant="section"
-              label={t('shift.pay')}
-              value={
-                <span className="text-lg font-semibold text-primary">
-                  {pay == null || Number(pay) === 0
-                    ? t('shift.payNegotiable')
-                    : `${formatMoney(Number(pay))} ${currency}`}
-                </span>
-              }
-              subValue={pay != null && Number(pay) > 0 ? paySuffix : undefined}
-            />
-
-            {applicationsInfo ? (
-              <DetailRow
-                icon={Users}
-                iconVariant="section"
-                label={t('shift.applicationsCount')}
-                value={applicationsInfo.value}
-              />
+            {displayLocation ? (
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span aria-hidden>📍</span>
+                  <span className="truncate text-sm font-semibold text-foreground">
+                    {displayLocation}
+                  </span>
+                </div>
+                {distance ? (
+                  <span className="shrink-0 text-sm text-primary">{distance}</span>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </Card>
 
-        {description ? (
-          <TextCard icon={FileText} title={t('common.description')} content={description} />
-        ) : null}
-        {requirements ? (
-          <TextCard icon={FileText} title={t('common.requirements')} content={requirements} />
+        {requirementsText ? (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {t('common.requirements')}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{requirementsText}</p>
+          </div>
         ) : null}
 
-        {aboutVenue ? (
-          <Card className={DETAIL_CARD_CLASS}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className={cn(ICON_WRAPPER_SECTION)} aria-hidden>
-                <Building2 className="h-5 w-5 text-primary shrink-0" />
-              </div>
-              <h2 className="text-base font-medium text-foreground break-words">
-                {t('common.aboutVenue')}
-              </h2>
-            </div>
-            {aboutVenue.bio ? (
-              <p className="text-sm text-muted-foreground mb-3">{aboutVenue.bio}</p>
-            ) : null}
-            <div className="space-y-2 text-sm text-muted-foreground">
-              {aboutVenue.city ? <p>{aboutVenue.city}</p> : null}
-              {aboutVenue.formatKey ? (
-                <p>
-                  {t(`labels.restaurantFormat.${aboutVenue.formatKey}`, {
-                    defaultValue: aboutVenue.formatKey,
-                  })}
-                </p>
-              ) : null}
-              {aboutVenue.cuisineTypes.length ? (
-                <p>
-                  {aboutVenue.cuisineTypes
-                    .map(type =>
-                      t(`labels.cuisineType.${type}`, {
-                        defaultValue: formatServiceCategory(type),
-                      })
-                    )
-                    .join(', ')}
-                </p>
-              ) : null}
-            </div>
-          </Card>
+        {description && requirements ? (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {t('common.description')}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
+          </div>
         ) : null}
-      </>
+      </div>
     )
   }
 )

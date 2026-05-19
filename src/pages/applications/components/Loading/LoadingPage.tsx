@@ -2,11 +2,13 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { LogoWithText } from '@/components/ui/logo-with-text'
+import { HERO_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
 
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
-  const roleColorVar = 'var(--terracotta)'
+  const roleColorVar = 'var(--primary)'
 
   const logoIcon = (
     <div className="relative">
@@ -87,7 +89,7 @@ export const LoadingPage = memo(function LoadingPage() {
           }
           className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl"
           style={{
-            background: 'linear-gradient(135deg, var(--amber) 0%, var(--terracotta) 100%)',
+            background: 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
           }}
           aria-hidden="true"
         />
@@ -99,7 +101,10 @@ export const LoadingPage = memo(function LoadingPage() {
           title="Resta"
           subtitle={t('loadingPage.subtitle')}
           iconClassName="mb-0"
-          titleClassName="font-display text-5xl tracking-tight bg-[image:var(--gradient-primary)] bg-clip-text text-transparent"
+          titleClassName={cn(
+            HERO_TITLE_CLASS,
+            'bg-[image:var(--gradient-primary)] bg-clip-text text-transparent'
+          )}
         />
       </div>
       <div className="absolute bottom-0 left-0 right-0 z-10 px-8 pb-7 text-center">

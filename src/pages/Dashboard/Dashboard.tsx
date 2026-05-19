@@ -10,6 +10,7 @@ import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
+import { resetAppScroll } from '@/shared/ui/appScroll'
 
 interface DashboardProps {
   role: UiRole
@@ -39,16 +40,8 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
   )
 
   useEffect(() => {
-    const resetScroll = () => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-      if (typeof document !== 'undefined') {
-        document.documentElement.scrollTop = 0
-        document.body.scrollTop = 0
-      }
-    }
-
-    resetScroll()
-    const raf = requestAnimationFrame(resetScroll)
+    resetAppScroll()
+    const raf = requestAnimationFrame(() => resetAppScroll())
     return () => cancelAnimationFrame(raf)
   }, [activeTab])
 

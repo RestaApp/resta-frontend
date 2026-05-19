@@ -81,7 +81,7 @@ const CardSelectInner = <TId extends string>({
                 ? 'bg-transparent'
                 : isSelected
                   ? 'bg-white/20 [&_svg]:text-white'
-                  : 'border border-border/60 bg-muted [&_svg]:text-muted-foreground',
+                  : 'border border-border/60 bg-secondary [&_svg]:text-muted-foreground',
               layout === 'horizontal' ? 'h-12 w-12' : 'h-14 w-14'
             )}
             aria-hidden="true"
@@ -108,7 +108,7 @@ const CardSelectInner = <TId extends string>({
           {socialProof ? (
             <div
               className={cn(
-                'mt-1.5 font-mono-resta text-meta font-medium',
+                'mt-1.5 font-mono-resta text-xs font-medium',
                 isSelected ? 'text-white/60' : 'text-muted-foreground/70'
               )}
             >

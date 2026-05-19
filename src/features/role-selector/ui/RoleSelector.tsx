@@ -88,7 +88,6 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         title={t('roles.whoAreYou')}
         subtitle={t('roles.roleChoiceHint')}
         bottomSpace={vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : undefined}
-        scrollable={Boolean(vm.selectedRole)}
       >
         <div className="flex flex-col gap-2.5">
           {vm.mainRoles.map((role, index) => (

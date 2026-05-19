@@ -11,7 +11,7 @@ interface TextCardProps {
 }
 
 export const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => (
-  <Card className={DETAIL_CARD_CLASS}>
+  <Card padding="md" className={DETAIL_CARD_CLASS}>
     <div className="flex items-center gap-2 mb-2">
       <div className={cn(ICON_WRAPPER_SECTION)} aria-hidden>
         <Icon className="h-5 w-5 text-primary shrink-0" />

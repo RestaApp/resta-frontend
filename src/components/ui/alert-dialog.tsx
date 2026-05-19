@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useId, useRef, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/utils/cn'
+import { Card } from './card'
 import { Button } from './button'
+import { MODAL_TITLE_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
@@ -123,24 +125,24 @@ export const AlertDialogContent = memo(function AlertDialogContent({
       {/* alertdialog — фокус-ловушка диалога; pointerdown/click stopPropagation
           нужен чтобы клик внутри окна не закрывал dialog (overlay click handler выше).
           Сам элемент не интерактивный, события обрабатывает только для bubbling‑guard. */}
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
-      <div
+      <Card
         ref={contentRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         tabIndex={-1}
+        padding="none"
         className={cn(
-          'relative z-10 outline-none',
-          'bg-card border border-border shadow-[0_14px_40px_rgba(0,0,0,0.4)] rounded-2xl p-6 w-full max-w-md max-w-[90vw]',
+          'relative z-10 outline-none rounded-2xl p-6 w-full max-w-md max-w-[90vw]',
+          SHADOW_MODAL_CLASS,
           className
         )}
         onPointerDown={e => e.stopPropagation()}
         onClick={e => e.stopPropagation()}
       >
         {children}
-      </div>
+      </Card>
     </AlertDialogA11yContext.Provider>
   )
 })
@@ -164,7 +166,7 @@ export const AlertDialogTitle = memo(function AlertDialogTitle({
   const fallbackId = useId()
   const id = ctx?.titleId ?? fallbackId
   return (
-    <h2 id={id} className={cn('text-lg font-semibold mb-2', className)}>
+    <h2 id={id} className={cn(MODAL_TITLE_CLASS, 'mb-2', className)}>
       {children}
     </h2>
   )

@@ -95,6 +95,8 @@ export function FeedBody({ vm }: FeedBodyProps) {
       <ApplyCoverLetterModal
         open={vm.isApplyCoverModalOpen}
         isSubmitting={vm.isApplyCoverModalSubmitting}
+        shift={vm.applyCoverShift}
+        userProfile={vm.userProfile}
         onClose={vm.closeApplyCoverModal}
         onSubmit={vm.submitApplyCoverModal}
       />

@@ -10,7 +10,21 @@ import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 import { cn } from '@/utils/cn'
 import { splitLocationPoints } from '@/shared/utils/location'
 import type { ShiftStatus } from '../StatusPill'
-import { toLocalISODateKey } from '@/utils/datetime'
+import { addDaysToISODate, toLocalISODateKey } from '@/utils/datetime'
+import {
+  SHIFT_CARD_BADGE_CLASS,
+  SHIFT_CARD_BADGE_ROW_CLASS,
+  SHIFT_CARD_CLASS,
+  SHIFT_CARD_CURRENCY_CLASS,
+  SHIFT_CARD_INTERACTIVE_CLASS,
+  SHIFT_CARD_LOGO_CLASS,
+  SHIFT_CARD_META_CLASS,
+  SHIFT_CARD_PRICE_CLASS,
+  SHIFT_CARD_ROW_CLASS,
+  SHIFT_CARD_SOS_CLASS,
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 
 interface ShiftCardOwnerActions {
   onEdit: (id: number) => void
@@ -66,8 +80,13 @@ const positionInitial = (position: string): string => {
   return (normalized[0] ?? 'R').toUpperCase()
 }
 
-const isTodayDateKey = (dateKey?: string | null): boolean => {
-  return Boolean(dateKey) && dateKey === toLocalISODateKey(new Date())
+const getUrgentDateTag = (dateKey?: string | null): string => {
+  if (!dateKey) return ''
+  const todayKey = toLocalISODateKey(new Date())
+  if (dateKey === todayKey) return 'СЕГОДНЯ'
+  const tomorrowKey = addDaysToISODate(todayKey, 1)
+  if (dateKey === tomorrowKey) return 'ЗАВТРА'
+  return ''
 }
 
 export interface ShiftCardProps {
@@ -162,7 +181,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
   const locationMeta = formatDistanceKm(shift.distanceKm) ?? locationText
   const compactSchedule = formatCompactSchedule(shift.date, shift.time)
   const compactPrice = shift.pay == null || Number(shift.pay) === 0 ? null : formatMoney(shift.pay)
-  const isToday = isTodayDateKey(shift.dateKey)
+  const urgentDateTag = getUrgentDateTag(shift.dateKey)
   const compactSubtitle =
     [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
     positionText
@@ -180,24 +199,27 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
       className={cn(
-        'shift-compact-card group cursor-pointer outline-none transition-all duration-200 active:scale-[0.99] hover:border-[var(--surface-stroke-soft-hover)] focus-visible:ring-2 focus-visible:ring-ring',
-        shift.urgent && 'shift-compact-card-sos'
+        SHIFT_CARD_CLASS,
+        SHIFT_CARD_INTERACTIVE_CLASS,
+        shift.urgent && SHIFT_CARD_SOS_CLASS
       )}
     >
-      <div className="shift-compact-row">
+      <div className={SHIFT_CARD_ROW_CLASS}>
         <div className="min-w-0 flex-1">
           {shift.urgent ? (
-            <div className="shift-compact-badge-row">
-              <span className="shift-compact-badge">🔥 SOS{isToday ? ' · СЕГОДНЯ' : ''}</span>
+            <div className={SHIFT_CARD_BADGE_ROW_CLASS}>
+              <span className={SHIFT_CARD_BADGE_CLASS}>
+                🔥 SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
+              </span>
             </div>
           ) : null}
           <div className={cn('flex min-w-0 items-start gap-[10px]', shift.urgent && 'gap-0')}>
             {!shift.urgent ? (
-              <div className="shift-compact-logo">{positionInitial(shift.position)}</div>
+              <div className={SHIFT_CARD_LOGO_CLASS}>{positionInitial(shift.position)}</div>
             ) : null}
             <div className="min-w-0 flex-1">
-              <h3 className="shift-compact-title line-clamp-2">{compactTitle}</h3>
-              <p className="shift-compact-sub truncate">{compactSubtitle}</p>
+              <h3 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h3>
+              <p className={SHIFT_CARD_SUB_CLASS}>{compactSubtitle}</p>
             </div>
           </div>
         </div>
@@ -205,16 +227,18 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
         <div className="shrink-0 text-right leading-none tabular-nums text-foreground">
           {compactPrice ? (
             <>
-              <span className="shift-compact-price font-display">{compactPrice}</span>
-              <span className="shift-compact-currency">{shift.currency}</span>
+              <span className={SHIFT_CARD_PRICE_CLASS}>{compactPrice}</span>
+              <span className={SHIFT_CARD_CURRENCY_CLASS}>{shift.currency}</span>
             </>
           ) : (
-            <span className="shift-compact-sub font-semibold">{t('shift.payNegotiable')}</span>
+            <span className={cn(SHIFT_CARD_SUB_CLASS, 'font-semibold')}>
+              {t('shift.payNegotiable')}
+            </span>
           )}
         </div>
       </div>
 
-      <div className="shift-compact-meta min-w-0">
+      <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0')}>
         {compactSchedule ? <span className="shrink-0">⏱ {compactSchedule}</span> : null}
         {locationMeta ? (
           <span className="min-w-[5rem] flex-1 truncate">📍 {locationMeta}</span>

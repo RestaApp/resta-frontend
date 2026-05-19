@@ -1,14 +1,19 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
-import { FormField } from '@/components/ui/form-field'
+import { Drawer } from '@/components/ui/drawer'
+import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { Textarea } from '@/components/ui/textarea'
-import { MODAL_SURFACE_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/utils/cn'
+import { formatMoney } from '@/features/feed/model/utils/formatting'
+import type { Shift } from '@/features/feed/model/types'
+import type { UserData } from '@/services/api/authApi'
 
 interface ApplyCoverLetterModalProps {
   open: boolean
   isSubmitting: boolean
+  shift: Shift | null
+  userProfile: UserData | null
   onClose: () => void
   onSubmit: (message?: string) => Promise<void>
 }
@@ -16,6 +21,8 @@ interface ApplyCoverLetterModalProps {
 export function ApplyCoverLetterModal({
   open,
   isSubmitting,
+  shift,
+  userProfile,
   onClose,
   onSubmit,
 }: ApplyCoverLetterModalProps) {
@@ -23,6 +30,8 @@ export function ApplyCoverLetterModal({
   return (
     <ApplyCoverLetterModalContent
       isSubmitting={isSubmitting}
+      shift={shift}
+      userProfile={userProfile}
       onClose={onClose}
       onSubmit={onSubmit}
     />
@@ -31,84 +40,93 @@ export function ApplyCoverLetterModal({
 
 interface ApplyCoverLetterModalContentProps {
   isSubmitting: boolean
+  shift: Shift | null
+  userProfile: UserData | null
   onClose: () => void
   onSubmit: (message?: string) => Promise<void>
 }
 
 function ApplyCoverLetterModalContent({
   isSubmitting,
+  shift,
   onClose,
   onSubmit,
 }: ApplyCoverLetterModalContentProps) {
   const { t } = useTranslation()
   const [message, setMessage] = useState('')
 
-  const example = useMemo(() => t('shift.coverMessageExample'), [t])
-
-  const handleUseExample = () => {
-    setMessage(example)
-  }
+  const shiftSummary = useMemo(() => {
+    const parts = [
+      shift?.restaurant,
+      shift?.pay ? `${formatMoney(Number(shift.pay))} ${shift.currency}` : null,
+      shift?.date,
+      shift?.time,
+    ].filter(Boolean)
+    return parts.join(' · ')
+  }, [shift])
 
   const handleSubmit = async () => {
     await onSubmit(message.trim() || undefined)
   }
 
   return (
-    <Modal isOpen onClose={onClose} className="max-w-lg">
-      <div className={`${MODAL_SURFACE_CLASS} p-4`}>
-        <h2 className="text-lg font-semibold text-foreground">
-          {t('shift.coverMessagePromptTitle')}
+    <Drawer open onOpenChange={open => !open && onClose()} overlayClassName="bg-black/60">
+      <div className="px-6 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-5">
+        <h2 className={MODAL_TITLE_CLASS}>
+          {t('shift.applyNow', { defaultValue: 'Откликнуться' })}
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t('shift.coverMessagePromptDescription')}
-        </p>
+        {shiftSummary ? (
+          <p className="mt-2 text-sm leading-snug text-muted-foreground">{shiftSummary}</p>
+        ) : null}
 
-        <div className="mt-4 space-y-3">
-          <FormField
-            label={t('shift.coverMessage')}
-            hint={t('shift.coverMessageHint')}
-            htmlFor="apply-cover-message"
-          >
-            <Textarea
-              id="apply-cover-message"
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              placeholder={t('shift.coverMessagePlaceholder')}
-              className="min-h-[110px] resize-y"
-              maxLength={2000}
-            />
-          </FormField>
+        <label
+          htmlFor="apply-cover-message"
+          className="mt-6 block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+        >
+          {t('shift.coverMessageOptional', { defaultValue: 'Сообщение (опц.)' })}
+        </label>
+        <Textarea
+          id="apply-cover-message"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          placeholder={t('shift.coverMessagePlaceholderShort', {
+            defaultValue: 'Готова выйти к 15:45, опыт работы с грилем — да.',
+          })}
+          className={cn(
+            'mt-2 min-h-20 resize-none rounded-lg border-border bg-input-background p-3',
+            'text-sm leading-snug text-foreground placeholder:text-muted-foreground'
+          )}
+          maxLength={2000}
+        />
 
-          <button
-            type="button"
-            onClick={handleUseExample}
-            className="text-xs text-primary hover:underline"
-          >
-            {t('shift.useCoverMessageExample')}
-          </button>
+        <div className="mt-5 flex gap-3 rounded-lg border border-success/50 bg-success/10 p-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-success text-base font-bold text-white">
+            i
+          </div>
+          <div>
+            <p className="text-sm font-semibold leading-tight text-success">
+              {t('shift.applyPrivacyTitle', { defaultValue: 'Сообщение увидит менеджер' })}
+            </p>
+            <p className="mt-1 text-sm leading-snug text-muted-foreground">
+              {t('shift.applyPrivacyDescription', {
+                defaultValue: 'Контакты откроются после принятия отклика.',
+              })}
+            </p>
+          </div>
         </div>
 
-        <div className="mt-5 flex gap-3">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            size="md"
-            className="flex-1"
-            disabled={isSubmitting}
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="gradient"
-            size="md"
-            className="flex-1"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? t('shift.sending') : t('shift.apply')}
-          </Button>
-        </div>
+        <Button
+          onClick={handleSubmit}
+          variant="gradient"
+          size="lg"
+          className="mt-5 w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? t('shift.sending')
+            : t('shift.sendApplication', { defaultValue: 'Отправить отклик →' })}
+        </Button>
       </div>
-    </Modal>
+    </Drawer>
   )
 }

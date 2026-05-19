@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
+import {
+  SHIFT_CARD_CLASS,
+  SHIFT_CARD_LOGO_CLASS,
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
+import { cn } from '@/utils/cn'
 import { useLabels } from '@/shared/i18n/hooks'
 
 export interface StaffItem {
@@ -125,7 +132,7 @@ export const VenueStaffList = ({
                   return (
                     <div
                       key={`${item.shiftId}-${item.applicationId}`}
-                      className="shift-compact-card ui-density-stack-sm"
+                      className={cn(SHIFT_CARD_CLASS, 'ui-density-stack-sm')}
                     >
                       <div
                         className="flex cursor-pointer items-start gap-[10px] rounded-lg transition-colors"
@@ -138,7 +145,9 @@ export const VenueStaffList = ({
                           onOpenDetails(item)
                         }}
                       >
-                        <Avatar className="shift-compact-logo h-9 w-9 shrink-0 self-start p-0">
+                        <Avatar
+                          className={cn(SHIFT_CARD_LOGO_CLASS, 'h-9 w-9 shrink-0 self-start p-0')}
+                        >
                           <AvatarImage src={photoUrl} alt={fullName} />
                           <AvatarFallback>
                             {getLogoByPosition(
@@ -149,9 +158,9 @@ export const VenueStaffList = ({
                         </Avatar>
 
                         <div className="min-w-0 flex-1">
-                          <p className="shift-compact-title truncate">{fullName}</p>
-                          <p className="shift-compact-sub truncate">{positionLabel}</p>
-                          <p className="mt-1 truncate text-meta text-muted-foreground">
+                          <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{fullName}</p>
+                          <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{positionLabel}</p>
+                          <p className="mt-1 truncate text-xs text-muted-foreground">
                             {item.shiftTitle}
                           </p>
                         </div>
