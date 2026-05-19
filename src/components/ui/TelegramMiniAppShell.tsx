@@ -9,6 +9,11 @@ interface TelegramMiniAppShellProps {
 
 const FULLSCREEN_TOP_OFFSET_PX = 80
 
+const isIosDevice = (): boolean => {
+  if (typeof navigator === 'undefined') return false
+  return /iP(hone|ad|od)/i.test(navigator.userAgent || '')
+}
+
 /**
  * Внешняя оболочка Telegram WebView.
  *
@@ -19,16 +24,17 @@ const FULLSCREEN_TOP_OFFSET_PX = 80
  */
 export const TelegramMiniAppShell = ({ children, className }: TelegramMiniAppShellProps) => {
   const { isFullscreen } = useTelegram()
+  const applyFullscreenOffset = isFullscreen && isIosDevice()
 
   return (
     <div
       className={cn(
         'bg-background flex flex-col overflow-hidden',
-        isFullscreen && 'mt-20',
+        applyFullscreenOffset && 'mt-20',
         className
       )}
       style={{
-        height: isFullscreen
+        height: applyFullscreenOffset
           ? `calc(var(--tg-viewport-stable-height, 100dvh) - ${FULLSCREEN_TOP_OFFSET_PX}px)`
           : 'var(--tg-viewport-stable-height, 100dvh)',
       }}
