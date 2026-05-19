@@ -11,12 +11,10 @@ import {
   Users,
 } from 'lucide-react'
 import type { TFunction } from 'i18next'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
 import { formatMoney } from '@/features/feed/model/utils/formatting'
-import { DirectPaymentInfo } from '@/components/ui/states'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
 import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
@@ -47,8 +45,6 @@ interface DetailsTabProps {
   description: string
   requirements: string
   aboutVenue: AboutVenue | null
-  showVenueBadges: boolean
-  getRestaurantFormatLabel: (value?: string | null) => string
   t: TFunction
 }
 
@@ -71,8 +67,6 @@ export const DetailsTab = memo(
     description,
     requirements,
     aboutVenue,
-    showVenueBadges,
-    getRestaurantFormatLabel,
     t,
   }: DetailsTabProps) => {
     return (
@@ -172,16 +166,6 @@ export const DetailsTab = memo(
           </div>
         </Card>
 
-        {pay != null && Number(pay) > 0 ? (
-          <DirectPaymentInfo
-            title={t('shift.directPay.title', 'Оплата напрямую от заведения.')}
-            description={t(
-              'shift.directPay.body',
-              'Resta не берёт комиссии и не держит твои деньги — расчёт идёт между сторонами.'
-            )}
-          />
-        ) : null}
-
         {description ? (
           <TextCard icon={FileText} title={t('common.description')} content={description} />
         ) : null}
@@ -202,29 +186,27 @@ export const DetailsTab = memo(
             {aboutVenue.bio ? (
               <p className="text-sm text-muted-foreground mb-3">{aboutVenue.bio}</p>
             ) : null}
-            {showVenueBadges ? (
-              <div className="flex flex-wrap gap-2">
-                {aboutVenue.city ? (
-                  <Badge variant="tag" className="font-normal">
-                    {aboutVenue.city}
-                  </Badge>
-                ) : null}
-                {aboutVenue.formatKey ? (
-                  <Badge variant="tag" className="font-normal">
-                    {getRestaurantFormatLabel(aboutVenue.formatKey)}
-                  </Badge>
-                ) : null}
-                {aboutVenue.cuisineTypes.length
-                  ? aboutVenue.cuisineTypes.map(type => (
-                      <Badge key={type} variant="tag" className="font-normal">
-                        {t(`labels.cuisineType.${type}`, {
-                          defaultValue: formatServiceCategory(type),
-                        })}
-                      </Badge>
-                    ))
-                  : null}
-              </div>
-            ) : null}
+            <div className="space-y-2 text-sm text-muted-foreground">
+              {aboutVenue.city ? <p>{aboutVenue.city}</p> : null}
+              {aboutVenue.formatKey ? (
+                <p>
+                  {t(`labels.restaurantFormat.${aboutVenue.formatKey}`, {
+                    defaultValue: aboutVenue.formatKey,
+                  })}
+                </p>
+              ) : null}
+              {aboutVenue.cuisineTypes.length ? (
+                <p>
+                  {aboutVenue.cuisineTypes
+                    .map(type =>
+                      t(`labels.cuisineType.${type}`, {
+                        defaultValue: formatServiceCategory(type),
+                      })
+                    )
+                    .join(', ')}
+                </p>
+              ) : null}
+            </div>
           </Card>
         ) : null}
       </>

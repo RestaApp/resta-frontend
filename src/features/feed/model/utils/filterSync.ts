@@ -1,4 +1,4 @@
-import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
+import type { AdvancedFiltersData } from '../types'
 
 export const createInitialFilters = (
   userPosition?: string | null,
@@ -9,11 +9,9 @@ export const createInitialFilters = (
   if (!hasPosition && !hasCity) return null
 
   return {
-    selectedCity: userCity?.trim() || null,
-    selectedPosition: userPosition || null,
-    selectedSpecializations: [],
-    startDate: null,
-    endDate: null,
+    selectedCity: userCity?.trim() || undefined,
+    selectedPosition: userPosition || undefined,
+    selectedSpecializations: undefined,
   }
 }
 
@@ -23,42 +21,20 @@ export const syncFiltersPositionAndSpecializations = (
 ): AdvancedFiltersData | null => {
   if (!sourceFilters) return targetFilters
 
-  const {
-    selectedCity,
-    selectedPosition,
-    selectedSpecializations,
-    whenPreset,
-    startDate,
-    endDate,
-    geoLat,
-    geoLon,
-    radiusKm,
-  } = sourceFilters
+  const { selectedCity, selectedPosition, selectedSpecializations } = sourceFilters
 
   if (!targetFilters) {
     return {
-      selectedCity: selectedCity || null,
+      selectedCity: selectedCity?.trim() || undefined,
       selectedPosition,
-      selectedSpecializations: selectedSpecializations || [],
-      startDate: startDate ?? null,
-      endDate: endDate ?? null,
-      whenPreset: whenPreset ?? undefined,
-      geoLat: geoLat ?? undefined,
-      geoLon: geoLon ?? undefined,
-      radiusKm: radiusKm ?? undefined,
+      selectedSpecializations: selectedSpecializations?.length ? selectedSpecializations : undefined,
     }
   }
 
   return {
     ...targetFilters,
-    selectedCity: selectedCity || null,
+    selectedCity: selectedCity?.trim() || undefined,
     selectedPosition,
-    selectedSpecializations: selectedSpecializations || [],
-    whenPreset: whenPreset ?? targetFilters.whenPreset,
-    startDate: startDate ?? targetFilters.startDate,
-    endDate: endDate ?? targetFilters.endDate,
-    geoLat: geoLat ?? targetFilters.geoLat,
-    geoLon: geoLon ?? targetFilters.geoLon,
-    radiusKm: radiusKm ?? targetFilters.radiusKm,
+    selectedSpecializations: selectedSpecializations?.length ? selectedSpecializations : undefined,
   }
 }

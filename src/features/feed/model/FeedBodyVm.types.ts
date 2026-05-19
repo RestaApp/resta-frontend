@@ -1,64 +1,50 @@
-import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import type { ToastType } from '@/components/ui/toast'
-import type { ShiftStatus } from '@/components/ui/StatusPill'
-import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
-import type { FeedType, Shift } from './types'
-import type { UseVacanciesInfiniteListReturn } from './hooks/useVacanciesInfiniteList'
+import type { useFeedPageModel } from './hooks/useFeedPageModel'
 
-export interface ProfileAlertState {
-  open: boolean
-  message: string
-  missingFields: string[]
-}
+export type ProfileAlertState = ReturnType<typeof useFeedPageModel>['profileAlert']
 
-/** View-model для FeedBody (совпадает с полями useFeedPageModel для передачи без маппинга) */
-export interface FeedBodyVm {
-  feedType: FeedType
-  filteredShifts: Shift[]
-  activeList: UseVacanciesInfiniteListReturn
-  onRefresh: () => Promise<void>
-
-  openShiftDetails: (id: number) => void
-  openRestaurantDetails: (restaurantId: number) => void
-  getApplicationId: (id: number) => number | undefined
-  getApplicationStatus: (id: number) => ShiftStatus
-  isApplied: (id: number) => boolean
-  handleApply: (id: number, message?: string) => Promise<void>
-  handleApplyWithModal: (id: number, message?: string) => Promise<void>
-  isApplyCoverModalOpen: boolean
-  isApplyCoverModalSubmitting: boolean
-  closeApplyCoverModal: () => void
-  submitApplyCoverModal: (message?: string) => Promise<void>
-  handleCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
-  isShiftLoading: (id: number) => boolean
-  handleEdit: (id: number) => void
-  handleDelete: (id: number) => Promise<void>
-  isDeleting: boolean
-
-  selectedShiftId: number | null
-  selectedRestaurantId: number | null
-  selectedShift: Shift | null
-  selectedVacancy: VacancyApiItem | null
-  closeShiftDetails: () => void
-  closeRestaurantDetails: () => void
-
-  toast: { message: string; type: ToastType; isVisible: boolean }
-  hideToast: () => void
-
-  hasActiveFilters: boolean
-  emptyMessage: string
-  emptyDescription: string
-  resetFilters: () => void
-
-  profileAlert: ProfileAlertState
-  closeProfileAlert: () => void
-  openProfileEdit: () => void
-
-  isFiltersOpen: boolean
-  closeFilters: () => void
-  applyAdvancedFilters: (f: AdvancedFiltersData | null) => void
-  advancedFilters: AdvancedFiltersData | null
-  filteredCount: number
-  resetFeedFilters: () => void
-  isVacancy: boolean
-}
+/** View-model для FeedBody — подмножество полей useFeedPageModel. */
+export type FeedBodyVm = Pick<
+  ReturnType<typeof useFeedPageModel>,
+  | 'feedType'
+  | 'filteredShifts'
+  | 'activeList'
+  | 'onRefresh'
+  | 'openShiftDetails'
+  | 'openRestaurantDetails'
+  | 'getApplicationId'
+  | 'getApplicationStatus'
+  | 'isApplied'
+  | 'handleApplyWithModal'
+  | 'isApplyCoverModalOpen'
+  | 'isApplyCoverModalSubmitting'
+  | 'applyCoverShift'
+  | 'userProfile'
+  | 'closeApplyCoverModal'
+  | 'submitApplyCoverModal'
+  | 'handleCancel'
+  | 'isShiftLoading'
+  | 'handleEdit'
+  | 'handleDelete'
+  | 'isDeleting'
+  | 'selectedShiftId'
+  | 'selectedRestaurantId'
+  | 'selectedShift'
+  | 'selectedVacancy'
+  | 'closeShiftDetails'
+  | 'closeRestaurantDetails'
+  | 'toast'
+  | 'hideToast'
+  | 'hasActiveFilters'
+  | 'emptyMessage'
+  | 'emptyDescription'
+  | 'resetFilters'
+  | 'profileAlert'
+  | 'closeProfileAlert'
+  | 'openProfileEdit'
+  | 'isFiltersOpen'
+  | 'closeFilters'
+  | 'applyAdvancedFilters'
+  | 'advancedFilters'
+  | 'resetFeedFilters'
+  | 'isVacancy'
+>

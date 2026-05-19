@@ -1,6 +1,6 @@
 /** Параметры GET /api/v1/shifts — см. SEARCH_FILTERS_SPEC.md § Shifts */
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
-import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
+import type { AdvancedFiltersData } from '../types'
 
 export type ShiftType = 'replacement' | 'vacancy'
 
@@ -25,14 +25,7 @@ export const buildVacanciesBaseParams = (
     if (adv.selectedCity?.trim()) {
       params.city = adv.selectedCity.trim()
     }
-
-    // даты — только для смен
-    if (options.shiftType !== 'vacancy') {
-      if (adv.startDate) params.start_date = adv.startDate
-      if (adv.endDate) params.end_date = adv.endDate
-    }
   }
-
   return params
 }
 

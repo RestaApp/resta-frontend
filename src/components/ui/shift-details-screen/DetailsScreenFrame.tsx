@@ -11,6 +11,7 @@ interface DetailsScreenFrameProps {
   headerMeta?: ReactNode
   children: ReactNode
   footer?: ReactNode
+  variant?: 'drawer' | 'page'
 }
 
 export function DetailsScreenFrame({
@@ -22,7 +23,37 @@ export function DetailsScreenFrame({
   headerMeta,
   children,
   footer,
+  variant = 'drawer',
 }: DetailsScreenFrameProps) {
+  if (variant === 'page') {
+    if (!open) return null
+    return (
+      <section className="fixed inset-0 z-50 flex flex-col bg-background">
+        <header className={`${DRAWER_HEADER_CLASS} shrink-0 border-b border-border/50 pb-4 pt-3`}>
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <DrawerTitle className="text-xl font-semibold break-words text-foreground">
+                {title}
+              </DrawerTitle>
+            </div>
+            <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel} />
+          </div>
+          {headerMeta ? (
+            <div className="flex items-center gap-2 flex-wrap mt-3">{headerMeta}</div>
+          ) : null}
+        </header>
+
+        <div
+          className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} ui-density-stack bg-background pb-5`}
+        >
+          {children}
+        </div>
+
+        {footer}
+      </section>
+    )
+  }
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <div

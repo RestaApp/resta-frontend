@@ -9,7 +9,7 @@ interface FeedListProps {
   shifts: Shift[]
   activeList: UseVacanciesInfiniteListReturn
   getApplicationId: (id: number) => number | undefined
-  getApplicationStatus: (id: number) => ShiftStatus
+  getApplicationStatus: (id: number) => ShiftStatus | null
   isApplied: (id: number) => boolean
   onOpenDetails: (id: number) => void
   onOpenRestaurant: (restaurantId: number) => void

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/utils/cn'
+import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
 interface StickyCTAProps {
@@ -37,10 +38,13 @@ export const StickyCTA = ({
     className={cn(
       'fixed left-0 right-0 px-4 pt-3 pb-safe-cta',
       !transparent && 'bg-background/92 backdrop-blur-xl',
-      aboveBottomNav ? 'bottom-[88px]' : 'bottom-0',
+      !aboveBottomNav && 'bottom-0',
       className
     )}
-    style={{ zIndex: Z_INDEX.stickyHeader }}
+    style={{
+      zIndex: Z_INDEX.stickyHeader,
+      ...(aboveBottomNav ? { bottom: BOTTOM_NAV_HEIGHT_PX } : undefined),
+    }}
   >
     {!hideFade ? (
       <div
@@ -48,6 +52,6 @@ export const StickyCTA = ({
         className="pointer-events-none absolute inset-x-0 -top-6 h-6 bg-gradient-to-t from-background to-transparent"
       />
     ) : null}
-    <div className="mx-auto max-w-2xl">{children}</div>
+    <div className="ui-app-frame">{children}</div>
   </div>
 )

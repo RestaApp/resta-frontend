@@ -4,12 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { useAppDispatch } from '@/store/hooks'
-import { useHaptics } from '@/utils/haptics'
-import {
-  getLocalStorageItem,
-  removeLocalStorageItem,
-  setLocalStorageItem,
-} from '@/utils/localStorage'
+import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 
 import { useFeedFiltersState } from '../hooks/useFeedFiltersState'
@@ -22,24 +17,22 @@ import { useDeleteShift } from '@/features/activity/model/hooks/useShifts'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
 import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
-import { formatFiltersForDisplay, hasActiveFilters } from '@/utils/filters'
+import { formatFiltersForDisplay, hasActiveFilters, normalizeAdvancedFilters } from '@/utils/filters'
 import { vacancyToShift } from '../utils/mapping'
 
 import { Briefcase, Flame } from 'lucide-react'
 import type { FeedType } from '../types'
 import type { Shift } from '../types'
 import type { TabOption } from '@/components/ui/tabs'
-import type { HotOffer } from '../../ui/components/HotOffers'
-import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
+import type { AdvancedFiltersData } from '../types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  useUserProfile()
+  const { userProfile } = useUserProfile()
 
   const { toast, showToast, hideToast } = useToast()
-  const haptics = useHaptics()
 
   const feedTypeOptions = useMemo<TabOption<FeedType>[]>(
     () => [
@@ -66,14 +59,6 @@ export const useFeedPageModel = () => {
   } = useFeedFiltersState()
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
 
-  // Переключение на таб "Смены" из внешнего флага (поведение сохраняем)
-  useEffect(() => {
-    const shouldShowShifts = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
-    if (shouldShowShifts === 'true') {
-      removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_FEED_SHIFTS)
-    }
-  }, [])
-
   const {
     appliedShiftsSet,
     appliedApplicationsMap,
@@ -91,6 +76,7 @@ export const useFeedPageModel = () => {
     openProfileEdit,
     isApplyCoverModalOpen,
     isApplyCoverModalSubmitting,
+    applyCoverTargetShiftId,
     closeApplyCoverModal,
     handleApplyWithModal,
     submitApplyCoverModal,
@@ -156,12 +142,7 @@ export const useFeedPageModel = () => {
 
   const activeList = feedType === 'shifts' ? shiftsList : jobsList
 
-  const {
-    hotOffers,
-    hotVacancies,
-    hotOffersTotalCount,
-    refresh: refreshHotOffers,
-  } = useHotOffers({
+  const { hotVacancies, refresh: refreshHotOffers } = useHotOffers({
     feedType,
     advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
   })
@@ -174,7 +155,6 @@ export const useFeedPageModel = () => {
 
   const filteredShifts = activeList.items
 
-  // IMPORTANT: для деталей лучше иметь lookup по исходным items (не по отфильтрованному списку)
   const shiftsById = useMemo(() => {
     const m = new Map<number, Shift>()
     for (const s of activeList.items) m.set(s.id, s)
@@ -192,30 +172,6 @@ export const useFeedPageModel = () => {
   )
   const closeRestaurantDetails = useCallback(() => setSelectedRestaurantId(null), [])
 
-  const handleHotOfferClick = useCallback(
-    (item: HotOffer) => {
-      haptics.trigger('light')
-
-      if (shiftsById.has(item.id)) {
-        openShiftDetails(item.id)
-        return
-      }
-
-      const fromMap = activeList.vacanciesMap.get(item.id)
-      if (fromMap) {
-        openShiftDetails(item.id)
-        return
-      }
-
-      if (hotVacanciesById.has(item.id)) openShiftDetails(item.id)
-    },
-    [haptics, shiftsById, activeList.vacanciesMap, hotVacanciesById, openShiftDetails]
-  )
-
-  const showAllHotShifts = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
-
   const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
 
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
@@ -227,14 +183,17 @@ export const useFeedPageModel = () => {
 
   const applyAdvancedFilters = useCallback(
     (filters: AdvancedFiltersData | null) => {
-      setAdvancedFilters(filters)
-      if (!filters) return
+      const normalized = normalizeAdvancedFilters(filters)
+      setAdvancedFilters(normalized)
+      if (!normalized) return
 
       if (feedType === 'shifts') {
-        setJobsAdvancedFilters(syncFiltersPositionAndSpecializations(filters, jobsAdvancedFilters))
+        setJobsAdvancedFilters(
+          syncFiltersPositionAndSpecializations(normalized, jobsAdvancedFilters)
+        )
       } else {
         setShiftsAdvancedFilters(
-          syncFiltersPositionAndSpecializations(filters, shiftsAdvancedFilters)
+          syncFiltersPositionAndSpecializations(normalized, shiftsAdvancedFilters)
         )
       }
     },
@@ -248,11 +207,10 @@ export const useFeedPageModel = () => {
     ]
   )
 
-  const hasActiveAdvanced = useMemo(
-    () => (advancedFilters ? hasActiveFilters(advancedFilters) : false),
+  const hasActiveFiltersFlag = useMemo(
+    () => hasActiveFilters(advancedFilters),
     [advancedFilters]
   )
-  const hasActiveAny = hasActiveAdvanced
 
   const activeFiltersList = useMemo(
     () => formatFiltersForDisplay(advancedFilters),
@@ -260,24 +218,22 @@ export const useFeedPageModel = () => {
   )
   const emptyMessage = useMemo(
     () =>
-      hasActiveAny
+      hasActiveFiltersFlag
         ? t('feed.emptyByFilters')
         : feedType === 'shifts'
           ? t('feed.noShifts')
           : t('feed.noVacancies'),
-    [hasActiveAny, feedType, t]
+    [hasActiveFiltersFlag, feedType, t]
   )
   const emptyDescription = useMemo(
     () =>
-      hasActiveAny
+      hasActiveFiltersFlag
         ? t('feed.emptyByFiltersDescription')
         : feedType === 'shifts'
           ? t('feed.noShiftsDescription')
           : t('feed.noVacanciesDescription'),
-    [hasActiveAny, feedType, t]
+    [hasActiveFiltersFlag, feedType, t]
   )
-
-  const filteredCount = useMemo(() => Math.max(0, activeList.totalCount), [activeList.totalCount])
 
   const selectedVacancy = useMemo(() => {
     if (!selectedShiftId) return null
@@ -293,6 +249,16 @@ export const useFeedPageModel = () => {
     if (selectedVacancy) return vacancyToShift(selectedVacancy)
     return null
   }, [selectedShiftId, shiftsById, selectedVacancy])
+
+  const applyCoverShift = useMemo(() => {
+    if (!applyCoverTargetShiftId) return null
+    const fromItems = shiftsById.get(applyCoverTargetShiftId)
+    if (fromItems) return fromItems
+    const vacancy = activeList.vacanciesMap.get(applyCoverTargetShiftId)
+    if (vacancy) return vacancyToShift(vacancy)
+    const hotVacancy = hotVacanciesById.get(applyCoverTargetShiftId)
+    return hotVacancy ? vacancyToShift(hotVacancy) : null
+  }, [applyCoverTargetShiftId, shiftsById, activeList.vacanciesMap, hotVacanciesById])
 
   const isApplied = useCallback((id: number) => appliedShiftsSet.has(id), [appliedShiftsSet])
   const getApplicationIdStable = useCallback(
@@ -312,46 +278,33 @@ export const useFeedPageModel = () => {
   }, [activeList, refreshHotOffers])
 
   return {
-    // header
     feedType,
     setFeedType,
     feedTypeOptions,
-    isFetching: activeList.isFetching,
-    isRefreshing: activeList.isRefreshing,
-    hasActiveAdvancedFilters: hasActiveAdvanced,
-    hasActiveFilters: hasActiveAny,
+    hasActiveFilters: hasActiveFiltersFlag,
     emptyMessage,
     emptyDescription,
     activeFiltersList,
-    totalCount: Math.max(0, activeList.totalCount),
-    openFilters,
+    resetFilters,
 
-    // hot offers
-    hotOffers,
-    hotOffersTotalCount,
-    showAllHotShifts,
-    onHotOfferClick: handleHotOfferClick,
-
-    // list
     filteredShifts,
     activeList,
     onRefresh: handleRefresh,
     advancedFilters,
-    resetFilters,
     openShiftDetails,
     openRestaurantDetails,
 
-    // details / actions
     selectedShiftId,
     selectedRestaurantId,
     selectedShift,
     selectedVacancy,
     closeShiftDetails,
     closeRestaurantDetails,
-    handleApply,
     handleApplyWithModal,
     isApplyCoverModalOpen,
     isApplyCoverModalSubmitting,
+    applyCoverShift,
+    userProfile,
     closeApplyCoverModal,
     submitApplyCoverModal,
     handleCancel,
@@ -363,20 +316,16 @@ export const useFeedPageModel = () => {
     handleDelete,
     isDeleting,
 
-    // toast
     toast,
     hideToast,
 
-    // profile alert
     profileAlert,
     closeProfileAlert,
     openProfileEdit,
 
-    // advanced filters modal
     isFiltersOpen,
     closeFilters,
     applyAdvancedFilters,
-    filteredCount,
     resetFeedFilters,
     isVacancy: feedType === 'jobs',
   }

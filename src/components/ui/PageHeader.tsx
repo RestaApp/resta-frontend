@@ -74,39 +74,43 @@ export const PageHeader = ({
       )}
       style={sticky ? { zIndex: Z_INDEX.stickyHeader } : undefined}
     >
-      {meta ? (
-        <div className="mb-1 font-mono-resta text-micro uppercase tracking-widest text-muted-foreground">
-          {meta}
-        </div>
-      ) : null}
-
-      <div className="flex min-h-[44px] items-center gap-2">
-        {LeadingIcon ? (
-          <button
-            type="button"
-            onClick={onLeadingAction}
-            aria-label={leadingAriaLabel}
-            className="-ml-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <LeadingIcon className="h-5 w-5" aria-hidden />
-          </button>
+      <div className="ui-app-frame">
+        {meta ? (
+          <div className="mb-1 font-mono-resta text-micro uppercase tracking-widest text-muted-foreground">
+            {meta}
+          </div>
         ) : null}
 
-        <div className="min-w-0 flex-1">
-          {title ? (
-            <h1 className="truncate text-title-md font-extrabold leading-tight tracking-tight text-foreground">
-              {title}
-            </h1>
+        <div className="flex min-h-[44px] items-center gap-2">
+          {LeadingIcon ? (
+            <button
+              type="button"
+              onClick={onLeadingAction}
+              aria-label={leadingAriaLabel}
+              className="-ml-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <LeadingIcon className="h-5 w-5" aria-hidden />
+            </button>
           ) : null}
-          {subtitle ? <p className="truncate text-meta text-muted-foreground">{subtitle}</p> : null}
+
+          <div className="min-w-0 flex-1">
+            {title ? (
+              <h1 className="truncate text-title-md font-extrabold leading-tight tracking-tight text-foreground">
+                {title}
+              </h1>
+            ) : null}
+            {subtitle ? (
+              <p className="truncate text-meta text-muted-foreground">{subtitle}</p>
+            ) : null}
+          </div>
+
+          {rightActions ? (
+            <div className="flex shrink-0 items-center gap-1">{rightActions}</div>
+          ) : null}
         </div>
 
-        {rightActions ? (
-          <div className="flex shrink-0 items-center gap-1">{rightActions}</div>
-        ) : null}
+        {progress ? <div className="mt-3">{progress}</div> : null}
       </div>
-
-      {progress ? <div className="mt-3">{progress}</div> : null}
     </header>
   )
 }

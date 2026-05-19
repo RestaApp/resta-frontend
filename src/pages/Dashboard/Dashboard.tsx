@@ -9,8 +9,7 @@ import { AppHeader } from '@/components/AppHeader'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
-
-const BOTTOM_NAV_HEIGHT_PX = 88
+import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 
 interface DashboardProps {
   role: UiRole
@@ -57,7 +56,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
     <div className="bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
       <AppHeader activeTab={activeTab} role={role} />
       {role === 'venue' ? <VenueAddShiftListener /> : null}
-      <main className="mx-auto max-w-2xl">
+      <main className="ui-app-frame">
         <TabContent activeTab={activeTab} />
       </main>
 

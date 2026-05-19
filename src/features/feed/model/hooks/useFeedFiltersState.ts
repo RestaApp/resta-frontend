@@ -5,19 +5,18 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserCity, selectUserPosition } from '@/features/navigation/model/userSlice'
-import type { FeedType } from '../types'
-import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
-import { hasActiveFilters } from '@/utils/filters'
+import type { AdvancedFiltersData, FeedType } from '../types'
+import { hasActiveFilters, normalizeAdvancedFilters } from '@/utils/filters'
 import { createInitialFilters } from '../utils/filterSync'
-import { loadFeedFilterTemplate } from '../utils/feedFilterTemplates'
+import { loadFeedFilterTemplate, saveFeedFilterTemplate } from '../utils/feedFilterTemplates'
 
 export interface UseFeedFiltersStateReturn {
   feedType: FeedType
   setFeedType: (type: FeedType) => void
-  advancedFilters: AdvancedFiltersData | null // Активные фильтры для текущего типа (shifts/jobs)
+  advancedFilters: AdvancedFiltersData | null
   setAdvancedFilters: (filters: AdvancedFiltersData | null) => void
-  shiftsAdvancedFilters: AdvancedFiltersData | null // Фильтры для смен
-  jobsAdvancedFilters: AdvancedFiltersData | null // Фильтры для вакансий
+  shiftsAdvancedFilters: AdvancedFiltersData | null
+  jobsAdvancedFilters: AdvancedFiltersData | null
   setShiftsAdvancedFilters: (filters: AdvancedFiltersData | null) => void
   setJobsAdvancedFilters: (filters: AdvancedFiltersData | null) => void
   selectedShiftId: number | null
@@ -25,7 +24,14 @@ export interface UseFeedFiltersStateReturn {
   isFiltersOpen: boolean
   setIsFiltersOpen: (open: boolean) => void
   resetFilters: () => void
-  hasAdvancedFilters: boolean
+}
+
+const resolveStoredFilters = (
+  saved: AdvancedFiltersData | null,
+  derivedInitial: AdvancedFiltersData | null
+): AdvancedFiltersData | null => {
+  if (saved && hasActiveFilters(saved)) return normalizeAdvancedFilters(saved)
+  return derivedInitial
 }
 
 export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
@@ -33,11 +39,9 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
   const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
-  // Инициализируем фильтры синхронно, если у пользователя есть позиция
   const userPosition = useAppSelector(selectUserPosition)
   const userCity = useAppSelector(selectUserCity)
 
-  // Отдельные фильтры для смен и вакансий
   const derivedInitialFilters = useMemo(
     () => createInitialFilters(userPosition, userCity),
     [userPosition, userCity]
@@ -51,51 +55,50 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
 
   const shiftsAdvancedFilters = useMemo(() => {
     if (shiftsAdvancedFiltersState !== undefined) return shiftsAdvancedFiltersState
-    const saved = loadFeedFilterTemplate('shifts')
-    if (saved && hasActiveFilters(saved)) return saved
-    return derivedInitialFilters
+    return resolveStoredFilters(loadFeedFilterTemplate('shifts'), derivedInitialFilters)
   }, [shiftsAdvancedFiltersState, derivedInitialFilters])
 
   const jobsAdvancedFilters = useMemo(() => {
     if (jobsAdvancedFiltersState !== undefined) return jobsAdvancedFiltersState
-    const saved = loadFeedFilterTemplate('jobs')
-    if (saved && hasActiveFilters(saved)) return saved
-    return derivedInitialFilters
+    return resolveStoredFilters(loadFeedFilterTemplate('jobs'), derivedInitialFilters)
   }, [jobsAdvancedFiltersState, derivedInitialFilters])
 
-  // Активные фильтры для текущего типа фида (вычисляемое значение)
   const advancedFilters = useMemo(() => {
     return feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters
   }, [feedType, shiftsAdvancedFilters, jobsAdvancedFilters])
 
-  // Сеттер для активных фильтров - обновляет соответствующий набор
   const setAdvancedFilters = useCallback(
     (filters: AdvancedFiltersData | null) => {
+      const normalized = normalizeAdvancedFilters(filters)
       if (feedType === 'shifts') {
-        setShiftsAdvancedFiltersState(filters)
+        setShiftsAdvancedFiltersState(normalized)
+        saveFeedFilterTemplate('shifts', normalized)
       } else {
-        setJobsAdvancedFiltersState(filters)
+        setJobsAdvancedFiltersState(normalized)
+        saveFeedFilterTemplate('jobs', normalized)
       }
     },
     [feedType]
   )
 
-  // Синхронизация позиций и специализаций — syncFiltersPositionAndSpecializations
-
-  const hasAdvancedFilters = useMemo(() => !!advancedFilters, [advancedFilters])
-
   const resetFilters = useCallback(() => {
     setShiftsAdvancedFiltersState(null)
     setJobsAdvancedFiltersState(null)
+    saveFeedFilterTemplate('shifts', null)
+    saveFeedFilterTemplate('jobs', null)
     setSelectedShiftId(null)
   }, [])
 
   const setShiftsAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
-    setShiftsAdvancedFiltersState(filters)
+    const normalized = normalizeAdvancedFilters(filters)
+    setShiftsAdvancedFiltersState(normalized)
+    saveFeedFilterTemplate('shifts', normalized)
   }, [])
 
   const setJobsAdvancedFilters = useCallback((filters: AdvancedFiltersData | null) => {
-    setJobsAdvancedFiltersState(filters)
+    const normalized = normalizeAdvancedFilters(filters)
+    setJobsAdvancedFiltersState(normalized)
+    saveFeedFilterTemplate('jobs', normalized)
   }, [])
 
   return {
@@ -112,6 +115,5 @@ export const useFeedFiltersState = (): UseFeedFiltersStateReturn => {
     isFiltersOpen,
     setIsFiltersOpen,
     resetFilters,
-    hasAdvancedFilters,
   }
 }

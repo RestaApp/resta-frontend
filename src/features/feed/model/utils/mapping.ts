@@ -7,8 +7,8 @@ import {
   parseApiDateTime,
   stripMinskPrefix,
 } from '../utils/formatting'
+import { normalizeApiLocation } from '@/shared/utils/location'
 import { toLocalISODateKey } from '@/utils/datetime'
-import type { HotOffer } from '../../ui/components/HotOffers'
 import i18n from '@/shared/i18n/config'
 
 const toNumber = (v?: string | number | null): number => {
@@ -128,7 +128,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
   const payPeriod: PayPeriod = resolvePayPeriodFromVacancy(item)
 
-  const locationRaw = item.location ?? getCityFromUser(item)
+  const locationRaw = normalizeApiLocation(item.location) ?? getCityFromUser(item)
   const location = stripMinskPrefix(locationRaw)
   const cuisineTypes = item.user?.restaurant_profile?.cuisine_types ?? undefined
 
@@ -169,31 +169,6 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   }
 }
 
-export const vacancyToHotOffer = (v: VacancyApiItem): HotOffer => {
-  const s = vacancyToShift(v)
-  return {
-    id: s.id,
-    emoji: s.logo,
-    photoUrl: s.userPhotoUrl ?? null,
-    payment: s.pay,
-    currency: s.currency,
-    rating: s.rating,
-    time: s.time || s.date,
-    date: s.date || undefined,
-    dateKey: s.dateKey ?? null,
-    payPeriod: s.payPeriod,
-    restaurant: s.restaurant,
-    title: s.title,
-    position: s.position,
-    specialization: s.specialization ?? null,
-    city: s.city ?? null,
-    location: s.location ?? null,
-    distanceKm: s.distanceKm ?? null,
-    applicationsCount: s.applicationsCount ?? null,
-    shiftType: v.shift_type,
-  }
-}
-
 /** Карточка «моя смена/вакансия» в activity venue — без названия ресторана, isMine */
 export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
   const { date, dateKey, time } = getVacancyScheduleFields(item)
@@ -214,7 +189,8 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     currency: 'BYN',
     payPeriod: resolvePayPeriodFromVacancy(item),
     shiftType: item.shift_type,
-    location: item.shift_type === 'vacancy' ? undefined : (item.location ?? undefined),
+    location:
+      item.shift_type === 'vacancy' ? undefined : normalizeApiLocation(item.location),
     urgent: Boolean(item.urgent),
     applicationId: null,
     ownerId: item.user?.id ?? null,
@@ -245,7 +221,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     pay: toNumber(v.payment),
     currency: 'BYN',
     payPeriod: resolvePayPeriodFromVacancy(v),
-    location: v.location ?? v.user?.restaurant_profile?.city ?? undefined,
+    location: normalizeApiLocation(v.location) ?? getCityFromUser(v) ?? undefined,
     urgent: Boolean(v.urgent),
     applicationId,
     ownerId: v.user?.id ?? null,

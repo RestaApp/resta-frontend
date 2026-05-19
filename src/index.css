@@ -305,14 +305,10 @@ textarea:focus-visible {
     @apply bg-background text-foreground;
     background-image:
       radial-gradient(circle at 15% 5%, rgba(255, 107, 44, 0.05), transparent 45%),
-      radial-gradient(circle at 85% 65%, rgba(179, 140, 255, 0.04), transparent 50%),
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      radial-gradient(circle at 85% 65%, rgba(179, 140, 255, 0.04), transparent 50%);
     background-size:
       auto,
-      auto,
-      44px 44px,
-      44px 44px;
+      auto;
     font-family: var(--font-family-base);
     margin: 0;
     padding: 0;
@@ -495,6 +491,12 @@ textarea:focus-visible {
   .ui-density-page {
     padding-left: var(--ui-density-page-x);
     padding-right: var(--ui-density-page-x);
+  }
+  .ui-app-frame {
+    width: 100%;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
   }
   .ui-density-py {
     padding-top: var(--ui-density-page-y);

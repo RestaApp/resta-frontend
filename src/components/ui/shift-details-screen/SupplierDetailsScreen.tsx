@@ -2,7 +2,6 @@ import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Building2, Globe, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import type { SupplierCardData } from '@/components/ui/shift-card/SupplierCard'
 import { DetailRow } from './DetailRow'
@@ -75,23 +74,20 @@ export const SupplierDetailsScreen = memo(
           </div>
         }
         headerMeta={
-          <>
-            <Badge variant="tag" className="inline-flex items-center gap-1">
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p className="inline-flex items-center gap-1">
               <Star className="h-3.5 w-3.5" />
               {supplier.averageRating.toFixed(1)} · {supplier.totalReviews}
-            </Badge>
-            <Badge
-              variant={supplier.deliveryAvailable ? 'tagActive' : 'tag'}
-              className="inline-flex items-center gap-1"
-            >
+            </p>
+            <p className="inline-flex items-center gap-1">
               <Truck className="h-3.5 w-3.5" />
               {supplier.deliveryAvailable == null
                 ? t('common.notSpecified', { defaultValue: 'Не указано' })
                 : supplier.deliveryAvailable
                   ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
                   : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })}
-            </Badge>
-          </>
+            </p>
+          </div>
         }
       >
         <Card className={DETAIL_CARD_CLASS}>
@@ -186,15 +182,15 @@ export const SupplierDetailsScreen = memo(
                 defaultValue: 'Категории товаров и услуг',
               })}
             </h2>
-            <div className="flex flex-wrap gap-2">
-              {supplier.serviceCategories.map(category => (
-                <Badge key={category} variant="tag" className="font-normal">
-                  {t(`labels.supplierType.${category}`, {
+            <p className="text-sm text-muted-foreground">
+              {supplier.serviceCategories
+                .map(category =>
+                  t(`labels.supplierType.${category}`, {
                     defaultValue: formatServiceCategory(category),
-                  })}
-                </Badge>
-              ))}
-            </div>
+                  })
+                )
+                .join(', ')}
+            </p>
           </Card>
         ) : null}
         {supplier.bio ? (

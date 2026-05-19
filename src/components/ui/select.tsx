@@ -6,6 +6,7 @@ import { FormField } from '@/components/ui/form-field'
 import { SelectDropdown } from './select/SelectDropdown'
 import { SelectTrigger } from './select/SelectTrigger'
 import type { SelectProps } from './select/types'
+import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 
 export type { SelectOption, SelectProps } from './select/types'
 
@@ -22,7 +23,7 @@ export const Select = memo(function Select({
   allowCustomValue = false,
   searchable = true,
   forceDropdownBelow = false,
-  bottomOffsetPx = 88,
+  bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
 }: SelectProps) {
   const { t } = useTranslation()
   const displayPlaceholder = placeholder ?? t('common.selectValue')

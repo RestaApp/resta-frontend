@@ -1,4 +1,11 @@
 export type FeedType = 'shifts' | 'jobs'
+
+/** Состояние расширенных фильтров ленты (город, позиция, специализации). */
+export interface AdvancedFiltersData {
+  selectedCity?: string | null
+  selectedPosition?: string | null
+  selectedSpecializations?: string[]
+}
 export type PayPeriod = 'shift' | 'month'
 
 export interface Shift {

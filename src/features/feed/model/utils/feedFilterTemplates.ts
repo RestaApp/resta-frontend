@@ -1,4 +1,4 @@
-import type { AdvancedFiltersData } from '@/features/feed/ui/components/AdvancedFilters'
+import type { AdvancedFiltersData } from '@/features/feed/model/types'
 import {
   getLocalStorageItem,
   removeLocalStorageItem,

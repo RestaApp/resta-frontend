@@ -1,10 +1,8 @@
 import { useMemo, useCallback } from 'react'
 import { useGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { FeedType } from '../types'
-import type { AdvancedFiltersData } from '../../ui/components/AdvancedFilters'
+import type { AdvancedFiltersData } from '../types'
 import { buildVacanciesQueryParams } from '../utils/queryParams'
-import type { HotOffer } from '../../ui/components/HotOffers'
-import { vacancyToHotOffer } from '../utils/mapping'
 
 interface UseHotOffersParams {
   feedType: FeedType
@@ -12,12 +10,11 @@ interface UseHotOffersParams {
 }
 
 interface UseHotOffersReturn {
-  hotOffers: HotOffer[]
   hotVacancies: VacancyApiItem[]
-  hotOffersTotalCount?: number
   refresh: () => Promise<void>
 }
 
+/** Срочные вакансии для деталей и refresh (UI-секция горящих отключена). */
 export const useHotOffers = ({
   feedType,
   advancedFilters,
@@ -42,19 +39,9 @@ export const useHotOffers = ({
 
   const hotVacancies = useMemo(() => (resp?.data?.length ? resp.data : []), [resp])
 
-  const hotOffers = useMemo<HotOffer[]>(() => {
-    if (!resp?.data?.length) return []
-    return resp.data.slice(0, 4).map(vacancyToHotOffer)
-  }, [resp])
-
-  const hotOffersTotalCount = useMemo(() => {
-    const p = resp?.pagination || resp?.meta
-    return p?.total_count ?? undefined
-  }, [resp])
-
   const refresh = useCallback(async () => {
     await refetch()
   }, [refetch])
 
-  return { hotOffers, hotVacancies, hotOffersTotalCount, refresh }
+  return { hotVacancies, refresh }
 }

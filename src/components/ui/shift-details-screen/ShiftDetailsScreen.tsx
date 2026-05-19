@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 import { FileText, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,6 @@ import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useShiftDetails } from '@/features/feed/model/hooks/useShiftDetails'
 import { DRAWER_FOOTER_CLASS } from '../ui-patterns'
-import { StatusPill, UrgentPill } from '../StatusPill'
 import { DetailsTab } from './DetailsTab'
 import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
@@ -48,7 +47,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   } = props
 
   const { t } = useTranslation()
-  const { getRestaurantFormatLabel, getEmployeePositionLabel, getSpecializationLabel } = useLabels()
+  const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const {
     aboutVenue,
     hourlyRate,
@@ -73,14 +72,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const selectedRole = useAppSelector(selectSelectedRole)
   const roleTheme = getRoleTheme(selectedRole ?? 'employee')
 
-  const showVenueBadges = useMemo(
-    () =>
-      Boolean(
-        aboutVenue &&
-          (aboutVenue.city || aboutVenue.formatKey || aboutVenue.cuisineTypes.length > 0)
-      ),
-    [aboutVenue]
-  )
   const restaurantOwnerId = typeof shift?.ownerId === 'number' ? shift.ownerId : null
 
   if (!shift) return null
@@ -88,6 +79,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   return (
     <>
       <DetailsScreenFrame
+        variant="page"
         open={isOpen}
         onOpenChange={open => {
           if (!open) controller.handleClose()
@@ -111,8 +103,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             ) : (
               <p className="text-sm text-muted-foreground">{shift.restaurant}</p>
             )}
-            {shift.urgent ? <UrgentPill /> : null}
-            <StatusPill status={controller.appStatus} />
           </>
         }
         footer={
@@ -137,7 +127,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                     disabled={isLoading}
                     className="flex-1"
                   >
-                    {isLoading ? t('shift.sending') : t('shift.apply')}
+                    {isLoading
+                      ? t('shift.sending')
+                      : t('shift.applyNow', { defaultValue: 'Откликнуться' })}
                   </Button>
                 )}
               </div>
@@ -178,8 +170,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             description={controller.description}
             requirements={controller.requirements}
             aboutVenue={aboutVenue}
-            showVenueBadges={showVenueBadges}
-            getRestaurantFormatLabel={value => getRestaurantFormatLabel(value ?? '')}
             t={t}
           />
         ) : null}

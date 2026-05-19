@@ -18,6 +18,7 @@ interface LocationFieldProps {
   value: string
   onChange: (value: string) => void
   onLocationRequest: () => void
+  showLocationButton?: boolean
   withAnimation?: boolean
   animationDelay?: number
   isLoading?: boolean
@@ -38,6 +39,7 @@ export const LocationField = memo(function LocationField({
   value,
   onChange,
   onLocationRequest,
+  showLocationButton = true,
   withAnimation = false,
   animationDelay = 0,
   isLoading = false,
@@ -97,19 +99,21 @@ export const LocationField = memo(function LocationField({
                 }
               : {})}
           />
-          <button
-            onClick={onLocationRequest}
-            disabled={isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={t('aria.determineLocation')}
-            type="button"
-          >
-            {isLoading ? (
-              <Loader size="sm" />
-            ) : (
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-            )}
-          </button>
+          {showLocationButton ? (
+            <button
+              onClick={onLocationRequest}
+              disabled={isLoading}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label={t('aria.determineLocation')}
+              type="button"
+            >
+              {isLoading ? (
+                <Loader size="sm" />
+              ) : (
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+              )}
+            </button>
+          ) : null}
         </div>
       </FormField>
 

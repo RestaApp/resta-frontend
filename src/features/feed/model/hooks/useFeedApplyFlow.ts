@@ -95,6 +95,7 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
     openProfileEdit,
     isApplyCoverModalOpen,
     isApplyCoverModalSubmitting,
+    applyCoverTargetShiftId,
     closeApplyCoverModal,
     handleApplyWithModal,
     submitApplyCoverModal,

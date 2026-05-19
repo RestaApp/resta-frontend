@@ -5,6 +5,7 @@ import { getTabsForRole } from '@/constants/tabs'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { UiRole, Tab } from '@/types'
 import { getRoleTheme } from '@/shared/lib/role-theme'
+import { cn } from '@/utils/cn'
 
 interface BottomNavProps {
   activeTab: Tab
@@ -13,6 +14,9 @@ interface BottomNavProps {
   layoutId?: string
   hasIncompleteProfile?: boolean
 }
+
+const focusRingFromRoleRing = (ringClass: string) =>
+  ringClass.replace(/^ring-/, 'focus-visible:ring-')
 
 export const BottomNav = ({
   activeTab,
@@ -27,12 +31,7 @@ export const BottomNav = ({
   const reduceMotion = useReducedMotion()
   const activeColorClass = roleTheme.classes.text
   const activeDotClass = roleTheme.classes.bg
-  const focusRingClass =
-    roleTheme.classes.ring === 'ring-role-employee'
-      ? 'focus-visible:ring-role-employee'
-      : roleTheme.classes.ring === 'ring-role-restaurant'
-        ? 'focus-visible:ring-role-restaurant'
-        : 'focus-visible:ring-role-supplier'
+  const focusRingClass = focusRingFromRoleRing(roleTheme.classes.ring)
 
   return (
     <nav
@@ -44,10 +43,10 @@ export const BottomNav = ({
       className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/92 backdrop-blur-xl"
     >
       <div
-        className={[
-          'mx-auto grid max-w-2xl items-center px-1.5 pt-1.5 pb-2',
-          tabs.length === 4 ? 'grid-cols-4' : 'grid-cols-2',
-        ].join(' ')}
+        className={cn(
+          'ui-app-frame grid items-center px-1.5 pt-1.5 pb-2',
+          tabs.length === 4 ? 'grid-cols-4' : 'grid-cols-2'
+        )}
       >
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = activeTab === id
@@ -65,19 +64,18 @@ export const BottomNav = ({
               aria-current={isActive ? 'page' : undefined}
               whileTap={reduceMotion ? undefined : { scale: 0.95 }}
               onClick={() => onTabChange(id)}
-              className={[
-                'relative flex min-h-[52px] flex-col items-center justify-center rounded-md px-2 py-1 gap-[3px]',
+              className={cn(
+                'relative flex min-h-[52px] flex-col items-center justify-center gap-[3px] rounded-md px-2 py-1',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                focusRingClass,
-              ].join(' ')}
+                focusRingClass
+              )}
             >
               <span className="relative flex h-[22px] w-[22px] items-center justify-center">
                 <Icon
-                  className={[
-                    'transition-colors',
-                    'h-[22px] w-[22px]',
-                    isActive ? activeColorClass : 'text-muted-foreground',
-                  ].join(' ')}
+                  className={cn(
+                    'h-[22px] w-[22px] transition-colors',
+                    isActive ? activeColorClass : 'text-muted-foreground'
+                  )}
                   strokeWidth={isActive ? 2.5 : 2}
                   aria-hidden="true"
                 />
@@ -85,9 +83,7 @@ export const BottomNav = ({
                 {isActive && (
                   <motion.span
                     layoutId={layoutId}
-                    className={['absolute -top-[7px] h-1.5 w-4 rounded-[4px]', activeDotClass].join(
-                      ' '
-                    )}
+                    className={cn('absolute -top-[7px] h-1.5 w-4 rounded-[4px]', activeDotClass)}
                     transition={
                       reduceMotion ? { duration: 0 } : { duration: 0.28, ease: 'easeOut' }
                     }
@@ -97,20 +93,20 @@ export const BottomNav = ({
 
                 {showProfileDot && (
                   <span
-                    className={[
+                    className={cn(
                       'absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background',
-                      activeDotClass,
-                    ].join(' ')}
+                      activeDotClass
+                    )}
                     aria-hidden="true"
                   />
                 )}
               </span>
 
               <span
-                className={[
-                  'font-semibold uppercase leading-none tracking-[0.04em] transition-colors text-[9px]',
-                  isActive ? activeColorClass : 'text-muted-foreground',
-                ].join(' ')}
+                className={cn(
+                  'text-[9px] font-semibold uppercase leading-none tracking-[0.04em] transition-colors',
+                  isActive ? activeColorClass : 'text-muted-foreground'
+                )}
               >
                 {labelText}
               </span>

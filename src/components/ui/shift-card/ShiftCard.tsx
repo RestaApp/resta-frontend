@@ -219,11 +219,6 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
         {locationMeta ? (
           <span className="min-w-[5rem] flex-1 truncate">📍 {locationMeta}</span>
         ) : null}
-        {shift.verified ? (
-          <span className="shrink-0 rounded-md bg-success/20 px-[7px] py-[2px] font-bold uppercase tracking-[0.12em] text-success">
-            VER
-          </span>
-        ) : null}
         {compactApplications ? (
           <span className="shrink-0 text-muted-foreground">👤 {compactApplications}</span>
         ) : null}

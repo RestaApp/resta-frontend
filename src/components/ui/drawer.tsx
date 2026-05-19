@@ -19,6 +19,7 @@ export type DrawerProps = {
   onOpenChange: (open: boolean) => void
   children?: React.ReactNode
   preventClose?: boolean
+  overlayClassName?: string
 
   /**
    * Новый API: явный отступ снизу (например высота BottomNav)
@@ -46,6 +47,7 @@ DrawerOverlay.displayName = 'DrawerOverlay'
 
 type DrawerContentProps = {
   className?: string
+  overlayClassName?: string
   children?: React.ReactNode
   onOpenChange: (open: boolean) => void
   preventClose?: boolean
@@ -54,6 +56,7 @@ type DrawerContentProps = {
 
 const DrawerContent = memo(function DrawerContent({
   className,
+  overlayClassName,
   children,
   onOpenChange,
   preventClose,
@@ -123,7 +126,7 @@ const DrawerContent = memo(function DrawerContent({
 
   return (
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
-      <DrawerOverlay onClick={handleOverlayClick} />
+      <DrawerOverlay className={overlayClassName} onClick={handleOverlayClick} />
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0, pointerEvents: 'auto' }}
@@ -139,7 +142,7 @@ const DrawerContent = memo(function DrawerContent({
         dragMomentum={false}
         onDragEnd={handleDragEnd}
         className={cn(
-          'fixed inset-x-0 z-10 flex flex-col overflow-y-auto overscroll-contain',
+          'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col overflow-y-auto overscroll-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-[0_14px_40px_rgba(0,0,0,0.4)] dark:shadow-none',
           'dark:bg-[var(--drawer-surface)] border-t-[var(--surface-stroke-soft)]',
           className
@@ -179,6 +182,7 @@ export const Drawer = ({
   children,
   preventClose,
   bottomOffsetPx,
+  overlayClassName,
 }: DrawerProps) => {
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
 
@@ -198,6 +202,7 @@ export const Drawer = ({
           onOpenChange={onOpenChange}
           preventClose={preventClose}
           bottomOffsetPx={resolvedBottomOffset}
+          overlayClassName={overlayClassName}
         >
           {children}
         </DrawerContent>

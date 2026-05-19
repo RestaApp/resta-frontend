@@ -44,7 +44,7 @@ export const PageShell = ({
   contentClassName,
   className,
 }: PageShellProps) => {
-  // Нижний отступ под main:
+  // Нижний отступ под main (высота BottomNav ≈ BOTTOM_NAV_HEIGHT_PX из @/shared/ui/layout):
   //   • bottomNav + stickyCTA  → отступ под обе (примерно 88 + 80)
   //   • только bottomNav       → 96
   //   • только stickyCTA       → 96
@@ -60,7 +60,7 @@ export const PageShell = ({
   return (
     <div className={cn('relative flex min-h-[100dvh] flex-col', className)}>
       {header}
-      <main className={cn('mx-auto w-full max-w-2xl flex-1', bottomPaddingClass, contentClassName)}>
+      <main className={cn('ui-app-frame flex-1', bottomPaddingClass, contentClassName)}>
         {children}
       </main>
       {stickyCTA}

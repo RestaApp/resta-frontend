@@ -1,4 +1,5 @@
 import i18n from '@/shared/i18n/config'
+import { normalizeApiLocation } from '@/shared/utils/location'
 import { parseDate } from '@/utils/datetime'
 
 export const formatMoney = (value: number): string => {
@@ -54,9 +55,11 @@ export const formatDuration = (hours?: string | number | null): string | undefin
   return `${Math.round(n)} ч.`
 }
 
-export const stripMinskPrefix = (location?: string | null): string | undefined => {
-  if (!location) return undefined
-  return location.replace(/^Минск,\s*/i, '')
+export const stripMinskPrefix = (location?: unknown): string | undefined => {
+  const normalized = normalizeApiLocation(location)
+  if (!normalized) return undefined
+  const stripped = normalized.replace(/^Минск,\s*/i, '')
+  return stripped || undefined
 }
 
 export const formatHourlyRate = (hourlyRate?: string | number | null): string | null => {

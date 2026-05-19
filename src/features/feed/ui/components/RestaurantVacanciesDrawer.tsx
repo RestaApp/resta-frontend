@@ -20,7 +20,7 @@ interface RestaurantVacanciesDrawerProps {
   onClose: () => void
   onOpenVacancy: (vacancyId: number) => void
   getApplicationId: (id: number) => number | undefined
-  getApplicationStatus: (id: number) => ShiftStatus
+  getApplicationStatus: (id: number) => ShiftStatus | null
   isApplied: (id: number) => boolean
   onApply: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>

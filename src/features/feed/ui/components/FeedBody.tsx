@@ -8,14 +8,12 @@ import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDi
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
-import type { ReactNode } from 'react'
 
 interface FeedBodyProps {
   vm: FeedBodyVm
-  topContent?: ReactNode
 }
 
-export function FeedBody({ vm, topContent }: FeedBodyProps) {
+export function FeedBody({ vm }: FeedBodyProps) {
   const isEmpty = vm.filteredShifts.length === 0
   const showEmptyState =
     isEmpty &&
@@ -29,7 +27,6 @@ export function FeedBody({ vm, topContent }: FeedBodyProps) {
         onRefresh={vm.onRefresh}
         disabled={vm.activeList.isInitialLoading || vm.activeList.isFetching}
       >
-        {topContent ? <div className="mb-3">{topContent}</div> : null}
         <div className="ui-density-page ui-density-py-sm ui-density-stack">
           <FeedListArea
             isInitialLoading={vm.activeList.isInitialLoading}
@@ -113,7 +110,6 @@ export function FeedBody({ vm, topContent }: FeedBodyProps) {
         onClose={vm.closeFilters}
         onApply={vm.applyAdvancedFilters}
         initialFilters={vm.advancedFilters ?? undefined}
-        filteredCount={vm.filteredCount}
         isVacancy={vm.isVacancy}
       />
     </>
