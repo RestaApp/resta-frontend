@@ -54,9 +54,7 @@
     "continue": "Continue",
     "done": "Done",
     "todayLower": "today",
-    "locationNotSet": "Location not set",
-    "continueFormVenue": "Continue filling restaurant form",
-    "continueFormSupplier": "Continue filling supplier form"
+    "locationNotSet": "Location not set"
   },
   "nav": {
     "bottomNav": "Bottom navigation",
@@ -441,16 +439,9 @@
     "specializationMultiHint": "you can select multiple",
     "venueInfoTitle": "Restaurant info",
     "venueInfoDescription": "Fill in your venue details",
-    "venueNameLabel": "Venue name",
-    "venueNamePlaceholder": "Enter name",
     "venueTypeLabel": "Venue type",
     "supplierInfoTitle": "Information",
-    "supplierInfoDescription": "Fill in your company details",
-    "supplierNameLabel": "Company name",
-    "supplierNamePlaceholder": "Enter company name",
     "supplierTypeLabel": "Supplier types",
-    "yourExperience": "Your experience",
-    "positionSearchPlaceholder": "Search professions",
     "continuePosition": "Find shifts",
     "continueAsRole": "Continue as {{role}}",
     "specializationsMain": "Specializations",

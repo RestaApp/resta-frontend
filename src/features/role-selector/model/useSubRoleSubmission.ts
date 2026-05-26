@@ -9,11 +9,14 @@ import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UiRole, EmployeeRole } from '@/shared/types/roles.types'
 import { mapApiRoleToDefaultUiRole } from '@/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
-import type { FormData } from './useFormSelector'
 
 export interface SupplierOnboardingData {
   category: string
   types: string[]
+}
+
+export interface RestaurantOnboardingData {
+  format: string
 }
 
 interface UseSubRoleSubmissionProps {
@@ -53,17 +56,6 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       if (formData?.specializations && formData.specializations.length > 0) {
         updateData.user.specializations = formData.specializations
-      }
-
-      if (formData?.location && formData.location.trim() !== '') {
-        updateData.user.city = formData.location.trim()
-      }
-
-      if (typeof formData?.experienceYears === 'number' && formData.experienceYears > 0) {
-        updateData.user.experience_years = formData.experienceYears
-      }
-      if (typeof formData?.openToWork === 'boolean') {
-        updateData.user.open_to_work = formData.openToWork
       }
 
       const success = await updateUserWithData(
@@ -114,30 +106,19 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
   )
 
   const handleRestaurantFormatContinue = useCallback(
-    async (formData?: FormData): Promise<boolean> => {
-      if (!formData?.type) {
+    async (formData?: RestaurantOnboardingData): Promise<boolean> => {
+      if (!formData?.format) {
         return false
       }
 
-      const trimmedName = formData.name.trim()
-
-      // Плоский PATCH + вложенный профиль: название заведения хранится в restaurant_profile (не в Telegram name)
       const updateData: UpdateUserRequest = {
         user: {
           role: 'restaurant',
-          restaurant_format: formData.type,
+          restaurant_format: formData.format,
           restaurant_profile_attributes: {
-            restaurant_format: formData.type,
+            restaurant_format: formData.format,
           },
         },
-      }
-
-      if (trimmedName) {
-        updateData.user.name = trimmedName
-      }
-
-      if (formData.city && formData.city.trim() !== '') {
-        updateData.user.city = formData.city.trim()
       }
 
       const success = await updateUserWithData(

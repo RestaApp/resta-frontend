@@ -11,14 +11,11 @@ import { Z_INDEX } from '@/shared/ui/zIndex'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { useLocationField } from '../../../../model/useLocationField'
-import { AnimatedField } from './AnimatedField'
 interface LocationFieldProps {
   value: string
   onChange: (value: string) => void
   onLocationRequest: () => void
   showLocationButton?: boolean
-  withAnimation?: boolean
-  animationDelay?: number
   isLoading?: boolean
   /** Очищать поле при фокусе (например, в фильтрах) */
   clearOnFocus?: boolean
@@ -31,8 +28,6 @@ export const LocationField = memo(function LocationField({
   onChange,
   onLocationRequest,
   showLocationButton = true,
-  withAnimation = false,
-  animationDelay = 0,
   isLoading = false,
   clearOnFocus = false,
   hideLabel = false,
@@ -144,9 +139,5 @@ export const LocationField = memo(function LocationField({
     </div>
   )
 
-  return (
-    <AnimatedField withAnimation={withAnimation} animationDelay={animationDelay}>
-      {content}
-    </AnimatedField>
-  )
+  return content
 })

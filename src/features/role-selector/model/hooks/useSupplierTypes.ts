@@ -13,7 +13,6 @@ interface UseSupplierTypesOptions {
   enabled?: boolean
   /**
    * Категория поставщика (обязательный query-параметр в API).
-   * Экран онбординга пока использует типы для категории `products`.
    */
   supplierCategory?: string
 }

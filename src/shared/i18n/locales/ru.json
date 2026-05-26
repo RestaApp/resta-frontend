@@ -54,9 +54,7 @@
     "continue": "Продолжить",
     "done": "Готово",
     "todayLower": "сегодня",
-    "locationNotSet": "Локация не указана",
-    "continueFormVenue": "Продолжить заполнение формы ресторана",
-    "continueFormSupplier": "Продолжить заполнение формы поставщика"
+    "locationNotSet": "Локация не указана"
   },
   "nav": {
     "bottomNav": "Нижняя навигация",
@@ -441,16 +439,9 @@
     "specializationMultiHint": "можно выбрать несколько",
     "venueInfoTitle": "Информация о заведении",
     "venueInfoDescription": "Заполните данные о вашем заведении",
-    "venueNameLabel": "Название заведения",
-    "venueNamePlaceholder": "Введите название",
     "venueTypeLabel": "Тип заведения",
     "supplierInfoTitle": "Информация",
-    "supplierInfoDescription": "Заполните данные о вашей компании",
-    "supplierNameLabel": "Название компании",
-    "supplierNamePlaceholder": "Введите название компании",
     "supplierTypeLabel": "Типы поставщика",
-    "yourExperience": "Ваш стаж",
-    "positionSearchPlaceholder": "Поиск по профессиям",
     "continuePosition": "Найти смены",
     "continueAsRole": "Продолжить как {{role}}",
     "specializationsMain": "Направления",

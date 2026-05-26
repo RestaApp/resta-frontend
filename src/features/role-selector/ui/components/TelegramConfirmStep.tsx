@@ -142,7 +142,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
       </OnboardingSection>
 
-      <div role="note" className="mt3 rounded-xl border border-primary bg-primary/8 px-3 py-2.5">
+      <div role="note" className="mt-3 rounded-xl border border-primary bg-primary/8 px-3 py-2.5">
         <div className="flex items-start gap-2">
           <span aria-hidden className="shrink-0 mt-0.5 text-sm text-primary">
             {ROLE_SHIELD_ICON[roleCategory]}

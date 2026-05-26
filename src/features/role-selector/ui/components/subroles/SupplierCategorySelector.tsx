@@ -4,12 +4,10 @@
 
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TagGroup } from '@/shared/ui/TagGroup'
 import { LoadingState } from './shared/LoadingState'
+import { RoleDetailsStep } from './shared/RoleDetailsStep'
 import { useSupplierTypes } from '../../../model/hooks/useSupplierTypes'
 import { useLabels } from '@/shared/i18n/hooks'
-import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT } from '../OnboardingBottomCta'
-import { OnboardingSection, OnboardingStepLayout } from '../OnboardingStepLayout'
 
 const CATEGORY_EMOJI: Record<string, string> = {
   products: '📦',
@@ -38,6 +36,7 @@ interface SupplierCategorySelectorProps {
 export const SupplierCategorySelector = memo(function SupplierCategorySelector({
   categories,
   onContinue,
+  onBack,
   isLoading = false,
   isFetching = false,
 }: SupplierCategorySelectorProps) {
@@ -93,68 +92,48 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
     return <LoadingState message={t('roles.categoriesError')} />
   }
 
-  const isTypesLoading = isLoadingTypes || isFetchingTypes
-  const shouldSelectType = selected !== null && !isTypesLoading && supplierTypes.length > 0
-  const canContinue =
-    selected !== null &&
-    !isSubmitting &&
-    !isTypesLoading &&
-    (!shouldSelectType || selectedTypes.length > 0)
+  const hasLoadedTypes = selected !== null && !isLoadingTypes && !isFetchingTypes
+  const canContinue = selected !== null && !isSubmitting
 
   return (
-    <OnboardingStepLayout
-      currentStep={3}
-      totalSteps={3}
+    <RoleDetailsStep
       title={t('roles.supplierCategoryTitle')}
       subtitle={t('roles.supplierCategoryDescription')}
-      bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT}
-    >
-      <OnboardingSection label={t('roles.supplierCategoriesLabel', { defaultValue: 'КАТЕГОРИИ' })}>
-        <TagGroup
-          values={categories}
-          selectedValues={selected ? [selected] : []}
-          onToggle={handleToggle}
-          getLabel={getCategoryLabel}
-          getAriaLabel={(category, label) =>
+      groups={[
+        {
+          id: 'category',
+          label: t('roles.supplierCategoriesLabel', { defaultValue: 'КАТЕГОРИИ' }),
+          values: categories,
+          selectedValues: selected ? [selected] : [],
+          onToggle: handleToggle,
+          getLabel: getCategoryLabel,
+          getAriaLabel: (category, label) =>
             t('aria.selectSupplierCategory', {
               label: label.replace(`${CATEGORY_EMOJI[category] ?? '📦'} `, ''),
-            })
-          }
-          size="lg"
-        />
-      </OnboardingSection>
-
-      {selected ? (
-        <OnboardingSection
-          label={t('roles.supplierTypeLabel')}
-          hint={supplierTypes.length > 1 ? t('roles.specializationMultiHint') : undefined}
-          className="mt-5"
-        >
-          {isTypesLoading ? (
-            <div className="text-sm text-muted-foreground">{t('common.loading')}...</div>
-          ) : supplierTypes.length > 0 ? (
-            <TagGroup
-              values={supplierTypes}
-              selectedValues={selectedTypes}
-              onToggle={handleTypeToggle}
-              getLabel={getSupplierTypeLabel}
-              getAriaLabel={(_, label) => t('aria.selectType', { label })}
-              size="lg"
-            />
-          ) : (
-            <div className="text-sm text-muted-foreground">{t('profile.supplierTypesEmpty')}</div>
-          )}
-        </OnboardingSection>
-      ) : null}
-
-      <OnboardingBottomCta
-        onClick={handleConfirm}
-        loading={isSubmitting}
-        disabled={!canContinue}
-        showFillLaterHint
-      >
-        {t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны' })}
-      </OnboardingBottomCta>
-    </OnboardingStepLayout>
+            }),
+        },
+        ...(selected
+          ? [
+              {
+                id: 'types',
+                label: t('roles.supplierTypeLabel'),
+                hint: supplierTypes.length > 1 ? t('roles.specializationMultiHint') : undefined,
+                values: supplierTypes,
+                selectedValues: selectedTypes,
+                onToggle: handleTypeToggle,
+                getLabel: getSupplierTypeLabel,
+                getAriaLabel: (_: string, label: string) => t('aria.selectType', { label }),
+                emptyText: hasLoadedTypes ? t('profile.supplierTypesEmpty') : undefined,
+              },
+            ]
+          : []),
+      ]}
+      ctaText={t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны' })}
+      onContinue={handleConfirm}
+      onBack={onBack}
+      canContinue={canContinue}
+      isSubmitting={isSubmitting}
+      continueButtonAriaLabel={t('common.continue')}
+    />
   )
 })
