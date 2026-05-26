@@ -5,6 +5,7 @@ import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { ModalA11yContext } from './modal-a11y'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 interface ModalProps {
   isOpen: boolean
@@ -42,6 +43,11 @@ export const Modal = memo(function Modal({
   const descriptionId = useId()
 
   useBodyScrollLock(isOpen)
+
+  useEffect(() => {
+    if (!isOpen || !closeOnEsc) return
+    return setupTelegramBackButton(onClose)
+  }, [closeOnEsc, isOpen, onClose])
 
   useEffect(() => {
     if (!isOpen || typeof document === 'undefined') return
@@ -117,7 +123,7 @@ export const Modal = memo(function Modal({
         <ModalA11yContext.Provider value={a11yValue}>
           <motion.div
             style={{ zIndex: Z_INDEX.modal }}
-            className="fixed inset-0 flex items-center justify-center p-4"
+            className="fixed inset-0 flex items-center justify-center ui-density-page ui-density-py"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

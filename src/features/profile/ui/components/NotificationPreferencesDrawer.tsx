@@ -2,19 +2,24 @@ import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
+  DrawerBody,
   DrawerHeader,
   DrawerTitle,
-  DrawerDescription,
   DrawerFooter,
+  DrawerCloseButton,
 } from '@/components/ui/drawer'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
+import { Card } from '@/components/ui/card'
 import {
-  DRAWER_BODY_CLASS,
-  DRAWER_FOOTER_CLASS,
-  DRAWER_SETTING_ROW_CLASS,
-} from '@/components/ui/ui-patterns'
+  SHIFT_CARD_CLASS,
+  SHIFT_CARD_LOGO_CLASS,
+  SHIFT_CARD_META_CLASS,
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
+import { cn } from '@/utils/cn'
 import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
@@ -32,16 +37,14 @@ type PreferenceKey = keyof Pick<
   'urgent_notifications' | 'new_shifts_notifications' | 'application_notifications'
 >
 
-const PREFERENCE_KEYS: PreferenceKey[] = [
-  'urgent_notifications',
-  'new_shifts_notifications',
-  'application_notifications',
-]
-
-const PREFERENCE_I18N: Record<PreferenceKey, { label: string; description: string }> = {
+const PREFERENCE_I18N: Record<
+  PreferenceKey,
+  { label: string; description: string; icon?: string }
+> = {
   urgent_notifications: {
     label: 'profile.notifications.urgent',
     description: 'profile.notifications.urgentDescription',
+    icon: '🔥',
   },
   new_shifts_notifications: {
     label: 'profile.notifications.newShifts',
@@ -52,6 +55,30 @@ const PREFERENCE_I18N: Record<PreferenceKey, { label: string; description: strin
     description: 'profile.notifications.applicationsDescription',
   },
 }
+
+const EMPLOYEE_NOTIFICATION_SECTIONS: Array<{
+  id: string
+  title: string
+  keys: PreferenceKey[]
+}> = [
+  {
+    id: 'shifts',
+    title: 'profile.notifications.sections.shifts',
+    keys: ['urgent_notifications', 'new_shifts_notifications', 'application_notifications'],
+  },
+]
+
+const RESTAURANT_NOTIFICATION_SECTIONS: Array<{
+  id: string
+  title: string
+  keys: PreferenceKey[]
+}> = [
+  {
+    id: 'requests',
+    title: 'profile.notifications.sections.requests',
+    keys: ['application_notifications'],
+  },
+]
 
 interface NotificationPreferencesDrawerProps {
   open: boolean
@@ -86,15 +113,10 @@ export const NotificationPreferencesDrawer = memo(
 
     const effectivePrefs = draftPrefs ?? prefsSnapshot
 
-    const visiblePreferenceKeys = useMemo<PreferenceKey[]>(() => {
-      if (apiRole === 'restaurant') return ['application_notifications']
-      return PREFERENCE_KEYS
+    const visibleSections = useMemo(() => {
+      if (apiRole === 'restaurant') return RESTAURANT_NOTIFICATION_SECTIONS
+      return EMPLOYEE_NOTIFICATION_SECTIONS
     }, [apiRole])
-
-    const allEnabled = useMemo(() => {
-      if (!effectivePrefs) return false
-      return visiblePreferenceKeys.every(key => effectivePrefs[key])
-    }, [effectivePrefs, visiblePreferenceKeys])
 
     const handleToggle = useCallback(
       (key: PreferenceKey, checked: boolean) => {
@@ -105,23 +127,6 @@ export const NotificationPreferencesDrawer = memo(
         })
       },
       [prefsSnapshot]
-    )
-
-    const handleToggleAll = useCallback(
-      (checked: boolean) => {
-        setDraftPrefs(prev => {
-          const base = prev ?? prefsSnapshot
-          if (!base) return prev
-          return visiblePreferenceKeys.reduce<Pick<NotificationPreference, PreferenceKey>>(
-            (acc, key) => {
-              acc[key] = checked
-              return acc
-            },
-            { ...base }
-          )
-        })
-      },
-      [prefsSnapshot, visiblePreferenceKeys]
     )
 
     const handleApply = useCallback(async () => {
@@ -154,61 +159,76 @@ export const NotificationPreferencesDrawer = memo(
 
     return (
       <Drawer open={open} onOpenChange={handleClose}>
-        <DrawerHeader>
-          <DrawerTitle>{t('profile.notificationSettings')}</DrawerTitle>
-          <DrawerDescription>{t('profile.notificationsDescription')}</DrawerDescription>
+        <DrawerHeader className="border-b border-transparent pb-3">
+          <div className="flex items-center justify-between gap-2">
+            <DrawerCloseButton
+              onClick={() => handleClose(false)}
+              ariaLabel={t('common.back')}
+              className="grid h-9 w-9 place-items-center rounded-sm p-0"
+            />
+            <DrawerTitle className="truncate text-center text-lg">
+              {t('profile.notificationSettings')}
+            </DrawerTitle>
+            <div className="h-9 w-9" aria-hidden />
+          </div>
         </DrawerHeader>
 
-        <div className={`${DRAWER_BODY_CLASS} gap-2`}>
+        <DrawerBody className="flex flex-col gap-3 pb-4 pt-2">
           {isLoading && (
             <div className="flex justify-center py-8">
               <Loader size="lg" />
             </div>
           )}
           {isError && <p className="text-sm text-destructive py-4">{t('profile.loadError')}</p>}
-          {effectivePrefs && (
-            <>
-              {visiblePreferenceKeys.length > 1 ? (
-                <div className={`${DRAWER_SETTING_ROW_CLASS} bg-secondary/30`}>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium">{t('profile.notifications.all')}</div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {t('profile.notifications.allDescription')}
-                    </p>
+          {effectivePrefs
+            ? visibleSections.map(section => (
+                <section key={section.id} className="flex flex-col gap-2">
+                  <div className={cn(SHIFT_CARD_META_CLASS, 'uppercase')}>
+                    {t(section.title, { defaultValue: section.id })}
                   </div>
-                  <Switch
-                    checked={allEnabled}
-                    onCheckedChange={handleToggleAll}
-                    disabled={isUpdating}
-                  />
-                </div>
-              ) : null}
-              {visiblePreferenceKeys.map(key => (
-                <div key={key} className={DRAWER_SETTING_ROW_CLASS}>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium">{t(PREFERENCE_I18N[key].label)}</div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {t(PREFERENCE_I18N[key].description)}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={effectivePrefs[key]}
-                    onCheckedChange={checked => handleToggle(key, checked)}
-                    disabled={isUpdating}
-                  />
-                </div>
-              ))}
-            </>
-          )}
-        </div>
+                  <Card className={cn(SHIFT_CARD_CLASS, 'overflow-hidden p-0')}>
+                    <div className="flex flex-col divide-y divide-border/50 px-3">
+                      {section.keys.map(key => {
+                        const label = t(PREFERENCE_I18N[key].label)
+                        return (
+                          <div key={key} className="flex items-center justify-between gap-2 py-3">
+                            <div className="flex min-w-0 flex-1 items-center gap-2">
+                              <span className={SHIFT_CARD_LOGO_CLASS}>
+                                {PREFERENCE_I18N[key].icon ?? label.slice(0, 1)}
+                              </span>
+                              <div className="min-w-0">
+                                <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+                                  {label}
+                                </div>
+                                <p className={SHIFT_CARD_SUB_CLASS}>
+                                  {t(PREFERENCE_I18N[key].description)}
+                                </p>
+                              </div>
+                            </div>
+                            <Switch
+                              checked={effectivePrefs[key]}
+                              onCheckedChange={checked => handleToggle(key, checked)}
+                              disabled={isUpdating}
+                              className="shrink-0"
+                              ariaLabel={label}
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </Card>
+                </section>
+              ))
+            : null}
+        </DrawerBody>
         {effectivePrefs ? (
-          <DrawerFooter className={DRAWER_FOOTER_CLASS}>
-            <div className="flex gap-3">
+          <DrawerFooter className="py-3">
+            <div className="flex gap-2">
               <Button
                 type="button"
                 onClick={() => handleClose(false)}
                 variant="outline"
-                size="md"
+                size="sm"
                 className="flex-1"
                 disabled={isUpdating}
               >
@@ -218,7 +238,7 @@ export const NotificationPreferencesDrawer = memo(
                 type="button"
                 onClick={handleApply}
                 variant="gradient"
-                size="md"
+                size="sm"
                 className="flex-1"
                 disabled={isUpdating}
               >

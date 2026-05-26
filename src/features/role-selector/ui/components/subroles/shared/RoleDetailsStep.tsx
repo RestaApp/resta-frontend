@@ -55,7 +55,7 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
       subtitle={subtitle}
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT}
     >
-      <div className="flex w-full max-w-md flex-col gap-5">
+      <div className="flex w-full max-w-md flex-col gap-3">
         {groups.map(group => (
           <OnboardingSection key={group.id} label={group.label} hint={group.hint}>
             {group.values.length > 0 ? (

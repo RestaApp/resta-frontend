@@ -137,13 +137,21 @@
     "bioSuffixSelf": "о себе",
     "workSummaryResume": "Резюме",
     "workSummaryExperience": "Опыт работы",
-    "settings": "Настройки",
+    "settings": "Прочее",
+    "appSection": "Приложение",
     "language": "Язык",
     "notificationSettings": "Настройки уведомлений",
-    "notificationsDescription": "Управление уведомлениями в Telegram бот.",
     "notifications": {
-      "all": "Все уведомления",
-      "allDescription": "Включить или выключить все сразу"
+      "sections": {
+        "shifts": "Смены",
+        "requests": "Заявки"
+      },
+      "urgent": "SOS-смены",
+      "urgentDescription": "срочные, в радиусе 3 км",
+      "newShifts": "Новые смены в городе",
+      "newShiftsDescription": "раз в час, дайджест",
+      "applications": "Принятие заявок",
+      "applicationsDescription": "мгновенно"
     },
     "support": "Поддержка Resta",
     "supportForm": {
@@ -218,11 +226,7 @@
     },
     "specializationSection": "Специализация",
     "supplierCategorySection": "Категория",
-    "loadError": "Ошибка загрузки профиля",
-    "completedShifts": "Смен выполнено",
-    "activeApplications": "Активные отклики",
-    "shiftsCreated": "Смен создано",
-    "activeRequests": "Активные заявки"
+    "loadError": "Ошибка загрузки профиля"
   },
   "feed": {
     "headerTitle": "Лента",

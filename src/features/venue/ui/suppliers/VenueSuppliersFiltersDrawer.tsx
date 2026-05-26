@@ -2,14 +2,15 @@ import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
+  DrawerBody,
   DrawerCloseButton,
+  DrawerFrame,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
-import { DRAWER_FOOTER_CLASS, DRAWER_HEADER_CLASS } from '@/components/ui/ui-patterns'
 import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 
@@ -91,8 +92,8 @@ export const VenueSuppliersFiltersDrawer = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <DrawerHeader className={DRAWER_HEADER_CLASS}>
+      <DrawerFrame className="flex-1">
+        <DrawerHeader>
           <div className="flex items-center justify-between gap-2">
             <DrawerTitle>
               {isRestaurantsMode
@@ -111,7 +112,7 @@ export const VenueSuppliersFiltersDrawer = ({
           </div>
         </DrawerHeader>
 
-        <div className="flex-1 ui-density-stack-lg overflow-y-auto ui-density-page ui-density-py">
+        <DrawerBody className="ui-density-stack-lg">
           <div className="ui-density-stack-sm">
             <p className="text-sm font-medium">{t('profile.city', { defaultValue: 'Город' })}</p>
             <CitySelect
@@ -252,16 +253,16 @@ export const VenueSuppliersFiltersDrawer = ({
               </div>
             </div>
           )}
-        </div>
+        </DrawerBody>
 
-        <DrawerFooter className={DRAWER_FOOTER_CLASS}>
+        <DrawerFooter>
           <Button variant="gradient" size="md" className="w-full" onClick={onApply}>
             {isRestaurantsMode
               ? t('supplierUi.restaurants.filters.apply', { defaultValue: 'Показать заведения' })
               : t('venueUi.suppliers.filters.apply', { defaultValue: 'Показать поставщиков' })}
           </Button>
         </DrawerFooter>
-      </div>
+      </DrawerFrame>
     </Drawer>
   )
 }

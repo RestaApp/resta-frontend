@@ -122,22 +122,78 @@ export const getTelegramLanguageCode = (): string | null => {
   return null
 }
 
+type TelegramBackButtonHandler = {
+  id: number
+  onBack: () => void
+}
+
+let telegramBackButtonHandlerId = 0
+let telegramBackButtonHandlers: TelegramBackButtonHandler[] = []
+let telegramBackButtonWebApp: TelegramWebApp | null = null
+let telegramBackButtonBound = false
+
+const handleTelegramBackButtonClick = () => {
+  const activeHandler = telegramBackButtonHandlers.at(-1)
+  activeHandler?.onBack()
+}
+
+const bindTelegramBackButton = (webApp: TelegramWebApp) => {
+  if (telegramBackButtonBound && telegramBackButtonWebApp === webApp) return
+
+  if (telegramBackButtonBound && telegramBackButtonWebApp) {
+    try {
+      telegramBackButtonWebApp.BackButton.offClick(handleTelegramBackButtonClick)
+    } catch {
+      // ignore
+    }
+  }
+
+  try {
+    webApp.BackButton.onClick(handleTelegramBackButtonClick)
+    telegramBackButtonWebApp = webApp
+    telegramBackButtonBound = true
+  } catch {
+    telegramBackButtonWebApp = null
+    telegramBackButtonBound = false
+  }
+}
+
+const syncTelegramBackButton = (webApp: TelegramWebApp) => {
+  try {
+    if (telegramBackButtonHandlers.length > 0) {
+      bindTelegramBackButton(webApp)
+      webApp.BackButton.show()
+      return
+    }
+
+    if (telegramBackButtonBound) {
+      webApp.BackButton.offClick(handleTelegramBackButtonClick)
+    }
+    webApp.BackButton.hide()
+    telegramBackButtonWebApp = null
+    telegramBackButtonBound = false
+  } catch {
+    // ignore
+  }
+}
+
 export const setupTelegramBackButton = (onBack: () => void) => {
   const webApp = getTelegramWebApp()
   if (!webApp) return () => {}
-  try {
-    webApp.BackButton.show()
-    webApp.BackButton.onClick(onBack)
-    return () => {
-      try {
-        webApp.BackButton.hide()
-        webApp.BackButton.offClick(onBack)
-      } catch {
-        // ignore
-      }
-    }
-  } catch {
-    return () => {}
+  const handler: TelegramBackButtonHandler = {
+    id: ++telegramBackButtonHandlerId,
+    onBack,
+  }
+  let cleanedUp = false
+
+  telegramBackButtonHandlers = [...telegramBackButtonHandlers, handler]
+  syncTelegramBackButton(webApp)
+
+  return () => {
+    if (cleanedUp) return
+    cleanedUp = true
+    telegramBackButtonHandlers = telegramBackButtonHandlers.filter(item => item.id !== handler.id)
+    syncTelegramBackButton(webApp)
   }
 }
 

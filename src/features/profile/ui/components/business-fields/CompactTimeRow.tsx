@@ -2,6 +2,10 @@ import { memo } from 'react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import {
+  SHIFT_CARD_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 
 interface CompactTimeRowProps {
   label: string
@@ -29,9 +33,9 @@ export const CompactTimeRow = memo(
     onFromChange,
     onToChange,
   }: CompactTimeRowProps) => (
-    <Card padding="none" className="rounded-xl border-border/60 bg-card/20 px-2.5 py-2">
-      <div className="mb-1.5 flex items-center justify-between">
-        <div className="text-sm font-semibold text-foreground">{label}</div>
+    <Card padding="none" className={SHIFT_CARD_CLASS}>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className={SHIFT_CARD_TITLE_CLASS}>{label}</div>
         <Switch checked={enabled} disabled={disabled} onCheckedChange={onToggle} />
       </div>
 

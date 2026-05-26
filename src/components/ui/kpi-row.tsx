@@ -16,6 +16,7 @@ export interface KpiItem {
 interface KpiRowProps {
   items: KpiItem[]
   className?: string
+  itemClassName?: string
 }
 
 const TONE_CLASS: Record<NonNullable<KpiItem['tone']>, string> = {
@@ -33,7 +34,7 @@ const TONE_CLASS: Record<NonNullable<KpiItem['tone']>, string> = {
  *
  * SRP: единственная задача — показать KPI. Любая логика расчёта — снаружи.
  */
-export const KpiRow = ({ items, className }: KpiRowProps) => (
+export const KpiRow = ({ items, className, itemClassName }: KpiRowProps) => (
   <div
     className={cn('grid gap-1', className)}
     style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
@@ -42,7 +43,10 @@ export const KpiRow = ({ items, className }: KpiRowProps) => (
       <Card
         key={id}
         padding="none"
-        className="flex flex-col gap-1 rounded-xl border-border/40 px-2 py-2.5 text-center"
+        className={cn(
+          'flex flex-col gap-1 rounded-lg border-border px-2 py-2.5 text-center',
+          itemClassName
+        )}
       >
         <div className={cn(KPI_VALUE_CLASS, TONE_CLASS[tone])}>{value}</div>
         <div className={META_MONO_CLASS}>{label}</div>

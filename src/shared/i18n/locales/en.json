@@ -137,13 +137,21 @@
     "bioSuffixSelf": "about yourself",
     "workSummaryResume": "Resume",
     "workSummaryExperience": "Work experience",
-    "settings": "Settings",
+    "settings": "Other",
+    "appSection": "App",
     "language": "Language",
     "notificationSettings": "Notification settings",
-    "notificationsDescription": "Manage Telegram notifications. In-app notifications are always on.",
     "notifications": {
-      "all": "All notifications",
-      "allDescription": "Turn all on or off"
+      "sections": {
+        "shifts": "Shifts",
+        "requests": "Requests"
+      },
+      "urgent": "SOS shifts",
+      "urgentDescription": "urgent, within 3 km",
+      "newShifts": "New shifts in city",
+      "newShiftsDescription": "hourly digest",
+      "applications": "Application acceptance",
+      "applicationsDescription": "instantly"
     },
     "support": "Resta support",
     "supportForm": {
@@ -218,11 +226,7 @@
     },
     "specializationSection": "Specialization",
     "supplierCategorySection": "Category",
-    "loadError": "Failed to load profile",
-    "completedShifts": "Shifts completed",
-    "activeApplications": "Active applications",
-    "shiftsCreated": "Shifts created",
-    "activeRequests": "Active requests"
+    "loadError": "Failed to load profile"
   },
   "feed": {
     "headerTitle": "Feed",

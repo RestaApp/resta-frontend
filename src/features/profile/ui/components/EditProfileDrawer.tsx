@@ -2,13 +2,13 @@ import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
+  DrawerBody,
   DrawerHeader,
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { DRAWER_BODY_CLASS, DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,7 +92,7 @@ export const EditProfileDrawer = memo(
           <DrawerDescription>{editProfileDescription}</DrawerDescription>
         </DrawerHeader>
 
-        <div className={DRAWER_BODY_CLASS}>
+        <DrawerBody className="ui-density-stack">
           <BasicProfileFields
             apiRole={apiRole}
             formData={formData}
@@ -124,9 +124,9 @@ export const EditProfileDrawer = memo(
               updateField={updateField}
             />
           )}
-        </div>
+        </DrawerBody>
 
-        <DrawerFooter className={`${DRAWER_FOOTER_CLASS} sticky bottom-0 z-10 flex-row`}>
+        <DrawerFooter className="sticky bottom-0 z-10 flex-row">
           <Button
             onClick={handleCancel}
             disabled={isLoading}

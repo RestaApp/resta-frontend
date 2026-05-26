@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useUser } from '@/hooks/useUser'
 import { useToast } from '@/hooks/useToast'
-import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
+import { useGetMyShiftsQuery } from '@/services/api/shiftsApi'
 import { mapRoleFromApi } from '@/utils/roles'
 import type { ApiRole } from '@/types'
 import { authService } from '@/services/auth'
@@ -14,14 +14,22 @@ import { normalizeVacanciesResponse } from '../utils/normalizeShiftsResponse'
 import { getProfileCompleteness } from '../utils/profileCompleteness'
 import { useAuth } from '@/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
+import { buildProfileViewModel } from '../buildProfileViewModel'
+import { useUpdateUser } from '@/hooks/useUsers'
 
 export const useProfilePageModel = () => {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
-  const { getEmployeePositionLabel } = useLabels()
+  const {
+    getEmployeePositionLabel,
+    getRestaurantFormatLabel,
+    getSpecializationLabel,
+    getSupplierTypeLabel,
+  } = useLabels()
   const { userProfile, isLoading: isProfileLoading, refetch } = useUserProfile()
   const { clearUserData } = useUser()
   const { showToast } = useToast()
+  const { updateUser, isLoading: isUpdatingUser } = useUpdateUser()
 
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(() => {
     const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
@@ -50,21 +58,11 @@ export const useProfilePageModel = () => {
     return mapRoleFromApi(roleValue)
   }, [userProfile?.role])
 
-  const shouldSkipAppliedShifts =
-    !isAuthenticated || apiRole === 'restaurant' || apiRole === 'supplier'
-
   const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
     skip: !isAuthenticated,
   })
-  const { data: appliedShiftsData } = useGetAppliedShiftsQuery(undefined, {
-    skip: shouldSkipAppliedShifts,
-  })
 
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
-  const appliedShifts = useMemo(
-    () => normalizeVacanciesResponse(appliedShiftsData),
-    [appliedShiftsData]
-  )
 
   const userName = useMemo(() => {
     if (!userProfile) return t('common.user')
@@ -86,24 +84,13 @@ export const useProfilePageModel = () => {
     return t('common.user')
   }, [apiRole, userProfile, getEmployeePositionLabel, t])
 
-  const specializations = useMemo(() => {
-    if (apiRole !== 'employee') return []
-    return userProfile?.employee_profile?.specializations || []
-  }, [apiRole, userProfile])
-
   const employeeStats = useMemo(() => {
     const completedShifts = myShifts.reduce((acc, s) => {
       return s.status === 'completed' ? acc + 1 : acc
     }, 0)
 
-    const activeApplications = appliedShifts.reduce((acc, s) => {
-      const a = s.my_application
-      if (!a) return acc
-      return a.status !== 'rejected' && a.status !== 'cancelled' ? acc + 1 : acc
-    }, 0)
-
-    return { completedShifts, activeApplications }
-  }, [myShifts, appliedShifts])
+    return { completedShifts }
+  }, [myShifts])
 
   const profileCompleteness = useMemo(() => {
     if (!userProfile) return null
@@ -117,66 +104,79 @@ export const useProfilePageModel = () => {
     showToast(t('auth.loggedOut'), 'success')
     window.location.reload()
   }, [clearUserData, showToast, t])
-  const openEditDrawer = useCallback(() => {
-    setIsEditDrawerOpen(true)
-  }, [])
-
-  const closeEditDrawer = useCallback(() => {
-    setIsEditDrawerOpen(false)
-  }, [])
-
   const handleEditSuccess = useCallback(() => {
     refetch()
   }, [refetch])
 
-  const supplierInfo = useMemo(() => {
-    if (apiRole !== 'supplier') return null
-    return {
-      name: userProfile?.full_name || userProfile?.name || t('company'),
-    }
-  }, [apiRole, userProfile, t])
+  const handleOpenToWorkToggle = useCallback(
+    async (nextValue: boolean) => {
+      if (!userProfile?.id || apiRole !== 'employee') return
 
-  const supplierCategory = useMemo(() => {
-    if (apiRole !== 'supplier') return null
-    return (
-      userProfile?.supplier_profile?.supplier_category ??
-      userProfile?.supplier_profile_attributes?.supplier_category ??
-      null
-    )
-  }, [apiRole, userProfile])
+      const result = await updateUser(userProfile.id, {
+        user: {
+          open_to_work: nextValue,
+          employee_profile_attributes: {
+            open_to_work: nextValue,
+          },
+        },
+      })
+
+      if (result.success) {
+        void refetch()
+        return
+      }
+
+      showToast(result.errors?.[0] ?? t('errors.saveErrorDescription'), 'error')
+    },
+    [apiRole, refetch, showToast, t, updateUser, userProfile]
+  )
+
+  const profileViewModel = useMemo(() => {
+    if (!userProfile) return null
+
+    return buildProfileViewModel({
+      t,
+      userProfile,
+      apiRole,
+      userName,
+      roleLabel,
+      completeness: profileCompleteness,
+      completedShifts: employeeStats.completedShifts,
+      myShiftsCount: myShifts.length,
+      getSpecializationLabel,
+      getSupplierTypeLabel,
+      getRestaurantFormatLabel,
+    })
+  }, [
+    apiRole,
+    employeeStats.completedShifts,
+    getRestaurantFormatLabel,
+    getSpecializationLabel,
+    getSupplierTypeLabel,
+    myShifts.length,
+    profileCompleteness,
+    roleLabel,
+    t,
+    userName,
+    userProfile,
+  ])
 
   return {
     userProfile,
     isProfileLoading,
-    refetch,
 
     apiRole,
-    userName,
-    roleLabel,
-    specializations,
-    employeeStats,
-
-    myShifts,
-    appliedShifts,
-
-    myShiftsCount: myShifts.length,
-    appliedShiftsCount: appliedShifts.length,
-
-    profileCompleteness,
+    profileViewModel,
 
     isEditDrawerOpen,
-    openEditDrawer,
-    closeEditDrawer,
     handleEditSuccess,
-    // exposed setter for compatibility with minimal safe cut
     setIsEditDrawerOpen,
 
     isNotificationPrefsDrawerOpen,
     setIsNotificationPrefsDrawerOpen,
 
-    supplierInfo,
-    supplierCategory,
-
+    isUpdatingUser,
+    handleOpenToWorkToggle,
     handleLogout,
   } as const
 }

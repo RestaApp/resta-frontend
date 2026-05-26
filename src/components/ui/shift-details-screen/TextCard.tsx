@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
 
@@ -16,7 +17,7 @@ export const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => 
       <div className={cn(ICON_WRAPPER_SECTION)} aria-hidden>
         <Icon className="h-5 w-5 text-primary shrink-0" />
       </div>
-      <h2 className="text-base font-medium text-foreground break-words">{title}</h2>
+      <h2 className={cn(SUBSECTION_TITLE_CLASS, 'break-words')}>{title}</h2>
     </div>
     <div
       className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line break-words"

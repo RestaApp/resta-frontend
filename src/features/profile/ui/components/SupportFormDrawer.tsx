@@ -2,13 +2,15 @@ import { useTranslation } from 'react-i18next'
 import { HelpCircle } from 'lucide-react'
 import {
   Drawer,
+  DrawerBody,
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
   DrawerFooter,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { DRAWER_BODY_CLASS, DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
+import { SHIFT_CARD_LOGO_CLASS } from '@/components/ui/shift-card/shift-card-styles'
+import { cn } from '@/utils/cn'
 import { useSupportTicketForm } from '@/features/profile/model/hooks/useSupportTicketForm'
 import { SupportTicketForm } from './SupportTicketForm'
 
@@ -18,8 +20,8 @@ interface SupportFormDrawerProps {
 }
 
 const SupportDrawerIcon = () => (
-  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/50">
-    <HelpCircle className="h-6 w-6 text-primary" />
+  <div className={cn(SHIFT_CARD_LOGO_CLASS, 'bg-secondary text-primary')}>
+    <HelpCircle className="h-5 w-5" />
   </div>
 )
 
@@ -38,8 +40,8 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
           </div>
           <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
         </DrawerHeader>
-        <DrawerFooter className={DRAWER_FOOTER_CLASS}>
-          <Button variant="gradient" size="md" className="w-full" onClick={form.handleClose}>
+        <DrawerFooter>
+          <Button variant="gradient" size="sm" className="w-full" onClick={form.handleClose}>
             {t('common.understand')}
           </Button>
         </DrawerFooter>
@@ -59,7 +61,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
         </div>
       </DrawerHeader>
 
-      <div className={DRAWER_BODY_CLASS}>
+      <DrawerBody className="ui-density-stack">
         <SupportTicketForm
           subject={form.subject}
           setSubject={form.setSubject}
@@ -77,7 +79,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
           fieldErrors={form.fieldErrors}
           maxMessageLength={form.maxMessageLength}
         />
-      </div>
+      </DrawerBody>
     </Drawer>
   )
 }

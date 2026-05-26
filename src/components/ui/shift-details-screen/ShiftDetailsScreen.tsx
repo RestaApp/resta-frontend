@@ -9,7 +9,6 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useShiftDetails } from '@/features/feed/model/hooks/useShiftDetails'
-import { DRAWER_FOOTER_CLASS } from '../ui-patterns'
 import { DetailsTab } from './DetailsTab'
 import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
@@ -75,7 +74,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         title={shiftTypeLabel || t('shift.shift', { defaultValue: 'Смена' })}
         footer={
           !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
-            <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0 border-border/30`}>
+            <DrawerFooter className="shrink-0 border-border/30">
               <div className="flex gap-4">
                 {isApplied ? (
                   <Button

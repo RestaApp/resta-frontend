@@ -31,7 +31,10 @@ export const LoadingState = ({ message, className }: LoadingStateProps) => {
   const { t } = useTranslation()
   return (
     <div
-      className={`flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 ${className ?? ''}`}
+      className={cn(
+        'flex min-h-[60vh] flex-col items-center justify-center gap-4 ui-density-page',
+        className
+      )}
       role="status"
       aria-live="polite"
     >
@@ -67,7 +70,10 @@ export const ErrorState = ({
   const { t } = useTranslation()
   return (
     <div
-      className={`flex min-h-[40vh] flex-col items-center justify-center gap-3 px-4 text-center ${className ?? ''}`}
+      className={cn(
+        'flex min-h-[40vh] flex-col items-center justify-center gap-3 text-center ui-density-page',
+        className
+      )}
       role="alert"
     >
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
@@ -109,7 +115,10 @@ export const SuccessState = ({
   className,
 }: SuccessStateProps) => (
   <div
-    className={`flex min-h-[40vh] flex-col items-center justify-center gap-3 px-4 text-center ${className ?? ''}`}
+    className={cn(
+      'flex min-h-[40vh] flex-col items-center justify-center gap-3 text-center ui-density-page',
+      className
+    )}
     role="status"
     aria-live="polite"
   >

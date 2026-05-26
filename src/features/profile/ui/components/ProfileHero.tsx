@@ -1,17 +1,16 @@
 import { memo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { AlertCircle, Briefcase, Link2, MapPin } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/utils/cn'
-import type { ApiRole } from '@/types'
 
 type ProfileHeroUser = {
   profile_photo_url?: string | null
   photo_url?: string | null
   city?: string | null
   location?: string | null
+  username?: string | null
+  average_rating?: number | string | null
   employee_profile?: {
     open_to_work?: boolean | null
   } | null
@@ -21,108 +20,81 @@ interface ProfileHeroProps {
   userProfile: ProfileHeroUser
   userName: string
   roleLabel: string
-  apiRole: ApiRole | null
-  isProfileFilled: boolean
-  /** Активная PRO-подписка — рендерит бейдж `PRO`. Бэк-источник: GET /billing/subscription. */
-  hasProSubscription?: boolean
-  /** Своё профиль: открыть форму заполнения (если профиль неполный) */
-  onFillProfile?: () => void
   /** В drawer профиля кандидата — без карточки, только контент */
   wrapInCard?: boolean
 }
 
+const getInitials = (name: string) => {
+  const parts = name
+    .replace(/[^\p{L}\p{N}\s.-]/gu, '')
+    .split(/\s+/)
+    .map(part => part.replace(/\./g, '').trim())
+    .filter(Boolean)
+
+  if (parts.length === 0) return 'R'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+
+  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+}
+
+const normalizeRating = (value: number | string | null | undefined) => {
+  const rating = Number(value)
+  return Number.isFinite(rating) && rating > 0 ? Math.min(5, Math.max(0, rating)) : null
+}
+
 export const ProfileHero = memo(
-  ({
-    userProfile,
-    userName,
-    roleLabel,
-    apiRole,
-    isProfileFilled,
-    hasProSubscription = false,
-    onFillProfile,
-    wrapInCard = true,
-  }: ProfileHeroProps) => {
-    const { t } = useTranslation()
+  ({ userProfile, userName, roleLabel, wrapInCard = true }: ProfileHeroProps) => {
     const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
     const cityOrLocation = userProfile.city || userProfile.location
-    const openToWork =
-      apiRole === 'employee' ? userProfile.employee_profile?.open_to_work : undefined
+    const username = userProfile.username?.trim()
+    const rating = normalizeRating(userProfile.average_rating)
+    const ratingPercent = rating ? (rating / 5) * 100 : 0
+    const metaItems = [username ? `@${username}` : null, cityOrLocation, roleLabel].filter(Boolean)
 
     const content = (
-      <div className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 flex-1 items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary">
-              {photoUrl ? (
-                <img src={photoUrl} alt={userName} className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-xl font-bold text-white">{userName.charAt(0)}</span>
-              )}
-            </div>
-
-            <div className="flex min-w-0 flex-col gap-1">
-              <h1 className={cn(SCREEN_TITLE_CLASS, 'truncate')}>{userName}</h1>
-              <div className="truncate text-sm text-muted-foreground">{roleLabel}</div>
-              {cityOrLocation ? (
-                <div className="flex items-center gap-1 truncate font-mono-resta text-xs text-muted-foreground">
-                  <MapPin className="h3 w3 shrink-0" />
-                  <span className="truncate">{cityOrLocation}</span>
-                </div>
-              ) : null}
-              {isProfileFilled || hasProSubscription ? (
-                <div className="flex flex-wrap items-center gap-1">
-                  {hasProSubscription ? <Badge variant="pro">PRO</Badge> : null}
-                </div>
-              ) : null}
-            </div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
+          <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[image:var(--gradient-primary)]">
+            {photoUrl ? (
+              <img src={photoUrl} alt={userName} className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-4xl font-extrabold tracking-tight text-white">
+                {getInitials(userName)}
+              </span>
+            )}
           </div>
 
-          {openToWork ? (
-            <div className="flex shrink-0 items-center gap-2 pt-0.5">
-              <span title={t('profile.openToWork')} aria-label={t('profile.openToWork')}>
-                <Badge
-                  variant="success"
-                  className="flex h-11 w-11 items-center justify-center px-0 py-0"
-                >
-                  <Briefcase className="h-4 w-4" />
-                </Badge>
-              </span>
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex min-w-0 items-center gap-2">
+              <h1 className={SCREEN_TITLE_CLASS}>{userName}</h1>
             </div>
-          ) : null}
+
+            <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0')}>
+              {metaItems.length > 0 ? metaItems.join(' · ') : roleLabel}
+            </div>
+          </div>
         </div>
 
-        {apiRole === 'employee' && isProfileFilled ? (
-          <div className="flex items-center gap-1">
-            <Link2 className="h3 w3 shrink-0 text-primary" />
-            <span className="truncate font-mono-resta text-xs text-primary">
-              resta.me/{userName.toLowerCase().replace(/\s+/g, '-')}
-            </span>
-          </div>
-        ) : null}
-
-        {!isProfileFilled ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge className="border border-warning/25 bg-warning/10 text-warning">
-              <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                <AlertCircle className="h3 w3 shrink-0" />
-                <span>{t('common.needToFill')}</span>
+        {rating ? (
+          <div
+            className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full p-1.5"
+            style={{
+              background: `conic-gradient(var(--success) ${ratingPercent}%, rgba(255,255,255,0.08) 0)`,
+            }}
+            aria-label={`Рейтинг ${rating.toFixed(1)}`}
+          >
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-background">
+              <span className="text-3xl font-extrabold tracking-tight text-foreground">
+                {rating.toFixed(1)}
               </span>
-            </Badge>
-            {onFillProfile ? (
-              <button
-                type="button"
-                onClick={onFillProfile}
-                className="text-sm font-medium text-primary underline-offset-2 hover:underline"
-              >
-                {t('common.fill')}
-              </button>
-            ) : null}
+            </div>
           </div>
         ) : null}
       </div>
     )
+
     return wrapInCard ? (
-      <Card className="relative p-4">{content}</Card>
+      <Card className="border-transparent bg-transparent p-0">{content}</Card>
     ) : (
       <div className="relative py-1">{content}</div>
     )

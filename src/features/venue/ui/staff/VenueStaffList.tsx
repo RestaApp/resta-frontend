@@ -179,8 +179,8 @@ export const VenueStaffList = ({
                             : item.applicationStatus === 'rejected'
                               ? t('venueUi.staff.status.rejected', { defaultValue: 'Отклонён' })
                               : t('venueUi.staff.status.pending', {
-                                defaultValue: 'На рассмотрении',
-                              })}
+                                  defaultValue: 'На рассмотрении',
+                                })}
                         </Badge>
                       </div>
 

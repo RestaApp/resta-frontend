@@ -14,6 +14,7 @@ import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 export type DrawerProps = {
   open: boolean
@@ -21,6 +22,7 @@ export type DrawerProps = {
   children?: React.ReactNode
   preventClose?: boolean
   overlayClassName?: string
+  onTelegramBack?: () => void
 
   /**
    * Новый API: явный отступ снизу (например высота BottomNav)
@@ -159,9 +161,7 @@ const DrawerContent = memo(function DrawerContent({
       >
         <div
           className={cn(
-            'sticky top-0 z-20 flex justify-center pt-3 pb-1.5 touch-none select-none',
-            'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm',
-            'dark:bg-card',
+            'flex shrink-0 justify-center bg-inherit pt-3 pb-2 touch-none select-none',
             preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
           )}
           onPointerDown={e => {
@@ -184,8 +184,16 @@ export const Drawer = ({
   preventClose,
   bottomOffsetPx,
   overlayClassName,
+  onTelegramBack,
 }: DrawerProps) => {
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
+  const handleTelegramBack = useCallback(() => {
+    if (onTelegramBack) {
+      onTelegramBack()
+      return
+    }
+    if (!preventClose) onOpenChange(false)
+  }, [onOpenChange, onTelegramBack, preventClose])
 
   useEffect(() => {
     if (!open) return
@@ -195,6 +203,12 @@ export const Drawer = ({
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [open, preventClose, onOpenChange])
+
+  useEffect(() => {
+    if (!open) return
+    if (preventClose && !onTelegramBack) return
+    return setupTelegramBackButton(handleTelegramBack)
+  }, [handleTelegramBack, onTelegramBack, open, preventClose])
 
   const node = (
     <AnimatePresence>
@@ -216,12 +230,43 @@ export const Drawer = ({
 
 // ----- Subcomponents (чтобы импорты не ломались) -----
 
+export const DrawerFrame = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div className={cn('flex min-h-0 flex-col bg-background dark:bg-card', className)} {...props} />
+  )
+}
+
+export const DrawerBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={cn('flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py', className)}
+      {...props}
+    />
+  )
+}
+
 export const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div className={cn('flex flex-col gap-1 p-4', className)} {...props} />
+  return (
+    <div
+      className={cn(
+        'flex flex-col gap-1 border-b border-border/50 ui-density-page ui-density-py-sm',
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 export const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div className={cn('mt-auto flex flex-col gap-2 p-4', className)} {...props} />
+  return (
+    <div
+      className={cn(
+        'mt-auto flex flex-col gap-2 border-t border-border/50 bg-background ui-density-page ui-density-py-sm',
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 export const DrawerTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {

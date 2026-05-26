@@ -91,7 +91,7 @@ export const SelectDropdown = ({
           >
             <Card
               padding="none"
-              className="h-full overflow-hidden rounded-xl border-border/30 shadow-lg backdrop-blur-sm"
+              className="h-full overflow-hidden rounded-lg border-border/30 shadow-lg backdrop-blur-sm"
             >
               {searchable ? (
                 <div className="sticky top-0 z-10 border-b border-border/30 bg-card/95 backdrop-blur-sm p-3">

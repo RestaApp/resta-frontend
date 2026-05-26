@@ -1,8 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Drawer } from '@/components/ui/drawer'
-import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import {
+  Drawer,
+  DrawerBody,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
+import { SHIFT_CARD_LOGO_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/utils/cn'
 import { formatMoney } from '@/features/feed/model/utils/formatting'
@@ -71,16 +78,12 @@ function ApplyCoverLetterModalContent({
 
   return (
     <Drawer open onOpenChange={open => !open && onClose()} overlayClassName="bg-black/60">
-      <div className="flex flex-col gap-5 px-6 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-5">
-        <div className="flex flex-col gap-2">
-          <h2 className={MODAL_TITLE_CLASS}>
-            {t('shift.applyNow', { defaultValue: 'Откликнуться' })}
-          </h2>
-          {shiftSummary ? (
-            <p className="text-sm leading-snug text-muted-foreground">{shiftSummary}</p>
-          ) : null}
-        </div>
+      <DrawerHeader>
+        <DrawerTitle>{t('shift.applyNow', { defaultValue: 'Откликнуться' })}</DrawerTitle>
+        {shiftSummary ? <DrawerDescription>{shiftSummary}</DrawerDescription> : null}
+      </DrawerHeader>
 
+      <DrawerBody className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">
           <label
             htmlFor="apply-cover-message"
@@ -103,10 +106,8 @@ function ApplyCoverLetterModalContent({
           />
         </div>
 
-        <div className="flex gap-3 rounded-lg border border-success/50 bg-success/10 p-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-success text-base font-bold text-white">
-            i
-          </div>
+        <div className="flex gap-2 rounded-lg border border-success/50 bg-success/10 p-3">
+          <div className={cn(SHIFT_CARD_LOGO_CLASS, 'bg-success text-white')}>i</div>
           <div className="flex flex-col gap-1">
             <p className="text-sm font-semibold leading-tight text-success">
               {t('shift.applyPrivacyTitle', { defaultValue: 'Сообщение увидит менеджер' })}
@@ -118,7 +119,9 @@ function ApplyCoverLetterModalContent({
             </p>
           </div>
         </div>
+      </DrawerBody>
 
+      <DrawerFooter className="pb-safe-cta">
         <Button
           onClick={handleSubmit}
           variant="gradient"
@@ -130,7 +133,7 @@ function ApplyCoverLetterModalContent({
             ? t('shift.sending')
             : t('shift.sendApplication', { defaultValue: 'Отправить отклик' })}
         </Button>
-      </div>
+      </DrawerFooter>
     </Drawer>
   )
 }

@@ -103,12 +103,12 @@ export function SupportTicketForm({
 
       {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-2 pt-2">
         <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
           <Button
             type="button"
             variant="outline"
-            size="md"
+            size="sm"
             className="w-full"
             onClick={onCancel}
             disabled={isLoading}
@@ -120,7 +120,7 @@ export function SupportTicketForm({
           <Button
             type="submit"
             variant="gradient"
-            size="md"
+            size="sm"
             className="w-full"
             disabled={isLoading}
           >

@@ -120,7 +120,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
         />
 
         {(showDetailedDays || hasWeekdayCustomPattern) && (
-          <div className="flex flex-col gap-1 rounded-xl border border-dashed border-border/60 p-2">
+          <div className="flex flex-col gap-1 rounded-lg border border-dashed border-border p-2">
             {DAY_ORDER.map(day => {
               const row = parsed.schedule.find(item => item.day === day)
               if (!row) return null

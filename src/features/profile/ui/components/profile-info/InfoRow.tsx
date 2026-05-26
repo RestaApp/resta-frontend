@@ -1,12 +1,13 @@
 import { memo, type ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 
-/** Общие стили строки для ProfileInfoCard. Переиспользуются в employee/business секциях. */
-export const ROW_CLASS = 'flex justify-between items-baseline gap-3 py-2.5'
-export const LABEL_CLASS = 'text-muted-foreground shrink-0 min-w-32'
-export const VALUE_CLASS = 'font-medium text-foreground text-right min-w-0'
+/** Общие стили строки для секций ProfileOverview. */
+export const ROW_CLASS = 'flex justify-between items-baseline gap-2 py-2'
+export const LABEL_CLASS =
+  'font-mono-resta text-xs tracking-wide text-muted-foreground shrink-0 min-w-28'
+export const VALUE_CLASS = 'text-sm font-semibold leading-snug text-foreground text-right min-w-0'
 export const VALUE_LINK_CLASS =
-  'font-medium text-primary text-right truncate hover:underline min-w-0'
+  'text-sm font-semibold leading-snug text-primary text-right truncate hover:underline min-w-0'
 
 interface InfoRowProps {
   label: string
@@ -17,7 +18,7 @@ interface InfoRowProps {
 
 /**
  * SRP: одна строка `label : value` с опциональной ссылкой.
- * Используется во всех секциях ProfileInfoCard.
+ * Используется во всех секциях ProfileOverview.
  */
 export const InfoRow = memo(
   ({ label, children, href, valueClassName = VALUE_CLASS }: InfoRowProps) => (

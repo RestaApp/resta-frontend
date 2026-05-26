@@ -95,7 +95,7 @@ export const LoadingPage = memo(function LoadingPage() {
         />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-8 px-8">
+      <div className="relative z-10 flex flex-col items-center gap-8 ui-density-page">
         <LogoWithText
           icon={logoIcon}
           title="Resta"
@@ -107,7 +107,7 @@ export const LoadingPage = memo(function LoadingPage() {
           )}
         />
       </div>
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-8 pb-7 text-center">
+      <div className="absolute bottom-0 left-0 right-0 z-10 ui-density-page pb-7 text-center">
         <p className="text-xs font-medium tracking-[0.22em] text-muted-foreground/70">
           {t('loadingPage.country')}
         </p>

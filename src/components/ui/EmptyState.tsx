@@ -27,17 +27,13 @@ export const EmptyState = ({
   const displayMessage = message ?? t('feed.noShifts')
   const resetButton =
     showResetButton && onReset ? (
-      <Button
-        className="h-14 rounded-2xl px-8 text-lg font-semibold"
-        variant="outline"
-        onClick={onReset}
-      >
+      <Button size="md" className="px-6" variant="outline" onClick={onReset}>
         {t('feed.resetFilters')}
       </Button>
     ) : null
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 px-4 py-12">
+    <div className="flex flex-col items-center justify-center gap-4 ui-density-page py-12">
       {illustration ? (
         <div className="text-muted-foreground">{illustration}</div>
       ) : (

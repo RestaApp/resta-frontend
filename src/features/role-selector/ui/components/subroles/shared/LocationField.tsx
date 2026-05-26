@@ -102,7 +102,7 @@ export const LocationField = memo(function LocationField({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             style={{ zIndex: Z_INDEX.popover }}
-            className="absolute w-full mt-1 overflow-hidden rounded-xl border border-border bg-background shadow-lg"
+            className="absolute mt-1 w-full overflow-hidden rounded-lg border border-border bg-background shadow-lg"
           >
             {isLoadingCities ? (
               <div className="flex items-center justify-center gap-2 px-4 py-3">

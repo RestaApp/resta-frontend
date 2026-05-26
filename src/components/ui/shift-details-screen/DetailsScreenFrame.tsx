@@ -1,6 +1,14 @@
-import type { ReactNode } from 'react'
-import { Drawer, DrawerCloseButton, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { DRAWER_HEADER_CLASS, DRAWER_SCROLL_BODY_CLASS } from '@/components/ui/ui-patterns'
+import { useEffect, type ReactNode } from 'react'
+import {
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerFrame,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
+import { DRAWER_SCROLL_BODY_CLASS } from '@/components/ui/ui-patterns'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 interface DetailsScreenFrameProps {
   open: boolean
@@ -25,12 +33,17 @@ export function DetailsScreenFrame({
   footer,
   variant = 'drawer',
 }: DetailsScreenFrameProps) {
+  useEffect(() => {
+    if (!open || variant !== 'page') return
+    return setupTelegramBackButton(onClose)
+  }, [onClose, open, variant])
+
   if (variant === 'page') {
     if (!open) return null
     return (
       <section className="fixed inset-0 z-50 flex flex-col bg-background">
         <div
-          className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} bg-background pb-24 pt-5`}
+          className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} bg-background pb-24`}
         >
           {children}
         </div>
@@ -42,8 +55,8 @@ export function DetailsScreenFrame({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <div className="flex min-h-0 flex-col rounded-t-2xl bg-background">
-        <DrawerHeader className={`${DRAWER_HEADER_CLASS} shrink-0 pb-4 pt-1`}>
+      <DrawerFrame>
+        <DrawerHeader className="shrink-0">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
               <DrawerTitle className="break-words">{title}</DrawerTitle>
@@ -55,12 +68,10 @@ export function DetailsScreenFrame({
           ) : null}
         </DrawerHeader>
 
-        <div className={`${DRAWER_SCROLL_BODY_CLASS} ui-density-stack bg-background pb-5`}>
-          {children}
-        </div>
+        <DrawerBody className="ui-density-stack pb-5">{children}</DrawerBody>
 
         {footer}
-      </div>
+      </DrawerFrame>
     </Drawer>
   )
 }

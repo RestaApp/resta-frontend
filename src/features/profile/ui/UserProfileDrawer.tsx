@@ -2,21 +2,20 @@ import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
+  DrawerBody,
   DrawerHeader,
   DrawerTitle,
   DrawerFooter,
   DrawerCloseButton,
+  DrawerFrame,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { mapRoleFromApi } from '@/utils/roles'
-import { ProfileHero } from './components/ProfileHero'
-import { ProfileInfoCard } from './components/ProfileInfoCard'
-import { ProfileBusinessInfoCard } from './components/ProfileBusinessInfoCard'
-import { ProfileSpecializationsSection } from './components/ProfileSpecializationsSection'
+import { buildProfileViewModel } from '../model/buildProfileViewModel'
+import { ProfileOverview } from './components/ProfileOverview'
 import { useLabels } from '@/shared/i18n/hooks'
 import { Loader } from '@/components/ui/loader'
-import { DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import { getProfileCompleteness } from '../model/utils/profileCompleteness'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -46,7 +45,13 @@ export const UserProfileDrawer = memo(
     onReject,
   }: UserProfileDrawerProps) => {
     const { t } = useTranslation()
-    const { getUiRoleLabel, getEmployeePositionLabel, getRestaurantFormatLabel } = useLabels()
+    const {
+      getUiRoleLabel,
+      getEmployeePositionLabel,
+      getRestaurantFormatLabel,
+      getSpecializationLabel,
+      getSupplierTypeLabel,
+    } = useLabels()
 
     const {
       data: userResponse,
@@ -85,35 +90,38 @@ export const UserProfileDrawer = memo(
       )
     }, [userProfile, apiRole, t])
 
-    const specializations = useMemo(() => {
-      if (apiRole !== 'employee' || !userProfile?.employee_profile) return []
-      return userProfile.employee_profile.specializations || []
-    }, [apiRole, userProfile])
-
-    const restaurantInfo = useMemo(() => {
-      if (apiRole !== 'restaurant') return null
-      const restaurantFormat =
-        userProfile?.restaurant_profile?.restaurant_format?.trim() ||
-        (
-          userProfile?.restaurant_profile as { format?: string | null } | null | undefined
-        )?.format?.trim()
-      if (!restaurantFormat) return null
-      return {
-        format: getRestaurantFormatLabel(restaurantFormat),
-      }
-    }, [apiRole, getRestaurantFormatLabel, userProfile])
-
-    const supplierInfo = useMemo(() => {
-      if (apiRole !== 'supplier') return null
-      return {
-        name: userProfile?.full_name || userProfile?.name || t('company'),
-      }
-    }, [apiRole, userProfile, t])
-
     const profileCompleteness = useMemo(() => {
       if (!userProfile) return null
       return getProfileCompleteness(userProfile, apiRole)
     }, [userProfile, apiRole])
+
+    const profileViewModel = useMemo(() => {
+      if (!userProfile) return null
+
+      return buildProfileViewModel({
+        t,
+        userProfile,
+        apiRole,
+        userName,
+        roleLabel: heroRoleOrPositionLabel,
+        completeness: profileCompleteness,
+        completedShifts: 0,
+        myShiftsCount: 0,
+        getSpecializationLabel,
+        getSupplierTypeLabel,
+        getRestaurantFormatLabel,
+      })
+    }, [
+      apiRole,
+      getRestaurantFormatLabel,
+      getSpecializationLabel,
+      getSupplierTypeLabel,
+      heroRoleOrPositionLabel,
+      profileCompleteness,
+      t,
+      userName,
+      userProfile,
+    ])
 
     const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false)
 
@@ -139,18 +147,15 @@ export const UserProfileDrawer = memo(
     return (
       <>
         <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
-          <div
-            className="flex flex-col rounded-t-2xl bg-background min-h-0 shrink-0"
-            style={{ height: 'calc(85vh - 52px)' }}
-          >
-            <DrawerHeader className="pb-2 border-b border-border shrink-0">
+          <DrawerFrame className="shrink-0" style={{ height: 'calc(85vh - 52px)' }}>
+            <DrawerHeader className="shrink-0">
               <div className="flex items-center justify-between gap-2">
                 <DrawerTitle>{drawerTitle}</DrawerTitle>
                 <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
               </div>
             </DrawerHeader>
 
-            <div className="flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py">
+            <DrawerBody>
               {isLoading ? (
                 <div className="flex items-center justify-center py-20">
                   <Loader size="lg" />
@@ -159,60 +164,13 @@ export const UserProfileDrawer = memo(
                 <div className="text-center py-10 text-muted-foreground">
                   {t('errors.loadError')}
                 </div>
-              ) : userProfile ? (
-                <>
-                  <ProfileHero
-                    userProfile={userProfile}
-                    userName={userName}
-                    roleLabel={heroRoleOrPositionLabel}
-                    apiRole={apiRole}
-                    isProfileFilled={profileCompleteness?.isFilled ?? false}
-                    wrapInCard={false}
-                  />
-
-                  {apiRole === 'employee' && specializations.length > 0 ? (
-                    <>
-                      <hr className="my-4 border-border" />
-                      <ProfileSpecializationsSection specializations={specializations} />
-                    </>
-                  ) : null}
-
-                  <hr className="my-4 border-border" />
-                  <ProfileInfoCard
-                    apiRole={apiRole}
-                    userProfile={userProfile}
-                    completeness={profileCompleteness}
-                    defaultOpen={true}
-                    variant="section"
-                  />
-
-                  {apiRole === 'restaurant' && restaurantInfo?.format ? (
-                    <>
-                      <hr className="my-4 border-border" />
-                      <ProfileBusinessInfoCard
-                        kind="restaurant"
-                        value={restaurantInfo.format}
-                        variant="section"
-                      />
-                    </>
-                  ) : null}
-
-                  {apiRole === 'supplier' && supplierInfo ? (
-                    <>
-                      <hr className="my-4 border-border" />
-                      <ProfileBusinessInfoCard
-                        kind="supplier"
-                        value={supplierInfo.name}
-                        variant="section"
-                      />
-                    </>
-                  ) : null}
-                </>
+              ) : profileViewModel ? (
+                <ProfileOverview profile={profileViewModel} variant="drawer" />
               ) : null}
-            </div>
+            </DrawerBody>
 
             {showModerationActions ? (
-              <DrawerFooter className={`${DRAWER_FOOTER_CLASS} shrink-0`}>
+              <DrawerFooter className="shrink-0">
                 <div className="flex gap-3">
                   {canReject ? (
                     <Button
@@ -245,7 +203,7 @@ export const UserProfileDrawer = memo(
                 </div>
               </DrawerFooter>
             ) : null}
-          </div>
+          </DrawerFrame>
         </Drawer>
 
         {canReject && onReject ? (

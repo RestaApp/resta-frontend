@@ -38,8 +38,8 @@ export const SectionHeader = function SectionHeader({
         transition={{ duration: 0.35, ease: 'easeOut' }}
         className={cn('flex items-center gap-2', className)}
       >
-        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
-          <Icon className="w-4 h-4" />
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
+          <Icon className="h-4 w-4" />
         </div>
         <h2 className={SUBSECTION_TITLE_CLASS}>{title}</h2>
         {count != null && count > 0 ? <Badge variant="outline">{count}</Badge> : null}

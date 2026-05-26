@@ -36,7 +36,7 @@ export const StickyCTA = ({
 }: StickyCTAProps) => (
   <div
     className={cn(
-      'fixed left-0 right-0 px-4 pt-3 pb-safe-cta',
+      'fixed left-0 right-0 ui-density-page pt-3 pb-safe-cta',
       !transparent && 'bg-background/92 backdrop-blur-xl',
       !aboveBottomNav && 'bottom-0',
       className

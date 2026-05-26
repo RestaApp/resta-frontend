@@ -9,7 +9,7 @@ import {
   SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
-import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
+import { Edit2, Plus, Settings, SlidersHorizontal } from 'lucide-react'
 import type { Tab, UiRole } from '@/types'
 import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
@@ -32,7 +32,7 @@ const getHeaderTitle = (activeTab: Tab | undefined, t: TranslateFn) => {
   if (activeTab === 'feed') return t('feed.headerTitle', { defaultValue: 'Лента' })
   if (activeTab === 'activity') return t('tabs.employee.activity', { defaultValue: 'Активность' })
   if (activeTab === 'myshifts') return t('tabs.employee.my', { defaultValue: 'Мои' })
-  if (activeTab === 'profile') return t('tabs.employee.profile', { defaultValue: 'Профиль' })
+  if (activeTab === 'profile') return t('tabs.employee.profileShort', { defaultValue: 'Я' })
   if (!activeTab) return ''
 
   const candidates = [
@@ -97,7 +97,7 @@ const getHeaderAction = (params: {
   if (activeTab === 'profile') {
     return {
       ariaLabel: t('aria.editProfile'),
-      Icon: Edit2,
+      Icon: Settings,
       onClick: () => emitAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT),
     }
   }
@@ -168,7 +168,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
         animate={{ y: 0, opacity: 1 }}
         className={cn(
           'flex items-center bg-background/95 backdrop-blur-xl ui-density-page ui-density-py-sm',
-          'border-b border-border'
+          activeTab === 'profile' ? 'border-b border-transparent' : 'border-b border-border'
         )}
       >
         <div className="ui-app-frame flex min-h-12 items-center justify-between gap-3">
@@ -181,7 +181,10 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
               size="sm"
               onClick={action.onClick}
               aria-label={action.ariaLabel}
-              className={APP_HEADER_ACTION_BUTTON_CLASS}
+              className={cn(
+                APP_HEADER_ACTION_BUTTON_CLASS,
+                activeTab === 'profile' && 'h-12 w-12 rounded-lg bg-card hover:bg-elevated'
+              )}
             >
               <action.Icon className={APP_HEADER_ACTION_ICON_CLASS} />
             </Button>

@@ -32,7 +32,7 @@ export const OnboardingBottomCta = memo(function OnboardingBottomCta({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 pt-3 pb-safe-cta backdrop-blur-sm"
+      className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 ui-density-page pt-3 pb-safe-cta backdrop-blur-sm"
       style={{ zIndex: Z_INDEX.stickyHeader }}
     >
       <div className="mx-auto w-full max-w-md">

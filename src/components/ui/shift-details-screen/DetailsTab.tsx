@@ -94,7 +94,7 @@ export const DetailsTab = memo(
     const compactSubtitle = shift.restaurant || positionLabel || ''
 
     return (
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-3">
         {shift.urgent ? (
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
@@ -114,7 +114,7 @@ export const DetailsTab = memo(
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <div className={cn(DISPLAY_PRICE_CLASS, 'price-xl')}>
               {payValue}
               {payCurrency ? (

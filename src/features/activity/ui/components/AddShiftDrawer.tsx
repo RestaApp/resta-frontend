@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
+  DrawerBody,
   DrawerHeader,
   DrawerFooter,
   DrawerTitle,
@@ -13,7 +14,6 @@ import { useUserSpecializations } from '@/features/navigation/model/hooks/useUse
 import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
-import { DRAWER_BODY_CLASS, DRAWER_FOOTER_CLASS } from '@/components/ui/ui-patterns'
 import { useToast } from '@/hooks/useToast'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
 import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
@@ -134,13 +134,17 @@ const AddShiftDrawerKeyed = ({
   )
 
   return (
-    <Drawer open={open} onOpenChange={controller.actions.handleDrawerOpenChange}>
+    <Drawer
+      open={open}
+      onOpenChange={controller.actions.handleDrawerOpenChange}
+      onTelegramBack={controller.actions.handleBackOrCancel}
+    >
       <DrawerHeader>
         <DrawerTitle>{drawerCopy.drawerTitle}</DrawerTitle>
         <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
       </DrawerHeader>
 
-      <div className={`${DRAWER_BODY_CLASS} gap-5`}>
+      <DrawerBody className="ui-density-stack gap-3">
         {controller.state.isSuccessOpen ? (
           <AddShiftDrawerSuccess />
         ) : (
@@ -222,9 +226,9 @@ const AddShiftDrawerKeyed = ({
         {!controller.state.isSuccessOpen ? (
           <AddShiftDrawerBanner message={controller.derived.bannerError} />
         ) : null}
-      </div>
+      </DrawerBody>
 
-      <DrawerFooter className={DRAWER_FOOTER_CLASS}>
+      <DrawerFooter>
         <AddShiftDrawerFooter
           isSuccessOpen={controller.state.isSuccessOpen}
           step={controller.state.step}

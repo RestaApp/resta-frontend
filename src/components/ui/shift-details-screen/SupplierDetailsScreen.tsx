@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Building2, Globe, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card } from '@/components/ui/card'
+import { SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import type { SupplierCardData } from '@/components/ui/shift-card/SupplierCard'
 import { DetailRow } from './DetailRow'
 import { TextCard } from './TextCard'
@@ -177,7 +178,7 @@ export const SupplierDetailsScreen = memo(
 
         {supplier.serviceCategories.length > 0 ? (
           <Card padding="md" className={DETAIL_CARD_CLASS}>
-            <h2 className="text-base font-medium text-foreground mb-3">
+            <h2 className={`${SUBSECTION_TITLE_CLASS} mb-3`}>
               {t('venueUi.suppliers.filters.categories', {
                 defaultValue: 'Категории товаров и услуг',
               })}

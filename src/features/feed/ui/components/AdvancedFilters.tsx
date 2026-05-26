@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Drawer, DrawerCloseButton } from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerCloseButton, DrawerFrame } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
@@ -7,7 +7,6 @@ import { LocationField } from '@/features/role-selector/ui/components/subroles/s
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
 import type { AdvancedFiltersData } from '@/features/feed/model/types'
 import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
 
 interface AdvancedFiltersProps {
   isOpen: boolean
@@ -39,8 +38,6 @@ export const AdvancedFilters = ({
   </Drawer>
 )
 
-const SHEET_SURFACE_CLASS = 'bg-background dark:bg-card'
-
 const SECTION_LABEL_CLASS = 'text-xs font-semibold uppercase tracking-widest text-muted-foreground'
 
 const FilterSectionLabel = ({ children }: { children: React.ReactNode }) => (
@@ -66,13 +63,8 @@ const AdvancedFiltersSheet = ({
   }
 
   return (
-    <div className={cn('flex min-h-0 flex-1 flex-col', SHEET_SURFACE_CLASS)}>
-      <div
-        className={cn(
-          'sticky top-0 z-10 flex shrink-0 items-center justify-between px-4 pt-2 pb-0 mb3',
-          SHEET_SURFACE_CLASS
-        )}
-      >
+    <DrawerFrame className="flex-1">
+      <div className="mb-3 flex shrink-0 items-center justify-between border-b border-border/50 ui-density-page ui-density-py-sm">
         <h2 className={MODAL_TITLE_CLASS}>{t('feed.filters')}</h2>
         <div className="flex items-center gap-2">
           <button
@@ -87,7 +79,7 @@ const AdvancedFiltersSheet = ({
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4">
+      <DrawerBody className="flex flex-col gap-3 pb-4">
         {c.positions.length > 0 ? (
           <div className="flex flex-col gap-2">
             <FilterSectionLabel>{t('feed.sectionPosition')}</FilterSectionLabel>
@@ -141,9 +133,9 @@ const AdvancedFiltersSheet = ({
             isLoading={false}
           />
         </div>
-      </div>
+      </DrawerBody>
 
-      <div className={cn('flex shrink-0 border-t border-border/50 px-4 py-3', SHEET_SURFACE_CLASS)}>
+      <div className="flex shrink-0 border-t border-border/50 ui-density-page py-3">
         <Button
           type="button"
           variant="ghost"
@@ -154,6 +146,6 @@ const AdvancedFiltersSheet = ({
           {isVacancy ? t('feed.showVacanciesCta') : t('feed.showShiftsCount')}
         </Button>
       </div>
-    </div>
+    </DrawerFrame>
   )
 }

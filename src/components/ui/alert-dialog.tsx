@@ -6,6 +6,7 @@ import { Button } from './button'
 import { MODAL_TITLE_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
+import { setupTelegramBackButton } from '@/utils/telegram'
 
 interface AlertDialogProps {
   open: boolean
@@ -37,6 +38,11 @@ export const AlertDialog = memo(function AlertDialog({
   const contentRef = useRef<HTMLDivElement | null>(null)
 
   useBodyScrollLock(open)
+
+  useEffect(() => {
+    if (!open || preventClose) return
+    return setupTelegramBackButton(() => onOpenChange(false))
+  }, [onOpenChange, open, preventClose])
 
   useEffect(() => {
     if (!open || typeof document === 'undefined') return
@@ -94,7 +100,7 @@ export const AlertDialog = memo(function AlertDialog({
   const node = (
     <AlertDialogRefContext.Provider value={contentRef}>
       <div
-        className="fixed inset-0 flex items-center justify-center"
+        className="fixed inset-0 flex items-center justify-center ui-density-page ui-density-py"
         role="presentation"
         style={{ zIndex: Z_INDEX.alertDialog }}
       >

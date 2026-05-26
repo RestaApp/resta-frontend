@@ -54,7 +54,7 @@ export const MultiSelectSpecializations = ({
           <div
             className={cn(
               'flex flex-wrap gap-2',
-              error && 'rounded-xl ring-2 ring-destructive/20 p-2 -m-2'
+              error && 'rounded-lg ring-2 ring-destructive/20 p-2 -m-2'
             )}
           >
             {options.map(spec => (
