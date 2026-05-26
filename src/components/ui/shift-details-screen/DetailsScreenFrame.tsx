@@ -8,6 +8,8 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { DRAWER_SCROLL_BODY_CLASS } from '@/components/ui/ui-patterns'
+import { useTelegramFullscreenOffset } from '@/contexts/telegram/useTelegramFullscreenOffset'
+import { cn } from '@/utils/cn'
 import { setupTelegramBackButton } from '@/utils/telegram'
 
 const SWIPE_BACK_EDGE_PX = 56
@@ -37,6 +39,7 @@ export function DetailsScreenFrame({
   footer,
   variant = 'drawer',
 }: DetailsScreenFrameProps) {
+  const fullscreenOffset = useTelegramFullscreenOffset()
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null)
 
   const handlePointerDown = useCallback((event: PointerEvent<HTMLElement>) => {
@@ -74,7 +77,10 @@ export function DetailsScreenFrame({
     if (!open) return null
     return (
       <section
-        className="fixed inset-0 z-50 flex flex-col bg-background"
+        className={cn(
+          'fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-background',
+          fullscreenOffset.topClassName
+        )}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}

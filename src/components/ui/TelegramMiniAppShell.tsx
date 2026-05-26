@@ -1,17 +1,10 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/utils/cn'
-import { useTelegram } from '@/contexts/TelegramContext'
+import { useTelegramFullscreenOffset } from '@/contexts/telegram/useTelegramFullscreenOffset'
 
 interface TelegramMiniAppShellProps {
   children: ReactNode
   className?: string
-}
-
-const FULLSCREEN_TOP_OFFSET_PX = 80
-
-const isIosDevice = (): boolean => {
-  if (typeof navigator === 'undefined') return false
-  return /iP(hone|ad|od)/i.test(navigator.userAgent || '')
 }
 
 /**
@@ -23,20 +16,17 @@ const isIosDevice = (): boolean => {
  * скролл в Mini App пропадает.
  */
 export const TelegramMiniAppShell = ({ children, className }: TelegramMiniAppShellProps) => {
-  const { isFullscreen } = useTelegram()
-  const applyFullscreenOffset = isFullscreen && isIosDevice()
+  const fullscreenOffset = useTelegramFullscreenOffset()
 
   return (
     <div
       className={cn(
         'bg-background flex flex-col overflow-hidden',
-        applyFullscreenOffset && 'mt-20',
+        fullscreenOffset.marginTopClassName,
         className
       )}
       style={{
-        height: applyFullscreenOffset
-          ? `calc(var(--tg-viewport-stable-height, 100dvh) - ${FULLSCREEN_TOP_OFFSET_PX}px)`
-          : 'var(--tg-viewport-stable-height, 100dvh)',
+        height: fullscreenOffset.viewportHeight,
       }}
     >
       <div data-app-scroll-root className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">

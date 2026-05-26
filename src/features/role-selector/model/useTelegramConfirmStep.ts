@@ -72,20 +72,23 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
       const shared = await requestTelegramContact()
       if (shared) {
         setIsPhoneShared(true)
-        if (!phoneFromProfile && !manualPhone.trim()) {
+        if (userId) {
+          const result = await refetchUser()
+          if (result && 'data' in result && result.data?.data?.phone) {
+            setManualPhone(formatPhoneInput(result.data.data.phone) || result.data.data.phone)
+          }
+        }
+        if (!manualPhone.trim()) {
           setManualPhone(
             t('onboarding.telegram.phoneFromTelegram', { defaultValue: 'Номер из Telegram' })
           )
-        }
-        if (userId) {
-          await refetchUser()
         }
         setPhoneError(null)
       }
     } finally {
       setIsRequestingPhone(false)
     }
-  }, [isRequestingPhone, manualPhone, phoneFromProfile, refetchUser, t, userId])
+  }, [isRequestingPhone, manualPhone, refetchUser, t, userId])
 
   const handleLocationShare = useCallback(async () => {
     if (isRequestingLocation) return
