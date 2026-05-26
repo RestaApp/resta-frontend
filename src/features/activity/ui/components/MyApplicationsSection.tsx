@@ -8,10 +8,11 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
 import { EmptyState } from '@/components/ui/EmptyState'
+import type { ToastType } from '@/components/ui/toast'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]
-  showToast: (m: string, t?: 'success' | 'error' | 'info') => void
+  showToast: (m: string, t?: ToastType) => void
 }
 
 type AppliedStatusGroup = ReturnType<typeof groupAppliedByStatus>[number]

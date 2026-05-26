@@ -1,6 +1,7 @@
 import { forwardRef, type ComponentProps } from 'react'
 import { cn } from '@/utils/cn'
 import { Loader } from '@/components/ui/loader'
+import type { HapticFeedbackPattern } from '@/utils/haptics'
 
 /**
  * Size scale per AI_DEVELOPMENT_GUIDELINES §1.4 (44 / 48 / 52 px).
@@ -46,13 +47,28 @@ const VARIANT_CLASSES = {
     'bg-secondary text-foreground/60 hover:bg-destructive/10 hover:text-destructive border border-destructive/20',
 } as const
 
+const BUTTON_HAPTIC_BY_VARIANT: Record<keyof typeof VARIANT_CLASSES, HapticFeedbackPattern> = {
+  primary: 'medium',
+  secondary: 'light',
+  outline: 'light',
+  ghost: 'light',
+  destructive: 'heavy',
+  danger: 'heavy',
+  success: 'medium',
+  stars: 'medium',
+  gradient: 'medium',
+  gradientPressed: 'light',
+}
+
 export type ButtonProps = {
   size?: keyof typeof SIZE_CLASSES
   variant?: keyof typeof VARIANT_CLASSES
   loading?: boolean
   pressed?: boolean
   type?: 'button' | 'submit' | 'reset'
-} & Omit<ComponentProps<'button'>, 'type'>
+  haptic?: HapticFeedbackPattern | false
+  'data-haptic'?: HapticFeedbackPattern | 'none'
+} & Omit<ComponentProps<'button'>, 'type' | 'data-haptic'>
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -64,6 +80,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       pressed = false,
       type = 'button',
+      haptic,
+      'data-haptic': dataHaptic,
       children,
       ...props
     },
@@ -71,12 +89,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const effectiveVariant = variant === 'gradient' && pressed ? 'gradientPressed' : variant
     const isDisabled = disabled || loading
+    const hapticPattern =
+      dataHaptic ??
+      (haptic === false ? 'none' : (haptic ?? BUTTON_HAPTIC_BY_VARIANT[effectiveVariant]))
 
     return (
       <button
         ref={ref}
         type={type}
         disabled={isDisabled}
+        data-haptic={hapticPattern}
         aria-busy={loading || undefined}
         aria-pressed={pressed || undefined}
         className={cn(

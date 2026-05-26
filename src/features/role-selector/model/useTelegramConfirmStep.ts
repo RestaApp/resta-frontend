@@ -8,6 +8,7 @@ import { requestTelegramContact, requestTelegramLocation } from '@/utils/telegra
 import { formatPhoneInput, toE164, validatePhone } from '@/utils/phone'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { setupTelegramBackButton } from '@/utils/telegram'
+import { triggerHapticFeedback } from '@/utils/haptics'
 
 interface UseTelegramConfirmStepProps {
   onContinue: () => void
@@ -84,6 +85,9 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
           )
         }
         setPhoneError(null)
+        triggerHapticFeedback('success')
+      } else {
+        triggerHapticFeedback('warning')
       }
     } finally {
       setIsRequestingPhone(false)
@@ -105,14 +109,17 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
         city = await getLocation()
       }
 
-      if (!city) return
+      if (!city) {
+        triggerHapticFeedback('warning')
+        return
+      }
       setSelectedCity(city)
       setCityError(null)
 
       await updateUserWithData(
         { user: { city } },
-        () => void 0,
-        () => void 0
+        () => triggerHapticFeedback('success'),
+        () => triggerHapticFeedback('error')
       )
     } finally {
       setIsRequestingLocation(false)
@@ -124,6 +131,7 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
       const phoneValidation = validatePhone(resolvedPhone)
       if (!phoneValidation.valid) {
         setPhoneError(phoneValidation.message ?? t('phone.invalidFormat'))
+        triggerHapticFeedback('warning')
         return
       }
     }
@@ -132,6 +140,7 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     const finalCity = selectedCity.trim() || cityFromProfile
     if (!finalCity) {
       setCityError(t('validation.requiredField'))
+      triggerHapticFeedback('warning')
       return
     }
     setCityError(null)
@@ -148,8 +157,12 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
             ...(nameChanged ? { name: trimmedName } : {}),
           },
         },
-        () => onContinue(),
+        () => {
+          triggerHapticFeedback('success')
+          onContinue()
+        },
         error => {
+          triggerHapticFeedback('error')
           setPhoneError(error)
         }
       )

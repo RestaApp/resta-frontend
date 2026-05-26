@@ -10,6 +10,7 @@ import {
 } from './validation'
 import { useAddShiftDrawerHandlers } from './useAddShiftDrawerHandlers'
 import { useAddShiftDrawerSubmit } from './useAddShiftDrawerSubmit'
+import { triggerHapticFeedback } from '@/utils/haptics'
 
 type UseAddShiftDrawerControllerParams = {
   open: boolean
@@ -184,8 +185,13 @@ export const useAddShiftDrawerController = ({
       return next
     })
 
-    if (isCurrentStepValid(step)) setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
-    else scrollToFirstInvalidInStep(step)
+    if (isCurrentStepValid(step)) {
+      setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
+      return
+    }
+
+    triggerHapticFeedback('warning')
+    scrollToFirstInvalidInStep(step)
   }, [isCurrentStepValid, scrollToFirstInvalidInStep, step])
 
   const handleBackOrCancel = useCallback(() => {

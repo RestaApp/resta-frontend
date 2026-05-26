@@ -78,6 +78,7 @@ export const RoleCard = memo(function RoleCard({
         onClick={handleClick}
         aria-label={t('aria.selectRole', { label: role.title })}
         aria-pressed={isSelected}
+        data-haptic="selection"
         className={cn(
           'flex w-full flex-col gap-2 rounded-lg border p-3 text-left transition-all duration-150',
           showPopularBadge ? 'pt-5' : '',

@@ -3,9 +3,8 @@ import { isIosDevice } from './utils'
 
 const TELEGRAM_VIEWPORT_HEIGHT = 'var(--tg-viewport-stable-height, 100dvh)'
 
-export const TELEGRAM_FULLSCREEN_TOP_OFFSET_PX = 80
 export const TELEGRAM_FULLSCREEN_TOP_OFFSET_CLASS = 'top-20'
-export const TELEGRAM_FULLSCREEN_MARGIN_TOP_CLASS = 'mt-20'
+export const TELEGRAM_FULLSCREEN_PADDING_TOP_CLASS = 'pt-20'
 
 /**
  * Единая логика отступа под Telegram top-controls в iOS fullscreen.
@@ -18,9 +17,7 @@ export const useTelegramFullscreenOffset = () => {
   return {
     shouldApply,
     topClassName: shouldApply ? TELEGRAM_FULLSCREEN_TOP_OFFSET_CLASS : 'top-0',
-    marginTopClassName: shouldApply ? TELEGRAM_FULLSCREEN_MARGIN_TOP_CLASS : undefined,
-    viewportHeight: shouldApply
-      ? `calc(${TELEGRAM_VIEWPORT_HEIGHT} - ${TELEGRAM_FULLSCREEN_TOP_OFFSET_PX}px)`
-      : TELEGRAM_VIEWPORT_HEIGHT,
+    shellTopOffsetClassName: shouldApply ? TELEGRAM_FULLSCREEN_PADDING_TOP_CLASS : undefined,
+    viewportHeight: TELEGRAM_VIEWPORT_HEIGHT,
   }
 }

@@ -65,7 +65,7 @@ export function VenueStaffPage() {
           t('venueUi.staff.acceptClosedError', {
             defaultValue: 'Смена уже закрыта для принятия откликов',
           }),
-          'error'
+          'warning'
         )
         return false
       }
@@ -85,7 +85,7 @@ export function VenueStaffPage() {
         applicationId,
         shiftId: shiftId > 0 ? shiftId : undefined,
       }).unwrap()
-      showToast(t('venueUi.staff.rejected', { defaultValue: 'Заявка отклонена' }), 'success')
+      showToast(t('venueUi.staff.rejected', { defaultValue: 'Заявка отклонена' }), 'warning')
       await refetch()
       return true
     } catch (error) {

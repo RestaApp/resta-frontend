@@ -71,7 +71,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
       try {
         await deleteShift(String(id))
         refetchMyShifts()
-        showToast(t('shift.deleted'), 'success')
+        showToast(t('shift.deleted'), 'warning')
       } catch {
         showToast(t('shift.deleteError'), 'error')
       }
@@ -103,7 +103,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
         t('venueUi.profileRequiredToCreate', {
           defaultValue: 'Чтобы создавать вакансии и смены, сначала заполните профиль.',
         }),
-        'error'
+        'warning'
       )
       return
     }

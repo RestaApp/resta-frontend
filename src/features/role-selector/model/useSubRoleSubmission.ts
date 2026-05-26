@@ -9,6 +9,7 @@ import type { UiRole, EmployeeRole } from '@/shared/types/roles.types'
 import { mapApiRoleToDefaultUiRole } from '@/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
 import { buildRegistrationUpdateUserRequest } from '@/features/profile/model/utils/buildUpdateUserRequest'
+import { triggerHapticFeedback } from '@/utils/haptics'
 
 export interface SupplierOnboardingData {
   category: string
@@ -51,8 +52,12 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       const success = await updateUserWithData(
         updateData,
-        () => onSelectRole(mapApiRoleToDefaultUiRole('employee') ?? 'chef'),
+        () => {
+          triggerHapticFeedback('success')
+          onSelectRole(mapApiRoleToDefaultUiRole('employee') ?? 'chef')
+        },
         error => {
+          triggerHapticFeedback('error')
           setErrorMessage(error)
           setErrorDialogOpen(true)
           onError(error)
@@ -78,8 +83,12 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       const success = await updateUserWithData(
         updateData,
-        () => onSelectRole('supplier'),
+        () => {
+          triggerHapticFeedback('success')
+          onSelectRole('supplier')
+        },
         error => {
+          triggerHapticFeedback('error')
           setErrorMessage(error)
           setErrorDialogOpen(true)
           onError(error)
@@ -104,8 +113,12 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       const success = await updateUserWithData(
         updateData,
-        () => onSelectRole('venue'),
+        () => {
+          triggerHapticFeedback('success')
+          onSelectRole('venue')
+        },
         error => {
+          triggerHapticFeedback('error')
           setErrorMessage(error)
           setErrorDialogOpen(true)
           onError(error)

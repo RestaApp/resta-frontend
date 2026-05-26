@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 import { useTelegramFullscreenOffset } from '@/contexts/telegram/useTelegramFullscreenOffset'
+import { useTelegramHapticFeedback } from '@/contexts/telegram/useTelegramHapticFeedback'
 
 interface TelegramMiniAppShellProps {
   children: ReactNode
@@ -17,12 +18,14 @@ interface TelegramMiniAppShellProps {
  */
 export const TelegramMiniAppShell = ({ children, className }: TelegramMiniAppShellProps) => {
   const fullscreenOffset = useTelegramFullscreenOffset()
+  const hapticRootRef = useTelegramHapticFeedback()
 
   return (
     <div
+      ref={hapticRootRef}
       className={cn(
-        'bg-background flex flex-col overflow-hidden',
-        fullscreenOffset.marginTopClassName,
+        'bg-background box-border flex flex-col overflow-hidden',
+        fullscreenOffset.shellTopOffsetClassName,
         className
       )}
       style={{

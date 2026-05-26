@@ -8,7 +8,6 @@ import {
 import type { Shift } from '@/features/feed/model/types'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { useToast } from '@/hooks/useToast'
-import { triggerHapticFeedback } from '@/utils/haptics'
 import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
 import { getTelegramWebApp } from '@/utils/telegram'
 import type { ShiftStatus } from '@/components/ui/StatusPill'
@@ -163,7 +162,6 @@ export const useShiftDetailsScreenController = ({
     async (id: number) => {
       try {
         setModerating({ id, action: 'accept' })
-        triggerHapticFeedback('light')
         const result = await acceptApplication({
           applicationId: id,
           shiftId: shift?.id,
@@ -184,12 +182,11 @@ export const useShiftDetailsScreenController = ({
     async (id: number) => {
       try {
         setModerating({ id, action: 'reject' })
-        triggerHapticFeedback('light')
         const result = await rejectApplication({
           applicationId: id,
           shiftId: shift?.id,
         }).unwrap()
-        showToast(extractModerationMessage(result) ?? t('shift.applicationRejected'), 'success')
+        showToast(extractModerationMessage(result) ?? t('shift.applicationRejected'), 'warning')
       } catch (e) {
         const err = normalizeApiError(e, t('shift.rejectApplicationError'), t)
         showToast(err.message, 'error')

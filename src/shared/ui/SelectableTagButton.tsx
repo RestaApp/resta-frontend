@@ -46,6 +46,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
       whileTap={disabled ? undefined : { scale: 0.95 }}
       onClick={() => !disabled && onClick(value)}
       disabled={disabled}
+      data-haptic="selection"
       className={cn(
         TAG_BASE_CLASS,
         SIZE_CLASS[size],

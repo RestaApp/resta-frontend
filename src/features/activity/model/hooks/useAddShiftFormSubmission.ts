@@ -8,6 +8,7 @@ import {
 } from '@/services/api/shiftsApi'
 import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
+import { triggerHapticFeedback } from '@/utils/haptics'
 import { parseMoneyInput } from '@/features/feed/model/utils/formatting'
 import { mapServerErrorsToFields, translateServerError } from '../utils/addShiftValidation'
 import type { AddShiftFormState } from './useAddShiftFormState'
@@ -94,7 +95,10 @@ export const useAddShiftFormSubmission = ({
   const handleSave = useCallback(async (): Promise<boolean> => {
     state.setSubmitError(null)
     state.setFieldErrors({})
-    if (!canSubmit()) return false
+    if (!canSubmit()) {
+      triggerHapticFeedback('warning')
+      return false
+    }
 
     const requiresSchedule = state.shiftType === 'replacement'
     const startM = toMinutes(state.startTime)
@@ -137,6 +141,7 @@ export const useAddShiftFormSubmission = ({
         if (hasInlineErrors(updateResult)) {
           const { hasFieldErrors, message } = applyServerErrors(inlineErrorMessages(updateResult))
           if (message) showToast?.(message, 'error')
+          else triggerHapticFeedback('warning')
           if (hasFieldErrors) return false
           return false
         }
@@ -148,6 +153,7 @@ export const useAddShiftFormSubmission = ({
           if (hasInlineErrors(createResult)) {
             const { hasFieldErrors, message } = applyServerErrors(inlineErrorMessages(createResult))
             if (message) showToast?.(message, 'error')
+            else triggerHapticFeedback('warning')
             if (hasFieldErrors) return false
             return false
           }
@@ -158,6 +164,7 @@ export const useAddShiftFormSubmission = ({
           if (messages) {
             const { message } = applyServerErrors(messages)
             if (message) showToast?.(message, 'error')
+            else triggerHapticFeedback('warning')
             return false
           }
           const errorMessage = translateServerError(single || t('shift.createError'), t)
@@ -175,6 +182,7 @@ export const useAddShiftFormSubmission = ({
       if (messages) {
         const { message } = applyServerErrors(messages)
         if (message) showToast?.(message, 'error')
+        else triggerHapticFeedback('warning')
         return false
       }
       const errorMessage = translateServerError(single || t('shift.updateError'), t)

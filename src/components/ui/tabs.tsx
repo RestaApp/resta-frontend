@@ -97,6 +97,7 @@ export const Tabs = <T extends string>({
             id={`tab-${option.id}`}
             aria-selected={isActive}
             tabIndex={isActive ? 0 : -1}
+            data-haptic="selection"
             onClick={() => onChange(option.id)}
             ref={el => {
               if (el) tabRefs.current.set(option.id, el)

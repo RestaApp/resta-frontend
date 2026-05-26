@@ -136,6 +136,7 @@ export const SelectDropdown = ({
                             type="button"
                             role="option"
                             aria-selected={isSelected}
+                            data-haptic="selection"
                             onClick={() => onSelect(option.value)}
                             className={cn(
                               'relative flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm transition-colors',

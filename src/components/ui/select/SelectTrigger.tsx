@@ -79,6 +79,7 @@ export const SelectTrigger = ({
       aria-controls={listboxId}
       onClick={onToggle}
       disabled={disabled}
+      data-haptic="light"
       aria-invalid={!!error}
       className={cn(
         INPUT_FIELD_BASE_CLASS,

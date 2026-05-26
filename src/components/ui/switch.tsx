@@ -40,6 +40,7 @@ export const Switch = memo(function Switch({
       aria-checked={checked}
       aria-label={ariaLabel ?? 'Switch'}
       disabled={disabled}
+      data-haptic="selection"
       onClick={toggle}
       onKeyDown={onKeyDown}
       className={cn(

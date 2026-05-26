@@ -196,6 +196,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
       role="button"
       tabIndex={0}
       aria-label={cardAriaLabel}
+      data-haptic="light"
       onKeyDown={handleKeyDown}
       onClick={handleOpen}
       className={cn(

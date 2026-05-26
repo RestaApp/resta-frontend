@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApplyToShiftMutation, useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { useToast } from '@/hooks/useToast'
-import { triggerHapticFeedback } from '@/utils/haptics'
 import { normalizeApiError } from '../utils/apiErrors'
 
 export const useShiftApplication = () => {
@@ -14,8 +13,6 @@ export const useShiftApplication = () => {
   const apply = useCallback(
     async (shiftId: number, message?: string) => {
       try {
-        triggerHapticFeedback('light')
-
         const result = await applyToShift({
           id: shiftId,
           data: message ? { message } : undefined,
@@ -41,7 +38,7 @@ export const useShiftApplication = () => {
 
       try {
         const result = await cancelApplication(applicationId).unwrap()
-        showToast(result.message ?? t('shift.applicationCancelled'), 'success')
+        showToast(result.message ?? t('shift.applicationCancelled'), 'warning')
         return result
       } catch (e) {
         const err = normalizeApiError(e, t('shift.cancelApplicationError'), t)

@@ -4,10 +4,11 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { mapVacancyToCardShift } from '@/features/feed/model/utils/mapping'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
+import type { ToastType } from '@/components/ui/toast'
 
 interface AppliedShiftCardProps {
   shift: VacancyApiItem
-  showToast: (message: string, type?: 'success' | 'error' | 'info') => void
+  showToast: (message: string, type?: ToastType) => void
 }
 
 export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) => {
@@ -21,7 +22,7 @@ export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) =>
       if (!appId) return
       try {
         await cancelApplication(appId).unwrap()
-        showToast(t('shift.applicationCancelled'), 'success')
+        showToast(t('shift.applicationCancelled'), 'warning')
       } catch {
         showToast(t('shift.cancelApplicationError'), 'error')
       }
@@ -39,7 +40,7 @@ export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) =>
       detailsProps={{
         applicationId,
         onApply: async () => {
-          showToast(t('shift.applyNotAvailable'), 'info')
+          showToast(t('shift.applyNotAvailable'), 'warning')
         },
         isApplied: Boolean(applicationId),
         onCancel: async appId => {

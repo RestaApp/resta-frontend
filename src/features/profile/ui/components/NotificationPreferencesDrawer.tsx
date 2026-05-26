@@ -142,6 +142,10 @@ export const NotificationPreferencesDrawer = memo(
         const response = await updatePreferences(payload).unwrap()
         setDraftPrefs(null)
         if (response.success) {
+          showToast(
+            t('profile.notifications.saved', { defaultValue: 'Настройки сохранены' }),
+            'success'
+          )
           onOpenChange(false)
         }
       } catch (error) {

@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { ToastType } from '@/components/ui/toast'
+import { triggerHapticFeedback, type HapticFeedbackPattern } from '@/utils/haptics'
 
 interface ToastState {
   message: string
@@ -19,6 +20,13 @@ interface UseToastReturn {
 }
 
 const DEFAULT_DURATION = 3000
+
+const TOAST_HAPTIC_MAP: Record<ToastType, HapticFeedbackPattern> = {
+  success: 'success',
+  error: 'error',
+  warning: 'warning',
+  info: 'light',
+}
 
 export const useToast = (): UseToastReturn => {
   const [toast, setToast] = useState<ToastState>({
@@ -39,6 +47,8 @@ export const useToast = (): UseToastReturn => {
 
   const showToast = useCallback(
     (message: string, type: ToastType = 'info', duration: number = DEFAULT_DURATION) => {
+      triggerHapticFeedback(TOAST_HAPTIC_MAP[type])
+
       // Очищаем предыдущий таймер, если есть
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)

@@ -105,7 +105,7 @@ export const useFeedPageModel = () => {
       try {
         await deleteShift(String(id))
         hideToast()
-        showToast(t('shift.deleted'), 'success')
+        showToast(t('shift.deleted'), 'warning')
       } catch {
         hideToast()
         showToast(t('shift.deleteError'), 'error')

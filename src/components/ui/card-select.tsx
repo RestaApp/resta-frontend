@@ -67,6 +67,7 @@ const CardSelectInner = <TId extends string>({
         onClick={handleClick}
         aria-label={ariaLabel ?? title}
         aria-pressed={isSelected}
+        data-haptic="selection"
         className={cn(
           'w-full rounded-lg border p-3 text-left transition-all',
           isSelected

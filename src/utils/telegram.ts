@@ -72,6 +72,8 @@ interface TelegramWebApp {
   }
   HapticFeedback?: {
     impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void
+    notificationOccurred?: (type: 'error' | 'success' | 'warning') => void
+    selectionChanged?: () => void
   }
   openLink?: (url: string, options?: { try_instant_view?: boolean }) => void
   showPopup?: (

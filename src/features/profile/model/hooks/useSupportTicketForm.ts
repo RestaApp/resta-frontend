@@ -7,6 +7,7 @@ import {
 } from '@/services/api/supportTicketsApi'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import type { SelectOption } from '@/components/ui/select'
+import { triggerHapticFeedback } from '@/utils/haptics'
 
 const MAX_MESSAGE_LENGTH = 2000
 
@@ -70,6 +71,7 @@ export function useSupportTicketForm(onClose: () => void) {
       if (!message.trim()) nextErrors.message = requiredMsg
       if (Object.keys(nextErrors).length > 0) {
         setFieldErrors(nextErrors)
+        triggerHapticFeedback('warning')
         return
       }
       setFieldErrors({})
@@ -83,7 +85,9 @@ export function useSupportTicketForm(onClose: () => void) {
             ...(contactInfo.trim() && { contact_info: contactInfo.trim() }),
           },
         }).unwrap()
+        triggerHapticFeedback('success')
       } catch {
+        triggerHapticFeedback('error')
         // ошибка попадёт в error из мутации
       }
     },

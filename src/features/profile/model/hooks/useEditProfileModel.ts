@@ -10,6 +10,7 @@ import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpda
 import { businessHoursRecordToFormValue } from '../utils/businessHoursForm'
 import { formatPhoneInput, validatePhone } from '@/utils/phone'
 import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
+import { triggerHapticFeedback } from '@/utils/haptics'
 
 type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
 type EditProfileErrors = Partial<Record<EditProfileField, string>>
@@ -165,7 +166,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     const nextErrors = buildValidationErrors(formData, true)
     setFieldErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) {
-      showToast(t('validation.fillRequired'), 'error')
+      showToast(t('validation.fillRequired'), 'warning')
       return
     }
 
@@ -215,11 +216,12 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
 
     const hasNonCityErrors = Object.entries(nextErrors).some(([key]) => key !== 'city')
     if (hasNonCityErrors) {
-      showToast(t('validation.fillRequired'), 'error')
+      showToast(t('validation.fillRequired'), 'warning')
       return
     }
 
     if (nextErrors.city) {
+      triggerHapticFeedback('warning')
       setShowCityWarning(true)
       return
     }

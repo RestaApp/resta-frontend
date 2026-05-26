@@ -7,6 +7,7 @@ import { MyApplicationsSection } from '@/features/activity/ui/components/MyAppli
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
+import type { ToastType } from '@/components/ui/toast'
 
 interface ActivityListTabProps {
   activeTab: ActivityTab
@@ -18,7 +19,7 @@ interface ActivityListTabProps {
   isDeleting: boolean
   onEdit: (id: number) => void
   onDelete: (id: number) => void
-  showToast: (m: string, t?: 'success' | 'error' | 'info') => void
+  showToast: (m: string, t?: ToastType) => void
   onRefresh: () => Promise<void>
 }
 

@@ -89,6 +89,7 @@ const SupplierCardComponent = ({
       role="button"
       tabIndex={0}
       aria-label={ariaLabel}
+      data-haptic="light"
       onClick={() => onOpenDetails(supplier.id)}
       onKeyDown={event => {
         if (event.key === 'Enter' || event.key === ' ') {
