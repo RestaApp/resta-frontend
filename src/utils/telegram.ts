@@ -136,6 +136,11 @@ let telegramBackButtonBound = false
 
 const handleTelegramBackButtonClick = () => {
   const activeHandler = telegramBackButtonHandlers.at(-1)
+  try {
+    telegramBackButtonWebApp?.HapticFeedback?.impactOccurred('light')
+  } catch {
+    // ignore
+  }
   activeHandler?.onBack()
 }
 

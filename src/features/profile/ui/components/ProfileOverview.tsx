@@ -113,6 +113,7 @@ const ProfileOpenToWorkCard = ({
         className="flex w-full items-center gap-2 text-left disabled:cursor-not-allowed disabled:opacity-70"
         onClick={() => onToggle?.(!checked)}
         disabled={disabled || !onToggle}
+        data-haptic="selection"
         role="switch"
         aria-checked={checked}
       >
@@ -199,6 +200,7 @@ const ProfileInfoSectionView = ({
       <button
         type="button"
         onClick={() => setIsOpen(value => !value)}
+        data-haptic="light"
         className="flex w-full items-center gap-2 rounded-sm transition-colors hover:text-primary"
         aria-expanded={isOpen}
       >

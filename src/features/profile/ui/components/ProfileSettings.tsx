@@ -59,6 +59,7 @@ export function ProfileSettings({
               'flex w-full items-center justify-between gap-2 p-3 text-left'
             )}
             onClick={() => setIsAppSettingsOpen(value => !value)}
+            data-haptic="light"
             aria-expanded={isAppSettingsOpen}
           >
             <div className="flex min-w-0 items-center gap-2">
@@ -125,6 +126,7 @@ export function ProfileSettings({
                     whileTap={{ scale: 0.98 }}
                     className="flex w-full items-center justify-between gap-2 py-3 text-left transition-colors hover:text-primary disabled:pointer-events-none disabled:opacity-50"
                     onClick={onNotificationSettingsClick}
+                    data-haptic="light"
                     disabled={!onNotificationSettingsClick}
                   >
                     <div className="flex min-w-0 items-center gap-2">
@@ -156,6 +158,7 @@ export function ProfileSettings({
                 'flex w-full items-center gap-2 text-left'
               )}
               onClick={() => setIsSupportDrawerOpen(true)}
+              data-haptic="light"
             >
               <span className={SHIFT_CARD_LOGO_CLASS}>
                 <HelpCircle className="h-5 w-5" />
