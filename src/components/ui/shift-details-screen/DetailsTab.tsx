@@ -63,7 +63,7 @@ interface LabeledTextSectionProps {
 const LabeledTextSection = ({ label, text }: LabeledTextSectionProps) => (
   <div className="flex flex-col gap-1">
     <p className={LABEL_CAPS_CLASS}>{label}</p>
-    <p className={cn(BODY_MUTED_CLASS, 'leading-relaxed')}>{text}</p>
+    <p className={cn(BODY_MUTED_CLASS, 'pl-1 leading-relaxed')}>{text}</p>
   </div>
 )
 
@@ -104,7 +104,7 @@ export const DetailsTab = memo(
         ) : null}
 
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
             <div className="flex min-w-0 items-center gap-2">
               <div className={SHIFT_CARD_LOGO_CLASS}>
