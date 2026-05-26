@@ -222,7 +222,7 @@ export const NotificationPreferencesDrawer = memo(
             : null}
         </DrawerBody>
         {effectivePrefs ? (
-          <DrawerFooter className="py-3">
+          <DrawerFooter>
             <div className="flex gap-2">
               <Button
                 type="button"

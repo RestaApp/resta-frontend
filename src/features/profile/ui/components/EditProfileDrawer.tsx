@@ -126,7 +126,7 @@ export const EditProfileDrawer = memo(
           )}
         </DrawerBody>
 
-        <DrawerFooter className="sticky bottom-0 z-10 flex-row">
+        <DrawerFooter className="sticky bottom-0 z-10" contentClassName="grid grid-cols-2 gap-2">
           <Button
             onClick={handleCancel}
             disabled={isLoading}

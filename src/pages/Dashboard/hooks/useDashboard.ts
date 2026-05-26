@@ -35,6 +35,21 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
   const setTabIfChanged = useCallback((nextTab: Tab) => {
     setActiveTab(prev => (prev === nextTab ? prev : nextTab))
   }, [])
+  const syncRouteForTab = useCallback(
+    (tab: Tab) => {
+      const screen = getScreenForTab(role, tab)
+      if (!screen) return
+
+      if (onNavigate) onNavigate(screen)
+      if (typeof window !== 'undefined') {
+        const nextPath = getPathForScreen(role, screen)
+        if (window.location.pathname !== nextPath) {
+          window.history.replaceState(null, '', nextPath)
+        }
+      }
+    },
+    [onNavigate, role]
+  )
 
   /* eslint-disable react-hooks/set-state-in-effect --
      Все три эффекта ниже — external sync (localStorage flag, Redux navigation command,
@@ -51,18 +66,19 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     }
   }, [setTabIfChanged])
 
-  // External sync: Redux navigation command → activeTab + consumeCommand для очистки.
+  // External sync: Redux navigation command → activeTab + screen/URL + consumeCommand.
   useEffect(() => {
     if (!navigationCommand) return
 
     if (navigationCommand.type === 'NAVIGATE_TAB') {
       const tabAllowed = tabs.some(t => t.id === navigationCommand.tab)
-      if (tabAllowed && navigationCommand.tab !== activeTab) {
+      if (tabAllowed) {
         setTabIfChanged(navigationCommand.tab)
+        syncRouteForTab(navigationCommand.tab)
       }
       dispatch(consumeCommand())
     }
-  }, [activeTab, dispatch, navigationCommand, role, setTabIfChanged, tabs])
+  }, [dispatch, navigationCommand, setTabIfChanged, syncRouteForTab, tabs])
 
   // External sync: prop currentScreen (из роутера/URL) → activeTab.
   useEffect(() => {
@@ -78,16 +94,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setActiveTab(tab)
-      const screen = getScreenForTab(role, tab)
-      if (screen) {
-        if (onNavigate) onNavigate(screen)
-        if (typeof window !== 'undefined') {
-          const nextPath = getPathForScreen(role, screen)
-          if (window.location.pathname !== nextPath) {
-            window.history.replaceState(null, '', nextPath)
-          }
-        }
-      }
+      syncRouteForTab(tab)
 
       if (tab === 'activity' && isEmployeeRole(role) && typeof window !== 'undefined') {
         const shown = getLocalStorageItem(STORAGE_KEYS.ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN)
@@ -97,7 +104,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
         }
       }
     },
-    [onNavigate, role]
+    [role, syncRouteForTab]
   )
 
   return {

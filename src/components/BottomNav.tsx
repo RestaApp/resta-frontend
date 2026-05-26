@@ -32,9 +32,8 @@ export const BottomNav = ({
       aria-label={t('nav.bottomNav')}
       style={{
         zIndex: Z_INDEX.bottomNav,
-        paddingBottom: 'calc(var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)) + 12px)',
       }}
-      className="fixed bottom-0 left-0 right-0 px-2.5"
+      className="fixed bottom-0 left-0 right-0 px-2.5 pb-safe-nav"
     >
       <div className="ui-app-frame pointer-events-none">
         <div

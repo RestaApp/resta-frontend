@@ -121,7 +121,7 @@ function ApplyCoverLetterModalContent({
         </div>
       </DrawerBody>
 
-      <DrawerFooter className="pb-safe-cta">
+      <DrawerFooter>
         <Button
           onClick={handleSubmit}
           variant="gradient"

@@ -10,6 +10,7 @@ import {
 } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -257,13 +258,17 @@ export const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLD
   )
 }
 
-export const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+type DrawerFooterProps = React.HTMLAttributes<HTMLDivElement> & {
+  contentClassName?: string
+}
+
+export const DrawerFooter = ({ className, contentClassName, ...props }: DrawerFooterProps) => {
   return (
-    <div
-      className={cn(
-        'mt-auto flex flex-col gap-2 border-t border-border/50 bg-background ui-density-page ui-density-py-sm',
-        className
-      )}
+    <BottomActionBar
+      mode="static"
+      withBorder
+      className={cn('mt-auto', className)}
+      contentClassName={cn('flex flex-col gap-2', contentClassName)}
       {...props}
     />
   )

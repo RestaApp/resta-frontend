@@ -81,7 +81,9 @@ export const useFeedPageModel = () => {
     isApplyCoverModalOpen,
     isApplyCoverModalSubmitting,
     applyCoverTargetShiftId,
+    applicationSuccess,
     closeApplyCoverModal,
+    closeApplicationSuccess,
     handleApplyWithModal,
     submitApplyCoverModal,
   } = useFeedApplyFlow({
@@ -176,6 +178,24 @@ export const useFeedPageModel = () => {
   )
   const closeRestaurantDetails = useCallback(() => setSelectedRestaurantId(null), [])
 
+  const closeApplicationSuccessView = useCallback(() => {
+    closeApplicationSuccess()
+  }, [closeApplicationSuccess])
+
+  const handleOpenApplications = useCallback(() => {
+    closeApplicationSuccess()
+    setSelectedShiftId(null)
+    setSelectedRestaurantId(null)
+    setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
+    dispatch(navigateToTab('activity'))
+  }, [closeApplicationSuccess, dispatch, setSelectedShiftId])
+
+  const handleSearchMoreAfterApply = useCallback(() => {
+    closeApplicationSuccess()
+    setSelectedShiftId(null)
+    setSelectedRestaurantId(null)
+  }, [closeApplicationSuccess, setSelectedShiftId])
+
   const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
 
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
@@ -261,6 +281,22 @@ export const useFeedPageModel = () => {
     return hotVacancy ? vacancyToShift(hotVacancy) : null
   }, [applyCoverTargetShiftId, shiftsById, activeList.vacanciesMap, hotVacanciesById])
 
+  const applicationSuccessShift = useMemo(() => {
+    if (!applicationSuccess.shiftId) return null
+    const fromItems = shiftsById.get(applicationSuccess.shiftId)
+    if (fromItems) return fromItems
+    const vacancy = activeList.vacanciesMap.get(applicationSuccess.shiftId)
+    if (vacancy) return vacancyToShift(vacancy)
+    const hotVacancy = hotVacanciesById.get(applicationSuccess.shiftId)
+    return hotVacancy ? vacancyToShift(hotVacancy) : selectedShift
+  }, [
+    activeList.vacanciesMap,
+    applicationSuccess.shiftId,
+    hotVacanciesById,
+    selectedShift,
+    shiftsById,
+  ])
+
   const isApplied = useCallback((id: number) => appliedShiftsSet.has(id), [appliedShiftsSet])
   const getApplicationIdStable = useCallback(
     (id: number) => appliedApplicationsMap[id] ?? getApplicationId(id),
@@ -308,6 +344,11 @@ export const useFeedPageModel = () => {
     userProfile,
     closeApplyCoverModal,
     submitApplyCoverModal,
+    applicationSuccess,
+    applicationSuccessShift,
+    closeApplicationSuccess: closeApplicationSuccessView,
+    openApplicationsAfterApply: handleOpenApplications,
+    searchMoreAfterApply: handleSearchMoreAfterApply,
     handleCancel,
     isApplied,
     getApplicationId: getApplicationIdStable,

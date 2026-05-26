@@ -34,12 +34,7 @@ export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) =>
       vacancy={shift}
       mapToShift={mapVacancyToCardShift}
       feedCardProps={{
-        isApplied: Boolean(applicationId),
-        applicationId,
         applicationStatus: shift.my_application?.status ?? shift.status ?? null,
-        onApply: () => {},
-        onCancel: appId => void cancel(appId ?? applicationId),
-        isLoading: isCancelling,
       }}
       detailsProps={{
         applicationId,

@@ -6,6 +6,7 @@ import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
 import { RestaurantVacanciesDrawer } from '@/features/feed/ui/components/RestaurantVacanciesDrawer'
 import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDialog'
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
+import { ApplicationSuccessOverlay } from '@/features/feed/ui/components/ApplicationSuccessOverlay'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
 
@@ -105,6 +106,14 @@ export function FeedBody({ vm }: FeedBodyProps) {
         state={vm.profileAlert}
         onClose={vm.closeProfileAlert}
         onOpenProfileEdit={vm.openProfileEdit}
+      />
+
+      <ApplicationSuccessOverlay
+        open={vm.applicationSuccess.open}
+        shift={vm.applicationSuccessShift}
+        onOpenApplications={vm.openApplicationsAfterApply}
+        onSearchMore={vm.searchMoreAfterApply}
+        onClose={vm.closeApplicationSuccess}
       />
 
       <AdvancedFilters

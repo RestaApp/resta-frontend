@@ -1,18 +1,20 @@
 import { useCallback, useMemo, useState, type ComponentProps } from 'react'
-import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { useGetShiftByIdQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/features/feed/model/types'
 import { FeedCard, type ShiftCardProps } from '@/components/ui/shift-card/ShiftCard'
 import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
 
-type ShiftDetailsBindings = Pick<
-  ShiftCardProps,
-  | 'isApplied'
-  | 'applicationId'
-  | 'applicationStatus'
-  | 'onApply'
-  | 'onCancel'
-  | 'isLoading'
-  | 'ownerActions'
+type ShiftDetailsBindings = Partial<
+  Pick<
+    ShiftCardProps,
+    | 'isApplied'
+    | 'applicationId'
+    | 'applicationStatus'
+    | 'onApply'
+    | 'onCancel'
+    | 'isLoading'
+    | 'ownerActions'
+  >
 >
 
 type ShiftDetailsScreenBindings = Omit<
@@ -33,8 +35,22 @@ export const VacancyCardWithDetails = ({
   feedCardProps,
   detailsProps,
 }: VacancyCardWithDetailsProps) => {
-  const mappedShift = useMemo(() => mapToShift(vacancy), [vacancy, mapToShift])
   const [isOpen, setIsOpen] = useState(false)
+  const { data: detailVacancy } = useGetShiftByIdQuery(String(vacancy.id), {
+    skip: !isOpen,
+  })
+
+  const resolvedVacancy = useMemo(
+    () =>
+      detailVacancy
+        ? {
+            ...detailVacancy,
+            my_application: detailVacancy.my_application ?? vacancy.my_application,
+          }
+        : vacancy,
+    [detailVacancy, vacancy]
+  )
+  const mappedShift = useMemo(() => mapToShift(resolvedVacancy), [resolvedVacancy, mapToShift])
 
   const handleOpenDetails = useCallback(() => setIsOpen(true), [])
   const handleCloseDetails = useCallback(() => setIsOpen(false), [])
@@ -69,7 +85,7 @@ export const VacancyCardWithDetails = ({
 
       <ShiftDetailsScreen
         shift={mappedShift}
-        vacancyData={vacancy}
+        vacancyData={resolvedVacancy}
         isOpen={isOpen}
         onClose={handleCloseDetails}
         {...restDetailsProps}

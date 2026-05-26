@@ -169,7 +169,7 @@ export const DetailsTab = memo(
           <LabeledTextSection label={t('common.requirements')} text={requirements} />
         ) : null}
 
-        {description && requirements ? (
+        {description ? (
           <LabeledTextSection label={t('common.description')} text={description} />
         ) : null}
       </div>

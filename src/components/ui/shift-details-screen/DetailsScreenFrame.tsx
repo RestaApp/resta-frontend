@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, type PointerEvent, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Drawer,
   DrawerBody,
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/drawer'
 import { DRAWER_SCROLL_BODY_CLASS } from '@/components/ui/ui-patterns'
 import { useTelegramFullscreenOffset } from '@/contexts/telegram/useTelegramFullscreenOffset'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/utils/cn'
 import { setupTelegramBackButton } from '@/utils/telegram'
 
@@ -75,12 +77,13 @@ export function DetailsScreenFrame({
 
   if (variant === 'page') {
     if (!open) return null
-    return (
+    const node = (
       <section
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-background',
+          'fixed bottom-0 left-0 right-0 flex flex-col bg-background',
           fullscreenOffset.topClassName
         )}
+        style={{ zIndex: Z_INDEX.drawer }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
@@ -94,6 +97,8 @@ export function DetailsScreenFrame({
         {footer}
       </section>
     )
+
+    return typeof document !== 'undefined' ? createPortal(node, document.body) : node
   }
 
   return (

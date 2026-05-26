@@ -10,7 +10,7 @@ import { useUserPositions } from '@/features/navigation/model/hooks/useUserPosit
 import { useSupplierCategories } from './hooks/useSupplierCategories'
 import { useRestaurantFormats } from './hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '../utils/mappers'
-import { isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
+import { isEmployeeRole, isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
 import type { UiRole } from '@/shared/types/roles.types'
 
 interface UseRoleSelectionProps {
@@ -77,7 +77,7 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
 
     setShowTelegramConfirm(false)
 
-    if (draftSelectedRole === 'chef') {
+    if (isEmployeeRole(draftSelectedRole)) {
       setShowEmployeeSubRoles(true)
       return
     }

@@ -1,14 +1,14 @@
 /**
  * Хук для логики отправки подролей (employee, supplier, restaurant)
- * PATCH /api/v1/users/:id — плоский user, см. ROLES_FRONTEND_SPEC §4
+ * PATCH /api/v1/users/:id — единая схема user + профильные атрибуты роли.
  */
 
 import { useState, useCallback } from 'react'
 import { useUserUpdate } from './useUserUpdate'
-import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UiRole, EmployeeRole } from '@/shared/types/roles.types'
 import { mapApiRoleToDefaultUiRole } from '@/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
+import { buildRegistrationUpdateUserRequest } from '@/features/profile/model/utils/buildUpdateUserRequest'
 
 export interface SupplierOnboardingData {
   category: string
@@ -43,20 +43,11 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         return false
       }
 
-      // Плоский PATCH user — как в ROLES_FRONTEND_SPEC §4 (employee)
-      const updateData: UpdateUserRequest = {
-        user: {
-          role: 'employee',
-        },
-      }
-
-      if (selectedPositionValue) {
-        updateData.user.position = selectedPositionValue
-      }
-
-      if (formData?.specializations && formData.specializations.length > 0) {
-        updateData.user.specializations = formData.specializations
-      }
+      const updateData = buildRegistrationUpdateUserRequest({
+        role: 'employee',
+        position: selectedPositionValue,
+        specializations: formData?.specializations,
+      })
 
       const success = await updateUserWithData(
         updateData,
@@ -79,16 +70,11 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         return false
       }
 
-      const updateData: UpdateUserRequest = {
-        user: {
-          role: 'supplier',
-          supplier_category: supplierData.category,
-          // ROLES_FRONTEND_SPEC: supplier_profile.delivery_available (boolean)
-          delivery_available: false,
-        },
-      }
-
-      if (supplierData.types.length > 0) updateData.user.supplier_types = supplierData.types
+      const updateData = buildRegistrationUpdateUserRequest({
+        role: 'supplier',
+        supplierCategory: supplierData.category,
+        supplierTypes: supplierData.types,
+      })
 
       const success = await updateUserWithData(
         updateData,
@@ -111,15 +97,10 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         return false
       }
 
-      const updateData: UpdateUserRequest = {
-        user: {
-          role: 'restaurant',
-          restaurant_format: formData.format,
-          restaurant_profile_attributes: {
-            restaurant_format: formData.format,
-          },
-        },
-      }
+      const updateData = buildRegistrationUpdateUserRequest({
+        role: 'restaurant',
+        restaurantFormat: formData.format,
+      })
 
       const success = await updateUserWithData(
         updateData,

@@ -231,6 +231,10 @@
   "feed": {
     "headerTitle": "Feed",
     "applicationSentSuccess": "Application sent. You will be notified if approved.",
+    "applicationSuccessTitle": "Application sent",
+    "applicationSuccessDescription": "We will notify you in Telegram when the venue replies. Usually 5-30 minutes.",
+    "openMyApplications": "Open my applications",
+    "searchMoreShifts": "Search more shifts",
     "openFilters": "Open filters",
     "emptyByFilters": "Nothing found for your filters",
     "emptyByFiltersDescription": "Change filters or date range to see matching shifts",

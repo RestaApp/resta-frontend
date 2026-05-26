@@ -10,6 +10,11 @@ export type ProfileAlertState = {
   missingFields: string[]
 }
 
+export type ApplicationSuccessState = {
+  open: boolean
+  shiftId: number | null
+}
+
 type UseFeedApplyFlowParams = {
   dispatch: AppDispatch
   t: TFunction
@@ -25,6 +30,10 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
   const [isApplyCoverModalOpen, setIsApplyCoverModalOpen] = useState(false)
   const [isApplyCoverModalSubmitting, setIsApplyCoverModalSubmitting] = useState(false)
   const [applyCoverTargetShiftId, setApplyCoverTargetShiftId] = useState<number | null>(null)
+  const [applicationSuccess, setApplicationSuccess] = useState<ApplicationSuccessState>({
+    open: false,
+    shiftId: null,
+  })
 
   const closeProfileAlert = useCallback(() => {
     setProfileAlert(prev => ({ ...prev, open: false }))
@@ -68,6 +77,10 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
     setApplyCoverTargetShiftId(null)
   }, [])
 
+  const closeApplicationSuccess = useCallback(() => {
+    setApplicationSuccess(prev => ({ ...prev, open: false }))
+  }, [])
+
   const handleApplyWithModal = useCallback(async (shiftId: number) => {
     setApplyCoverTargetShiftId(shiftId)
     setIsApplyCoverModalOpen(true)
@@ -80,6 +93,10 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
       try {
         const ok = await applyWithGuard(applyCoverTargetShiftId, message)
         if (ok) {
+          setApplicationSuccess({
+            open: true,
+            shiftId: applyCoverTargetShiftId,
+          })
           closeApplyCoverModal()
         }
       } finally {
@@ -96,7 +113,9 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
     isApplyCoverModalOpen,
     isApplyCoverModalSubmitting,
     applyCoverTargetShiftId,
+    applicationSuccess,
     closeApplyCoverModal,
+    closeApplicationSuccess,
     handleApplyWithModal,
     submitApplyCoverModal,
   }

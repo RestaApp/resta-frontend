@@ -61,6 +61,7 @@ export interface UpdateUserRequest {
     }
     restaurant_profile_attributes?: {
       id?: number
+      name?: string | null
       restaurant_format?: string
       cuisine_types?: string[]
       _destroy?: boolean

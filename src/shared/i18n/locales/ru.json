@@ -231,6 +231,10 @@
   "feed": {
     "headerTitle": "Лента",
     "applicationSentSuccess": "Заявка отправлена. Если вас утвердят, бот пришлет сообщение.",
+    "applicationSuccessTitle": "Отклик отправлен",
+    "applicationSuccessDescription": "Уведомим в Telegram, когда ресторан ответит. Обычно 5–30 минут.",
+    "openMyApplications": "Открыть мои отклики",
+    "searchMoreShifts": "Искать ещё смены",
     "openFilters": "Открыть фильтры",
     "emptyByFilters": "По вашим фильтрам ничего не найдено",
     "emptyByFiltersDescription": "Измените фильтры или период — подходящие смены появятся в ленте",

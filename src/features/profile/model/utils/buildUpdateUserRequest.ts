@@ -26,6 +26,112 @@ export interface ProfileFormData {
   supplierTypes: string[]
 }
 
+type UserUpdatePayload = UpdateUserRequest['user']
+type EmployeeProfileAttributes = NonNullable<UserUpdatePayload['employee_profile_attributes']>
+type SupplierProfileAttributes = NonNullable<UserUpdatePayload['supplier_profile_attributes']>
+type RestaurantProfileAttributes = NonNullable<UserUpdatePayload['restaurant_profile_attributes']>
+
+export type RegistrationProfileData =
+  | {
+      role: 'employee'
+      position?: string | null
+      specializations?: string[]
+    }
+  | {
+      role: 'supplier'
+      supplierCategory: string
+      supplierTypes: string[]
+      deliveryAvailable?: boolean
+    }
+  | {
+      role: 'restaurant'
+      restaurantFormat: string
+    }
+
+const uniqueStrings = (values: string[]) =>
+  Array.from(new Set(values.map(value => value.trim()).filter(Boolean)))
+
+const mergeEmployeeProfileAttributes = (
+  user: UserUpdatePayload,
+  attributes: EmployeeProfileAttributes
+) => {
+  user.employee_profile_attributes = {
+    ...user.employee_profile_attributes,
+    ...attributes,
+  }
+}
+
+const mergeSupplierProfileAttributes = (
+  user: UserUpdatePayload,
+  attributes: SupplierProfileAttributes
+) => {
+  user.supplier_profile_attributes = {
+    ...user.supplier_profile_attributes,
+    ...attributes,
+  }
+}
+
+const mergeRestaurantProfileAttributes = (
+  user: UserUpdatePayload,
+  attributes: RestaurantProfileAttributes
+) => {
+  user.restaurant_profile_attributes = {
+    ...user.restaurant_profile_attributes,
+    ...attributes,
+  }
+}
+
+export const buildRegistrationUpdateUserRequest = (
+  data: RegistrationProfileData
+): UpdateUserRequest => {
+  const user: UserUpdatePayload = { role: data.role }
+
+  if (data.role === 'employee') {
+    const employeeAttributes: EmployeeProfileAttributes = {}
+    const position = data.position?.trim()
+    const specializations = uniqueStrings(data.specializations ?? [])
+
+    if (position) {
+      user.position = position
+      employeeAttributes.position = position
+    }
+
+    if (specializations.length > 0) {
+      user.specializations = specializations
+      employeeAttributes.specializations = specializations
+    }
+
+    if (Object.keys(employeeAttributes).length > 0) {
+      mergeEmployeeProfileAttributes(user, employeeAttributes)
+    }
+  }
+
+  if (data.role === 'supplier') {
+    const supplierCategory = data.supplierCategory.trim()
+    const supplierTypes = uniqueStrings(data.supplierTypes)
+    const deliveryAvailable = data.deliveryAvailable ?? false
+
+    user.supplier_category = supplierCategory
+    user.supplier_types = supplierTypes
+    user.delivery_available = deliveryAvailable
+    mergeSupplierProfileAttributes(user, {
+      supplier_category: supplierCategory,
+      supplier_types: supplierTypes,
+      delivery_available: deliveryAvailable,
+    })
+  }
+
+  if (data.role === 'restaurant') {
+    const restaurantFormat = data.restaurantFormat.trim()
+    user.restaurant_format = restaurantFormat
+    mergeRestaurantProfileAttributes(user, {
+      restaurant_format: restaurantFormat,
+    })
+  }
+
+  return { user }
+}
+
 /**
  * Строит запрос на обновление пользователя из данных формы
  */
@@ -72,13 +178,21 @@ export const buildUpdateUserRequest = (
     .filter(Boolean)
   const currentSupplierCategory = formData.supplierCategory.trim()
   const initialSupplierCategory = source.supplierCategory.trim()
-  const currentSupplierTypes = Array.from(new Set(formData.supplierTypes.filter(Boolean)))
-  const initialSupplierTypes = Array.from(new Set(source.supplierTypes.filter(Boolean)))
+  const currentSupplierTypes = uniqueStrings(formData.supplierTypes)
+  const initialSupplierTypes = uniqueStrings(source.supplierTypes)
 
   const user: UpdateUserRequest['user'] = {}
 
   if (currentName && currentName !== initialName) {
     user.name = currentName
+
+    if (apiRole === 'restaurant') {
+      mergeRestaurantProfileAttributes(user, { name: currentName })
+    }
+
+    if (apiRole === 'supplier') {
+      mergeSupplierProfileAttributes(user, { name: currentName })
+    }
   }
 
   if (apiRole === 'employee' && currentLastName !== initialLastName) {
@@ -123,41 +237,50 @@ export const buildUpdateUserRequest = (
     > = {}
 
     if (formData.experienceYears !== source.experienceYears && formData.experienceYears !== '') {
+      user.experience_years = formData.experienceYears
       employeeProfileAttributes.experience_years = formData.experienceYears
     }
 
     if (formData.openToWork !== source.openToWork) {
+      user.open_to_work = formData.openToWork
       employeeProfileAttributes.open_to_work = formData.openToWork
     }
 
     if (hasDiff(currentSkills, initialSkills)) {
+      user.skills = currentSkills
       employeeProfileAttributes.skills = currentSkills
     }
 
     if (Object.keys(employeeProfileAttributes).length > 0) {
-      user.employee_profile_attributes = employeeProfileAttributes
+      mergeEmployeeProfileAttributes(user, employeeProfileAttributes)
     }
   }
 
-  if (apiRole === 'supplier' && hasDiff(currentSupplierTypes, initialSupplierTypes)) {
-    user.supplier_types = currentSupplierTypes
+  if (apiRole === 'supplier') {
+    const supplierProfileAttributes: SupplierProfileAttributes = {}
 
-    if (currentSupplierCategory) {
-      user.supplier_category = currentSupplierCategory
-      user.supplier_profile_attributes = {
-        supplier_category: currentSupplierCategory,
-        supplier_types: currentSupplierTypes,
+    if (hasDiff(currentSupplierTypes, initialSupplierTypes)) {
+      user.supplier_types = currentSupplierTypes
+      supplierProfileAttributes.supplier_types = currentSupplierTypes
+
+      if (currentSupplierCategory) {
+        user.supplier_category = currentSupplierCategory
+        supplierProfileAttributes.supplier_category = currentSupplierCategory
       }
     }
-  }
 
-  if (
-    apiRole === 'supplier' &&
-    currentSupplierCategory &&
-    currentSupplierCategory !== initialSupplierCategory &&
-    !user.supplier_category
-  ) {
-    user.supplier_category = currentSupplierCategory
+    if (
+      currentSupplierCategory &&
+      currentSupplierCategory !== initialSupplierCategory &&
+      !user.supplier_category
+    ) {
+      user.supplier_category = currentSupplierCategory
+      supplierProfileAttributes.supplier_category = currentSupplierCategory
+    }
+
+    if (Object.keys(supplierProfileAttributes).length > 0) {
+      mergeSupplierProfileAttributes(user, supplierProfileAttributes)
+    }
   }
 
   return {
