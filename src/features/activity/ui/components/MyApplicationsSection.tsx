@@ -2,6 +2,7 @@ import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, Briefcase, Clock3 } from 'lucide-react'
 import { SectionHeader } from '@/components/ui/section-header'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 import { groupAppliedByStatus } from '@/features/activity/model/utils/groupAppliedShifts'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
@@ -9,6 +10,7 @@ import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorag
 import { STORAGE_KEYS } from '@/constants/storage'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { ToastType } from '@/components/ui/toast'
+import { cn } from '@/utils/cn'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]
@@ -42,7 +44,10 @@ const AppliedStatusGroups = ({
           <div key={status}>
             <button
               type="button"
-              className="mb-2 flex w-full items-center justify-between text-xs font-medium uppercase tracking-wider text-muted-foreground"
+              className={cn(
+                'mb-2 flex w-full items-center justify-between',
+                PROFILE_SECTION_LABEL_CLASS
+              )}
               onClick={isRejectedGroup ? onToggleRejected : undefined}
               aria-expanded={!isCollapsed}
             >

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 
 interface FormFieldProps {
@@ -33,7 +34,7 @@ export const FormField = ({
       {label ? (
         <label
           htmlFor={htmlFor}
-          className={cn('block text-sm font-medium text-muted-foreground', labelClassName)}
+          className={cn('block', PROFILE_SECTION_LABEL_CLASS, labelClassName)}
         >
           {label}
           {required ? ' *' : ''}

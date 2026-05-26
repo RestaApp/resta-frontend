@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { ChevronDown, HelpCircle, Languages, LogOut, Palette, Settings } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_INTERACTIVE_CLASS,
@@ -45,7 +45,7 @@ export function ProfileSettings({
 
   return (
     <div className="ui-density-stack">
-      <h3 className={cn(BLOCK_TITLE_CLASS, 'flex items-center gap-2')}>
+      <h3 className={cn(PROFILE_SECTION_LABEL_CLASS, 'flex items-center gap-2')}>
         <Settings className="h-5 w-5 text-primary" />
         {t('profile.settings')}
       </h3>

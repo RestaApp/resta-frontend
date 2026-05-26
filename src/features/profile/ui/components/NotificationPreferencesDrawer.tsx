@@ -12,10 +12,10 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_LOGO_CLASS,
-  SHIFT_CARD_META_CLASS,
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
@@ -187,7 +187,7 @@ export const NotificationPreferencesDrawer = memo(
           {effectivePrefs
             ? visibleSections.map(section => (
                 <section key={section.id} className="flex flex-col gap-2">
-                  <div className={cn(SHIFT_CARD_META_CLASS, 'uppercase')}>
+                  <div className={PROFILE_SECTION_LABEL_CLASS}>
                     {t(section.title, { defaultValue: section.id })}
                   </div>
                   <Card className={cn(SHIFT_CARD_CLASS, 'overflow-hidden p-0')}>

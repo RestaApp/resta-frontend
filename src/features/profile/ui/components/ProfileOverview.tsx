@@ -6,10 +6,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { KpiRow } from '@/components/ui/kpi-row'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_LOGO_CLASS,
-  SHIFT_CARD_META_CLASS,
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
@@ -38,7 +38,7 @@ interface ProfileOverviewProps {
 }
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <div className={cn(SHIFT_CARD_META_CLASS, 'uppercase')}>{children}</div>
+  <div className={PROFILE_SECTION_LABEL_CLASS}>{children}</div>
 )
 
 const renderInfoValue = (row: ProfileInfoRow) => {

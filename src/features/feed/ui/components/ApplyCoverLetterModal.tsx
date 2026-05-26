@@ -9,6 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_LOGO_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/utils/cn'
@@ -85,10 +86,7 @@ function ApplyCoverLetterModalContent({
 
       <DrawerBody className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">
-          <label
-            htmlFor="apply-cover-message"
-            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-          >
+          <label htmlFor="apply-cover-message" className={PROFILE_SECTION_LABEL_CLASS}>
             {t('shift.coverMessageOptional', { defaultValue: 'Сообщение (опц.)' })}
           </label>
           <Textarea

@@ -6,7 +6,7 @@ import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
 import type { AdvancedFiltersData } from '@/features/feed/model/types'
-import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { MODAL_TITLE_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 
 interface AdvancedFiltersProps {
   isOpen: boolean
@@ -38,10 +38,8 @@ export const AdvancedFilters = ({
   </Drawer>
 )
 
-const SECTION_LABEL_CLASS = 'text-xs font-semibold uppercase tracking-widest text-muted-foreground'
-
 const FilterSectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className={SECTION_LABEL_CLASS}>{children}</p>
+  <p className={PROFILE_SECTION_LABEL_CLASS}>{children}</p>
 )
 
 const AdvancedFiltersSheet = ({

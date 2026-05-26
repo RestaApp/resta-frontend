@@ -70,6 +70,10 @@ export const STATE_TITLE_CLASS = SECTION_TITLE_CLASS
 export const LABEL_CAPS_CLASS =
   'text-xs font-semibold uppercase tracking-wider text-muted-foreground'
 
+/** Micro-заголовок секции профиля — как `Specialization`. */
+export const PROFILE_SECTION_LABEL_CLASS =
+  'font-mono-resta text-xs uppercase tracking-wide text-muted-foreground'
+
 /** Mono-подпись (шаги, мета). */
 export const META_MONO_CLASS =
   'font-mono-resta text-xs uppercase tracking-wider text-muted-foreground'

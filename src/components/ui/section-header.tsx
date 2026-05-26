@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import type { LucideIcon } from 'lucide-react'
-import { HERO_TITLE_CLASS, SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { HERO_TITLE_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { Badge } from '@/components/ui/badge'
 
@@ -41,7 +41,7 @@ export const SectionHeader = function SectionHeader({
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
           <Icon className="h-4 w-4" />
         </div>
-        <h2 className={SUBSECTION_TITLE_CLASS}>{title}</h2>
+        <h2 className={cn(PROFILE_SECTION_LABEL_CLASS, titleClassName)}>{title}</h2>
         {count != null && count > 0 ? <Badge variant="outline">{count}</Badge> : null}
       </motion.div>
     )

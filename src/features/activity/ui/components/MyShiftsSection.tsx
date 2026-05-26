@@ -16,7 +16,7 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
   const { t } = useTranslation()
 
   return (
-    <section>
+    <section className="ui-density-stack">
       <SectionHeader icon={Briefcase} title={t('activity.myShifts')} count={shifts.length} />
       {shifts.length === 0 ? (
         <EmptyState

@@ -14,6 +14,7 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { useLabels } from '@/shared/i18n/hooks'
 
@@ -109,7 +110,7 @@ export const VenueStaffList = ({
             .filter(group => group.items.length > 0)
             .map(group => (
               <div key={group.id} className="ui-density-stack-sm">
-                <div className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <div className={cn('mb-1', PROFILE_SECTION_LABEL_CLASS)}>
                   {group.label} ({group.items.length})
                 </div>
                 {group.items.map(item => {
