@@ -43,7 +43,11 @@ export const triggerHapticFeedback = (pattern: HapticFeedbackPattern = 'light'):
   if (webApp?.HapticFeedback) {
     try {
       if (pattern === 'selection') {
-        webApp.HapticFeedback.selectionChanged?.()
+        if (webApp.HapticFeedback.selectionChanged) {
+          webApp.HapticFeedback.selectionChanged()
+          return
+        }
+        webApp.HapticFeedback.impactOccurred('light')
         return
       }
 
