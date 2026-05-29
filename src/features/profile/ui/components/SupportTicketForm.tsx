@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
+import { InlineAlert } from '@/components/ui/inline-alert'
 import { Select } from '@/components/ui/select'
 import { FormField } from '@/components/ui/form-field'
 import { Textarea } from '@/components/ui/textarea'
@@ -94,7 +95,7 @@ export function SupportTicketForm({
         />
       </FormField>
 
-      {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
+      <InlineAlert message={errorMessage} />
     </form>
   )
 }

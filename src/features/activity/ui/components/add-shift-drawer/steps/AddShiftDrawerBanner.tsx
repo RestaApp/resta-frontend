@@ -1,4 +1,5 @@
-export const AddShiftDrawerBanner = ({ message }: { message: string | null }) => {
-  if (!message) return null
-  return <p className="text-sm text-destructive">{message}</p>
-}
+import { InlineAlert } from '@/components/ui/inline-alert'
+
+export const AddShiftDrawerBanner = ({ message }: { message: string | null }) => (
+  <InlineAlert message={message} />
+)

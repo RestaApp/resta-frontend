@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/drawer'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
+import { InlineAlert } from '@/components/ui/inline-alert'
 import { Loader } from '@/components/ui/loader'
 import { Card } from '@/components/ui/card'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
@@ -181,7 +182,7 @@ export const NotificationPreferencesDrawer = memo(
               <Loader size="lg" />
             </div>
           )}
-          {isError && <p className="text-sm text-destructive py-4">{t('profile.loadError')}</p>}
+          {isError && <InlineAlert message={t('profile.loadError')} className="my-4" />}
           {effectivePrefs
             ? visibleSections.map(section => (
                 <section key={section.id} className="flex flex-col gap-2">
