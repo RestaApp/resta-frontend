@@ -152,7 +152,7 @@ const buildKpis = ({
     items.push({
       id: 'shifts',
       value: completedShifts,
-      label: t('profile.kpi.shifts', { defaultValue: 'Смен' }),
+      label: t('profile.kpi.shifts'),
     })
   }
 
@@ -160,7 +160,7 @@ const buildKpis = ({
     items.push({
       id: 'created',
       value: myShiftsCount,
-      label: t('profile.kpi.created', { defaultValue: 'Смен' }),
+      label: t('profile.kpi.created'),
     })
   }
 
@@ -168,13 +168,13 @@ const buildKpis = ({
     {
       id: 'rating',
       value: formatRating(rating),
-      label: t('profile.kpi.rating', { defaultValue: 'Рейтинг' }),
+      label: t('profile.kpi.rating'),
       tone: rating != null && rating > 0 ? 'success' : 'muted',
     },
     {
       id: 'reviews',
       value: formatReviews(reviews),
-      label: t('common.reviews5', { defaultValue: 'отзывов' }),
+      label: t('common.reviews5'),
       tone: reviews != null && reviews > 0 ? 'default' : 'muted',
     }
   )

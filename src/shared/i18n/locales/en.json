@@ -48,7 +48,12 @@
     "continue": "Continue",
     "done": "Done",
     "todayLower": "today",
-    "locationNotSet": "Location not set"
+    "locationNotSet": "Location not set",
+    "reviews5": "reviews",
+    "retry": "Retry",
+    "error": "Failed to load",
+    "deleting": "Deleting...",
+    "clear": "Clear"
   },
   "nav": {
     "bottomNav": "Bottom navigation",
@@ -79,7 +84,20 @@
       "shownCount": "Showing {{shown}} of {{total}}",
       "showActive": "Only active",
       "emptyTitle": "No suppliers found",
-      "emptyDescription": "Disable the filter or add a new supplier"
+      "emptyDescription": "Disable the filter or add a new supplier",
+      "loadError": "Failed to load suppliers",
+      "unknownName": "Venue #{{id}}",
+      "deliveryYes": "Delivery available",
+      "deliveryNo": "No delivery",
+      "filters": {
+        "title": "Supplier filters",
+        "type": "Supplier type",
+        "categories": "Service categories",
+        "delivery": "Delivery",
+        "deliveryYes": "With delivery",
+        "deliveryNo": "No delivery",
+        "apply": "Show suppliers"
+      }
     }
   },
   "supplierUi": {
@@ -88,6 +106,7 @@
       "moreLocations": "+{{count}}",
       "emptyTitle": "No venues found",
       "emptyDescription": "Try refreshing the list or changing filters",
+      "loadError": "Failed to load restaurants",
       "filters": {
         "title": "Venue filters",
         "format": "Venue format",
@@ -102,6 +121,18 @@
       "activity": "Applied",
       "my": "Mine",
       "myHeader": "My shifts",
+      "profile": "Me",
+      "profileShort": "Me"
+    },
+    "venue": {
+      "feed": "Feed",
+      "activity": "Activity",
+      "staff": "Staff",
+      "suppliers": "Suppliers",
+      "profile": "Me"
+    },
+    "supplier": {
+      "home": "Home",
       "profile": "Me"
     },
     "feed": {
@@ -146,7 +177,8 @@
       "newShifts": "New shifts in city",
       "newShiftsDescription": "hourly digest",
       "applications": "Application acceptance",
-      "applicationsDescription": "instantly"
+      "applicationsDescription": "instantly",
+      "saved": "Settings saved"
     },
     "support": "Resta support",
     "supportForm": {
@@ -221,7 +253,19 @@
     },
     "specializationSection": "Specialization",
     "supplierCategorySection": "Category",
-    "loadError": "Failed to load profile"
+    "loadError": "Failed to load profile",
+    "openToWorkShort": "Looking for shifts",
+    "openToWorkOff": "Not looking for shifts",
+    "openToWorkCatalogHint": "Visible in the open-to-work catalog",
+    "openToWorkHiddenHint": "Hidden from the open-to-work catalog",
+    "latestReviews": "Latest reviews",
+    "reviewSummaryTitle": "Review rating",
+    "theme": "Theme",
+    "kpi": {
+      "shifts": "Shifts",
+      "created": "Shifts",
+      "rating": "Rating"
+    }
   },
   "feed": {
     "headerTitle": "Feed",
@@ -296,6 +340,7 @@
     "offerShiftAria": "Offer a shift",
     "addStepLabel": "Step {{current}} of {{total}}",
     "addStep1Title": "Date & time",
+    "addStep1TitleVacancy": "Basic info",
     "addStep2Title": "Location & position",
     "addStep3Title": "Description & requirements",
     "cancelApplication": "Cancel application",
@@ -310,6 +355,7 @@
     "rejectApplicationError": "Failed to reject application",
     "rejectApplicationConfirmTitle": "Reject this application?",
     "rejectApplicationConfirmDescription": "The candidate will be declined for this shift. Continue?",
+    "applyNow": "Apply",
     "apply": "Apply",
     "coverMessage": "Cover message",
     "coverMessagePromptTitle": "Cover letter",
@@ -433,6 +479,9 @@
       "logistics": "Delivery and logistics"
     },
     "restaurantFormatsError": "Failed to load restaurant formats",
+    "positionLabel": "POSITION",
+    "supplierCategoriesLabel": "CATEGORIES",
+    "supplierCategoryCta": "Browse restaurants",
     "positionScreenTitle": "What is your profession?",
     "positionScreenDescription": "We'll match shifts for you",
     "shiftsDefault": "Shifts",
@@ -489,6 +538,8 @@
     "telegram": {
       "title": "Confirm your contact",
       "subtitle": "Restaurants will message you directly in Telegram",
+      "editName": "Name",
+      "phoneFromTelegram": "Phone from Telegram",
       "connected": "✓ TELEGRAM CONNECTED",
       "fallbackName": "Telegram user",
       "noUsername": "username is not set",

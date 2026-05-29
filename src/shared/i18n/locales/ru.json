@@ -37,6 +37,7 @@
     "payPerShift": "за смену",
     "payPerMonth": "за месяц",
     "rating": "Рейтинг",
+    "reviews5": "отзывов",
     "notSpecified": "Не указано",
     "aboutVenue": "О заведении",
     "vacancy": "Вакансия",
@@ -48,7 +49,11 @@
     "continue": "Продолжить",
     "done": "Готово",
     "todayLower": "сегодня",
-    "locationNotSet": "Локация не указана"
+    "locationNotSet": "Локация не указана",
+    "retry": "Повторить",
+    "error": "Не удалось загрузить",
+    "deleting": "Удаление...",
+    "clear": "Очистить"
   },
   "nav": {
     "bottomNav": "Нижняя навигация",
@@ -79,7 +84,20 @@
       "shownCount": "Показано {{shown}} из {{total}}",
       "showActive": "Только активные",
       "emptyTitle": "Поставщики не найдены",
-      "emptyDescription": "Отключите фильтр или добавьте нового поставщика"
+      "emptyDescription": "Отключите фильтр или добавьте нового поставщика",
+      "loadError": "Не удалось загрузить поставщиков",
+      "unknownName": "Заведение #{{id}}",
+      "deliveryYes": "Есть доставка",
+      "deliveryNo": "Без доставки",
+      "filters": {
+        "title": "Фильтры поставщиков",
+        "type": "Тип поставщика",
+        "categories": "Категории услуг",
+        "delivery": "Доставка",
+        "deliveryYes": "С доставкой",
+        "deliveryNo": "Без доставки",
+        "apply": "Показать поставщиков"
+      }
     }
   },
   "supplierUi": {
@@ -88,6 +106,7 @@
       "moreLocations": "+{{count}}",
       "emptyTitle": "Заведения не найдены",
       "emptyDescription": "Попробуйте обновить список или изменить фильтры",
+      "loadError": "Не удалось загрузить рестораны",
       "filters": {
         "title": "Фильтры заведений",
         "format": "Формат заведения",
@@ -102,6 +121,18 @@
       "activity": "Отклики",
       "my": "Мои",
       "myHeader": "Мои смены",
+      "profile": "Я",
+      "profileShort": "Я"
+    },
+    "venue": {
+      "feed": "Лента",
+      "activity": "Активность",
+      "staff": "Персонал",
+      "suppliers": "Поставщики",
+      "profile": "Я"
+    },
+    "supplier": {
+      "home": "Главная",
       "profile": "Я"
     },
     "feed": {
@@ -146,7 +177,8 @@
       "newShifts": "Новые смены в городе",
       "newShiftsDescription": "раз в час, дайджест",
       "applications": "Принятие заявок",
-      "applicationsDescription": "мгновенно"
+      "applicationsDescription": "мгновенно",
+      "saved": "Настройки сохранены"
     },
     "support": "Поддержка Resta",
     "supportForm": {
@@ -221,7 +253,19 @@
     },
     "specializationSection": "Специализация",
     "supplierCategorySection": "Категория",
-    "loadError": "Ошибка загрузки профиля"
+    "loadError": "Ошибка загрузки профиля",
+    "openToWorkShort": "Ищу смены",
+    "openToWorkOff": "Не ищу смены",
+    "openToWorkCatalogHint": "Виден в каталоге open-to-work",
+    "openToWorkHiddenHint": "Скрыт из каталога open-to-work",
+    "latestReviews": "Последние отзывы",
+    "reviewSummaryTitle": "Рейтинг по отзывам",
+    "theme": "Тема",
+    "kpi": {
+      "shifts": "Смен",
+      "created": "Смен",
+      "rating": "Рейтинг"
+    }
   },
   "feed": {
     "headerTitle": "Лента",
@@ -296,6 +340,7 @@
     "offerShiftAria": "Предложить смену",
     "addStepLabel": "Шаг {{current}} из {{total}}",
     "addStep1Title": "Дата и время",
+    "addStep1TitleVacancy": "Основные данные",
     "addStep2Title": "Локация и позиция",
     "addStep3Title": "Описание и требования",
     "cancelApplication": "Отменить заявку",
@@ -310,6 +355,7 @@
     "rejectApplicationError": "Не удалось отклонить заявку",
     "rejectApplicationConfirmTitle": "Отклонить заявку?",
     "rejectApplicationConfirmDescription": "Кандидат получит отказ по этой смене. Продолжить?",
+    "applyNow": "Откликнуться",
     "apply": "Откликнуться",
     "coverMessage": "Сопроводительное сообщение",
     "coverMessagePromptTitle": "Сопроводительное письмо",
@@ -433,6 +479,9 @@
       "logistics": "Доставка и логистика"
     },
     "restaurantFormatsError": "Не удалось загрузить форматы ресторанов",
+    "positionLabel": "ПОЗИЦИЯ",
+    "supplierCategoriesLabel": "КАТЕГОРИИ",
+    "supplierCategoryCta": "Смотреть рестораны",
     "positionScreenTitle": "Кто ты по профессии?",
     "positionScreenDescription": "Покажем смены под тебя",
     "shiftsDefault": "Смены",
@@ -489,6 +538,8 @@
     "telegram": {
       "title": "Подтверди контакт",
       "subtitle": "Рестораны будут писать тебе в Telegram напрямую",
+      "editName": "Имя",
+      "phoneFromTelegram": "Номер из Telegram",
       "connected": "✓ TELEGRAM ПОДКЛЮЧЁН",
       "fallbackName": "Пользователь Telegram",
       "noUsername": "username не указан",

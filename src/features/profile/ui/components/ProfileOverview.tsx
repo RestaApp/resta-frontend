@@ -133,17 +133,13 @@ const ProfileOpenToWorkCard = ({
         <div className="min-w-0">
           <div className={SHIFT_CARD_TITLE_CLASS}>
             {checked
-              ? t('profile.openToWorkShort', { defaultValue: 'Ищу смены' })
-              : t('profile.openToWorkOff', { defaultValue: 'Не ищу смены' })}
+              ? t('profile.openToWorkShort')
+              : t('profile.openToWorkOff')}
           </div>
           <div className={SHIFT_CARD_SUB_CLASS}>
             {checked
-              ? t('profile.openToWorkCatalogHint', {
-                  defaultValue: 'Виден в каталоге open-to-work',
-                })
-              : t('profile.openToWorkHiddenHint', {
-                  defaultValue: 'Скрыт из каталога open-to-work',
-                })}
+              ? t('profile.openToWorkCatalogHint')
+              : t('profile.openToWorkHiddenHint')}
           </div>
         </div>
       </button>
@@ -158,7 +154,7 @@ const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {
   return (
     <div className="flex flex-col gap-2">
       <SectionLabel>
-        {t('profile.latestReviews', { defaultValue: 'Последние отзывы' })}
+        {t('profile.latestReviews')}
       </SectionLabel>
       <Card className={SHIFT_CARD_CLASS}>
         <div className="flex items-center justify-between gap-2">
@@ -166,10 +162,10 @@ const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {
             <div className={cn(SHIFT_CARD_LOGO_CLASS, 'bg-elevated text-foreground')}>R</div>
             <div className="min-w-0">
               <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
-                {t('profile.reviewSummaryTitle', { defaultValue: 'Рейтинг по отзывам' })}
+                {t('profile.reviewSummaryTitle')}
               </div>
               <div className={SHIFT_CARD_SUB_CLASS}>
-                {profile.reviewSummary.reviews} {t('common.reviews5', { defaultValue: 'отзывов' })}
+                {profile.reviewSummary.reviews} {t('common.reviews5')}
               </div>
             </div>
           </div>

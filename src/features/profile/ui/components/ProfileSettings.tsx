@@ -112,7 +112,7 @@ export const ProfileSettings = memo(function ProfileSettings({
                       <Palette className="h-4 w-4" />
                     </span>
                     <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
-                      {t('profile.theme', 'Тема')}
+                      {t('profile.theme')}
                     </div>
                   </div>
                   <ThemeToggle />

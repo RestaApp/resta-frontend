@@ -50,10 +50,8 @@ const normalizeLocationEntry = (value: unknown): string | undefined => {
         : typeof record.street === 'string'
           ? record.street.trim()
           : ''
-    if (city || address) {
-      const combined = combineCityAddress(city, address)
-      return combined || undefined
-    }
+    if (address) return address
+    if (city) return city
 
     for (const key of ['name', 'label', 'text'] as const) {
       const candidate = record[key]
@@ -79,28 +77,3 @@ export const sanitizeLocations = (locations: string[]): string[] => {
   return locations.map(line => line.trim()).filter(Boolean)
 }
 
-/** Разбор «Город, адрес» → `{ city, address }`. Используется в employee‑форме смены. */
-export const parseLocation = (location: string): { city: string; address: string } => {
-  if (!location.trim()) return { city: '', address: '' }
-  const commaIndex = location.indexOf(',')
-  if (commaIndex === -1) {
-    return { city: '', address: location }
-  }
-  const city = location.substring(0, commaIndex).trim()
-  const address = location.substring(commaIndex + 1).trimStart()
-  return { city, address }
-}
-
-/** Склейка `city` + `address` обратно в строку формата «Город, адрес». */
-export const combineLocation = (city: string, address: string): string => {
-  return combineCityAddress(city, address)
-}
-
-const combineCityAddress = (city: string, address: string): string => {
-  const c = city.trim()
-  const a = address.trim()
-  if (!c && !a) return ''
-  if (!c) return a
-  if (!a) return c
-  return `${c}, ${a}`
-}
