@@ -42,7 +42,7 @@ const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
     animate={{ opacity: 1, pointerEvents: 'auto' }}
     exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
-    className={cn('fixed inset-0 bg-overlay-scrim', className)}
+    className={cn('fixed inset-0 bg-[rgba(5,7,14,0.78)] backdrop-blur-[2px]', className)}
     onClick={onClick}
     aria-hidden="true"
   />
@@ -249,6 +249,7 @@ export const DrawerFrame = ({ className, ...props }: React.HTMLAttributes<HTMLDi
 export const DrawerBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
+      data-scroll-container="true"
       className={cn('flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py', className)}
       {...props}
     />

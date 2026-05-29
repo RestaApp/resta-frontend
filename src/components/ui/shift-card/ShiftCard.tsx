@@ -7,7 +7,6 @@ import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { cn } from '@/utils/cn'
 import { firstLocation } from '@/shared/utils/location'
-import type { ShiftStatus } from '../StatusPill'
 import { addDaysToISODate, toLocalISODateKey } from '@/utils/datetime'
 import {
   SHIFT_CARD_BADGE_CLASS,
@@ -23,19 +22,7 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-
-const formatDistanceKm = (distanceKm?: number | null): string | null => {
-  if (distanceKm == null || !Number.isFinite(distanceKm) || distanceKm <= 0) return null
-  const rounded = distanceKm < 10 ? Math.round(distanceKm * 10) / 10 : Math.round(distanceKm)
-  return `${rounded} км`
-}
-
-const stripVacancyPrefix = (title: string): string => {
-  return title
-    .replace(/^вакансия:\s*/i, '')
-    .replace(/^(?:\s|🔥)+/u, '')
-    .trim()
-}
+import { formatDistanceKm, stripVacancyPrefix, positionInitial } from './shift-card-utils'
 
 const formatCompactDate = (date?: string | null): string => {
   if (!date) return ''
@@ -66,12 +53,6 @@ const formatCompactSchedule = (date?: string | null, time?: string | null): stri
   return [formatCompactDate(date), formatCompactTime(time)].filter(Boolean).join(' ')
 }
 
-const positionInitial = (position: string): string => {
-  const normalized = position.trim().toLowerCase()
-  if (normalized === 'chef') return 'C'
-  return (normalized[0] ?? 'R').toUpperCase()
-}
-
 const getUrgentDateTag = (dateKey?: string | null): string => {
   if (!dateKey) return ''
   const todayKey = toLocalISODateKey(new Date())
@@ -83,16 +64,8 @@ const getUrgentDateTag = (dateKey?: string | null): string => {
 
 export interface ShiftCardProps {
   shift: Shift
-  isApplied?: boolean
-  applicationId?: number | null
-  applicationStatus?: ShiftStatus
   onOpenDetails: (id: number) => void
-  onOpenRestaurant?: (restaurantId: number) => void
-  onApply: (id: number) => void
-  onCancel: (applicationId: number | null | undefined, shiftId: number) => void
-  isLoading?: boolean
 }
-export type FeedCardProps = ShiftCardProps
 
 const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
   const { t } = useTranslation()
@@ -232,4 +205,3 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
 
 export const FeedCard = memo(ShiftCardComponent)
 FeedCard.displayName = 'FeedCard'
-export const ShiftCard = FeedCard

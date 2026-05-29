@@ -11,6 +11,7 @@ import type { Shift } from '@/features/feed/model/types'
 import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { useLabels } from '@/shared/i18n/hooks'
 import { cn } from '@/utils/cn'
+import { stripVacancyPrefix } from '@/components/ui/shift-card/shift-card-utils'
 
 interface ApplicationSuccessOverlayProps {
   open: boolean
@@ -18,13 +19,6 @@ interface ApplicationSuccessOverlayProps {
   onOpenApplications: () => void
   onSearchMore: () => void
   onClose: () => void
-}
-
-const stripVacancyPrefix = (title: string): string => {
-  return title
-    .replace(/^вакансия:\s*/i, '')
-    .replace(/^(?:\s|🔥)+/u, '')
-    .trim()
 }
 
 export const ApplicationSuccessOverlay = ({

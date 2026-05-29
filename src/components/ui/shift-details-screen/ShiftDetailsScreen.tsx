@@ -28,7 +28,6 @@ interface ShiftDetailsScreenProps {
   applicationId?: number | null
   isOpen: boolean
   onClose: () => void
-  onOpenRestaurant?: (restaurantId: number) => void
   onApply: (id: number, message?: string) => Promise<void>
   isApplied: boolean
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
@@ -182,7 +181,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             hourlyRate={hourlyRate}
             description={controller.description}
             requirements={controller.requirements}
-            managerName={vacancyData?.user?.name ?? vacancyData?.user?.full_name ?? null}
             t={t}
           />
         ) : null}

@@ -55,6 +55,7 @@ export interface AddShiftDrawerStep1Props {
   profileAddresses: string[]
   /** true для employee — показываем CitySelect+address; для restaurant/supplier — multi-select. */
   isEmployeeMode: boolean
+  employeePositionLabel?: string
   formPosition: string
   onPositionChange: (value: string) => void
   positionOptions: SelectFieldOption[]

@@ -34,9 +34,6 @@ export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) =>
     <VacancyCardWithDetails
       vacancy={shift}
       mapToShift={mapVacancyToCardShift}
-      feedCardProps={{
-        applicationStatus: shift.my_application?.status ?? shift.status ?? null,
-      }}
       detailsProps={{
         applicationId,
         onApply: async () => {

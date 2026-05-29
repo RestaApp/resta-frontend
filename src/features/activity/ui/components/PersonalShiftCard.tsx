@@ -19,10 +19,6 @@ export const PersonalShiftCard = ({
     <VacancyCardWithDetails
       vacancy={shift}
       mapToShift={mapOwnerVacancyToCardShift}
-      feedCardProps={{
-        onApply: () => {},
-        onCancel: () => {},
-      }}
       detailsProps={{
         applicationId: null,
         onApply: async () => {},

@@ -14,6 +14,7 @@ import {
   SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_SUB_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
+import { formatDistanceKm, stripVacancyPrefix, positionInitial } from '@/components/ui/shift-card/shift-card-utils'
 
 interface DetailsTabProps {
   shift: Shift
@@ -28,31 +29,12 @@ interface DetailsTabProps {
   hourlyRate: string | null
   description: string
   requirements: string
-  managerName?: string | null
   t: TFunction
-}
-
-const formatDistanceKm = (distanceKm?: number | null): string | null => {
-  if (distanceKm == null || !Number.isFinite(distanceKm) || distanceKm <= 0) return null
-  const value = distanceKm < 10 ? Math.round(distanceKm * 10) / 10 : Math.round(distanceKm)
-  return `${String(value).replace('.', ',')} км`
 }
 
 const normalizeDuration = (duration?: string | null): string | null => {
   const value = duration?.trim().replace(/\.$/, '') ?? ''
   return value || null
-}
-
-const positionInitial = (position: string): string => {
-  const normalized = position.trim()
-  return (normalized[0] ?? 'R').toUpperCase()
-}
-
-const stripVacancyPrefix = (title: string): string => {
-  return title
-    .replace(/^вакансия:\s*/i, '')
-    .replace(/^(?:\s|🔥)+/u, '')
-    .trim()
 }
 
 interface LabeledTextSectionProps {

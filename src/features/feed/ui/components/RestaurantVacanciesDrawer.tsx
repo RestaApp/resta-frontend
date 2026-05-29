@@ -10,7 +10,6 @@ import { DetailsScreenFrame } from '@/components/ui/shift-details-screen/Details
 import { useLazyGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { vacancyToShift } from '@/features/feed/model/utils/mapping'
-import type { ShiftStatus } from '@/components/ui/StatusPill'
 
 const PAGE_SIZE = 20
 
@@ -19,12 +18,6 @@ interface RestaurantVacanciesDrawerProps {
   open: boolean
   onClose: () => void
   onOpenVacancy: (vacancyId: number) => void
-  getApplicationId: (id: number) => number | undefined
-  getApplicationStatus: (id: number) => ShiftStatus | null
-  isApplied: (id: number) => boolean
-  onApply: (id: number, message?: string) => Promise<void>
-  onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
-  isShiftLoading: (id: number) => boolean
 }
 
 export const RestaurantVacanciesDrawer = ({
@@ -32,12 +25,6 @@ export const RestaurantVacanciesDrawer = ({
   open,
   onClose,
   onOpenVacancy,
-  getApplicationId,
-  getApplicationStatus,
-  isApplied,
-  onApply,
-  onCancel,
-  isShiftLoading,
 }: RestaurantVacanciesDrawerProps) => {
   const { t } = useTranslation()
   const [page, setPage] = useState(0)
@@ -166,13 +153,7 @@ export const RestaurantVacanciesDrawer = ({
           <FeedCard
             key={shift.id}
             shift={shift}
-            applicationId={getApplicationId(shift.id) ?? null}
-            applicationStatus={getApplicationStatus(shift.id) ?? null}
-            isApplied={isApplied(shift.id)}
             onOpenDetails={handleOpenVacancy}
-            onApply={onApply}
-            onCancel={onCancel}
-            isLoading={isShiftLoading(shift.id)}
           />
         ))}
 

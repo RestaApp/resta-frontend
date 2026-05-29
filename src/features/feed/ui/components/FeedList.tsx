@@ -8,27 +8,15 @@ import type { ShiftStatus } from '@/components/ui/StatusPill'
 interface FeedListProps {
   shifts: Shift[]
   activeList: UseVacanciesInfiniteListReturn
-  getApplicationId: (id: number) => number | undefined
   getApplicationStatus: (id: number) => ShiftStatus | null
-  isApplied: (id: number) => boolean
   onOpenDetails: (id: number) => void
-  onOpenRestaurant: (restaurantId: number) => void
-  onApplyWithModal: (id: number, message?: string) => Promise<void>
-  onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
-  isShiftLoading: (id: number) => boolean
 }
 
 export function FeedList({
   shifts,
   activeList,
-  getApplicationId,
   getApplicationStatus,
-  isApplied,
   onOpenDetails,
-  onOpenRestaurant,
-  onApplyWithModal,
-  onCancel,
-  isShiftLoading,
 }: FeedListProps) {
   const sortedShifts = useMemo(() => {
     if (!shifts.length) return shifts
@@ -54,14 +42,7 @@ export function FeedList({
         <FeedCard
           key={shift.id}
           shift={shift}
-          applicationId={getApplicationId(shift.id) ?? null}
-          applicationStatus={getApplicationStatus(shift.id) ?? null}
-          isApplied={isApplied(shift.id)}
           onOpenDetails={onOpenDetails}
-          onOpenRestaurant={onOpenRestaurant}
-          onApply={onApplyWithModal}
-          onCancel={onCancel}
-          isLoading={isShiftLoading(shift.id)}
         />
       ))}
 

@@ -1,12 +1,20 @@
 import { useTranslation } from 'react-i18next'
-import { Drawer, DrawerBody, DrawerCloseButton, DrawerFrame } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerFooter,
+  DrawerFrame,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
 import type { AdvancedFiltersData } from '@/features/feed/model/types'
-import { MODAL_TITLE_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 
 interface AdvancedFiltersProps {
   isOpen: boolean
@@ -26,7 +34,6 @@ export const AdvancedFilters = ({
   <Drawer
     open={isOpen}
     onOpenChange={open => !open && onClose()}
-    overlayClassName="bg-[rgba(5,7,14,0.78)] backdrop-blur-[2px]"
   >
     <AdvancedFiltersSheet
       key={isOpen ? JSON.stringify(initialFilters ?? null) : 'closed'}
@@ -62,20 +69,22 @@ const AdvancedFiltersSheet = ({
 
   return (
     <DrawerFrame className="flex-1">
-      <div className="mb-3 flex shrink-0 items-center justify-between border-b border-border/50 ui-density-page ui-density-py-sm">
-        <h2 className={MODAL_TITLE_CLASS}>{t('feed.filters')}</h2>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={c.handleReset}
-            disabled={!c.hasActiveFilters}
-            className="text-sm font-medium text-primary transition-opacity disabled:opacity-40"
-          >
-            {t('feed.resetFiltersSheet')}
-          </button>
-          <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} className="-mr-2" />
+      <DrawerHeader>
+        <div className="flex items-center justify-between gap-2">
+          <DrawerTitle>{t('feed.filters')}</DrawerTitle>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={c.handleReset}
+              disabled={!c.hasActiveFilters}
+            >
+              {t('feed.resetFiltersSheet')}
+            </Button>
+            <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
+          </div>
         </div>
-      </div>
+      </DrawerHeader>
 
       <DrawerBody className="flex flex-col gap-3 pb-4">
         {c.positions.length > 0 ? (
@@ -133,17 +142,11 @@ const AdvancedFiltersSheet = ({
         </div>
       </DrawerBody>
 
-      <div className="flex shrink-0 border-t border-border/50 ui-density-page py-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="md"
-          className="w-full min-w-0 border-0 bg-primary font-semibold text-primary-foreground shadow-sm ring-primary hover:bg-primary/92 hover:opacity-95 active:bg-primary/85"
-          onClick={handleShowResults}
-        >
+      <DrawerFooter>
+        <Button variant="gradient" size="md" className="w-full" onClick={handleShowResults}>
           {isVacancy ? t('feed.showVacanciesCta') : t('feed.showShiftsCount')}
         </Button>
-      </div>
+      </DrawerFooter>
     </DrawerFrame>
   )
 }

@@ -1,8 +1,10 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
+  DrawerFrame,
   DrawerHeader,
   DrawerFooter,
   DrawerTitle,
@@ -34,6 +36,7 @@ import {
   INITIAL_SHIFT_TYPE,
   TOTAL_STEPS,
 } from './add-shift-drawer/config'
+import { normalizeCatalogPosition } from '@/utils/roles'
 
 type AddShiftDrawerProps = {
   open: boolean
@@ -91,6 +94,17 @@ const AddShiftDrawerKeyed = ({
   }, [initialValues?.location])
 
   const userCity = userProfile?.city?.trim() || null
+  const employeeFixedPosition = useMemo(
+    () =>
+      normalizeCatalogPosition(
+        userProfile?.position || userProfile?.employee_profile?.position || ''
+      ),
+    [userProfile?.employee_profile?.position, userProfile?.position]
+  )
+  const employeePositionLabel = useMemo(
+    () => (employeeFixedPosition ? getEmployeePositionLabel(employeeFixedPosition) : ''),
+    [employeeFixedPosition, getEmployeePositionLabel]
+  )
 
   const form = useAddShiftForm({
     initialShiftType: lockedShiftType ?? initialShiftType ?? INITIAL_SHIFT_TYPE,
@@ -109,7 +123,7 @@ const AddShiftDrawerKeyed = ({
   })
 
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
-    enabled: open,
+    enabled: open && !isEmployeeUser,
   })
   const { specializations: availableSpecializations, isLoading: isSpecializationsLoading } =
     useUserSpecializations({
@@ -128,6 +142,12 @@ const AddShiftDrawerKeyed = ({
       }),
     [getEmployeePositionLabel, positionsForDisplay]
   )
+
+  useEffect(() => {
+    if (!open || !isEmployeeUser || !employeeFixedPosition) return
+    if (form.position === employeeFixedPosition) return
+    form.setPosition(employeeFixedPosition)
+  }, [open, isEmployeeUser, employeeFixedPosition, form])
 
   const stepTitle = useMemo(() => {
     if (controller.state.step === 0) {
@@ -154,9 +174,18 @@ const AddShiftDrawerKeyed = ({
       onOpenChange={controller.actions.handleDrawerOpenChange}
       onTelegramBack={controller.actions.handleBackOrCancel}
     >
+      <DrawerFrame className="flex-1">
       <DrawerHeader>
-        <DrawerTitle>{drawerCopy.drawerTitle}</DrawerTitle>
-        <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <DrawerTitle>{drawerCopy.drawerTitle}</DrawerTitle>
+            <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
+          </div>
+          <DrawerCloseButton
+            onClick={() => controller.actions.handleDrawerOpenChange(false)}
+            ariaLabel={t('common.close')}
+          />
+        </div>
       </DrawerHeader>
 
       <DrawerBody className="ui-density-stack gap-3">
@@ -214,6 +243,7 @@ const AddShiftDrawerKeyed = ({
             cityError={controller.derived.errors.cityFieldError}
             profileAddresses={profileAddresses}
             isEmployeeMode={isEmployeeUser}
+            employeePositionLabel={employeePositionLabel}
             formPosition={form.position}
             onPositionChange={controller.actions.handlePositionChange}
             positionOptions={positionOptions}
@@ -266,6 +296,7 @@ const AddShiftDrawerKeyed = ({
         isVisible={toast.isVisible}
         onClose={hideToast}
       />
+      </DrawerFrame>
     </Drawer>
   )
 }

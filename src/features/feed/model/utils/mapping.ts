@@ -47,40 +47,6 @@ const getCityFromUser = (item: VacancyApiItem): string | undefined => {
   return item.city ?? item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
 }
 
-const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
-  const userWithExtra = item.user as
-    | (typeof item.user & { avatar_url?: string | null; image_url?: string | null })
-    | undefined
-  const profileWithExtra = item.user?.restaurant_profile as
-    | (typeof item.user extends undefined
-        ? never
-        : NonNullable<typeof item.user>['restaurant_profile'] & {
-            photo_url?: string | null
-            logo_url?: string | null
-            image_url?: string | null
-          })
-    | undefined
-
-  const candidateUrls = [
-    item.user?.photo_url,
-    item.user?.profile_photo_url,
-    (item as VacancyApiItem & { photo_url?: string | null }).photo_url,
-    (item as VacancyApiItem & { profile_photo_url?: string | null }).profile_photo_url,
-    userWithExtra?.avatar_url,
-    userWithExtra?.image_url,
-    profileWithExtra?.photo_url,
-    profileWithExtra?.logo_url,
-    profileWithExtra?.image_url,
-  ]
-
-  for (const url of candidateUrls) {
-    if (typeof url !== 'string') continue
-    const normalized = url.trim()
-    if (normalized.length > 0) return normalized
-  }
-  return null
-}
-
 const getDistanceKm = (item: VacancyApiItem): number | null => {
   const rawDistance = item.distance_km ?? item.distance
   const distance = toNumber(rawDistance)
@@ -136,19 +102,14 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
           const city = getCityFromUser(item)
           return city ? [city] : []
         })()
-  const cuisineTypes = item.user?.restaurant_profile?.cuisine_types ?? undefined
-
   return {
     id: item.id,
-    logo: getLogoByPosition(item.position, item.id),
-    userPhotoUrl: getUserPhotoUrl(item),
     title: item.title?.trim() || null,
     restaurant: item.user?.full_name || item.user?.name || item.title || '—',
     rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
 
     position: item.position ?? 'chef',
     specialization: item.specialization ?? null,
-    cuisineTypes,
 
     date,
     dateKey: start ? toLocalISODateKey(start) : null,
@@ -161,7 +122,6 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     location,
     duration,
     urgent: Boolean(item.urgent),
-    badges: item.urgent ? ['🔥 Срочно'] : undefined,
 
     applicationId: item.my_application?.id ?? null,
     ownerId: item.user?.id ?? null,
@@ -181,8 +141,6 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
 
   return {
     id: item.id,
-    logo: getLogoByPosition(item.position, item.id),
-    userPhotoUrl: getUserPhotoUrl(item),
     title: item.title?.trim() || null,
     restaurant: '',
     rating: 0,
@@ -213,14 +171,11 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
 
   return {
     id: v.id,
-    logo: getLogoByPosition(v.position, v.id),
-    userPhotoUrl: getUserPhotoUrl(v),
     title: v.title?.trim() || null,
     restaurant,
     rating: 0,
     position: v.position ?? 'chef',
     specialization: v.specialization ?? null,
-    cuisineTypes: v.user?.restaurant_profile?.cuisine_types ?? undefined,
     date,
     dateKey,
     time,

@@ -43,14 +43,8 @@ export function FeedBody({ vm }: FeedBodyProps) {
             <FeedList
               shifts={vm.filteredShifts}
               activeList={vm.activeList}
-              getApplicationId={vm.getApplicationId}
               getApplicationStatus={vm.getApplicationStatus}
-              isApplied={vm.isApplied}
               onOpenDetails={vm.openShiftDetails}
-              onOpenRestaurant={vm.openRestaurantDetails}
-              onApplyWithModal={vm.handleApplyWithModal}
-              onCancel={vm.handleCancel}
-              isShiftLoading={vm.isShiftLoading}
             />
           </FeedListArea>
         </div>
@@ -71,7 +65,6 @@ export function FeedBody({ vm }: FeedBodyProps) {
           isApplied={vm.isApplied(vm.selectedShiftId)}
           isLoading={vm.isShiftLoading(vm.selectedShiftId)}
           onClose={vm.closeShiftDetails}
-          onOpenRestaurant={vm.openRestaurantDetails}
           onApply={vm.handleApplyWithModal}
           onCancel={vm.handleCancel}
           ownerActions={{
@@ -87,12 +80,6 @@ export function FeedBody({ vm }: FeedBodyProps) {
         open={vm.selectedRestaurantId !== null}
         onClose={vm.closeRestaurantDetails}
         onOpenVacancy={vm.openShiftDetails}
-        getApplicationId={vm.getApplicationId}
-        getApplicationStatus={vm.getApplicationStatus}
-        isApplied={vm.isApplied}
-        onApply={vm.handleApplyWithModal}
-        onCancel={vm.handleCancel}
-        isShiftLoading={vm.isShiftLoading}
       />
 
       <ApplyCoverLetterModal

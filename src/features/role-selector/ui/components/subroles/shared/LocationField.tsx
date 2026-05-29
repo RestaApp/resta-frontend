@@ -2,13 +2,14 @@
  * Поле выбора города с автодополнением
  */
 
-import { memo } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
+import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { useLocationField } from '../../../../model/useLocationField'
 interface LocationFieldProps {
   value: string
@@ -50,6 +51,53 @@ export const LocationField = memo(function LocationField({
     value,
     onChange,
   })
+  const didAutoScrollRef = useRef(false)
+  const [maxDropdownHeight, setMaxDropdownHeight] = useState(200)
+
+  useEffect(() => {
+    if (!hasSuggestions || !containerRef.current) return
+
+    const updateMaxHeight = () => {
+      if (!containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      const scrollContainer = containerRef.current.closest('[data-scroll-container="true"]')
+      const scrollContainerRect = scrollContainer?.getBoundingClientRect()
+      const viewportBottom = scrollContainerRect?.bottom ?? window.innerHeight
+      const effectiveBottomOffset = scrollContainerRect ? 0 : BOTTOM_NAV_HEIGHT_PX
+      const spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
+      const desiredDropdownHeight = 260 // ~5-6 опций
+
+      if (scrollContainer instanceof HTMLElement && !didAutoScrollRef.current) {
+        const deficit = desiredDropdownHeight - spaceBelow
+        if (deficit > 0) {
+          const remainingScroll =
+            scrollContainer.scrollHeight - scrollContainer.clientHeight - scrollContainer.scrollTop
+          const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
+          if (scrollDelta > 0) {
+            didAutoScrollRef.current = true
+            scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+          }
+        }
+      }
+
+      setMaxDropdownHeight(Math.max(Math.min(spaceBelow - 12, 420), 64))
+    }
+
+    updateMaxHeight()
+    window.addEventListener('resize', updateMaxHeight)
+    window.addEventListener('scroll', updateMaxHeight, true)
+
+    return () => {
+      window.removeEventListener('resize', updateMaxHeight)
+      window.removeEventListener('scroll', updateMaxHeight, true)
+    }
+  }, [hasSuggestions, containerRef])
+
+  useEffect(() => {
+    if (!hasSuggestions) {
+      didAutoScrollRef.current = false
+    }
+  }, [hasSuggestions])
 
   const cityOptions = filteredCities.map(city => ({ value: city, label: city }))
 
@@ -115,7 +163,7 @@ export const LocationField = memo(function LocationField({
         value={value}
         searchQuery=""
         filteredOptions={cityOptions}
-        maxHeight={200}
+        maxHeight={maxDropdownHeight}
         dropdownPosition={{ left: 0, top: 0, width: 0, opensUp: false }}
         needsScroll={false}
         isScrolledToBottom

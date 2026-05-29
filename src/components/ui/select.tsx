@@ -22,7 +22,7 @@ export const Select = memo(function Select({
   error,
   allowCustomValue = false,
   searchable = true,
-  forceDropdownBelow = false,
+  forceDropdownBelow = true,
   bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
 }: SelectProps) {
   const { t } = useTranslation()
@@ -34,6 +34,7 @@ export const Select = memo(function Select({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const triggerInputRef = useRef<HTMLInputElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const didAutoScrollRef = useRef(false)
 
   useBodyScrollLock(isOpen)
 
@@ -79,21 +80,48 @@ export const Select = memo(function Select({
         if (!containerRef.current) return
 
         const rect = containerRef.current.getBoundingClientRect()
-        const viewportHeight = window.innerHeight
+        const scrollContainer = containerRef.current.closest('[data-scroll-container="true"]')
+        const scrollContainerRect = scrollContainer?.getBoundingClientRect()
+        const viewportHeight = scrollContainerRect?.bottom ?? window.innerHeight
+        const effectiveBottomOffset = scrollContainerRect ? 0 : bottomOffsetPx
         const viewportWidth = window.innerWidth
 
-        const spaceBelow = viewportHeight - rect.bottom - bottomOffsetPx
+        const spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
         const spaceAbove = rect.top
-        const estimatedDropdownHeight = 320 // примерная высота дропдауна
+        const desiredDropdownHeight = 260 // ~5-6 опций по ~44px
 
         // Определяем, открывать вверх или вниз
         const opensUp = forceDropdownBelow
           ? false
-          : spaceBelow < estimatedDropdownHeight && spaceAbove > spaceBelow
+          : spaceBelow < desiredDropdownHeight && spaceAbove > spaceBelow
+
+        // Внутри DrawerBody поднимаем поле (через scroll контейнера), чтобы
+        // у выпадающего списка было место показать минимум 5-6 опций.
+        if (
+          forceDropdownBelow &&
+          !opensUp &&
+          scrollContainer instanceof HTMLElement &&
+          !didAutoScrollRef.current
+        ) {
+          const deficit = desiredDropdownHeight - spaceBelow
+          if (deficit > 0) {
+            const remainingScroll =
+              scrollContainer.scrollHeight -
+              scrollContainer.clientHeight -
+              scrollContainer.scrollTop
+            const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
+            if (scrollDelta > 0) {
+              didAutoScrollRef.current = true
+              scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+            }
+          }
+        }
 
         const availableSpace = opensUp
           ? Math.max(spaceAbove - 20, 200)
-          : Math.max(spaceBelow - 20, forceDropdownBelow ? 120 : 200)
+          : forceDropdownBelow
+            ? Math.max(spaceBelow - 12, 64)
+            : Math.max(spaceBelow - 20, 200)
 
         // Корректируем позицию по горизонтали, чтобы не выходить за границы экрана
         let left = rect.left
@@ -107,7 +135,7 @@ export const Select = memo(function Select({
 
         let top: number
         if (opensUp) {
-          top = rect.top - Math.min(availableSpace, 320) - 4
+          top = rect.top - Math.min(availableSpace, 420) - 4
         } else {
           top = rect.bottom + 4
         }
@@ -118,7 +146,7 @@ export const Select = memo(function Select({
           width: rect.width,
           opensUp,
         })
-        setMaxHeight(Math.min(availableSpace, 320)) // максимум 320px
+        setMaxHeight(Math.min(availableSpace, 420)) // максимум 420px
       }
 
       const throttledUpdate = () => {
@@ -143,6 +171,12 @@ export const Select = memo(function Select({
       }
     }
   }, [isOpen, bottomOffsetPx, forceDropdownBelow])
+
+  useEffect(() => {
+    if (!isOpen) {
+      didAutoScrollRef.current = false
+    }
+  }, [isOpen])
 
   // Фокус на input при открытии
   useEffect(() => {

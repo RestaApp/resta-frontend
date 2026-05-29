@@ -34,6 +34,7 @@ export const CitySelect = memo(function CitySelect({
       onChange={onChange}
       options={selectOptions}
       placeholder={displayPlaceholder}
+      searchable={false}
       disabled={disabled}
       className={className}
       error={error}

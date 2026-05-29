@@ -18,6 +18,7 @@ export const AddShiftDrawerStep1 = ({
   cityError,
   profileAddresses,
   isEmployeeMode,
+  employeePositionLabel,
   formPosition,
   onPositionChange,
   positionOptions,
@@ -73,17 +74,26 @@ export const AddShiftDrawerStep1 = ({
         )}
       </div>
 
-      <div ref={positionRef}>
-        <Select
-          label={t('common.position')}
-          value={formPosition || ''}
-          onChange={onPositionChange}
-          options={positionOptions}
-          placeholder={t('shift.selectPosition')}
-          disabled={isPositionsLoading}
-          error={positionError}
-        />
-      </div>
+      {isEmployeeMode ? (
+        <div ref={positionRef}>
+          <Field label={t('common.position')} error={positionError}>
+            <Input value={employeePositionLabel || ''} readOnly aria-invalid={!!positionError} />
+          </Field>
+        </div>
+      ) : (
+        <div ref={positionRef}>
+          <Select
+            label={t('common.position')}
+            value={formPosition || ''}
+            onChange={onPositionChange}
+            options={positionOptions}
+            placeholder={t('shift.selectPosition')}
+            searchable={false}
+            disabled={isPositionsLoading}
+            error={positionError}
+          />
+        </div>
+      )}
 
       <div ref={specializationRef}>
         <MultiSelectSpecializations
