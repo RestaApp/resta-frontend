@@ -4,7 +4,7 @@ import { useActivityPageModel } from '../model/hooks/useActivityPageModel'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 import type { TabOption } from '@/components/ui/tabs'
-import { Briefcase, Clock3 } from 'lucide-react'
+
 import { VenueActivityContent } from './components/VenueActivityContent'
 import { EmployeeActivityContent } from './components/EmployeeActivityContent'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
@@ -24,8 +24,8 @@ export const ActivityPage = ({ employeeDefaultTab = 'applications' }: ActivityPa
 
   const venueTabOptions = useMemo<TabOption<VenueTab>[]>(
     () => [
-      { id: 'vacancies', label: t('tabs.feed.jobs'), icon: Briefcase },
-      { id: 'shifts', label: t('tabs.feed.shifts'), icon: Clock3 },
+      { id: 'vacancies', label: t('tabs.feed.jobs') },
+      { id: 'shifts', label: t('tabs.feed.shifts') },
     ],
     [t]
   )

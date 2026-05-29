@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
-import { Briefcase } from 'lucide-react'
-import { SectionHeader } from '@/components/ui/section-header'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { EmptyShiftsIllustration } from '@/components/ui/empty-illustrations'
+import { Button } from '@/components/ui/button'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 interface MyShiftsSectionProps {
   shifts: VacancyApiItem[]
@@ -17,11 +18,21 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
 
   return (
     <section className="ui-density-stack">
-      <SectionHeader icon={Briefcase} title={t('activity.myShifts')} count={shifts.length} />
       {shifts.length === 0 ? (
         <EmptyState
           message={t('activity.noShiftsYet')}
           description={t('activity.shiftsWillAppearHere')}
+          illustration={<EmptyShiftsIllustration className="h-24 w-24" />}
+          action={
+            <Button
+              variant="gradient"
+              size="md"
+              className="px-6"
+              onClick={() => emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)}
+            >
+              {t('activity.offerShiftCta')}
+            </Button>
+          }
         />
       ) : (
         <div className="ui-density-stack">

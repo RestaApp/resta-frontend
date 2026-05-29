@@ -4,15 +4,15 @@ import { Loader } from '@/components/ui/loader'
 import type { HapticFeedbackPattern } from '@/utils/haptics'
 
 const SIZE_CLASSES = {
-  sm: 'h-11 px-3 text-xs',
+  sm: 'h-9 px-3 text-xs',
   md: 'h-11 px-4 text-sm',
-  lg: 'h-11 px-5 text-sm',
+  lg: 'h-13 px-5 text-sm',
 } as const
 
 const LOADER_SLOT = {
-  sm: 'w-4',
-  md: 'w-4',
-  lg: 'w-5',
+  sm: 'w-3',
+  md: 'w-5',
+  lg: 'w-7',
 } as const
 
 const VARIANT_CLASSES = {

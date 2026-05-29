@@ -31,7 +31,7 @@ type TranslateFn = (key: string, options?: Record<string, unknown>) => string
 const getHeaderTitle = (activeTab: Tab | undefined, t: TranslateFn) => {
   if (activeTab === 'feed') return t('feed.headerTitle', { defaultValue: 'Лента' })
   if (activeTab === 'activity') return t('tabs.employee.activity', { defaultValue: 'Активность' })
-  if (activeTab === 'myshifts') return t('tabs.employee.my', { defaultValue: 'Мои' })
+  if (activeTab === 'myshifts') return t('tabs.employee.myHeader', { defaultValue: 'Мои смены' })
   if (activeTab === 'profile') return t('tabs.employee.profileShort', { defaultValue: 'Я' })
   if (!activeTab) return ''
 

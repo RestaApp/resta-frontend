@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react'
-import { FileText, Users } from 'lucide-react'
+
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { DrawerFooter } from '@/components/ui/drawer'
@@ -153,8 +153,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         {controller.showTabs ? (
           <Tabs
             options={[
-              { id: 'applicants', label: t('shift.applicants'), icon: Users },
-              { id: 'details', label: t('shift.details', 'Детали'), icon: FileText },
+              { id: 'applicants', label: t('shift.applicants') },
+              { id: 'details', label: t('shift.details', 'Детали') },
             ]}
             activeId={controller.activeTab}
             onChange={id => controller.setActiveTab(id as 'applicants' | 'details')}

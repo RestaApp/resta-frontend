@@ -101,6 +101,7 @@
       "feed": "Лента",
       "activity": "Отклики",
       "my": "Мои",
+      "myHeader": "Мои смены",
       "profile": "Я"
     },
     "feed": {
@@ -392,7 +393,9 @@
     "day": "День",
     "durationWithValue": "Длительность: {{value}}",
     "freeDay": "Свободный день!",
-    "findShift": "Найти смену"
+    "findShift": "Найти смену",
+    "offerShiftCta": "Предложить смену",
+    "createShiftCta": "Создать вакансию / смену"
   },
   "validation": {
     "timeEndAfterStart": "Время окончания должно быть позже начала.",

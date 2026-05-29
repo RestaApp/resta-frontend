@@ -23,7 +23,7 @@ import {
 } from '@/utils/filters'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 
-import { Briefcase, Flame } from 'lucide-react'
+
 import type { FeedType } from '@/shared/shifts/types'
 import type { Shift } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
@@ -38,8 +38,8 @@ export const useFeedPageModel = () => {
 
   const feedTypeOptions = useMemo<TabOption<FeedType>[]>(
     () => [
-      { id: 'jobs', label: t('tabs.feed.jobs'), icon: Briefcase },
-      { id: 'shifts', label: t('tabs.feed.shifts'), icon: Flame },
+      { id: 'jobs', label: t('tabs.feed.jobs') },
+      { id: 'shifts', label: t('tabs.feed.shifts') },
     ],
     [t]
   )

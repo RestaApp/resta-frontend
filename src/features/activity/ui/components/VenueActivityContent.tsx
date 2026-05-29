@@ -71,7 +71,7 @@ export const VenueActivityContent = ({
               description={venueEmptyContent.description}
               illustration={<EmptyInboxIllustration className="h-24 w-24" />}
               action={
-                <Button variant="gradient" size="lg" className="px-6" onClick={handleOpenCreate}>
+                <Button variant="gradient" size="md" className="px-6" onClick={handleOpenCreate}>
                   {t('feed.venueEmptyCta')}
                 </Button>
               }

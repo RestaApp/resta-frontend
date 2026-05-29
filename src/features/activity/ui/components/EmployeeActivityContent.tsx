@@ -1,7 +1,6 @@
 import type { TFunction } from 'i18next'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
 import { Toast } from '@/components/ui/toast'
-import { ActivityHeader } from './ActivityHeader'
 import { ActivityListTab } from './ActivityListTab'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
 
@@ -15,8 +14,6 @@ interface EmployeeActivityContentProps {
 export const EmployeeActivityContent = ({ t, model }: EmployeeActivityContentProps) => {
   return (
     <>
-      <ActivityHeader activeTab={model.activeTab} onChange={model.setActiveTab} />
-
       <div className="ui-density-page ui-density-py">
         <div className="ui-density-stack">
           <ActivityListTab

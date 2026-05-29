@@ -101,6 +101,7 @@
       "feed": "Shifts",
       "activity": "Applied",
       "my": "Mine",
+      "myHeader": "My shifts",
       "profile": "Me"
     },
     "feed": {
@@ -392,7 +393,9 @@
     "day": "Day",
     "durationWithValue": "Duration: {{value}}",
     "freeDay": "Free day!",
-    "findShift": "Find shift"
+    "findShift": "Find shift",
+    "offerShiftCta": "Offer a shift",
+    "createShiftCta": "Create vacancy / shift"
   },
   "validation": {
     "timeEndAfterStart": "End time must be after start time.",

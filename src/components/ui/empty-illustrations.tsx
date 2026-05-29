@@ -96,6 +96,108 @@ export const EmptyFiltersIllustration = memo(function EmptyFiltersIllustration({
   )
 })
 
+export const EmptyApplicationsIllustration = memo(function EmptyApplicationsIllustration({
+  className,
+}: Props) {
+  return (
+    <svg
+      className={className}
+      width="96"
+      height="96"
+      viewBox="0 0 96 96"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="g4" x1="14" y1="16" x2="82" y2="82" gradientUnits="userSpaceOnUse">
+          <stop stopColor="var(--primary)" stopOpacity="0.22" />
+          <stop offset="1" stopColor="var(--primary)" stopOpacity="0.16" />
+        </linearGradient>
+      </defs>
+      <rect x="14" y="18" width="68" height="60" rx="18" fill="url(#g4)" />
+      <path
+        d="M48 32L68 48L48 56L28 48L48 32Z"
+        stroke="currentColor"
+        strokeOpacity="0.25"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M48 56V70"
+        stroke="currentColor"
+        strokeOpacity="0.18"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M38 62L48 70L58 62"
+        stroke="currentColor"
+        strokeOpacity="0.16"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+})
+
+export const EmptyShiftsIllustration = memo(function EmptyShiftsIllustration({
+  className,
+}: Props) {
+  return (
+    <svg
+      className={className}
+      width="96"
+      height="96"
+      viewBox="0 0 96 96"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="g5" x1="14" y1="16" x2="82" y2="82" gradientUnits="userSpaceOnUse">
+          <stop stopColor="var(--primary)" stopOpacity="0.22" />
+          <stop offset="1" stopColor="var(--primary)" stopOpacity="0.16" />
+        </linearGradient>
+      </defs>
+      <rect x="14" y="18" width="68" height="60" rx="18" fill="url(#g5)" />
+      <rect
+        x="30"
+        y="30"
+        width="36"
+        height="32"
+        rx="6"
+        stroke="currentColor"
+        strokeOpacity="0.25"
+        strokeWidth="3"
+      />
+      <path
+        d="M30 42H66"
+        stroke="currentColor"
+        strokeOpacity="0.2"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M42 26V34"
+        stroke="currentColor"
+        strokeOpacity="0.22"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M54 26V34"
+        stroke="currentColor"
+        strokeOpacity="0.22"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <circle cx="48" cy="52" r="4" fill="currentColor" fillOpacity="0.18" />
+    </svg>
+  )
+})
+
 export const EmptyInboxIllustration = memo(function EmptyInboxIllustration({ className }: Props) {
   return (
     <svg
