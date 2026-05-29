@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { ChevronDown, HelpCircle, Languages, LogOut, Palette, Settings } from 'lucide-react'
@@ -24,7 +24,7 @@ interface ProfileSettingsProps {
   showSupport?: boolean
 }
 
-export function ProfileSettings({
+export const ProfileSettings = memo(function ProfileSettings({
   onLogout,
   onNotificationSettingsClick,
   showNotificationSettings = true,
@@ -36,9 +36,7 @@ export function ProfileSettings({
 
   const handleLanguageChange = useCallback(
     (locale: Locale) => {
-      // ✅ мгновенно, как тема
       i18n.changeLanguage(locale)
-      // ❌ на бэк не сохраняем
     },
     [i18n]
   )
@@ -194,4 +192,4 @@ export function ProfileSettings({
       </div>
     </div>
   )
-}
+})

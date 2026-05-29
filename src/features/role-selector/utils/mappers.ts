@@ -1,64 +1,9 @@
-import {
-  Utensils,
-  Martini,
-  Coffee,
-  UserCog,
-  Store,
-  CookingPot,
-  Truck,
-  Briefcase,
-  Headphones,
-} from 'lucide-react'
 import type { RoleOption, EmployeeSubRole, UiRole, EmployeeRole } from '@/shared/types/roles.types'
 import {
   mapApiRoleStringToUiRole,
   mapPositionFromApi as mapPositionToEmployeeRole,
 } from '@/utils/roles'
 import i18n from '@/shared/i18n/config'
-
-const POSITION_ICON_MAP: Partial<
-  Record<EmployeeRole, React.ComponentType<{ className?: string }>>
-> = {
-  manager: Briefcase,
-  support: Headphones,
-}
-
-const POSITION_COLOR_MAP: Partial<Record<EmployeeRole, string>> = {
-  manager: 'from-primary to-amber',
-  support: 'from-muted-foreground to-foreground',
-}
-
-const ROLE_ICON_MAP: Record<UiRole, React.ComponentType<{ className?: string }>> = {
-  chef: CookingPot,
-  waiter: Utensils,
-  bartender: Martini,
-  barista: Coffee,
-  hostess: Utensils,
-  delivery: Truck,
-  cashier: UserCog,
-  office: Headphones,
-  admin: UserCog,
-  manager: Briefcase,
-  support: Headphones,
-  venue: Store,
-  supplier: Truck,
-}
-
-const ROLE_COLOR_MAP: Record<UiRole, string> = {
-  chef: 'from-primary to-amber',
-  waiter: 'from-success to-primary',
-  bartender: 'from-primary to-amber',
-  barista: 'from-warning to-primary',
-  hostess: 'from-success to-primary',
-  delivery: 'from-primary to-success',
-  cashier: 'from-primary to-amber',
-  office: 'from-primary to-amber',
-  admin: 'from-primary to-amber',
-  manager: 'from-primary to-amber',
-  support: 'from-muted-foreground to-foreground',
-  venue: 'from-primary to-amber',
-  supplier: 'from-amber to-primary',
-}
 
 const tRoleLabel = (roleId: UiRole): string =>
   i18n.t(`roles.labels.${roleId}`, { defaultValue: roleId })
@@ -84,8 +29,6 @@ const mapRoleOptionFromApi = (roleValue: string): RoleOption | null => {
     id: roleId,
     title: tRoleLabel(roleId),
     description: tRoleDescription(roleId),
-    icon: ROLE_ICON_MAP[roleId],
-    color: ROLE_COLOR_MAP[roleId],
   }
 }
 
@@ -96,15 +39,10 @@ const mapPositionFromApi = (positionValue: string): EmployeeSubRole | null => {
   const roleId = mapPositionToEmployeeRole(positionValue)
   if (!roleId) return null
 
-  const icon = POSITION_ICON_MAP[roleId] ?? ROLE_ICON_MAP[roleId]
-  const color = POSITION_COLOR_MAP[roleId] ?? ROLE_COLOR_MAP[roleId]
-
   return {
     id: roleId,
     title: tPositionLabel(roleId),
     description: tPositionDescription(roleId) || tRoleDescription(roleId),
-    icon,
-    color,
     originalValue: positionValue.toLowerCase().trim(),
   }
 }

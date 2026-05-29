@@ -173,10 +173,20 @@ const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-warning" aria-label={t('common.rating')}>
-            {[0, 1, 2, 3, 4].map(index => (
-              <Star key={index} className="h-3.5 w-3.5 fill-current" />
-            ))}
+          <div className="flex items-center gap-1" aria-label={t('common.rating')}>
+            {[0, 1, 2, 3, 4].map(index => {
+              const ratingNum = Number(profile.reviewSummary!.rating)
+              const filled = Number.isFinite(ratingNum) && index < Math.round(ratingNum)
+              return (
+                <Star
+                  key={index}
+                  className={cn(
+                    'h-3.5 w-3.5',
+                    filled ? 'fill-current text-warning' : 'text-muted-foreground/30'
+                  )}
+                />
+              )
+            })}
           </div>
         </div>
       </Card>
@@ -255,7 +265,6 @@ export const ProfileOverview = memo(function ProfileOverview({
         userProfile={profile.userProfile}
         userName={profile.userName}
         roleLabel={profile.roleLabel}
-        wrapInCard={false}
       />
 
       <ProfileOpenToWorkCard

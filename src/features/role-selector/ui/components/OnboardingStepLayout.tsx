@@ -11,7 +11,6 @@ interface OnboardingStepLayoutProps {
   totalSteps: number
   children: ReactNode
   bottomSpace?: string
-  contentClassName?: string
 }
 
 export const OnboardingStepLayout = memo(function OnboardingStepLayout({
@@ -21,7 +20,6 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
   totalSteps,
   children,
   bottomSpace,
-  contentClassName,
 }: OnboardingStepLayoutProps) {
   return (
     <div className="bg-background flex flex-col">
@@ -30,7 +28,7 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
         subtitle={subtitle}
         progress={<OnboardingProgress current={currentStep} total={totalSteps} />}
       />
-      <div className={cn('ui-density-page pt-3', bottomSpace, contentClassName)}>{children}</div>
+      <div className={cn('ui-density-page pt-3', bottomSpace)}>{children}</div>
     </div>
   )
 })

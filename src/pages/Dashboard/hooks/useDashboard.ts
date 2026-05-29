@@ -44,7 +44,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
       if (typeof window !== 'undefined') {
         const nextPath = getPathForScreen(role, screen)
         if (window.location.pathname !== nextPath) {
-          window.history.replaceState(null, '', nextPath)
+          window.history.pushState(null, '', nextPath)
         }
       }
     },

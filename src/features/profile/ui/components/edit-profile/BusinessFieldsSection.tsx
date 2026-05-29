@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import type { ApiRole } from '@/types'
-import {
-  BusinessAddressesField,
-  BusinessHoursField,
-} from '@/features/profile/ui/components/BusinessStructuredFields'
+import { BusinessAddressesField } from '../business-fields/BusinessAddressesField'
+import { BusinessHoursField } from '../business-fields/BusinessHoursField'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 import { SupplierTypesField } from './SupplierTypesField'
 

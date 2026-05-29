@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { FileText, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -9,11 +9,18 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useShiftDetails } from '@/features/feed/model/hooks/useShiftDetails'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { DetailsTab } from './DetailsTab'
 import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
 import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
+
+export interface ShiftDetailsOwnerActions {
+  onEdit: (id: number) => void
+  onDelete: (id: number) => void
+  isDeleting?: boolean
+}
 
 interface ShiftDetailsScreenProps {
   shift: Shift | null
@@ -26,6 +33,7 @@ interface ShiftDetailsScreenProps {
   isApplied: boolean
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isLoading?: boolean
+  ownerActions?: ShiftDetailsOwnerActions
 }
 
 export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
@@ -39,9 +47,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     isApplied,
     onCancel,
     isLoading = false,
+    ownerActions,
   } = props
 
   const { t } = useTranslation()
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const { getEmployeePositionLabel } = useLabels()
   const { hourlyRate, shiftTypeLabel, vacancyTitle, positionLabel } = useShiftDetails(
     shift,
@@ -59,7 +69,77 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     t,
   })
 
+  const handleEdit = useCallback(() => {
+    if (shift) ownerActions?.onEdit(shift.id)
+  }, [ownerActions, shift])
+
+  const handleDeleteRequest = useCallback(() => {
+    setConfirmOpen(true)
+  }, [])
+
+  const confirmDelete = useCallback(() => {
+    if (shift) ownerActions?.onDelete(shift.id)
+    setConfirmOpen(false)
+  }, [ownerActions, shift])
+
   if (!shift) return null
+
+  const ownerFooter =
+    controller.isOwner && ownerActions ? (
+      <DrawerFooter className="shrink-0 border-border/30">
+        <div className="flex gap-4">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handleDeleteRequest}
+            disabled={ownerActions.isDeleting}
+            className="flex-1"
+          >
+            {ownerActions.isDeleting ? t('common.deleting', { defaultValue: 'Удаление...' }) : t('common.delete')}
+          </Button>
+          <Button
+            variant="gradient"
+            size="lg"
+            onClick={handleEdit}
+            disabled={ownerActions.isDeleting}
+            className="flex-1"
+          >
+            {t('common.edit')}
+          </Button>
+        </div>
+      </DrawerFooter>
+    ) : null
+
+  const applicantFooter =
+    !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
+      <DrawerFooter className="shrink-0 border-border/30">
+        <div className="flex gap-4">
+          {isApplied ? (
+            <Button
+              onClick={controller.handleCancel}
+              disabled={isLoading}
+              variant="outline"
+              size="md"
+              className="flex-1"
+            >
+              {isLoading ? t('shift.cancelling') : t('shift.cancelApplication')}
+            </Button>
+          ) : (
+            <Button
+              variant="gradient"
+              size="lg"
+              onClick={controller.handleApply}
+              disabled={isLoading}
+              className="flex-1"
+            >
+              {isLoading
+                ? t('shift.sending')
+                : t('shift.applyNow', { defaultValue: 'Откликнуться' })}
+            </Button>
+          )}
+        </div>
+      </DrawerFooter>
+    ) : null
 
   return (
     <>
@@ -72,37 +152,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         onClose={controller.handleClose}
         closeAriaLabel={t('common.close')}
         title={shiftTypeLabel || t('shift.shift', { defaultValue: 'Смена' })}
-        footer={
-          !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
-            <DrawerFooter className="shrink-0 border-border/30">
-              <div className="flex gap-4">
-                {isApplied ? (
-                  <Button
-                    onClick={controller.handleCancel}
-                    disabled={isLoading}
-                    variant="outline"
-                    size="md"
-                    className="flex-1"
-                  >
-                    {isLoading ? t('shift.cancelling') : t('shift.cancelApplication')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="gradient"
-                    size="lg"
-                    onClick={controller.handleApply}
-                    disabled={isLoading}
-                    className="flex-1"
-                  >
-                    {isLoading
-                      ? t('shift.sending')
-                      : t('shift.applyNow', { defaultValue: 'Откликнуться' })}
-                  </Button>
-                )}
-              </div>
-            </DrawerFooter>
-          ) : null
-        }
+        footer={ownerFooter ?? applicantFooter}
       >
         {controller.showTabs ? (
           <Tabs
@@ -177,6 +227,16 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           controller.setSelectedApplicantId(null)
           controller.setSelectedApplicantApplicationId(null)
         }}
+      />
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title={t('shift.deleteConfirmTitle')}
+        description={t('shift.deleteConfirmDesc')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('common.delete')}
+        onConfirm={confirmDelete}
       />
     </>
   )

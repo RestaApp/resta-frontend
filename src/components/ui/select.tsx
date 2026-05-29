@@ -129,12 +129,14 @@ export const Select = memo(function Select({
         })
       }
 
-      // initial
+      // initial + delayed recalc to handle auto-scroll from focus
       throttledUpdate()
+      const delayedId = setTimeout(updatePosition, 100)
       window.addEventListener('resize', throttledUpdate)
       window.addEventListener('scroll', throttledUpdate, true)
 
       return () => {
+        clearTimeout(delayedId)
         window.removeEventListener('resize', throttledUpdate)
         window.removeEventListener('scroll', throttledUpdate, true)
         if (rafId !== null) cancelAnimationFrame(rafId)
@@ -147,7 +149,7 @@ export const Select = memo(function Select({
     if (!isOpen || !searchable) return
     let rafId: number | null = null
     rafId = requestAnimationFrame(() => {
-      searchInputRef.current?.focus()
+      searchInputRef.current?.focus({ preventScroll: true })
       rafId = null
     })
     return () => {

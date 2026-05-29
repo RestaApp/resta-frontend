@@ -4,7 +4,6 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
-import { isPromise } from '@/utils/promise'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import { mapEmployeeSubRolesFromApi } from '../utils/mappers'
 
@@ -62,11 +61,7 @@ export const useEmployeeSubRoleSelector = ({
     }
 
     try {
-      const result = onContinue(finalFormData)
-
-      if (isPromise<boolean | void>(result)) {
-        await result
-      }
+      await onContinue(finalFormData)
     } catch (error) {
       console.error('Ошибка при сохранении:', error)
     }

@@ -60,15 +60,11 @@ export interface RoleOption {
   id: UiRole
   title: string
   description: string
-  icon: React.ComponentType<{ className?: string }>
-  color: string
 }
 
 export interface EmployeeSubRole {
   id: EmployeeRole
   title: string
   description: string
-  icon: React.ComponentType<{ className?: string }>
-  color: string
   originalValue?: string
 }

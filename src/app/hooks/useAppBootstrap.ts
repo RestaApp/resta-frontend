@@ -42,6 +42,7 @@ export function useAppBootstrap() {
   /** Инкремент при popstate — пересчёт экрана из актуального pathname */
   const [browserHistoryTick, setBrowserHistoryTick] = useState(0)
   const logoutTimerRef = useRef<number | null>(null)
+  const initialScreenRef = useRef(true)
 
   // После logout кратко показываем LoadingPage, чтобы избежать резкого перехода на RoleSelector.
   useEffect(() => {
@@ -81,7 +82,12 @@ export function useAppBootstrap() {
     if (!selectedRole || typeof window === 'undefined') return
     const expectedPath = getPathForScreen(selectedRole, currentScreen)
     if (window.location.pathname !== expectedPath) {
-      window.history.replaceState(null, '', expectedPath)
+      if (initialScreenRef.current) {
+        window.history.replaceState(null, '', expectedPath)
+        initialScreenRef.current = false
+      } else {
+        window.history.pushState(null, '', expectedPath)
+      }
     }
   }, [currentScreen, selectedRole])
 

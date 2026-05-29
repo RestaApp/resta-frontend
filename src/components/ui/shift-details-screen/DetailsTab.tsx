@@ -84,7 +84,15 @@ export const DetailsTab = memo(
     t,
   }: DetailsTabProps) => {
     const displayDuration = normalizeDuration(duration)
-    const displayLocation = locationPoints[0] ?? shift.location?.[0] ?? ''
+    const rawLocation = locationPoints[0] ?? shift.location?.[0] ?? ''
+    const displayLocation = (() => {
+      if (!rawLocation) return shift.city ?? ''
+      const street = rawLocation.replace(/^Минск,\s*/i, '')
+      if (shift.city && !rawLocation.toLowerCase().startsWith(shift.city.toLowerCase())) {
+        return `${shift.city}, ${street}`
+      }
+      return street
+    })()
     const distance = formatDistanceKm(shift.distanceKm)
     const payValue =
       pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : formatMoney(Number(pay))

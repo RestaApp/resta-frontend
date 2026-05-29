@@ -22,7 +22,6 @@ export const PersonalShiftCard = ({
       feedCardProps={{
         onApply: () => {},
         onCancel: () => {},
-        ownerActions: { onEdit, onDelete, isDeleting },
       }}
       detailsProps={{
         applicationId: null,
@@ -31,6 +30,7 @@ export const PersonalShiftCard = ({
         onCancel: async () => {},
         isLoading: false,
       }}
+      ownerActions={{ onEdit, onDelete, isDeleting }}
     />
   )
 }

@@ -1,4 +1,7 @@
-import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
+import {
+  ShiftDetailsScreen,
+  type ShiftDetailsOwnerActions,
+} from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
 import type { Shift } from '@/features/feed/model/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
@@ -12,6 +15,7 @@ interface FeedDetailsProps {
   onOpenRestaurant: (restaurantId: number) => void
   onApply: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
+  ownerActions?: ShiftDetailsOwnerActions
 }
 
 export function FeedDetails({
@@ -24,6 +28,7 @@ export function FeedDetails({
   onOpenRestaurant,
   onApply,
   onCancel,
+  ownerActions,
 }: FeedDetailsProps) {
   return (
     <ShiftDetailsScreen
@@ -37,6 +42,7 @@ export function FeedDetails({
       onCancel={onCancel}
       isApplied={isApplied}
       isLoading={isLoading}
+      ownerActions={ownerActions}
     />
   )
 }

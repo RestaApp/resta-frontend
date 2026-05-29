@@ -2,18 +2,15 @@ import { useCallback, useMemo, useState, type ComponentProps } from 'react'
 import { useGetShiftByIdQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/features/feed/model/types'
 import { FeedCard, type ShiftCardProps } from '@/components/ui/shift-card/ShiftCard'
-import { ShiftDetailsScreen } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
+import {
+  ShiftDetailsScreen,
+  type ShiftDetailsOwnerActions,
+} from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
 
 type ShiftDetailsBindings = Partial<
   Pick<
     ShiftCardProps,
-    | 'isApplied'
-    | 'applicationId'
-    | 'applicationStatus'
-    | 'onApply'
-    | 'onCancel'
-    | 'isLoading'
-    | 'ownerActions'
+    'isApplied' | 'applicationId' | 'applicationStatus' | 'onApply' | 'onCancel' | 'isLoading'
   >
 >
 
@@ -27,6 +24,7 @@ interface VacancyCardWithDetailsProps {
   mapToShift: (vacancy: VacancyApiItem) => Shift
   feedCardProps?: ShiftDetailsBindings
   detailsProps: ShiftDetailsScreenBindings
+  ownerActions?: ShiftDetailsOwnerActions
 }
 
 export const VacancyCardWithDetails = ({
@@ -34,6 +32,7 @@ export const VacancyCardWithDetails = ({
   mapToShift,
   feedCardProps,
   detailsProps,
+  ownerActions,
 }: VacancyCardWithDetailsProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const { data: detailVacancy } = useGetShiftByIdQuery(String(vacancy.id), {
@@ -91,6 +90,7 @@ export const VacancyCardWithDetails = ({
         {...restDetailsProps}
         onApply={handleDetailsApply}
         onCancel={handleDetailsCancel}
+        ownerActions={ownerActions}
       />
     </>
   )

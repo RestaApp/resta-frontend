@@ -30,10 +30,7 @@ const ROLE_EMOJI: Record<UiRole, string> = {
 interface RoleCardProps {
   role: RoleOption
   isSelected: boolean
-  index: number
   onSelect: (roleId: UiRole) => void
-  showPopularBadge?: boolean
-  socialProof?: string
 }
 
 function defaultSocialProofFromI18n(
@@ -56,22 +53,14 @@ export const RoleCard = memo(function RoleCard({
   role,
   isSelected,
   onSelect,
-  showPopularBadge = false,
-  socialProof,
 }: RoleCardProps) {
   const { t } = useTranslation()
-  const proof = socialProof ?? defaultSocialProofFromI18n(role.id, t)
+  const proof = defaultSocialProofFromI18n(role.id, t)
   const emoji = ROLE_EMOJI[role.id] ?? '👤'
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
 
   return (
     <div className="relative">
-      {showPopularBadge ? (
-        <span className="absolute -top-2 left-3 z-10 inline-flex items-center rounded-[4px] bg-primary px-2 py-1 font-mono-resta text-xs font-semibold uppercase tracking-wider text-white">
-          {t('roles.mostPopularBadge', { defaultValue: 'Популярно' })}
-        </span>
-      ) : null}
-
       <motion.button
         type="button"
         whileTap={{ scale: 0.985 }}
@@ -81,7 +70,6 @@ export const RoleCard = memo(function RoleCard({
         data-haptic="selection"
         className={cn(
           'flex w-full flex-col gap-2 rounded-lg border p-3 text-left transition-all duration-150',
-          showPopularBadge ? 'pt-5' : '',
           isSelected
             ? 'border-primary bg-primary/14'
             : 'border-border bg-card hover:border-foreground/20'

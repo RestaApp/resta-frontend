@@ -51,9 +51,6 @@ export function FeedBody({ vm }: FeedBodyProps) {
               onApplyWithModal={vm.handleApplyWithModal}
               onCancel={vm.handleCancel}
               isShiftLoading={vm.isShiftLoading}
-              onEdit={vm.handleEdit}
-              onDelete={vm.handleDelete}
-              isDeleting={vm.isDeleting}
             />
           </FeedListArea>
         </div>
@@ -77,6 +74,11 @@ export function FeedBody({ vm }: FeedBodyProps) {
           onOpenRestaurant={vm.openRestaurantDetails}
           onApply={vm.handleApplyWithModal}
           onCancel={vm.handleCancel}
+          ownerActions={{
+            onEdit: vm.handleEdit,
+            onDelete: vm.handleDelete,
+            isDeleting: vm.isDeleting,
+          }}
         />
       ) : null}
 

@@ -16,9 +16,6 @@ interface FeedListProps {
   onApplyWithModal: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isShiftLoading: (id: number) => boolean
-  onEdit: (id: number) => void
-  onDelete: (id: number) => Promise<void>
-  isDeleting: boolean
 }
 
 export function FeedList({
@@ -32,19 +29,7 @@ export function FeedList({
   onApplyWithModal,
   onCancel,
   isShiftLoading,
-  onEdit,
-  onDelete,
-  isDeleting,
 }: FeedListProps) {
-  const ownerActions = useMemo(
-    () => ({
-      onEdit,
-      onDelete,
-      isDeleting,
-    }),
-    [onEdit, onDelete, isDeleting]
-  )
-
   const sortedShifts = useMemo(() => {
     if (!shifts.length) return shifts
 
@@ -77,7 +62,6 @@ export function FeedList({
           onApply={onApplyWithModal}
           onCancel={onCancel}
           isLoading={isShiftLoading(shift.id)}
-          ownerActions={ownerActions}
         />
       ))}
 

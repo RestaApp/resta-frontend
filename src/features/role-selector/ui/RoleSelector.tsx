@@ -90,12 +90,11 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         bottomSpace={vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : undefined}
       >
         <div className="flex flex-col gap-2">
-          {vm.mainRoles.map((role, index) => (
+          {vm.mainRoles.map(role => (
             <RoleCard
               key={role.id}
               role={role}
               isSelected={vm.selectedRole === role.id}
-              index={index}
               onSelect={vm.handleRoleSelect}
             />
           ))}

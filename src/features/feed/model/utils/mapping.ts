@@ -202,6 +202,7 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     canApply: false,
     applicationsCount: item.applications_count ?? 0,
     isMine: true,
+    city: getCityFromUser(item) ?? null,
   }
 }
 

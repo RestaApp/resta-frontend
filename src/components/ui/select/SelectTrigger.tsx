@@ -62,7 +62,7 @@ export const SelectTrigger = ({
             INPUT_FIELD_DISABLED_CLASS,
             'flex h-11 items-center px-4 py-3 pr-10 text-base transition-all',
             'border-border/50',
-            isOpen && 'border-primary ring-2 ring-primary/20'
+            isOpen && 'border-primary'
           )}
         />
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 shrink-0 text-muted-foreground transition-transform rotate-180 pointer-events-none" />
@@ -88,7 +88,7 @@ export const SelectTrigger = ({
         INPUT_FIELD_DISABLED_CLASS,
         'flex h-11 items-center justify-between px-4 py-3 text-base transition-all',
         'border-border/50',
-        isOpen && 'border-primary ring-2 ring-primary/20',
+        isOpen && 'border-primary',
         !value && 'text-muted-foreground'
       )}
     >

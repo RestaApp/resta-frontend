@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { Card } from '@/components/ui/card'
 import { SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/utils/cn'
@@ -11,17 +10,12 @@ type ProfileHeroUser = {
   location?: string[] | null
   username?: string | null
   average_rating?: number | string | null
-  employee_profile?: {
-    open_to_work?: boolean | null
-  } | null
 }
 
 interface ProfileHeroProps {
   userProfile: ProfileHeroUser
   userName: string
   roleLabel: string
-  /** В drawer профиля кандидата — без карточки, только контент */
-  wrapInCard?: boolean
 }
 
 const getInitials = (name: string) => {
@@ -43,7 +37,7 @@ const normalizeRating = (value: number | string | null | undefined) => {
 }
 
 export const ProfileHero = memo(
-  ({ userProfile, userName, roleLabel, wrapInCard = true }: ProfileHeroProps) => {
+  ({ userProfile, userName, roleLabel }: ProfileHeroProps) => {
     const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
     const firstLocation = userProfile.location?.find(line => line.trim().length > 0)
     const cityOrLocation = userProfile.city || firstLocation
@@ -94,11 +88,7 @@ export const ProfileHero = memo(
       </div>
     )
 
-    return wrapInCard ? (
-      <Card className="border-transparent bg-transparent p-0">{content}</Card>
-    ) : (
-      <div className="relative py-1">{content}</div>
-    )
+    return <div className="relative py-1">{content}</div>
   }
 )
 ProfileHero.displayName = 'ProfileHero'

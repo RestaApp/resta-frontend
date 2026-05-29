@@ -153,7 +153,5 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     handleRoleContinue,
     handleTelegramContinue,
     handleBack,
-    setShowEmployeeSubRoles,
-    setShowRestaurantFormats,
   }
 }

@@ -1,12 +1,10 @@
-import { memo, useCallback, useMemo, useState } from 'react'
-import type { KeyboardEvent, MouseEvent } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
-import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 import { cn } from '@/utils/cn'
 import { firstLocation } from '@/shared/utils/location'
 import type { ShiftStatus } from '../StatusPill'
@@ -25,12 +23,6 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-
-interface ShiftCardOwnerActions {
-  onEdit: (id: number) => void
-  onDelete: (id: number) => void
-  isDeleting?: boolean
-}
 
 const formatDistanceKm = (distanceKm?: number | null): string | null => {
   if (distanceKm == null || !Number.isFinite(distanceKm) || distanceKm <= 0) return null
@@ -99,15 +91,13 @@ export interface ShiftCardProps {
   onApply: (id: number) => void
   onCancel: (applicationId: number | null | undefined, shiftId: number) => void
   isLoading?: boolean
-  ownerActions?: ShiftCardOwnerActions
 }
 export type FeedCardProps = ShiftCardProps
 
-const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardProps) => {
+const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
   const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const currentUserId = useCurrentUserId()
-  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const isOwner = useMemo(
     () => shift.isMine === true || Boolean(shift.ownerId && shift.ownerId === currentUserId),
@@ -124,9 +114,13 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
 
   const locationText = useMemo(() => {
     const first = firstLocation(shift.location)
-    if (!first) return ''
-    return first.replace(/^Минск,\s*/i, '')
-  }, [shift.location])
+    if (!first) return shift.city ?? ''
+    const street = first.replace(/^Минск,\s*/i, '')
+    if (shift.city && !first.toLowerCase().startsWith(shift.city.toLowerCase())) {
+      return `${shift.city}, ${street}`
+    }
+    return street
+  }, [shift.location, shift.city])
 
   const isVacancyCard = shift.shiftType === 'vacancy' || shift.payPeriod === 'month'
 
@@ -151,24 +145,6 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
     },
     [handleOpen]
   )
-
-  const handleEdit = useCallback(
-    (event: MouseEvent) => {
-      event.stopPropagation()
-      ownerActions?.onEdit(shift.id)
-    },
-    [ownerActions, shift.id]
-  )
-
-  const handleDelete = (event: MouseEvent) => {
-    event.stopPropagation()
-    setConfirmOpen(true)
-  }
-
-  const confirmDelete = () => {
-    ownerActions?.onDelete(shift.id)
-    setConfirmOpen(false)
-  }
 
   const responses = useMemo(() => {
     if (!isOwner) return null
@@ -242,33 +218,14 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
 
       <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0')}>
         {compactSchedule ? <span className="shrink-0">⏱ {compactSchedule}</span> : null}
-        {locationMeta ? <span className="min-w-20 flex-1 truncate">📍 {locationMeta}</span> : null}
         {compactApplications ? (
-          <span className="shrink-0 text-muted-foreground">👤 {compactApplications}</span>
+          <span className="ml-auto shrink-0 text-muted-foreground">👤 {compactApplications}</span>
         ) : null}
       </div>
-
-      {isOwner && ownerActions ? (
-        <div className="flex justify-end border-t border-border/40 pt-3">
-          <ShiftOwnerActions
-            editLabel={t('common.edit')}
-            deleteLabel={t('common.delete')}
-            isDeleting={ownerActions.isDeleting}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </div>
+      {locationMeta ? (
+        <span className="truncate font-mono text-xs tracking-wide text-muted-foreground">📍 {locationMeta}</span>
       ) : null}
 
-      <ConfirmDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title={t('shift.deleteConfirmTitle')}
-        description={t('shift.deleteConfirmDesc')}
-        cancelLabel={t('common.cancel')}
-        confirmLabel={t('common.delete')}
-        onConfirm={confirmDelete}
-      />
     </div>
   )
 }
