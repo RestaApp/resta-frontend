@@ -35,6 +35,7 @@ export const Select = memo(function Select({
   const triggerInputRef = useRef<HTMLInputElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const didAutoScrollRef = useRef(false)
+  const addedPaddingRef = useRef<{ container: HTMLElement; original: string } | null>(null)
 
   useBodyScrollLock(isOpen)
 
@@ -110,17 +111,31 @@ export const Select = memo(function Select({
           ? false
           : spaceBelow < desiredDropdownHeight && spaceAbove > spaceBelow
 
-        // Внутри DrawerBody поднимаем поле (через scroll контейнера), чтобы
-        // у выпадающего списка было место показать минимум 5-6 опций.
         if (forceDropdownBelow && !opensUp && !didAutoScrollRef.current) {
           const deficit = desiredDropdownHeight - spaceBelow
           if (deficit > 0) {
             if (scrollContainer instanceof HTMLElement) {
+              const neededScroll = deficit + 24
               const remainingScroll =
                 scrollContainer.scrollHeight -
                 scrollContainer.clientHeight -
                 scrollContainer.scrollTop
-              const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
+
+              if (remainingScroll < neededScroll) {
+                const extra = neededScroll - remainingScroll
+                addedPaddingRef.current = {
+                  container: scrollContainer,
+                  original: scrollContainer.style.paddingBottom,
+                }
+                const current = parseFloat(window.getComputedStyle(scrollContainer).paddingBottom) || 0
+                scrollContainer.style.paddingBottom = `${current + extra}px`
+              }
+
+              const updatedRemaining =
+                scrollContainer.scrollHeight -
+                scrollContainer.clientHeight -
+                scrollContainer.scrollTop
+              const scrollDelta = Math.min(neededScroll, Math.max(updatedRemaining, 0))
               if (scrollDelta > 0) {
                 didAutoScrollRef.current = true
                 scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
@@ -195,6 +210,11 @@ export const Select = memo(function Select({
   useEffect(() => {
     if (!isOpen) {
       didAutoScrollRef.current = false
+      if (addedPaddingRef.current) {
+        const { container, original } = addedPaddingRef.current
+        container.style.paddingBottom = original
+        addedPaddingRef.current = null
+      }
     }
   }, [isOpen])
 

@@ -80,7 +80,7 @@ const AdvancedFiltersSheet = ({
         </div>
       </DrawerHeader>
 
-      <DrawerBody className="flex flex-col gap-3 pb-28">
+      <DrawerBody className="flex flex-col gap-3">
         {c.positions.length > 0 ? (
           <div className="flex flex-col gap-2">
             <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.sectionPosition')}</p>

@@ -4,6 +4,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
+import { logger } from '@/utils/logger'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import { mapEmployeeSubRolesFromApi } from '../utils/mappers'
 
@@ -63,7 +64,7 @@ export const useEmployeeSubRoleSelector = ({
     try {
       await onContinue(finalFormData)
     } catch (error) {
-      console.error('Ошибка при сохранении:', error)
+      logger.error('Ошибка при сохранении:', error)
     }
   }, [selectedSpecializations, onContinue])
 
