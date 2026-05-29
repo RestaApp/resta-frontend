@@ -96,7 +96,7 @@ export function ApplyCoverLetterModal({
         <Button
           onClick={handleSubmit}
           variant="gradient"
-          size="lg"
+          size="md"
           className="w-full"
           disabled={isSubmitting}
         >

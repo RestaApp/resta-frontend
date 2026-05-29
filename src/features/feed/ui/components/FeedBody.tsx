@@ -1,9 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import { Toast } from '@/components/ui/toast'
 import { AdvancedFilters } from '@/features/feed/ui/components/AdvancedFilters'
 import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
 import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
-import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDialog'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { ApplicationSuccessOverlay } from '@/features/feed/ui/components/ApplicationSuccessOverlay'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
@@ -14,6 +15,7 @@ interface FeedBodyProps {
 }
 
 export function FeedBody({ vm }: FeedBodyProps) {
+  const { t } = useTranslation()
   const isEmpty = vm.filteredShifts.length === 0
   const showEmptyState =
     isEmpty &&
@@ -82,10 +84,16 @@ export function FeedBody({ vm }: FeedBodyProps) {
         onSubmit={vm.submitApplyCoverModal}
       />
 
-      <ProfileAlertDialog
-        state={vm.profileAlert}
-        onClose={vm.closeProfileAlert}
-        onOpenProfileEdit={vm.openProfileEdit}
+      <ConfirmDialog
+        open={vm.profileAlert.open}
+        onOpenChange={open => {
+          if (!open) vm.closeProfileAlert()
+        }}
+        title={t('feed.applicationNotSent')}
+        description={vm.profileAlert.message}
+        cancelLabel={t('common.close')}
+        confirmLabel={t('common.openProfile')}
+        onConfirm={vm.openProfileEdit}
       />
 
       <ApplicationSuccessOverlay

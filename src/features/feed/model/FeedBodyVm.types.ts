@@ -1,7 +1,5 @@
 import type { useFeedPageModel } from './hooks/useFeedPageModel'
 
-export type ProfileAlertState = ReturnType<typeof useFeedPageModel>['profileAlert']
-
 /** View-model для FeedBody — подмножество полей useFeedPageModel. */
 export type FeedBodyVm = Pick<
   ReturnType<typeof useFeedPageModel>,

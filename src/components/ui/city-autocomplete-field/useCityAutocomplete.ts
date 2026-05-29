@@ -1,12 +1,8 @@
-/**
- * Хук для управления бизнес-логикой поля выбора города
- */
-
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCities } from '@/hooks/useCities'
 
-interface UseLocationFieldProps {
+interface UseCityAutocompleteProps {
   value: string
   onChange: (value: string) => void
   initialVisibleCount?: number
@@ -20,13 +16,13 @@ interface ValidationResult {
   normalizedValue?: string
 }
 
-export const useLocationField = ({
+export const useCityAutocomplete = ({
   value,
   onChange,
   initialVisibleCount = 10,
   loadMoreThreshold = 0.8,
   loadMoreStep = 10,
-}: UseLocationFieldProps) => {
+}: UseCityAutocompleteProps) => {
   const { t } = useTranslation()
   const [isFocused, setIsFocused] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -38,12 +34,10 @@ export const useLocationField = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // Загружаем города при фокусе на поле
   const { cities, isLoading: isLoadingCities } = useCities({
     enabled: isFocused,
   })
 
-  // Фильтруем города по введенному тексту
   const allFilteredCities = useMemo(() => {
     if (!value.trim()) {
       return cities
@@ -53,22 +47,17 @@ export const useLocationField = ({
     return cities.filter(city => city.toLowerCase().includes(searchTerm))
   }, [cities, value])
 
-  // Отображаем только видимые города (для подгрузки при скролле)
   const filteredCities = useMemo(() => {
     return allFilteredCities.slice(0, visibleCount)
   }, [allFilteredCities, visibleCount])
 
   const hasMore = allFilteredCities.length > visibleCount
 
-  /** Актуальная длина списка для обработчика скролла (без устаревшего замыкания). */
   const filteredTotalRef = useRef(0)
   useEffect(() => {
     filteredTotalRef.current = allFilteredCities.length
   }, [allFilteredCities.length])
 
-  // Подгрузка порциями при скролле. Зависимость от `showSuggestions`: при закрытии списка
-  // DOM снимается, а старый listener оставался на отсоединённом узле — новый список не подгружался.
-  // `isLoadingCities`: пока скелетон, `listRef` на скролл-контейнере ещё нет — подписаться после загрузки.
   useEffect(() => {
     if (!showSuggestions || !hasMore || isLoadingCities) return
 
@@ -100,7 +89,6 @@ export const useLocationField = ({
     isLoadingCities,
   ])
 
-  // Закрываем список при клике вне компонента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -115,7 +103,6 @@ export const useLocationField = ({
     }
   }, [])
 
-  // Валидация города
   const validateCity = useCallback(
     (cityValue: string): ValidationResult => {
       if (!cityValue.trim()) {
@@ -129,7 +116,6 @@ export const useLocationField = ({
       const exactMatch = cities.find(city => city.toLowerCase() === trimmedValue.toLowerCase())
 
       if (exactMatch) {
-        // Используем точное значение из списка (с правильным регистром)
         if (exactMatch !== trimmedValue) {
           onChange(exactMatch)
         }
@@ -140,7 +126,6 @@ export const useLocationField = ({
         }
       }
 
-      // Если остался только один вариант - используем его
       if (allFilteredCities.length === 1) {
         onChange(allFilteredCities[0])
         return {
@@ -150,7 +135,6 @@ export const useLocationField = ({
         }
       }
 
-      // Если есть варианты, но нет точного совпадения
       if (allFilteredCities.length > 0) {
         return {
           isValid: false,
@@ -158,7 +142,6 @@ export const useLocationField = ({
         }
       }
 
-      // Если нет вариантов вообще
       return {
         isValid: false,
         errorMessage: t('cityNotFound'),
@@ -175,7 +158,6 @@ export const useLocationField = ({
       }
       onChange(newValue)
       setShowSuggestions(true)
-      // Сбрасываем ошибку при вводе
       if (!isValid) {
         setIsValid(true)
         setErrorMessage(null)
@@ -187,18 +169,15 @@ export const useLocationField = ({
   const handleInputFocus = useCallback(() => {
     setIsFocused(true)
     setShowSuggestions(true)
-    // Сбрасываем ошибку при фокусе
     setIsValid(true)
     setErrorMessage(null)
   }, [])
 
   const handleInputBlur = useCallback(() => {
-    // Не закрываем сразу, чтобы можно было кликнуть на элемент списка
     setTimeout(() => {
       setShowSuggestions(false)
       setIsFocused(false)
 
-      // Валидация при потере фокуса
       if (value.trim()) {
         const validation = validateCity(value)
         setIsValid(validation.isValid)
@@ -223,7 +202,6 @@ export const useLocationField = ({
   const hasSuggestions = filteredCities.length > 0 && showSuggestions
 
   return {
-    // Состояние
     isFocused,
     showSuggestions,
     isValid,
@@ -232,16 +210,13 @@ export const useLocationField = ({
     hasSuggestions,
     hasMore,
 
-    // Данные
     filteredCities,
     allFilteredCities,
 
-    // Refs
     inputRef,
     containerRef,
     listRef,
 
-    // Обработчики
     handleInputChange,
     handleInputFocus,
     handleInputBlur,

@@ -50,7 +50,7 @@ export const OnboardingSection = memo(function OnboardingSection({
     <section className={cn('flex w-full max-w-md flex-col gap-2', className)}>
       <div className="flex items-center justify-between gap-2">
         <div className={META_MONO_CLASS}>{label}</div>
-        {hint ? <div className="text-sm text-muted-foreground">{hint}</div> : null}
+        {hint ? <div className="text-xs text-muted-foreground">{hint}</div> : null}
       </div>
       {children}
     </section>

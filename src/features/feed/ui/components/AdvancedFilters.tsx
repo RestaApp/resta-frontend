@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
-import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
+import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
@@ -124,7 +124,7 @@ const AdvancedFiltersSheet = ({
 
         <div className="flex flex-col gap-2">
           <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.sectionCity')}</p>
-          <LocationField
+          <CityAutocompleteField
             value={c.selectedCity}
             onChange={c.setSelectedCity}
             onLocationRequest={() => undefined}

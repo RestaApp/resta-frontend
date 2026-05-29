@@ -38,7 +38,7 @@ export const OnboardingBottomCta = memo(function OnboardingBottomCta({
         loading={loading}
         disabled={disabled}
         variant="gradient"
-        size="lg"
+        size="md"
         className={cn('w-full', SHADOW_MODAL_CLASS, 'disabled:opacity-40', className)}
         aria-label={ariaLabel}
       >

@@ -88,7 +88,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         <div className="flex gap-4">
           <Button
             variant="outline"
-            size="lg"
+            size="md"
             onClick={handleDeleteRequest}
             disabled={ownerActions.isDeleting}
             className="flex-1"
@@ -97,7 +97,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           </Button>
           <Button
             variant="gradient"
-            size="lg"
+            size="md"
             onClick={handleEdit}
             disabled={ownerActions.isDeleting}
             className="flex-1"

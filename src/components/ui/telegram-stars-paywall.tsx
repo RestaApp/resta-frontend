@@ -106,7 +106,7 @@ export const TelegramStarsPaywall = ({
                 <div
                   className={cn(
                     META_MONO_CLASS,
-                    plan.highlighted ? 'text-warning' : 'text-muted-foreground'
+                    plan.highlighted ? 'text-stars' : 'text-muted-foreground'
                   )}
                 >
                   {plan.period}
@@ -121,7 +121,7 @@ export const TelegramStarsPaywall = ({
                   className={cn(
                     PRICE_EMPHASIS_CLASS,
                     'inline-flex items-center gap-1',
-                    plan.highlighted ? 'text-warning' : 'text-foreground'
+                    plan.highlighted ? 'text-stars' : 'text-foreground'
                   )}
                 >
                   <Star className="h-4 w-4 fill-current" />
@@ -149,7 +149,7 @@ export const TelegramStarsPaywall = ({
       </Card>
 
       <Button
-        size="lg"
+        size="md"
         variant="stars"
         onClick={() => onPay(selectedPlan)}
         loading={isPaying}

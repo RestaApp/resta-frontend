@@ -70,7 +70,7 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
                 onToggle={group.onToggle}
                 getLabel={group.getLabel}
                 getAriaLabel={group.getAriaLabel}
-                size="lg"
+                size="md"
               />
             ) : group.emptyText ? (
               <div className="text-sm text-muted-foreground">{group.emptyText}</div>

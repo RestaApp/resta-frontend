@@ -1,7 +1,3 @@
-/**
- * Поле выбора города с автодополнением
- */
-
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin } from 'lucide-react'
@@ -11,21 +7,19 @@ import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
 import { useDropdownAutoScroll } from '@/components/ui/select/useDropdownAutoScroll'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
-import { useLocationField } from '../../../../model/useLocationField'
+import { useCityAutocomplete } from './useCityAutocomplete'
 
-interface LocationFieldProps {
+interface CityAutocompleteFieldProps {
   value: string
   onChange: (value: string) => void
   onLocationRequest: () => void
   showLocationButton?: boolean
   isLoading?: boolean
-  /** Очищать поле при фокусе (например, в фильтрах) */
   clearOnFocus?: boolean
-  /** Не показывать подпись (заголовок задаётся снаружи, напр. в фильтрах) */
   hideLabel?: boolean
 }
 
-export const LocationField = memo(function LocationField({
+export const CityAutocompleteField = memo(function CityAutocompleteField({
   value,
   onChange,
   onLocationRequest,
@@ -33,7 +27,7 @@ export const LocationField = memo(function LocationField({
   isLoading = false,
   clearOnFocus = false,
   hideLabel = false,
-}: LocationFieldProps) {
+}: CityAutocompleteFieldProps) {
   const { t } = useTranslation()
   const {
     isValid,
@@ -48,7 +42,7 @@ export const LocationField = memo(function LocationField({
     handleInputFocus,
     handleInputBlur,
     handleCitySelect,
-  } = useLocationField({
+  } = useCityAutocomplete({
     value,
     onChange,
   })

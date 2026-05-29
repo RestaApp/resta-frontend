@@ -76,4 +76,3 @@ export const firstLocation = (locations: string[] | null | undefined): string | 
 export const sanitizeLocations = (locations: string[]): string[] => {
   return locations.map(line => line.trim()).filter(Boolean)
 }
-

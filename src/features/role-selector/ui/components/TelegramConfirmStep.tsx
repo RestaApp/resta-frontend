@@ -2,7 +2,7 @@ import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pencil } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { LocationField } from './subroles/shared/LocationField'
+import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { Card } from '@/components/ui/card'
 import { OnboardingSection, OnboardingStepLayout } from './OnboardingStepLayout'
 import { useAppSelector } from '@/store/hooks'
@@ -128,7 +128,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
 
       <OnboardingSection label={t('onboarding.telegram.cityLabel')} className="mt-3">
         <div className="w-full">
-          <LocationField
+          <CityAutocompleteField
             value={selectedCity}
             onChange={value => {
               setSelectedCity(value)
