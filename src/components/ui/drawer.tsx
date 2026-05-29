@@ -146,7 +146,7 @@ const DrawerContent = memo(function DrawerContent({
         dragMomentum={false}
         onDragEnd={handleDragEnd}
         className={cn(
-          'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col min-h-0 overflow-y-auto overscroll-contain',
+          'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col min-h-0 overflow-hidden',
           'rounded-t-2xl border-t border-border bg-background shadow-[var(--shadow-modal)] dark:shadow-none',
           'dark:bg-card border-t-border',
           className

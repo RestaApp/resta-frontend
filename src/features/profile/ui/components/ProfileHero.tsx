@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { DISPLAY_PRICE_CLASS, HERO_TITLE_CLASS, SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/utils/cn'
 
@@ -53,9 +53,7 @@ export const ProfileHero = memo(
             {photoUrl ? (
               <img src={photoUrl} alt={userName} className="h-full w-full object-cover" />
             ) : (
-              <span className="text-4xl font-extrabold tracking-tight text-white">
-                {getInitials(userName)}
-              </span>
+              <span className={cn(HERO_TITLE_CLASS, 'text-white')}>{getInitials(userName)}</span>
             )}
           </div>
 
@@ -79,9 +77,7 @@ export const ProfileHero = memo(
             aria-label={`Рейтинг ${rating.toFixed(1)}`}
           >
             <div className="flex h-full w-full items-center justify-center rounded-full bg-background">
-              <span className="text-3xl font-extrabold tracking-tight text-foreground">
-                {rating.toFixed(1)}
-              </span>
+              <span className={DISPLAY_PRICE_CLASS}>{rating.toFixed(1)}</span>
             </div>
           </div>
         ) : null}

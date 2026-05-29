@@ -135,7 +135,7 @@ export const ApplicantsTab = memo(
                                   'h3 w3 shrink-0',
                                   normalizedRating >= i + 0.5
                                     ? 'fill-warning text-warning'
-                                    : 'fill-muted text-muted-foreground/40'
+                                    : 'fill-muted text-muted-foreground/30'
                                 )}
                               />
                             ))}

@@ -43,7 +43,7 @@ export const VenueActivityContent = ({
   return (
     <>
       <div
-        className="top-0 bg-background/95 backdrop-blur-sm transition-all border-border/50 ui-density-page ui-density-py-sm"
+        className="top-0 bg-background/92 backdrop-blur-sm transition-all border-border/50 ui-density-page ui-density-py-sm"
         style={{ zIndex: Z_INDEX.stickyHeader }}
       >
         <Tabs

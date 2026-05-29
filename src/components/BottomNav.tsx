@@ -94,7 +94,7 @@ export const BottomNav = ({
 
                 <span
                   className={cn(
-                    'text-xs font-semibold uppercase leading-none tracking-[0.04em] transition-colors',
+                    'text-xs font-semibold uppercase leading-none tracking-wider transition-colors',
                     isActive ? 'text-primary' : 'text-muted-foreground'
                   )}
                 >

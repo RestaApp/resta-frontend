@@ -78,7 +78,7 @@ function ApplyCoverLetterModalContent({
   }
 
   return (
-    <Drawer open onOpenChange={open => !open && onClose()} overlayClassName="bg-black/60">
+    <Drawer open onOpenChange={open => !open && onClose()} overlayClassName="bg-black/50">
       <DrawerHeader>
         <DrawerTitle>{t('shift.applyNow', { defaultValue: 'Откликнуться' })}</DrawerTitle>
         {shiftSummary ? <DrawerDescription>{shiftSummary}</DrawerDescription> : null}

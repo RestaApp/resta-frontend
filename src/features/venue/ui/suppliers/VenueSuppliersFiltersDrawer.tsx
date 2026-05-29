@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
 import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
+import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 
 interface VenueSuppliersFiltersDrawerProps {
@@ -114,7 +115,7 @@ export const VenueSuppliersFiltersDrawer = ({
 
         <DrawerBody className="ui-density-stack-lg">
           <div className="ui-density-stack-sm">
-            <p className="text-sm font-medium">{t('profile.city', { defaultValue: 'Город' })}</p>
+            <p className={PROFILE_SECTION_LABEL_CLASS}>{t('profile.city', { defaultValue: 'Город' })}</p>
             <CitySelect
               value={draftFilters.city}
               onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
@@ -127,7 +128,7 @@ export const VenueSuppliersFiltersDrawer = ({
           </div>
           {!isRestaurantsMode && (
             <div className="ui-density-stack-sm">
-              <p className="text-sm font-medium">
+              <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -163,7 +164,7 @@ export const VenueSuppliersFiltersDrawer = ({
 
           {!isRestaurantsMode && (
             <div className="ui-density-stack-sm">
-              <p className="text-sm font-medium">
+              <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.categories', { defaultValue: 'Категории услуг' })}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -185,7 +186,7 @@ export const VenueSuppliersFiltersDrawer = ({
 
           {!isRestaurantsMode && (
             <div className="ui-density-stack-sm">
-              <p className="text-sm font-medium">
+              <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.delivery', { defaultValue: 'Доставка' })}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -216,7 +217,7 @@ export const VenueSuppliersFiltersDrawer = ({
 
           {isRestaurantsMode && (
             <div className="ui-density-stack-sm">
-              <p className="text-sm font-medium">
+              <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('supplierUi.restaurants.filters.format', { defaultValue: 'Формат заведения' })}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -236,7 +237,7 @@ export const VenueSuppliersFiltersDrawer = ({
 
           {isRestaurantsMode && (
             <div className="ui-density-stack-sm">
-              <p className="text-sm font-medium">
+              <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('supplierUi.restaurants.filters.cuisines', { defaultValue: 'Кухни' })}
               </p>
               <div className="flex flex-wrap gap-2">

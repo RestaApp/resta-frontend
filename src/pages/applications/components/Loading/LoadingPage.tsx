@@ -29,7 +29,7 @@ export const LoadingPage = memo(function LoadingPage() {
 
       <div className="relative mb-8 size-22">
         <motion.div
-          className="absolute inset-0 grid place-items-center rounded-2xl text-[52px] font-extrabold text-white"
+          className="absolute inset-0 grid place-items-center rounded-2xl text-5xl font-extrabold text-white"
           style={{
             boxShadow: `0 24px 48px color-mix(in srgb, ${roleColorVar} 40%, transparent)`,
             background: `linear-gradient(135deg, ${roleColorVar}, color-mix(in srgb, ${roleColorVar} 75%, white))`,

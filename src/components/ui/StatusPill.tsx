@@ -26,7 +26,7 @@ const statusToClasses = (status: ShiftStatus): string => {
       return 'border-destructive/25 bg-destructive/8 text-destructive'
     case 'pending':
     case 'processing':
-      return 'border-primary/25 bg-primary/8 text-primary'
+      return 'border-primary/25 bg-primary/10 text-primary'
     default:
       return 'border-border bg-secondary/50 text-muted-foreground'
   }

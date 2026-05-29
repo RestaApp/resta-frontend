@@ -98,7 +98,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
           </button>
         )}
         <div className="mt-0.5 text-sm text-muted-foreground">{displayUsername}</div>
-        <div className="mt-2.5 font-mono-resta text-xs uppercase tracking-[0.08em] text-success">
+        <div className="mt-2.5 font-mono-resta text-xs uppercase tracking-widest text-success">
           {t('onboarding.telegram.connected')}
         </div>
       </Card>
@@ -142,7 +142,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
       </OnboardingSection>
 
-      <div role="note" className="mt-3 rounded-xl border border-primary bg-primary/8 px-3 py-2.5">
+      <div role="note" className="mt-3 rounded-xl border border-primary bg-primary/10 px-3 py-2.5">
         <div className="flex items-start gap-2">
           <span aria-hidden className="shrink-0 mt-0.5 text-sm text-primary">
             {ROLE_SHIELD_ICON[roleCategory]}

@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import type { LucideIcon } from 'lucide-react'
-import { HERO_TITLE_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
+import { SECTION_TITLE_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/utils/cn'
 import { Badge } from '@/components/ui/badge'
 
@@ -54,7 +54,7 @@ export const SectionHeader = function SectionHeader({
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn('flex flex-col gap-3', align === 'center' && 'text-center', className)}
     >
-      <h2 className={cn(HERO_TITLE_CLASS, titleClassName)}>{title}</h2>
+      <h2 className={cn(SECTION_TITLE_CLASS, titleClassName)}>{title}</h2>
       {description || hint ? (
         <div className="flex flex-col gap-1">
           {description ? (

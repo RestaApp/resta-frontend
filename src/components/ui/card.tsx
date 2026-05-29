@@ -55,7 +55,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
         PADDING_CLASSES[padding],
         emphasis && 'bg-elevated',
         status && STATUS_BORDER[status],
-        selected && 'border-primary/60 bg-primary/[0.06]',
+        selected && 'border-primary/60 bg-primary/10',
         pro && 'border-pro-border bg-[linear-gradient(160deg,var(--pro-soft),var(--card)_70%)]',
         className
       )}

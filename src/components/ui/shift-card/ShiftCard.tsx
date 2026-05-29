@@ -196,7 +196,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
         ) : null}
       </div>
       {locationMeta ? (
-        <span className="truncate font-mono text-xs tracking-wide text-muted-foreground">📍 {locationMeta}</span>
+        <span className="truncate font-mono-resta text-xs tracking-wide text-muted-foreground">📍 {locationMeta}</span>
       ) : null}
 
     </div>

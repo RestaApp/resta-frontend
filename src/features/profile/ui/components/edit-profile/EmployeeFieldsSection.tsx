@@ -6,6 +6,10 @@ import { RangeSlider } from '@/components/ui'
 import { Badge } from '@/components/ui/badge'
 import { FormField } from '@/components/ui/form-field'
 import { BLOCK_TITLE_CLASS, DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import {
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/utils/cn'
 import { formatExperienceText } from '@/utils/experience'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
@@ -65,9 +69,9 @@ export const EmployeeFieldsSection = memo(
           />
         </FormField>
         <div className={DRAWER_SETTING_ROW_CLASS}>
-          <div>
-            <p className="block text-sm font-medium mb-1">{t('profile.openToWork')}</p>
-            <p className="text-xs text-muted-foreground">{t('profile.openToWorkDescription')}</p>
+          <div className="min-w-0">
+            <p className={SHIFT_CARD_TITLE_CLASS}>{t('profile.openToWork')}</p>
+            <p className={SHIFT_CARD_SUB_CLASS}>{t('profile.openToWorkDescription')}</p>
           </div>
           <Switch
             checked={openToWork}

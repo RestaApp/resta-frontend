@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
+import { BODY_TEXT_CLASS, SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
 interface AddShiftOnboardingOverlayProps {
@@ -123,7 +123,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
         }}
       >
         <Card className={SHADOW_MODAL_CLASS}>
-          <p className="text-sm font-medium text-foreground">{resolvedTooltip}</p>
+          <p className={BODY_TEXT_CLASS}>{resolvedTooltip}</p>
           <div className="mt-3 flex justify-end">
             <Button variant="ghost" size="sm" onClick={onClose}>
               {t('common.understand')}

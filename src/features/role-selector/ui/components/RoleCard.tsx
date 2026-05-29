@@ -71,7 +71,7 @@ export const RoleCard = memo(function RoleCard({
         className={cn(
           'flex w-full flex-col gap-2 rounded-lg border p-3 text-left transition-all duration-150',
           isSelected
-            ? 'border-primary bg-primary/14'
+            ? 'border-primary bg-primary/15'
             : 'border-border bg-card hover:border-foreground/20'
         )}
       >

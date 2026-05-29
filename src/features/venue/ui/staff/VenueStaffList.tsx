@@ -186,7 +186,7 @@ export const VenueStaffList = ({
                       </div>
 
                       {isPending ? (
-                        <div className="flex gap-3 border-t border-border/40 pt-3">
+                        <div className="flex gap-3 border-t border-border/50 pt-3">
                           <Button
                             className="flex-1"
                             size="md"

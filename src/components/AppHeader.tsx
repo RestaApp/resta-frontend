@@ -167,7 +167,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className={cn(
-          'flex items-center bg-background/95 backdrop-blur-xl ui-density-page ui-density-py-sm',
+          'flex items-center bg-background/92 backdrop-blur-xl ui-density-page ui-density-py-sm',
           activeTab === 'profile' ? 'border-b border-transparent' : 'border-b border-border'
         )}
       >

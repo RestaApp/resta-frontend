@@ -19,7 +19,7 @@ export const FeedHeader = memo((props: Props) => {
 
   return (
     <div
-      className="top-0 border-border/50 bg-background/95 backdrop-blur-sm transition-all"
+      className="top-0 border-border/50 bg-background/92 backdrop-blur-sm transition-all"
       style={{ zIndex: Z_INDEX.stickyHeader }}
     >
       <div className="ui-density-page ui-density-py-sm">

@@ -24,7 +24,7 @@ export const ActivityHeader = memo(({ activeTab, onChange }: Props) => {
 
   return (
     <div
-      className="top-0 bg-background/95 backdrop-blur-sm transition-all border-border/50"
+      className="top-0 bg-background/92 backdrop-blur-sm transition-all border-border/50"
       style={{ zIndex: Z_INDEX.stickyHeader }}
     >
       <div className="ui-density-page ui-density-py-sm">

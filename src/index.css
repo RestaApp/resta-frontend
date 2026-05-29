@@ -165,13 +165,19 @@ textarea:focus-visible {
 @layer base {
   * {
     @apply border-border;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
   }
 
   html {
     font-size: var(--font-size);
     -webkit-tap-highlight-color: transparent;
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
+    background-color: var(--background);
   }
 
   body {
@@ -185,7 +191,7 @@ textarea:focus-visible {
     min-height: var(--tg-viewport-stable-height, 100dvh);
     height: 100%;
     width: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
@@ -262,13 +268,6 @@ textarea:focus-visible {
     font-size: 44px;
     font-weight: 900;
     letter-spacing: -0.045em;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
   }
   .ui-density-page {
     padding-left: var(--ui-density-page-x);

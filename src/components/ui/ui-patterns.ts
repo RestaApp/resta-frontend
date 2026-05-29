@@ -82,9 +82,6 @@ export const BODY_TEXT_CLASS = 'text-sm text-foreground'
 
 export const BODY_MUTED_CLASS = 'text-sm text-muted-foreground'
 
-/** @deprecated Используйте `SCREEN_TITLE_CLASS`. */
-export const APP_HEADER_TITLE_CLASS = SCREEN_TITLE_CLASS
-
 export const APP_HEADER_ACTION_BUTTON_CLASS =
   'h-12 w-12 min-w-12 rounded-sm p-0 flex-shrink-0 bg-transparent text-foreground hover:bg-transparent hover:text-foreground'
 
