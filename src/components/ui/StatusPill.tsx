@@ -23,7 +23,7 @@ const statusToClasses = (status: ShiftStatus): string => {
     case 'accepted':
       return 'border-success/25 bg-success/10 text-success'
     case 'rejected':
-      return 'border-destructive/25 bg-destructive/8 text-destructive'
+      return 'border-destructive/25 bg-destructive/10 text-destructive'
     case 'pending':
     case 'processing':
       return 'border-primary/25 bg-primary/10 text-primary'
