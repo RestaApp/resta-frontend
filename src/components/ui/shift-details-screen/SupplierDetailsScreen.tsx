@@ -26,8 +26,8 @@ export const SupplierDetailsScreen = memo(
     const locationText = useMemo(() => {
       if (!supplier) return ''
       const city = supplier.city.trim()
-      const location = supplier.location.trim()
-      if (location && location !== city) return location
+      const addresses = supplier.location.map(line => line.trim()).filter(Boolean)
+      if (addresses.length > 0) return addresses.join(', ')
       return city
     }, [supplier])
 

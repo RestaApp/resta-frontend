@@ -10,6 +10,11 @@ import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
 import { triggerHapticFeedback } from '@/utils/haptics'
 import { parseMoneyInput } from '@/features/feed/model/utils/formatting'
+import { normalizeCatalogPosition } from '@/utils/roles'
+import { sanitizeLocations } from '@/shared/utils/location'
+import { useUpdateUser } from '@/hooks/useUsers'
+import { useAppSelector } from '@/store/hooks'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 import { mapServerErrorsToFields, translateServerError } from '../utils/addShiftValidation'
 import type { AddShiftFormState } from './useAddShiftFormState'
 
@@ -19,6 +24,8 @@ interface UseAddShiftFormSubmissionOptions {
   onSave?: (shift: CreateShiftResponse | null) => void
   /** Pre-flight чек: false → submit отменён (не валидно). */
   canSubmit: () => boolean
+  /** Текущий city пользователя — если форменный отличается, заранее обновляем user.city. */
+  userCity?: string | null
 }
 
 interface ServerErrorBag {
@@ -73,11 +80,14 @@ export const useAddShiftFormSubmission = ({
   initialValues,
   onSave,
   canSubmit,
+  userCity,
 }: UseAddShiftFormSubmissionOptions) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
   const [updateShiftMutation] = useUpdateShiftMutation()
+  const { updateUser } = useUpdateUser()
+  const currentUser = useAppSelector(selectUserData)
 
   const applyServerErrors = useCallback(
     (errors: string[]) => {
@@ -121,13 +131,22 @@ export const useAddShiftFormSubmission = ({
             }
           : {}),
         payment: parseMoneyInput(state.pay) ?? undefined,
-        location: state.location,
+        location: sanitizeLocations(state.location),
+        city: state.city.trim() || undefined,
         requirements: state.requirements,
         shift_type: state.shiftType,
         urgent: state.urgent,
-        position: state.position,
+        position: normalizeCatalogPosition(state.position),
         specializations: state.specializations.length > 0 ? state.specializations : undefined,
       },
+    }
+
+    // Если форменный city отличается от сохранённого user.city — обновляем пользователя
+    // первым, чтобы бэкенд мог использовать его для фильтрации/валидации смены.
+    const formCity = state.city.trim()
+    const normalizedUserCity = (userCity ?? '').trim()
+    if (formCity && formCity !== normalizedUserCity && currentUser?.id) {
+      await updateUser(currentUser.id, { user: { city: formCity } })
     }
 
     try {
@@ -200,6 +219,9 @@ export const useAddShiftFormSubmission = ({
     showToast,
     applyServerErrors,
     t,
+    userCity,
+    currentUser,
+    updateUser,
   ])
 
   return { handleSave, isCreating }

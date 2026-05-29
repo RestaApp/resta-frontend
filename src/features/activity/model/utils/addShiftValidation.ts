@@ -5,7 +5,7 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 /** SRP: чистые функции валидации формы AddShift. Никаких React/Redux зависимостей. */
 
 export type AddShiftFieldErrors = Partial<
-  Record<'location' | 'requirements' | 'description' | 'specializations', string>
+  Record<'location' | 'city' | 'requirements' | 'description' | 'specializations', string>
 >
 
 export const validateTimeRange = (
@@ -142,6 +142,10 @@ export const mapServerErrorsToFields = (
     }
     if (lower.includes('requirements')) {
       fieldErrors.requirements = t('validation.requiredField')
+      continue
+    }
+    if (lower.includes('city') || lower.includes('город')) {
+      fieldErrors.city = t('validation.requiredField')
       continue
     }
     if (lower.includes('location')) {

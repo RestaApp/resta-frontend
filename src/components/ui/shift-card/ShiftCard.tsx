@@ -3,12 +3,12 @@ import type { KeyboardEvent, MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Shift } from '@/features/feed/model/types'
 import { useLabels } from '@/shared/i18n/hooks'
-import { formatMoney, stripMinskPrefix } from '@/features/feed/model/utils/formatting'
+import { formatMoney } from '@/features/feed/model/utils/formatting'
 import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ShiftOwnerActions } from '@/components/ui/shift-owner-actions'
 import { cn } from '@/utils/cn'
-import { splitLocationPoints } from '@/shared/utils/location'
+import { firstLocation } from '@/shared/utils/location'
 import type { ShiftStatus } from '../StatusPill'
 import { addDaysToISODate, toLocalISODateKey } from '@/utils/datetime'
 import {
@@ -123,9 +123,9 @@ const ShiftCardComponent = ({ shift, onOpenDetails, ownerActions }: ShiftCardPro
   }, [shift.position, shift.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
   const locationText = useMemo(() => {
-    const normalized = stripMinskPrefix(shift.location) ?? ''
-    const points = splitLocationPoints(normalized)
-    return points[0] ?? ''
+    const first = firstLocation(shift.location)
+    if (!first) return ''
+    return first.replace(/^Минск,\s*/i, '')
   }, [shift.location])
 
   const isVacancyCard = shift.shiftType === 'vacancy' || shift.payPeriod === 'month'

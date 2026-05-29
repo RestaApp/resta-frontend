@@ -7,13 +7,13 @@ UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md
 
 ## Иерархия документов и приоритет
 
-| # | Источник | Зона ответственности |
-|---|----------|----------------------|
-| 1 | Задача пользователя (чат / PR) | — |
-| 2 | **`.cursorrules`** | Стек, структура, Redux, TypeScript, общие принципы |
-| 3a | **`AI_DEVELOPMENT_GUIDELINES.md`** | Design system, UI-примитивы, hooks, forms, a11y, verification |
-| 3b | **`HANDOFF.md`** (этот файл) | Эндпоинты и контракты для интеграции с бэкендом |
-| 4 | Паттерны целевых файлов | Локальные соглашения модуля |
+| #   | Источник                           | Зона ответственности                                          |
+| --- | ---------------------------------- | ------------------------------------------------------------- |
+| 1   | Задача пользователя (чат / PR)     | —                                                             |
+| 2   | **`.cursorrules`**                 | Стек, структура, Redux, TypeScript, общие принципы            |
+| 3a  | **`AI_DEVELOPMENT_GUIDELINES.md`** | Design system, UI-примитивы, hooks, forms, a11y, verification |
+| 3b  | **`HANDOFF.md`** (этот файл)       | Эндпоинты и контракты для интеграции с бэкендом               |
+| 4   | Паттерны целевых файлов            | Локальные соглашения модуля                                   |
 
 **При расхождении между документами:** `.cursorrules` > специализированный документ **в его зоне** > код. Между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта нет — разные зоны.
 
@@ -23,13 +23,13 @@ UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md
 
 ## Готовые точки на фронте
 
-| Фича | Компонент / место | Без бэка |
-|------|-------------------|----------|
-| PRO подписка (Stars) | [`telegram-stars-paywall.tsx`](src/components/ui/telegram-stars-paywall.tsx) | UI-only; `onPay` — заглушка |
-| KPI профиля | [`ProfileKpiCard`](src/features/profile/ui/components/ProfileKpiCard.tsx), [`KpiRow`](src/components/ui/kpi-row.tsx) | `—` в рейтинге/заработке |
-| Hire / контакты | заявки на смену | нет мутации `hire` |
-| SOS / Boost на смене | [`ShiftCard`](src/components/ui/shift-card/ShiftCard.tsx), лента | только `urgent` (SOS) |
-| AI-match | список кандидатов R04 | бейдж скрыт |
+| Фича                 | Компонент / место                                                                                                      | Без бэка                    |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| PRO подписка (Stars) | [`telegram-stars-paywall.tsx`](src/components/ui/telegram-stars-paywall.tsx)                                           | UI-only; `onPay` — заглушка |
+| KPI профиля          | [`ProfileOverview`](src/features/profile/ui/components/ProfileOverview.tsx), [`KpiRow`](src/components/ui/kpi-row.tsx) | `—` в рейтинге/заработке    |
+| Hire / контакты      | заявки на смену                                                                                                        | нет мутации `hire`          |
+| SOS / Boost на смене | [`ShiftCard`](src/components/ui/shift-card/ShiftCard.tsx), лента                                                       | только `urgent` (SOS)       |
+| AI-match             | список кандидатов R04                                                                                                  | бейдж скрыт                 |
 
 RTK Query: новые endpoints — `src/services/api/*Api.ts` + импорт в [`services/api/index.ts`](src/services/api/index.ts).
 
@@ -55,7 +55,7 @@ GET  /api/v1/billing/subscription
 POST /api/v1/billing/subscription/cancel
 ```
 
-**Интеграция на фронте:** создать `billingApi.ts`, тег `'Subscription'`, подключить в `TelegramStarsPaywall` (`onPay` → POST invoice → openInvoice).
+**Интеграция на фронте:** создать `billingApi.ts`, добавить тег `'Subscription'` в `tagTypes`, подключить в `TelegramStarsPaywall` (`onPay` → POST invoice → openInvoice).
 
 ---
 
@@ -67,7 +67,7 @@ POST /api/v1/applications/:id/hire
   returns: { contact: { telegram_username: string|null, phone: string|null } }
 ```
 
-**Интеграция:** мутация `hireApplication` в applications API. Убедиться, что `telegram_username` отдаётся владельцу смены в карточке кандидата.
+**Интеграция:** мутация `hireApplication` в API заявок. Если отдельный `applicationsApi.ts` не выделяется, добавить endpoint в текущий `shiftsApi.ts`, где уже живут `/api/v1/shift_applications/*`. Убедиться, что `telegram_username` отдаётся владельцу смены в карточке кандидата.
 
 ---
 
@@ -93,11 +93,11 @@ GET /api/v1/me/stats
 
 Нужно от API:
 
-| Поле | Назначение |
-|------|------------|
-| `is_sos: boolean` | экстренная смена <3ч, приоритет в ленте |
-| `is_boosted: boolean` | бейдж BOOST |
-| `boost_position?: number` | `BOOSTED · #2` (R03) |
+| Поле                      | Назначение                              |
+| ------------------------- | --------------------------------------- |
+| `is_sos: boolean`         | экстренная смена <3ч, приоритет в ленте |
+| `is_boosted: boolean`     | бейдж BOOST                             |
+| `boost_position?: number` | `BOOSTED · #2` (R03)                    |
 
 ---
 

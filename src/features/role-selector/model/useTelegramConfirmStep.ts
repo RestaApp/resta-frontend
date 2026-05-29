@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
@@ -38,7 +38,7 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     ? `@${user.username.trim().replace(/^@/, '')}`
     : t('onboarding.telegram.noUsername')
   const phoneFromProfile = user?.phone?.trim() || ''
-  const cityFromProfile = user?.city?.trim() || user?.location?.trim() || ''
+  const cityFromProfile = user?.city?.trim() || ''
   const userId = user?.id
 
   const resolvedPhone = phoneFromProfile || manualPhone.trim()
@@ -59,12 +59,15 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     setSelectedCity(cityFromProfile)
   }, [cityFromProfile, selectedCity])
 
+  const onBackRef = useRef(onBack)
+  useLayoutEffect(() => {
+    onBackRef.current = onBack
+  })
+  const stableBack = useCallback(() => onBackRef.current(), [])
+
   useEffect(() => {
-    const cleanup = setupTelegramBackButton(() => {
-      onBack()
-    })
-    return cleanup
-  }, [onBack])
+    return setupTelegramBackButton(stableBack)
+  }, [stableBack])
 
   const handlePhoneShare = useCallback(async () => {
     if (isRequestingPhone) return

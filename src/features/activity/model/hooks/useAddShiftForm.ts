@@ -15,7 +15,10 @@ type UseAddShiftFormOptions = {
   initialShiftType?: ShiftType | null
   onSave?: (shift: CreateShiftResponse | null) => void
   initialValues?: VacancyApiItem | null
-  initialLocation?: string | null
+  initialLocation?: string[] | null
+  initialCity?: string | null
+  /** Известный city пользователя — используется в submission, чтобы понять, нужно ли обновлять user.city. */
+  userCity?: string | null
 }
 
 export type { ShiftType }
@@ -37,6 +40,8 @@ export const useAddShiftForm = ({
   onSave,
   initialValues = null,
   initialLocation = null,
+  initialCity = null,
+  userCity = null,
 }: UseAddShiftFormOptions = {}) => {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
@@ -52,6 +57,7 @@ export const useAddShiftForm = ({
     initialShiftType,
     initialValues,
     initialLocation,
+    initialCity,
   })
 
   // Derived валидации — считаем при каждом рендере, без useMemo.
@@ -66,7 +72,8 @@ export const useAddShiftForm = ({
 
   const isFormInvalid =
     !state.title ||
-    !state.location ||
+    !state.city.trim() ||
+    state.location.every(line => !line.trim()) ||
     !state.description ||
     !state.requirements ||
     !state.position ||
@@ -83,6 +90,7 @@ export const useAddShiftForm = ({
     initialValues,
     onSave,
     canSubmit,
+    userCity,
   })
 
   return {
@@ -100,6 +108,8 @@ export const useAddShiftForm = ({
     setPay: state.setPay,
     location: state.location,
     setLocation: state.setLocation,
+    city: state.city,
+    setCity: state.setCity,
     requirements: state.requirements,
     setRequirements: state.setRequirements,
     shiftType: state.shiftType,

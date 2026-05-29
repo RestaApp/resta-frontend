@@ -181,10 +181,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
               size="sm"
               onClick={action.onClick}
               aria-label={action.ariaLabel}
-              className={cn(
-                APP_HEADER_ACTION_BUTTON_CLASS,
-                activeTab === 'profile' && 'h-12 w-12 rounded-lg bg-card hover:bg-elevated'
-              )}
+              className={cn(APP_HEADER_ACTION_BUTTON_CLASS)}
             >
               <action.Icon className={APP_HEADER_ACTION_ICON_CLASS} />
             </Button>

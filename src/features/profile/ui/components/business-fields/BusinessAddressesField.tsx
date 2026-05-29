@@ -1,20 +1,18 @@
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { FormField } from '@/components/ui/form-field'
 import { Input } from '@/components/ui/input'
-import { parseAddresses, serializeAddresses } from '@/features/profile/model/utils/businessFields'
 
 interface BusinessAddressesFieldProps {
-  value: string
+  value: string[]
   disabled: boolean
   isRestaurant: boolean
-  onChange: (next: string) => void
+  onChange: (next: string[]) => void
 }
 
 /**
  * Адреса бизнеса: одна или несколько строк (для ресторанов с филиалами).
- * Сохраняет исходный сериализованный формат через `serializeAddresses`.
+ * Работает напрямую со string[] — без сериализации через `\n`.
  */
 export const BusinessAddressesField = ({
   value,
@@ -23,19 +21,19 @@ export const BusinessAddressesField = ({
   onChange,
 }: BusinessAddressesFieldProps) => {
   const { t } = useTranslation()
-  const addresses = useMemo(() => parseAddresses(value), [value])
+  const addresses = value.length > 0 ? value : ['']
 
   const updateAt = (index: number, nextValue: string) => {
     const next = [...addresses]
     next[index] = nextValue
-    onChange(serializeAddresses(next))
+    onChange(next)
   }
 
-  const addLine = () => onChange(serializeAddresses([...addresses, '']))
+  const addLine = () => onChange([...addresses, ''])
 
   const removeAt = (index: number) => {
     const next = addresses.filter((_, itemIndex) => itemIndex !== index)
-    onChange(serializeAddresses(next))
+    onChange(next.length > 0 ? next : [''])
   }
 
   return (
@@ -48,7 +46,7 @@ export const BusinessAddressesField = ({
       hint={
         isRestaurant
           ? t('profile.addressesHint', {
-              defaultValue: 'Если у вас несколько точек, укажите каждый адрес с новой строки',
+              defaultValue: 'Если у вас несколько точек, добавьте каждый адрес отдельно',
             })
           : undefined
       }

@@ -1,5 +1,35 @@
-/** Приводит location из API к строке (строка, объект city/address, массив точек). */
-export const normalizeApiLocation = (value: unknown): string | undefined => {
+/**
+ * Утилиты для работы с location (массив адресов) и city.
+ *
+ * Контракт: внутри приложения `location` всегда `string[]`.
+ * На границе с API нормализуем любые входные форматы (строка / массив / объект)
+ * через `toLocationArray`, а на отправке шлём массив.
+ */
+
+export const toLocationArray = (value: unknown): string[] => {
+  if (value === null || value === undefined) return []
+
+  if (Array.isArray(value)) {
+    return value
+      .map(part => normalizeLocationEntry(part))
+      .filter((part): part is string => Boolean(part))
+  }
+
+  const single = normalizeLocationEntry(value)
+  if (!single) return []
+
+  // Legacy: одна строка с разделителем `\n` — раскладываем в массив.
+  if (single.includes('\n') || single.includes('\r')) {
+    return single
+      .split(/\r?\n+/)
+      .map(line => line.trim())
+      .filter(Boolean)
+  }
+
+  return [single]
+}
+
+const normalizeLocationEntry = (value: unknown): string | undefined => {
   if (value === null || value === undefined) return undefined
 
   if (typeof value === 'string') {
@@ -9,13 +39,6 @@ export const normalizeApiLocation = (value: unknown): string | undefined => {
 
   if (typeof value === 'number' && Number.isFinite(value)) {
     return String(value)
-  }
-
-  if (Array.isArray(value)) {
-    const parts = value
-      .map(part => normalizeApiLocation(part))
-      .filter((part): part is string => Boolean(part))
-    return parts.length > 0 ? parts.join('\n') : undefined
   }
 
   if (typeof value === 'object') {
@@ -28,7 +51,7 @@ export const normalizeApiLocation = (value: unknown): string | undefined => {
           ? record.street.trim()
           : ''
     if (city || address) {
-      const combined = combineLocation(city, address).trim()
+      const combined = combineCityAddress(city, address)
       return combined || undefined
     }
 
@@ -44,6 +67,28 @@ export const normalizeApiLocation = (value: unknown): string | undefined => {
   return undefined
 }
 
+/** Первый адрес из массива (или undefined). Использовать для карточек/карты. */
+export const firstLocation = (locations: string[] | null | undefined): string | undefined => {
+  if (!locations || locations.length === 0) return undefined
+  const first = locations[0]?.trim()
+  return first || undefined
+}
+
+/** Сериализация массива в строку через `\n` — для legacy‑потребителей. */
+export const joinLocations = (locations: string[] | null | undefined): string => {
+  if (!locations || locations.length === 0) return ''
+  return locations
+    .map(line => line.trim())
+    .filter(Boolean)
+    .join('\n')
+}
+
+/** Очистка массива адресов перед сохранением: trim + удаление пустых. */
+export const sanitizeLocations = (locations: string[]): string[] => {
+  return locations.map(line => line.trim()).filter(Boolean)
+}
+
+/** Разбор «Город, адрес» → `{ city, address }`. Используется в employee‑форме смены. */
 export const parseLocation = (location: string): { city: string; address: string } => {
   if (!location.trim()) return { city: '', address: '' }
   const commaIndex = location.indexOf(',')
@@ -55,19 +100,16 @@ export const parseLocation = (location: string): { city: string; address: string
   return { city, address }
 }
 
+/** Склейка `city` + `address` обратно в строку формата «Город, адрес». */
 export const combineLocation = (city: string, address: string): string => {
-  const c = city.trim()
-  const a = address.trimStart()
-  if (!c && !a) return ''
-  if (!c) return a
-  if (!a.trim()) return c
-  return `${c}, ${a}`
+  return combineCityAddress(city, address)
 }
 
-export const splitLocationPoints = (location?: string | null): string[] => {
-  if (!location) return []
-  return location
-    .split(/\r?\n+/)
-    .map(value => value.trim())
-    .filter(Boolean)
+const combineCityAddress = (city: string, address: string): string => {
+  const c = city.trim()
+  const a = address.trim()
+  if (!c && !a) return ''
+  if (!c) return a
+  if (!a) return c
+  return `${c}, ${a}`
 }

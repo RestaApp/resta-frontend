@@ -1,7 +1,7 @@
 export type StepIndex = 0 | 1 | 2
 
 export type DrawerFieldErrors = Partial<
-  Record<'location' | 'requirements' | 'description' | 'specializations', string>
+  Record<'location' | 'city' | 'requirements' | 'description' | 'specializations', string>
 >
 
 export interface AddShiftDrawerFormState {
@@ -9,7 +9,8 @@ export interface AddShiftDrawerFormState {
   date: string | null
   startTime: string
   endTime: string
-  location: string
+  location: string[]
+  city: string
   description: string
   requirements: string
   shiftType: 'vacancy' | 'replacement'
@@ -27,6 +28,9 @@ const normalizeRequiredText = (error: string | undefined, requiredFieldError: st
   return error
 }
 
+export const hasLocation = (location: string[]): boolean =>
+  location.some(line => line.trim().length > 0)
+
 export const isStepValid = (form: AddShiftDrawerFormState, targetStep: StepIndex): boolean => {
   if (targetStep === 0) {
     if (!form.title.trim()) return false
@@ -39,7 +43,8 @@ export const isStepValid = (form: AddShiftDrawerFormState, targetStep: StepIndex
   }
 
   if (targetStep === 1) {
-    if (!form.location.trim()) return false
+    if (!form.city.trim()) return false
+    if (!hasLocation(form.location)) return false
     if (!form.position || !!form.positionError) return false
     return form.specializations.length > 0
   }
@@ -57,7 +62,8 @@ export const findFirstInvalidStep = (form: AddShiftDrawerFormState): StepIndex =
     if (!form.date || form.dateError) return 0
     if (!form.startTime || !form.endTime || form.timeRangeError) return 0
   }
-  if (!form.location.trim()) return 1
+  if (!form.city.trim()) return 1
+  if (!hasLocation(form.location)) return 1
   if (!form.position || form.positionError) return 1
   if (form.position && form.specializations.length === 0) return 1
   if (!form.description.trim()) return 2
@@ -86,9 +92,10 @@ export const buildDrawerErrorState = (params: {
   const startTimeError = showStep0Errors && !form.startTime ? requiredMarker : undefined
   const endTimeError =
     form.timeRangeError ?? (showStep0Errors && !form.endTime ? requiredMarker : undefined)
+  const cityFieldError = showStep1Errors && !form.city.trim() ? requiredMarker : undefined
   const locationFieldError =
     normalizeRequiredText(form.fieldErrors.location, requiredFieldError) ??
-    (showStep1Errors && !form.location.trim() ? requiredMarker : undefined)
+    (showStep1Errors && !hasLocation(form.location) ? requiredMarker : undefined)
   const positionFieldError =
     form.positionError ?? (showStep1Errors && !form.position ? requiredMarker : undefined)
 
@@ -110,7 +117,10 @@ export const buildDrawerErrorState = (params: {
       (!form.title.trim() ||
         (form.shiftType === 'replacement' && (!form.date || !form.startTime || !form.endTime)))) ||
     (showStep1Errors &&
-      (!form.location.trim() || !form.position || form.specializations.length === 0)) ||
+      (!form.city.trim() ||
+        !hasLocation(form.location) ||
+        !form.position ||
+        form.specializations.length === 0)) ||
     (showStep2Errors && (!form.description.trim() || !form.requirements.trim()))
 
   const bannerError =
@@ -128,6 +138,7 @@ export const buildDrawerErrorState = (params: {
       dateFieldError,
       startTimeError,
       endTimeError,
+      cityFieldError,
       locationFieldError,
       positionFieldError,
       specializationFieldError,

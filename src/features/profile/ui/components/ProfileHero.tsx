@@ -8,7 +8,7 @@ type ProfileHeroUser = {
   profile_photo_url?: string | null
   photo_url?: string | null
   city?: string | null
-  location?: string | null
+  location?: string[] | null
   username?: string | null
   average_rating?: number | string | null
   employee_profile?: {
@@ -45,7 +45,8 @@ const normalizeRating = (value: number | string | null | undefined) => {
 export const ProfileHero = memo(
   ({ userProfile, userName, roleLabel, wrapInCard = true }: ProfileHeroProps) => {
     const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
-    const cityOrLocation = userProfile.city || userProfile.location
+    const firstLocation = userProfile.location?.find(line => line.trim().length > 0)
+    const cityOrLocation = userProfile.city || firstLocation
     const username = userProfile.username?.trim()
     const rating = normalizeRating(userProfile.average_rating)
     const ratingPercent = rating ? (rating / 5) * 100 : 0

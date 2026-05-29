@@ -2,6 +2,7 @@ import type { TFunction } from 'i18next'
 import type { RestaurantApiUser, SupplierApiUser, SupplierItem } from './types'
 import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
 import type { UserData } from '@/services/api/usersApi'
+import { toLocationArray } from '@/shared/utils/location'
 
 const getSupplierName = (item: SupplierApiUser, fallback: string) => {
   const profile = item.supplier_profile ?? item.supplier_profile_attributes ?? null
@@ -74,7 +75,7 @@ export const mapRestaurantUsersToItems = (
       bio: item.bio ?? null,
       website: item.website?.trim() || '',
       city: item.city?.trim() || '',
-      location: item.location?.trim() || '',
+      location: toLocationArray(item.location),
       email: item.email?.trim() || '',
       phone: item.phone?.trim() || '',
       averageRating: Number.isFinite(item.average_rating) ? item.average_rating : 0,
@@ -114,7 +115,7 @@ export const mapSupplierUsersToItems = (
       bio: item.bio ?? null,
       website: item.website?.trim() || '',
       city: item.city?.trim() || '',
-      location: item.location?.trim() || '',
+      location: toLocationArray(item.location),
       email: item.email?.trim() || '',
       phone: item.phone?.trim() || '',
       averageRating: normalizeRating(item.average_rating),

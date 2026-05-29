@@ -1,5 +1,5 @@
 import i18n from '@/shared/i18n/config'
-import { normalizeApiLocation } from '@/shared/utils/location'
+import { firstLocation, toLocationArray } from '@/shared/utils/location'
 import { parseDate } from '@/utils/datetime'
 
 export const formatMoney = (value: number): string => {
@@ -56,10 +56,18 @@ export const formatDuration = (hours?: string | number | null): string | undefin
 }
 
 export const stripMinskPrefix = (location?: unknown): string | undefined => {
-  const normalized = normalizeApiLocation(location)
-  if (!normalized) return undefined
-  const stripped = normalized.replace(/^Минск,\s*/i, '')
+  const arr = toLocationArray(location)
+  const first = firstLocation(arr)
+  if (!first) return undefined
+  const stripped = first.replace(/^Минск,\s*/i, '')
   return stripped || undefined
+}
+
+/** Аналог stripMinskPrefix, но возвращает массив с очищенными адресами. */
+export const stripMinskPrefixAll = (location?: unknown): string[] => {
+  return toLocationArray(location)
+    .map(line => line.replace(/^Минск,\s*/i, '').trim())
+    .filter(Boolean)
 }
 
 export const formatHourlyRate = (hourlyRate?: string | number | null): string | null => {

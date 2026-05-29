@@ -4,6 +4,7 @@
 
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { normalizeCatalogPosition } from '@/utils/roles'
 
 const humanizeLabel = (value: string): string => {
   const normalized = value
@@ -90,18 +91,17 @@ export function useLabels() {
   )
   const getEmployeePositionLabel = useCallback(
     (value: string) => {
-      const key1 = `labels.position.${value}`
-      const key2 = `labels.position.${value.toLowerCase()}`
-      const r1 = t(key1)
-      if (r1 !== key1) return r1
-      const r2 = t(key2)
-      return r2 !== key2 ? r2 : value
+      const positionKey = normalizeCatalogPosition(value)
+      const key = `labels.position.${positionKey}`
+      const res = t(key)
+      return res !== key ? res : value
     },
     [t]
   )
   const getEmployeePositionDescription = useCallback(
     (value: string) => {
-      const key = `labels.positionDesc.${value.toLowerCase()}`
+      const positionKey = normalizeCatalogPosition(value)
+      const key = `labels.positionDesc.${positionKey}`
       const res = t(key)
       return res === key ? '' : res
     },

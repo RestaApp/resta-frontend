@@ -4,11 +4,14 @@
 
 import type { AdvancedFiltersData } from '@/features/feed/model/types'
 import i18n from '@/shared/i18n/config'
+import { normalizeCatalogPosition } from '@/utils/roles'
 
 const getSpecializationLabel = (spec: string): string =>
   i18n.t(`labels.specialization.${spec}`) || spec
-const getEmployeePositionLabel = (value: string): string =>
-  i18n.t(`labels.position.${value}`) || i18n.t(`labels.position.${value.toLowerCase()}`) || value
+const getEmployeePositionLabel = (value: string): string => {
+  const positionKey = normalizeCatalogPosition(value)
+  return i18n.t(`labels.position.${positionKey}`) || value
+}
 
 const formatSpecializations = (specializations: string[]): string[] => {
   if (specializations.length === 0) return []

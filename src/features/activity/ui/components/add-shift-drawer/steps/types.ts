@@ -45,9 +45,16 @@ export interface AddShiftDrawerStep1Props {
   locationRef: RefObject<HTMLDivElement | null>
   positionRef: RefObject<HTMLDivElement | null>
   specializationRef: RefObject<HTMLDivElement | null>
-  location: string
-  onLocationChange: (value: string) => void
+  location: string[]
+  onLocationChange: (value: string[]) => void
   locationError?: string
+  city: string
+  onCityChange: (value: string) => void
+  cityError?: string
+  /** Сохранённые адреса заведения (для restaurant/supplier). Пустой массив → ручной ввод. */
+  profileAddresses: string[]
+  /** true для employee — показываем CitySelect+address; для restaurant/supplier — multi-select. */
+  isEmployeeMode: boolean
   formPosition: string
   onPositionChange: (value: string) => void
   positionOptions: SelectFieldOption[]

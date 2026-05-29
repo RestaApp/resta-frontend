@@ -11,6 +11,7 @@ import { businessHoursRecordToFormValue } from '../utils/businessHoursForm'
 import { formatPhoneInput, validatePhone } from '@/utils/phone'
 import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
 import { triggerHapticFeedback } from '@/utils/haptics'
+import { toLocationArray } from '@/shared/utils/location'
 
 type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
 type EditProfileErrors = Partial<Record<EditProfileField, string>>
@@ -55,7 +56,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         lastName: '',
         bio: '',
         city: '',
-        location: '',
+        location: [],
         email: '',
         phone: '',
         workExperienceSummary: '',
@@ -79,7 +80,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
       lastName: userProfile.last_name || '',
       bio: userProfile.bio || '',
       city: userProfile.city ?? '',
-      location: userProfile.location ?? '',
+      location: toLocationArray(userProfile.location),
       email: userProfile.email || '',
       phone: formatPhoneInput(userProfile.phone || '') || userProfile.phone || '',
       workExperienceSummary: userProfile.work_experience_summary || '',

@@ -27,7 +27,7 @@ export interface Shift {
   pay: number
   currency: string
   payPeriod: 'shift' | 'month'
-  location?: string
+  location?: string[]
   duration?: string
   urgent?: boolean
   badges?: string[]

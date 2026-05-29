@@ -26,7 +26,7 @@ export const useProfilePageModel = () => {
     getSpecializationLabel,
     getSupplierTypeLabel,
   } = useLabels()
-  const { userProfile, isLoading: isProfileLoading, refetch } = useUserProfile()
+  const { userProfile, isLoading: isProfileLoading } = useUserProfile()
   const { clearUserData } = useUser()
   const { showToast } = useToast()
   const { updateUser, isLoading: isUpdatingUser } = useUpdateUser()
@@ -105,8 +105,8 @@ export const useProfilePageModel = () => {
     window.location.reload()
   }, [clearUserData, showToast, t])
   const handleEditSuccess = useCallback(() => {
-    refetch()
-  }, [refetch])
+    // cache is updated automatically via onQueryStarted in the mutation
+  }, [])
 
   const handleOpenToWorkToggle = useCallback(
     async (nextValue: boolean) => {
@@ -122,13 +122,12 @@ export const useProfilePageModel = () => {
       })
 
       if (result.success) {
-        void refetch()
         return
       }
 
       showToast(result.errors?.[0] ?? t('errors.saveErrorDescription'), 'error')
     },
-    [apiRole, refetch, showToast, t, updateUser, userProfile]
+    [apiRole, showToast, t, updateUser, userProfile]
   )
 
   const profileViewModel = useMemo(() => {

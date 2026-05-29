@@ -6,7 +6,8 @@ export interface CreateShiftBody {
   start_time?: string
   end_time?: string
   payment?: number
-  location?: string
+  location?: string[]
+  city?: string
   requirements?: string
   shift_type: 'vacancy' | 'replacement'
   urgent?: boolean
@@ -142,7 +143,7 @@ export interface UserApi {
   name: string
   full_name?: string
   city?: string
-  location?: string
+  location?: string[]
   bio?: string
   phone?: string
   email?: string
@@ -228,7 +229,8 @@ export interface VacancyApiItem {
   id: number
   title: string
   description?: string
-  location?: string
+  location?: string[]
+  city?: string
   /** Моя заявка (ShiftApplicationBlueprint :basic / полный) */
   my_application?: ShiftMyApplicationApi
   payment?: string | number

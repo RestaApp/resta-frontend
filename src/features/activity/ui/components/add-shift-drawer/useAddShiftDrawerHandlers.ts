@@ -7,7 +7,8 @@ interface FormSetters {
   setStartTime: (value: string) => void
   setEndTime: (value: string) => void
   setPay: (value: string) => void
-  setLocation: (value: string) => void
+  setLocation: (value: string[]) => void
+  setCity: (value: string) => void
   setRequirements: (value: string) => void
   setShiftType: (value: ShiftType) => void
   setUrgent: (value: boolean) => void
@@ -74,8 +75,12 @@ export const useAddShiftDrawerHandlers = ({
     [form.setPay, wrapStringSetter]
   )
   const handleLocationChange = useMemo(
-    () => wrapStringSetter(form.setLocation),
-    [form.setLocation, wrapStringSetter]
+    () => wrapArraySetter(form.setLocation),
+    [form.setLocation, wrapArraySetter]
+  )
+  const handleCityChange = useMemo(
+    () => wrapStringSetter(form.setCity),
+    [form.setCity, wrapStringSetter]
   )
   const handleDescriptionChange = useMemo(
     () => wrapStringSetter(form.setDescription),
@@ -128,6 +133,7 @@ export const useAddShiftDrawerHandlers = ({
     handleEndTimeChange,
     handlePayChange,
     handleLocationChange,
+    handleCityChange,
     handleShiftTypeChange,
     handlePositionChange,
     handleSpecializationsChange,

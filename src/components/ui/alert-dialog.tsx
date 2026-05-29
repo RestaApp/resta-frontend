@@ -1,4 +1,13 @@
-import { createContext, useContext, useEffect, useId, useRef, memo } from 'react'
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  memo,
+} from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/utils/cn'
 import { Card } from './card'
@@ -36,13 +45,21 @@ export const AlertDialog = memo(function AlertDialog({
   preventClose = false,
 }: AlertDialogProps) {
   const contentRef = useRef<HTMLDivElement | null>(null)
+  const onOpenChangeRef = useRef(onOpenChange)
+  const preventCloseRef = useRef(preventClose)
+  useLayoutEffect(() => {
+    onOpenChangeRef.current = onOpenChange
+    preventCloseRef.current = preventClose
+  })
+
+  const stableClose = useCallback(() => onOpenChangeRef.current(false), [])
 
   useBodyScrollLock(open)
 
   useEffect(() => {
     if (!open || preventClose) return
-    return setupTelegramBackButton(() => onOpenChange(false))
-  }, [onOpenChange, open, preventClose])
+    return setupTelegramBackButton(stableClose)
+  }, [stableClose, open, preventClose])
 
   useEffect(() => {
     if (!open || typeof document === 'undefined') return
@@ -51,7 +68,7 @@ export const AlertDialog = memo(function AlertDialog({
     queueMicrotask(() => contentRef.current?.focus())
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !preventClose) onOpenChange(false)
+      if (e.key === 'Escape' && !preventCloseRef.current) onOpenChangeRef.current(false)
 
       if (e.key === 'Tab' && contentRef.current) {
         const focusables = contentRef.current.querySelectorAll<HTMLElement>(
@@ -88,7 +105,7 @@ export const AlertDialog = memo(function AlertDialog({
       window.removeEventListener('keydown', onKeyDown)
       prevActive?.focus?.()
     }
-  }, [open, onOpenChange, preventClose])
+  }, [open])
 
   if (!open) return null
 

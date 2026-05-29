@@ -19,7 +19,7 @@ export interface SupplierCardData {
   bio: string | null
   website: string
   city: string
-  location: string
+  location: string[]
   email: string
   phone: string
   averageRating: number
@@ -49,27 +49,22 @@ const SupplierCardComponent = ({
 
   const { locationText, extraLocationsLabel } = useMemo(() => {
     const city = supplier.city.trim()
-    const location = supplier.location.trim()
+    const points = supplier.location.map(line => line.trim()).filter(Boolean)
+    const firstAddress = points[0] ?? ''
 
-    if (isRestaurantsMode && location) {
-      const points = location
-        .split(/\r?\n+/)
-        .map(value => value.trim())
-        .filter(Boolean)
-
-      if (points.length > 1) {
-        const moreLocationsLabel = t('supplierUi.restaurants.moreLocations', {
-          count: points.length - 1,
-          defaultValue: '+{{count}}',
-        })
-        return {
-          locationText: points[0],
-          extraLocationsLabel: moreLocationsLabel,
-        }
+    if (isRestaurantsMode && points.length > 1) {
+      const moreLocationsLabel = t('supplierUi.restaurants.moreLocations', {
+        count: points.length - 1,
+        defaultValue: '+{{count}}',
+      })
+      return {
+        locationText: firstAddress,
+        extraLocationsLabel: moreLocationsLabel,
       }
     }
 
-    if (location && location !== city) return { locationText: location, extraLocationsLabel: null }
+    if (firstAddress && firstAddress !== city)
+      return { locationText: firstAddress, extraLocationsLabel: null }
     if (city) return { locationText: city, extraLocationsLabel: null }
     return { locationText: notSpecified, extraLocationsLabel: null }
   }, [isRestaurantsMode, notSpecified, supplier.city, supplier.location, t])

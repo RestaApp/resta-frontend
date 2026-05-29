@@ -85,6 +85,7 @@
   --elevated-foreground: #0a0a0d;
   --border: rgba(10, 10, 13, 0.08);
   --input-background: #ffffff;
+  --switch-background: rgba(10, 10, 13, 0.15);
 }
 
 @media (min-width: 640px) {

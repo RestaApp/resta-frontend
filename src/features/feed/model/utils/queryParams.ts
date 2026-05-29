@@ -1,5 +1,6 @@
 /** Параметры GET /api/v1/shifts — см. SEARCH_FILTERS_SPEC.md § Shifts */
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
+import { normalizeCatalogPosition } from '@/utils/roles'
 import type { AdvancedFiltersData } from '../types'
 
 export type ShiftType = 'replacement' | 'vacancy'
@@ -16,7 +17,7 @@ export const buildVacanciesBaseParams = (
 
   const adv = options.advanced
   if (adv) {
-    if (adv.selectedPosition) params.position = adv.selectedPosition
+    if (adv.selectedPosition) params.position = normalizeCatalogPosition(adv.selectedPosition)
 
     if (adv.selectedSpecializations?.length) {
       params.specialization = adv.selectedSpecializations.join(',')

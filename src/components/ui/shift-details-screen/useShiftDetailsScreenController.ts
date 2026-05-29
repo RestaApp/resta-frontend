@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/useToast'
 import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
 import { getTelegramWebApp } from '@/utils/telegram'
 import type { ShiftStatus } from '@/components/ui/StatusPill'
-import { splitLocationPoints } from '@/shared/utils/location'
+import { sanitizeLocations } from '@/shared/utils/location'
 
 interface UseShiftDetailsScreenControllerParams {
   shift: Shift | null
@@ -58,9 +58,8 @@ export const useShiftDetailsScreenController = ({
   )
   const description = vacancyData?.description?.trim() ?? ''
   const requirements = vacancyData?.requirements?.trim() ?? ''
-  const location = shift?.location?.trim() ?? ''
-  const locationPoints = splitLocationPoints(location)
-  const mapLocation = locationPoints[0] ?? location
+  const locationPoints = sanitizeLocations(shift?.location ?? [])
+  const mapLocation = locationPoints[0] ?? ''
   const hasDate = Boolean(shift?.date?.trim())
   const hasTime = Boolean(shift?.time?.trim())
 

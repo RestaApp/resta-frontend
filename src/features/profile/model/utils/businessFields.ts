@@ -60,20 +60,6 @@ const normalizeTime = (value: string): string | null => {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
 
-const splitAddressLines = (value: string): string[] => {
-  const lines = value.split('\n').map(line => line.replace(/\r/g, ''))
-  if (lines.length === 0) return ['']
-  if (lines.every(line => !line)) return ['']
-  return lines
-}
-
-export const parseAddresses = (value: string): string[] => splitAddressLines(value)
-
-export const serializeAddresses = (addresses: string[]): string => {
-  const normalized = addresses.map(line => line.replace(/\r/g, ''))
-  return normalized.join('\n')
-}
-
 const toDayIndex = (value: string): number | null => {
   const key = dayLabelToKey[value.trim().toLowerCase()]
   if (!key) return null

@@ -105,12 +105,11 @@ export const Select = memo(function Select({
           left = 16
         }
 
-        // Вычисляем top позицию с учетом нижней навигации
         let top: number
         if (opensUp) {
-          top = rect.top - Math.min(availableSpace, 320) - 8
+          top = rect.top - Math.min(availableSpace, 320) - 4
         } else {
-          top = rect.bottom + 8
+          top = rect.bottom + 4
         }
 
         setDropdownPosition({

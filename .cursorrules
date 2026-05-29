@@ -6,13 +6,13 @@
 
 ## Иерархия документов и приоритет
 
-| # | Источник | Зона ответственности |
-|---|----------|----------------------|
-| 1 | Задача пользователя (чат / PR) | — |
-| 2 | **`.cursorrules`** (этот файл) | Стек, структура, Redux, TypeScript, общие принципы |
-| 3a | **`AI_DEVELOPMENT_GUIDELINES.md`** | Design system, UI-примитивы, hooks, forms, a11y, verification |
-| 3b | **`HANDOFF.md`** | Эндпоинты и контракты для интеграции с бэкендом |
-| 4 | Паттерны целевых файлов | Локальные соглашения модуля |
+| #   | Источник                           | Зона ответственности                                          |
+| --- | ---------------------------------- | ------------------------------------------------------------- |
+| 1   | Задача пользователя (чат / PR)     | —                                                             |
+| 2   | **`.cursorrules`** (этот файл)     | Стек, структура, Redux, TypeScript, общие принципы            |
+| 3a  | **`AI_DEVELOPMENT_GUIDELINES.md`** | Design system, UI-примитивы, hooks, forms, a11y, verification |
+| 3b  | **`HANDOFF.md`**                   | Эндпоинты и контракты для интеграции с бэкендом               |
+| 4   | Паттерны целевых файлов            | Локальные соглашения модуля                                   |
 
 **При расхождении между документами:** `.cursorrules` > специализированный документ **в его зоне** > код. Между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта нет — разные зоны.
 
@@ -28,17 +28,17 @@
 
 ## Стек
 
-| Слой | Технологии |
-|------|------------|
-| Сборка | Vite 7, `@vitejs/plugin-react`, `@tailwindcss/vite` |
-| UI | React 19 (FC + хуки), Tailwind 4, `cn` |
-| Язык | TypeScript 5.x, `strict`, `import type` для типов |
-| Состояние | Redux Toolkit, `redux-persist` |
-| Данные | RTK Query — один `createApi` в `shared/api/api.ts` |
-| API | `services/api/*Api.ts` + регистрация в `services/api/index.ts` |
-| i18n | `i18next`, `react-i18next`, `shared/i18n/` |
-| UI-kit | Radix UI, `lucide-react`, `motion` |
-| Качество | ESLint 9, Prettier — `npm run lint`, `npm run format:check` |
+| Слой      | Технологии                                                           |
+| --------- | -------------------------------------------------------------------- |
+| Сборка    | Vite 7, `@vitejs/plugin-react`, `@tailwindcss/vite`                  |
+| UI        | React 19 (FC + хуки), Tailwind 4, `cn`                               |
+| Язык      | TypeScript 5.x, `strict`, `import type` для типов                    |
+| Состояние | Redux Toolkit, `redux-persist`                                       |
+| Данные    | RTK Query — один `createApi` в `shared/api/api.ts`                   |
+| API       | `services/api/*Api.ts` + регистрация в `services/api/index.ts`       |
+| i18n      | `i18next`, `react-i18next`, `shared/i18n/`                           |
+| UI-kit    | собственные примитивы `src/components/ui/`, `lucide-react`, `motion` |
+| Качество  | ESLint 9, Prettier — `npm run lint`, `npm run format:check`          |
 
 **Алиас:** `@/*` → `src/*`.
 
@@ -46,16 +46,16 @@
 
 ## Структура
 
-| Назначение | Путь |
-|------------|------|
-| Bootstrap | `src/app/` |
-| Страницы | `src/pages/` |
-| Фичи | `src/features/<домен>/` — `model/`, `ui/` |
-| UI-kit | `src/components/ui/` |
-| Store | `src/store/` |
-| RTK Query | `src/shared/api/` |
-| Endpoints | `src/services/api/` |
-| Shared | `src/shared/` |
+| Назначение | Путь                                      |
+| ---------- | ----------------------------------------- |
+| Bootstrap  | `src/app/`                                |
+| Страницы   | `src/pages/`                              |
+| Фичи       | `src/features/<домен>/` — `model/`, `ui/` |
+| UI-kit     | `src/components/ui/`                      |
+| Store      | `src/store/`                              |
+| RTK Query  | `src/shared/api/`                         |
+| Endpoints  | `src/services/api/`                       |
+| Shared     | `src/shared/`                             |
 
 Импорты — через `@/...`.
 

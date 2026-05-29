@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   animate,
   motion,
@@ -188,28 +188,37 @@ export const Drawer = ({
   onTelegramBack,
 }: DrawerProps) => {
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
-  const handleTelegramBack = useCallback(() => {
-    if (onTelegramBack) {
-      onTelegramBack()
+  const telegramBackRef = useRef(onTelegramBack)
+  const onOpenChangeRef = useRef(onOpenChange)
+  const preventCloseRef = useRef(preventClose)
+  useLayoutEffect(() => {
+    telegramBackRef.current = onTelegramBack
+    onOpenChangeRef.current = onOpenChange
+    preventCloseRef.current = preventClose
+  })
+
+  const stableTelegramBack = useCallback(() => {
+    if (telegramBackRef.current) {
+      telegramBackRef.current()
       return
     }
-    if (!preventClose) onOpenChange(false)
-  }, [onOpenChange, onTelegramBack, preventClose])
+    if (!preventCloseRef.current) onOpenChangeRef.current(false)
+  }, [])
 
   useEffect(() => {
     if (!open) return
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !preventClose) onOpenChange(false)
+      if (e.key === 'Escape' && !preventCloseRef.current) onOpenChangeRef.current(false)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, preventClose, onOpenChange])
+  }, [open])
 
   useEffect(() => {
     if (!open) return
     if (preventClose && !onTelegramBack) return
-    return setupTelegramBackButton(handleTelegramBack)
-  }, [handleTelegramBack, onTelegramBack, open, preventClose])
+    return setupTelegramBackButton(stableTelegramBack)
+  }, [stableTelegramBack, onTelegramBack, open, preventClose])
 
   const node = (
     <AnimatePresence>

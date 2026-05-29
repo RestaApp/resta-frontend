@@ -158,3 +158,12 @@ export const mapPositionFromApi = (positionValue: string): EmployeeRole | null =
 export const normalizeEmployeePosition = (value: string): EmployeeRole | null => {
   return mapPositionFromApi(value)
 }
+
+/**
+ * Приводит позицию к актуальному ключу каталога/API (legacy: operator -> office).
+ */
+export const normalizeCatalogPosition = (value: string): string => {
+  const trimmed = normalizeRole(value)
+  if (!trimmed) return ''
+  return mapPositionFromApi(trimmed) ?? trimmed
+}

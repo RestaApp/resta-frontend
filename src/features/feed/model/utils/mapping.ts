@@ -5,9 +5,9 @@ import {
   formatDuration,
   formatTimeRangeRU,
   parseApiDateTime,
-  stripMinskPrefix,
+  stripMinskPrefixAll,
 } from '../utils/formatting'
-import { normalizeApiLocation } from '@/shared/utils/location'
+import { toLocationArray } from '@/shared/utils/location'
 import { toLocalISODateKey } from '@/utils/datetime'
 import i18n from '@/shared/i18n/config'
 
@@ -44,7 +44,7 @@ export const getLogoByPosition = (position?: string | null, idFallback?: number 
 }
 
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {
-  return item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
+  return item.city ?? item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
 }
 
 const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
@@ -128,8 +128,14 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
   const payPeriod: PayPeriod = resolvePayPeriodFromVacancy(item)
 
-  const locationRaw = normalizeApiLocation(item.location) ?? getCityFromUser(item)
-  const location = stripMinskPrefix(locationRaw)
+  const fromApi = stripMinskPrefixAll(item.location)
+  const location =
+    fromApi.length > 0
+      ? fromApi
+      : (() => {
+          const city = getCityFromUser(item)
+          return city ? [city] : []
+        })()
   const cuisineTypes = item.user?.restaurant_profile?.cuisine_types ?? undefined
 
   return {
@@ -189,7 +195,7 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     currency: 'BYN',
     payPeriod: resolvePayPeriodFromVacancy(item),
     shiftType: item.shift_type,
-    location: item.shift_type === 'vacancy' ? undefined : normalizeApiLocation(item.location),
+    location: item.shift_type === 'vacancy' ? undefined : toLocationArray(item.location),
     urgent: Boolean(item.urgent),
     applicationId: null,
     ownerId: item.user?.id ?? null,
@@ -220,7 +226,12 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     pay: toNumber(v.payment),
     currency: 'BYN',
     payPeriod: resolvePayPeriodFromVacancy(v),
-    location: normalizeApiLocation(v.location) ?? getCityFromUser(v) ?? undefined,
+    location: (() => {
+      const arr = toLocationArray(v.location)
+      if (arr.length > 0) return arr
+      const city = getCityFromUser(v)
+      return city ? [city] : undefined
+    })(),
     urgent: Boolean(v.urgent),
     applicationId,
     ownerId: v.user?.id ?? null,

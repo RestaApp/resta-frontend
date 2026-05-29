@@ -52,7 +52,6 @@ export function VenueStaffPage() {
         shiftId: shiftId > 0 ? shiftId : undefined,
       }).unwrap()
       showToast(t('venueUi.staff.accepted', { defaultValue: 'Сотрудник принят' }), 'success')
-      await refetch()
       return true
     } catch (error) {
       const errorMessage = getErrorMessage(error)
@@ -86,7 +85,6 @@ export function VenueStaffPage() {
         shiftId: shiftId > 0 ? shiftId : undefined,
       }).unwrap()
       showToast(t('venueUi.staff.rejected', { defaultValue: 'Заявка отклонена' }), 'warning')
-      await refetch()
       return true
     } catch (error) {
       showToast(

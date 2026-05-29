@@ -27,7 +27,7 @@ export interface UpdateUserRequest {
     bio?: string | null
     email?: string | null
     phone?: string | null
-    location?: string | null
+    location?: string[] | null
     city?: string | null
     work_experience_summary?: string | null
     /** Плоский формат employee (ROLES_FRONTEND_SPEC / API.md) */
@@ -195,7 +195,20 @@ export const usersApi = api.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['User'],
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        try {
+          const { data: response } = await queryFulfilled
+          if (response.success && response.data) {
+            dispatch(
+              usersApi.util.updateQueryData('getUser', id, draft => {
+                Object.assign(draft.data, response.data)
+              })
+            )
+          }
+        } catch {
+          // on error — do nothing, UI shows error toast
+        }
+      },
     }),
 
     // Получение позиций (подролей сотрудников)

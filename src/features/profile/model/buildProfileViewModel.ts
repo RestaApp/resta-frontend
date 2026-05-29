@@ -296,8 +296,9 @@ const buildInfoSections = ({
 }: Pick<BuildProfileViewModelParams, 't' | 'apiRole' | 'userProfile'>) => {
   const rows: ProfileInfoRow[] = []
   const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
-  const cityValue = isBusinessRole ? userProfile.city : userProfile.city || userProfile.location
-  const addressValue = isBusinessRole ? userProfile.location : null
+  const addresses = (userProfile.location ?? []).map(line => line.trim()).filter(Boolean)
+  const cityValue = isBusinessRole ? userProfile.city : userProfile.city || addresses[0]
+  const addressValue = isBusinessRole && addresses.length > 0 ? addresses.join('\n') : null
   const phoneDisplay = formatPhoneDisplay(userProfile.phone)
   const businessHours = isBusinessRole
     ? businessHoursRecordToFormValue(userProfile.business_hours)

@@ -1,4 +1,11 @@
-import { useEffect, type ComponentProps, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type ComponentProps,
+  type ReactNode,
+} from 'react'
 import { createPortal } from 'react-dom'
 import { AlertTriangle, Check } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
@@ -75,13 +82,18 @@ export const ResultOverlay = ({
   const fullscreenOffset = useTelegramFullscreenOffset()
   const config = TONE_CONFIG[tone]
   const Icon = config.icon
+  const onCloseRef = useRef(onClose)
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose
+  })
+  const stableClose = useCallback(() => onCloseRef.current(), [])
 
   useBodyScrollLock(open)
 
   useEffect(() => {
     if (!open) return
-    return setupTelegramBackButton(onClose)
-  }, [onClose, open])
+    return setupTelegramBackButton(stableClose)
+  }, [stableClose, open])
 
   if (!open) return null
 

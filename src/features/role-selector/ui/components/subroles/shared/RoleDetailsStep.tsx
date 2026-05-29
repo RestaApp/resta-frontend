@@ -1,4 +1,4 @@
-import { memo, useEffect, type ReactNode } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { TagGroup } from '@/shared/ui/TagGroup'
 import { setupTelegramBackButton } from '@/utils/telegram'
 import {
@@ -42,10 +42,15 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
   isSubmitting = false,
   continueButtonAriaLabel,
 }: RoleDetailsStepProps) {
+  const onBackRef = useRef(onBack)
+  useLayoutEffect(() => {
+    onBackRef.current = onBack
+  })
+  const stableBack = useCallback(() => onBackRef.current(), [])
+
   useEffect(() => {
-    const cleanup = setupTelegramBackButton(onBack)
-    return cleanup
-  }, [onBack])
+    return setupTelegramBackButton(stableBack)
+  }, [stableBack])
 
   return (
     <OnboardingStepLayout

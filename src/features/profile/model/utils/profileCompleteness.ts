@@ -4,7 +4,7 @@ export type UserProfileLike = {
   name?: string | null
   full_name?: string | null
   phone?: string | null
-  location?: string | null
+  location?: string[] | null
   city?: string | null
   last_name?: string | null
   bio?: string | null
@@ -29,7 +29,9 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
       ? !!(venueName || userProfile.full_name?.trim() || userProfile.name?.trim())
       : !!(userProfile.name?.trim() || userProfile.full_name?.trim())
   const hasPhone = !!userProfile.phone
-  const hasCity = !!(userProfile.location || userProfile.city)
+  const hasAnyLocation =
+    Array.isArray(userProfile.location) && userProfile.location.some(line => line.trim().length > 0)
+  const hasCity = hasAnyLocation || !!userProfile.city
   const hasLastName = apiRole === 'employee' ? !!userProfile.last_name : true
   const isFilled = hasName && hasPhone && hasCity && hasLastName
 
@@ -40,7 +42,7 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
   const experienceYears = userProfile.employee_profile?.experience_years
   const hasExperience = typeof experienceYears === 'number' && Number.isFinite(experienceYears)
   /** Для заведений/поставщиков стаж не применим — учитываем адрес (location), как в форме профиля */
-  const hasBusinessLocation = !!userProfile.location?.trim()
+  const hasBusinessLocation = hasAnyLocation
 
   const infoFlags: boolean[] =
     apiRole === 'employee'

@@ -4,6 +4,7 @@ import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
 import {
   buildDrawerErrorState,
   findFirstInvalidStep,
+  hasLocation,
   isStepValid,
   type AddShiftDrawerFormState,
   type StepIndex,
@@ -30,8 +31,10 @@ type UseAddShiftDrawerControllerParams = {
     setEndTime: (value: string) => void
     pay: string
     setPay: (value: string) => void
-    location: string
-    setLocation: (value: string) => void
+    location: string[]
+    setLocation: (value: string[]) => void
+    city: string
+    setCity: (value: string) => void
     requirements: string
     setRequirements: (value: string) => void
     shiftType: ShiftType
@@ -49,7 +52,7 @@ type UseAddShiftDrawerControllerParams = {
     dateError: string | null
     positionError: string | null
     fieldErrors: Partial<
-      Record<'location' | 'requirements' | 'description' | 'specializations', string>
+      Record<'location' | 'city' | 'requirements' | 'description' | 'specializations', string>
     >
     handleSave: () => Promise<boolean>
     resetForm: () => void
@@ -126,7 +129,7 @@ export const useAddShiftDrawerController = ({
         }
       }
       if (targetStep === 1) {
-        if (!form.location.trim()) return scrollTo(locationRef)
+        if (!hasLocation(form.location)) return scrollTo(locationRef)
         if (!form.position || form.positionError) return scrollTo(positionRef)
         if (form.position && form.specializations.length === 0) return scrollTo(specializationRef)
       }

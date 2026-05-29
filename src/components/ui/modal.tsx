@@ -1,4 +1,4 @@
-import { useEffect, useRef, memo, useId, useMemo } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, memo, useId, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/utils/cn'
@@ -41,13 +41,18 @@ export const Modal = memo(function Modal({
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const titleId = useId()
   const descriptionId = useId()
+  const onCloseRef = useRef(onClose)
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose
+  })
+  const stableClose = useCallback(() => onCloseRef.current(), [])
 
   useBodyScrollLock(isOpen)
 
   useEffect(() => {
     if (!isOpen || !closeOnEsc) return
-    return setupTelegramBackButton(onClose)
-  }, [closeOnEsc, isOpen, onClose])
+    return setupTelegramBackButton(stableClose)
+  }, [closeOnEsc, isOpen, stableClose])
 
   useEffect(() => {
     if (!isOpen || typeof document === 'undefined') return

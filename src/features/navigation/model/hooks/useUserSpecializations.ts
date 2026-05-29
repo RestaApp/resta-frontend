@@ -6,6 +6,7 @@
 
 import { useEffect, useMemo } from 'react'
 import { useAuth } from '@/contexts/auth'
+import { normalizeCatalogPosition } from '@/utils/roles'
 import { useGetUserSpecializationsQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import {
@@ -35,8 +36,8 @@ export const useUserSpecializations = (options: UseUserSpecializationsOptions) =
   const { isAuthenticated } = useAuth()
   const dispatch = useAppDispatch()
 
-  // Нормализуем позицию к lowercase для консистентности
-  const normalizedPosition = useMemo(() => (position || '').trim().toLowerCase(), [position])
+  // Нормализуем позицию к ключу каталога (legacy operator -> office)
+  const normalizedPosition = useMemo(() => normalizeCatalogPosition(position || ''), [position])
 
   // Получаем специализации из Redux кеша для данной позиции
   const cachedSpecializations = useAppSelector(state =>

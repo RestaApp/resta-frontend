@@ -70,13 +70,12 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
     async (id: number) => {
       try {
         await deleteShift(String(id))
-        refetchMyShifts()
         showToast(t('shift.deleted'), 'warning')
       } catch {
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, refetchMyShifts, showToast, t]
+    [deleteShift, showToast, t]
   )
 
   const refreshList = useCallback(async () => {

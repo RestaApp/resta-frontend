@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import { CitySelect } from '@/components/ui/city-select'
+import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { LocationField, MultiSelectSpecializations } from '../../fields'
+import { useCities } from '@/hooks/useCities'
+import { Field, MultiSelectSpecializations, ShiftLocationField } from '../../fields'
 import type { AddShiftDrawerStep1Props } from './types'
 
 export const AddShiftDrawerStep1 = ({
@@ -10,6 +13,11 @@ export const AddShiftDrawerStep1 = ({
   location,
   onLocationChange,
   locationError,
+  city,
+  onCityChange,
+  cityError,
+  profileAddresses,
+  isEmployeeMode,
   formPosition,
   onPositionChange,
   positionOptions,
@@ -22,17 +30,47 @@ export const AddShiftDrawerStep1 = ({
   specializationError,
 }: AddShiftDrawerStep1Props) => {
   const { t } = useTranslation()
+  const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
+
+  // Employee: один адрес как строка (внутри держим как массив из 1 элемента).
+  const employeeAddress = location[0] ?? ''
+  const handleEmployeeAddressChange = (next: string) => {
+    onLocationChange(next ? [next] : [])
+  }
 
   return (
     <>
-      <div ref={locationRef}>
-        <LocationField
-          label={t('common.location')}
-          value={location}
-          onChange={onLocationChange}
-          placeholder={t('shift.locationPlaceholder')}
-          error={locationError}
-        />
+      <div ref={locationRef} className="flex flex-col gap-3">
+        <Field label={t('profile.city')} error={cityError}>
+          <CitySelect
+            value={city}
+            onChange={onCityChange}
+            options={cities}
+            placeholder={t('profile.form.cityPlaceholder')}
+            disabled={isCitiesLoading}
+            error={cityError}
+          />
+        </Field>
+
+        {isEmployeeMode ? (
+          <Field label={t('common.location')} error={locationError}>
+            <Input
+              value={employeeAddress}
+              onChange={e => handleEmployeeAddressChange(e.target.value)}
+              placeholder={t('shift.locationPlaceholder')}
+              aria-invalid={!!locationError}
+            />
+          </Field>
+        ) : (
+          <ShiftLocationField
+            label={t('common.location')}
+            value={location}
+            onChange={onLocationChange}
+            profileAddresses={profileAddresses}
+            placeholder={t('shift.locationPlaceholder')}
+            error={locationError}
+          />
+        )}
       </div>
 
       <div ref={positionRef}>

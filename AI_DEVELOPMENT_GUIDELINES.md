@@ -7,13 +7,13 @@
 
 ## Иерархия документов и приоритет
 
-| # | Источник | Зона ответственности |
-|---|----------|----------------------|
-| 1 | Задача пользователя (чат / PR) | — |
-| 2 | **`.cursorrules`** | Стек, структура, Redux, TypeScript, общие принципы |
-| 3a | **`AI_DEVELOPMENT_GUIDELINES.md`** (этот файл) | Design system, UI-примитивы, hooks, forms, a11y, verification |
-| 3b | **`HANDOFF.md`** | Эндпоинты и контракты для интеграции с бэкендом |
-| 4 | Паттерны целевых файлов | Локальные соглашения модуля |
+| #   | Источник                                       | Зона ответственности                                          |
+| --- | ---------------------------------------------- | ------------------------------------------------------------- |
+| 1   | Задача пользователя (чат / PR)                 | —                                                             |
+| 2   | **`.cursorrules`**                             | Стек, структура, Redux, TypeScript, общие принципы            |
+| 3a  | **`AI_DEVELOPMENT_GUIDELINES.md`** (этот файл) | Design system, UI-примитивы, hooks, forms, a11y, verification |
+| 3b  | **`HANDOFF.md`**                               | Эндпоинты и контракты для интеграции с бэкендом               |
+| 4   | Паттерны целевых файлов                        | Локальные соглашения модуля                                   |
 
 **При расхождении между документами:** `.cursorrules` > специализированный документ **в его зоне** > код. Между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта нет — разные зоны.
 
@@ -35,19 +35,19 @@
 
 **Цвета и поверхности** — только Tailwind‑семантика из [`src/index.css`](src/index.css) (`@theme inline`):
 
-| Назначение | Tailwind class | CSS‑переменная |
-|------------|----------------|----------------|
-| Фон приложения | `bg-background` | `--background` |
-| Основной текст | `text-foreground` | `--foreground` |
-| Карточка / sheet | `bg-card` | `--card` |
-| Акцент / CTA (оранжевый) | `bg-primary` / `text-primary` | `--primary` |
-| Мягкая подложка блоков | `bg-secondary` | `--secondary`; `--muted` = alias |
-| Приподнятая surface (hover secondary, индикаторы) | `bg-elevated` | `--elevated` |
-| Вторичный текст | `text-muted-foreground` | `--muted-foreground` (не путать с фоном) |
-| Рамка | `border-border` | `--border` |
-| Успех / предупреждение | `bg-success`, `bg-warning` | `--success`, `--warning` |
+| Назначение                                        | Tailwind class                | CSS‑переменная                           |
+| ------------------------------------------------- | ----------------------------- | ---------------------------------------- |
+| Фон приложения                                    | `bg-background`               | `--background`                           |
+| Основной текст                                    | `text-foreground`             | `--foreground`                           |
+| Карточка / sheet                                  | `bg-card`                     | `--card`                                 |
+| Акцент / CTA (оранжевый)                          | `bg-primary` / `text-primary` | `--primary`                              |
+| Мягкая подложка блоков                            | `bg-secondary`                | `--secondary`; `--muted` = alias         |
+| Приподнятая surface (hover secondary, индикаторы) | `bg-elevated`                 | `--elevated`                             |
+| Вторичный текст                                   | `text-muted-foreground`       | `--muted-foreground` (не путать с фоном) |
+| Рамка                                             | `border-border`               | `--border`                               |
+| Успех / предупреждение                            | `bg-success`, `bg-warning`    | `--success`, `--warning`                 |
 
-```tsx
+```text
 // ✅ хорошо
 className="bg-card text-foreground border-border"
 className="bg-secondary hover:bg-elevated"
@@ -61,7 +61,7 @@ className="bg-emp border-emp"                    // legacy → primary
 
 **Градиенты и тени** — только через CSS‑vars в arbitrary, если нет utility:
 
-```tsx
+```text
 className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-primary-cta)]"
 ```
 
@@ -85,31 +85,31 @@ className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-primary-cta)]
 
 Все интерактивные элементы и поверхности — из `src/components/ui/`:
 
-| Тебе нужно | Используй |
-|------------|-----------|
-| Кнопка | [`Button`](src/components/ui/button.tsx) с `size: sm/md/lg` (44/48/52 px) |
-| Поле ввода | [`Input`](src/components/ui/input.tsx) с `variant: default/inline` |
-| Карточка‑surface | [`Card`](src/components/ui/card.tsx) с `padding`/`emphasis`/`status` |
-| Информационный блок (success/warning/info) | [`Callout`](src/components/ui/callout.tsx) |
-| KPI блок (значение + подпись) | [`KpiRow`](src/components/ui/kpi-row.tsx) |
-| Bottom sheet | [`Drawer`](src/components/ui/drawer.tsx) |
-| Modal | [`Modal`](src/components/ui/modal.tsx) |
-| Confirmation | [`AlertDialog`](src/components/ui/alert-dialog.tsx) |
-| Toast | [`useToast`](src/hooks/useToast.ts) |
-| Lazy fallback | [`PageSuspense`](src/components/ui/PageSuspense.tsx) |
-| Бейдж | [`Badge`](src/components/ui/badge.tsx) (variants: `sos/verified/direct/boost/pro/stars/...`) |
-| Компактная карточка смены | [`ShiftCard`](src/components/ui/shift-card/ShiftCard.tsx) + константы из [`shift-card-styles.ts`](src/components/ui/shift-card/shift-card-styles.ts) |
+| Тебе нужно                                 | Используй                                                                                                                                            |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Кнопка                                     | [`Button`](src/components/ui/button.tsx) с `size: sm/md/lg` (44/48/52 px)                                                                            |
+| Поле ввода                                 | [`Input`](src/components/ui/input.tsx) с `variant: default/inline`                                                                                   |
+| Карточка‑surface                           | [`Card`](src/components/ui/card.tsx) с `padding`/`emphasis`/`status`                                                                                 |
+| Информационный блок (success/warning/info) | [`Callout`](src/components/ui/callout.tsx)                                                                                                           |
+| KPI блок (значение + подпись)              | [`KpiRow`](src/components/ui/kpi-row.tsx)                                                                                                            |
+| Bottom sheet                               | [`Drawer`](src/components/ui/drawer.tsx)                                                                                                             |
+| Modal                                      | [`Modal`](src/components/ui/modal.tsx)                                                                                                               |
+| Confirmation                               | [`AlertDialog`](src/components/ui/alert-dialog.tsx)                                                                                                  |
+| Toast                                      | [`useToast`](src/hooks/useToast.ts)                                                                                                                  |
+| Lazy fallback                              | [`PageSuspense`](src/components/ui/PageSuspense.tsx)                                                                                                 |
+| Бейдж                                      | [`Badge`](src/components/ui/badge.tsx) (variants: `sos/verified/direct/boost/pro/stars/...`)                                                         |
+| Компактная карточка смены                  | [`ShiftCard`](src/components/ui/shift-card/ShiftCard.tsx) + константы из [`shift-card-styles.ts`](src/components/ui/shift-card/shift-card-styles.ts) |
 
 ### 1.5. Паттерны className — не дублировать
 
 Повторяющиеся наборы — в [`ui-patterns.ts`](src/components/ui/ui-patterns.ts):
 
-| Группа | Константы (примеры) |
-|--------|---------------------|
-| Поверхности / overlay | `MODAL_SURFACE_CLASS`, `DRAWER_*`, `SHADOW_MODAL_CLASS` |
-| Теги, segmented, табы | `TAG_*`, `SEGMENTED_*`, `TAB_ACTIVE_*` |
-| Инпуты, header actions | `INPUT_FIELD_*`, `APP_HEADER_*` |
-| Типографика | `SCREEN_TITLE_CLASS`, `MODAL_TITLE_CLASS`, `HERO_TITLE_CLASS`, `BLOCK_TITLE_CLASS`, `DISPLAY_PRICE_CLASS`, `CARD_PRICE_CLASS`, `LABEL_CAPS_CLASS`, `META_MONO_CLASS`, … |
+| Группа                 | Константы (примеры)                                                                                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Поверхности / overlay  | `MODAL_SURFACE_CLASS`, `DRAWER_*`, `SHADOW_MODAL_CLASS`                                                                                                                 |
+| Теги, segmented, табы  | `TAG_*`, `SEGMENTED_*`, `TAB_ACTIVE_*`                                                                                                                                  |
+| Инпуты, header actions | `INPUT_FIELD_*`, `APP_HEADER_*`                                                                                                                                         |
+| Типографика            | `SCREEN_TITLE_CLASS`, `MODAL_TITLE_CLASS`, `HERO_TITLE_CLASS`, `BLOCK_TITLE_CLASS`, `DISPLAY_PRICE_CLASS`, `CARD_PRICE_CLASS`, `LABEL_CAPS_CLASS`, `META_MONO_CLASS`, … |
 
 Карточка смены — [`shift-card-styles.ts`](src/components/ui/shift-card/shift-card-styles.ts) (`SHIFT_CARD_*`; цена — `SHIFT_CARD_PRICE_CLASS` = `CARD_PRICE_CLASS`).
 
@@ -144,31 +144,31 @@ import { SHIFT_CARD_CLASS, SHIFT_CARD_PRICE_CLASS } from '@/components/ui/shift-
 
 ESLint правило `no-restricted-syntax` блокирует:
 
-| Запрет | Используй |
-|--------|-----------|
-| `text-[Npx]` (вне allowlist 9/16/36/52) | Шкала Tailwind: `text-xs` / `text-sm` / `text-base` / `text-lg` / `text-xl` / `text-2xl` / `text-3xl` / `text-4xl` |
-| `text-body-*`, `text-meta`, `text-micro`, `text-title-*`, `text-display*` | Удалённые кастомные токены → ближайший Tailwind (см. §2.2) |
-| `bg-[#hex]` | `bg-primary` / `bg-card` / `bg-secondary` / `bg-success/10` |
-| legacy `--surface-*` arbitrary bg | `bg-secondary` / `bg-elevated` / `border-border` |
-| `z-[N]` | `style={{ zIndex: Z_INDEX.modal }}` (см. [`src/shared/ui/zIndex.ts`](src/shared/ui/zIndex.ts)) |
-| `!important` (вне `motion-reduce:`) | Расширь API примитива через `variant` |
-| `rounded-[Npx]` (вне allowlist 4px/2rem) | `rounded-sm` (10) / `rounded-md` (12) / `rounded-lg` (14) / `rounded-xl` (18) / `rounded-2xl` (20) |
+| Запрет                                                                    | Используй                                                                                                          |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `text-[Npx]` (вне allowlist 9/16/36/52)                                   | Шкала Tailwind: `text-xs` / `text-sm` / `text-base` / `text-lg` / `text-xl` / `text-2xl` / `text-3xl` / `text-4xl` |
+| `text-body-*`, `text-meta`, `text-micro`, `text-title-*`, `text-display*` | Удалённые кастомные токены → ближайший Tailwind (см. §2.2)                                                         |
+| `bg-[#hex]`                                                               | `bg-primary` / `bg-card` / `bg-secondary` / `bg-success/10`                                                        |
+| legacy `--surface-*` arbitrary bg                                         | `bg-secondary` / `bg-elevated` / `border-border`                                                                   |
+| `z-[N]`                                                                   | `style={{ zIndex: Z_INDEX.modal }}` (см. [`src/shared/ui/zIndex.ts`](src/shared/ui/zIndex.ts))                     |
+| `!important` (вне `motion-reduce:`)                                       | Расширь API примитива через `variant`                                                                              |
+| `rounded-[Npx]` (вне allowlist 4px/2rem)                                  | `rounded-sm` (10) / `rounded-md` (12) / `rounded-lg` (14) / `rounded-xl` (18) / `rounded-2xl` (20)                 |
 
 ### 2.2. Typography — шкала Tailwind
 
 Кастомные `text-micro` / `text-body-md` и т.п. **сняты с проекта**. Используй
 дефолтную шкалу Tailwind (база `16px` в `:root` → `html`).
 
-| Роль в UI | Константа (`ui-patterns.ts`) | Tailwind | ≈ px |
-|-----------|------------------------------|----------|------|
-| Micro‑лейблы, бейджи, nav | `LABEL_CAPS_CLASS` / `META_MONO_CLASS` | `text-xs` | 12 |
-| Body в карточках, подписи | `BODY_TEXT_CLASS` / `BODY_MUTED_CLASS` | `text-sm` | 14 |
-| Основной body, инпуты | — | `text-base` | 16 |
-| Заголовок секции / блока | `SECTION_TITLE_CLASS` / `BLOCK_TITLE_CLASS` | `text-lg` | 18 |
-| Заголовок экрана (header) | `SCREEN_TITLE_CLASS` | `text-2xl` | 24 |
-| Заголовок модалки / drawer | `MODAL_TITLE_CLASS` | `text-xl` | 20 |
-| Hero / splash | `HERO_TITLE_CLASS` | `text-4xl` | 36 |
-| Цена на деталях / KPI | `DISPLAY_PRICE_CLASS` / `KPI_VALUE_CLASS` | `text-2xl` / `text-lg` | 24 / 18 |
+| Роль в UI                  | Константа (`ui-patterns.ts`)                | Tailwind               | ≈ px    |
+| -------------------------- | ------------------------------------------- | ---------------------- | ------- |
+| Micro‑лейблы, бейджи, nav  | `LABEL_CAPS_CLASS` / `META_MONO_CLASS`      | `text-xs`              | 12      |
+| Body в карточках, подписи  | `BODY_TEXT_CLASS` / `BODY_MUTED_CLASS`      | `text-sm`              | 14      |
+| Основной body, инпуты      | —                                           | `text-base`            | 16      |
+| Заголовок секции / блока   | `SECTION_TITLE_CLASS` / `BLOCK_TITLE_CLASS` | `text-lg`              | 18      |
+| Заголовок экрана (header)  | `SCREEN_TITLE_CLASS`                        | `text-2xl`             | 24      |
+| Заголовок модалки / drawer | `MODAL_TITLE_CLASS`                         | `text-xl`              | 20      |
+| Hero / splash              | `HERO_TITLE_CLASS`                          | `text-4xl`             | 36      |
+| Цена на деталях / KPI      | `DISPLAY_PRICE_CLASS` / `KPI_VALUE_CLASS`   | `text-2xl` / `text-lg` | 24 / 18 |
 
 Заголовки `h1`–`h4` в `@layer base` ([`index.css`](src/index.css)) и константы выше — единственный источник; не дублировать `text-lg font-semibold` / `text-2xl font-extrabold` вручную.
 
@@ -178,14 +178,14 @@ ESLint правило `no-restricted-syntax` блокирует:
 
 Значения из `--radius` в [`index.css`](src/index.css):
 
-| Utility | px | Типичное применение |
-|---------|-----|---------------------|
-| `rounded-sm` | 10 | чипы, segmented control |
-| `rounded-md` | 12 | кнопки |
-| `rounded-lg` | 14 | карточки, инпуты (`Card`, `SHIFT_CARD_CLASS`) |
-| `rounded-xl` | 18 | callout |
-| `rounded-2xl` | 20 | modal, drawer top |
-| `rounded-full` | pill | аватары, switch |
+| Utility        | px   | Типичное применение                           |
+| -------------- | ---- | --------------------------------------------- |
+| `rounded-sm`   | 10   | чипы, segmented control                       |
+| `rounded-md`   | 12   | кнопки                                        |
+| `rounded-lg`   | 14   | карточки, инпуты (`Card`, `SHIFT_CARD_CLASS`) |
+| `rounded-xl`   | 18   | callout                                       |
+| `rounded-2xl`  | 20   | modal, drawer top                             |
+| `rounded-full` | pill | аватары, switch                               |
 
 **Allowlist arbitrary `rounded-[…]`**: `4px` (микро‑бейдж), `2rem` (декоративный spinner).
 
@@ -213,9 +213,10 @@ export const Z_INDEX = {
 
 ```css
 .pb-safe       /* max(env(safe-area-inset-bottom), 16px) — для контента */
-.pb-safe-cta   /* calc(1.25rem + env) — для sticky CTA */
+.pb-safe-nav   /* bottom nav / fixed нижняя навигация */
 .pt-safe
 .bottom-safe   /* bottom: env(safe-area-inset-bottom) */
+.safe-area-bottom
 ```
 
 Не плодить ручные arbitrary safe-area padding-классы — используй утилиту.
@@ -237,7 +238,9 @@ export const Z_INDEX = {
 ```tsx
 // ✅
 <button className="bg-primary text-primary-foreground">CTA</button>
+```
 
+```text
 // ❌ — удалено
 'bg-role-employee' | 'getRoleTheme' | 'bg-emp'
 ```
@@ -246,11 +249,11 @@ export const Z_INDEX = {
 
 Для вертикальных/горизонтальных стеков и сеток — **`gap` на flex/grid-контейнере**, не `margin` на дочерних элементах.
 
-| ❌ Запрещено для стеков | ✅ Используй |
-|-------------------------|--------------|
-| `space-y-*` | `flex flex-col gap-*` или `ui-density-stack` / `ui-density-stack-sm` / `ui-density-stack-lg` |
-| `mt-*` / `mb-*` между соседними блоками в колонке | `gap` на родителе |
-| `ui-density-mb` на заголовках секций | `ui-density-stack` на обёртке секции |
+| ❌ Запрещено для стеков                           | ✅ Используй                                                                                 |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `space-y-*`                                       | `flex flex-col gap-*` или `ui-density-stack` / `ui-density-stack-sm` / `ui-density-stack-lg` |
+| `mt-*` / `mb-*` между соседними блоками в колонке | `gap` на родителе                                                                            |
+| `ui-density-mb` на заголовках секций              | `ui-density-stack` на обёртке секции                                                         |
 
 **Margin допустим** только для: позиционирования (`absolute`, overlay), оптического выравнивания иконки (`mt-0.5` у inline-иконки), отрицательных overlap (`-mt-*`), внешних отступов компонента от соседей снаружи (если родитель не flex/grid-стек).
 
@@ -272,11 +275,17 @@ export const Z_INDEX = {
 
 ## 3. Component architecture
 
-### 3.1. Shared UI = feature‑agnostic
+### 3.1. UI primitives = feature‑agnostic
 
-[`src/components/ui/*`](src/components/ui) НЕ должен импортировать ничего из
-`features/*`. Если примитив знает про `Shift` или `User` — он не shared, перенеси
-в `features/feed/ui/components/...`.
+Новые низкоуровневые примитивы в [`src/components/ui`](src/components/ui)
+должны быть feature‑agnostic: без импортов из `features/*` и без знания доменных
+типов (`Shift`, `User`, role‑specific contracts).
+
+В `src/components/ui` уже есть product-level компоненты, которые переиспользуются
+между экранами (`shift-card`, `shift-details-screen`). Их можно поддерживать на
+месте, но новые доменные компоненты по умолчанию создавай в `features/<домен>/ui`.
+Если компонент становится общим для нескольких доменов, выноси его только после
+появления реального повторного использования.
 
 ### 3.2. Feature‑specific компоненты живут в `features/<домен>/`
 
@@ -313,12 +322,12 @@ export const MyComponent = (props) => {
 
 ### 3.4. Не держать 300+ LOC без причины
 
-| LOC | Действие |
-|-----|----------|
-| <200 | OK |
+| LOC     | Действие                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------- |
+| <200    | OK                                                                                          |
 | 200–300 | Думаем о расщеплении. Проверяем: есть ли логически независимые подкомпоненты или sub‑hooks? |
-| 300–400 | Обоснование требуется в PR. Composition layers (`use*PageModel`) — допустимо. |
-| 400+ | Обязательное расщепление. Pure type‑файлы — исключение. |
+| 300–400 | Обоснование требуется в PR. Composition layers (`use*PageModel`) — допустимо.               |
+| 400+    | Обязательное расщепление. Pure type‑файлы — исключение.                                     |
 
 ### 3.5. Повторяющиеся паттерны → reusable primitives
 
@@ -337,13 +346,13 @@ const visibleRoles = useMemo(() => subRoles, [subRoles])
 const websiteValue = useMemo(() => supplier?.website?.trim() || '', [supplier?.website])
 
 // ✅ оставить
-const filteredItems = useMemo(() =>
-  items.filter(complexPredicate).sort(complexComparator), [items])  // дорогой расчёт
+const filteredItems = useMemo(() => items.filter(complexPredicate).sort(complexComparator), [items]) // дорогой расчёт
 
-const stableProps = useMemo(() => ({ a, b }), [a, b])  // feed в memo‑child
+const stableProps = useMemo(() => ({ a, b }), [a, b]) // feed в memo‑child
 ```
 
 **Правило:** мемоизируй, если:
+
 1. Расчёт дорогой (>0.5ms) или содержит большие данные;
 2. Результат feed в `useEffect deps` или передаётся в `memo()` дочерний компонент;
 3. Иначе — обычная переменная при рендере.
@@ -369,7 +378,7 @@ useEffect(() => {
 
 // ✅ controlled init из props (с guard)
 useEffect(() => {
-  if (manualPhone) return  // не перезаписываем уже введённое
+  if (manualPhone) return // не перезаписываем уже введённое
   if (phoneFromProfile) setManualPhone(formatPhoneInput(phoneFromProfile))
 }, [phoneFromProfile])
 
@@ -461,7 +470,7 @@ const [fieldErrors, setFieldErrors] = useState<AddShiftFieldErrors>({})
 
 // ❌
 const [fieldErrors, setFieldErrors] = useState<any>({})
-const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})  // слишком широкий
+const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}) // слишком широкий
 ```
 
 ### 5.4. Reset / init logic — явно изолирован
@@ -497,7 +506,8 @@ const handleDrawerOpenChange = (next: boolean) => {
 
 ### 6.2. Telegram safe‑area
 
-- Любой `fixed bottom-0` контент → `pb-safe` или `pb-safe-cta`.
+- Любой `fixed bottom-0` контент → существующая safe-area utility
+  (`pb-safe`, `pb-safe-nav`, `bottom-safe`, `safe-area-bottom`) по назначению.
 - Не использовать ручные `pb-[calc(...env(safe-area)...)]`.
 
 ### 6.3. Keyboard‑aware layout
@@ -518,7 +528,12 @@ const handleDrawerOpenChange = (next: boolean) => {
 - Не добавлять глобальные transitions на `*` (`* { transition: all }` — запрещено).
 - Theme transitions — только на `body` / `.themed-surface`:
   ```css
-  body { transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+  body {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
   ```
 - Heavy lists → `react-virtual` (если будет потребность); пока используется
   `useVacanciesInfiniteList` с пагинацией.
@@ -564,6 +579,7 @@ const handleDrawerOpenChange = (next: boolean) => {
 ### 7.3. Focus‑visible states обязательны
 
 Любой интерактивный элемент должен иметь видимый focus ring. Стандарт:
+
 ```css
 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
 ```
@@ -603,7 +619,8 @@ Tailwind‑утилита уже встроена в `Button`, `IconAction`, `Bo
   - Icons → `lucide-react` (уже есть);
   - HTTP/state → RTK Query (уже есть);
   - Forms → собственная архитектура `model/hooks` (нет нужды в react‑hook‑form).
-- Bundle budget: main initial JS ≤ 250 KB gzip. Сейчас ~208 KB.
+- Bundle budget: main initial JS ≤ 250 KB gzip. Фактический размер фиксировать
+  только по свежему `npm run build`.
 
 ### 8.2. Lazy‑load route‑level pages
 
@@ -611,9 +628,7 @@ Tailwind‑утилита уже встроена в `Button`, `IconAction`, `Bo
 добавляешь новый таб — следуй паттерну:
 
 ```ts
-const NewPage = lazy(() =>
-  import('@/features/new/ui/NewPage').then(m => ({ default: m.NewPage }))
-)
+const NewPage = lazy(() => import('@/features/new/ui/NewPage').then(m => ({ default: m.NewPage })))
 ```
 
 `<PageSuspense>` обёртывает их автоматически.
@@ -632,7 +647,8 @@ const NewPage = lazy(() =>
 
 - Аватарки / превью с фиксированными размерами `w-11 h-11` (не `aspect-square` без явной высоты).
 - Skeleton loaders должны иметь те же габариты, что и финальный контент.
-- `font-display: swap` через `<link>` препродашн уже настроен.
+- Для webfont при подключении внешних шрифтов использовать `font-display: swap`;
+  не блокировать first paint загрузкой шрифта.
 
 ---
 
@@ -676,15 +692,15 @@ npm run test:visual:update
 
 ### Smoke screens — обязательный минимум для UI задач
 
-| Экран | Что проверить |
-|-------|---------------|
-| Boot | Splash отрисовался, нет console errors |
-| Onboarding (RoleSelector → TelegramConfirm → OnboardingComplete) | Прогресс‑бар, поля валидируются, Continue работает |
-| Feed | Список, фильтры, hot offers, переключение jobs/shifts, пустое состояние |
-| Activity | Tab Active/History, AddShiftDrawer открывается, валидация шагов |
-| Profile | KPI, бейджи, edit drawer открывается per‑role, theme switch |
-| Venue Suppliers | Поиск, фильтр drawer, пагинация, empty state |
-| Dark / Light | Обе темы переключаются мгновенно, контраст ОК |
+| Экран                                                            | Что проверить                                                           |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Boot                                                             | Splash отрисовался, нет console errors                                  |
+| Onboarding (RoleSelector → TelegramConfirm → OnboardingComplete) | Прогресс‑бар, поля валидируются, Continue работает                      |
+| Feed                                                             | Список, фильтры, hot offers, переключение jobs/shifts, пустое состояние |
+| Activity                                                         | Tab Active/History, AddShiftDrawer открывается, валидация шагов         |
+| Profile                                                          | KPI, бейджи, edit drawer открывается per‑role, theme switch             |
+| Venue Suppliers                                                  | Поиск, фильтр drawer, пагинация, empty state                            |
+| Dark / Light                                                     | Обе темы переключаются мгновенно, контраст ОК                           |
 
 ---
 
@@ -699,8 +715,8 @@ npm run test:visual:update
 
 ## Затронутые файлы
 
-| Файл | Что |
-|------|-----|
+| Файл               | Что              |
+| ------------------ | ---------------- |
 | `path/to/file.tsx` | краткое описание |
 
 ## Public API
@@ -827,7 +843,6 @@ body, .themed-surface { transition: background-color 0.2s ease }
 
 - [`.cursorrules`](.cursorrules) — канон (стек, Redux, структура).
 - [`HANDOFF.md`](HANDOFF.md) — эндпоинты бэкенда (Stars, KPI, Hire, SOS, AI-match).
-- [`AUDIT.md`](AUDIT.md) — engineering audit и roadmap.
 - [`AGENTS.md`](AGENTS.md) — указатель на `.cursorrules`.
 
 ---

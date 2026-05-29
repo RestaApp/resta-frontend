@@ -84,7 +84,7 @@ export const DetailsTab = memo(
     t,
   }: DetailsTabProps) => {
     const displayDuration = normalizeDuration(duration)
-    const displayLocation = locationPoints[0] ?? shift.location ?? ''
+    const displayLocation = locationPoints[0] ?? shift.location?.[0] ?? ''
     const distance = formatDistanceKm(shift.distanceKm)
     const payValue =
       pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : formatMoney(Number(pay))

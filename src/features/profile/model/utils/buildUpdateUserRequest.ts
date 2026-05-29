@@ -1,6 +1,8 @@
 import type { ApiRole } from '@/types'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
+import { normalizeCatalogPosition } from '@/utils/roles'
 import { toE164 } from '@/utils/phone'
+import { sanitizeLocations } from '@/shared/utils/location'
 
 import { formValueToBusinessHoursRecord } from '@/features/profile/model/utils/businessHoursForm'
 
@@ -9,7 +11,8 @@ export interface ProfileFormData {
   lastName: string
   bio: string
   city: string
-  location: string
+  /** Адреса заведения (для restaurant / supplier). Для employee всегда []. */
+  location: string[]
   email: string
   phone: string
   workExperienceSummary: string
@@ -88,7 +91,8 @@ export const buildRegistrationUpdateUserRequest = (
 
   if (data.role === 'employee') {
     const employeeAttributes: EmployeeProfileAttributes = {}
-    const position = data.position?.trim()
+    const positionRaw = data.position?.trim()
+    const position = positionRaw ? normalizeCatalogPosition(positionRaw) : undefined
     const specializations = uniqueStrings(data.specializations ?? [])
 
     if (position) {
@@ -156,8 +160,8 @@ export const buildUpdateUserRequest = (
   const initialBio = normalizeStringOrNull(source.bio)
   const currentCity = normalizeStringOrNull(formData.city)
   const initialCity = normalizeStringOrNull(source.city)
-  const currentLocation = normalizeStringOrNull(formData.location)
-  const initialLocation = normalizeStringOrNull(source.location)
+  const currentLocation = sanitizeLocations(formData.location)
+  const initialLocation = sanitizeLocations(source.location)
   const currentWebsite = normalizeStringOrNull(formData.website)
   const initialWebsite = normalizeStringOrNull(source.website)
   const currentBusinessHours = formValueToBusinessHoursRecord(formData.businessHours) ?? null
@@ -207,7 +211,7 @@ export const buildUpdateUserRequest = (
     user.city = currentCity
   }
 
-  if (isBusinessRole && currentLocation !== initialLocation) {
+  if (isBusinessRole && hasDiff(currentLocation, initialLocation)) {
     user.location = currentLocation
   }
 

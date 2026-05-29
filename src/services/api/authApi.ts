@@ -51,7 +51,7 @@ export interface UserData {
   language: string
   /** Только для employee в Blueprinter */
   last_name?: string
-  location: string | null
+  location: string[] | null
   city?: string | null
   name: string
   phone: string | null

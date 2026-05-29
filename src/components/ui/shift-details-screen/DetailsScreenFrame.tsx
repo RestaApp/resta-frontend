@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, type PointerEvent, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type PointerEvent,
+  type ReactNode,
+} from 'react'
 import { createPortal } from 'react-dom'
 import {
   Drawer,
@@ -43,6 +50,11 @@ export function DetailsScreenFrame({
 }: DetailsScreenFrameProps) {
   const fullscreenOffset = useTelegramFullscreenOffset()
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null)
+  const onCloseRef = useRef(onClose)
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose
+  })
+  const stableClose = useCallback(() => onCloseRef.current(), [])
 
   const handlePointerDown = useCallback((event: PointerEvent<HTMLElement>) => {
     if (event.pointerType === 'mouse') return
@@ -72,8 +84,8 @@ export function DetailsScreenFrame({
 
   useEffect(() => {
     if (!open || variant !== 'page') return
-    return setupTelegramBackButton(onClose)
-  }, [onClose, open, variant])
+    return setupTelegramBackButton(stableClose)
+  }, [stableClose, open, variant])
 
   if (variant === 'page') {
     if (!open) return null

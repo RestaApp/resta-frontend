@@ -15,6 +15,7 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/hooks/useToast'
+import { toLocationArray } from '@/shared/utils/location'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
 import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
 import {
@@ -74,16 +75,30 @@ const AddShiftDrawerKeyed = ({
     [t]
   )
 
-  const defaultLocation =
-    (userProfile?.location && userProfile.location.trim()) ||
-    (userProfile?.city && userProfile.city.trim()) ||
-    null
+  const profileAddresses = useMemo(
+    () => toLocationArray(userProfile?.location),
+    [userProfile?.location]
+  )
+  // По умолчанию подставляем сохранённые адреса заведения; city не дублируется в location.
+  const defaultLocation = useMemo<string[] | null>(
+    () => (profileAddresses.length > 0 ? profileAddresses : null),
+    [profileAddresses]
+  )
+
+  const initialLocationFromValues = useMemo(() => {
+    const fromValues = toLocationArray(initialValues?.location)
+    return fromValues.length > 0 ? fromValues : null
+  }, [initialValues?.location])
+
+  const userCity = userProfile?.city?.trim() || null
 
   const form = useAddShiftForm({
     initialShiftType: lockedShiftType ?? initialShiftType ?? INITIAL_SHIFT_TYPE,
     onSave,
     initialValues,
-    initialLocation: initialValues?.location ?? defaultLocation,
+    initialLocation: initialLocationFromValues ?? defaultLocation,
+    initialCity: userCity,
+    userCity,
   })
   const controller = useAddShiftDrawerController({
     open,
@@ -194,6 +209,11 @@ const AddShiftDrawerKeyed = ({
             location={form.location}
             onLocationChange={controller.actions.handleLocationChange}
             locationError={controller.derived.errors.locationFieldError}
+            city={form.city}
+            onCityChange={controller.actions.handleCityChange}
+            cityError={controller.derived.errors.cityFieldError}
+            profileAddresses={profileAddresses}
+            isEmployeeMode={isEmployeeUser}
             formPosition={form.position}
             onPositionChange={controller.actions.handlePositionChange}
             positionOptions={positionOptions}
