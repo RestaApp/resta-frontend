@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import {
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
+  DrawerFrame,
   DrawerHeader,
   DrawerFooter,
   DrawerTitle,
@@ -87,9 +89,15 @@ export const EditProfileDrawer = memo(
 
     return (
       <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
+        <DrawerFrame className="flex-1">
         <DrawerHeader>
-          <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
-          <DrawerDescription>{editProfileDescription}</DrawerDescription>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
+              <DrawerDescription>{editProfileDescription}</DrawerDescription>
+            </div>
+            <DrawerCloseButton onClick={handleCancel} ariaLabel={t('common.close')} />
+          </div>
         </DrawerHeader>
 
         <DrawerBody className="ui-density-stack">
@@ -126,7 +134,7 @@ export const EditProfileDrawer = memo(
           )}
         </DrawerBody>
 
-        <DrawerFooter className="sticky bottom-0 z-10" contentClassName="grid grid-cols-2 gap-2">
+        <DrawerFooter contentClassName="grid grid-cols-2 gap-2">
           <Button
             onClick={handleCancel}
             disabled={isLoading}
@@ -147,6 +155,7 @@ export const EditProfileDrawer = memo(
           </Button>
         </DrawerFooter>
 
+        </DrawerFrame>
         <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>
           <AlertDialogContent>
             <AlertDialogHeader>

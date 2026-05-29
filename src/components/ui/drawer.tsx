@@ -277,6 +277,7 @@ export const DrawerFooter = ({ className, contentClassName, ...props }: DrawerFo
     <BottomActionBar
       mode="static"
       withBorder
+      transparent
       className={cn('mt-auto', className)}
       contentClassName={cn('flex flex-col gap-2', contentClassName)}
       {...props}

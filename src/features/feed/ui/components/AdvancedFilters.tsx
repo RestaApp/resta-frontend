@@ -31,10 +31,7 @@ export const AdvancedFilters = ({
   initialFilters,
   isVacancy = false,
 }: AdvancedFiltersProps) => (
-  <Drawer
-    open={isOpen}
-    onOpenChange={open => !open && onClose()}
-  >
+  <Drawer open={isOpen} onOpenChange={open => !open && onClose()}>
     <AdvancedFiltersSheet
       key={isOpen ? JSON.stringify(initialFilters ?? null) : 'closed'}
       onClose={onClose}
@@ -86,7 +83,7 @@ const AdvancedFiltersSheet = ({
         </div>
       </DrawerHeader>
 
-      <DrawerBody className="flex flex-col gap-3 pb-4">
+      <DrawerBody className="flex flex-col gap-3 pb-28">
         {c.positions.length > 0 ? (
           <div className="flex flex-col gap-2">
             <FilterSectionLabel>{t('feed.sectionPosition')}</FilterSectionLabel>

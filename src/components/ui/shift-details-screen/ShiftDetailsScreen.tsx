@@ -85,7 +85,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const ownerFooter =
     controller.isOwner && ownerActions ? (
-      <DrawerFooter className="shrink-0 border-border/30">
+      <DrawerFooter>
         <div className="flex gap-4">
           <Button
             variant="outline"
@@ -111,7 +111,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const applicantFooter =
     !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
-      <DrawerFooter className="shrink-0 border-border/30">
+      <DrawerFooter>
         <div className="flex gap-4">
           {isApplied ? (
             <Button

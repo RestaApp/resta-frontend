@@ -3,6 +3,8 @@ import { HelpCircle } from 'lucide-react'
 import {
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
+  DrawerFrame,
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
@@ -33,53 +35,63 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
   if (form.isSuccess) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerHeader>
-          <div className="flex items-center gap-3">
-            <SupportDrawerIcon />
-            <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
-          </div>
-          <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
-        </DrawerHeader>
-        <DrawerFooter>
-          <Button variant="gradient" size="sm" className="w-full" onClick={form.handleClose}>
-            {t('common.understand')}
-          </Button>
-        </DrawerFooter>
+        <DrawerFrame className="flex-1">
+          <DrawerHeader>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <SupportDrawerIcon />
+                <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
+              </div>
+              <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
+            </div>
+            <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter>
+            <Button variant="gradient" size="md" className="w-full" onClick={form.handleClose}>
+              {t('common.understand')}
+            </Button>
+          </DrawerFooter>
+        </DrawerFrame>
       </Drawer>
     )
   }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerHeader>
-        <div className="flex items-center gap-3">
-          <SupportDrawerIcon />
-          <div>
-            <DrawerTitle>{t('profile.supportForm.title')}</DrawerTitle>
-            <DrawerDescription>{t('profile.supportForm.description')}</DrawerDescription>
+      <DrawerFrame className="flex-1">
+        <DrawerHeader>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3">
+              <SupportDrawerIcon />
+              <div>
+                <DrawerTitle>{t('profile.supportForm.title')}</DrawerTitle>
+                <DrawerDescription>{t('profile.supportForm.description')}</DrawerDescription>
+              </div>
+            </div>
+            <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
           </div>
-        </div>
-      </DrawerHeader>
+        </DrawerHeader>
 
-      <DrawerBody className="ui-density-stack">
-        <SupportTicketForm
-          subject={form.subject}
-          setSubject={form.setSubject}
-          message={form.message}
-          setMessage={form.setMessage}
-          category={form.category}
-          setCategory={form.setCategory}
-          contactInfo={form.contactInfo}
-          setContactInfo={form.setContactInfo}
-          categoryOptions={form.categoryOptions}
-          onSubmit={form.handleSubmit}
-          onCancel={handleClose}
-          isLoading={form.isLoading}
-          errorMessage={form.errorMessage}
-          fieldErrors={form.fieldErrors}
-          maxMessageLength={form.maxMessageLength}
-        />
-      </DrawerBody>
+        <DrawerBody className="ui-density-stack">
+          <SupportTicketForm
+            subject={form.subject}
+            setSubject={form.setSubject}
+            message={form.message}
+            setMessage={form.setMessage}
+            category={form.category}
+            setCategory={form.setCategory}
+            contactInfo={form.contactInfo}
+            setContactInfo={form.setContactInfo}
+            categoryOptions={form.categoryOptions}
+            onSubmit={form.handleSubmit}
+            onCancel={handleClose}
+            isLoading={form.isLoading}
+            errorMessage={form.errorMessage}
+            fieldErrors={form.fieldErrors}
+            maxMessageLength={form.maxMessageLength}
+          />
+        </DrawerBody>
+      </DrawerFrame>
     </Drawer>
   )
 }

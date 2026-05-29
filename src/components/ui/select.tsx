@@ -71,6 +71,19 @@ export const Select = memo(function Select({
   })
   const [maxHeight, setMaxHeight] = useState(280)
 
+  const getScrollableAncestor = useCallback((element: HTMLElement | null): HTMLElement | null => {
+    let current = element?.parentElement ?? null
+    while (current) {
+      const { overflowY } = window.getComputedStyle(current)
+      const canScroll =
+        (overflowY === 'auto' || overflowY === 'scroll') &&
+        current.scrollHeight > current.clientHeight
+      if (canScroll) return current
+      current = current.parentElement
+    }
+    return null
+  }, [])
+
   // Расчет позиции и максимальной высоты дропдауна
   useEffect(() => {
     if (isOpen && containerRef.current) {
@@ -80,7 +93,9 @@ export const Select = memo(function Select({
         if (!containerRef.current) return
 
         const rect = containerRef.current.getBoundingClientRect()
-        const scrollContainer = containerRef.current.closest('[data-scroll-container="true"]')
+        const scrollContainer =
+          (containerRef.current.closest('[data-scroll-container="true"]') as HTMLElement | null) ??
+          getScrollableAncestor(containerRef.current)
         const scrollContainerRect = scrollContainer?.getBoundingClientRect()
         const viewportHeight = scrollContainerRect?.bottom ?? window.innerHeight
         const effectiveBottomOffset = scrollContainerRect ? 0 : bottomOffsetPx
@@ -88,7 +103,7 @@ export const Select = memo(function Select({
 
         const spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
         const spaceAbove = rect.top
-        const desiredDropdownHeight = 260 // ~5-6 опций по ~44px
+        const desiredDropdownHeight = 215
 
         // Определяем, открывать вверх или вниз
         const opensUp = forceDropdownBelow
@@ -97,22 +112,27 @@ export const Select = memo(function Select({
 
         // Внутри DrawerBody поднимаем поле (через scroll контейнера), чтобы
         // у выпадающего списка было место показать минимум 5-6 опций.
-        if (
-          forceDropdownBelow &&
-          !opensUp &&
-          scrollContainer instanceof HTMLElement &&
-          !didAutoScrollRef.current
-        ) {
+        if (forceDropdownBelow && !opensUp && !didAutoScrollRef.current) {
           const deficit = desiredDropdownHeight - spaceBelow
           if (deficit > 0) {
-            const remainingScroll =
-              scrollContainer.scrollHeight -
-              scrollContainer.clientHeight -
-              scrollContainer.scrollTop
-            const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
-            if (scrollDelta > 0) {
-              didAutoScrollRef.current = true
-              scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+            if (scrollContainer instanceof HTMLElement) {
+              const remainingScroll =
+                scrollContainer.scrollHeight -
+                scrollContainer.clientHeight -
+                scrollContainer.scrollTop
+              const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
+              if (scrollDelta > 0) {
+                didAutoScrollRef.current = true
+                scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+              }
+            } else {
+              const maxWindowScroll = document.documentElement.scrollHeight - window.innerHeight
+              const remainingWindowScroll = Math.max(maxWindowScroll - window.scrollY, 0)
+              const scrollDelta = Math.min(deficit + 24, remainingWindowScroll)
+              if (scrollDelta > 0) {
+                didAutoScrollRef.current = true
+                window.scrollBy({ top: scrollDelta, behavior: 'auto' })
+              }
             }
           }
         }
@@ -135,7 +155,7 @@ export const Select = memo(function Select({
 
         let top: number
         if (opensUp) {
-          top = rect.top - Math.min(availableSpace, 420) - 4
+          top = rect.top - Math.min(availableSpace, 215) - 4
         } else {
           top = rect.bottom + 4
         }
@@ -146,7 +166,7 @@ export const Select = memo(function Select({
           width: rect.width,
           opensUp,
         })
-        setMaxHeight(Math.min(availableSpace, 420)) // максимум 420px
+        setMaxHeight(Math.min(availableSpace, 215))
       }
 
       const throttledUpdate = () => {
@@ -170,7 +190,7 @@ export const Select = memo(function Select({
         if (rafId !== null) cancelAnimationFrame(rafId)
       }
     }
-  }, [isOpen, bottomOffsetPx, forceDropdownBelow])
+  }, [isOpen, bottomOffsetPx, forceDropdownBelow, getScrollableAncestor])
 
   useEffect(() => {
     if (!isOpen) {

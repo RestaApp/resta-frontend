@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next'
 import {
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
+  DrawerFrame,
   DrawerHeader,
   DrawerTitle,
   DrawerFooter,
-  DrawerCloseButton,
 } from '@/components/ui/drawer'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
@@ -163,17 +164,14 @@ export const NotificationPreferencesDrawer = memo(
 
     return (
       <Drawer open={open} onOpenChange={handleClose}>
-        <DrawerHeader className="border-b border-transparent pb-3">
+        <DrawerFrame className="flex-1">
+        <DrawerHeader>
           <div className="flex items-center justify-between gap-2">
+            <DrawerTitle>{t('profile.notificationSettings')}</DrawerTitle>
             <DrawerCloseButton
               onClick={() => handleClose(false)}
-              ariaLabel={t('common.back')}
-              className="grid h-9 w-9 place-items-center rounded-sm p-0"
+              ariaLabel={t('common.close')}
             />
-            <DrawerTitle className="truncate text-center text-lg">
-              {t('profile.notificationSettings')}
-            </DrawerTitle>
-            <div className="h-9 w-9" aria-hidden />
           </div>
         </DrawerHeader>
 
@@ -232,7 +230,7 @@ export const NotificationPreferencesDrawer = memo(
                 type="button"
                 onClick={() => handleClose(false)}
                 variant="outline"
-                size="sm"
+                size="md"
                 className="flex-1"
                 disabled={isUpdating}
               >
@@ -242,7 +240,7 @@ export const NotificationPreferencesDrawer = memo(
                 type="button"
                 onClick={handleApply}
                 variant="gradient"
-                size="sm"
+                size="md"
                 className="flex-1"
                 disabled={isUpdating}
               >
@@ -251,6 +249,7 @@ export const NotificationPreferencesDrawer = memo(
             </div>
           </DrawerFooter>
         ) : null}
+        </DrawerFrame>
       </Drawer>
     )
   }

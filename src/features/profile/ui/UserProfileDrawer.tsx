@@ -170,7 +170,7 @@ export const UserProfileDrawer = memo(
             </DrawerBody>
 
             {showModerationActions ? (
-              <DrawerFooter className="shrink-0">
+              <DrawerFooter>
                 <div className="flex gap-3">
                   {canReject ? (
                     <Button

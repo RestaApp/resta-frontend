@@ -2,7 +2,7 @@
  * Поле выбора города с автодополнением
  */
 
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -38,7 +38,6 @@ export const LocationField = memo(function LocationField({
     errorMessage,
     isLoadingCities,
     hasSuggestions,
-    hasMore,
     filteredCities,
     inputRef,
     containerRef,
@@ -53,6 +52,18 @@ export const LocationField = memo(function LocationField({
   })
   const didAutoScrollRef = useRef(false)
   const [maxDropdownHeight, setMaxDropdownHeight] = useState(200)
+  const getScrollableAncestor = useCallback((element: HTMLElement | null): HTMLElement | null => {
+    let current = element?.parentElement ?? null
+    while (current) {
+      const { overflowY } = window.getComputedStyle(current)
+      const canScroll =
+        (overflowY === 'auto' || overflowY === 'scroll') &&
+        current.scrollHeight > current.clientHeight
+      if (canScroll) return current
+      current = current.parentElement
+    }
+    return null
+  }, [])
 
   useEffect(() => {
     if (!hasSuggestions || !containerRef.current) return
@@ -60,27 +71,41 @@ export const LocationField = memo(function LocationField({
     const updateMaxHeight = () => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
-      const scrollContainer = containerRef.current.closest('[data-scroll-container="true"]')
+      const scrollContainer =
+        (containerRef.current.closest('[data-scroll-container="true"]') as HTMLElement | null) ??
+        getScrollableAncestor(containerRef.current)
       const scrollContainerRect = scrollContainer?.getBoundingClientRect()
       const viewportBottom = scrollContainerRect?.bottom ?? window.innerHeight
       const effectiveBottomOffset = scrollContainerRect ? 0 : BOTTOM_NAV_HEIGHT_PX
       const spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
-      const desiredDropdownHeight = 260 // ~5-6 опций
+      const desiredDropdownHeight = 215
 
-      if (scrollContainer instanceof HTMLElement && !didAutoScrollRef.current) {
+      if (!didAutoScrollRef.current) {
         const deficit = desiredDropdownHeight - spaceBelow
         if (deficit > 0) {
-          const remainingScroll =
-            scrollContainer.scrollHeight - scrollContainer.clientHeight - scrollContainer.scrollTop
-          const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
-          if (scrollDelta > 0) {
-            didAutoScrollRef.current = true
-            scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+          if (scrollContainer instanceof HTMLElement) {
+            const remainingScroll =
+              scrollContainer.scrollHeight -
+              scrollContainer.clientHeight -
+              scrollContainer.scrollTop
+            const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
+            if (scrollDelta > 0) {
+              didAutoScrollRef.current = true
+              scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+            }
+          } else {
+            const maxWindowScroll = document.documentElement.scrollHeight - window.innerHeight
+            const remainingWindowScroll = Math.max(maxWindowScroll - window.scrollY, 0)
+            const scrollDelta = Math.min(deficit + 24, remainingWindowScroll)
+            if (scrollDelta > 0) {
+              didAutoScrollRef.current = true
+              window.scrollBy({ top: scrollDelta, behavior: 'auto' })
+            }
           }
         }
       }
 
-      setMaxDropdownHeight(Math.max(Math.min(spaceBelow - 12, 420), 64))
+      setMaxDropdownHeight(Math.max(Math.min(spaceBelow - 12, 215), 64))
     }
 
     updateMaxHeight()
@@ -91,7 +116,7 @@ export const LocationField = memo(function LocationField({
       window.removeEventListener('resize', updateMaxHeight)
       window.removeEventListener('scroll', updateMaxHeight, true)
     }
-  }, [hasSuggestions, containerRef])
+  }, [hasSuggestions, containerRef, getScrollableAncestor])
 
   useEffect(() => {
     if (!hasSuggestions) {
@@ -151,13 +176,7 @@ export const LocationField = memo(function LocationField({
             <Loader size="sm" />
           </div>
         }
-        footerContent={
-          hasMore ? (
-            <div className="border-t border-border px-4 py-2 text-center text-xs text-muted-foreground">
-              {t('citySelect.loadMoreHint')}
-            </div>
-          ) : null
-        }
+        footerContent={null}
         searchable={false}
         displayPlaceholder={t('citySelect.placeholder')}
         value={value}
