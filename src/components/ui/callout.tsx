@@ -10,11 +10,11 @@ import { cn } from '@/utils/cn'
  * SRP: чистый презентационный примитив. Любое поведение (закрытие/действия) — снаружи.
  */
 const TONE_CLASSES = {
-  success: 'border-success/30 bg-success/8',
-  warning: 'border-warning/30 bg-warning/8',
-  destructive: 'border-destructive/30 bg-destructive/8',
+  success: 'border-success/30 bg-success/10',
+  warning: 'border-warning/30 bg-warning/10',
+  destructive: 'border-destructive/30 bg-destructive/10',
   /** Alias to `destructive` per spec naming. */
-  danger: 'border-destructive/30 bg-destructive/8',
+  danger: 'border-destructive/30 bg-destructive/10',
   info: 'border-border bg-secondary',
   neutral: 'border-border bg-card',
   /**

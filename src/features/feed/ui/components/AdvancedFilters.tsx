@@ -42,9 +42,6 @@ export const AdvancedFilters = ({
   </Drawer>
 )
 
-const FilterSectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className={PROFILE_SECTION_LABEL_CLASS}>{children}</p>
-)
 
 const AdvancedFiltersSheet = ({
   onClose,
@@ -86,7 +83,7 @@ const AdvancedFiltersSheet = ({
       <DrawerBody className="flex flex-col gap-3 pb-28">
         {c.positions.length > 0 ? (
           <div className="flex flex-col gap-2">
-            <FilterSectionLabel>{t('feed.sectionPosition')}</FilterSectionLabel>
+            <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.sectionPosition')}</p>
             <div className="flex flex-wrap gap-2">
               {c.positions.map(position => {
                 const positionValue = position.originalValue || position.id
@@ -107,7 +104,7 @@ const AdvancedFiltersSheet = ({
 
         {c.selectedPosition && c.displaySpecializations.length > 0 ? (
           <div className="relative flex shrink-0 flex-col gap-2 overflow-visible">
-            <FilterSectionLabel>{t('shift.specialization')}</FilterSectionLabel>
+            <p className={PROFILE_SECTION_LABEL_CLASS}>{t('shift.specialization')}</p>
             <div className="relative flex flex-wrap gap-2">
               {c.displaySpecializations.map(specialization => (
                 <SelectableTagButton
@@ -126,7 +123,7 @@ const AdvancedFiltersSheet = ({
         ) : null}
 
         <div className="flex flex-col gap-2">
-          <FilterSectionLabel>{t('feed.sectionCity')}</FilterSectionLabel>
+          <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.sectionCity')}</p>
           <LocationField
             value={c.selectedCity}
             onChange={c.setSelectedCity}

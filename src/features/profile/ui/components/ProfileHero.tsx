@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DISPLAY_PRICE_CLASS, HERO_TITLE_CLASS, SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/utils/cn'
@@ -49,13 +50,12 @@ export const ProfileHero = memo(
     const content = (
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[image:var(--gradient-primary)]">
-            {photoUrl ? (
-              <img src={photoUrl} alt={userName} className="h-full w-full object-cover" />
-            ) : (
+          <Avatar className="h-24 w-24 bg-[image:var(--gradient-primary)]">
+            <AvatarImage src={photoUrl} alt={userName} />
+            <AvatarFallback>
               <span className={cn(HERO_TITLE_CLASS, 'text-white')}>{getInitials(userName)}</span>
-            )}
-          </div>
+            </AvatarFallback>
+          </Avatar>
 
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex min-w-0 items-center gap-2">
