@@ -39,8 +39,6 @@ export function useAppBootstrap() {
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(ROUTES.HOME)
   const [postLogoutLoading, setPostLogoutLoading] = useState(false)
-  /** Инкремент при popstate — пересчёт экрана из актуального pathname */
-  const [browserHistoryTick, setBrowserHistoryTick] = useState(0)
   const logoutTimerRef = useRef<number | null>(null)
   const initialScreenRef = useRef(true)
 
@@ -95,7 +93,6 @@ export function useAppBootstrap() {
     if (typeof window === 'undefined') return
 
     const handlePopState = () => {
-      setBrowserHistoryTick(n => n + 1)
       if (!selectedRole) return
       const screenFromPath = getScreenForPath(selectedRole, window.location.pathname)
       if (screenFromPath) {
@@ -106,15 +103,6 @@ export function useAppBootstrap() {
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [selectedRole])
-
-  // При popstate инкрементируется browserHistoryTick — новый рендер и чтение pathname ниже.
-  const pathnameFromHistory = typeof window !== 'undefined' ? window.location.pathname : ''
-  void browserHistoryTick
-
-  const resolvedCurrentScreen =
-    selectedRole && typeof window !== 'undefined'
-      ? (getScreenForPath(selectedRole, pathnameFromHistory) ?? currentScreen)
-      : currentScreen
 
   const onSelectRole = useCallback(
     (role: UiRole) => {
@@ -127,7 +115,7 @@ export function useAppBootstrap() {
   return {
     screen,
     role: selectedRole,
-    currentScreen: resolvedCurrentScreen,
+    currentScreen,
     navigate,
     onSelectRole,
   }

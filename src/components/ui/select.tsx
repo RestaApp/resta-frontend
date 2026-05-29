@@ -93,7 +93,7 @@ export const Select = memo(function Select({
       const updatePosition = () => {
         if (!containerRef.current) return
 
-        const rect = containerRef.current.getBoundingClientRect()
+        let rect = containerRef.current.getBoundingClientRect()
         const scrollContainer =
           (containerRef.current.closest('[data-scroll-container="true"]') as HTMLElement | null) ??
           getScrollableAncestor(containerRef.current)
@@ -102,11 +102,10 @@ export const Select = memo(function Select({
         const effectiveBottomOffset = scrollContainerRect ? 0 : bottomOffsetPx
         const viewportWidth = window.innerWidth
 
-        const spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
+        let spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
         const spaceAbove = rect.top
         const desiredDropdownHeight = 215
 
-        // Определяем, открывать вверх или вниз
         const opensUp = forceDropdownBelow
           ? false
           : spaceBelow < desiredDropdownHeight && spaceAbove > spaceBelow
@@ -139,6 +138,8 @@ export const Select = memo(function Select({
               if (scrollDelta > 0) {
                 didAutoScrollRef.current = true
                 scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
+                rect = containerRef.current.getBoundingClientRect()
+                spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
               }
             } else {
               const maxWindowScroll = document.documentElement.scrollHeight - window.innerHeight
@@ -147,6 +148,8 @@ export const Select = memo(function Select({
               if (scrollDelta > 0) {
                 didAutoScrollRef.current = true
                 window.scrollBy({ top: scrollDelta, behavior: 'auto' })
+                rect = containerRef.current.getBoundingClientRect()
+                spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
               }
             }
           }

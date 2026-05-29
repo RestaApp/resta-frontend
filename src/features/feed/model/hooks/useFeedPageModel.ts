@@ -59,7 +59,7 @@ export const useFeedPageModel = () => {
     setSelectedShiftId,
     isFiltersOpen,
     setIsFiltersOpen,
-    resetFilters: resetFeedFilters,
+    resetFilters,
   } = useFeedFiltersState()
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
 
@@ -178,10 +178,6 @@ export const useFeedPageModel = () => {
   )
   const closeRestaurantDetails = useCallback(() => setSelectedRestaurantId(null), [])
 
-  const closeApplicationSuccessView = useCallback(() => {
-    closeApplicationSuccess()
-  }, [closeApplicationSuccess])
-
   const handleOpenApplications = useCallback(() => {
     closeApplicationSuccess()
     setSelectedShiftId(null)
@@ -195,8 +191,6 @@ export const useFeedPageModel = () => {
     setSelectedShiftId(null)
     setSelectedRestaurantId(null)
   }, [closeApplicationSuccess, setSelectedShiftId])
-
-  const resetFilters = useCallback(() => resetFeedFilters(), [resetFeedFilters])
 
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
   const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])
@@ -346,7 +340,7 @@ export const useFeedPageModel = () => {
     submitApplyCoverModal,
     applicationSuccess,
     applicationSuccessShift,
-    closeApplicationSuccess: closeApplicationSuccessView,
+    closeApplicationSuccess,
     openApplicationsAfterApply: handleOpenApplications,
     searchMoreAfterApply: handleSearchMoreAfterApply,
     handleCancel,
