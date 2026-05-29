@@ -13,9 +13,7 @@ export interface SelectProps {
   label?: string
   hint?: string
   error?: string
-  allowCustomValue?: boolean
   searchable?: boolean
-  forceDropdownBelow?: boolean
-  /** Отступ снизу (например высота BottomNav) для расчёта позиции дропдауна */
+  /** Отступ снизу (например высота BottomNav) для автоскролла при открытии дропдауна */
   bottomOffsetPx?: number
 }

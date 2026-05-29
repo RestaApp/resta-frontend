@@ -7,10 +7,9 @@ import type { AppDispatch } from '@/store'
 export type ProfileAlertState = {
   open: boolean
   message: string
-  missingFields: string[]
 }
 
-export type ApplicationSuccessState = {
+type ApplicationSuccessState = {
   open: boolean
   shiftId: number | null
 }
@@ -25,7 +24,6 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
   const [profileAlert, setProfileAlert] = useState<ProfileAlertState>({
     open: false,
     message: '',
-    missingFields: [],
   })
   const [isApplyCoverModalOpen, setIsApplyCoverModalOpen] = useState(false)
   const [isApplyCoverModalSubmitting, setIsApplyCoverModalSubmitting] = useState(false)
@@ -55,7 +53,6 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
         if (normalized.kind === 'profile_incomplete') {
           setProfileAlert({
             open: true,
-            missingFields: normalized.missingFieldsLabels,
             message: normalized.message,
           })
           return false
@@ -63,7 +60,6 @@ export const useFeedApplyFlow = ({ dispatch, t, handleApply }: UseFeedApplyFlowP
 
         setProfileAlert({
           open: true,
-          missingFields: [],
           message: normalized.message,
         })
         return false

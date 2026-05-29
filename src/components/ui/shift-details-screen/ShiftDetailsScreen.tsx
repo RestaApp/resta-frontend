@@ -6,9 +6,9 @@ import { DrawerFooter } from '@/components/ui/drawer'
 import { Tabs } from '@/components/ui/tabs'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import type { Shift } from '@/features/feed/model/types'
+import type { Shift } from '@/shared/shifts/types'
 import { useLabels } from '@/shared/i18n/hooks'
-import { useShiftDetails } from '@/features/feed/model/hooks/useShiftDetails'
+import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { DetailsTab } from './DetailsTab'
 import { ApplicantsTab } from './ApplicantsTab'
@@ -52,7 +52,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const { getEmployeePositionLabel } = useLabels()
-  const { hourlyRate, shiftTypeLabel, vacancyTitle, positionLabel } = useShiftDetails(
+  const { hourlyRate, vacancyTitle, positionLabel } = useShiftDetails(
     shift,
     vacancyData
   )
@@ -64,7 +64,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     onClose,
     onApply,
     onCancel,
-    hourlyRate,
     t,
   })
 
@@ -149,8 +148,6 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           if (!open) controller.handleClose()
         }}
         onClose={controller.handleClose}
-        closeAriaLabel={t('common.close')}
-        title={shiftTypeLabel || t('shift.shift', { defaultValue: 'Смена' })}
         footer={ownerFooter ?? applicantFooter}
       >
         {controller.showTabs ? (

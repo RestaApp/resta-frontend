@@ -1,7 +1,6 @@
-import { useMemo, useCallback, useEffect, useState } from 'react'
+import { useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useUserProfile } from '@/hooks/useUserProfile'
 import { useToast } from '@/hooks/useToast'
 import { useAppDispatch } from '@/store/hooks'
 import { setLocalStorageItem } from '@/utils/localStorage'
@@ -22,19 +21,18 @@ import {
   hasActiveFilters,
   normalizeAdvancedFilters,
 } from '@/utils/filters'
-import { vacancyToShift } from '../utils/mapping'
+import { vacancyToShift } from '@/shared/shifts/mapping'
 
 import { Briefcase, Flame } from 'lucide-react'
-import type { FeedType } from '../types'
-import type { Shift } from '../types'
+import type { FeedType } from '@/shared/shifts/types'
+import type { Shift } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
-import type { AdvancedFiltersData } from '../types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { userProfile } = useUserProfile()
 
   const { toast, showToast, hideToast } = useToast()
 
@@ -61,7 +59,6 @@ export const useFeedPageModel = () => {
     setIsFiltersOpen,
     resetFilters,
   } = useFeedFiltersState()
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
 
   const {
     appliedShiftsSet,
@@ -169,19 +166,10 @@ export const useFeedPageModel = () => {
 
   const openShiftDetails = useCallback((id: number) => setSelectedShiftId(id), [setSelectedShiftId])
   const closeShiftDetails = useCallback(() => setSelectedShiftId(null), [setSelectedShiftId])
-  const openRestaurantDetails = useCallback(
-    (restaurantId: number) => {
-      setSelectedShiftId(null)
-      setSelectedRestaurantId(restaurantId)
-    },
-    [setSelectedShiftId]
-  )
-  const closeRestaurantDetails = useCallback(() => setSelectedRestaurantId(null), [])
 
   const handleOpenApplications = useCallback(() => {
     closeApplicationSuccess()
     setSelectedShiftId(null)
-    setSelectedRestaurantId(null)
     setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
     dispatch(navigateToTab('activity'))
   }, [closeApplicationSuccess, dispatch, setSelectedShiftId])
@@ -189,7 +177,6 @@ export const useFeedPageModel = () => {
   const handleSearchMoreAfterApply = useCallback(() => {
     closeApplicationSuccess()
     setSelectedShiftId(null)
-    setSelectedRestaurantId(null)
   }, [closeApplicationSuccess, setSelectedShiftId])
 
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
@@ -323,19 +310,15 @@ export const useFeedPageModel = () => {
     onRefresh: handleRefresh,
     advancedFilters,
     openShiftDetails,
-    openRestaurantDetails,
 
     selectedShiftId,
-    selectedRestaurantId,
     selectedShift,
     selectedVacancy,
     closeShiftDetails,
-    closeRestaurantDetails,
     handleApplyWithModal,
     isApplyCoverModalOpen,
     isApplyCoverModalSubmitting,
     applyCoverShift,
-    userProfile,
     closeApplyCoverModal,
     submitApplyCoverModal,
     applicationSuccess,
@@ -362,7 +345,6 @@ export const useFeedPageModel = () => {
     isFiltersOpen,
     closeFilters,
     applyAdvancedFilters,
-    resetFeedFilters,
     isVacancy: feedType === 'jobs',
   }
 }

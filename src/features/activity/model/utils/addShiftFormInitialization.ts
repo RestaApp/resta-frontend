@@ -3,7 +3,7 @@ import {
   formatMoney,
   parseApiDateTime,
   parseMoneyInput,
-} from '@/features/feed/model/utils/formatting'
+} from '@/shared/shifts/formatting'
 
 const toInputDate = (date: Date): string => {
   const yyyy = date.getFullYear()

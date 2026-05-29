@@ -1,12 +1,12 @@
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import type { PayPeriod, Shift } from '../types'
+import type { PayPeriod, Shift } from './types'
 import {
   formatDateRU,
   formatDuration,
   formatTimeRangeRU,
   parseApiDateTime,
   stripMinskPrefixAll,
-} from '../utils/formatting'
+} from './formatting'
 import { toLocationArray } from '@/shared/utils/location'
 import { toLocalISODateKey } from '@/utils/datetime'
 import i18n from '@/shared/i18n/config'
@@ -62,7 +62,7 @@ const getDistanceKm = (item: VacancyApiItem): number | null => {
  * Оплата за период: для вакансии без конкретного окна времени — «за месяц»;
  * если указаны начало и конец смены — сумма относится к этой смене («за смену»).
  */
-export const resolvePayPeriodFromVacancy = (item: VacancyApiItem): PayPeriod => {
+const resolvePayPeriodFromVacancy = (item: VacancyApiItem): PayPeriod => {
   if (item.shift_type !== 'vacancy') return 'shift'
   const start = parseApiDateTime(item.start_time ?? undefined)
   const end = parseApiDateTime(item.end_time ?? undefined)

@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import type { TFunction } from 'i18next'
-import type { Shift } from '@/features/feed/model/types'
-import { formatMoney } from '@/features/feed/model/utils/formatting'
+import type { Shift } from '@/shared/shifts/types'
+import { formatMoney } from '@/shared/shifts/formatting'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
 import {
@@ -79,6 +79,8 @@ export const DetailsTab = memo(
     const payValue =
       pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : formatMoney(Number(pay))
     const payCurrency = pay == null || Number(pay) === 0 ? '' : (currency ?? '')
+    const payPeriodLabel =
+      shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' · ')
     const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
     const compactSubtitle = shift.restaurant || positionLabel || ''
@@ -115,7 +117,7 @@ export const DetailsTab = memo(
             </div>
             <div className="min-w-0 text-sm">
               <p className="text-muted-foreground">
-                {t('common.payPerShift', { defaultValue: 'за смену' })}
+                {payPeriodLabel}
                 {displayDuration ? ` ${displayDuration}` : ''}
               </p>
               {hourlyRate ? (

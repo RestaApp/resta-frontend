@@ -7,8 +7,8 @@ import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_META_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import type { Shift } from '@/features/feed/model/types'
-import { formatMoney } from '@/features/feed/model/utils/formatting'
+import type { Shift } from '@/shared/shifts/types'
+import { formatMoney } from '@/shared/shifts/formatting'
 import { useLabels } from '@/shared/i18n/hooks'
 import { cn } from '@/utils/cn'
 import { stripVacancyPrefix } from '@/components/ui/shift-card/shift-card-utils'

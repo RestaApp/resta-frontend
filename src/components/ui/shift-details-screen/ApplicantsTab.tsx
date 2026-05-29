@@ -132,7 +132,7 @@ export const ApplicantsTab = memo(
                               <Star
                                 key={i}
                                 className={cn(
-                                  'h3 w3 shrink-0',
+                                  'h-3 w-3 shrink-0',
                                   normalizedRating >= i + 0.5
                                     ? 'fill-warning text-warning'
                                     : 'fill-muted text-muted-foreground/30'

@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Tabs } from '@/components/ui/tabs'
 import { SearchFilters } from './SearchFilters'
-import type { FeedType } from '../../model/types'
+import type { FeedType } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
 import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'

@@ -13,15 +13,13 @@ import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_LOGO_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/utils/cn'
-import { formatMoney } from '@/features/feed/model/utils/formatting'
-import type { Shift } from '@/features/feed/model/types'
-import type { UserData } from '@/services/api/authApi'
+import { formatMoney } from '@/shared/shifts/formatting'
+import type { Shift } from '@/shared/shifts/types'
 
 interface ApplyCoverLetterModalProps {
   open: boolean
   isSubmitting: boolean
   shift: Shift | null
-  userProfile: UserData | null
   onClose: () => void
   onSubmit: (message?: string) => Promise<void>
 }
@@ -30,36 +28,9 @@ export function ApplyCoverLetterModal({
   open,
   isSubmitting,
   shift,
-  userProfile,
   onClose,
   onSubmit,
 }: ApplyCoverLetterModalProps) {
-  if (!open) return null
-  return (
-    <ApplyCoverLetterModalContent
-      isSubmitting={isSubmitting}
-      shift={shift}
-      userProfile={userProfile}
-      onClose={onClose}
-      onSubmit={onSubmit}
-    />
-  )
-}
-
-interface ApplyCoverLetterModalContentProps {
-  isSubmitting: boolean
-  shift: Shift | null
-  userProfile: UserData | null
-  onClose: () => void
-  onSubmit: (message?: string) => Promise<void>
-}
-
-function ApplyCoverLetterModalContent({
-  isSubmitting,
-  shift,
-  onClose,
-  onSubmit,
-}: ApplyCoverLetterModalContentProps) {
   const { t } = useTranslation()
   const [message, setMessage] = useState('')
 
@@ -77,8 +48,10 @@ function ApplyCoverLetterModalContent({
     await onSubmit(message.trim() || undefined)
   }
 
+  if (!open) return null
+
   return (
-    <Drawer open onOpenChange={open => !open && onClose()} overlayClassName="bg-black/50">
+    <Drawer open onOpenChange={openState => !openState && onClose()} overlayClassName="bg-black/50">
       <DrawerHeader>
         <DrawerTitle>{t('shift.applyNow', { defaultValue: 'Откликнуться' })}</DrawerTitle>
         {shiftSummary ? <DrawerDescription>{shiftSummary}</DrawerDescription> : null}

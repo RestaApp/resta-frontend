@@ -2,15 +2,17 @@
  * Поле выбора города с автодополнением
  */
 
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
+import { useDropdownAutoScroll } from '@/components/ui/select/useDropdownAutoScroll'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { useLocationField } from '../../../../model/useLocationField'
+
 interface LocationFieldProps {
   value: string
   onChange: (value: string) => void
@@ -50,83 +52,16 @@ export const LocationField = memo(function LocationField({
     value,
     onChange,
   })
-  const didAutoScrollRef = useRef(false)
-  const [maxDropdownHeight, setMaxDropdownHeight] = useState(200)
-  const getScrollableAncestor = useCallback((element: HTMLElement | null): HTMLElement | null => {
-    let current = element?.parentElement ?? null
-    while (current) {
-      const { overflowY } = window.getComputedStyle(current)
-      const canScroll =
-        (overflowY === 'auto' || overflowY === 'scroll') &&
-        current.scrollHeight > current.clientHeight
-      if (canScroll) return current
-      current = current.parentElement
-    }
-    return null
-  }, [])
 
-  useEffect(() => {
-    if (!hasSuggestions || !containerRef.current) return
-
-    const updateMaxHeight = () => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      const scrollContainer =
-        (containerRef.current.closest('[data-scroll-container="true"]') as HTMLElement | null) ??
-        getScrollableAncestor(containerRef.current)
-      const scrollContainerRect = scrollContainer?.getBoundingClientRect()
-      const viewportBottom = scrollContainerRect?.bottom ?? window.innerHeight
-      const effectiveBottomOffset = scrollContainerRect ? 0 : BOTTOM_NAV_HEIGHT_PX
-      const spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
-      const desiredDropdownHeight = 215
-
-      if (!didAutoScrollRef.current) {
-        const deficit = desiredDropdownHeight - spaceBelow
-        if (deficit > 0) {
-          if (scrollContainer instanceof HTMLElement) {
-            const remainingScroll =
-              scrollContainer.scrollHeight -
-              scrollContainer.clientHeight -
-              scrollContainer.scrollTop
-            const scrollDelta = Math.min(deficit + 24, Math.max(remainingScroll, 0))
-            if (scrollDelta > 0) {
-              didAutoScrollRef.current = true
-              scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
-            }
-          } else {
-            const maxWindowScroll = document.documentElement.scrollHeight - window.innerHeight
-            const remainingWindowScroll = Math.max(maxWindowScroll - window.scrollY, 0)
-            const scrollDelta = Math.min(deficit + 24, remainingWindowScroll)
-            if (scrollDelta > 0) {
-              didAutoScrollRef.current = true
-              window.scrollBy({ top: scrollDelta, behavior: 'auto' })
-            }
-          }
-        }
-      }
-
-      setMaxDropdownHeight(Math.max(Math.min(spaceBelow - 12, 215), 64))
-    }
-
-    updateMaxHeight()
-    window.addEventListener('resize', updateMaxHeight)
-    window.addEventListener('scroll', updateMaxHeight, true)
-
-    return () => {
-      window.removeEventListener('resize', updateMaxHeight)
-      window.removeEventListener('scroll', updateMaxHeight, true)
-    }
-  }, [hasSuggestions, containerRef, getScrollableAncestor])
-
-  useEffect(() => {
-    if (!hasSuggestions) {
-      didAutoScrollRef.current = false
-    }
-  }, [hasSuggestions])
+  useDropdownAutoScroll({
+    isOpen: hasSuggestions,
+    containerRef,
+    bottomOffsetPx: BOTTOM_NAV_HEIGHT_PX,
+  })
 
   const cityOptions = filteredCities.map(city => ({ value: city, label: city }))
 
-  const content = (
+  return (
     <div ref={containerRef} className="relative">
       <FormField
         label={hideLabel ? undefined : t('profile.city')}
@@ -182,10 +117,6 @@ export const LocationField = memo(function LocationField({
         value={value}
         searchQuery=""
         filteredOptions={cityOptions}
-        maxHeight={maxDropdownHeight}
-        dropdownPosition={{ left: 0, top: 0, width: 0, opensUp: false }}
-        needsScroll={false}
-        isScrolledToBottom
         searchInputRef={inputRef}
         scrollContainerRef={listRef}
         dropdownRef={containerRef}
@@ -197,6 +128,4 @@ export const LocationField = memo(function LocationField({
       />
     </div>
   )
-
-  return content
 })

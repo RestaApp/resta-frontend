@@ -3,7 +3,7 @@ import {
   hasActiveFilters as checkHasActiveFilters,
   normalizeAdvancedFilters,
 } from '@/utils/filters'
-import type { AdvancedFiltersData } from '../types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 
 interface UseAdvancedFiltersOptions {
   initialFilters?: AdvancedFiltersData | null

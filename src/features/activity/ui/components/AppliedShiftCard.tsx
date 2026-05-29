@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useCancelApplicationMutation } from '@/services/api/shiftsApi'
-import { mapVacancyToCardShift } from '@/features/feed/model/utils/mapping'
+import { mapVacancyToCardShift } from '@/shared/shifts/mapping'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
 import type { ToastType } from '@/components/ui/toast'
 

@@ -74,15 +74,6 @@ export const firstLocation = (locations: string[] | null | undefined): string | 
   return first || undefined
 }
 
-/** Сериализация массива в строку через `\n` — для legacy‑потребителей. */
-export const joinLocations = (locations: string[] | null | undefined): string => {
-  if (!locations || locations.length === 0) return ''
-  return locations
-    .map(line => line.trim())
-    .filter(Boolean)
-    .join('\n')
-}
-
 /** Очистка массива адресов перед сохранением: trim + удаление пустых. */
 export const sanitizeLocations = (locations: string[]): string[] => {
   return locations.map(line => line.trim()).filter(Boolean)

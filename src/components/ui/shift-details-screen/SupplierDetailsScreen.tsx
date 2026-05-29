@@ -77,11 +77,11 @@ export const SupplierDetailsScreen = memo(
         headerMeta={
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <p className="inline-flex items-center gap-1">
-              <Star className="h3 w3" />
+              <Star className="h-3 w-3" />
               {supplier.averageRating.toFixed(1)} · {supplier.totalReviews}
             </p>
             <p className="inline-flex items-center gap-1">
-              <Truck className="h3 w3" />
+              <Truck className="h-3 w-3" />
               {supplier.deliveryAvailable == null
                 ? t('common.notSpecified', { defaultValue: 'Не указано' })
                 : supplier.deliveryAvailable

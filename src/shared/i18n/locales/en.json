@@ -1,14 +1,7 @@
 {
   "feedFallback": {
     "venue": "Restaurant",
-    "vacancy": "Vacancy",
-    "noApplications": "No applications yet",
-    "application": "application",
-    "applications2": "applications",
-    "applications5": "applications",
-    "review": "review",
-    "reviews2": "reviews",
-    "reviews5": "reviews"
+    "vacancy": "Vacancy"
   },
   "filters": {
     "fromDate": "From {{date}}",
@@ -246,10 +239,6 @@
     "loadErrorShifts": "Error loading shifts",
     "loadErrorVacancies": "Error loading vacancies",
     "hotOffers": "Hot shifts",
-    "hotShifts": "Hot shifts",
-    "hotVacancies": "Hot vacancies",
-    "showAllHotOffers": "All hot",
-    "clearHotFilter": "Remove filter",
     "filters": "Filters",
     "resetFiltersAria": "Reset filters",
     "resetFiltersSheet": "Reset",

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/states'
-import type { FeedType } from '@/features/feed/model/types'
+import type { FeedType } from '@/shared/shifts/types'
 import {
   EmptyFiltersIllustration,
   EmptySearchIllustration,

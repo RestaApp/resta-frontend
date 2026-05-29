@@ -1,8 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { motion } from 'motion/react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Loader } from '@/components/ui/loader'
 import { Select } from '@/components/ui/select'
 import { FormField } from '@/components/ui/form-field'
 import { Textarea } from '@/components/ui/textarea'
@@ -20,8 +17,6 @@ interface SupportTicketFormProps {
   setContactInfo: (v: string) => void
   categoryOptions: SelectOption[]
   onSubmit: (e: React.FormEvent) => void
-  onCancel: () => void
-  isLoading: boolean
   errorMessage: string | null
   fieldErrors: { subject?: string; message?: string }
   maxMessageLength: number
@@ -38,8 +33,6 @@ export function SupportTicketForm({
   setContactInfo,
   categoryOptions,
   onSubmit,
-  onCancel,
-  isLoading,
   errorMessage,
   fieldErrors,
   maxMessageLength,
@@ -102,39 +95,6 @@ export function SupportTicketForm({
       </FormField>
 
       {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
-
-      <div className="flex gap-2 pt-2">
-        <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            {t('common.cancel')}
-          </Button>
-        </motion.div>
-        <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
-          <Button
-            type="submit"
-            variant="gradient"
-            size="sm"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <Loader size="sm" />
-                {t('common.saving')}
-              </span>
-            ) : (
-              t('profile.supportForm.submit')
-            )}
-          </Button>
-        </motion.div>
-      </div>
     </form>
   )
 }

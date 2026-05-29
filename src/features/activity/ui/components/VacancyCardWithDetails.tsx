@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, type ComponentProps } from 'react'
 import { useGetShiftByIdQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
-import type { Shift } from '@/features/feed/model/types'
+import type { Shift } from '@/shared/shifts/types'
 import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import {
   ShiftDetailsScreen,

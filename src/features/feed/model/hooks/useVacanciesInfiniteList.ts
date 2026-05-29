@@ -1,9 +1,9 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useMemo, useState, useCallback, useEffect } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
-import type { Shift } from '../types'
+import type { Shift } from '@/shared/shifts/types'
 import type { ShiftType } from '../utils/queryParams'
-import { vacancyToShift } from '../utils/mapping'
+import { vacancyToShift } from '@/shared/shifts/mapping'
 
 export interface UseVacanciesInfiniteListOptions {
   shiftType: ShiftType
@@ -17,13 +17,11 @@ export interface UseVacanciesInfiniteListReturn {
   vacanciesMap: Map<number, VacancyApiItem>
   hasMore: boolean
   isInitialLoading: boolean
-  isRefreshing: boolean
   isFetching: boolean
   error: unknown
   totalCount: number
   loadMore: () => void
   refresh: () => Promise<void>
-  reset: () => void
 }
 
 export const useVacanciesInfiniteList = (
@@ -156,31 +154,20 @@ export const useVacanciesInfiniteList = (
     await refetch()
   }, [enabled, refetch])
 
-  const reset = useCallback(() => {
-    setVisibleCount(perPage)
-  }, [perPage])
-
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false
     return items.length === 0 && (isLoading || isFetching || !response)
   }, [enabled, items.length, isLoading, isFetching, response])
-
-  const isRefreshing = useMemo(
-    () => enabled && isFetching && items.length > 0,
-    [enabled, isFetching, items.length]
-  )
 
   return {
     items,
     vacanciesMap,
     hasMore,
     isInitialLoading,
-    isRefreshing,
     isFetching,
     error: isError ? error : null,
     totalCount,
     loadMore,
     refresh,
-    reset,
   }
 }

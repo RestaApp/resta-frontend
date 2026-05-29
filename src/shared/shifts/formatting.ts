@@ -77,23 +77,6 @@ export const formatHourlyRate = (hourlyRate?: string | number | null): string | 
   return formatMoney(n)
 }
 
-export const formatShiftType = (shiftType?: 'vacancy' | 'replacement' | null): string | null => {
-  if (!shiftType) return null
-  return shiftType === 'replacement' ? i18n.t('common.replacement') : i18n.t('common.vacancy')
-}
-
-export const formatApplicationsCount = (count: number): { value: string; label: string } => {
-  if (count <= 0) return { value: '0', label: i18n.t('feedFallback.noApplications') }
-  const last = count % 10
-  const last2 = count % 100
-  if (last2 >= 11 && last2 <= 14)
-    return { value: String(count), label: i18n.t('feedFallback.applications5') }
-  if (last === 1) return { value: String(count), label: i18n.t('feedFallback.application') }
-  if (last >= 2 && last <= 4)
-    return { value: String(count), label: i18n.t('feedFallback.applications2') }
-  return { value: String(count), label: i18n.t('feedFallback.applications5') }
-}
-
 export const getVacancyTitle = (title?: string | null, position?: string | null): string => {
   return title || position || i18n.t('feedFallback.vacancy')
 }

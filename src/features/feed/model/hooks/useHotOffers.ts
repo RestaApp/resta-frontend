@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import { useGetVacanciesQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
-import type { FeedType } from '../types'
-import type { AdvancedFiltersData } from '../types'
+import type { FeedType } from '@/shared/shifts/types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { buildVacanciesQueryParams } from '../utils/queryParams'
 
 interface UseHotOffersParams {

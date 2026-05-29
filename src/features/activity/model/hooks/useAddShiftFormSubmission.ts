@@ -9,7 +9,7 @@ import {
 import { useToast } from '@/hooks/useToast'
 import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
 import { triggerHapticFeedback } from '@/utils/haptics'
-import { parseMoneyInput } from '@/features/feed/model/utils/formatting'
+import { parseMoneyInput } from '@/shared/shifts/formatting'
 import { normalizeCatalogPosition } from '@/utils/roles'
 import { sanitizeLocations } from '@/shared/utils/location'
 import { useUpdateUser } from '@/hooks/useUsers'

@@ -3,7 +3,6 @@ import { AdvancedFilters } from '@/features/feed/ui/components/AdvancedFilters'
 import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
 import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
-import { RestaurantVacanciesDrawer } from '@/features/feed/ui/components/RestaurantVacanciesDrawer'
 import { ProfileAlertDialog } from '@/features/feed/ui/components/ProfileAlertDialog'
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { ApplicationSuccessOverlay } from '@/features/feed/ui/components/ApplicationSuccessOverlay'
@@ -75,18 +74,10 @@ export function FeedBody({ vm }: FeedBodyProps) {
         />
       ) : null}
 
-      <RestaurantVacanciesDrawer
-        restaurantId={vm.selectedRestaurantId}
-        open={vm.selectedRestaurantId !== null}
-        onClose={vm.closeRestaurantDetails}
-        onOpenVacancy={vm.openShiftDetails}
-      />
-
       <ApplyCoverLetterModal
         open={vm.isApplyCoverModalOpen}
         isSubmitting={vm.isApplyCoverModalSubmitting}
         shift={vm.applyCoverShift}
-        userProfile={vm.userProfile}
         onClose={vm.closeApplyCoverModal}
         onSubmit={vm.submitApplyCoverModal}
       />

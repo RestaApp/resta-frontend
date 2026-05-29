@@ -1,31 +1,19 @@
 # AI_DEVELOPMENT_GUIDELINES.md
 
-> **UI и frontend engineering для Resta.** Не дублирует [`.cursorrules`](.cursorrules) (стек, Redux, структура).
-> Контракты бэкенда — [`HANDOFF.md`](HANDOFF.md).
+Reference doc для UI и frontend engineering. Иерархия документов, стек, общие принципы — в [`.cursorrules`](.cursorrules) (этот файл его не дублирует).
+
+§14 — **продолжение `.cursorrules`** (архитектурные правила).
+§1–§13 — design system, UI‑примитивы, hooks, forms, a11y, verification.
 
 ---
 
-## Иерархия документов и приоритет
+## 0. Принципы
 
-| #   | Источник                                       | Зона ответственности                                          |
-| --- | ---------------------------------------------- | ------------------------------------------------------------- |
-| 1   | Задача пользователя (чат / PR)                 | —                                                             |
-| 2   | **`.cursorrules`**                             | Стек, структура, Redux, TypeScript, общие принципы            |
-| 3a  | **`AI_DEVELOPMENT_GUIDELINES.md`** (этот файл) | Design system, UI-примитивы, hooks, forms, a11y, verification |
-| 3b  | **`HANDOFF.md`**                               | Эндпоинты и контракты для интеграции с бэкендом               |
-| 4   | Паттерны целевых файлов                        | Локальные соглашения модуля                                   |
-
-**При расхождении между документами:** `.cursorrules` > специализированный документ **в его зоне** > код. Между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта нет — разные зоны.
-
----
-
-## 0. Принципы (UI / engineering)
-
-1. **Stability over novelty.** Перед добавлением — проверь, есть ли уже примитив/токен.
-2. **Один источник истины.** Цвета и радиусы — [`src/index.css`](src/index.css); className-паттерны — [`ui-patterns.ts`](src/components/ui/ui-patterns.ts), [`shift-card-styles.ts`](src/components/ui/shift-card/shift-card-styles.ts); z-index — [`zIndex.ts`](src/shared/ui/zIndex.ts).
-3. **Production-first.** TS + ESLint + build без необоснованных warnings.
-4. **Файл >300 LOC** — повод задуматься о расщеплении (controller hook + UI).
-5. **Blast radius.** Рефакторинг вне ТЗ — в backlog, не в текущий PR.
+1. **Stability over novelty** — перед добавлением проверь, есть ли уже примитив/токен.
+2. **Один источник истины:** цвета и радиусы — [`src/index.css`](src/index.css); className‑паттерны — [`ui-patterns.ts`](src/components/ui/ui-patterns.ts); z‑index — [`zIndex.ts`](src/shared/ui/zIndex.ts).
+3. **Production‑first** — TS + ESLint + build без необоснованных warnings.
+4. **Файл >300 LOC** — повод расщепить (controller hook + UI).
+5. **Blast radius** — рефакторинг вне ТЗ → в backlog.
 
 ---
 
@@ -497,46 +485,11 @@ const handleDrawerOpenChange = (next: boolean) => {
 
 ## 6. Mobile WebApp rules
 
-### 6.1. Touch targets ≥ 44px (WCAG 2.5.5)
-
-- `Button.size`: `sm = 44px`, `md = 48px`, `lg = 52px` — минимум 44.
-- Icon‑кнопки: `h-11 w-11` (44×44).
-- Запрещено: `h-9` (36px), `h-10` (40px) для интерактивных элементов.
-- Скелетоны / декорации могут быть меньше — это не интерактив.
-
-### 6.2. Telegram safe‑area
-
-- Любой `fixed bottom-0` контент → существующая safe-area utility
-  (`pb-safe`, `pb-safe-nav`, `bottom-safe`, `safe-area-bottom`) по назначению.
-- Не использовать ручные `pb-[calc(...env(safe-area)...)]`.
-
-### 6.3. Keyboard‑aware layout
-
-- Telegram WebApp может не поднимать drawer над клавиатурой.
-- Высота drawer: `min(85vh, calc(100vh - bottomOffset - 20px))` — см.
-  [`Drawer`](src/components/ui/drawer.tsx).
-- Проверяй открытый input в нижней половине drawer'а.
-
-### 6.4. Маленькие экраны
-
-- iPhone SE (375×667), Android small (360×640) — поддерживаемые.
-- Не делать `min-w-[480px]` контент в drawer.
-- `truncate` / `text-ellipsis` для длинных строк — обязательно для имён, адресов.
-
-### 6.5. Scroll jank
-
-- Не добавлять глобальные transitions на `*` (`* { transition: all }` — запрещено).
-- Theme transitions — только на `body` / `.themed-surface`:
-  ```css
-  body {
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease,
-      border-color 0.2s ease;
-  }
-  ```
-- Heavy lists → `react-virtual` (если будет потребность); пока используется
-  `useVacanciesInfiniteList` с пагинацией.
+- **Touch targets ≥ 44px** (WCAG 2.5.5). `Button.size`: `sm=44 / md=48 / lg=52`. Icon‑кнопки `h-11 w-11`. Запрещено `h-9`/`h-10` на интерактиве.
+- **Safe‑area:** `fixed bottom-0` → утилиты `pb-safe` / `pb-safe-nav` / `bottom-safe`. Ручные `pb-[calc(...env(safe-area)...)]` запрещены.
+- **Keyboard‑aware:** drawer высота `min(85vh, calc(100vh - bottomOffset - 20px))` — см. [`Drawer`](src/components/ui/drawer.tsx).
+- **Маленькие экраны:** поддерживаем iPhone SE (375×667), Android (360×640). `truncate` для длинных строк (имена, адреса).
+- **Scroll jank:** `* { transition: all }` запрещено. Theme transitions — только на `body` / `.themed-surface`.
 
 ---
 
@@ -654,221 +607,164 @@ const NewPage = lazy(() => import('@/features/new/ui/NewPage').then(m => ({ defa
 
 ## 9. Verification before merge
 
-Перед завершением задачи (или перед PR) **обязательно** — базовая проверка как в [`.cursorrules`](.cursorrules):
+**Обязательно перед PR:**
 
 ```bash
-# 1. ESLint (включая jsx-a11y + no-restricted-syntax)
-npm run lint
-# → 0 errors. Warnings — допустимы только если документированы
-
-# 2. Prettier
+npm run lint           # 0 errors (jsx-a11y + no-restricted-syntax включены)
 npm run format:check
-
-# 3. Production build (= tsc -b && vite build)
-npm run build
-# → 0 TS errors; bundle не должен скакать >10% без причины
-
-# 4. Grep design‑system violations
-grep -rEon 'text-\[[0-9]+(px|rem)\]' src --include='*.tsx' | wc -l   # = allowlist count
-grep -rEon 'bg-\[#[0-9a-fA-F]+\]' src --include='*.tsx' | wc -l      # = 0
-grep -rEon 'z-\[[0-9]+\]' src --include='*.tsx' | wc -l              # = 0
-grep -rEon 'rounded-\[[0-9]+(px|rem)\]' src --include='*.tsx' | wc -l # = allowlist count
-grep -rE 'text-body-|text-meta|text-micro|text-title-|text-screen-title|text-display' src --include='*.tsx' | wc -l  # = 0
-grep -rE 'surface-|shift-compact|bg-emp|drawer-surface|bg-terracotta|bg-accent|bg-role-|getRoleTheme' src --include='*.tsx' | wc -l  # = 0
-# !important: 0 в JSX className (вне motion-reduce:)
-
-# 5. Smoke check (preview)
-npm run dev    # руками проверить ключевые экраны
+npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 ```
 
-Если меняется UI:
+**Если меняется UI — также:**
 
-```bash
-# 6. Visual regression
-npm run test:visual          # после первого `npx playwright install chromium`
-# или для пересохранения эталонов после намеренных изменений:
-npm run test:visual:update
-```
+- Smoke на mobile viewport — экраны, которые задача затронула.
+- `npm run test:visual` (или `test:visual:update` после намеренных изменений).
+- Design‑system violations (`text-[Npx]`, `bg-[#hex]`, `z-[N]`, legacy токены) — `0` или allowlist.
 
-### Smoke screens — обязательный минимум для UI задач
-
-| Экран                                                            | Что проверить                                                           |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Boot                                                             | Splash отрисовался, нет console errors                                  |
-| Onboarding (RoleSelector → TelegramConfirm → OnboardingComplete) | Прогресс‑бар, поля валидируются, Continue работает                      |
-| Feed                                                             | Список, фильтры, hot offers, переключение jobs/shifts, пустое состояние |
-| Activity                                                         | Tab Active/History, AddShiftDrawer открывается, валидация шагов         |
-| Profile                                                          | KPI, бейджи, edit drawer открывается per‑role, theme switch             |
-| Venue Suppliers                                                  | Поиск, фильтр drawer, пагинация, empty state                            |
-| Dark / Light                                                     | Обе темы переключаются мгновенно, контраст ОК                           |
+**Smoke screens (минимум при системных UI‑изменениях):** Boot · Onboarding · Feed · Activity · Profile · Venue Suppliers · Dark/Light.
 
 ---
 
 ## 10. Output format (для AI‑ассистента)
 
-После каждой задачи AI **обязан** дать summary в формате:
+После каждой нетривиальной задачи дай summary:
 
-```markdown
-## Что изменено
+- **Что изменено** — 1‑3 предложения.
+- **Затронутые файлы** — таблица `файл / что`.
+- **Public API** — shape сохранён / изменён (как).
+- **Verification** — какие команды прогнал, реальный результат (не пересказ).
+- **Риски** и **Что осталось** — если есть.
 
-[1‑3 предложения о сути изменения.]
+Принципы: только подтверждённые утверждения; конкретика (bundle delta в KB, а не «практически не изменился»); warnings не прятать; не предлагать улучшения вне ТЗ — только риски и блокеры.
 
-## Затронутые файлы
+---
 
-| Файл               | Что              |
-| ------------------ | ---------------- |
-| `path/to/file.tsx` | краткое описание |
+## 11. Escalation
 
-## Public API
+- **Нарушить дизайн‑систему** (цвет/размер вне scale) → подними в summary, объясни, предложи токен.
+- **Refactor вне ТЗ** → в «Что осталось», **не делай** в текущем PR.
+- **Красная сборка** → чини или откатывай.
+- **Бизнес‑интеграция без контракта** (платежи, Stars, auth) → документируй в `HANDOFF.md`, не выдумывай.
 
-- `useMyHook` — shape сохранён 1:1 / изменён (опишите как).
-- `MyComponent` props — без изменений / новые props (опишите).
+---
 
-## Verification
+## 12. Anti‑patterns (catalog)
 
-- [x] `npm run lint` — 0 errors
-- [x] `npm run format:check` — pass
-- [x] `npm run build` (`tsc -b` + `vite build`) — 0 errors, bundle delta
-- [x] Smoke check: [список проверенных экранов]
-- [x] Visual regression — pass / N/A (если UI не менялся)
+| ❌ Никогда не делай                                       | ✅ Используй                                                            |
+| -------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `bg-[#FF6B2C]`, `text-[15px]`, `z-[200]`, `rounded-[Npx]` | Tailwind‑токены, `Z_INDEX.X`, allowlist (§2.1)                         |
+| `!important` в JSX className                             | Расширь API примитива через `variant`                                  |
+| `<div onClick>` без a11y                                 | `<button>` или `role` + `tabIndex` + `aria-label` + keydown            |
+| `<div className="rounded-xl border bg-card p-4">`        | `<Card padding="md">`                                                  |
+| Hand‑rolled аватар                                       | `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`                      |
+| Кастомный `fixed bottom-0` CTA                           | `BottomActionBar` / `StickyCTA` / `OnboardingBottomCta` / `DrawerFooter` |
+| `<DrawerFooter className="sticky bottom-0 z-10">`        | `<DrawerFooter>` (base уже корректен)                                  |
+| `font-mono`, `tracking-[Nem]`                            | `font-mono-resta`, `tracking-wide/wider/widest`                        |
+| `text-sm font-medium` как label формы                    | `PROFILE_SECTION_LABEL_CLASS` (через `FormField`)                      |
+| `bg-primary/8`, `/14`, `bg-background/95`                | `/10`, `/15`, `/92` (§14.4)                                            |
+| `<button className="h-9 w-9">`                           | `<Button size="sm">` (h‑11 = 44px) или `IconAction h-11`               |
+| `useEffect(() => setLocal(prop), [prop])`                | `const [local, set] = useState(prop)` + явный controlled init          |
+| `useMemo(() => count > 0, [count])`                      | `const isActive = count > 0`                                           |
+| Subscription без cleanup                                 | `return () => removeEventListener(...)`                                |
+| `* { transition: all }`                                  | `body, .themed-surface { transition: bg-color 0.2s }`                  |
+| `console.log/error/warn`                                 | `@/utils/logger`                                                       |
+| UI primitive импортирует из `features/*`                 | Вынести domain в `@/shared/<domain>/`                                  |
+| Барьер `index.ts` с ≤2 потребителями                     | Прямой импорт                                                          |
+| Deprecated alias без deadline                            | Удалить в той же PR                                                    |
+| `useCallback(() => fn(), [fn])` без агрегации            | Использовать `fn` напрямую                                             |
+| Boolean prop, который никогда не передаётся как `true`   | Удалить из interface и call sites                                      |
+| Поле в типе/маппинге, которое нигде не рендерится        | Удалить из типа и mapping‑функции                                      |
 
-## Риски
+---
 
-1. [Риск 1, если есть.]
-2. [Риск 2.]
+## 13. Pre‑merge чек‑лист (TL;DR)
 
-## Что осталось на следующий этап
+- [ ] **Build / lint / format** — все три зелёные.
+- [ ] **Архитектура** — UI primitives не импортируют из features (§14.1); общие shift‑утилиты — из `@/shared/shifts/`.
+- [ ] **Tokens** — цвета, типографика, радиусы, z‑index — из ui-patterns / index.css; opacity по §14.4.
+- [ ] **UI primitives** — `Button`, `Input`, `Card`, `Avatar`, `BottomActionBar` / `DrawerFooter` — не ad‑hoc div'ы.
+- [ ] **Mobile** — touch ≥44px, safe‑area utility, truncate для длинных строк.
+- [ ] **A11y** — aria‑label на icon buttons, focus‑visible state.
+- [ ] **Hooks** — нет over‑memo, нет `useEffect` для derived state, cleanup у subscriptions.
+- [ ] **Файлы ≤300 LOC** (или обоснование).
+- [ ] **Нет мёртвого кода** — пропсы, поля типов, exports, deprecated alias, барьеры с ≤2 потребителями.
+- [ ] **Логи** — `logger`, не `console.*`.
 
-- [Если применимо.]
+Если что‑то не выполнено — **не мерджить**.
+
+---
+
+## 14. Архитектура и cleanup (продолжение `.cursorrules`)
+
+### 14.1. Направленность зависимостей
+
+```
+features/<X> ──→ shared/* ──→ components/ui/*  (feature-agnostic)
 ```
 
-### Принципы AI‑output
+- `components/ui/*` **не** импортирует из `features/*`. Domain‑тип/утилита, нужная UI → выноси в `shared/<domain>/`.
+- Cross‑feature импорты допустимы только из `navigation`. Иное → перенести в `shared/`.
+- Канонические shared‑модули: `shared/shifts/`, `shared/ui/`, `shared/i18n/`, `shared/api/`, `shared/utils/`.
 
-- **Никаких неподтверждённых утверждений.** «Build passed» только если запустил.
-- **Конкретика.** «Размер бандла +0.04 KB», а не «бандл практически не изменился».
-- **Не скрывать warnings.** Если warning остался — он в summary.
-- **Не предлагать «дальнейшие улучшения», которые не запрошены.** Только риски и
-  блокеры.
+### 14.2. Single‑source tokens (специфика)
 
----
+| Что                 | Источник                                          | НЕ использовать                          |
+| ------------------- | ------------------------------------------------- | ---------------------------------------- |
+| Mono font           | `font-mono-resta`                                 | `font-mono` (Tailwind default)           |
+| Tracking            | `tracking-wide` / `wider` / `widest`              | `tracking-[Nem]` (вне splash)            |
+| Заголовок секции    | `SECTION_TITLE_CLASS` (text‑lg)                   | `HERO_TITLE_CLASS` вне hero              |
+| Label формы         | `PROFILE_SECTION_LABEL_CLASS` (через `FormField`) | `text-sm font-medium` ad‑hoc             |
+| Label switch‑строки | `SHIFT_CARD_TITLE_CLASS` + `SHIFT_CARD_SUB_CLASS` | ручной `text-sm font-medium mb-1`        |
+| Body                | `BODY_TEXT_CLASS` / `BODY_MUTED_CLASS`            | ручные `text-sm text-foreground/muted-…` |
 
-## 11. Escalation rules
+### 14.3. UI primitives vs ad‑hoc
 
-Если по ходу задачи:
+- Аватары — **только** `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`. Никаких `<div className="rounded-full overflow-hidden"><img/></div>`.
+- Нижние CTA — **только** `BottomActionBar` / `StickyCTA` / `OnboardingBottomCta` / `DrawerFooter`. Самописных `fixed bottom-0` баров не делать.
+- `DrawerFooter` базово даёт `mt-auto`, `shrink-0`, `border-t border-border/50`, `bg-background/92` — не накладывай `sticky bottom-0 z-N`, `shrink-0`, кастомные border поверх.
+- Локальный wrapper (`SectionLabel` и пр.) оправдан только при ≥4 использованиях в одном файле и нетривиальной структуре. Иначе инлайн константу.
 
-- **Нужно нарушить дизайн‑систему** (новый цвет / размер / spacing вне scale) →
-  не молча. Подними в summary, объясни причину, предложи альтернативу через
-  расширение токенов.
-- **Возникает refactor вне ТЗ** → перечисли в «Что осталось на следующий этап»,
-  но **не делай** в текущем PR. Минимизируй blast radius.
-- **Сломалась сборка / тесты** → не оставляй красные. Либо чини, либо откатывай
-  изменения, которые сломали.
-- **Тяжёлая зависимость / бизнес‑интеграция** (платежи, авторизация, Telegram
-  Stars) → не реализуй на догадках. Документируй в `HANDOFF.md` что нужно от бэка.
+### 14.4. Канон opacity для семантических цветов
 
----
+| Token                   | OK                                                    | НЕ ОК                  |
+| ----------------------- | ----------------------------------------------------- | ---------------------- |
+| `bg-background`         | `/65` BottomNav · `/82` ResultOverlay · `/92` sticky  | `/95`                  |
+| `bg-primary`            | `/5` · `/10` · `/15`                                  | `/8`, `/14`, `/[0.06]` |
+| `bg-destructive`        | `/10` · `/15` · `/20`                                 | `/8`                   |
+| `bg-success`            | `/10` (bg) · `/15` (filled)                           | `/8`                   |
+| `bg-warning`            | `/10`                                                 | `/8`                   |
+| `bg-black` (overlay)    | `/20–/40` dropdown · `/50` modal/drawer               | `/60`                  |
+| `border-border`         | `/50` стандарт · `/60` chrome                         | `/40`, `/70`           |
+| `text-muted-foreground` | `/30` empty stars · `/70` hint                        | `/40`, `/50`, `/15`    |
 
-## 12. Anti‑patterns reference
+Если разница с утверждённым `/N` < 5 — используй существующий.
 
-Краткий список того, что **никогда не должно** появляться:
+### 14.5. Анти‑оверхед
 
-```tsx
-// ❌ Inline magic colors
-className="bg-[#FF6B2C]"
+- Барьер `index.ts` — только при **≥3** потребителях.
+- Тривиальный `useCallback(() => fn(), [fn])` без агрегации — используй `fn` напрямую.
+- Тривиальный alias (`A = B`) — не создавать.
+- Deprecated export без deadline — удалить в той же PR.
+- Магические числа (`tracking-[0.04em]`, `tracking-[0.08em]`, `tracking-[0.22em]` в одном файле) — перейти на токены или комментировать каждое отклонение.
 
-// ❌ Arbitrary text size
-className="text-[15px]"
+### 14.6. Перед написанием helper'а
 
-// ❌ Arbitrary z-index
-className="z-[200]"
+`grep -rn 'имя|похожий regexp' src/` и переиспользуй. Хранилища pure‑утилит: `shared/shifts/formatting.ts` (shift), `components/ui/shift-card/shift-card-utils.ts` (компактная карточка), `shared/utils/` (общие).
 
-// ❌ !important hack
-className="!border-0 !ring-0 !shadow-none"
+### 14.7. Когда хук пора разбить
 
-// ❌ Interactive div без a11y
-<div onClick={handler}>{content}</div>
+- ≥3 `useEffect` + ≥5 `useState` + DOM‑математика → экстракт в дочерний хук (`useDropdownPosition` и т.п.).
+- Файл >300 LOC, ≥40% — вычисления, не JSX → controller hook + декларативный UI.
 
-// ❌ Copy props to state via useEffect
-useEffect(() => setLocalValue(propValue), [propValue])
+### 14.8. Cleanup перед закрытием задачи
 
-// ❌ useMemo для примитива
-const isActive = useMemo(() => count > 0, [count])
+Grep‑аудит: объявленный, но не deструктурируемый prop · поле в типе/маппинге, которое нигде не рендерится · `console.*` · пустые директории · неиспользуемые exports / deprecated alias.
 
-// ❌ Subscription без cleanup
-useEffect(() => {
-  document.addEventListener('click', handler)
-}, [])
+### 14.9. Когда оставлять «дубликат»
 
-// ❌ Глобальный * { transition }
-* { transition: all 0.3s ease }
+Не объединяй то, что только выглядит одинаково:
+- `Modal` vs `AlertDialog` — разная семантика и focus management.
+- Два `LocationField` — разные API/сценарии (форма vs onboarding) → переименуй, не объединяй.
+- `--warning` и `--stars` — одинаковый hex, разная семантика (warning vs premium).
 
-// ❌ Card‑паттерн руками
-<div className="rounded-xl border border-border bg-card p-4">…</div>
-
-// ❌ Touch target <44px интерактивный
-<button className="h-9 w-9">…</button>
-```
-
-И их корректные эквиваленты:
-
-```tsx
-// ✅
-className="bg-primary"
-className="text-sm"    // body в карточке; text-base — основной body
-style={{ zIndex: Z_INDEX.alertDialog }}
-<Input variant="inline" />
-
-<button type="button" onClick={handler} aria-label="…">…</button>
-
-const [localValue, setLocalValue] = useState(propValue)
-useEffect(() => { ...controlled init with guard... }, [propValue])
-
-const isActive = count > 0  // обычная переменная
-
-useEffect(() => {
-  document.addEventListener('click', handler)
-  return () => document.removeEventListener('click', handler)
-}, [])
-
-body, .themed-surface { transition: background-color 0.2s ease }
-
-<Card padding="md">…</Card>
-
-<Button size="sm">…</Button>  // h-11 = 44px
-```
-
----
-
-## 13. Связанные документы
-
-- [`.cursorrules`](.cursorrules) — канон (стек, Redux, структура).
-- [`HANDOFF.md`](HANDOFF.md) — эндпоинты бэкенда (Stars, KPI, Hire, SOS, AI-match).
-- [`AGENTS.md`](AGENTS.md) — указатель на `.cursorrules`.
-
----
-
-## 14. Контрольный чек‑лист (TL;DR)
-
-Перед коммитом каждой задачи прогони мысленно:
-
-- [ ] Цвета: Tailwind‑семантика (`bg-primary`, `bg-secondary`, `bg-elevated`, …), без legacy, без `bg-accent`, без `bg-role-*` / `getRoleTheme`.
-- [ ] Типографика: константы `ui-patterns.ts` или шкала Tailwind; без `text-body-*` / `text-meta` и без ручных дублей заголовков.
-- [ ] Радиусы: `rounded-sm` … `rounded-2xl`, без `shift-compact-*` CSS.
-- [ ] Использую UI primitives, а не ad‑hoc div‑ы.
-- [ ] Touch targets ≥ 44px на всех интерактивных элементах.
-- [ ] safe‑area через утилиту, а не calc.
-- [ ] z‑index через `Z_INDEX`.
-- [ ] Все subscriptions / listeners имеют cleanup.
-- [ ] Нет `useEffect` для derived state.
-- [ ] Нет over‑memoization.
-- [ ] Файлы не >300 LOC (или есть обоснование).
-- [ ] Forms: validation pure, submission отдельно.
-- [ ] aria‑label на icon buttons.
-- [ ] focus‑visible state виден.
-- [ ] `npm run lint` ✓
-- [ ] `npm run format:check` ✓
-- [ ] `npm run build` ✓ (`tsc -b` + `vite build`)
-- [ ] Smoke check на mobile viewport.
-- [ ] Output summary в формате §10.
-
-Если хотя бы один пункт не выполнен — **не мерджить**.
+Объединяй только при идентичной семантике.

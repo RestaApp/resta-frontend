@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  type PointerEvent,
-  type ReactNode,
-} from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Drawer,
@@ -21,16 +14,12 @@ import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/utils/cn'
 import { setupTelegramBackButton } from '@/utils/telegram'
 
-const SWIPE_BACK_EDGE_PX = 56
-const SWIPE_BACK_DISTANCE_PX = 84
-const SWIPE_BACK_VERTICAL_TOLERANCE_PX = 64
-
 interface DetailsScreenFrameProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onClose: () => void
-  closeAriaLabel: string
-  title: ReactNode
+  closeAriaLabel?: string
+  title?: ReactNode
   headerMeta?: ReactNode
   children: ReactNode
   footer?: ReactNode
@@ -49,38 +38,11 @@ export function DetailsScreenFrame({
   variant = 'drawer',
 }: DetailsScreenFrameProps) {
   const fullscreenOffset = useTelegramFullscreenOffset()
-  const swipeStartRef = useRef<{ x: number; y: number } | null>(null)
   const onCloseRef = useRef(onClose)
   useLayoutEffect(() => {
     onCloseRef.current = onClose
   })
   const stableClose = useCallback(() => onCloseRef.current(), [])
-
-  const handlePointerDown = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (event.pointerType === 'mouse') return
-    if (event.clientX > SWIPE_BACK_EDGE_PX) return
-    swipeStartRef.current = { x: event.clientX, y: event.clientY }
-  }, [])
-
-  const handlePointerUp = useCallback(
-    (event: PointerEvent<HTMLElement>) => {
-      const start = swipeStartRef.current
-      swipeStartRef.current = null
-      if (!start) return
-
-      const deltaX = event.clientX - start.x
-      const deltaY = Math.abs(event.clientY - start.y)
-      const isBackSwipe =
-        deltaX >= SWIPE_BACK_DISTANCE_PX && deltaY <= SWIPE_BACK_VERTICAL_TOLERANCE_PX
-
-      if (isBackSwipe) onClose()
-    },
-    [onClose]
-  )
-
-  const handlePointerCancel = useCallback(() => {
-    swipeStartRef.current = null
-  }, [])
 
   useEffect(() => {
     if (!open || variant !== 'page') return
@@ -96,9 +58,6 @@ export function DetailsScreenFrame({
           fullscreenOffset.topClassName
         )}
         style={{ zIndex: Z_INDEX.drawer }}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerCancel}
       >
         <div
           className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} bg-background pb-24`}
@@ -121,7 +80,7 @@ export function DetailsScreenFrame({
             <div className="min-w-0 flex-1">
               <DrawerTitle className="break-words">{title}</DrawerTitle>
             </div>
-            <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel} />
+            <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel ?? ''} />
           </div>
           {headerMeta ? (
             <div className="flex items-center gap-2 flex-wrap mt-3">{headerMeta}</div>

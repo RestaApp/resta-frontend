@@ -4,13 +4,6 @@ import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { ChangeEvent, KeyboardEvent, ReactNode, RefObject } from 'react'
 import type { SelectOption } from './types'
 
-interface DropdownPosition {
-  left: number
-  top: number
-  width: number
-  opensUp: boolean
-}
-
 interface SelectDropdownProps {
   isOpen: boolean
   withOverlay?: boolean
@@ -23,10 +16,6 @@ interface SelectDropdownProps {
   value: string
   searchQuery: string
   filteredOptions: SelectOption[]
-  maxHeight: number
-  dropdownPosition: DropdownPosition
-  needsScroll: boolean
-  isScrolledToBottom: boolean
   searchInputRef: RefObject<HTMLInputElement | null>
   scrollContainerRef: RefObject<HTMLDivElement | null>
   dropdownRef: RefObject<HTMLDivElement | null>
@@ -49,8 +38,6 @@ export const SelectDropdown = ({
   value,
   searchQuery,
   filteredOptions,
-  maxHeight,
-  dropdownPosition,
   searchInputRef,
   scrollContainerRef,
   dropdownRef,
@@ -84,13 +71,9 @@ export const SelectDropdown = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className={cn(
-              'absolute left-0 right-0 w-full',
-              dropdownPosition.opensUp ? 'bottom-full mb-1' : 'top-full mt-1'
-            )}
+            className="absolute left-0 right-0 top-full mt-1 w-full"
             style={{
               zIndex: Z_INDEX.popover + 1,
-              maxHeight: `${maxHeight}px`,
             }}
           >
             <div className="overflow-hidden rounded-lg border border-border bg-background shadow-lg">
@@ -117,7 +100,7 @@ export const SelectDropdown = ({
                 role="listbox"
                 aria-label={label ?? displayPlaceholder}
                 className="overflow-y-auto overflow-x-hidden overscroll-contain"
-                style={{ maxHeight: `${searchable ? maxHeight - 40 : maxHeight}px` }}
+                style={{ maxHeight: '215px' }}
               >
                 {isLoading ? (
                   loadingContent

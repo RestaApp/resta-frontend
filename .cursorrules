@@ -1,20 +1,21 @@
 # Resta — единый свод правил (канон)
 
-**Короткий закон проекта.** Детали UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md). Контракты бэкенда — [`HANDOFF.md`](HANDOFF.md). `AGENTS.md` — только указатель сюда.
+**Короткий закон проекта.** Детали UI / engineering — в [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md) (§1–§14 — UI / hooks / forms / a11y; **§15 — обязательная часть канона: архитектура, направленность зависимостей, opacity‑токены, cleanup‑правила**). Контракты бэкенда — [`HANDOFF.md`](HANDOFF.md). `AGENTS.md` — только указатель сюда.
 
 ---
 
 ## Иерархия документов и приоритет
 
-| #   | Источник                           | Зона ответственности                                          |
-| --- | ---------------------------------- | ------------------------------------------------------------- |
-| 1   | Задача пользователя (чат / PR)     | —                                                             |
-| 2   | **`.cursorrules`** (этот файл)     | Стек, структура, Redux, TypeScript, общие принципы            |
-| 3a  | **`AI_DEVELOPMENT_GUIDELINES.md`** | Design system, UI-примитивы, hooks, forms, a11y, verification |
-| 3b  | **`HANDOFF.md`**                   | Эндпоинты и контракты для интеграции с бэкендом               |
-| 4   | Паттерны целевых файлов            | Локальные соглашения модуля                                   |
+| #   | Источник                                  | Зона ответственности                                                                                                |
+| --- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1   | Задача пользователя (чат / PR)            | —                                                                                                                   |
+| 2   | **`.cursorrules`** (этот файл)            | Стек, структура, Redux, TypeScript, общие принципы                                                                  |
+| 3a  | **`AI_DEVELOPMENT_GUIDELINES.md` §1–§14** | Design system, UI‑примитивы, hooks, forms, a11y, verification                                                       |
+| 3a* | **`AI_DEVELOPMENT_GUIDELINES.md` §15**    | Архитектура, направленность зависимостей, opacity‑токены, cleanup‑правила — **является продолжением `.cursorrules`** |
+| 3b  | **`HANDOFF.md`**                          | Эндпоинты и контракты для интеграции с бэкендом                                                                     |
+| 4   | Паттерны целевых файлов                   | Локальные соглашения модуля                                                                                         |
 
-**При расхождении между документами:** `.cursorrules` > специализированный документ **в его зоне** > код. Между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта нет — разные зоны.
+**При расхождении между документами:** `.cursorrules` (+ §15 guidelines как часть канона) > специализированный документ **в его зоне** > код. В норме между `AI_DEVELOPMENT_GUIDELINES.md` и `HANDOFF.md` конфликта быть не должно, так как они отвечают за разные зоны (UI vs контракты бэкенда).
 
 ---
 
@@ -46,18 +47,32 @@
 
 ## Структура
 
-| Назначение | Путь                                      |
-| ---------- | ----------------------------------------- |
-| Bootstrap  | `src/app/`                                |
-| Страницы   | `src/pages/`                              |
-| Фичи       | `src/features/<домен>/` — `model/`, `ui/` |
-| UI-kit     | `src/components/ui/`                      |
-| Store      | `src/store/`                              |
-| RTK Query  | `src/shared/api/`                         |
-| Endpoints  | `src/services/api/`                       |
-| Shared     | `src/shared/`                             |
+| Назначение      | Путь                                      |
+| --------------- | ----------------------------------------- |
+| Bootstrap       | `src/app/`                                |
+| Страницы        | `src/pages/`                              |
+| Фичи            | `src/features/<домен>/` — `model/`, `ui/` |
+| UI-kit          | `src/components/ui/`                      |
+| Store           | `src/store/`                              |
+| RTK Query       | `src/shared/api/`                         |
+| Endpoints       | `src/services/api/`                       |
+| Shared          | `src/shared/`                             |
+| Shift utilities | `src/shared/shifts/`                      |
+| Shared UI       | `src/shared/ui/`                          |
 
 Импорты — через `@/...`.
+
+**Направленность зависимостей (строгое правило):**
+
+```
+features/<X> ──→ shared/* ──→ components/ui/*
+```
+
+- `src/components/ui/*` — **feature‑agnostic**: не импортирует из `src/features/`.
+- Cross‑feature импорты допустимы только из `navigation`. Иные пары `features/A → features/B` — сигнал переноса общего кода в `src/shared/`.
+- Общие shift‑утилиты, типы, форматтеры, mapping → **`@/shared/shifts/`** (не `@/features/feed/`).
+
+Подробнее — см. §15 в [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md).
 
 ---
 
@@ -111,4 +126,12 @@
 - `any`, второй store / второй `createApi`, мутация Redux вне RTK.
 - Хардкод строк вместо i18n; игнор loading/error/empty в UI.
 - Косметический рефакторинг вне задачи.
-- UI/design-system нарушения — см. [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md) §12.
+- `console.log/error/warn` — только через `@/utils/logger`.
+- `font-mono` (Tailwind default) — в проекте только `font-mono-resta`.
+- Hand‑rolled аватары — использовать `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`.
+- Кастомный sticky/fixed bottom CTA — только через `BottomActionBar` / `StickyCTA` / `DrawerFooter`.
+- UI primitives (`components/ui/*`) импортируют из `features/*` — запрещено (см. §14.1 guidelines).
+- Произвольные opacity‑варианты (`bg-primary/8`, `bg-primary/14`) рядом с утверждённым стандартом (`/10`, `/15`).
+- Мёртвые пропсы / поля типа / неиспользуемые exports / barrel `index.ts` с ≤2 потребителями / deprecated alias без deadline.
+- Тривиальные `useCallback(() => fn(), [fn])` без агрегации логики.
+- UI/design-system нарушения — см. [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md) §12, §15.

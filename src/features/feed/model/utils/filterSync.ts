@@ -1,4 +1,4 @@
-import type { AdvancedFiltersData } from '../types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 
 export const createInitialFilters = (
   userPosition?: string | null,

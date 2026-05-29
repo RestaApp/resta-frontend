@@ -5,7 +5,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserCity, selectUserPosition } from '@/features/navigation/model/userSlice'
-import type { AdvancedFiltersData, FeedType } from '../types'
+import type { AdvancedFiltersData, FeedType } from '@/shared/shifts/types'
 import { hasActiveFilters, normalizeAdvancedFilters } from '@/utils/filters'
 import { createInitialFilters } from '../utils/filterSync'
 import { loadFeedFilterTemplate, saveFeedFilterTemplate } from '../utils/feedFilterTemplates'

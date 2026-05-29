@@ -5,6 +5,7 @@ import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { FormField } from '@/components/ui/form-field'
 import { SelectDropdown } from './select/SelectDropdown'
 import { SelectTrigger } from './select/SelectTrigger'
+import { useDropdownAutoScroll } from './select/useDropdownAutoScroll'
 import type { SelectProps } from './select/types'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 
@@ -20,9 +21,7 @@ export const Select = memo(function Select({
   label,
   hint,
   error,
-  allowCustomValue = false,
   searchable = true,
-  forceDropdownBelow = true,
   bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
 }: SelectProps) {
   const { t } = useTranslation()
@@ -32,18 +31,19 @@ export const Select = memo(function Select({
   const containerRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const triggerInputRef = useRef<HTMLInputElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const didAutoScrollRef = useRef(false)
-  const addedPaddingRef = useRef<{ container: HTMLElement; original: string } | null>(null)
 
   useBodyScrollLock(isOpen)
 
-  const selectedOption = options.find(opt => opt.value === value)
-  const displayValue =
-    isOpen && allowCustomValue ? searchQuery : selectedOption?.label || value || displayPlaceholder
+  useDropdownAutoScroll({
+    isOpen,
+    containerRef,
+    bottomOffsetPx,
+  })
 
-  // Фильтрация опций по поисковому запросу
+  const selectedOption = options.find(opt => opt.value === value)
+  const displayValue = selectedOption?.label || value || ''
+
   const filteredOptions = useMemo(() => {
     if (!searchable) return options
     if (!searchQuery.trim()) return options
@@ -54,174 +54,6 @@ export const Select = memo(function Select({
     )
   }, [options, searchQuery, searchable])
 
-  // Проверка, есть ли точное совпадение
-  const hasExactMatch = useMemo(() => {
-    if (!searchQuery.trim()) return false
-    const query = searchQuery.toLowerCase().trim()
-    return options.some(
-      opt => opt.label.toLowerCase() === query || opt.value.toLowerCase() === query
-    )
-  }, [options, searchQuery])
-
-  // Позиция и размеры дропдауна
-  const [dropdownPosition, setDropdownPosition] = useState({
-    left: 0,
-    top: 0,
-    width: 0,
-    opensUp: false,
-  })
-  const [maxHeight, setMaxHeight] = useState(280)
-
-  const getScrollableAncestor = useCallback((element: HTMLElement | null): HTMLElement | null => {
-    let current = element?.parentElement ?? null
-    while (current) {
-      const { overflowY } = window.getComputedStyle(current)
-      const canScroll =
-        (overflowY === 'auto' || overflowY === 'scroll') &&
-        current.scrollHeight > current.clientHeight
-      if (canScroll) return current
-      current = current.parentElement
-    }
-    return null
-  }, [])
-
-  // Расчет позиции и максимальной высоты дропдауна
-  useEffect(() => {
-    if (isOpen && containerRef.current) {
-      let rafId: number | null = null
-
-      const updatePosition = () => {
-        if (!containerRef.current) return
-
-        let rect = containerRef.current.getBoundingClientRect()
-        const scrollContainer =
-          (containerRef.current.closest('[data-scroll-container="true"]') as HTMLElement | null) ??
-          getScrollableAncestor(containerRef.current)
-        const scrollContainerRect = scrollContainer?.getBoundingClientRect()
-        const viewportHeight = scrollContainerRect?.bottom ?? window.innerHeight
-        const effectiveBottomOffset = scrollContainerRect ? 0 : bottomOffsetPx
-        const viewportWidth = window.innerWidth
-
-        let spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
-        const spaceAbove = rect.top
-        const desiredDropdownHeight = 215
-
-        const opensUp = forceDropdownBelow
-          ? false
-          : spaceBelow < desiredDropdownHeight && spaceAbove > spaceBelow
-
-        if (forceDropdownBelow && !opensUp && !didAutoScrollRef.current) {
-          const deficit = desiredDropdownHeight - spaceBelow
-          if (deficit > 0) {
-            if (scrollContainer instanceof HTMLElement) {
-              const neededScroll = deficit + 24
-              const remainingScroll =
-                scrollContainer.scrollHeight -
-                scrollContainer.clientHeight -
-                scrollContainer.scrollTop
-
-              if (remainingScroll < neededScroll) {
-                const extra = neededScroll - remainingScroll
-                addedPaddingRef.current = {
-                  container: scrollContainer,
-                  original: scrollContainer.style.paddingBottom,
-                }
-                const current = parseFloat(window.getComputedStyle(scrollContainer).paddingBottom) || 0
-                scrollContainer.style.paddingBottom = `${current + extra}px`
-              }
-
-              const updatedRemaining =
-                scrollContainer.scrollHeight -
-                scrollContainer.clientHeight -
-                scrollContainer.scrollTop
-              const scrollDelta = Math.min(neededScroll, Math.max(updatedRemaining, 0))
-              if (scrollDelta > 0) {
-                didAutoScrollRef.current = true
-                scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
-                rect = containerRef.current.getBoundingClientRect()
-                spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
-              }
-            } else {
-              const maxWindowScroll = document.documentElement.scrollHeight - window.innerHeight
-              const remainingWindowScroll = Math.max(maxWindowScroll - window.scrollY, 0)
-              const scrollDelta = Math.min(deficit + 24, remainingWindowScroll)
-              if (scrollDelta > 0) {
-                didAutoScrollRef.current = true
-                window.scrollBy({ top: scrollDelta, behavior: 'auto' })
-                rect = containerRef.current.getBoundingClientRect()
-                spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
-              }
-            }
-          }
-        }
-
-        const availableSpace = opensUp
-          ? Math.max(spaceAbove - 20, 200)
-          : forceDropdownBelow
-            ? Math.max(spaceBelow - 12, 64)
-            : Math.max(spaceBelow - 20, 200)
-
-        // Корректируем позицию по горизонтали, чтобы не выходить за границы экрана
-        let left = rect.left
-        const dropdownWidth = rect.width
-        if (left + dropdownWidth > viewportWidth - 16) {
-          left = viewportWidth - dropdownWidth - 16
-        }
-        if (left < 16) {
-          left = 16
-        }
-
-        let top: number
-        if (opensUp) {
-          top = rect.top - Math.min(availableSpace, 215) - 4
-        } else {
-          top = rect.bottom + 4
-        }
-
-        setDropdownPosition({
-          left,
-          top,
-          width: rect.width,
-          opensUp,
-        })
-        setMaxHeight(Math.min(availableSpace, 215))
-      }
-
-      const throttledUpdate = () => {
-        if (rafId !== null) return
-        rafId = requestAnimationFrame(() => {
-          updatePosition()
-          rafId = null
-        })
-      }
-
-      // initial + delayed recalc to handle auto-scroll from focus
-      throttledUpdate()
-      const delayedId = setTimeout(updatePosition, 100)
-      window.addEventListener('resize', throttledUpdate)
-      window.addEventListener('scroll', throttledUpdate, true)
-
-      return () => {
-        clearTimeout(delayedId)
-        window.removeEventListener('resize', throttledUpdate)
-        window.removeEventListener('scroll', throttledUpdate, true)
-        if (rafId !== null) cancelAnimationFrame(rafId)
-      }
-    }
-  }, [isOpen, bottomOffsetPx, forceDropdownBelow, getScrollableAncestor])
-
-  useEffect(() => {
-    if (!isOpen) {
-      didAutoScrollRef.current = false
-      if (addedPaddingRef.current) {
-        const { container, original } = addedPaddingRef.current
-        container.style.paddingBottom = original
-        addedPaddingRef.current = null
-      }
-    }
-  }, [isOpen])
-
-  // Фокус на input при открытии
   useEffect(() => {
     if (!isOpen || !searchable) return
     let rafId: number | null = null
@@ -233,27 +65,6 @@ export const Select = memo(function Select({
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
   }, [isOpen, searchable])
-
-  // Проверка, нужна ли прокрутка
-  const [needsScroll, setNeedsScroll] = useState(false)
-  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false)
-
-  useEffect(() => {
-    if (isOpen && scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const checkScroll = () => {
-        const hasScroll = container.scrollHeight > container.clientHeight
-        setNeedsScroll(hasScroll)
-        const isAtBottom =
-          container.scrollHeight - container.scrollTop <= container.clientHeight + 5
-        setIsScrolledToBottom(isAtBottom)
-      }
-
-      checkScroll()
-      container.addEventListener('scroll', checkScroll)
-      return () => container.removeEventListener('scroll', checkScroll)
-    }
-  }, [isOpen, options])
 
   const handleSelect = useCallback(
     (optionValue: string) => {
@@ -274,40 +85,21 @@ export const Select = memo(function Select({
     setIsOpen(false)
   }, [])
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value
-      setSearchQuery(newValue)
-      if (allowCustomValue) {
-        onChange(newValue)
-      }
-    },
-    [allowCustomValue, onChange]
-  )
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [])
 
   const handleInputKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
-        if (allowCustomValue && searchQuery.trim() && !hasExactMatch) {
-          onChange(searchQuery.trim())
-          setIsOpen(false)
-          setSearchQuery('')
-        } else if (filteredOptions.length > 0) {
+        if (filteredOptions.length > 0) {
           handleSelect(filteredOptions[0].value)
-        } else {
-          // Если нет совпадений, но allowCustomValue включен, принимаем введенное значение
-          if (allowCustomValue && searchQuery.trim()) {
-            onChange(searchQuery.trim())
-            setIsOpen(false)
-            setSearchQuery('')
-          }
         }
       } else if (e.key === 'Escape') {
         setIsOpen(false)
         setSearchQuery('')
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
-        // Фокус на первую опцию
         if (filteredOptions.length > 0 && scrollContainerRef.current) {
           const firstOption = scrollContainerRef.current.querySelector('button')
           if (firstOption) {
@@ -316,25 +108,19 @@ export const Select = memo(function Select({
         }
       }
     },
-    [allowCustomValue, searchQuery, hasExactMatch, filteredOptions, handleSelect, onChange]
+    [filteredOptions, handleSelect]
   )
 
   return (
     <FormField label={label} hint={hint} error={error} className={cn('w-full', className)}>
       <div className="relative" ref={containerRef}>
         <SelectTrigger
-          allowCustomValue={allowCustomValue}
           isOpen={isOpen}
           disabled={disabled}
           error={error}
           displayPlaceholder={displayPlaceholder}
           displayValue={displayValue}
           value={value}
-          searchQuery={searchQuery}
-          triggerInputRef={triggerInputRef}
-          onInputChange={handleInputChange}
-          onInputKeyDown={handleInputKeyDown}
-          onFocusInput={() => setIsOpen(true)}
           onToggle={handleToggle}
         />
 
@@ -346,10 +132,6 @@ export const Select = memo(function Select({
           value={value}
           searchQuery={searchQuery}
           filteredOptions={filteredOptions}
-          maxHeight={maxHeight}
-          dropdownPosition={dropdownPosition}
-          needsScroll={needsScroll}
-          isScrolledToBottom={isScrolledToBottom}
           searchInputRef={searchInputRef}
           scrollContainerRef={scrollContainerRef}
           dropdownRef={dropdownRef}

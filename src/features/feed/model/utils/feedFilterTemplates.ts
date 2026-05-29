@@ -1,4 +1,4 @@
-import type { AdvancedFiltersData } from '@/features/feed/model/types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import {
   getLocalStorageItem,
   removeLocalStorageItem,
@@ -10,7 +10,7 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
 
 /** Минимальная проверка структуры после JSON.parse */
-export const parseFeedFilterTemplate = (raw: string | null): AdvancedFiltersData | null => {
+const parseFeedFilterTemplate = (raw: string | null): AdvancedFiltersData | null => {
   if (!raw?.trim()) return null
   try {
     const data = JSON.parse(raw) as unknown

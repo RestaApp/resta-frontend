@@ -13,7 +13,7 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { LocationField } from '@/features/role-selector/ui/components/subroles/shared/LocationField'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
-import type { AdvancedFiltersData } from '@/features/feed/model/types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 
 interface AdvancedFiltersProps {

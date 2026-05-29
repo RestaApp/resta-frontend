@@ -2,7 +2,7 @@ import {
   ShiftDetailsScreen,
   type ShiftDetailsOwnerActions,
 } from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
-import type { Shift } from '@/features/feed/model/types'
+import type { Shift } from '@/shared/shifts/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 interface FeedDetailsProps {

@@ -78,13 +78,3 @@ export const triggerHapticFeedback = (pattern: HapticFeedbackPattern = 'light'):
       : HAPTIC_DURATION_MAP[pattern]
   )
 }
-
-/**
- * Утилита для тактильной обратной связи
- * @deprecated Используйте triggerHapticFeedback напрямую. Это не React хук.
- */
-export const useHaptics = () => {
-  return {
-    trigger: triggerHapticFeedback,
-  }
-}

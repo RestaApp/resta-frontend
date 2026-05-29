@@ -1,15 +1,14 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { TFunction } from 'i18next'
 import {
   type VacancyApiItem,
   useAcceptApplicationMutation,
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
-import type { Shift } from '@/features/feed/model/types'
-import { useCurrentUserId } from '@/features/feed/model/hooks/useCurrentUserId'
+import type { Shift } from '@/shared/shifts/types'
+import { useCurrentUserId } from '@/shared/shifts/useCurrentUserId'
 import { useToast } from '@/hooks/useToast'
 import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
-import { getTelegramWebApp } from '@/utils/telegram'
 import type { ShiftStatus } from '@/components/ui/StatusPill'
 import { sanitizeLocations } from '@/shared/utils/location'
 
@@ -20,7 +19,6 @@ interface UseShiftDetailsScreenControllerParams {
   onClose: () => void
   onApply: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
-  hourlyRate: string | null
   t: TFunction
 }
 
@@ -36,7 +34,6 @@ export const useShiftDetailsScreenController = ({
   onClose,
   onApply,
   onCancel,
-  hourlyRate,
   t,
 }: UseShiftDetailsScreenControllerParams) => {
   const currentUserId = useCurrentUserId()
@@ -59,9 +56,6 @@ export const useShiftDetailsScreenController = ({
   const description = vacancyData?.description?.trim() ?? ''
   const requirements = vacancyData?.requirements?.trim() ?? ''
   const locationPoints = sanitizeLocations(shift?.location ?? [])
-  const mapLocation = locationPoints[0] ?? ''
-  const hasDate = Boolean(shift?.date?.trim())
-  const hasTime = Boolean(shift?.time?.trim())
 
   const applicants = vacancyData?.applications_preview ?? []
   const showTabs = isOwner && applicants.length > 0
@@ -81,13 +75,6 @@ export const useShiftDetailsScreenController = ({
     vacancyData?.my_application?.status ?? shift?.applicationStatus ?? null
   const isAccepted = appStatus === 'accepted'
   const isRejected = appStatus === 'rejected'
-
-  const paySuffix = useMemo(() => {
-    if (!shift) return t('common.payPerShift')
-    const base = shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
-    if (!hourlyRate) return base
-    return `${base} (${hourlyRate} ${shift.currency}/час)`
-  }, [hourlyRate, shift, t])
 
   const handleClose = useCallback(() => {
     onClose()
@@ -112,50 +99,6 @@ export const useShiftDetailsScreenController = ({
       // Ошибка уже обрабатывается выше по стеку.
     }
   }, [shift, isRejected, applicationId, vacancyData, onCancel, handleClose])
-
-  const handleOpenMap = useCallback(() => {
-    if (!mapLocation) return
-
-    const encodedLocation = encodeURIComponent(mapLocation)
-    const yandexUrl = `https://yandex.ru/maps/?text=${encodedLocation}`
-    const googleUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`
-
-    const openExternalMapLink = (url: string) => {
-      const webApp = getTelegramWebApp()
-      if (webApp?.openLink) {
-        webApp.openLink(url)
-        return
-      }
-      window.open(url, '_blank', 'noopener,noreferrer')
-    }
-
-    const webApp = getTelegramWebApp()
-    if (webApp?.showPopup) {
-      webApp.showPopup(
-        {
-          title: t('shift.openMapTitle', 'Открыть на карте'),
-          message: t('shift.openMapMessage', 'Выберите приложение карт'),
-          buttons: [
-            { id: 'yandex', type: 'default', text: t('shift.openInYandex', 'Яндекс Карты') },
-            { id: 'google', type: 'default', text: t('shift.openInGoogle', 'Google Maps') },
-            { type: 'cancel' },
-          ],
-        },
-        buttonId => {
-          if (buttonId === 'google') {
-            openExternalMapLink(googleUrl)
-            return
-          }
-          if (buttonId === 'yandex') {
-            openExternalMapLink(yandexUrl)
-          }
-        }
-      )
-      return
-    }
-
-    openExternalMapLink(yandexUrl)
-  }, [mapLocation, t])
 
   const handleAcceptApplication = useCallback(
     async (id: number) => {
@@ -202,17 +145,13 @@ export const useShiftDetailsScreenController = ({
     description,
     requirements,
     locationPoints,
-    hasDate,
-    hasTime,
     applicants,
     showTabs,
     applicationsCount,
     selectedAppStatus,
     canModerateSelected,
-    appStatus,
     isAccepted,
     isRejected,
-    paySuffix,
     activeTab,
     setActiveTab,
     selectedApplicantId,
@@ -223,7 +162,6 @@ export const useShiftDetailsScreenController = ({
     handleClose,
     handleApply,
     handleCancel,
-    handleOpenMap,
     handleAcceptApplication,
     handleRejectApplication,
   }

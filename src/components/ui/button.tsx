@@ -3,14 +3,10 @@ import { cn } from '@/utils/cn'
 import { Loader } from '@/components/ui/loader'
 import type { HapticFeedbackPattern } from '@/utils/haptics'
 
-/**
- * Size scale per AI_DEVELOPMENT_GUIDELINES §1.4 (44 / 48 / 52 px).
- * Все размеры удовлетворяют WCAG 2.5.5 touch target ≥ 44 px.
- */
 const SIZE_CLASSES = {
   sm: 'h-11 px-3 text-xs',
-  md: 'h-12 px-4 text-sm',
-  lg: 'h-13 px-5 text-sm',
+  md: 'h-11 px-4 text-sm',
+  lg: 'h-11 px-5 text-sm',
 } as const
 
 const LOADER_SLOT = {

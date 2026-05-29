@@ -1,14 +1,7 @@
 {
   "feedFallback": {
     "venue": "Ресторан",
-    "vacancy": "Вакансия",
-    "noApplications": "Пока нет заявок",
-    "application": "заявка",
-    "applications2": "заявки",
-    "applications5": "заявок",
-    "review": "отзыв",
-    "reviews2": "отзыва",
-    "reviews5": "отзывов"
+    "vacancy": "Вакансия"
   },
   "filters": {
     "fromDate": "От {{date}}",
@@ -249,10 +242,6 @@
     "loadErrorShifts": "Ошибка загрузки смен",
     "loadErrorVacancies": "Ошибка загрузки вакансий",
     "hotOffers": "Горящие смены",
-    "hotShifts": "Горящие смены",
-    "hotVacancies": "Горящие вакансии",
-    "showAllHotOffers": "Все горящие",
-    "clearHotFilter": "Убрать фильтр",
     "filters": "Фильтры",
     "resetFiltersAria": "Сбросить фильтры",
     "resetFiltersSheet": "Сбросить",

@@ -1,7 +1,7 @@
 import { useMemo, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ApplicationPreviewApiItem } from '@/services/api/shiftsApi'
-import { getLogoByPosition } from '@/features/feed/model/utils/mapping'
+import { getLogoByPosition } from '@/shared/shifts/mapping'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

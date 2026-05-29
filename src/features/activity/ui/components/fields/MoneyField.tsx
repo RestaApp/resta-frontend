@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { BynIcon } from '@/components/ui/byn-icon'
-import { formatMoney, parseMoneyInput } from '@/features/feed/model/utils/formatting'
+import { formatMoney, parseMoneyInput } from '@/shared/shifts/formatting'
 import { Field } from './Field'
 
 type MoneyFieldProps = {

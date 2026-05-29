@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { HelpCircle } from 'lucide-react'
 import {
   Drawer,
   DrawerBody,
@@ -11,8 +10,7 @@ import {
   DrawerFooter,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { SHIFT_CARD_LOGO_CLASS } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
+import { Loader } from '@/components/ui/loader'
 import { useSupportTicketForm } from '@/features/profile/model/hooks/useSupportTicketForm'
 import { SupportTicketForm } from './SupportTicketForm'
 
@@ -20,12 +18,6 @@ interface SupportFormDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
-
-const SupportDrawerIcon = () => (
-  <div className={cn(SHIFT_CARD_LOGO_CLASS, 'bg-secondary text-primary')}>
-    <HelpCircle className="h-5 w-5" />
-  </div>
-)
 
 export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps) {
   const { t } = useTranslation()
@@ -38,10 +30,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
         <DrawerFrame className="flex-1">
           <DrawerHeader>
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-3">
-                <SupportDrawerIcon />
-                <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
-              </div>
+              <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
               <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
             </div>
             <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
@@ -61,12 +50,9 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
       <DrawerFrame className="flex-1">
         <DrawerHeader>
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <SupportDrawerIcon />
-              <div>
-                <DrawerTitle>{t('profile.supportForm.title')}</DrawerTitle>
-                <DrawerDescription>{t('profile.supportForm.description')}</DrawerDescription>
-              </div>
+            <div>
+              <DrawerTitle>{t('profile.supportForm.title')}</DrawerTitle>
+              <DrawerDescription>{t('profile.supportForm.description')}</DrawerDescription>
             </div>
             <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
           </div>
@@ -84,13 +70,42 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
             setContactInfo={form.setContactInfo}
             categoryOptions={form.categoryOptions}
             onSubmit={form.handleSubmit}
-            onCancel={handleClose}
-            isLoading={form.isLoading}
             errorMessage={form.errorMessage}
             fieldErrors={form.fieldErrors}
             maxMessageLength={form.maxMessageLength}
           />
         </DrawerBody>
+        <DrawerFooter>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="md"
+              className="flex-1"
+              onClick={handleClose}
+              disabled={form.isLoading}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              type="button"
+              variant="gradient"
+              size="md"
+              className="flex-1"
+              onClick={form.handleSubmit}
+              disabled={form.isLoading}
+            >
+              {form.isLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader size="sm" />
+                  {t('common.saving')}
+                </span>
+              ) : (
+                t('profile.supportForm.submit')
+              )}
+            </Button>
+          </div>
+        </DrawerFooter>
       </DrawerFrame>
     </Drawer>
   )

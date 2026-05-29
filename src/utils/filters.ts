@@ -2,7 +2,7 @@
  * Утилиты для работы с фильтрами
  */
 
-import type { AdvancedFiltersData } from '@/features/feed/model/types'
+import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import i18n from '@/shared/i18n/config'
 import { normalizeCatalogPosition } from '@/utils/roles'
 

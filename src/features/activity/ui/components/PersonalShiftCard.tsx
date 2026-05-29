@@ -1,5 +1,5 @@
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { mapOwnerVacancyToCardShift } from '@/features/feed/model/utils/mapping'
+import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
 
 interface PersonalShiftCardProps {
