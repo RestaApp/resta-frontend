@@ -20,9 +20,9 @@ interface DatePickerProps {
   error?: string
 }
 
-function formatDisplayDate(iso: string, locale: string): string {
-  const d = new Date(`${iso}T00:00:00`)
-  return d.toLocaleDateString(locale, { month: '2-digit', day: '2-digit', year: 'numeric' })
+function formatDisplayDate(iso: string): string {
+  const [y, m, d] = iso.split('-')
+  return `${d}/${m}/${y}`
 }
 
 export const DatePicker = ({
@@ -60,7 +60,7 @@ export const DatePicker = ({
           aria-expanded={open}
         >
           {value ? (
-            <span className="text-foreground">{formatDisplayDate(value, i18n.language)}</span>
+            <span className="text-foreground">{formatDisplayDate(value)}</span>
           ) : (
             <span className="text-sm text-muted-foreground">{displayPlaceholder}</span>
           )}

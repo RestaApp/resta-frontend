@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { OnboardingStepLayout } from './components/OnboardingStepLayout'
 import { RoleCard } from './components/RoleCard'
-import { ErrorModal } from './components/subroles/shared/ErrorModal'
+import { ErrorModal } from '@/components/ui/error-modal'
 
 import { EmployeeSubRoleSelector } from './components/subroles/EmployeeSubRoleSelector'
 import { SupplierCategorySelector } from './components/subroles/SupplierCategorySelector'

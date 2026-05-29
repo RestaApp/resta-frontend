@@ -18,10 +18,8 @@ export function useCalendar({ initialDate, minDate, locale = 'en' }: UseCalendar
   const [viewMonth, setViewMonth] = useState(parsed.getMonth())
 
   const monthLabel = useMemo(() => {
-    const d = new Date(viewYear, viewMonth, 1)
-    const label = d.toLocaleDateString(locale, { month: '2-digit', year: 'numeric' })
-    return label
-  }, [viewYear, viewMonth, locale])
+    return `${String(viewMonth + 1).padStart(2, '0')}/${viewYear}`
+  }, [viewYear, viewMonth])
 
   const dayHeaders = useMemo(() => {
     const base = new Date(2024, 0, 7)

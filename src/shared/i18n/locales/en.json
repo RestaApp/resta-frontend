@@ -611,7 +611,7 @@
     "timeNotSet": "Time not set"
   },
   "datePicker": {
-    "placeholder": "MM/DD/YYYY",
+    "placeholder": "DD/MM/YYYY",
     "ariaLabel": "Select date"
   },
   "citySelect": {
