@@ -254,8 +254,8 @@
     "specializationSection": "Специализация",
     "supplierCategorySection": "Категория",
     "loadError": "Ошибка загрузки профиля",
-    "openToWorkShort": "Ищу смены",
-    "openToWorkOff": "Не ищу смены",
+    "openToWorkShort": "Ищу работу",
+    "openToWorkOff": "Не ищу работу",
     "openToWorkCatalogHint": "Виден в каталоге open-to-work",
     "openToWorkHiddenHint": "Скрыт из каталога open-to-work",
     "latestReviews": "Последние отзывы",
@@ -556,7 +556,7 @@
         "employee": {
           "subtitle": "Рестораны будут писать тебе в Telegram напрямую",
           "shieldTitle": "Без посредников.",
-          "shieldText": "Resta только сводит. Оплата за смену — напрямую между тобой и рестораном."
+          "shieldText": "Resta только сводит. Оплата за смену — напрямую между тобой и работодателем."
         },
         "venue": {
           "subtitle": "Кандидаты будут писать в Telegram менеджеру",

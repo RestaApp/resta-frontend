@@ -14,6 +14,9 @@ import { getRoleCategory, type RoleCategory } from '@/shared/types/roles.types'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
+import { LegalConsentCheckbox } from '@/features/legal/ui/LegalConsentCheckbox'
+import { PrivacyPolicyPage } from '@/features/legal/ui/PrivacyPolicyPage'
+import { TermsOfServicePage } from '@/features/legal/ui/TermsOfServicePage'
 
 const ROLE_SHIELD_ICON: Record<RoleCategory, string> = {
   employee: '🛡',
@@ -27,6 +30,8 @@ interface TelegramConfirmStepProps {
   selectedRole: UiRole | null
 }
 
+type LegalOverlay = 'none' | 'privacy' | 'terms'
+
 export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   onContinue,
   onBack,
@@ -38,6 +43,9 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     selectedRole === 'venue' || selectedRole === 'supplier' ? selectedRole : 'employee'
   const roleCategory = getRoleCategory(selectedRole ?? 'chef')
   const [isEditingName, setIsEditingName] = useState(false)
+  const [legalConsent, setLegalConsent] = useState(false)
+  const [consentError, setConsentError] = useState(false)
+  const [legalOverlay, setLegalOverlay] = useState<LegalOverlay>('none')
   const {
     displayName,
     editedName,
@@ -156,9 +164,42 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         </div>
       </div>
 
-      <OnboardingBottomCta onClick={handleContinue} loading={isSaving} disabled={isSaving}>
+      <LegalConsentCheckbox
+        checked={legalConsent}
+        onChange={value => {
+          setLegalConsent(value)
+          if (value) setConsentError(false)
+        }}
+        onPrivacyPress={() => setLegalOverlay('privacy')}
+        onTermsPress={() => setLegalOverlay('terms')}
+        error={consentError}
+        className="mt-3"
+      />
+
+      <OnboardingBottomCta
+        onClick={() => {
+          if (!legalConsent) {
+            setConsentError(true)
+            return
+          }
+          handleContinue()
+        }}
+        loading={isSaving}
+        disabled={isSaving}
+      >
         {t('onboarding.telegram.next')}
       </OnboardingBottomCta>
+
+      {legalOverlay === 'privacy' ? (
+        <div className="fixed inset-0 bg-background" style={{ zIndex: 9999 }}>
+          <PrivacyPolicyPage onBack={() => setLegalOverlay('none')} />
+        </div>
+      ) : null}
+      {legalOverlay === 'terms' ? (
+        <div className="fixed inset-0 bg-background" style={{ zIndex: 9999 }}>
+          <TermsOfServicePage onBack={() => setLegalOverlay('none')} />
+        </div>
+      ) : null}
     </OnboardingStepLayout>
   )
 })

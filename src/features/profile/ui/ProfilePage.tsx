@@ -1,16 +1,35 @@
-import { memo } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { resetAppScroll } from '@/shared/ui/appScroll'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileOverview } from './components/ProfileOverview'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
+import { PrivacyPolicyPage } from '@/features/legal/ui/PrivacyPolicyPage'
+import { TermsOfServicePage } from '@/features/legal/ui/TermsOfServicePage'
 import { Loader } from '@/components/ui/loader'
 import { ErrorState } from '@/components/ui/states'
+
+type LegalScreen = 'none' | 'privacy' | 'terms'
 
 export const ProfilePage = memo(() => {
   const { t } = useTranslation()
   const m = useProfilePageModel()
+  const [legalScreen, setLegalScreen] = useState<LegalScreen>('none')
+
+  const handleLegalBack = useCallback(() => {
+    setLegalScreen('none')
+    resetAppScroll()
+  }, [])
+
+  if (legalScreen === 'privacy') {
+    return <PrivacyPolicyPage onBack={handleLegalBack} />
+  }
+
+  if (legalScreen === 'terms') {
+    return <TermsOfServicePage onBack={handleLegalBack} />
+  }
 
   if (m.isProfileLoading) {
     return (
@@ -44,6 +63,9 @@ export const ProfilePage = memo(() => {
         onNotificationSettingsClick={() => m.setIsNotificationPrefsDrawerOpen(true)}
         showNotificationSettings={m.profileViewModel.showNotificationSettings}
         showSupport={m.profileViewModel.showSupport}
+        onPrivacyPress={() => setLegalScreen('privacy')}
+        onTermsPress={() => setLegalScreen('terms')}
+        onDeleteAccount={m.handleDeleteAccount}
       />
 
       <EditProfileDrawer

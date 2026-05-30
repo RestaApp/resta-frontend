@@ -8,6 +8,7 @@ import {
   Languages,
   LogOut,
   Palette,
+  Scale,
   Settings,
   Trash2,
 } from 'lucide-react'
@@ -49,6 +50,7 @@ export const ProfileSettings = memo(function ProfileSettings({
   const { t, i18n } = useTranslation()
   const [isSupportDrawerOpen, setIsSupportDrawerOpen] = useState(false)
   const [isAppSettingsOpen, setIsAppSettingsOpen] = useState(false)
+  const [isLegalOpen, setIsLegalOpen] = useState(false)
   const [isDeleteDrawerOpen, setIsDeleteDrawerOpen] = useState(false)
 
   const handleLanguageChange = useCallback(
@@ -186,42 +188,104 @@ export const ProfileSettings = memo(function ProfileSettings({
         ) : null}
 
         <Card className="overflow-hidden rounded-lg border-border bg-card p-0">
-          <div className="flex flex-col divide-y divide-border/50">
-            {onPrivacyPress ? (
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                className="flex w-full items-center gap-2 p-3 text-left transition-colors hover:bg-secondary/50"
-                onClick={onPrivacyPress}
-                data-haptic="light"
-              >
-                <span className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}>
-                  <FileText className="h-4 w-4" />
-                </span>
-                <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
-                  {t('legal.privacyPolicy')}
-                </span>
-                <ChevronDown className="ml-auto h-4 w-4 -rotate-90 text-muted-foreground" />
-              </motion.button>
-            ) : null}
-            {onTermsPress ? (
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                className="flex w-full items-center gap-2 p-3 text-left transition-colors hover:bg-secondary/50"
-                onClick={onTermsPress}
-                data-haptic="light"
-              >
-                <span className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}>
-                  <FileText className="h-4 w-4" />
-                </span>
-                <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
-                  {t('legal.termsOfService')}
-                </span>
-                <ChevronDown className="ml-auto h-4 w-4 -rotate-90 text-muted-foreground" />
-              </motion.button>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            className={cn(
+              SHIFT_CARD_INTERACTIVE_CLASS,
+              'flex w-full items-center justify-between gap-2 p-3 text-left'
+            )}
+            onClick={() => setIsLegalOpen(v => !v)}
+            data-haptic="light"
+            aria-expanded={isLegalOpen}
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <span className={SHIFT_CARD_LOGO_CLASS}>
+                <Scale className="h-5 w-5" />
+              </span>
+              <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+                {t('legal.legalDocuments')}
+              </span>
+            </div>
+            <motion.span
+              animate={{ rotate: isLegalOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-sm bg-secondary text-muted-foreground"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </motion.span>
+          </button>
+
+          {isLegalOpen ? (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden border-t border-border/50"
+            >
+              <div className="flex flex-col divide-y divide-border/50 px-3">
+                {onPrivacyPress ? (
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    className="flex w-full items-center gap-2 py-3 text-left transition-colors hover:text-primary"
+                    onClick={onPrivacyPress}
+                    data-haptic="light"
+                  >
+                    <span
+                      className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </span>
+                    <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+                      {t('legal.privacyPolicy')}
+                    </span>
+                    <ChevronDown className="ml-auto h-4 w-4 -rotate-90 text-muted-foreground" />
+                  </motion.button>
+                ) : null}
+                {onTermsPress ? (
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    className="flex w-full items-center gap-2 py-3 text-left transition-colors hover:text-primary"
+                    onClick={onTermsPress}
+                    data-haptic="light"
+                  >
+                    <span
+                      className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </span>
+                    <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+                      {t('legal.termsOfService')}
+                    </span>
+                    <ChevronDown className="ml-auto h-4 w-4 -rotate-90 text-muted-foreground" />
+                  </motion.button>
+                ) : null}
+                {onDeleteAccount ? (
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    className="flex w-full items-center gap-2 py-3 text-left text-destructive transition-colors hover:bg-destructive/10"
+                    onClick={() => setIsDeleteDrawerOpen(true)}
+                    data-haptic="light"
+                  >
+                    <span
+                      className={cn(
+                        SHIFT_CARD_LOGO_CLASS,
+                        'h-8 w-8 border border-destructive/30 bg-destructive/10 text-destructive'
+                      )}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </span>
+                    <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate text-destructive')}>
+                      {t('legal.deleteAccount.title')}
+                    </span>
+                    <ChevronDown className="ml-auto h-4 w-4 -rotate-90 text-muted-foreground" />
+                  </motion.button>
+                ) : null}
+              </div>
+            </motion.div>
+          ) : null}
         </Card>
 
         <motion.button
@@ -247,35 +311,11 @@ export const ProfileSettings = memo(function ProfileSettings({
         </motion.button>
 
         {onDeleteAccount ? (
-          <>
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setIsDeleteDrawerOpen(true)}
-              className={cn(
-                SHIFT_CARD_CLASS,
-                SHIFT_CARD_INTERACTIVE_CLASS,
-                'flex w-full items-center gap-2 text-left text-destructive hover:bg-destructive/10'
-              )}
-            >
-              <span
-                className={cn(
-                  SHIFT_CARD_LOGO_CLASS,
-                  'border border-destructive/30 bg-destructive/10 text-destructive'
-                )}
-              >
-                <Trash2 className="h-5 w-5" />
-              </span>
-              <span className={cn(SHIFT_CARD_TITLE_CLASS, 'text-destructive')}>
-                {t('legal.deleteAccount.title')}
-              </span>
-            </motion.button>
-
-            <DeleteAccountDrawer
-              open={isDeleteDrawerOpen}
-              onOpenChange={setIsDeleteDrawerOpen}
-              onDeleteConfirmed={onDeleteAccount}
-            />
-          </>
+          <DeleteAccountDrawer
+            open={isDeleteDrawerOpen}
+            onOpenChange={setIsDeleteDrawerOpen}
+            onDeleteConfirmed={onDeleteAccount}
+          />
         ) : null}
       </div>
     </div>

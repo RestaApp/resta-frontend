@@ -1,6 +1,7 @@
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { resetAppScroll } from '@/shared/ui/appScroll'
 
 interface TermsOfServicePageProps {
   onBack: () => void
@@ -10,6 +11,10 @@ export const TermsOfServicePage = memo(function TermsOfServicePage({
   onBack,
 }: TermsOfServicePageProps) {
   const { t } = useTranslation()
+
+  useEffect(() => {
+    resetAppScroll()
+  }, [])
 
   return (
     <div className="flex flex-col bg-background">

@@ -104,6 +104,23 @@ export const useProfilePageModel = () => {
     showToast(t('auth.loggedOut'), 'success')
     window.location.reload()
   }, [clearUserData, showToast, t])
+
+  const handleDeleteAccount = useCallback(async () => {
+    if (!userProfile?.id) throw new Error('No user')
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/users/${userProfile.id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${authService.getToken()}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    if (!response.ok) throw new Error('Delete failed')
+    authService.logout()
+    clearUserData()
+    emitAppEvent(APP_EVENTS.AUTH_LOGOUT)
+    showToast(t('legal.deleteAccount.success'), 'success')
+    window.location.reload()
+  }, [clearUserData, showToast, t, userProfile])
   const handleEditSuccess = useCallback(() => {
     // cache is updated automatically via onQueryStarted in the mutation
   }, [])
@@ -177,5 +194,6 @@ export const useProfilePageModel = () => {
     isUpdatingUser,
     handleOpenToWorkToggle,
     handleLogout,
+    handleDeleteAccount,
   } as const
 }

@@ -70,24 +70,19 @@ export const DeleteAccountDrawer = memo(function DeleteAccountDrawer({
           <DrawerHeader>
             <div className="flex items-center justify-between gap-2">
               <DrawerTitle>{t('legal.deleteAccount.title')}</DrawerTitle>
-              <DrawerCloseButton
-                onClick={() => handleClose(false)}
-                ariaLabel={t('common.close')}
-              />
+              <DrawerCloseButton onClick={() => handleClose(false)} ariaLabel={t('common.close')} />
             </div>
           </DrawerHeader>
 
           <DrawerBody className="flex flex-col gap-4 pt-2">
-            <p className="text-sm text-muted-foreground">
-              {t('legal.deleteAccount.description')}
-            </p>
+            <p className="text-sm text-muted-foreground">{t('legal.deleteAccount.description')}</p>
 
             <ul className="list-disc pl-5 text-sm text-muted-foreground flex flex-col gap-1">
-              {(
-                t('legal.deleteAccount.consequencesList', { returnObjects: true }) as string[]
-              ).map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
+              {(t('legal.deleteAccount.consequencesList', { returnObjects: true }) as string[]).map(
+                (item, idx) => (
+                  <li key={idx}>{item}</li>
+                )
+              )}
             </ul>
 
             {error ? <InlineAlert message={error} /> : null}
@@ -123,15 +118,16 @@ export const DeleteAccountDrawer = memo(function DeleteAccountDrawer({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowConfirm(false)} disabled={isDeleting}>
+            <AlertDialogCancel onClick={() => setShowConfirm(false)}>
               {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? t('legal.deleteAccount.deleting') : t('legal.deleteAccount.confirmDelete')}
+              {isDeleting
+                ? t('legal.deleteAccount.deleting')
+                : t('legal.deleteAccount.confirmDelete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
