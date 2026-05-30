@@ -1,5 +1,6 @@
-import { lazy, type ComponentType } from 'react'
+import { lazy, type ComponentType, type ReactNode } from 'react'
 import { PageSuspense } from '@/components/ui/PageSuspense'
+import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { ActivityTab } from '@/features/activity/model/hooks/useActivityPageModel'
 
@@ -19,15 +20,20 @@ const VenueSuppliersPage = lazy(() =>
   import('@/features/venue/ui/VenueSuppliersPage').then(m => ({ default: m.VenueSuppliersPage }))
 )
 
-const TAB_COMPONENTS: Partial<Record<Tab, ComponentType>> = {
-  feed: FeedPage,
-  activity: ActivityPage,
-  profile: ProfilePage,
-  staff: VenueStaffPage,
-  suppliers: VenueSuppliersPage,
-  home: VenueSuppliersPage,
-  showcase: VenueSuppliersPage,
-  requests: ActivityPage,
+const cardSkeletonFallback = <FeedCardSkeletonList className="ui-density-page ui-density-py" />
+const staffSkeletonFallback = (
+  <FeedCardSkeletonList variant="staff" className="ui-density-page ui-density-py" />
+)
+
+const TAB_CONFIG: Partial<Record<Tab, { component: ComponentType; fallback?: ReactNode }>> = {
+  feed: { component: FeedPage, fallback: cardSkeletonFallback },
+  activity: { component: ActivityPage, fallback: cardSkeletonFallback },
+  profile: { component: ProfilePage },
+  staff: { component: VenueStaffPage, fallback: staffSkeletonFallback },
+  suppliers: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
+  home: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
+  showcase: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
+  requests: { component: ActivityPage, fallback: cardSkeletonFallback },
 }
 
 interface TabContentProps {
@@ -40,17 +46,19 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
 
   if (activeTab === 'activity' || activeTab === 'myshifts') {
     return (
-      <PageSuspense>
+      <PageSuspense fallback={cardSkeletonFallback}>
         <ActivityPage key={activeTab} employeeDefaultTab={employeeActivityDefaultTab} />
       </PageSuspense>
     )
   }
 
-  const Component = TAB_COMPONENTS[activeTab]
-  if (!Component) return null
+  const config = TAB_CONFIG[activeTab]
+  if (!config) return null
+
+  const { component: Component, fallback } = config
 
   return (
-    <PageSuspense>
+    <PageSuspense fallback={fallback}>
       <Component />
     </PageSuspense>
   )
