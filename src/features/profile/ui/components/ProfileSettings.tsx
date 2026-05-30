@@ -11,7 +11,7 @@ import {
   SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import type { Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'

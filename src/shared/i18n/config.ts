@@ -5,8 +5,8 @@
 
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { STORAGE_KEYS } from '@/constants/storage'
-import { getLocalStorageItem, setLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
+import { getLocalStorageItem, setLocalStorageItem } from '@/shared/utils/localStorage'
 import ru from './locales/ru.json'
 import en from './locales/en.json'
 

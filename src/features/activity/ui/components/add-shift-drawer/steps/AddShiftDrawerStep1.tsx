@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { CitySelect } from '@/components/ui/city-select'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { useCities } from '@/hooks/useCities'
+import { useCities } from '@/shared/lib/hooks/useCities'
 import { Field, MultiSelectSpecializations, ShiftLocationField } from '../../fields'
 import type { AddShiftDrawerStep1Props } from './types'
 

@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Card } from './card'
 import { META_MONO_CLASS, MODAL_TITLE_CLASS, PRICE_EMPHASIS_CLASS } from './ui-patterns'
 import { Badge } from './badge'

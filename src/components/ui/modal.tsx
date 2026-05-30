@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, memo, useId, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { cn } from '@/utils/cn'
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { cn } from '@/shared/utils/cn'
+import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { ModalA11yContext } from './modal-a11y'
-import { setupTelegramBackButton } from '@/utils/telegram'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
 interface ModalProps {
   isOpen: boolean

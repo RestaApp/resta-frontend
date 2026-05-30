@@ -1,12 +1,12 @@
 import type { TFunction } from 'i18next'
 import type { KpiItem } from '@/components/ui/kpi-row'
 import type { UserData } from '@/services/api/authApi'
-import type { ApiRole } from '@/types'
-import { formatPhoneDisplay, toE164 } from '@/utils/phone'
-import { formatExperienceText } from '@/utils/experience'
-import { normalizeExternalUrl } from '@/utils/externalUrl'
+import type { ApiRole } from '@/shared/types/roles.types'
+import { formatPhoneDisplay, toE164 } from '@/shared/utils/phone'
+import { formatExperienceText } from '@/shared/utils/experience'
+import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
 import { businessHoursRecordToFormValue } from './utils/businessHoursForm'
-import { getProfileCompleteness } from './utils/profileCompleteness'
+import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { splitSkillByDots } from '../ui/components/profile-info/skills'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>

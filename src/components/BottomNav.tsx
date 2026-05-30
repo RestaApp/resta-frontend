@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
-import { getTabsForRole } from '@/constants/tabs'
+import { getTabsForRole } from '@/shared/constants/tabs'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import type { UiRole, Tab } from '@/types'
-import { cn } from '@/utils/cn'
+import type { Tab } from '@/shared/types/navigation.types'
+import type { UiRole } from '@/shared/types/roles.types'
+import { cn } from '@/shared/utils/cn'
 
 interface BottomNavProps {
   activeTab: Tab

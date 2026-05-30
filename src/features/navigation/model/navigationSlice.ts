@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction, createSelector } from '@reduxjs/toolkit'
 import type { RootState } from '@/store/index'
-import type { Tab } from '@/types'
+import type { Tab } from '@/shared/types/navigation.types'
 
 type NavigationCommand = { type: 'NAVIGATE_TAB'; tab: Tab }
 

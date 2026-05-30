@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   INPUT_FIELD_BASE_CLASS,
   INPUT_FIELD_DISABLED_CLASS,

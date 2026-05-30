@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card'
 import { KPI_VALUE_CLASS, META_MONO_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 export interface KpiItem {
   /** Уникальный id (используется как ключ списка). */

@@ -5,7 +5,7 @@ import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import {
   ShiftDetailsScreen,
   type ShiftDetailsOwnerActions,
-} from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
+} from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
 
 type ShiftDetailsScreenBindings = Omit<
   ComponentProps<typeof ShiftDetailsScreen>,

@@ -1,6 +1,6 @@
 import i18n from '@/shared/i18n/config'
 import { firstLocation, toLocationArray } from '@/shared/utils/location'
-import { parseDate } from '@/utils/datetime'
+import { parseDate } from '@/shared/utils/datetime'
 
 export const formatMoney = (value: number): string => {
   const v = Number.isFinite(value) ? value : 0

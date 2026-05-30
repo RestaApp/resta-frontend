@@ -6,12 +6,12 @@ import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 import { groupAppliedByStatus } from '@/features/activity/model/utils/groupAppliedShifts'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
-import { STORAGE_KEYS } from '@/constants/storage'
+import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyApplicationsIllustration } from '@/components/ui/empty-illustrations'
 import type { ToastType } from '@/components/ui/toast'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]

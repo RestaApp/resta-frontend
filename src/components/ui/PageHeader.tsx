@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ArrowLeft, X } from 'lucide-react'
 import { SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
 type LeadingActionKind = 'back' | 'close'

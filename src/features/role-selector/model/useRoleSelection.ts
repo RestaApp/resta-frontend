@@ -9,8 +9,8 @@ import { useRoles } from './hooks/useRoles'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useSupplierCategories } from './hooks/useSupplierCategories'
 import { useRestaurantFormats } from './hooks/useRestaurantFormats'
-import { mapRoleOptionsFromApi } from '../utils/mappers'
-import { isEmployeeRole, isVerifiedRole, mapRoleFromApi } from '@/utils/roles'
+import { mapRoleOptionsFromApi } from '@/shared/utils/roleMappers'
+import { isEmployeeRole, isVerifiedRole, mapRoleFromApi } from '@/shared/utils/roles'
 import type { UiRole } from '@/shared/types/roles.types'
 
 interface UseRoleSelectionProps {

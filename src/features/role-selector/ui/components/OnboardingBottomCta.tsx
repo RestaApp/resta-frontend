@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 export const ONBOARDING_BOTTOM_CTA_SPACE = 'pb-onboarding-cta'
 

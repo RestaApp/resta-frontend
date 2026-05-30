@@ -21,14 +21,14 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
 } from '@/services/api/notificationPreferencesApi'
-import { useToast } from '@/hooks/useToast'
+import { useToast } from '@/shared/lib/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
-import type { ApiRole } from '@/types'
+import type { ApiRole } from '@/shared/types/roles.types'
 import type {
   NotificationPreference,
   UpdateNotificationPreferenceRequest,

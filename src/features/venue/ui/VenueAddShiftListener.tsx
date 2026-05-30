@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
-import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
+import type { ShiftType } from '@/shared/shifts/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { useProfileCompleteness } from '@/features/profile/model/hooks/useProfileCompleteness'
-import { useToast } from '@/hooks/useToast'
+import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'
+import { useToast } from '@/shared/lib/hooks/useToast'
 import { Toast } from '@/components/ui/toast'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 

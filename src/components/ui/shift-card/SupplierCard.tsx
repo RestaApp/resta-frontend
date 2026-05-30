@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { MapPin, Phone, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_INTERACTIVE_CLASS,

@@ -8,7 +8,7 @@ import { EmployeeSubRoleSelector } from './components/subroles/EmployeeSubRoleSe
 import { SupplierCategorySelector } from './components/subroles/SupplierCategorySelector'
 import { RestaurantFormatSelector } from './components/subroles/RestaurantFormatSelector'
 import { LoadingState } from './components/subroles/shared/LoadingState'
-import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
+import { LoadingPage } from '@/components/ui/LoadingPage'
 import { TelegramConfirmStep } from './components/TelegramConfirmStep'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './components/OnboardingBottomCta'
 

@@ -2,11 +2,11 @@ import { useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
 
-import { useToast } from '@/hooks/useToast'
-import { useSuccessOverlay } from '@/hooks/useSuccessOverlay'
+import { useToast } from '@/shared/lib/hooks/useToast'
+import { useSuccessOverlay } from '@/shared/lib/hooks/useSuccessOverlay'
 import { useAppDispatch } from '@/store/hooks'
-import { setLocalStorageItem } from '@/utils/localStorage'
-import { STORAGE_KEYS } from '@/constants/storage'
+import { setLocalStorageItem } from '@/shared/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
 
 import { useFeedFiltersState } from '../hooks/useFeedFiltersState'
 import { useVacanciesInfiniteList } from '../hooks/useVacanciesInfiniteList'
@@ -14,7 +14,7 @@ import { buildVacanciesBaseParams } from '../utils/queryParams'
 import { useHotOffers } from '../hooks/useHotOffers'
 import { useShiftActions } from '../hooks/useShiftActions'
 import { useFeedApplyFlow } from '../hooks/useFeedApplyFlow'
-import { useDeleteShift } from '@/features/activity/model/hooks/useShifts'
+import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
 import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
@@ -22,7 +22,7 @@ import {
   formatFiltersForDisplay,
   hasActiveFilters,
   normalizeAdvancedFilters,
-} from '@/utils/filters'
+} from '@/shared/utils/filters'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 
 

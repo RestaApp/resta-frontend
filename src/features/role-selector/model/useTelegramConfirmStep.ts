@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useUserUpdate } from './useUserUpdate'
-import { useGeolocation, getCityByCoordinates } from '@/hooks/useGeolocation'
-import { requestTelegramContact, requestTelegramLocation } from '@/utils/telegram'
-import { formatPhoneInput, toE164, validatePhone } from '@/utils/phone'
+import { useGeolocation, getCityByCoordinates } from '@/shared/lib/hooks/useGeolocation'
+import { requestTelegramContact, requestTelegramLocation } from '@/shared/utils/telegram'
+import { formatPhoneInput, toE164, validatePhone } from '@/shared/utils/phone'
 import { useGetUserQuery } from '@/services/api/usersApi'
-import { setupTelegramBackButton } from '@/utils/telegram'
-import { triggerHapticFeedback } from '@/utils/haptics'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 interface UseTelegramConfirmStepProps {
   onContinue: () => void

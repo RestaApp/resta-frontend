@@ -1,5 +1,5 @@
 import { memo, type ReactNode } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 /** Общие стили строки для секций ProfileOverview. */
 export const ROW_CLASS = 'flex justify-between items-baseline gap-2 py-2'

@@ -10,8 +10,8 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
-import { formatExperienceText } from '@/utils/experience'
+import { cn } from '@/shared/utils/cn'
+import { formatExperienceText } from '@/shared/utils/experience'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 
 interface EmployeeFieldsSectionProps {

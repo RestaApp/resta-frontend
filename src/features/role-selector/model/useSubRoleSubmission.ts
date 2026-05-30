@@ -6,10 +6,10 @@
 import { useState, useCallback } from 'react'
 import { useUserUpdate } from './useUserUpdate'
 import type { UiRole, EmployeeRole } from '@/shared/types/roles.types'
-import { mapApiRoleToDefaultUiRole } from '@/utils/roles'
+import { mapApiRoleToDefaultUiRole } from '@/shared/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
-import { buildRegistrationUpdateUserRequest } from '@/features/profile/model/utils/buildUpdateUserRequest'
-import { triggerHapticFeedback } from '@/utils/haptics'
+import { buildRegistrationUpdateUserRequest } from '@/shared/utils/buildRegistrationRequest'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 export interface SupplierOnboardingData {
   category: string

@@ -1,5 +1,5 @@
 import { AlertTriangle, Check, Info } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 type InlineAlertTone = 'error' | 'success' | 'info'
 

@@ -11,12 +11,12 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { useGetUserQuery } from '@/services/api/usersApi'
-import { mapRoleFromApi } from '@/utils/roles'
+import { mapRoleFromApi } from '@/shared/utils/roles'
 import { buildProfileViewModel } from '../model/buildProfileViewModel'
 import { ProfileOverview } from './components/ProfileOverview'
 import { useLabels } from '@/shared/i18n/hooks'
 import { Loader } from '@/components/ui/loader'
-import { getProfileCompleteness } from '../model/utils/profileCompleteness'
+import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface UserProfileDrawerProps {

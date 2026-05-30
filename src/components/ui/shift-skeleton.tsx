@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_META_CLASS,

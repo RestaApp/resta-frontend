@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface LoaderProps {
   size?: 'sm' | 'md' | 'lg'

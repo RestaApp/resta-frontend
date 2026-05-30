@@ -5,9 +5,9 @@ import type { Shift } from '@/shared/shifts/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney } from '@/shared/shifts/formatting'
 import { useCurrentUserId } from '@/shared/shifts/useCurrentUserId'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { firstLocation } from '@/shared/utils/location'
-import { addDaysToISODate, toLocalISODateKey } from '@/utils/datetime'
+import { addDaysToISODate, toLocalISODateKey } from '@/shared/utils/datetime'
 import {
   SHIFT_CARD_BADGE_CLASS,
   SHIFT_CARD_BADGE_ROW_CLASS,

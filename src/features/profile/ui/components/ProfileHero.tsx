@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DISPLAY_PRICE_CLASS, HERO_TITLE_CLASS, SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 type ProfileHeroUser = {
   profile_photo_url?: string | null

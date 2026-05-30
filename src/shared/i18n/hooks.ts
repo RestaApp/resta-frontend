@@ -4,7 +4,7 @@
 
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { normalizeCatalogPosition } from '@/utils/roles'
+import { normalizeCatalogPosition } from '@/shared/utils/roles'
 
 const humanizeLabel = (value: string): string => {
   const normalized = value

@@ -1,5 +1,5 @@
 import { ResultOverlay } from './result-overlay'
-import type { SuccessOverlayState } from '@/hooks/useSuccessOverlay'
+import type { SuccessOverlayState } from '@/shared/lib/hooks/useSuccessOverlay'
 
 interface SuccessOverlayProps {
   state: SuccessOverlayState

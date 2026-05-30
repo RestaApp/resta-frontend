@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface SkeletonProps {
   className?: string

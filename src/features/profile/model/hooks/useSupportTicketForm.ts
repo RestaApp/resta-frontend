@@ -7,7 +7,7 @@ import {
 } from '@/services/api/supportTicketsApi'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import type { SelectOption } from '@/components/ui/select'
-import { triggerHapticFeedback } from '@/utils/haptics'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 const MAX_MESSAGE_LENGTH = 2000
 

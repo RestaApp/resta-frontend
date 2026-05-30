@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useAppSelector } from '@/store/hooks'
-import { mapRoleFromApi } from '@/utils/roles'
+import { mapRoleFromApi } from '@/shared/utils/roles'
 import type { VacanciesResponse } from '@/services/api/shiftsApi'
 
 export interface UseAppliedShiftsReturn {

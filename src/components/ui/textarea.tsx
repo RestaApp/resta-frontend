@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 export const Textarea = forwardRef<HTMLTextAreaElement, React.ComponentProps<'textarea'>>(
   ({ className, ...props }, ref) => (

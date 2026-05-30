@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { normalizeCatalogPosition } from '@/utils/roles'
+import { normalizeCatalogPosition } from '@/shared/utils/roles'
 import { toLocationArray } from '@/shared/utils/location'
 import {
   getInitialPay,
@@ -10,7 +10,8 @@ import {
 } from '../utils/addShiftFormInitialization'
 import type { AddShiftFieldErrors } from '../utils/addShiftValidation'
 
-export type ShiftType = 'vacancy' | 'replacement'
+export type { ShiftType } from '@/shared/shifts/types'
+import type { ShiftType } from '@/shared/shifts/types'
 
 interface UseAddShiftFormStateOptions {
   initialShiftType: ShiftType | null

@@ -4,9 +4,9 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
-import { logger } from '@/utils/logger'
+import { logger } from '@/shared/utils/logger'
 import type { EmployeeRole } from '@/shared/types/roles.types'
-import { mapEmployeeSubRolesFromApi } from '../utils/mappers'
+import { mapEmployeeSubRolesFromApi } from '@/shared/utils/roleMappers'
 
 export interface EmployeeFormData {
   specializations: string[]

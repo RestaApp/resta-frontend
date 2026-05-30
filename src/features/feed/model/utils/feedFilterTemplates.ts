@@ -3,8 +3,8 @@ import {
   getLocalStorageItem,
   removeLocalStorageItem,
   setLocalStorageItem,
-} from '@/utils/localStorage'
-import { STORAGE_KEYS } from '@/constants/storage'
+} from '@/shared/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)

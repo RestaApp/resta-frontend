@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react'
 import { motion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface SwitchProps {
   checked: boolean

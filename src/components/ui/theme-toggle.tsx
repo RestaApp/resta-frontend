@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
-import { cn } from '@/utils/cn'
-import { getCurrentTheme, toggleTheme, type ResolvedTheme } from '@/utils/theme'
+import { cn } from '@/shared/utils/cn'
+import { getCurrentTheme, toggleTheme, type ResolvedTheme } from '@/shared/utils/theme'
 
 interface ThemeToggleProps {
   className?: string

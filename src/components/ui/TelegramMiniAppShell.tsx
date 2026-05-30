@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { cn } from '@/utils/cn'
-import { useTelegramFullscreenOffset } from '@/contexts/telegram/useTelegramFullscreenOffset'
-import { useTelegramHapticFeedback } from '@/contexts/telegram/useTelegramHapticFeedback'
+import { cn } from '@/shared/utils/cn'
+import { useTelegramFullscreenOffset } from '@/app/contexts/telegram/useTelegramFullscreenOffset'
+import { useTelegramHapticFeedback } from '@/app/contexts/telegram/useTelegramHapticFeedback'
 
 interface TelegramMiniAppShellProps {
   children: ReactNode

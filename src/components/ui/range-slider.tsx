@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useState } from 'react'
 import { motion, useSpring, useTransform, useMotionValueEvent } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 const SPRING_CONFIG = { stiffness: 220, damping: 18, mass: 0.35 }
 const DEFAULT_TICK_COUNT = 10

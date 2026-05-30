@@ -12,7 +12,7 @@ import {
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_LOGO_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { formatMoney } from '@/shared/shifts/formatting'
 import type { Shift } from '@/shared/shifts/types'
 

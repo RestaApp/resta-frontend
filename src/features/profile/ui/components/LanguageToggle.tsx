@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n/config'
 import {
   SEGMENTED_CONTAINER_CLASS,

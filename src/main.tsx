@@ -6,10 +6,10 @@ import '@/shared/i18n/config'
 import './index.css'
 import { App } from './App'
 import { store, persistor } from './store'
-import { TelegramProvider } from './contexts/TelegramContext'
-import { AuthProvider } from './contexts/AuthContext'
-import { initTheme } from './utils/theme'
-import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
+import { TelegramProvider } from '@/app/contexts/TelegramContext'
+import { AuthProvider } from '@/app/contexts/AuthContext'
+import { initTheme } from '@/shared/utils/theme'
+import { LoadingPage } from '@/components/ui/LoadingPage'
 
 // Инициализация единой тёмной темы до рендера
 initTheme()

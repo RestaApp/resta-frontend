@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
-import { formatServiceCategory } from '@/components/ui/shift-details-screen/formatServiceCategory'
+import { formatServiceCategory } from '@/shared/ui/shift-details-screen/formatServiceCategory'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 

@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useCities } from '@/hooks/useCities'
+import { useCities } from '@/shared/lib/hooks/useCities'
 
 interface UseCityAutocompleteProps {
   value: string

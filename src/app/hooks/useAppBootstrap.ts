@@ -10,12 +10,13 @@ import {
   selectSelectedRole,
   setSelectedRole,
 } from '@/features/navigation/model/userSlice'
-import { useAuth } from '@/contexts/auth'
-import { ROUTES } from '@/constants/routes'
-import type { Screen, UiRole } from '@/types'
+import { useAuth } from '@/app/contexts/auth'
+import { ROUTES } from '@/shared/constants/routes'
+import type { Screen } from '@/shared/types/navigation.types'
+import type { UiRole } from '@/shared/types/roles.types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { authService } from '@/services/auth'
-import { getPathForScreen, getScreenForPath } from '@/constants/routePaths'
+import { getPathForScreen, getScreenForPath } from '@/shared/constants/routePaths'
 
 type AppScreen = 'loading' | 'role' | 'dashboard'
 

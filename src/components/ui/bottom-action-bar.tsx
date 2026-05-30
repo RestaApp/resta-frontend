@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface BottomActionBarProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode

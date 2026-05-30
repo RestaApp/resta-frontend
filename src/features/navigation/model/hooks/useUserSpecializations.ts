@@ -5,8 +5,8 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import { useAuth } from '@/contexts/auth'
-import { normalizeCatalogPosition } from '@/utils/roles'
+import { useAuth } from '@/app/contexts/auth'
+import { normalizeCatalogPosition } from '@/shared/utils/roles'
 import { useGetUserSpecializationsQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import {

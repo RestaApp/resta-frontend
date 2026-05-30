@@ -5,7 +5,7 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 type ImageType = 'emoji' | 'icon'
 

@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApplyToShiftMutation, useCancelApplicationMutation } from '@/services/api/shiftsApi'
-import { useToast } from '@/hooks/useToast'
+import { useToast } from '@/shared/lib/hooks/useToast'
 import { normalizeApiError } from '../utils/apiErrors'
 
 export const useShiftApplication = () => {

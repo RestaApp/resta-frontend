@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
 import { OnboardingProgress } from './OnboardingProgress'
 

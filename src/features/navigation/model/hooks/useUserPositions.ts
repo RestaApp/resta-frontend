@@ -6,8 +6,8 @@
 
 import { useEffect } from 'react'
 import { useGetUserPositionsQuery } from '@/services/api/usersApi'
-import { mapEmployeeSubRolesFromApi } from '@/features/role-selector/utils/mappers'
-import { useAuth } from '@/contexts/auth'
+import { mapEmployeeSubRolesFromApi } from '@/shared/utils/roleMappers'
+import { useAuth } from '@/app/contexts/auth'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { selectPositions, setPositions } from '@/features/navigation/model/catalogSlice'
 

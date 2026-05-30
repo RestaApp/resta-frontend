@@ -3,18 +3,19 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { getTabsForRole } from '@/constants/tabs'
-import { getScreenForTab, getTabForScreen } from '@/constants/navigation'
-import type { Tab, UiRole, Screen } from '@/types'
+import { getTabsForRole } from '@/shared/constants/tabs'
+import { getScreenForTab, getTabForScreen } from '@/shared/constants/navigation'
+import type { Tab, Screen } from '@/shared/types/navigation.types'
+import type { UiRole } from '@/shared/types/roles.types'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   getLocalStorageItem,
   removeLocalStorageItem,
   setLocalStorageItem,
-} from '@/utils/localStorage'
-import { STORAGE_KEYS } from '@/constants/storage'
-import { isEmployeeRole } from '@/utils/roles'
-import { getPathForScreen } from '@/constants/routePaths'
+} from '@/shared/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
+import { isEmployeeRole } from '@/shared/utils/roles'
+import { getPathForScreen } from '@/shared/constants/routePaths'
 import {
   consumeCommand,
   selectNavigationCommand,

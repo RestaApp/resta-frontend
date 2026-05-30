@@ -5,13 +5,13 @@
 
 import { useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useUpdateUser } from '@/hooks/useUsers'
-import { getCurrentUserId } from '@/utils/user'
-import { logger } from '@/utils/logger'
+import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
+import { getCurrentUserId } from '@/shared/utils/user'
+import { logger } from '@/shared/utils/logger'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UiRole } from '@/shared/types/roles.types'
-import { mapUiRoleToApiRole } from '@/utils/roles'
-import { useAuth } from '@/contexts/auth'
+import { mapUiRoleToApiRole } from '@/shared/utils/roles'
+import { useAuth } from '@/app/contexts/auth'
 
 interface UseUserUpdateResult {
   updateUiRole: (

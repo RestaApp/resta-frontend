@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import type { LucideIcon } from 'lucide-react'
 import { SECTION_TITLE_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Badge } from '@/components/ui/badge'
 
 export interface SectionHeaderProps {

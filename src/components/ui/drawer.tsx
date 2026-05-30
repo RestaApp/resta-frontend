@@ -12,10 +12,10 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { cn } from '@/shared/utils/cn'
+import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import { setupTelegramBackButton } from '@/utils/telegram'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
 export type DrawerProps = {
   open: boolean

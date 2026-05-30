@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Select } from '@/components/ui/select'
-import { getTodayDateISO } from '@/utils/datetime'
+import { getTodayDateISO } from '@/shared/utils/datetime'
 import { Field, MoneyField, TextField, TimeField } from '../../fields'
 import type { AddShiftDrawerStep0Props } from './types'
 

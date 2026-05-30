@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { useCalendar } from './useCalendar'
 
 interface CalendarPickerProps {

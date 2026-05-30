@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
-import { SupplierDetailsScreen } from '@/components/ui/shift-details-screen/SupplierDetailsScreen'
+import { SupplierDetailsScreen } from '@/shared/ui/shift-details-screen/SupplierDetailsScreen'
 import { ErrorState } from '@/components/ui/states'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'

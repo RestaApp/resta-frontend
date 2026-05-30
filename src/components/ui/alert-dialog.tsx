@@ -9,13 +9,13 @@ import {
   memo,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Card } from './card'
 import { Button } from './button'
 import { MODAL_TITLE_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
-import { setupTelegramBackButton } from '@/utils/telegram'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
 interface AlertDialogProps {
   open: boolean

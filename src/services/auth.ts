@@ -2,8 +2,8 @@
  * Сервис для работы с аутентификацией
  */
 
-import { STORAGE_KEYS } from '@/constants/storage'
-import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
+import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
 
 const TOKEN_STORAGE_KEY = STORAGE_KEYS.AUTH_TOKEN
 const REFRESH_TOKEN_STORAGE_KEY = STORAGE_KEYS.REFRESH_TOKEN

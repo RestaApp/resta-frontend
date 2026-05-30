@@ -8,6 +8,8 @@ export interface AdvancedFiltersData {
 }
 export type PayPeriod = 'shift' | 'month'
 
+export type ShiftType = 'vacancy' | 'replacement'
+
 export interface Shift {
   id: number
   title?: string | null

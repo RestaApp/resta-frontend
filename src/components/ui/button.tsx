@@ -1,7 +1,7 @@
 import { forwardRef, type ComponentProps } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Loader } from '@/components/ui/loader'
-import type { HapticFeedbackPattern } from '@/utils/haptics'
+import type { HapticFeedbackPattern } from '@/shared/utils/haptics'
 
 const SIZE_CLASSES = {
   sm: 'h-9 px-3 text-xs',

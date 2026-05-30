@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface FormFieldProps {
   label?: string

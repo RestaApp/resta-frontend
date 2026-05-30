@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
 export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined

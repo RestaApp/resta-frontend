@@ -1,5 +1,5 @@
 import { Suspense, lazy, type ReactNode } from 'react'
-import { LoadingPage } from '@/pages/applications/components/Loading/LoadingPage'
+import { LoadingPage } from '@/components/ui/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'

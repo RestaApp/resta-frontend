@@ -1,14 +1,14 @@
 import { memo } from 'react'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   logoAnimation,
   textAnimation,
   logoTransition,
   createTextTransition,
   ANIMATION_DELAY_STEP,
-} from '@/constants/animations'
+} from '@/shared/constants/animations'
 
 interface LogoWithTextProps {
   icon: ReactNode

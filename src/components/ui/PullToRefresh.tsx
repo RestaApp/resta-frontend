@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { TouchEvent, ReactNode } from 'react'
 import { Loader } from '@/components/ui/loader'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { getAppScrollTop } from '@/shared/ui/appScroll'
 
 interface PullToRefreshProps {

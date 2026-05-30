@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface ErrorStateProps {
   /** Главный текст: что произошло. */

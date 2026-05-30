@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { ChangeEvent, KeyboardEvent, ReactNode, RefObject } from 'react'
 import type { SelectOption } from './types'

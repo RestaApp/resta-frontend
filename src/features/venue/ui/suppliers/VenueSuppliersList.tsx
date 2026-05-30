@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
-import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
-import { SearchFilters } from '@/features/feed/ui/components/SearchFilters'
+import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
+import { SearchFilters } from '@/shared/ui/SearchFilters'
 import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { Switch } from '@/components/ui/switch'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import type { SupplierItem } from './types'
 
 interface VenueSuppliersListProps {

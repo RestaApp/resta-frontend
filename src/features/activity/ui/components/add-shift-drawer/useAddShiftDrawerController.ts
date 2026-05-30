@@ -10,7 +10,7 @@ import {
 } from './validation'
 import { useAddShiftDrawerHandlers } from './useAddShiftDrawerHandlers'
 import { useAddShiftDrawerSubmit } from './useAddShiftDrawerSubmit'
-import { triggerHapticFeedback } from '@/utils/haptics'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 type UseAddShiftDrawerControllerParams = {
   onOpenChange: (open: boolean) => void

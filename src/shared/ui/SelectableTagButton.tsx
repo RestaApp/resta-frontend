@@ -5,7 +5,7 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   TAG_ACTIVE_CLASS,
   TAG_BASE_CLASS,

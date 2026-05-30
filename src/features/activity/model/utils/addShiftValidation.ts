@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import { toMinutes } from '@/utils/datetime'
+import { toMinutes } from '@/shared/utils/datetime'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 /** SRP: чистые функции валидации формы AddShift. Никаких React/Redux зависимостей. */

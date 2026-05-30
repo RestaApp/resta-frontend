@@ -10,7 +10,7 @@ import {
 import type { Shift } from '@/shared/shifts/types'
 import { formatMoney } from '@/shared/shifts/formatting'
 import { useLabels } from '@/shared/i18n/hooks'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { stripVacancyPrefix } from '@/components/ui/shift-card/shift-card-utils'
 
 interface ApplicationSuccessOverlayProps {

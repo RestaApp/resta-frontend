@@ -1,7 +1,7 @@
 import {
   ShiftDetailsScreen,
   type ShiftDetailsOwnerActions,
-} from '@/components/ui/shift-details-screen/ShiftDetailsScreen'
+} from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
 import type { Shift } from '@/shared/shifts/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 

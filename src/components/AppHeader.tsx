@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Button } from '@/components/ui/button'
 import {
   APP_HEADER_ACTION_BUTTON_CLASS,
@@ -10,7 +10,8 @@ import {
 } from '@/components/ui/ui-patterns'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
 import { Edit2, Plus, Settings, SlidersHorizontal } from 'lucide-react'
-import type { Tab, UiRole } from '@/types'
+import type { Tab } from '@/shared/types/navigation.types'
+import type { UiRole } from '@/shared/types/roles.types'
 import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 

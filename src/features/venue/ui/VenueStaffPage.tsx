@@ -7,7 +7,7 @@ import {
 } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { ErrorState } from '@/components/ui/states'
-import { useToast } from '@/hooks/useToast'
+import { useToast } from '@/shared/lib/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'

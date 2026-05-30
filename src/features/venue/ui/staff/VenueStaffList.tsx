@@ -15,7 +15,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { useLabels } from '@/shared/i18n/hooks'
 
 export interface StaffItem {

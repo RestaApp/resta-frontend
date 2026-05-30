@@ -8,11 +8,11 @@ import { OnboardingSection, OnboardingStepLayout } from './OnboardingStepLayout'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
-import { formatPhoneInput } from '@/utils/phone'
+import { formatPhoneInput } from '@/shared/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
 import { getRoleCategory, type RoleCategory } from '@/shared/types/roles.types'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
 
 const ROLE_SHIELD_ICON: Record<RoleCategory, string> = {

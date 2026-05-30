@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { CitySelect } from '@/components/ui/city-select'
-import type { ApiRole } from '@/types'
+import type { ApiRole } from '@/shared/types/roles.types'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 
 interface BasicProfileFieldsProps {

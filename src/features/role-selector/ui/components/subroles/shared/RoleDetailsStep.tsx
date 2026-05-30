@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { TagGroup } from '@/shared/ui/TagGroup'
-import { setupTelegramBackButton } from '@/utils/telegram'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
 import {
   OnboardingBottomCta,
   ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT,

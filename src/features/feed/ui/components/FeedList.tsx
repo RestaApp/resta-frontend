@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
-import { InfiniteScrollTrigger } from '@/features/feed/ui/components/InfiniteScrollTrigger'
+import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
 import type { Shift } from '@/shared/shifts/types'
 import type { UseVacanciesInfiniteListReturn } from '@/features/feed/model/hooks/useVacanciesInfiniteList'
 import type { ShiftStatus } from '@/components/ui/StatusPill'

@@ -3,7 +3,7 @@ import { Field } from './Field'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { Loader } from '@/components/ui/loader'
 import { useLabels } from '@/shared/i18n/hooks'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 
 interface MultiSelectSpecializationsProps {
   label: string

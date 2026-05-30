@@ -3,7 +3,7 @@
  */
 
 import { useGetSupplierCategoriesQuery } from '@/services/api/rolesApi'
-import { useAuth } from '@/contexts/auth'
+import { useAuth } from '@/app/contexts/auth'
 
 interface UseSupplierCategoriesOptions {
   enabled?: boolean

@@ -1,6 +1,6 @@
 import { lazy, type ComponentType } from 'react'
 import { PageSuspense } from '@/components/ui/PageSuspense'
-import type { Tab } from '@/types'
+import type { Tab } from '@/shared/types/navigation.types'
 import type { ActivityTab } from '@/features/activity/model/hooks/useActivityPageModel'
 
 const FeedPage = lazy(() =>

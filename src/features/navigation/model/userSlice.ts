@@ -1,7 +1,7 @@
 import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { UiRole, ApiRole } from '@/types'
+import type { UiRole, ApiRole } from '@/shared/types/roles.types'
 import type { UserData } from '@/services/api/authApi'
-import { mapRoleFromApi, mapApiRoleToDefaultUiRole, isVerifiedRole } from '@/utils/roles'
+import { mapRoleFromApi, mapApiRoleToDefaultUiRole, isVerifiedRole } from '@/shared/utils/roles'
 import type { RootState } from '@/store/index'
 
 interface UserState {

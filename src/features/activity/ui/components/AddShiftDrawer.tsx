@@ -14,9 +14,9 @@ import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsA
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
-import { useUserProfile } from '@/hooks/useUserProfile'
+import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
-import { useToast } from '@/hooks/useToast'
+import { useToast } from '@/shared/lib/hooks/useToast'
 import { toLocationArray } from '@/shared/utils/location'
 import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
 import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
@@ -36,7 +36,7 @@ import {
   INITIAL_SHIFT_TYPE,
   TOTAL_STEPS,
 } from './add-shift-drawer/config'
-import { normalizeCatalogPosition } from '@/utils/roles'
+import { normalizeCatalogPosition } from '@/shared/utils/roles'
 
 type AddShiftDrawerProps = {
   open: boolean

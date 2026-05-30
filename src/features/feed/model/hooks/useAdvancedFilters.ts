@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import {
   hasActiveFilters as checkHasActiveFilters,
   normalizeAdvancedFilters,
-} from '@/utils/filters'
+} from '@/shared/utils/filters'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 
 interface UseAdvancedFiltersOptions {

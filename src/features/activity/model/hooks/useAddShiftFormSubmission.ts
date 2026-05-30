@@ -6,13 +6,13 @@ import {
   type CreateShiftResponse,
   type VacancyApiItem,
 } from '@/services/api/shiftsApi'
-import { useToast } from '@/hooks/useToast'
-import { toMinutes, buildDateTime, addDaysToISODate } from '@/utils/datetime'
-import { triggerHapticFeedback } from '@/utils/haptics'
+import { useToast } from '@/shared/lib/hooks/useToast'
+import { toMinutes, buildDateTime, addDaysToISODate } from '@/shared/utils/datetime'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { parseMoneyInput } from '@/shared/shifts/formatting'
-import { normalizeCatalogPosition } from '@/utils/roles'
+import { normalizeCatalogPosition } from '@/shared/utils/roles'
 import { sanitizeLocations } from '@/shared/utils/location'
-import { useUpdateUser } from '@/hooks/useUsers'
+import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { mapServerErrorsToFields, translateServerError } from '../utils/addShiftValidation'

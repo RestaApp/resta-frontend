@@ -8,7 +8,7 @@ import {
   stripMinskPrefixAll,
 } from './formatting'
 import { toLocationArray } from '@/shared/utils/location'
-import { toLocalISODateKey } from '@/utils/datetime'
+import { toLocalISODateKey } from '@/shared/utils/datetime'
 import i18n from '@/shared/i18n/config'
 
 const toNumber = (v?: string | number | null): number => {

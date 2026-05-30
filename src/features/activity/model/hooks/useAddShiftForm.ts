@@ -5,8 +5,8 @@ import {
   type CreateShiftResponse,
   type VacancyApiItem,
 } from '@/services/api/shiftsApi'
-import { normalizeVacanciesResponse } from '@/features/profile/model/utils/normalizeShiftsResponse'
-import { useAuth } from '@/contexts/auth'
+import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
+import { useAuth } from '@/app/contexts/auth'
 import { findDuplicatePosition, validateDate, validateTimeRange } from '../utils/addShiftValidation'
 import { useAddShiftFormState, type ShiftType } from './useAddShiftFormState'
 import { useAddShiftFormSubmission } from './useAddShiftFormSubmission'

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'

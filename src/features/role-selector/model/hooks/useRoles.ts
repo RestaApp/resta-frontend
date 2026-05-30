@@ -4,7 +4,7 @@
  */
 
 import { useGetAvailableUiRolesQuery } from '@/services/api/rolesApi'
-import { useAuth } from '@/contexts/auth'
+import { useAuth } from '@/app/contexts/auth'
 
 interface UseRolesOptions {
   /**

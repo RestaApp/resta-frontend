@@ -8,7 +8,7 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
 
 const ROLE_EMOJI: Record<UiRole, string> = {

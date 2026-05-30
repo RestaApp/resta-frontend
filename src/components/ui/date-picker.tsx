@@ -1,7 +1,7 @@
 import { useCallback, useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import { FormField } from '@/components/ui/form-field'
 import { CalendarPicker } from '@/components/ui/calendar-picker'
 

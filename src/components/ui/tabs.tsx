@@ -1,6 +1,6 @@
 import { useCallback, useId, useMemo, useRef } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
-import { cn } from '@/utils/cn'
+import { cn } from '@/shared/utils/cn'
 import {
   SEGMENTED_CONTAINER_CLASS,
   SEGMENTED_TRIGGER_ACTIVE_CLASS,
