@@ -99,6 +99,7 @@ const notificationsApi = api.injectEndpoints({
     getNotificationsHasUnread: builder.query<NotificationsHasUnreadResponse, void>({
       query: () => '/api/v1/notifications/has_unread',
       providesTags: [{ type: 'Notification', id: 'UNREAD_FLAG' }],
+      keepUnusedDataFor: 30,
     }),
   }),
 })

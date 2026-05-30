@@ -45,7 +45,7 @@ const shiftsApi = api.injectEndpoints({
         }
       },
       providesTags: result => provideListTags('Shift', result),
-      keepUnusedDataFor: 30,
+      keepUnusedDataFor: 300,
     }),
 
     // GET /api/v1/shifts/:id — детальный ShiftBlueprint (view :detail)
@@ -173,7 +173,7 @@ const shiftsApi = api.injectEndpoints({
         method: 'GET',
       }),
       providesTags: result => provideListTags('AppliedShift', result),
-      keepUnusedDataFor: 30,
+      keepUnusedDataFor: 120,
     }),
 
     // Получить мои смены (список смен текущего пользователя)

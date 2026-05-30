@@ -859,5 +859,114 @@
       "technologist": "Technologist",
       "accountant": "Accountant"
     }
+  },
+  "legal": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "legalDocuments": "Legal documents",
+    "consent": {
+      "prefix": "I accept the",
+      "privacyLink": "Privacy Policy",
+      "and": "and",
+      "termsLink": "Terms of Service",
+      "suffix": ", confirm that I am at least 16 years old, and consent to the processing of my personal data.",
+      "required": "You must accept the terms to continue"
+    },
+    "privacy": {
+      "generalTitle": "1. General provisions",
+      "generalText": "This Privacy Policy defines the procedure for processing and protecting personal data of users of the Resta application (hereinafter — the Application) in accordance with the Law of the Republic of Belarus No. 99-Z dated 07.05.2021 \"On Personal Data Protection\".",
+      "operatorTitle": "2. Data controller",
+      "operatorText": "The data controller is the owner of the Resta Application. Contact details of the controller are available in the \"Support\" section of the Application.",
+      "dataTitle": "3. Data collected",
+      "dataList": [
+        "First and last name",
+        "Phone number",
+        "Email address",
+        "City of residence",
+        "Profile photo",
+        "Telegram ID and username",
+        "Professional experience and skills",
+        "Geolocation (with explicit user consent)",
+        "Venue addresses (for the \"restaurant\" role)",
+        "Supply categories (for the \"supplier\" role)"
+      ],
+      "purposeTitle": "4. Purposes of processing",
+      "purposeList": [
+        "Registration and authentication in the Application",
+        "Providing shift, vacancy, and employee search functionality",
+        "Selecting relevant offers based on city and specialization",
+        "Enabling communication between workers and venues",
+        "Displaying user profiles to other platform participants",
+        "Sending notifications about application statuses and new offers",
+        "Technical support and handling inquiries",
+        "Improving the quality of the Application"
+      ],
+      "basisTitle": "5. Legal basis for processing",
+      "basisText": "Personal data is processed based on the consent of the data subject (Article 5 of Law No. 99-Z). Consent is provided upon registration in the Application by accepting this Privacy Policy and the Terms of Service.",
+      "storageTitle": "6. Data storage and deletion",
+      "storageText": "Personal data is stored for the entire period of Application use and 30 days after account deletion. After this period, data is permanently deleted. The user may request account and data deletion at any time through the \"Settings\" section of their profile.",
+      "rightsTitle": "7. Data subject rights",
+      "rightsList": [
+        "Obtain information about the processing of their personal data",
+        "Request corrections to personal data",
+        "Request cessation of processing and deletion of personal data",
+        "Withdraw consent to personal data processing",
+        "Appeal the controller's actions to the authorized personal data protection body"
+      ],
+      "thirdPartyTitle": "8. Data sharing with third parties",
+      "thirdPartyText": "Personal data is not shared with third parties, except as required by the legislation of the Republic of Belarus. Contact details (phone, Telegram) are shared with another platform user only after mutual consent (acceptance of a shift application). An open geocoding service is used to determine the city by coordinates — coordinates are transmitted anonymously.",
+      "geolocationTitle": "9. Geolocation",
+      "geolocationText": "The Application may request access to device geolocation to determine the user's city and find nearby shifts. Geolocation is requested only with explicit user consent and is not collected in the background. The user may deny access — in that case, the city is selected manually.",
+      "contactTitle": "10. Contact",
+      "contactText": "For questions related to personal data processing, please contact us through the \"Support\" section in the Application.",
+      "lastUpdated": "Last updated: May 30, 2026"
+    },
+    "terms": {
+      "generalTitle": "1. General provisions",
+      "generalText": "These Terms of Service (hereinafter — the Agreement) govern the use of the Resta application (hereinafter — the Application) and constitute a public offer in accordance with Article 407 of the Civil Code of the Republic of Belarus. By using the Application, you fully and unconditionally accept this Agreement.",
+      "subjectTitle": "2. Subject of the agreement",
+      "subjectText": "The Application provides an information platform for interaction between HoReCa workers, dining establishments, and suppliers. The Application enables the posting and searching of shifts, vacancies, and the exchange of contact information between participants.",
+      "platformTitle": "3. Platform status",
+      "platformText": "Resta is exclusively an information platform and is not a party to labor, civil, or other relationships between users. Resta is not an employer, recruitment agency, job exchange, or employment intermediary. All relationships between a worker and a venue (including payment, working conditions, insurance) are established and governed directly between them in accordance with the legislation of the Republic of Belarus.",
+      "userTitle": "4. User obligations",
+      "userList": [
+        "Provide accurate information during registration and in their profile",
+        "Not use the Application to post knowingly false information",
+        "Independently settle labor and civil law relationships with other users",
+        "Comply with the legislation of the Republic of Belarus when formalizing labor relationships",
+        "Not transfer account access to third parties",
+        "Confirm that the user is at least 16 years old"
+      ],
+      "paymentTitle": "5. Shift payments",
+      "paymentText": "Payment for completed shifts is made directly between the worker and the venue. Resta does not participate in payments, does not withhold commissions from wages, and is not responsible for the timeliness or completeness of payments. The parties independently determine the form and procedure of payment in accordance with the law.",
+      "subscriptionTitle": "6. PRO subscription",
+      "subscriptionText": "The Application offers paid PRO subscriptions with extended functionality. Payment is made via Telegram Stars. The subscription is valid for the paid period and does not auto-renew. Refunds for unused subscription periods are handled in accordance with Telegram's policies. The user may cancel the subscription at any time — access is maintained until the end of the paid period.",
+      "reviewsTitle": "7. Reviews and ratings",
+      "reviewsText": "Users may leave reviews about their work experience. Reviews reflect the subjective opinion of the author and do not constitute an official employment reference. The administration reserves the right to moderate reviews containing insults, knowingly false information, or violations of law. Users may dispute a review through the \"Support\" section.",
+      "liabilityTitle": "8. Limitation of liability",
+      "liabilityText": "Resta is not responsible for: actions or inactions of users; quality of work performed; users' compliance with labor legislation; accuracy of information posted by users; losses resulting from user interactions. Resta makes reasonable efforts to ensure uninterrupted operation of the Application but does not guarantee 24/7 availability.",
+      "terminationTitle": "9. Account deletion",
+      "terminationText": "The user may delete their account at any time through the \"Settings\" section of their profile. Upon account deletion, all personal data is deleted in accordance with the Privacy Policy. The administration reserves the right to block or delete a user's account for violations of this Agreement or the legislation of the Republic of Belarus.",
+      "lawTitle": "10. Governing law",
+      "lawText": "This Agreement is governed by the legislation of the Republic of Belarus. All disputes shall be resolved through negotiations, and if no agreement is reached — in court at the location of the controller in accordance with the legislation of the Republic of Belarus.",
+      "lastUpdated": "Last updated: May 30, 2026"
+    },
+    "deleteAccount": {
+      "title": "Delete account",
+      "description": "Deleting your account will permanently remove all your data. This action cannot be undone.",
+      "consequencesList": [
+        "All personal data will be deleted",
+        "Shift and application history will be deleted",
+        "Reviews and ratings will be deleted",
+        "Active PRO subscription will be cancelled without refund"
+      ],
+      "deleteButton": "Delete account",
+      "confirmTitle": "Are you sure?",
+      "confirmDescription": "All data will be permanently deleted. This action cannot be undone.",
+      "confirmDelete": "Delete permanently",
+      "deleting": "Deleting...",
+      "error": "Failed to delete account. Please try again later.",
+      "success": "Account deleted"
+    }
   }
 }

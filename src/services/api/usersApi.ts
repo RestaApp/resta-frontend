@@ -185,7 +185,7 @@ export const usersApi = api.injectEndpoints({
         params,
       }),
       providesTags: ['User'],
-      keepUnusedDataFor: 60,
+      keepUnusedDataFor: 300,
     }),
 
     // Обновление данных пользователя

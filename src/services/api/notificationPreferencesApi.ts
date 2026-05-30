@@ -35,7 +35,7 @@ const notificationPreferencesApi = api.injectEndpoints({
         url: '/api/v1/notification_preferences',
         method: 'GET',
       }),
-      providesTags: ['Notification'],
+      providesTags: ['NotificationPreferences'],
     }),
 
     updateNotificationPreferences: builder.mutation<

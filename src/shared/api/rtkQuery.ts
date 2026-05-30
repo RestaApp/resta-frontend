@@ -16,6 +16,7 @@ export const tagTypes = [
   'Application',
   'AppliedShift',
   'Notification',
+  'NotificationPreferences',
   'Review',
   'User',
   'Profile',
@@ -31,7 +32,7 @@ export const rtkQueryConfig = {
   baseUrl: API_BASE_URL,
   keepUnusedDataFor: 60,
   refetchOnMountOrArgChange: 30,
-  refetchOnFocus: true,
+  refetchOnFocus: false,
   refetchOnReconnect: true,
 } as const
 

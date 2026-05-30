@@ -20,7 +20,6 @@ export const useAppliedShifts = (): UseAppliedShiftsReturn => {
   const shouldSkipAppliedShifts = apiRole === 'restaurant' || apiRole === 'supplier'
 
   const { data } = useGetAppliedShiftsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
     skip: shouldSkipAppliedShifts,
   })
 
