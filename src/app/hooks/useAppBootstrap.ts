@@ -42,6 +42,9 @@ export function useAppBootstrap() {
   const [postLogoutLoading, setPostLogoutLoading] = useState(false)
   const logoutTimerRef = useRef<number | null>(null)
   const initialScreenRef = useRef(true)
+  const initialPathRef = useRef<string | null>(
+    typeof window !== 'undefined' ? window.location.pathname : null
+  )
 
   // После logout кратко показываем LoadingPage, чтобы избежать резкого перехода на RoleSelector.
   useEffect(() => {
@@ -79,14 +82,22 @@ export function useAppBootstrap() {
 
   useEffect(() => {
     if (!selectedRole || typeof window === 'undefined') return
+
+    // На первом проходе после монтирования: если в URL уже есть валидный экран
+    // для этой роли — восстанавливаем его, а не перезаписываем URL.
+    if (initialScreenRef.current && initialPathRef.current) {
+      const screenFromUrl = getScreenForPath(selectedRole, initialPathRef.current)
+      initialScreenRef.current = false
+      initialPathRef.current = null
+      if (screenFromUrl && screenFromUrl !== currentScreen) {
+        setCurrentScreen(screenFromUrl)
+        return
+      }
+    }
+
     const expectedPath = getPathForScreen(selectedRole, currentScreen)
     if (window.location.pathname !== expectedPath) {
-      if (initialScreenRef.current) {
-        window.history.replaceState(null, '', expectedPath)
-        initialScreenRef.current = false
-      } else {
-        window.history.pushState(null, '', expectedPath)
-      }
+      window.history.pushState(null, '', expectedPath)
     }
   }, [currentScreen, selectedRole])
 
