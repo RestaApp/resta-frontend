@@ -27,8 +27,8 @@ import {
   AddShiftDrawerStep0,
   AddShiftDrawerStep1,
   AddShiftDrawerStep2,
-  AddShiftDrawerSuccess,
 } from './add-shift-drawer/AddShiftDrawerSteps'
+import { ResultOverlay } from '@/components/ui/result-overlay'
 import { useAddShiftDrawerController } from './add-shift-drawer/useAddShiftDrawerController'
 import {
   getDrawerCopy,
@@ -115,9 +115,7 @@ const AddShiftDrawerKeyed = ({
     userCity,
   })
   const controller = useAddShiftDrawerController({
-    open,
     onOpenChange,
-    initialValues,
     t,
     form,
   })
@@ -168,9 +166,22 @@ const AddShiftDrawerKeyed = ({
     [isVacancyType, isEmployeeUser, t]
   )
 
+  const successCopy = useMemo(
+    () => ({
+      title: initialValues?.id
+        ? t('shift.updated', { defaultValue: 'Смена обновлена' })
+        : t('shift.created', { defaultValue: 'Смена создана' }),
+      description: t('shift.createdConfirmation', {
+        defaultValue: 'Теперь она появится в «Мои смены».',
+      }),
+    }),
+    [initialValues?.id, t]
+  )
+
   return (
+    <>
     <Drawer
-      open={open}
+      open={open && !controller.state.isSuccessOpen}
       onOpenChange={controller.actions.handleDrawerOpenChange}
       onTelegramBack={controller.actions.handleBackOrCancel}
     >
@@ -189,17 +200,13 @@ const AddShiftDrawerKeyed = ({
       </DrawerHeader>
 
       <DrawerBody className="ui-density-stack gap-3">
-        {controller.state.isSuccessOpen ? (
-          <AddShiftDrawerSuccess />
-        ) : (
-          <AddShiftDrawerProgress
-            step={controller.state.step}
-            totalSteps={TOTAL_STEPS}
-            stepTitle={stepTitle}
-          />
-        )}
+        <AddShiftDrawerProgress
+          step={controller.state.step}
+          totalSteps={TOTAL_STEPS}
+          stepTitle={stepTitle}
+        />
 
-        {!controller.state.isSuccessOpen && controller.state.step === 0 ? (
+        {controller.state.step === 0 ? (
           <AddShiftDrawerStep0
             titleRef={controller.refs.titleRef}
             dateRef={controller.refs.dateRef}
@@ -230,7 +237,7 @@ const AddShiftDrawerKeyed = ({
           />
         ) : null}
 
-        {!controller.state.isSuccessOpen && controller.state.step === 1 ? (
+        {controller.state.step === 1 ? (
           <AddShiftDrawerStep1
             locationRef={controller.refs.locationRef}
             positionRef={controller.refs.positionRef}
@@ -257,7 +264,7 @@ const AddShiftDrawerKeyed = ({
           />
         ) : null}
 
-        {!controller.state.isSuccessOpen && controller.state.step === 2 ? (
+        {controller.state.step === 2 ? (
           <AddShiftDrawerStep2
             descriptionRef={controller.refs.descriptionRef}
             requirementsRef={controller.refs.requirementsRef}
@@ -273,21 +280,16 @@ const AddShiftDrawerKeyed = ({
           />
         ) : null}
 
-        {!controller.state.isSuccessOpen ? (
-          <AddShiftDrawerBanner message={controller.derived.bannerError} />
-        ) : null}
+        <AddShiftDrawerBanner message={controller.derived.bannerError} />
       </DrawerBody>
 
       <DrawerFooter>
         <AddShiftDrawerFooter
-          isSuccessOpen={controller.state.isSuccessOpen}
           step={controller.state.step}
           onBackOrCancel={controller.actions.handleBackOrCancel}
           onContinue={controller.actions.handleContinue}
           onSubmit={controller.actions.handleSubmit}
           isCreating={form.isCreating}
-          onCreateAnother={controller.actions.handleCreateAnother}
-          onClose={controller.actions.close}
         />
       </DrawerFooter>
       <Toast
@@ -298,5 +300,28 @@ const AddShiftDrawerKeyed = ({
       />
       </DrawerFrame>
     </Drawer>
+
+    <ResultOverlay
+      open={controller.state.isSuccessOpen}
+      tone="success"
+      title={successCopy.title}
+      description={successCopy.description}
+      onClose={controller.actions.close}
+      primaryAction={{
+        label: t('common.close'),
+        onClick: controller.actions.close,
+        variant: 'gradient',
+      }}
+      secondaryAction={
+        initialValues?.id
+          ? undefined
+          : {
+              label: t('shift.createAnother'),
+              onClick: controller.actions.handleCreateAnother,
+              variant: 'outline',
+            }
+      }
+    />
+    </>
   )
 }

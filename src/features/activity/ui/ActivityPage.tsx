@@ -88,7 +88,7 @@ export const ActivityPage = ({ employeeDefaultTab = 'applications' }: ActivityPa
           venueEmptyContent={venueEmptyContent}
         />
       ) : (
-        <EmployeeActivityContent t={t} model={m} />
+        <EmployeeActivityContent model={m} />
       )}
     </div>
   )

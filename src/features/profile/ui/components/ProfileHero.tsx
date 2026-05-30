@@ -50,9 +50,9 @@ export const ProfileHero = memo(
     const content = (
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <Avatar className="h-24 w-24 bg-[image:var(--gradient-primary)]">
+          <Avatar className="h-24 w-24">
             <AvatarImage src={photoUrl} alt={userName} />
-            <AvatarFallback>
+            <AvatarFallback className="bg-[image:var(--gradient-primary)]">
               <span className={cn(HERO_TITLE_CLASS, 'text-white')}>{getInitials(userName)}</span>
             </AvatarFallback>
           </Avatar>

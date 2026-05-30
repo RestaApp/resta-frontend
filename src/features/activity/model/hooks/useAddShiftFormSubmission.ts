@@ -164,7 +164,7 @@ export const useAddShiftFormSubmission = ({
           if (hasFieldErrors) return false
           return false
         }
-        showToast?.(t('shift.updated'), 'success')
+        triggerHapticFeedback('success')
         response = null
       } else {
         try {
@@ -177,7 +177,7 @@ export const useAddShiftFormSubmission = ({
             return false
           }
           response = createResult
-          showToast?.(t('shift.created'), 'success')
+          triggerHapticFeedback('success')
         } catch (error: unknown) {
           const { messages, single } = extractServerErrors(error)
           if (messages) {

@@ -125,7 +125,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           ) : (
             <Button
               variant="gradient"
-              size="lg"
+              size="md"
               onClick={controller.handleApply}
               disabled={isLoading}
               className="flex-1"

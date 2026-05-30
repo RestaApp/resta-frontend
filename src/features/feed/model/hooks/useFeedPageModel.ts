@@ -1,7 +1,9 @@
 import { useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Trash2 } from 'lucide-react'
 
 import { useToast } from '@/hooks/useToast'
+import { useSuccessOverlay } from '@/hooks/useSuccessOverlay'
 import { useAppDispatch } from '@/store/hooks'
 import { setLocalStorageItem } from '@/utils/localStorage'
 import { STORAGE_KEYS } from '@/constants/storage'
@@ -35,6 +37,7 @@ export const useFeedPageModel = () => {
   const dispatch = useAppDispatch()
 
   const { toast, showToast, hideToast } = useToast()
+  const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
 
   const feedTypeOptions = useMemo<TabOption<FeedType>[]>(
     () => [
@@ -102,13 +105,20 @@ export const useFeedPageModel = () => {
       try {
         await deleteShift(String(id))
         hideToast()
-        showToast(t('shift.deleted'), 'warning')
+        showSuccess({
+          title: t('shift.deleted'),
+          description: t('shift.deletedDescription', {
+            defaultValue: 'Смена удалена и больше не показывается соискателям.',
+          }),
+          icon: Trash2,
+          primaryAction: { label: t('common.close'), onClick: closeSuccess, variant: 'gradient' },
+        })
       } catch {
         hideToast()
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, t, showToast, hideToast]
+    [deleteShift, t, showToast, hideToast, showSuccess, closeSuccess]
   )
 
   const shiftsBaseQuery = useMemo(
@@ -337,6 +347,9 @@ export const useFeedPageModel = () => {
 
     toast,
     hideToast,
+
+    successState,
+    closeSuccess,
 
     profileAlert,
     closeProfileAlert,

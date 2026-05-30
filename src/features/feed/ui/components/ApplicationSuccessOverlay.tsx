@@ -50,13 +50,11 @@ export const ApplicationSuccessOverlay = ({
         label: t('feed.openMyApplications'),
         onClick: onOpenApplications,
         variant: 'gradient',
-        size: 'lg',
       }}
       secondaryAction={{
         label: t('feed.searchMoreShifts'),
         onClick: onSearchMore,
         variant: 'outline',
-        size: 'sm',
       }}
     >
       <Card className={cn(SHIFT_CARD_CLASS, 'w-full max-w-70 text-left')}>

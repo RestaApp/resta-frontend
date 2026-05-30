@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Trash2 } from 'lucide-react'
 import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from './useShifts'
 import { useToast } from '@/hooks/useToast'
+import { useSuccessOverlay } from '@/hooks/useSuccessOverlay'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/utils/localStorage'
@@ -46,6 +48,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
 
   const { deleteShift, isLoading: isDeleting } = useDeleteShift()
   const { toast, showToast, hideToast } = useToast()
+  const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
   const profileCompleteness = useProfileCompleteness()
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -70,12 +73,19 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
     async (id: number) => {
       try {
         await deleteShift(String(id))
-        showToast(t('shift.deleted'), 'warning')
+        showSuccess({
+          title: t('shift.deleted'),
+          description: t('shift.deletedDescription', {
+            defaultValue: 'Смена удалена и больше не показывается соискателям.',
+          }),
+          icon: Trash2,
+          primaryAction: { label: t('common.close'), onClick: closeSuccess, variant: 'gradient' },
+        })
       } catch {
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, showToast, t]
+    [deleteShift, showToast, showSuccess, closeSuccess, t]
   )
 
   const refreshList = useCallback(async () => {
@@ -144,6 +154,8 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
     showToast,
     toast,
     hideToast,
+    successState,
+    closeSuccess,
     isDrawerOpen,
     setIsDrawerOpen,
     editingShift,

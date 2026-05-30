@@ -1,4 +1,3 @@
-export { AddShiftDrawerSuccess } from './steps/AddShiftDrawerSuccess'
 export { AddShiftDrawerProgress } from './steps/AddShiftDrawerProgress'
 export { AddShiftDrawerBanner } from './steps/AddShiftDrawerBanner'
 export { AddShiftDrawerStep0 } from './steps/AddShiftDrawerStep0'

@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { ErrorState } from '@/components/ui/states'
 import { Button } from '@/components/ui/button'
+import { SuccessOverlay } from '@/components/ui/success-overlay'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { PersonalShiftCard } from './PersonalShiftCard'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
@@ -91,6 +92,8 @@ export const VenueActivityContent = ({
           )}
         </PullToRefresh>
       </div>
+
+      <SuccessOverlay state={model.successState} onClose={model.closeSuccess} />
     </>
   )
 }

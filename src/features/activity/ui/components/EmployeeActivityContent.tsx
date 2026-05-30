@@ -1,5 +1,5 @@
-import type { TFunction } from 'i18next'
 import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
+import { SuccessOverlay } from '@/components/ui/success-overlay'
 import { Toast } from '@/components/ui/toast'
 import { ActivityListTab } from './ActivityListTab'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
@@ -7,11 +7,10 @@ import type { useActivityPageModel } from '../../model/hooks/useActivityPageMode
 type ActivityPageModel = ReturnType<typeof useActivityPageModel>
 
 interface EmployeeActivityContentProps {
-  t: TFunction
   model: ActivityPageModel
 }
 
-export const EmployeeActivityContent = ({ t, model }: EmployeeActivityContentProps) => {
+export const EmployeeActivityContent = ({ model }: EmployeeActivityContentProps) => {
   return (
     <>
       <div className="ui-density-page ui-density-py">
@@ -39,11 +38,6 @@ export const EmployeeActivityContent = ({ t, model }: EmployeeActivityContentPro
           if (!open) model.setEditingShift(null)
         }}
         initialValues={model.editingShift}
-        onSave={() => {
-          model.setIsDrawerOpen(false)
-          model.setEditingShift(null)
-          model.showToast(t('shift.saved'), 'success')
-        }}
       />
 
       <Toast
@@ -52,6 +46,8 @@ export const EmployeeActivityContent = ({ t, model }: EmployeeActivityContentPro
         isVisible={model.toast.isVisible}
         onClose={model.hideToast}
       />
+
+      <SuccessOverlay state={model.successState} onClose={model.closeSuccess} />
     </>
   )
 }

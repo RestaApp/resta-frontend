@@ -7,6 +7,7 @@ import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { ApplicationSuccessOverlay } from '@/features/feed/ui/components/ApplicationSuccessOverlay'
+import { SuccessOverlay } from '@/components/ui/success-overlay'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
 
@@ -111,6 +112,8 @@ export function FeedBody({ vm }: FeedBodyProps) {
         initialFilters={vm.advancedFilters ?? undefined}
         isVacancy={vm.isVacancy}
       />
+
+      <SuccessOverlay state={vm.successState} onClose={vm.closeSuccess} />
     </>
   )
 }

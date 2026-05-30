@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
 import {
   buildDrawerErrorState,
@@ -14,9 +13,7 @@ import { useAddShiftDrawerSubmit } from './useAddShiftDrawerSubmit'
 import { triggerHapticFeedback } from '@/utils/haptics'
 
 type UseAddShiftDrawerControllerParams = {
-  open: boolean
   onOpenChange: (open: boolean) => void
-  initialValues: VacancyApiItem | null
   t: (key: string, options?: Record<string, unknown>) => string
   form: {
     title: string
@@ -69,9 +66,7 @@ type UseAddShiftDrawerControllerParams = {
  *  • shape возврата (`refs/state/derived/actions`) — без изменений.
  */
 export const useAddShiftDrawerController = ({
-  open,
   onOpenChange,
-  initialValues,
   t,
   form,
 }: UseAddShiftDrawerControllerParams) => {
@@ -170,11 +165,8 @@ export const useAddShiftDrawerController = ({
   const close = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
 
   const { isSuccessOpen, setIsSuccessOpen, handleSubmit } = useAddShiftDrawerSubmit({
-    open,
     drawerFormState,
-    initialValues,
     onSave: form.handleSave,
-    close,
     setStep,
     setAttemptedSteps,
     setDidAttemptSubmit,

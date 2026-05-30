@@ -4,10 +4,11 @@ import {
   useLayoutEffect,
   useRef,
   type ComponentProps,
+  type ComponentType,
   type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { AlertTriangle, Check } from 'lucide-react'
+import { AlertTriangle, Check, type LucideProps } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { Button } from '@/components/ui/button'
 import { BODY_MUTED_CLASS, STATE_TITLE_CLASS } from '@/components/ui/ui-patterns'
@@ -36,6 +37,8 @@ interface ResultOverlayProps {
   secondaryAction?: ResultOverlayAction
   onClose: () => void
   className?: string
+  /** Кастомная иконка — переопределяет дефолтную для текущего tone. */
+  icon?: ComponentType<LucideProps>
 }
 
 const TONE_CONFIG = {
@@ -56,7 +59,7 @@ const ResultAction = ({
   fallbackSize,
 }: {
   action: ResultOverlayAction
-  fallbackSize: 'sm' | 'lg'
+  fallbackSize: 'sm' | 'md' | 'lg'
 }) => (
   <Button
     type="button"
@@ -78,10 +81,11 @@ export const ResultOverlay = ({
   secondaryAction,
   onClose,
   className,
+  icon,
 }: ResultOverlayProps) => {
   const fullscreenOffset = useTelegramFullscreenOffset()
   const config = TONE_CONFIG[tone]
-  const Icon = config.icon
+  const Icon = icon ?? config.icon
   const onCloseRef = useRef(onClose)
   useLayoutEffect(() => {
     onCloseRef.current = onClose
@@ -143,8 +147,8 @@ export const ResultOverlay = ({
           className="relative"
           contentClassName="flex flex-col gap-2"
         >
-          {primaryAction ? <ResultAction action={primaryAction} fallbackSize="lg" /> : null}
-          {secondaryAction ? <ResultAction action={secondaryAction} fallbackSize="sm" /> : null}
+          {primaryAction ? <ResultAction action={primaryAction} fallbackSize="md" /> : null}
+          {secondaryAction ? <ResultAction action={secondaryAction} fallbackSize="md" /> : null}
         </BottomActionBar>
       ) : null}
     </div>

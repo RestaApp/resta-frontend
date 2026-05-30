@@ -407,6 +407,7 @@
     "createAnother": "Create another",
     "updated": "Shift updated successfully",
     "deleted": "Shift deleted",
+    "deletedDescription": "The shift has been removed and is no longer visible to candidates.",
     "createError": "Failed to create shift. Please try again.",
     "updateError": "Failed to update shift. Please try again.",
     "deleteError": "Failed to delete shift.",
