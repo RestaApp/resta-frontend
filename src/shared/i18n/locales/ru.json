@@ -117,10 +117,10 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Лента",
+      "feed": "Работа",
       "activity": "Отклики",
       "my": "Мои",
-      "myHeader": "Мои смены",
+      "myHeader": "Мои вакансии",
       "profile": "Я",
       "profileShort": "Я"
     },
@@ -493,7 +493,7 @@
     "venueTypeLabel": "Тип заведения",
     "supplierInfoTitle": "Информация",
     "supplierTypeLabel": "Типы поставщика",
-    "continuePosition": "Найти смены",
+    "continuePosition": "Найти работу",
     "continueAsRole": "Продолжить как {{role}}",
     "specializationsMain": "Направления",
     "specializationsMore": "Ещё направления",

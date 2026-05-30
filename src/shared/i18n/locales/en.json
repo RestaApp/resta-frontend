@@ -117,10 +117,10 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Shifts",
+      "feed": "Jobs",
       "activity": "Applied",
       "my": "Mine",
-      "myHeader": "My shifts",
+      "myHeader": "My jobs",
       "profile": "Me",
       "profileShort": "Me"
     },
@@ -254,8 +254,8 @@
     "specializationSection": "Specialization",
     "supplierCategorySection": "Category",
     "loadError": "Failed to load profile",
-    "openToWorkShort": "Looking for shifts",
-    "openToWorkOff": "Not looking for shifts",
+    "openToWorkShort": "Looking for work",
+    "openToWorkOff": "Not looking for work",
     "openToWorkCatalogHint": "Visible in the open-to-work catalog",
     "openToWorkHiddenHint": "Hidden from the open-to-work catalog",
     "latestReviews": "Latest reviews",
@@ -493,7 +493,7 @@
     "venueTypeLabel": "Venue type",
     "supplierInfoTitle": "Information",
     "supplierTypeLabel": "Supplier types",
-    "continuePosition": "Find shifts",
+    "continuePosition": "Find jobs",
     "continueAsRole": "Continue as {{role}}",
     "specializationsMain": "Specializations",
     "specializationsMore": "More specializations",
@@ -556,7 +556,7 @@
         "employee": {
           "subtitle": "Restaurants will message you directly in Telegram",
           "shieldTitle": "No middlemen.",
-          "shieldText": "Resta only connects you. Shift payment is handled directly between you and the restaurant."
+          "shieldText": "Resta only connects you. Payment is handled directly between you and the employer."
         },
         "venue": {
           "subtitle": "Candidates will message your manager in Telegram",
