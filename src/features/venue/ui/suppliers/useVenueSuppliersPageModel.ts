@@ -6,6 +6,7 @@ import { useCities } from '@/shared/lib/hooks/useCities'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole, selectUserCity } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
+import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
 import { resolveAppliedCity } from './filtersUtils'
 import { mapRestaurantUsersToItems, mapSupplierUsersToItems } from './mappers'
 import {
@@ -263,15 +264,19 @@ export const useVenueSuppliersPageModel = () => {
     setIsFiltersOpen(false)
   }, [draftFilters])
 
+  const { openUserProfile } = useDetailOverlay()
+
   const handleOpenDetails = useCallback(
     (id: number) => {
       if (isSupplierRole) {
         setSelectedRestaurantId(id)
+        openUserProfile(id)
         return
       }
       setSelectedSupplierId(id)
+      openUserProfile(id)
     },
-    [isSupplierRole]
+    [isSupplierRole, openUserProfile]
   )
 
   return {

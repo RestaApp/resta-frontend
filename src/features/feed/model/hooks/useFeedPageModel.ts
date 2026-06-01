@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from 'react'
+import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
 
@@ -31,10 +31,12 @@ import type { Shift } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
+import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const { overlay, openShiftDetail, closeOverlay } = useDetailOverlay()
 
   const { toast, showToast, hideToast } = useToast()
   const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
@@ -62,6 +64,15 @@ export const useFeedPageModel = () => {
     setIsFiltersOpen,
     resetFilters,
   } = useFeedFiltersState()
+
+  // Sync: when overlay is cleared externally (back button), clear local selectedShiftId.
+  const prevOverlayRef = useRef(overlay)
+  useEffect(() => {
+    if (prevOverlayRef.current && !overlay && selectedShiftId) {
+      setSelectedShiftId(null)
+    }
+    prevOverlayRef.current = overlay
+  }, [overlay, selectedShiftId, setSelectedShiftId])
 
   const {
     appliedShiftsSet,
@@ -174,8 +185,17 @@ export const useFeedPageModel = () => {
     return m
   }, [activeList.items])
 
-  const openShiftDetails = useCallback((id: number) => setSelectedShiftId(id), [setSelectedShiftId])
-  const closeShiftDetails = useCallback(() => setSelectedShiftId(null), [setSelectedShiftId])
+  const openShiftDetails = useCallback(
+    (id: number) => {
+      setSelectedShiftId(id)
+      openShiftDetail(id)
+    },
+    [setSelectedShiftId, openShiftDetail]
+  )
+  const closeShiftDetails = useCallback(() => {
+    setSelectedShiftId(null)
+    closeOverlay()
+  }, [setSelectedShiftId, closeOverlay])
 
   const handleOpenApplications = useCallback(() => {
     closeApplicationSuccess()

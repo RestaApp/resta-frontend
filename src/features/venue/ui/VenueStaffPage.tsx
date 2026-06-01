@@ -11,6 +11,7 @@ import { useToast } from '@/shared/lib/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'
+import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
 
 export function VenueStaffPage() {
   const { t } = useTranslation()
@@ -96,15 +97,19 @@ export function VenueStaffPage() {
     }
   }
 
+  const { openUserProfile, closeOverlay } = useDetailOverlay()
+
   const handleOpenDetails = (item: StaffItem) => {
     const userId = item.person.user_id ?? item.person.user?.id ?? null
     if (!userId) return
     setSelectedItem(item)
+    openUserProfile(userId)
   }
 
   const handleCloseDetails = () => {
     setSelectedItem(null)
     setModeratingAction(null)
+    closeOverlay()
   }
 
   const handleDrawerAccept = async () => {

@@ -15,7 +15,6 @@ import {
 } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { isEmployeeRole } from '@/shared/utils/roles'
-import { getPathForScreen } from '@/shared/constants/routePaths'
 import {
   consumeCommand,
   selectNavigationCommand,
@@ -40,14 +39,7 @@ export const useDashboard = ({ role, onNavigate, currentScreen = null }: UseDash
     (tab: Tab) => {
       const screen = getScreenForTab(role, tab)
       if (!screen) return
-
       if (onNavigate) onNavigate(screen)
-      if (typeof window !== 'undefined') {
-        const nextPath = getPathForScreen(role, screen)
-        if (window.location.pathname !== nextPath) {
-          window.history.pushState(null, '', nextPath)
-        }
-      }
     },
     [onNavigate, role]
   )

@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react'
 import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
+import { DetailOverlayRenderer } from '@/components/DetailOverlayRenderer'
 import { VenueAddShiftListener } from '@/features/venue/ui/VenueAddShiftListener'
 import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'
 import type { Tab, Screen } from '@/shared/types/navigation.types'
@@ -60,6 +61,8 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
         role={role}
         hasIncompleteProfile={hasIncompleteFields}
       />
+
+      <DetailOverlayRenderer />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ComponentProps } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from 'react'
 import { useGetShiftByIdQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/shared/shifts/types'
 import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
@@ -6,6 +6,7 @@ import {
   ShiftDetailsScreen,
   type ShiftDetailsOwnerActions,
 } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
+import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
 
 type ShiftDetailsScreenBindings = Omit<
   ComponentProps<typeof ShiftDetailsScreen>,
@@ -25,7 +26,16 @@ export const VacancyCardWithDetails = ({
   detailsProps,
   ownerActions,
 }: VacancyCardWithDetailsProps) => {
+  const { overlay, openShiftDetail, closeOverlay } = useDetailOverlay()
   const [isOpen, setIsOpen] = useState(false)
+
+  const prevOverlayRef = useRef(overlay)
+  useEffect(() => {
+    if (prevOverlayRef.current && !overlay && isOpen) {
+      setIsOpen(false)
+    }
+    prevOverlayRef.current = overlay
+  }, [overlay, isOpen])
   const { data: detailVacancy } = useGetShiftByIdQuery(String(vacancy.id), {
     skip: !isOpen,
   })
@@ -42,8 +52,14 @@ export const VacancyCardWithDetails = ({
   )
   const mappedShift = useMemo(() => mapToShift(resolvedVacancy), [resolvedVacancy, mapToShift])
 
-  const handleOpenDetails = useCallback(() => setIsOpen(true), [])
-  const handleCloseDetails = useCallback(() => setIsOpen(false), [])
+  const handleOpenDetails = useCallback(() => {
+    setIsOpen(true)
+    openShiftDetail(vacancy.id)
+  }, [openShiftDetail, vacancy.id])
+  const handleCloseDetails = useCallback(() => {
+    setIsOpen(false)
+    closeOverlay()
+  }, [closeOverlay])
 
   const { onApply, onCancel, ...restDetailsProps } = detailsProps
 
