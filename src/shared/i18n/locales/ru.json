@@ -272,7 +272,7 @@
     "openMyApplications": "Открыть мои отклики",
     "searchMoreShifts": "Искать вакансии и смены",
     "openFilters": "Открыть фильтры",
-    "emptyByFilters": "По вашим фильтрам ничего не найдено",
+    "emptyByFilters": "По фильтрам ничего не найдено",
     "emptyByFiltersDescription": "Измените фильтры или период — подходящие предложения появятся в ленте",
     "venueEmptyTitle": "Здесь будут ваши вакансии и смены",
     "venueEmptyDescription": "Создайте первую вакансию или смену — кандидаты начнут откликаться, и вы увидите их здесь.",
@@ -318,7 +318,7 @@
     "quickFilters": {
       "all": "Все",
       "today": "Сегодня",
-      "urgent": "🔥 Срочные",
+      "urgent": "Срочные",
       "highPay": ">120 BYN",
       "nearby": "<2 км",
       "myRole": "Моя роль"
@@ -376,6 +376,7 @@
     "applicants": "Откликнувшиеся",
     "applicantSelected": "Выбран",
     "noApplicants": "Пока нет заявок",
+    "noApplicantsDescription": "Кандидаты, откликнувшиеся на смену, появятся здесь",
     "applicantsPreviewNote": "Показаны {{shown}} из {{total}}",
     "shiftTitle": "Название смены",
     "shiftTitlePlaceholder": "Например: \"Основная работа\", \"Банкет\"",
@@ -425,8 +426,8 @@
     "myApplications": "Мои отклики",
     "noShiftsYet": "Вы ещё не создавали смен",
     "shiftsWillAppearHere": "Созданные смены появятся здесь",
-    "noApplicationsYet": "У вас пока нет откликов",
-    "applicationsWillAppearHere": "Отклики на вакансии и смены появятся здесь",
+    "noApplicationsYet": "Вы ещё не отправляли заявки",
+    "applicationsWillAppearHere": "Заявки на вакансии и смены появятся здесь",
     "statusAcceptedPill": "Подтверждена",
     "statusRejectedPill": "Отклонена",
     "statusPendingPill": "В обработке",
@@ -532,7 +533,7 @@
   },
   "onboarding": {
     "stepOf": "Шаг {{current}} из {{total}}",
-    "doneEmoji": "🎉",
+    "doneEmoji": "",
     "telegram": {
       "title": "Подтверди контакт",
       "subtitle": "Заведения будут писать тебе в Telegram напрямую",

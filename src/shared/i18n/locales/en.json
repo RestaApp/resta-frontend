@@ -251,8 +251,8 @@
     "specializationSection": "Specialization",
     "supplierCategorySection": "Category",
     "loadError": "Failed to load profile",
-    "openToWorkShort": "Looking for work",
-    "openToWorkOff": "Not looking for work",
+    "openToWorkShort": "Open to work",
+    "openToWorkOff": "Not open to work",
     "openToWorkCatalogHint": "Profile visible to employers",
     "openToWorkHiddenHint": "Profile hidden from employers",
     "latestReviews": "Latest reviews",
@@ -315,7 +315,7 @@
     "quickFilters": {
       "all": "All",
       "today": "Today",
-      "urgent": "🔥 Urgent",
+      "urgent": "Urgent",
       "highPay": ">120 BYN",
       "nearby": "<2 km",
       "myRole": "My role"
@@ -375,6 +375,7 @@
     "noResponses": "No responses yet",
     "applicants": "Applicants",
     "noApplicants": "No applications yet",
+    "noApplicantsDescription": "Candidates who apply for your shift will appear here",
     "applicantsPreviewNote": "Showing {{shown}} of {{total}}",
     "applicantSelected": "Selected",
     "shiftTitle": "Shift title",
@@ -425,7 +426,7 @@
     "myApplications": "My applications",
     "noShiftsYet": "You haven't created any shifts yet",
     "shiftsWillAppearHere": "Created shifts will appear here",
-    "noApplicationsYet": "You have no applications yet",
+    "noApplicationsYet": "You haven't applied yet",
     "applicationsWillAppearHere": "Your applications to vacancies and shifts will appear here",
     "statusAcceptedPill": "Accepted",
     "statusRejectedPill": "Rejected",
@@ -532,7 +533,7 @@
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
-    "doneEmoji": "🎉",
+    "doneEmoji": "",
     "telegram": {
       "title": "Confirm your contact",
       "subtitle": "Restaurants will message you directly in Telegram",
