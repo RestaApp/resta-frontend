@@ -7,13 +7,10 @@ import {
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 
-type ImageType = 'emoji' | 'icon'
-
 interface CardSelectBaseProps {
   title: string
   description?: string
   image?: React.ReactNode
-  imageType?: ImageType
   isSelected?: boolean
   index?: number
   layout?: 'horizontal' | 'vertical'
@@ -35,7 +32,6 @@ const CardSelectInner = <TId extends string>({
   title,
   description,
   image,
-  imageType = 'icon',
   isSelected = false,
   layout = 'horizontal',
   className,
@@ -84,20 +80,14 @@ const CardSelectInner = <TId extends string>({
             className={cn(
               SHIFT_CARD_LOGO_CLASS,
               '[&_svg]:stroke-[1.5]',
-              imageType === 'emoji'
-                ? 'bg-transparent'
-                : isSelected
-                  ? 'bg-white/20 [&_svg]:text-white'
-                  : 'border border-border/60 bg-secondary [&_svg]:text-muted-foreground',
+              isSelected
+                ? 'bg-white/20 [&_svg]:text-white'
+                : 'border border-border/60 bg-secondary [&_svg]:text-muted-foreground',
               layout === 'horizontal' ? 'h-9 w-9' : 'h-10 w-10'
             )}
             aria-hidden="true"
           >
-            {typeof image === 'string' && imageType === 'emoji' ? (
-              <span className="text-lg leading-none">{image}</span>
-            ) : (
-              image
-            )}
+            {image}
           </div>
         ) : null}
 

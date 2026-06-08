@@ -11,14 +11,6 @@ import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 const MAX_MESSAGE_LENGTH = 2000
 
-const CATEGORY_EMOJI: Record<SupportTicketCategory, string> = {
-  technical_issue: '🐛',
-  account_issue: '😡',
-  feature_request: '✨',
-  general_inquiry: '❓',
-  onboarding_issue: '🔐',
-}
-
 export function useSupportTicketForm(onClose: () => void) {
   const { t } = useTranslation()
   const [createTicket, { isLoading, isSuccess, error, reset }] = useCreateSupportTicketMutation()
@@ -43,7 +35,7 @@ export function useSupportTicketForm(onClose: () => void) {
     () =>
       SUPPORT_TICKET_CATEGORIES.map(value => ({
         value,
-        label: `${CATEGORY_EMOJI[value]} ${t(`profile.supportForm.category.${value}`)}`,
+        label: t(`profile.supportForm.category.${value}`),
       })),
     [t]
   )

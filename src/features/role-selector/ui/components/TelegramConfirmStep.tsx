@@ -1,6 +1,7 @@
-import { memo, useState } from 'react'
+import { memo, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pencil } from 'lucide-react'
+import { ICON_SM_CLASS, ROLE_CATEGORY_ICONS } from '@/shared/constants/role-icons'
 import { Input } from '@/components/ui/input'
 import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { Card } from '@/components/ui/card'
@@ -10,19 +11,13 @@ import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/shared/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
-import { getRoleCategory, type RoleCategory } from '@/shared/types/roles.types'
+import { getRoleCategory } from '@/shared/types/roles.types'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
 import { LegalConsentCheckbox } from '@/features/legal/ui/LegalConsentCheckbox'
 import { PrivacyPolicyPage } from '@/features/legal/ui/PrivacyPolicyPage'
 import { TermsOfServicePage } from '@/features/legal/ui/TermsOfServicePage'
-
-const ROLE_SHIELD_ICON: Record<RoleCategory, string> = {
-  employee: '🛡',
-  restaurant: '⚡',
-  supplier: '⭐',
-}
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
@@ -152,9 +147,10 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
 
       <div role="note" className="mt-3 rounded-xl border border-primary bg-primary/10 px-3 py-2.5">
         <div className="flex items-start gap-2">
-          <span aria-hidden className="shrink-0 mt-0.5 text-sm text-primary">
-            {ROLE_SHIELD_ICON[roleCategory]}
-          </span>
+          {createElement(ROLE_CATEGORY_ICONS[roleCategory], {
+            'aria-hidden': true,
+            className: cn(ICON_SM_CLASS, 'mt-0.5 text-primary'),
+          })}
           <div className="flex-1 text-xs leading-snug text-muted-foreground">
             <span className="font-semibold text-foreground">
               {t(`onboarding.telegram.copy.${copyRole}.shieldTitle`)}

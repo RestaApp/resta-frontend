@@ -8,22 +8,7 @@ import { LoadingState } from './shared/LoadingState'
 import { RoleDetailsStep } from './shared/RoleDetailsStep'
 import { useSupplierTypes } from '../../../model/hooks/useSupplierTypes'
 import { useLabels } from '@/shared/i18n/hooks'
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  products: '📦',
-  spices: '🌶',
-  herbs: '🌿',
-  meat: '🥩',
-  fish: '🐟',
-  vegetables: '🥬',
-  cheese: '🧀',
-  alcohol: '🍷',
-  packaging: '📦',
-  equipment: '🔧',
-  consumables: '🧺',
-  services: '🎧',
-  logistics: '🚚',
-}
+import { getSupplierCategoryIcon } from '@/shared/constants/role-icons'
 
 interface SupplierCategorySelectorProps {
   categories: string[]
@@ -66,11 +51,8 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
   }, [])
 
   const getCategoryLabel = useCallback(
-    (category: string) => {
-      const label = t(`roles.supplierCategories.${category}`, { defaultValue: category })
-      const emoji = CATEGORY_EMOJI[category] ?? '📦'
-      return `${emoji} ${label}`
-    },
+    (category: string) =>
+      t(`roles.supplierCategories.${category}`, { defaultValue: category }),
     [t]
   )
 
@@ -107,10 +89,9 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
           selectedValues: selected ? [selected] : [],
           onToggle: handleToggle,
           getLabel: getCategoryLabel,
-          getAriaLabel: (category, label) =>
-            t('aria.selectSupplierCategory', {
-              label: label.replace(`${CATEGORY_EMOJI[category] ?? '📦'} `, ''),
-            }),
+          getIcon: getSupplierCategoryIcon,
+          getAriaLabel: (_category, label) =>
+            t('aria.selectSupplierCategory', { label }),
         },
         ...(selected
           ? [

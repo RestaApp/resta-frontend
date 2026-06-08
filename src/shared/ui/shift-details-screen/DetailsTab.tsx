@@ -1,6 +1,8 @@
 import { memo } from 'react'
 import type { TFunction } from 'i18next'
+import { Clock, Flame, MapPin } from 'lucide-react'
 import type { Shift } from '@/shared/shifts/types'
+import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { formatMoney } from '@/shared/shifts/formatting'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/shared/utils/cn'
@@ -89,8 +91,9 @@ export const DetailsTab = memo(
       <div className="flex flex-col gap-3">
         {shift.urgent ? (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-              🔥 SOS
+            <span className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              <Flame className={cn(ICON_SM_CLASS, 'text-white')} aria-hidden />
+              SOS
             </span>
           </div>
         ) : null}
@@ -133,7 +136,7 @@ export const DetailsTab = memo(
             {schedule ? (
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span aria-hidden>⏱</span>
+                  <Clock className={cn(ICON_SM_CLASS, 'text-muted-foreground')} aria-hidden />
                   <span className="truncate text-sm font-semibold text-foreground">{schedule}</span>
                 </div>
                 {displayDuration ? (
@@ -144,7 +147,7 @@ export const DetailsTab = memo(
             {displayLocation ? (
               <div className="flex items-center justify-between gap-4">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span aria-hidden>📍</span>
+                  <MapPin className={cn(ICON_SM_CLASS, 'text-muted-foreground')} aria-hidden />
                   <span className="truncate text-sm font-semibold text-foreground">
                     {displayLocation}
                   </span>

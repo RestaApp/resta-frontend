@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo, type RefObject, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,11 +13,16 @@ import {
 import { cn } from '@/shared/utils/cn'
 import { formatExperienceText } from '@/shared/utils/experience'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
+import { EmployeeSpecializationsField } from './EmployeeSpecializationsField'
 
 interface EmployeeFieldsSectionProps {
   experienceYearsValue: number
   openToWork: boolean
   skills: string
+  specializations: string[]
+  specializationOptions: string[]
+  isSpecializationsLoading: boolean
+  specializationRef?: RefObject<HTMLDivElement | null>
   updateField: <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => void
   disabled: boolean
 }
@@ -32,6 +37,10 @@ export const EmployeeFieldsSection = memo(
     experienceYearsValue,
     openToWork,
     skills,
+    specializations,
+    specializationOptions,
+    isSpecializationsLoading,
+    specializationRef,
     updateField,
     disabled,
   }: EmployeeFieldsSectionProps) => {
@@ -79,6 +88,14 @@ export const EmployeeFieldsSection = memo(
             disabled={disabled}
           />
         </div>
+        <EmployeeSpecializationsField
+          value={specializations}
+          options={specializationOptions}
+          disabled={disabled}
+          isLoading={isSpecializationsLoading}
+          containerRef={specializationRef}
+          onChange={next => updateField('specializations', next)}
+        />
         <FormField label={t('profile.skills')} hint={t('profile.skillsExample')}>
           <Textarea
             value={skills}

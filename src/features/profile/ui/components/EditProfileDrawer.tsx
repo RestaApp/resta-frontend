@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Drawer,
@@ -31,6 +31,7 @@ interface EditProfileDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
+  initialSection?: 'specializations' | null
 }
 
 /**
@@ -44,8 +45,9 @@ interface EditProfileDrawerProps {
  * Public API (`EditProfileDrawerProps`) и поведение reset/save сохранены 1:1.
  */
 export const EditProfileDrawer = memo(
-  ({ open, onOpenChange, onSuccess }: EditProfileDrawerProps) => {
+  ({ open, onOpenChange, onSuccess, initialSection = null }: EditProfileDrawerProps) => {
     const { t } = useTranslation()
+    const specializationRef = useRef<HTMLDivElement | null>(null)
     const { getBioLabelSuffix } = useProfileFormLabels()
     const {
       userProfile,
@@ -54,6 +56,8 @@ export const EditProfileDrawer = memo(
       cities,
       isCitiesLoading,
       isLoading,
+      specializationOptions,
+      isSpecializationsLoading,
       supplierTypeOptions,
       isSupplierTypesLoading,
       experienceYearsForSlider,
@@ -76,6 +80,16 @@ export const EditProfileDrawer = memo(
 
     const handleCancel = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
 
+    useEffect(() => {
+      if (!open || initialSection !== 'specializations' || apiRole !== 'employee') return
+
+      const frame = requestAnimationFrame(() => {
+        specializationRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      })
+
+      return () => cancelAnimationFrame(frame)
+    }, [apiRole, initialSection, open])
+
     if (!userProfile) return null
 
     const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
@@ -90,71 +104,74 @@ export const EditProfileDrawer = memo(
     return (
       <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
         <DrawerFrame className="flex-1">
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex flex-col gap-1">
-              <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
-              <DrawerDescription>{editProfileDescription}</DrawerDescription>
+          <DrawerHeader>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col gap-1">
+                <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
+                <DrawerDescription>{editProfileDescription}</DrawerDescription>
+              </div>
+              <DrawerCloseButton onClick={handleCancel} ariaLabel={t('common.close')} />
             </div>
-            <DrawerCloseButton onClick={handleCancel} ariaLabel={t('common.close')} />
-          </div>
-        </DrawerHeader>
+          </DrawerHeader>
 
-        <DrawerBody className="ui-density-stack">
-          <BasicProfileFields
-            apiRole={apiRole}
-            formData={formData}
-            fieldErrors={fieldErrors}
-            cities={cities}
-            isCitiesLoading={isCitiesLoading}
-            isLoading={isLoading}
-            bioSuffix={bioSuffix}
-            updateField={updateField}
-          />
-
-          {apiRole === 'employee' && (
-            <EmployeeFieldsSection
-              experienceYearsValue={experienceYearsForSlider}
-              openToWork={formData.openToWork}
-              skills={formData.skills}
-              updateField={updateField}
-              disabled={isLoading}
-            />
-          )}
-
-          {isBusinessRole && (
-            <BusinessFieldsSection
+          <DrawerBody className="ui-density-stack">
+            <BasicProfileFields
               apiRole={apiRole}
               formData={formData}
+              fieldErrors={fieldErrors}
+              cities={cities}
+              isCitiesLoading={isCitiesLoading}
               isLoading={isLoading}
-              supplierTypeOptions={supplierTypeOptions}
-              isSupplierTypesLoading={isSupplierTypesLoading}
+              bioSuffix={bioSuffix}
               updateField={updateField}
             />
-          )}
-        </DrawerBody>
 
-        <DrawerFooter contentClassName="grid grid-cols-2 gap-2">
-          <Button
-            onClick={handleCancel}
-            disabled={isLoading}
-            variant="outline"
-            size="md"
-            className="flex-1"
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={isLoading}
-            className="flex-1"
-            variant="gradient"
-            size="md"
-          >
-            {isLoading ? t('common.saving') : t('common.save')}
-          </Button>
-        </DrawerFooter>
+            {apiRole === 'employee' && (
+              <EmployeeFieldsSection
+                experienceYearsValue={experienceYearsForSlider}
+                openToWork={formData.openToWork}
+                skills={formData.skills}
+                specializations={formData.specializations}
+                specializationOptions={specializationOptions}
+                isSpecializationsLoading={isSpecializationsLoading}
+                specializationRef={specializationRef}
+                updateField={updateField}
+                disabled={isLoading}
+              />
+            )}
 
+            {isBusinessRole && (
+              <BusinessFieldsSection
+                apiRole={apiRole}
+                formData={formData}
+                isLoading={isLoading}
+                supplierTypeOptions={supplierTypeOptions}
+                isSupplierTypesLoading={isSupplierTypesLoading}
+                updateField={updateField}
+              />
+            )}
+          </DrawerBody>
+
+          <DrawerFooter contentClassName="grid grid-cols-2 gap-2">
+            <Button
+              onClick={handleCancel}
+              disabled={isLoading}
+              variant="outline"
+              size="md"
+              className="flex-1"
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="flex-1"
+              variant="gradient"
+              size="md"
+            >
+              {isLoading ? t('common.saving') : t('common.save')}
+            </Button>
+          </DrawerFooter>
         </DrawerFrame>
         <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>
           <AlertDialogContent>

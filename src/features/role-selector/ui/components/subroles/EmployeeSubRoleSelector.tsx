@@ -8,20 +8,9 @@ import { useEmployeeSubRoleSelector } from '../../../model/useEmployeeSubRoleSel
 import { LoadingState } from './shared/LoadingState'
 import { RoleDetailsStep } from './shared/RoleDetailsStep'
 import { useLabels } from '@/shared/i18n/hooks'
+import { getEmployeeRoleIcon } from '@/shared/constants/role-icons'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import type { EmployeeFormData } from '../../../model/useEmployeeSubRoleSelector'
-
-const EMOJI_BY_ROLE: Partial<Record<EmployeeRole, string>> = {
-  chef: '👨‍🍳',
-  waiter: '🍽',
-  barista: '☕',
-  bartender: '🍸',
-  manager: '📋',
-  support: '🎧',
-  delivery: '🛵',
-  cashier: '💵',
-  office: '💼',
-}
 
 interface EmployeeSubRoleSelectorProps {
   onSelectSubRole: (role: EmployeeRole, positionValue: string) => void
@@ -81,8 +70,9 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
           },
           getLabel: id => {
             const role = subRoles.find(item => item.id === id)
-            return `${EMOJI_BY_ROLE[id as EmployeeRole] ?? '👤'} ${role?.title ?? id}`
+            return role?.title ?? id
           },
+          getIcon: id => getEmployeeRoleIcon(id as EmployeeRole),
           getAriaLabel: id => {
             const role = subRoles.find(item => item.id === id)
             return t('aria.selectType', { label: role?.title ?? id })

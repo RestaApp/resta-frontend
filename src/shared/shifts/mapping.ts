@@ -18,29 +18,20 @@ const toNumber = (v?: string | number | null): number => {
   return Number.isFinite(n) ? n : 0
 }
 
-const getLogo = (id: number): string => {
-  const logos = ['🍽️', '☕️', '🍕', '🥖', '🥘', '🍔', '🍣', '🍜']
-  return logos[Math.abs(id) % logos.length]
-}
+export const getLogoByPosition = (position?: string | null): string => {
+  const normalized = (position ?? '').trim().toLowerCase()
 
-export const getLogoByPosition = (position?: string | null, idFallback?: number | null): string => {
-  const p = (position ?? '').toLowerCase()
-
-  const map: Record<string, string[]> = {
-    chef: ['👨‍🍳', '👩‍🍳', '🍳', '🔪', '🥘'],
-    waiter: ['🍽️', '🥂', '🍷', '🧾', '🍴'],
-    bartender: ['🍸', '🍹', '🥃', '🍺', '🧊'],
-    barista: ['☕️', '🫖', '🥐', '🍰', '🫘'],
-    manager: ['🧑‍💼', '📋', '📊', '📞', '🗓️'],
-    support: ['🧽', '🧹', '🧼', '🧤', '🧺'],
+  const map: Record<string, string> = {
+    chef: 'C',
+    waiter: 'W',
+    bartender: 'B',
+    barista: 'B',
+    manager: 'M',
+    support: 'S',
   }
 
-  if (p && map[p]?.length) {
-    const i = typeof idFallback === 'number' ? Math.abs(idFallback) % map[p].length : 0
-    return map[p][i]
-  }
-  if (typeof idFallback === 'number') return getLogo(idFallback)
-  return '🍽️'
+  if (normalized && map[normalized]) return map[normalized]
+  return (normalized[0] ?? 'R').toUpperCase()
 }
 
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {

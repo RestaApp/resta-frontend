@@ -1,7 +1,7 @@
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { ArrowRight, ChevronDown, Star } from 'lucide-react'
+import { ArrowRight, BriefcaseBusiness, ChevronDown, SquarePen, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -33,6 +33,7 @@ interface ProfileOverviewProps {
   profile: ProfileViewModel
   variant?: 'page' | 'drawer'
   onFill?: () => void
+  onEditSpecializations?: () => void
   onOpenToWorkToggle?: (nextValue: boolean) => void
   isOpenToWorkUpdating?: boolean
 }
@@ -71,19 +72,47 @@ const renderInfoValue = (row: ProfileInfoRow) => {
   )
 }
 
-const ProfileTagSectionView = ({ section }: { section: ProfileTagSection }) => {
+const ProfileTagSectionView = ({
+  section,
+  onEdit,
+}: {
+  section: ProfileTagSection
+  onEdit?: () => void
+}) => {
+  const { t } = useTranslation()
   if (section.items.length === 0) return null
 
   return (
     <div className="flex flex-col gap-2">
-      <SectionLabel>{section.title}</SectionLabel>
+      <div className="flex items-center justify-between gap-2">
+        <SectionLabel>{section.title}</SectionLabel>
+        {onEdit ? (
+          <button
+            type="button"
+            onClick={onEdit}
+            data-haptic="selection"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] border border-primary/25 bg-primary/10 text-primary transition-colors hover:border-primary/40 hover:bg-primary/15"
+            aria-label={t('aria.editProfile')}
+          >
+            <SquarePen className="h-3 w-3" aria-hidden="true" />
+          </button>
+        ) : null}
+      </div>
       <div className="flex flex-wrap gap-2">
         {section.items.map(item => (
           <Badge
             key={item.id}
             variant="tag"
-            className="rounded-sm border-border bg-card px-2 py-1 font-mono-resta text-xs font-semibold tracking-wide text-foreground"
+            className={cn(
+              'rounded-sm px-2 py-1 font-mono-resta text-xs font-semibold tracking-wide',
+              item.id === 'experience'
+                ? 'border-primary/30 bg-primary/10 text-primary'
+                : 'border-border bg-card text-foreground'
+            )}
           >
+            {item.id === 'experience' ? (
+              <BriefcaseBusiness className="mr-1.5 h-3 w-3 text-primary" aria-hidden="true" />
+            ) : null}
             {item.label}
           </Badge>
         ))}
@@ -132,14 +161,10 @@ const ProfileOpenToWorkCard = ({
         </span>
         <div className="min-w-0">
           <div className={SHIFT_CARD_TITLE_CLASS}>
-            {checked
-              ? t('profile.openToWorkShort')
-              : t('profile.openToWorkOff')}
+            {checked ? t('profile.openToWorkShort') : t('profile.openToWorkOff')}
           </div>
           <div className={SHIFT_CARD_SUB_CLASS}>
-            {checked
-              ? t('profile.openToWorkCatalogHint')
-              : t('profile.openToWorkHiddenHint')}
+            {checked ? t('profile.openToWorkCatalogHint') : t('profile.openToWorkHiddenHint')}
           </div>
         </div>
       </button>
@@ -153,9 +178,7 @@ const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <SectionLabel>
-        {t('profile.latestReviews')}
-      </SectionLabel>
+      <SectionLabel>{t('profile.latestReviews')}</SectionLabel>
       <Card className={SHIFT_CARD_CLASS}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
@@ -247,6 +270,7 @@ export const ProfileOverview = memo(function ProfileOverview({
   profile,
   variant = 'page',
   onFill,
+  onEditSpecializations,
   onOpenToWorkToggle,
   isOpenToWorkUpdating = false,
 }: ProfileOverviewProps) {
@@ -301,7 +325,15 @@ export const ProfileOverview = memo(function ProfileOverview({
       ) : null}
 
       {profile.tagSections.map(section => (
-        <ProfileTagSectionView key={section.id} section={section} />
+        <ProfileTagSectionView
+          key={section.id}
+          section={section}
+          onEdit={
+            section.id === 'employee-specializations' && variant === 'page'
+              ? onEditSpecializations
+              : undefined
+          }
+        />
       ))}
 
       <ProfileReviewSummary profile={profile} />

@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
@@ -9,23 +9,8 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
+import { getRoleIcon, ICON_MD_CLASS } from '@/shared/constants/role-icons'
 import type { UiRole, RoleOption } from '@/shared/types/roles.types'
-
-const ROLE_EMOJI: Record<UiRole, string> = {
-  chef: '👨‍🍳',
-  waiter: '🍽️',
-  bartender: '🍸',
-  barista: '☕',
-  hostess: '🙋',
-  delivery: '🚚',
-  cashier: '💳',
-  office: '💼',
-  admin: '🧑‍💼',
-  manager: '📋',
-  support: '🎧',
-  venue: '🏪',
-  supplier: '🚚',
-}
 
 interface RoleCardProps {
   role: RoleOption
@@ -56,7 +41,6 @@ export const RoleCard = memo(function RoleCard({
 }: RoleCardProps) {
   const { t } = useTranslation()
   const proof = defaultSocialProofFromI18n(role.id, t)
-  const emoji = ROLE_EMOJI[role.id] ?? '👤'
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
 
   return (
@@ -76,8 +60,8 @@ export const RoleCard = memo(function RoleCard({
         )}
       >
         <div className="flex items-center gap-2">
-          <div className={cn(SHIFT_CARD_LOGO_CLASS, 'text-base')} aria-hidden>
-            {emoji}
+          <div className={cn(SHIFT_CARD_LOGO_CLASS, '[&_svg]:text-muted-foreground')} aria-hidden>
+            {createElement(getRoleIcon(role.id), { className: ICON_MD_CLASS })}
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">

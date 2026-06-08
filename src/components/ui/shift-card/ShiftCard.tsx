@@ -1,6 +1,8 @@
 import { memo, useCallback, useMemo } from 'react'
 import type { KeyboardEvent } from 'react'
+import { Clock, Flame, MapPin, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import type { Shift } from '@/shared/shifts/types'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatMoney } from '@/shared/shifts/formatting'
@@ -159,8 +161,9 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
         <div className="min-w-0 flex-1">
           {shift.urgent ? (
             <div className={SHIFT_CARD_BADGE_ROW_CLASS}>
-              <span className={SHIFT_CARD_BADGE_CLASS}>
-                🔥 SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
+              <span className={cn(SHIFT_CARD_BADGE_CLASS, 'inline-flex items-center gap-1')}>
+                <Flame className={ICON_SM_CLASS} aria-hidden />
+                SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
               </span>
             </div>
           ) : null}
@@ -190,13 +193,24 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
       </div>
 
       <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0')}>
-        {compactSchedule ? <span className="shrink-0">⏱ {compactSchedule}</span> : null}
+        {compactSchedule ? (
+          <span className="inline-flex shrink-0 items-center gap-1">
+            <Clock className={ICON_SM_CLASS} aria-hidden />
+            {compactSchedule}
+          </span>
+        ) : null}
         {compactApplications ? (
-          <span className="ml-auto shrink-0 text-muted-foreground">👤 {compactApplications}</span>
+          <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-muted-foreground">
+            <User className={ICON_SM_CLASS} aria-hidden />
+            {compactApplications}
+          </span>
         ) : null}
       </div>
       {locationMeta ? (
-        <span className="truncate font-mono-resta text-xs tracking-wide text-muted-foreground">📍 {locationMeta}</span>
+        <span className="inline-flex min-w-0 items-center gap-1 truncate font-mono-resta text-xs tracking-wide text-muted-foreground">
+          <MapPin className={ICON_SM_CLASS} aria-hidden />
+          {locationMeta}
+        </span>
       ) : null}
 
     </div>

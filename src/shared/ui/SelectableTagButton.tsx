@@ -5,7 +5,9 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
+import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import {
   TAG_ACTIVE_CLASS,
   TAG_BASE_CLASS,
@@ -23,6 +25,7 @@ const SIZE_CLASS: Record<TagSize, string> = {
 interface SelectableTagButtonProps {
   value: string
   label: string
+  icon?: LucideIcon
   isSelected: boolean
   onClick: (value: string) => void
   ariaLabel?: string
@@ -33,6 +36,7 @@ interface SelectableTagButtonProps {
 export const SelectableTagButton = memo(function SelectableTagButton({
   value,
   label,
+  icon: Icon,
   isSelected,
   onClick,
   ariaLabel,
@@ -49,6 +53,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
       data-haptic="selection"
       className={cn(
         TAG_BASE_CLASS,
+        'inline-flex items-center gap-1.5',
         SIZE_CLASS[size],
         disabled && TAG_DISABLED_CLASS,
         isSelected ? TAG_ACTIVE_CLASS : TAG_INACTIVE_CLASS
@@ -58,6 +63,7 @@ export const SelectableTagButton = memo(function SelectableTagButton({
       aria-disabled={disabled}
       title={label}
     >
+      {Icon ? <Icon className={ICON_SM_CLASS} aria-hidden /> : null}
       {label}
     </motion.button>
   )

@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
 import { SearchFilters } from '@/shared/ui/SearchFilters'
 import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
@@ -82,7 +81,7 @@ export const VenueSuppliersList = ({
                     defaultValue: 'Отключите фильтр или добавьте нового поставщика',
                   })
             }
-            illustration={<EmptyInboxIllustration className="h-24 w-24" />}
+            image="inbox"
           />
         ) : (
           <>

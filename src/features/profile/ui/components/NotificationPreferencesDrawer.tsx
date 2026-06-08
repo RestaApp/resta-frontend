@@ -1,5 +1,7 @@
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { LucideIcon } from 'lucide-react'
+import { Bell, Briefcase, Flame } from 'lucide-react'
 import {
   Drawer,
   DrawerBody,
@@ -21,6 +23,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
+import { ICON_MD_CLASS } from '@/shared/constants/role-icons'
 import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
@@ -38,16 +41,18 @@ type PreferenceKey = keyof Pick<
   'urgent_notifications' | 'new_shifts_notifications' | 'application_notifications'
 >
 
-const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: string }> = {
+const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: LucideIcon }> = {
   urgent_notifications: {
     label: 'profile.notifications.urgent',
-    icon: '🔥',
+    icon: Flame,
   },
   new_shifts_notifications: {
     label: 'profile.notifications.newShifts',
+    icon: Briefcase,
   },
   application_notifications: {
     label: 'profile.notifications.applications',
+    icon: Bell,
   },
 }
 
@@ -186,11 +191,17 @@ export const NotificationPreferencesDrawer = memo(
                     <div className="flex flex-col divide-y divide-border/50 px-3">
                       {section.keys.map(key => {
                         const label = t(PREFERENCE_I18N[key].label)
+                        const preferenceIcon = PREFERENCE_I18N[key].icon
                         return (
                           <div key={key} className="flex items-center justify-between gap-2 py-3">
                             <div className="flex min-w-0 flex-1 items-center gap-2">
-                              <span className={SHIFT_CARD_LOGO_CLASS}>
-                                {PREFERENCE_I18N[key].icon ?? label.slice(0, 1)}
+                              <span className={cn(SHIFT_CARD_LOGO_CLASS, '[&_svg]:text-muted-foreground')}>
+                                {preferenceIcon
+                                  ? createElement(preferenceIcon, {
+                                      className: ICON_MD_CLASS,
+                                      'aria-hidden': true,
+                                    })
+                                  : label.slice(0, 1)}
                               </span>
                               <div className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 truncate')}>
                                 {label}

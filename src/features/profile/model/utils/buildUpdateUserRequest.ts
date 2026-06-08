@@ -26,6 +26,7 @@ export interface ProfileFormData {
   experienceYears: number | ''
   openToWork: boolean
   skills: string
+  specializations: string[]
   // Для supplier
   supplierCategory: string
   supplierTypes: string[]
@@ -113,6 +114,8 @@ export const buildUpdateUserRequest = (
     .split(',')
     .map(s => s.trim())
     .filter(Boolean)
+  const currentSpecializations = uniqueStrings(formData.specializations)
+  const initialSpecializations = uniqueStrings(source.specializations)
   const currentSupplierCategory = formData.supplierCategory.trim()
   const initialSupplierCategory = source.supplierCategory.trim()
   const currentSupplierTypes = uniqueStrings(formData.supplierTypes)
@@ -186,6 +189,11 @@ export const buildUpdateUserRequest = (
     if (hasDiff(currentSkills, initialSkills)) {
       user.skills = currentSkills
       employeeProfileAttributes.skills = currentSkills
+    }
+
+    if (hasDiff(currentSpecializations, initialSpecializations)) {
+      user.specializations = currentSpecializations
+      employeeProfileAttributes.specializations = currentSpecializations
     }
 
     if (Object.keys(employeeProfileAttributes).length > 0) {

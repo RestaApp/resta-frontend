@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { cn } from '@/shared/utils/cn'
 import { DETAIL_CARD_CLASS } from './constants'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
@@ -198,7 +199,12 @@ export const ApplicantsTab = memo(
             ) : null}
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">{t('shift.noApplicants')}</div>
+          <EmptyState
+            density="compact"
+            image="shift-applicants"
+            message={t('shift.noApplicants')}
+            description={t('shift.noApplicantsDescription')}
+          />
         )}
 
         <ConfirmDialog

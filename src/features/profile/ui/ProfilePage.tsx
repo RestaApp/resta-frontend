@@ -17,11 +17,17 @@ export const ProfilePage = memo(() => {
   const { t } = useTranslation()
   const m = useProfilePageModel()
   const [legalScreen, setLegalScreen] = useState<LegalScreen>('none')
+  const [editProfileSection, setEditProfileSection] = useState<'specializations' | null>(null)
 
   const handleLegalBack = useCallback(() => {
     setLegalScreen('none')
     resetAppScroll()
   }, [])
+
+  const handleEditSpecializations = useCallback(() => {
+    setEditProfileSection('specializations')
+    m.setIsEditDrawerOpen(true)
+  }, [m])
 
   if (legalScreen === 'privacy') {
     return <PrivacyPolicyPage onBack={handleLegalBack} />
@@ -54,6 +60,7 @@ export const ProfilePage = memo(() => {
       <ProfileOverview
         profile={m.profileViewModel}
         onFill={() => m.setIsEditDrawerOpen(true)}
+        onEditSpecializations={handleEditSpecializations}
         onOpenToWorkToggle={m.handleOpenToWorkToggle}
         isOpenToWorkUpdating={m.isUpdatingUser}
       />
@@ -70,8 +77,13 @@ export const ProfilePage = memo(() => {
 
       <EditProfileDrawer
         open={m.isEditDrawerOpen}
-        onOpenChange={m.setIsEditDrawerOpen}
+        onOpenChange={open => {
+          m.setIsEditDrawerOpen(open)
+          if (!open) setEditProfileSection(null)
+        }}
+        initialSection={editProfileSection}
         onSuccess={() => {
+          setEditProfileSection(null)
           m.setIsEditDrawerOpen(false)
           void m.handleEditSuccess()
         }}

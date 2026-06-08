@@ -64,6 +64,7 @@ export function SupportTicketForm({
           value={category}
           onChange={v => setCategory(v as SupportTicketCategory)}
           options={categoryOptions}
+          searchable={false}
         />
       </FormField>
 

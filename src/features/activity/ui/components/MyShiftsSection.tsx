@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { EmptyShiftsIllustration } from '@/components/ui/empty-illustrations'
 import { Button } from '@/components/ui/button'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
@@ -20,9 +19,9 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
     <section className="ui-density-stack">
       {shifts.length === 0 ? (
         <EmptyState
+          image="shifts"
           message={t('activity.noShiftsYet')}
           description={t('activity.shiftsWillAppearHere')}
-          illustration={<EmptyShiftsIllustration className="h-24 w-24" />}
           action={
             <Button
               variant="gradient"

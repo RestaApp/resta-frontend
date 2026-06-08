@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
+import type { LucideIcon } from 'lucide-react'
 import { TagGroup } from '@/shared/ui/TagGroup'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
 import {
@@ -15,6 +16,7 @@ export interface RoleDetailsGroup {
   selectedValues: string[]
   onToggle: (value: string) => void
   getLabel: (value: string) => string
+  getIcon?: (value: string) => LucideIcon | undefined
   getAriaLabel?: (value: string, label: string) => string
   emptyText?: ReactNode
 }
@@ -69,6 +71,7 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
                 selectedValues={group.selectedValues}
                 onToggle={group.onToggle}
                 getLabel={group.getLabel}
+                getIcon={group.getIcon}
                 getAriaLabel={group.getAriaLabel}
                 size="md"
               />

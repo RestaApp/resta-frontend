@@ -12,6 +12,7 @@ import { formatPhoneInput, validatePhone } from '@/shared/utils/phone'
 import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { toLocationArray } from '@/shared/utils/location'
+import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 
 type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
 type EditProfileErrors = Partial<Record<EditProfileField, string>>
@@ -65,6 +66,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         experienceYears: '',
         openToWork: false,
         skills: '',
+        specializations: [],
         supplierCategory: '',
         supplierTypes: [],
       }
@@ -94,6 +96,17 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
           : '',
       openToWork: apiRole === 'employee' && ep ? ep.open_to_work || false : false,
       skills: apiRole === 'employee' && ep?.skills ? ep.skills.join(', ') : '',
+      specializations:
+        apiRole === 'employee'
+          ? Array.from(
+              new Set(
+                (ep?.specializations?.length
+                  ? ep.specializations
+                  : [userProfile.specialization]
+                ).filter((value): value is string => Boolean(value))
+              )
+            )
+          : [],
       supplierCategory: supplierProfile?.supplier_category ?? '',
       supplierTypes: Array.isArray(supplierProfile?.supplier_types)
         ? Array.from(new Set(supplierProfile.supplier_types.filter(Boolean)))
@@ -102,6 +115,17 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
           : [],
     }
   }, [apiRole, userProfile])
+
+  const employeePosition =
+    apiRole === 'employee'
+      ? (userProfile?.employee_profile?.position ?? userProfile?.position ?? null)
+      : null
+
+  const { specializations: specializationOptions, isLoading: isSpecializationsLoading } =
+    useUserSpecializations({
+      position: employeePosition,
+      enabled: open && apiRole === 'employee' && Boolean(employeePosition),
+    })
 
   const [draftFormData, setDraftFormData] = useState<ProfileFormData | null>(null)
   const formData = draftFormData ?? baseFormData
@@ -271,6 +295,8 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     cities,
     isCitiesLoading,
     isLoading,
+    specializationOptions,
+    isSpecializationsLoading,
     supplierTypeOptions,
     isSupplierTypesLoading: isSupplierTypesLoading || isSupplierTypesFetching,
     supplierCategory,

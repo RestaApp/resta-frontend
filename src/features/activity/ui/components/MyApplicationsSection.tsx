@@ -9,7 +9,6 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { EmptyApplicationsIllustration } from '@/components/ui/empty-illustrations'
 import type { ToastType } from '@/components/ui/toast'
 import { cn } from '@/shared/utils/cn'
 
@@ -116,9 +115,9 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
     <section ref={sectionRef}>
       {appliedShifts.length === 0 ? (
         <EmptyState
+          image="applications"
           message={t('activity.noApplicationsYet')}
           description={t('activity.applicationsWillAppearHere')}
-          illustration={<EmptyApplicationsIllustration className="h-24 w-24" />}
         />
       ) : (
         <div className="ui-density-stack-lg">

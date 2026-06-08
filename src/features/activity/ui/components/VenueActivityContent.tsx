@@ -4,7 +4,6 @@ import { Tabs, type TabOption } from '@/components/ui/tabs'
 import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { ErrorState } from '@/components/ui/states'
 import { Button } from '@/components/ui/button'
 import { SuccessOverlay } from '@/components/ui/success-overlay'
@@ -68,9 +67,9 @@ export const VenueActivityContent = ({
             <FeedCardSkeletonList />
           ) : venueItems.length === 0 ? (
             <EmptyState
+              image="inbox"
               message={venueEmptyContent.title}
               description={venueEmptyContent.description}
-              illustration={<EmptyInboxIllustration className="h-24 w-24" />}
               action={
                 <Button variant="gradient" size="md" className="px-6" onClick={handleOpenCreate}>
                   {t('feed.venueEmptyCta')}

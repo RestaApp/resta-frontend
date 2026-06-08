@@ -4,10 +4,6 @@ import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/states'
 import type { FeedType } from '@/shared/shifts/types'
-import {
-  EmptyFiltersIllustration,
-  EmptySearchIllustration,
-} from '@/components/ui/empty-illustrations'
 
 interface FeedListAreaProps {
   isInitialLoading: boolean
@@ -54,13 +50,7 @@ export function FeedListArea({
       <EmptyState
         message={emptyMessage}
         description={emptyDescription}
-        illustration={
-          hasActiveFilters ? (
-            <EmptyFiltersIllustration className="h-24 w-24" />
-          ) : (
-            <EmptySearchIllustration className="h-24 w-24" />
-          )
-        }
+        image={hasActiveFilters ? 'filters' : 'search'}
         onReset={onResetFilters}
         showResetButton={hasActiveFilters}
       />

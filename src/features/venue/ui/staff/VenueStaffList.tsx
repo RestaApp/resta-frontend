@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { EmptyInboxIllustration } from '@/components/ui/empty-illustrations'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import {
   SHIFT_CARD_CLASS,
@@ -98,11 +97,9 @@ export const VenueStaffList = ({
         <FeedCardSkeletonList variant="staff" className="ui-density-stack-sm" />
       ) : items.length === 0 ? (
         <EmptyState
-          message={t('venueUi.staff.emptyTitle', { defaultValue: 'Сотрудников пока нет' })}
-          description={t('venueUi.staff.emptyDescription', {
-            defaultValue: 'Принятые сотрудники появятся здесь после обработки заявок',
-          })}
-          illustration={<EmptyInboxIllustration className="h-24 w-24" />}
+          image="shift-applicants"
+          message={t('shift.noApplicants')}
+          description={t('shift.noApplicantsDescription')}
         />
       ) : (
         <div className="ui-density-stack-sm">
@@ -151,10 +148,7 @@ export const VenueStaffList = ({
                         >
                           <AvatarImage src={photoUrl} alt={fullName} />
                           <AvatarFallback>
-                            {getLogoByPosition(
-                              rawPosition,
-                              item.person.user_id ?? item.person.user?.id ?? 0
-                            )}
+                            {getLogoByPosition(rawPosition)}
                           </AvatarFallback>
                         </Avatar>
 
