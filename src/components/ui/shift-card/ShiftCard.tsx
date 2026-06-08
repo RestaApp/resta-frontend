@@ -10,6 +10,7 @@ import { useCurrentUserId } from '@/shared/shifts/useCurrentUserId'
 import { cn } from '@/shared/utils/cn'
 import { firstLocation } from '@/shared/utils/location'
 import { addDaysToISODate, toLocalISODateKey } from '@/shared/utils/datetime'
+import { Badge } from '@/components/ui/badge'
 import {
   SHIFT_CARD_BADGE_CLASS,
   SHIFT_CARD_BADGE_ROW_CLASS,
@@ -141,6 +142,11 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     : typeof shift.applicationsCount === 'number' && shift.applicationsCount > 0
       ? shift.applicationsCount
       : null
+  const statusTagLabel =
+    shift.statusTag === 'expired'
+      ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
+      : null
+  const hasBottomRightMeta = Boolean(statusTagLabel) || Boolean(compactApplications)
 
   return (
     <div
@@ -160,7 +166,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
       <div className={SHIFT_CARD_ROW_CLASS}>
         <div className="min-w-0 flex-1">
           {shift.urgent ? (
-            <div className={SHIFT_CARD_BADGE_ROW_CLASS}>
+            <div className={cn(SHIFT_CARD_BADGE_ROW_CLASS, 'flex flex-wrap gap-1.5')}>
               <span className={cn(SHIFT_CARD_BADGE_CLASS, 'inline-flex items-center gap-1')}>
                 <Flame className={ICON_SM_CLASS} aria-hidden />
                 SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
@@ -199,10 +205,19 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
             {compactSchedule}
           </span>
         ) : null}
-        {compactApplications ? (
-          <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-muted-foreground">
-            <User className={ICON_SM_CLASS} aria-hidden />
-            {compactApplications}
+        {hasBottomRightMeta ? (
+          <span className="ml-auto inline-flex shrink-0 items-center gap-1.5">
+            {compactApplications ? (
+              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                <User className={ICON_SM_CLASS} aria-hidden />
+                {compactApplications}
+              </span>
+            ) : null}
+            {statusTagLabel ? (
+              <Badge variant="rej" className="shrink-0">
+                {statusTagLabel}
+              </Badge>
+            ) : null}
           </span>
         ) : null}
       </div>
@@ -212,7 +227,6 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           {locationMeta}
         </span>
       ) : null}
-
     </div>
   )
 }

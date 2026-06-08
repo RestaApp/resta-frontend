@@ -435,6 +435,7 @@
     "statusAccepted": "Принят",
     "statusRejected": "Отклонён",
     "statusCancelled": "Отменён",
+    "statusExpired": "Просрочена",
     "day": "День",
     "durationWithValue": "Длительность: {{value}}",
     "freeDay": "Свободный день!",

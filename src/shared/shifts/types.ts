@@ -33,6 +33,7 @@ export interface Shift {
   applicationsCount?: number
   isMine?: boolean
   applicationStatus?: string | null
+  statusTag?: 'expired'
   /** Город (для отображения в карточке). Из user.city / restaurant_profile */
   city?: string | null
   /** Дистанция от пользователя, если список запрошен с геолокацией. */

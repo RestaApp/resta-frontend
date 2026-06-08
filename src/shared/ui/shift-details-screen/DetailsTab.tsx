@@ -4,6 +4,7 @@ import { Clock, Flame, MapPin } from 'lucide-react'
 import type { Shift } from '@/shared/shifts/types'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { formatMoney } from '@/shared/shifts/formatting'
+import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/shared/utils/cn'
 import {
@@ -17,7 +18,11 @@ import {
   SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_SUB_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
-import { formatDistanceKm, stripVacancyPrefix, positionInitial } from '@/components/ui/shift-card/shift-card-utils'
+import {
+  formatDistanceKm,
+  stripVacancyPrefix,
+  positionInitial,
+} from '@/components/ui/shift-card/shift-card-utils'
 
 interface DetailsTabProps {
   shift: Shift
@@ -87,15 +92,27 @@ export const DetailsTab = memo(
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' · ')
     const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
     const compactSubtitle = shift.restaurant || positionLabel || ''
+    const statusTagLabel =
+      shift.statusTag === 'expired'
+        ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
+        : null
+    const hasTopBadges = shift.urgent || Boolean(statusTagLabel)
 
     return (
       <div className="flex flex-col gap-3">
-        {shift.urgent ? (
+        {hasTopBadges ? (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-              <Flame className={cn(ICON_SM_CLASS, 'text-white')} aria-hidden />
-              SOS
-            </span>
+            {shift.urgent ? (
+              <span className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                <Flame className={cn(ICON_SM_CLASS, 'text-white')} aria-hidden />
+                SOS
+              </span>
+            ) : null}
+            {statusTagLabel ? (
+              <Badge variant="rej" className="px-3 py-1">
+                {statusTagLabel}
+              </Badge>
+            ) : null}
           </div>
         ) : null}
 

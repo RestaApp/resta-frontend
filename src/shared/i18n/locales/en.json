@@ -435,6 +435,7 @@
     "statusAccepted": "Accepted",
     "statusRejected": "Rejected",
     "statusCancelled": "Cancelled",
+    "statusExpired": "Expired",
     "day": "Day",
     "durationWithValue": "Duration: {{value}}",
     "freeDay": "Free day!",

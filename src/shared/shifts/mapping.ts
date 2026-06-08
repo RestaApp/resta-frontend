@@ -73,6 +73,14 @@ const getVacancyScheduleFields = (item: VacancyApiItem) => {
   }
 }
 
+const isExpiredOwnerListing = (item: VacancyApiItem): boolean => {
+  const status = item.status?.trim().toLowerCase()
+  if (status === 'completed' || status === 'cancelled' || status === 'canceled') return false
+
+  const deadline = parseApiDateTime(item.end_time ?? undefined) ?? parseApiDateTime(item.start_time)
+  return deadline ? deadline.getTime() < Date.now() : false
+}
+
 export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const start = parseApiDateTime(item.start_time ?? undefined)
   const end = parseApiDateTime(item.end_time ?? undefined)
@@ -151,6 +159,7 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     canApply: false,
     applicationsCount: item.applications_count ?? 0,
     isMine: true,
+    statusTag: isExpiredOwnerListing(item) ? 'expired' : undefined,
     city: getCityFromUser(item) ?? null,
   }
 }
