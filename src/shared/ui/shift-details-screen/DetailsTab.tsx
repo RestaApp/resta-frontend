@@ -96,23 +96,21 @@ export const DetailsTab = memo(
       shift.statusTag === 'expired'
         ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
         : null
-    const hasTopBadges = shift.urgent || Boolean(statusTagLabel)
 
     return (
-      <div className="flex flex-col gap-3">
-        {hasTopBadges ? (
+      <div className="relative flex flex-col gap-3">
+        {statusTagLabel ? (
+          <Badge variant="rej" className="absolute right-0 top-0 px-3 py-1">
+            {statusTagLabel}
+          </Badge>
+        ) : null}
+
+        {shift.urgent ? (
           <div className="flex flex-wrap items-center gap-2">
-            {shift.urgent ? (
-              <span className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                <Flame className={cn(ICON_SM_CLASS, 'text-white')} aria-hidden />
-                SOS
-              </span>
-            ) : null}
-            {statusTagLabel ? (
-              <Badge variant="rej" className="px-3 py-1">
-                {statusTagLabel}
-              </Badge>
-            ) : null}
+            <span className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              <Flame className={cn(ICON_SM_CLASS, 'text-white')} aria-hidden />
+              SOS
+            </span>
           </div>
         ) : null}
 

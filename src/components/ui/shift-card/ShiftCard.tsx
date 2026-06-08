@@ -65,6 +65,14 @@ const getUrgentDateTag = (dateKey?: string | null): string => {
   return ''
 }
 
+const getApplicationBadgeVariant = (
+  status?: string | null
+): 'pending' | 'accepted' | 'rejected' => {
+  if (status === 'accepted') return 'accepted'
+  if (status === 'rejected') return 'rejected'
+  return 'pending'
+}
+
 export interface ShiftCardProps {
   shift: Shift
   onOpenDetails: (id: number) => void
@@ -137,6 +145,16 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
   const compactSubtitle =
     [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
     positionText
+  const applicationStatus =
+    !isOwner && shift.applicationId ? (shift.applicationStatus ?? 'pending') : null
+  const applicationBadgeVariant = getApplicationBadgeVariant(applicationStatus)
+  const applicationBadgeLabel = applicationStatus
+    ? applicationStatus === 'accepted'
+      ? t('activity.statusAcceptedPill')
+      : applicationStatus === 'rejected'
+        ? t('activity.statusRejectedPill')
+        : t('activity.statusPendingPill')
+    : null
   const compactApplications = responses?.hasResponses
     ? responses.count
     : typeof shift.applicationsCount === 'number' && shift.applicationsCount > 0
@@ -165,12 +183,19 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     >
       <div className={SHIFT_CARD_ROW_CLASS}>
         <div className="min-w-0 flex-1">
-          {shift.urgent ? (
+          {shift.urgent || applicationBadgeLabel ? (
             <div className={cn(SHIFT_CARD_BADGE_ROW_CLASS, 'flex flex-wrap gap-1.5')}>
-              <span className={cn(SHIFT_CARD_BADGE_CLASS, 'inline-flex items-center gap-1')}>
-                <Flame className={ICON_SM_CLASS} aria-hidden />
-                SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
-              </span>
+              {shift.urgent ? (
+                <span className={cn(SHIFT_CARD_BADGE_CLASS, 'inline-flex items-center gap-1')}>
+                  <Flame className={ICON_SM_CLASS} aria-hidden />
+                  SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
+                </span>
+              ) : null}
+              {applicationBadgeLabel ? (
+                <Badge variant={applicationBadgeVariant} className="shrink-0">
+                  {applicationBadgeLabel}
+                </Badge>
+              ) : null}
             </div>
           ) : null}
           <div className={cn('flex min-w-0 items-start gap-2', shift.urgent && 'gap-0')}>

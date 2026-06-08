@@ -7,6 +7,7 @@
  *
  * Иерархия снизу вверх:
  *  base          — обычный контент, статические карточки.
+ *  detailPage    — фон под нижней навигацией для полноэкранных detail-страниц.
  *  bottomNav     — фикс-панель навигации внизу.
  *  stickyHeader  — заголовки внутри страницы, sticky-фильтры.
  *  overlay       — затемнение под drawer/modal.
@@ -18,6 +19,7 @@
  */
 export const Z_INDEX = {
   base: 0,
+  detailPage: 20,
   bottomNav: 30,
   stickyHeader: 35,
   overlay: 40,

@@ -52,10 +52,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const { getEmployeePositionLabel } = useLabels()
-  const { hourlyRate, vacancyTitle, positionLabel } = useShiftDetails(
-    shift,
-    vacancyData
-  )
+  const { hourlyRate, vacancyTitle, positionLabel } = useShiftDetails(shift, vacancyData)
 
   const controller = useShiftDetailsScreenController({
     shift,
@@ -84,7 +81,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const ownerFooter =
     controller.isOwner && ownerActions ? (
-      <DrawerFooter>
+      <DrawerFooter className="pb-3">
         <div className="flex gap-4">
           <Button
             variant="outline"
@@ -93,7 +90,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             disabled={ownerActions.isDeleting}
             className="flex-1"
           >
-            {ownerActions.isDeleting ? t('common.deleting', { defaultValue: 'Удаление...' }) : t('common.delete')}
+            {ownerActions.isDeleting
+              ? t('common.deleting', { defaultValue: 'Удаление...' })
+              : t('common.delete')}
           </Button>
           <Button
             variant="gradient"
@@ -110,7 +109,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const applicantFooter =
     !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
-      <DrawerFooter>
+      <DrawerFooter className="pb-3">
         <div className="flex gap-4">
           {isApplied ? (
             <Button

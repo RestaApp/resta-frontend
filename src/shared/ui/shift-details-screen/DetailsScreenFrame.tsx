@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/drawer'
 import { DRAWER_SCROLL_BODY_CLASS } from '@/components/ui/ui-patterns'
 import { useTelegramFullscreenOffset } from '@/app/contexts/telegram/useTelegramFullscreenOffset'
+import { BOTTOM_NAV_HEIGHT_CSS } from '@/shared/ui/layout'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
@@ -52,21 +53,28 @@ export function DetailsScreenFrame({
   if (variant === 'page') {
     if (!open) return null
     const node = (
-      <section
-        className={cn(
-          'fixed bottom-0 left-0 right-0 flex flex-col bg-background',
-          fullscreenOffset.topClassName
-        )}
-        style={{ zIndex: Z_INDEX.drawer }}
-      >
+      <>
         <div
-          className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} bg-background pb-24`}
+          aria-hidden="true"
+          className="fixed bottom-0 left-0 right-0 bg-background"
+          style={{ zIndex: Z_INDEX.detailPage, height: BOTTOM_NAV_HEIGHT_CSS }}
+        />
+        <section
+          className={cn(
+            'fixed left-0 right-0 flex flex-col bg-background',
+            fullscreenOffset.topClassName
+          )}
+          style={{ zIndex: Z_INDEX.drawer, bottom: BOTTOM_NAV_HEIGHT_CSS }}
         >
-          {children}
-        </div>
+          <div
+            className={`flex-1 min-h-0 overflow-y-auto ${DRAWER_SCROLL_BODY_CLASS} bg-background pb-24`}
+          >
+            {children}
+          </div>
 
-        {footer}
-      </section>
+          {footer}
+        </section>
+      </>
     )
 
     return typeof document !== 'undefined' ? createPortal(node, document.body) : node
