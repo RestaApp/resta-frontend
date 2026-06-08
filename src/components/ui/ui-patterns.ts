@@ -75,6 +75,10 @@ export const BODY_TEXT_CLASS = 'text-sm text-foreground'
 
 export const BODY_MUTED_CLASS = 'text-sm text-muted-foreground'
 
+/** Многострочный пользовательский текст — сохраняет переносы строк и отступы. */
+export const FORMATTED_USER_TEXT_CLASS =
+  'whitespace-pre-wrap break-words leading-relaxed [overflow-wrap:anywhere]'
+
 export const APP_HEADER_ACTION_BUTTON_CLASS =
   'h-12 w-12 min-w-12 rounded-sm p-0 flex-shrink-0 bg-transparent text-foreground hover:bg-transparent hover:text-foreground'
 

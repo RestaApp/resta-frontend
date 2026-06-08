@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { KpiRow } from '@/components/ui/kpi-row'
-import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
+import { FORMATTED_USER_TEXT_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_LOGO_CLASS,
@@ -64,7 +64,7 @@ const renderInfoValue = (row: ProfileInfoRow) => {
       href={row.value.href}
       valueClassName={cn(
         row.value.href ? VALUE_LINK_CLASS : VALUE_CLASS,
-        row.value.multiline ? 'whitespace-pre-line break-words' : 'truncate'
+        row.value.multiline ? FORMATTED_USER_TEXT_CLASS : 'truncate'
       )}
     >
       {row.value.value}

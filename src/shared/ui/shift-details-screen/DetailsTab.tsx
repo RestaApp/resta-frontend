@@ -9,6 +9,7 @@ import { cn } from '@/shared/utils/cn'
 import {
   BODY_MUTED_CLASS,
   DISPLAY_PRICE_CLASS,
+  FORMATTED_USER_TEXT_CLASS,
   PROFILE_SECTION_LABEL_CLASS,
   SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
@@ -47,7 +48,7 @@ interface LabeledTextSectionProps {
 const LabeledTextSection = ({ label, text }: LabeledTextSectionProps) => (
   <div className="flex flex-col gap-2">
     <p className={PROFILE_SECTION_LABEL_CLASS}>{label}</p>
-    <p className={cn(BODY_MUTED_CLASS, 'leading-relaxed')}>{text}</p>
+    <p className={cn(BODY_MUTED_CLASS, FORMATTED_USER_TEXT_CLASS)}>{text}</p>
   </div>
 )
 

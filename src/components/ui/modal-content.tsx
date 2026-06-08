@@ -4,7 +4,7 @@ import { Button } from './button'
 import { Loader } from './loader'
 import { cn } from '@/shared/utils/cn'
 import { useModalA11y } from './modal-a11y'
-import { MODAL_SURFACE_CLASS, MODAL_TITLE_CLASS } from './ui-patterns'
+import { FORMATTED_USER_TEXT_CLASS, MODAL_SURFACE_CLASS, MODAL_TITLE_CLASS } from './ui-patterns'
 import type { ButtonProps } from './button'
 
 export type ModalButton = {
@@ -93,7 +93,7 @@ export const ModalContent = memo(function ModalContent({
         </h2>
 
         {description ? (
-          <p id={descriptionId} className="whitespace-pre-line text-sm text-muted-foreground">
+          <p id={descriptionId} className={cn('text-sm text-muted-foreground', FORMATTED_USER_TEXT_CLASS)}>
             {description}
           </p>
         ) : (

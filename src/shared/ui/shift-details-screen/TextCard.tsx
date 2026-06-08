@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
+import { FORMATTED_USER_TEXT_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { DETAIL_CARD_CLASS, ICON_WRAPPER_SECTION } from './constants'
 
@@ -19,12 +19,7 @@ export const TextCard = memo(({ icon: Icon, title, content }: TextCardProps) => 
       </div>
       <h2 className={cn(PROFILE_SECTION_LABEL_CLASS, 'break-words')}>{title}</h2>
     </div>
-    <div
-      className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line break-words"
-      style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-    >
-      {content}
-    </div>
+    <div className={cn('text-sm text-muted-foreground', FORMATTED_USER_TEXT_CLASS)}>{content}</div>
   </Card>
 ))
 
