@@ -37,7 +37,7 @@ export const isIosDevice = (): boolean => {
 
 /**
  * Конфигурация WebApp при старте: `ready()`, отключение vertical swipes,
- * `expand()`, fullscreen и блокировка текущей ориентации.
+ * `expand()`, fullscreen только на телефоне и блокировка текущей ориентации.
  */
 export const configureTelegram = (webApp: TelegramWebApp | null): void => {
   if (!webApp) return
@@ -47,7 +47,12 @@ export const configureTelegram = (webApp: TelegramWebApp | null): void => {
       webApp.disableVerticalSwipes()
     }
     webApp.expand()
-    if (webApp.requestFullscreen && isVersionAtLeast(webApp, '8.0') && !webApp.isFullscreen) {
+    if (
+      webApp.requestFullscreen &&
+      isMobileDevice() &&
+      isVersionAtLeast(webApp, '8.0') &&
+      !webApp.isFullscreen
+    ) {
       webApp.requestFullscreen()
     }
     if (webApp.lockOrientation && isVersionAtLeast(webApp, '8.0')) {
