@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react'
 import { getTelegramWebApp } from '@/shared/utils/telegram'
-import { isIosDevice, type TelegramWebApp } from './utils'
+import type { TelegramWebApp } from './utils'
 
 interface UseTelegramFullscreenResult {
   isFullscreen: boolean
@@ -41,7 +41,6 @@ export const useTelegramFullscreen = (
   const isFullscreen = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
   const requestFullscreen = useCallback(() => {
-    if (!isIosDevice()) return
     const webApp = telegram ?? getTelegramWebApp()
     if (!webApp) return
     try {

@@ -9,7 +9,7 @@ import {
   SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
 import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
-import { Edit2, Plus, Settings, SlidersHorizontal } from 'lucide-react'
+import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
@@ -98,7 +98,7 @@ const getHeaderAction = (params: {
   if (activeTab === 'profile') {
     return {
       ariaLabel: t('aria.editProfile'),
-      Icon: Settings,
+      Icon: Edit2,
       onClick: () => emitAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT),
     }
   }

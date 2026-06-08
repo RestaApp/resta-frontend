@@ -6,7 +6,11 @@ import { authService } from '@/services/auth'
 import { usersApi } from '@/services/api/usersApi'
 import { useAuthActions } from '@/shared/lib/hooks/useAuth'
 import { updateUserDataInStore } from '@/shared/utils/userData'
-import { getTelegramWebApp, getTelegramLanguageCode, isTelegramWebApp } from '@/shared/utils/telegram'
+import {
+  getTelegramWebApp,
+  getTelegramLanguageCode,
+  isTelegramWebApp,
+} from '@/shared/utils/telegram'
 import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { getLocalStorageItem } from '@/shared/utils/localStorage'
@@ -51,7 +55,6 @@ const getInitData = async (): Promise<string | null> => {
 interface UseTelegramAuthResult {
   isReady: boolean
   telegram: TelegramWebApp | null
-  fullscreenRequestedRef: React.MutableRefObject<boolean>
 }
 
 /**
@@ -69,7 +72,6 @@ export const useTelegramAuth = (): UseTelegramAuthResult => {
 
   const [isReady, setIsReady] = useState(false)
   const [telegram, setTelegram] = useState<TelegramWebApp | null>(null)
-  const fullscreenRequestedRef = useRef(false)
 
   // Держим актуальную ссылку на authTelegram, чтобы effect ниже не перезапускался.
   const authTelegramRef = useRef(authTelegram)
@@ -142,8 +144,7 @@ export const useTelegramAuth = (): UseTelegramAuthResult => {
     void (async () => {
       await applyLanguage(userDataFromStore as UserData)
       const webApp = getTelegramWebApp()
-      const { fullscreenRequested } = configureTelegram(webApp, fullscreenRequestedRef.current)
-      fullscreenRequestedRef.current = fullscreenRequested
+      configureTelegram(webApp)
       setTelegram(webApp ?? null)
       setIsReady(true)
       dispatch(setReady(true))
@@ -168,8 +169,7 @@ export const useTelegramAuth = (): UseTelegramAuthResult => {
         const webApp = await loginOnce()
         if (!mounted) return
 
-        const { fullscreenRequested } = configureTelegram(webApp, fullscreenRequestedRef.current)
-        fullscreenRequestedRef.current = fullscreenRequested
+        configureTelegram(webApp)
         setTelegram(webApp ?? null)
         setIsReady(true)
         dispatch(setReady(true))
@@ -189,5 +189,5 @@ export const useTelegramAuth = (): UseTelegramAuthResult => {
     }
   }, [dispatch, isReady, loginOnce])
 
-  return { isReady, telegram, fullscreenRequestedRef }
+  return { isReady, telegram }
 }
