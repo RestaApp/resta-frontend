@@ -1,6 +1,6 @@
 {
   "feedFallback": {
-    "venue": "Ресторан",
+    "venue": "Заведение",
     "vacancy": "Вакансия"
   },
   "filters": {
@@ -106,7 +106,7 @@
       "moreLocations": "+{{count}}",
       "emptyTitle": "Заведения не найдены",
       "emptyDescription": "Попробуйте обновить список или изменить фильтры",
-      "loadError": "Не удалось загрузить рестораны",
+      "loadError": "Не удалось загрузить заведения",
       "filters": {
         "title": "Фильтры заведений",
         "format": "Формат заведения",
@@ -117,10 +117,10 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Работа",
+      "feed": "Лента",
       "activity": "Отклики",
       "my": "Мои",
-      "myHeader": "Мои вакансии",
+      "myHeader": "Мои смены",
       "profile": "Я",
       "profileShort": "Я"
     },
@@ -271,12 +271,12 @@
     "headerTitle": "Лента",
     "applicationSentSuccess": "Заявка отправлена. Если вас утвердят, бот пришлет сообщение.",
     "applicationSuccessTitle": "Отклик отправлен",
-    "applicationSuccessDescription": "Уведомим в Telegram, когда ресторан ответит. Обычно 5–30 минут.",
+    "applicationSuccessDescription": "Уведомим в Telegram, когда заведение ответит. Обычно 5–30 минут.",
     "openMyApplications": "Открыть мои отклики",
-    "searchMoreShifts": "Искать ещё смены",
+    "searchMoreShifts": "Искать вакансии и смены",
     "openFilters": "Открыть фильтры",
     "emptyByFilters": "По вашим фильтрам ничего не найдено",
-    "emptyByFiltersDescription": "Измените фильтры или период — подходящие смены появятся в ленте",
+    "emptyByFiltersDescription": "Измените фильтры или период — подходящие предложения появятся в ленте",
     "venueEmptyTitle": "Здесь будут ваши вакансии и смены",
     "venueEmptyDescription": "Создайте первую вакансию или смену — кандидаты начнут откликаться, и вы увидите их здесь.",
     "venueEmptyCta": "Создать вакансию / смену",
@@ -429,7 +429,7 @@
     "noShiftsYet": "Вы ещё не создавали смен",
     "shiftsWillAppearHere": "Созданные смены появятся здесь",
     "noApplicationsYet": "У вас пока нет откликов",
-    "applicationsWillAppearHere": "Откликнувшиеся смены появятся здесь",
+    "applicationsWillAppearHere": "Отклики на вакансии и смены появятся здесь",
     "statusAcceptedPill": "Подтверждена",
     "statusRejectedPill": "Отклонена",
     "statusPendingPill": "В обработке",
@@ -479,12 +479,12 @@
       "services": "Клининг, обслуживание, обучение и консалтинг",
       "logistics": "Доставка и логистика"
     },
-    "restaurantFormatsError": "Не удалось загрузить форматы ресторанов",
+    "restaurantFormatsError": "Не удалось загрузить форматы заведений",
     "positionLabel": "ПОЗИЦИЯ",
     "supplierCategoriesLabel": "КАТЕГОРИИ",
-    "supplierCategoryCta": "Смотреть рестораны",
+    "supplierCategoryCta": "Смотреть заведения",
     "positionScreenTitle": "Кто ты по профессии?",
-    "positionScreenDescription": "Покажем смены под тебя",
+    "positionScreenDescription": "Покажем вакансии и смены под тебя",
     "shiftsDefault": "Смены",
     "specializationLabel": "СПЕЦИАЛИЗАЦИЯ",
     "specializationMultiHint": "можно выбрать несколько",
@@ -493,7 +493,7 @@
     "venueTypeLabel": "Тип заведения",
     "supplierInfoTitle": "Информация",
     "supplierTypeLabel": "Типы поставщика",
-    "continuePosition": "Найти работу",
+    "continuePosition": "Найти вакансии и смены",
     "continueAsRole": "Продолжить как {{role}}",
     "specializationsMain": "Направления",
     "specializationsMore": "Ещё направления",
@@ -538,7 +538,7 @@
     "doneEmoji": "🎉",
     "telegram": {
       "title": "Подтверди контакт",
-      "subtitle": "Рестораны будут писать тебе в Telegram напрямую",
+      "subtitle": "Заведения будут писать тебе в Telegram напрямую",
       "editName": "Имя",
       "phoneFromTelegram": "Номер из Telegram",
       "connected": "✓ TELEGRAM ПОДКЛЮЧЁН",
@@ -554,7 +554,7 @@
       "cityHint": "по геолокации ✓",
       "copy": {
         "employee": {
-          "subtitle": "Рестораны будут писать тебе в Telegram напрямую",
+          "subtitle": "Заведения будут писать тебе в Telegram напрямую",
           "shieldTitle": "Без посредников.",
           "shieldText": "Resta только сводит. Оплата за смену — напрямую между тобой и работодателем."
         },
@@ -564,9 +564,9 @@
           "shieldText": "Без верификации, без депозита. Опубликуй за 60 сек."
         },
         "supplier": {
-          "subtitle": "Рестораны будут писать в Telegram менеджеру по продажам",
+          "subtitle": "Заведения будут писать в Telegram менеджеру по продажам",
           "shieldTitle": "7 дней PRO trial.",
-          "shieldText": "Доступ к 230+ ресторанам Минска. Без карты — оплата Telegram Stars позже."
+          "shieldText": "Доступ к 230+ заведениям Минска. Без карты — оплата Telegram Stars позже."
         }
       },
       "next": "Далее"
@@ -887,7 +887,7 @@
         "Telegram ID и имя пользователя",
         "Данные о профессиональном опыте и навыках",
         "Геолокация (при явном согласии пользователя)",
-        "Адреса заведений (для роли «ресторан»)",
+        "Адреса заведений (для роли «заведение»)",
         "Сведения о категориях поставок (для роли «поставщик»)"
       ],
       "purposeTitle": "4. Цели обработки",

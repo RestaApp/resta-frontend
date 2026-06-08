@@ -1,6 +1,6 @@
 {
   "feedFallback": {
-    "venue": "Restaurant",
+    "venue": "Venue",
     "vacancy": "Vacancy"
   },
   "filters": {
@@ -117,10 +117,10 @@
   },
   "tabs": {
     "employee": {
-      "feed": "Jobs",
+      "feed": "Feed",
       "activity": "Applied",
       "my": "Mine",
-      "myHeader": "My jobs",
+      "myHeader": "My shifts",
       "profile": "Me",
       "profileShort": "Me"
     },
@@ -147,8 +147,8 @@
   "profile": {
     "achievements": "Achievements",
     "personalInfo": "Personal info",
-    "fillToApply": "To apply for jobs or shifts, please fill in the required fields.",
-    "fillToApplyRestaurant": "To publish jobs and shifts, please fill in the required fields.",
+    "fillToApply": "To apply for vacancies or shifts, please fill in the required fields.",
+    "fillToApplyRestaurant": "To publish vacancies and shifts, please fill in the required fields.",
     "fillToApplySupplier": "To receive relevant requests from venues, please fill in the required fields.",
     "city": "City",
     "surname": "Surname",
@@ -203,8 +203,8 @@
       "successDescription": "We'll get back to you as soon as we can."
     },
     "logout": "Log out",
-    "editProfileDescription": "Fields marked with (*) are required to apply for jobs and shifts.",
-    "editProfileDescriptionRestaurant": "Fields marked with (*) are required to publish jobs and shifts.",
+    "editProfileDescription": "Fields marked with (*) are required to apply for vacancies and shifts.",
+    "editProfileDescriptionRestaurant": "Fields marked with (*) are required to publish vacancies and shifts.",
     "editProfileDescriptionSupplier": "Fields marked with (*) are required to complete a supplier profile.",
     "nameLabel": "First name",
     "nameOrTitle": " / Name",
@@ -232,7 +232,7 @@
     "showDetailedDays": "Configure",
     "hideDetailedDays": "Hide detailed days",
     "cityNotSet": "City not set",
-    "cityWarningDescription": "Without a city you won't see relevant jobs and shifts in your region. We recommend adding a city for better matches.",
+    "cityWarningDescription": "Without a city you won't see relevant vacancies and shifts in your region. We recommend adding a city for better matches.",
     "saveWithoutCity": "Save without city",
     "fillLaterHint": "You can fill in the rest of your profile later in the Profile section.",
     "bioPlaceholder": "Enter description {{suffix}}",
@@ -273,10 +273,10 @@
     "applicationSuccessTitle": "Application sent",
     "applicationSuccessDescription": "We will notify you in Telegram when the venue replies. Usually 5-30 minutes.",
     "openMyApplications": "Open my applications",
-    "searchMoreShifts": "Search more shifts",
+    "searchMoreShifts": "Search vacancies and shifts",
     "openFilters": "Open filters",
     "emptyByFilters": "Nothing found for your filters",
-    "emptyByFiltersDescription": "Change filters or date range to see matching shifts",
+    "emptyByFiltersDescription": "Change filters or date range to see matching offers",
     "noShifts": "No shifts yet",
     "noShiftsDescription": "No matches for the current filters. Try changing filters or period",
     "noVacancies": "No vacancies found",
@@ -429,7 +429,7 @@
     "noShiftsYet": "You haven't created any shifts yet",
     "shiftsWillAppearHere": "Created shifts will appear here",
     "noApplicationsYet": "You have no applications yet",
-    "applicationsWillAppearHere": "Applied shifts will appear here",
+    "applicationsWillAppearHere": "Your applications to vacancies and shifts will appear here",
     "statusAcceptedPill": "Accepted",
     "statusRejectedPill": "Rejected",
     "statusPendingPill": "In progress",
@@ -484,7 +484,7 @@
     "supplierCategoriesLabel": "CATEGORIES",
     "supplierCategoryCta": "Browse restaurants",
     "positionScreenTitle": "What is your profession?",
-    "positionScreenDescription": "We'll match shifts for you",
+    "positionScreenDescription": "We'll match vacancies and shifts for you",
     "shiftsDefault": "Shifts",
     "specializationLabel": "SPECIALIZATION",
     "specializationMultiHint": "you can select multiple",
@@ -493,7 +493,7 @@
     "venueTypeLabel": "Venue type",
     "supplierInfoTitle": "Information",
     "supplierTypeLabel": "Supplier types",
-    "continuePosition": "Find jobs",
+    "continuePosition": "Find vacancies and shifts",
     "continueAsRole": "Continue as {{role}}",
     "specializationsMain": "Specializations",
     "specializationsMore": "More specializations",
