@@ -173,11 +173,8 @@
         "requests": "Заявки"
       },
       "urgent": "SOS-смены",
-      "urgentDescription": "срочные, в радиусе 3 км",
       "newShifts": "Новые смены в городе",
-      "newShiftsDescription": "раз в час, дайджест",
       "applications": "Принятие заявок",
-      "applicationsDescription": "мгновенно",
       "saved": "Настройки сохранены"
     },
     "support": "Поддержка Resta",

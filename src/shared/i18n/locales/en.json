@@ -173,11 +173,8 @@
         "requests": "Requests"
       },
       "urgent": "SOS shifts",
-      "urgentDescription": "urgent, within 3 km",
       "newShifts": "New shifts in city",
-      "newShiftsDescription": "hourly digest",
       "applications": "Application acceptance",
-      "applicationsDescription": "instantly",
       "saved": "Settings saved"
     },
     "support": "Resta support",

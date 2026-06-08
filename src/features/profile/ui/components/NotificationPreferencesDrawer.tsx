@@ -18,7 +18,6 @@ import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_LOGO_CLASS,
-  SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
@@ -39,22 +38,16 @@ type PreferenceKey = keyof Pick<
   'urgent_notifications' | 'new_shifts_notifications' | 'application_notifications'
 >
 
-const PREFERENCE_I18N: Record<
-  PreferenceKey,
-  { label: string; description: string; icon?: string }
-> = {
+const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: string }> = {
   urgent_notifications: {
     label: 'profile.notifications.urgent',
-    description: 'profile.notifications.urgentDescription',
     icon: '🔥',
   },
   new_shifts_notifications: {
     label: 'profile.notifications.newShifts',
-    description: 'profile.notifications.newShiftsDescription',
   },
   application_notifications: {
     label: 'profile.notifications.applications',
-    description: 'profile.notifications.applicationsDescription',
   },
 }
 
@@ -199,13 +192,8 @@ export const NotificationPreferencesDrawer = memo(
                               <span className={SHIFT_CARD_LOGO_CLASS}>
                                 {PREFERENCE_I18N[key].icon ?? label.slice(0, 1)}
                               </span>
-                              <div className="min-w-0">
-                                <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
-                                  {label}
-                                </div>
-                                <p className={SHIFT_CARD_SUB_CLASS}>
-                                  {t(PREFERENCE_I18N[key].description)}
-                                </p>
+                              <div className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 truncate')}>
+                                {label}
                               </div>
                             </div>
                             <Switch
