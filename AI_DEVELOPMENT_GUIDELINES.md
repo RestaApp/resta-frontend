@@ -537,7 +537,7 @@ const handleDrawerOpenChange = (next: boolean) => {
 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
 ```
 
-Tailwind‑утилита уже встроена в `Button`, `IconAction`, `BottomNav` через primitive.
+Tailwind‑утилита уже встроена в `Button`, `BottomNav` через primitive.
 
 ### 7.4. `eslint-disable jsx-a11y/*` — только с комментарием
 
@@ -657,12 +657,12 @@ npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 | `<div onClick>` без a11y                                 | `<button>` или `role` + `tabIndex` + `aria-label` + keydown            |
 | `<div className="rounded-xl border bg-card p-4">`        | `<Card padding="md">`                                                  |
 | Hand‑rolled аватар                                       | `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`                      |
-| Кастомный `fixed bottom-0` CTA                           | `BottomActionBar` / `StickyCTA` / `OnboardingBottomCta` / `DrawerFooter` |
+| Кастомный `fixed bottom-0` CTA                           | `BottomActionBar` / `OnboardingBottomCta` / `DrawerFooter` |
 | `<DrawerFooter className="sticky bottom-0 z-10">`        | `<DrawerFooter>` (base уже корректен)                                  |
 | `font-mono`, `tracking-[Nem]`                            | `font-mono-resta`, `tracking-wide/wider/widest`                        |
 | `text-sm font-medium` как label формы                    | `PROFILE_SECTION_LABEL_CLASS` (через `FormField`)                      |
 | `bg-primary/8`, `/14`, `bg-background/95`                | `/10`, `/15`, `/92` (§14.4)                                            |
-| `<button className="h-9 w-9">`                           | `<Button size="sm">` (h‑11 = 44px) или `IconAction h-11`               |
+| `<button className="h-9 w-9">`                           | `<Button size="sm">` (h‑11 = 44px)                                     |
 | `useEffect(() => setLocal(prop), [prop])`                | `const [local, set] = useState(prop)` + явный controlled init          |
 | `useMemo(() => count > 0, [count])`                      | `const isActive = count > 0`                                           |
 | Subscription без cleanup                                 | `return () => removeEventListener(...)`                                |
@@ -720,7 +720,7 @@ features/<X> ──→ shared/* ──→ components/ui/*  (feature-agnostic)
 ### 14.3. UI primitives vs ad‑hoc
 
 - Аватары — **только** `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`. Никаких `<div className="rounded-full overflow-hidden"><img/></div>`.
-- Нижние CTA — **только** `BottomActionBar` / `StickyCTA` / `OnboardingBottomCta` / `DrawerFooter`. Самописных `fixed bottom-0` баров не делать.
+- Нижние CTA — **только** `BottomActionBar` / `OnboardingBottomCta` / `DrawerFooter`. Самописных `fixed bottom-0` баров не делать.
 - `DrawerFooter` базово даёт `mt-auto`, `shrink-0`, `border-t border-border/50`, `bg-background/92` — не накладывай `sticky bottom-0 z-N`, `shrink-0`, кастомные border поверх.
 - Локальный wrapper (`SectionLabel` и пр.) оправдан только при ≥4 использованиях в одном файле и нетривиальной структуре. Иначе инлайн константу.
 

@@ -5,7 +5,7 @@
  */
 const SKILL_SPLIT_LIMIT = 44
 
-export const splitLongSkill = (skill: string): string[] => {
+const splitLongSkill = (skill: string): string[] => {
   const normalized = skill.trim()
   if (normalized.length <= SKILL_SPLIT_LIMIT) return [normalized]
 

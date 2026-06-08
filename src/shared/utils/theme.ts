@@ -23,7 +23,7 @@ export const getCurrentTheme = (): ResolvedTheme => {
   return (document.documentElement.dataset.theme as ResolvedTheme | undefined) ?? readStoredTheme()
 }
 
-export const setTheme = (theme: ResolvedTheme) => {
+const setTheme = (theme: ResolvedTheme) => {
   applyTheme(theme)
   setLocalStorageItem(THEME_KEY, theme)
 }

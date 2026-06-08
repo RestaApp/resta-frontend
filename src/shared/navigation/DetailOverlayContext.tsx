@@ -79,11 +79,17 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useDetailOverlay() {
+export function useDetailOverlay(): Omit<DetailOverlayContextValue, 'setOverlay'> {
   const ctx = useContext(DetailOverlayContext)
   if (!ctx) throw new Error('useDetailOverlay must be used within DetailOverlayProvider')
-  const { setOverlay: _, ...rest } = ctx
-  return rest
+  return {
+    overlay: ctx.overlay,
+    isDeepLinked: ctx.isDeepLinked,
+    openShiftDetail: ctx.openShiftDetail,
+    openVacancyDetail: ctx.openVacancyDetail,
+    openUserProfile: ctx.openUserProfile,
+    closeOverlay: ctx.closeOverlay,
+  }
 }
 
 export function useDetailOverlayInternal(): DetailOverlayContextValue {

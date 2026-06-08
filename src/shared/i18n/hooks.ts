@@ -138,18 +138,6 @@ export function useLabels() {
   }
 }
 
-export function useDrawerTitle() {
-  const { t } = useTranslation()
-
-  return useCallback(
-    (position: string | null, hasSpecializations: boolean): string => {
-      if (!position || !hasSpecializations) return t('drawer.default')
-      return t(`drawer.${position.toLowerCase()}`) || t('drawer.default')
-    },
-    [t]
-  )
-}
-
 export function useProfileFormLabels() {
   const { t } = useTranslation()
 

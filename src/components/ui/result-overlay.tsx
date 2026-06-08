@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom'
 import { AlertTriangle, Check, type LucideProps } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { Button } from '@/components/ui/button'
-import { BODY_MUTED_CLASS, STATE_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { BODY_MUTED_CLASS, SECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { useTelegramFullscreenOffset } from '@/app/contexts/telegram/useTelegramFullscreenOffset'
 import { Z_INDEX } from '@/shared/ui/zIndex'
@@ -128,7 +128,7 @@ export const ResultOverlay = ({
           </div>
 
           <div className="flex flex-col items-center gap-2">
-            <h2 className={STATE_TITLE_CLASS}>{title}</h2>
+            <h2 className={SECTION_TITLE_CLASS}>{title}</h2>
             {description ? (
               <p className={cn(BODY_MUTED_CLASS, 'max-w-xs text-center leading-snug')}>
                 {description}

@@ -5,9 +5,6 @@ import { sanitizeLocations } from '@/shared/utils/location'
 
 import { formValueToBusinessHoursRecord } from '@/features/profile/model/utils/businessHoursForm'
 
-export { buildRegistrationUpdateUserRequest } from '@/shared/utils/buildRegistrationRequest'
-export type { RegistrationProfileData } from '@/shared/utils/buildRegistrationRequest'
-
 export interface ProfileFormData {
   name: string
   lastName: string

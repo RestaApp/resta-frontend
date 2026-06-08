@@ -152,14 +152,6 @@ export const mapPositionFromApi = (positionValue: string): EmployeeRole | null =
 }
 
 /**
- * Нормализатор позиции сотрудника из API -> ключ UI
- * Возвращает нормализованный ключ EmployeeRole или null
- */
-export const normalizeEmployeePosition = (value: string): EmployeeRole | null => {
-  return mapPositionFromApi(value)
-}
-
-/**
  * Приводит позицию к актуальному ключу каталога/API (legacy: operator -> office).
  */
 export const normalizeCatalogPosition = (value: string): string => {

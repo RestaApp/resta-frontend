@@ -7,19 +7,18 @@ import {
   SHIFT_CARD_ROW_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 
-export const FEED_CARD_SKELETON_COUNT = 3
+const FEED_CARD_SKELETON_COUNT = 3
 
 interface ShiftSkeletonProps {
   variant?: 'default' | 'staff'
 }
-export type FeedCardSkeletonProps = ShiftSkeletonProps
 
 const VARIANT_CONTAINER_CLASSES: Record<NonNullable<ShiftSkeletonProps['variant']>, string> = {
   default: '',
   staff: 'p3',
 }
 
-export const FeedCardSkeleton = memo(function FeedCardSkeleton({
+const FeedCardSkeleton = memo(function FeedCardSkeleton({
   variant = 'default',
 }: ShiftSkeletonProps) {
   return (
@@ -49,7 +48,6 @@ export const FeedCardSkeleton = memo(function FeedCardSkeleton({
   )
 })
 FeedCardSkeleton.displayName = 'FeedCardSkeleton'
-export const ShiftSkeleton = FeedCardSkeleton
 
 interface FeedCardSkeletonListProps {
   count?: number

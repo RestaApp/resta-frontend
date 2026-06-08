@@ -3,9 +3,7 @@ import {
   Bike,
   Box,
   Briefcase,
-  Bug,
   ChefHat,
-  CircleAlert,
   ClipboardList,
   Coffee,
   CreditCard,
@@ -13,14 +11,11 @@ import {
   Flame,
   Hand,
   Headphones,
-  HelpCircle,
   Leaf,
-  Lock,
   Martini,
   Package,
   Shield,
   ShoppingBasket,
-  Sparkles,
   Star,
   Store,
   Truck,
@@ -31,15 +26,14 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react'
-import type { SupportTicketCategory } from '@/services/api/supportTicketsApi'
 import type { EmployeeRole, RoleCategory, UiRole } from '@/shared/types/roles.types'
 
 export const ICON_SM_CLASS = 'h-4 w-4 shrink-0 stroke-[1.5]'
 export const ICON_MD_CLASS = 'h-5 w-5 shrink-0 stroke-[1.5]'
 
-export const DEFAULT_ROLE_ICON: LucideIcon = UserRound
+const DEFAULT_ROLE_ICON: LucideIcon = UserRound
 
-export const ROLE_ICONS: Record<UiRole, LucideIcon> = {
+const ROLE_ICONS: Record<UiRole, LucideIcon> = {
   chef: ChefHat,
   waiter: UtensilsCrossed,
   bartender: Martini,
@@ -55,9 +49,9 @@ export const ROLE_ICONS: Record<UiRole, LucideIcon> = {
   supplier: Truck,
 }
 
-export const EMPLOYEE_ROLE_ICONS: Partial<Record<EmployeeRole, LucideIcon>> = ROLE_ICONS
+const EMPLOYEE_ROLE_ICONS: Partial<Record<EmployeeRole, LucideIcon>> = ROLE_ICONS
 
-export const SUPPLIER_CATEGORY_ICONS: Record<string, LucideIcon> = {
+const SUPPLIER_CATEGORY_ICONS: Record<string, LucideIcon> = {
   products: Package,
   spices: Flame,
   herbs: Leaf,
@@ -71,14 +65,6 @@ export const SUPPLIER_CATEGORY_ICONS: Record<string, LucideIcon> = {
   consumables: ShoppingBasket,
   services: Headphones,
   logistics: Truck,
-}
-
-export const SUPPORT_CATEGORY_ICONS: Record<SupportTicketCategory, LucideIcon> = {
-  technical_issue: Bug,
-  account_issue: CircleAlert,
-  feature_request: Sparkles,
-  general_inquiry: HelpCircle,
-  onboarding_issue: Lock,
 }
 
 export const ROLE_CATEGORY_ICONS: Record<RoleCategory, LucideIcon> = {

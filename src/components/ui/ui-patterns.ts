@@ -63,13 +63,6 @@ export const CARD_PRICE_CLASS =
 /** Значение KPI в строке. */
 export const KPI_VALUE_CLASS = 'text-lg font-bold tracking-tight leading-none text-foreground'
 
-/** Заголовок empty / success / error state. */
-export const STATE_TITLE_CLASS = SECTION_TITLE_CLASS
-
-/** Micro-лейбл секции (фильтры, формы). */
-export const LABEL_CAPS_CLASS =
-  'text-xs font-semibold uppercase tracking-wider text-muted-foreground'
-
 /** Micro-заголовок секции профиля — как `Specialization`. */
 export const PROFILE_SECTION_LABEL_CLASS =
   'font-mono-resta text-xs uppercase tracking-wide text-muted-foreground'
@@ -99,15 +92,8 @@ export const INPUT_FIELD_INVALID_CLASS =
 export const INPUT_FIELD_DISABLED_CLASS =
   'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
 
-export const DRAWER_BODY_CLASS = 'ui-density-page ui-density-py ui-density-stack'
-
-export const DRAWER_HEADER_CLASS = 'border-b border-border/50 ui-density-page'
-
 export const DRAWER_SCROLL_BODY_CLASS =
   'flex-1 min-h-0 overflow-y-auto ui-density-page ui-density-py'
-
-export const DRAWER_FOOTER_CLASS =
-  'border-t border-border/50 bg-background ui-density-page ui-density-py-sm'
 
 export const DRAWER_SETTING_ROW_CLASS =
   'flex items-center justify-between gap-3 rounded-lg border border-border/50 p-4'

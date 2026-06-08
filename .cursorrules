@@ -129,7 +129,7 @@ features/<X> ──→ shared/* ──→ components/ui/*
 - `console.log/error/warn` — только через `@/utils/logger`.
 - `font-mono` (Tailwind default) — в проекте только `font-mono-resta`.
 - Hand‑rolled аватары — использовать `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`.
-- Кастомный sticky/fixed bottom CTA — только через `BottomActionBar` / `StickyCTA` / `DrawerFooter`.
+- Кастомный sticky/fixed bottom CTA — только через `BottomActionBar` / `DrawerFooter`.
 - UI primitives (`components/ui/*`) импортируют из `features/*` — запрещено (см. §14.1 guidelines).
 - Произвольные opacity‑варианты (`bg-primary/8`, `bg-primary/14`) рядом с утверждённым стандартом (`/10`, `/15`).
 - Мёртвые пропсы / поля типа / неиспользуемые exports / barrel `index.ts` с ≤2 потребителями / deprecated alias без deadline.

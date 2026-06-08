@@ -15,7 +15,7 @@ interface BottomActionBarProps extends HTMLAttributes<HTMLDivElement> {
 
 /**
  * Единая нижняя CTA-зона: та же логика размещения, что у BottomNav.
- * Контейнер не отвечает за отступ контента: его задают PageShell / DrawerBody.
+ * Контейнер не отвечает за отступ контента: его задают layout страницы / DrawerBody.
  */
 export const BottomActionBar = ({
   children,
