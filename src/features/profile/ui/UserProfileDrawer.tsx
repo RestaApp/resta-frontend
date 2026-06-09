@@ -147,15 +147,15 @@ export const UserProfileDrawer = memo(
     return (
       <>
         <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
-          <DrawerFrame className="shrink-0" style={{ height: 'calc(85vh - 52px)' }}>
-            <DrawerHeader className="shrink-0">
+          <DrawerFrame className="flex-1">
+            <DrawerHeader>
               <div className="flex items-center justify-between gap-2">
                 <DrawerTitle>{drawerTitle}</DrawerTitle>
                 <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
               </div>
             </DrawerHeader>
 
-            <DrawerBody>
+            <DrawerBody className="ui-density-stack">
               {isLoading ? (
                 <div className="flex items-center justify-center py-20">
                   <Loader size="lg" />
@@ -170,37 +170,35 @@ export const UserProfileDrawer = memo(
             </DrawerBody>
 
             {showModerationActions ? (
-              <DrawerFooter>
-                <div className="flex gap-3">
-                  {canReject ? (
-                    <Button
-                      variant="outline"
-                      size="md"
-                      className="flex-1"
-                      loading={moderatingAction === 'reject'}
-                      disabled={moderatingAction != null}
-                      onClick={() => setRejectConfirmOpen(true)}
-                    >
-                      {moderatingAction === 'reject'
-                        ? t('shift.rejectingApplication')
-                        : t('shift.rejectApplication')}
-                    </Button>
-                  ) : null}
-                  {canAccept ? (
-                    <Button
-                      variant="gradient"
-                      size="md"
-                      className="flex-1"
-                      loading={moderatingAction === 'accept'}
-                      disabled={moderatingAction != null}
-                      onClick={onAccept}
-                    >
-                      {moderatingAction === 'accept'
-                        ? t('shift.acceptingApplication')
-                        : t('shift.acceptApplication')}
-                    </Button>
-                  ) : null}
-                </div>
+              <DrawerFooter contentClassName="grid grid-cols-2 gap-3">
+                {canReject ? (
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="w-full"
+                    loading={moderatingAction === 'reject'}
+                    disabled={moderatingAction != null}
+                    onClick={() => setRejectConfirmOpen(true)}
+                  >
+                    {moderatingAction === 'reject'
+                      ? t('shift.rejectingApplication')
+                      : t('shift.rejectApplication')}
+                  </Button>
+                ) : null}
+                {canAccept ? (
+                  <Button
+                    variant="gradient"
+                    size="md"
+                    className="w-full"
+                    loading={moderatingAction === 'accept'}
+                    disabled={moderatingAction != null}
+                    onClick={onAccept}
+                  >
+                    {moderatingAction === 'accept'
+                      ? t('shift.acceptingApplication')
+                      : t('shift.acceptApplication')}
+                  </Button>
+                ) : null}
               </DrawerFooter>
             ) : null}
           </DrawerFrame>
