@@ -128,6 +128,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 
     applicationId: item.my_application?.id ?? null,
     ownerId: item.user?.id ?? null,
+    photoUrl: getUserPhotoUrl(item),
 
     canApply: item.can_apply,
     applicationsCount: item.applications_count,
@@ -196,6 +197,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     urgent: Boolean(v.urgent),
     applicationId,
     ownerId: v.user?.id ?? null,
+    photoUrl: getUserPhotoUrl(v),
     canApply: Boolean(v.can_apply),
     applicationStatus: v.my_application?.status ?? v.status ?? null,
     applicationsCount: v.applications_count ?? 0,

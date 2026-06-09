@@ -200,23 +200,21 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
               ) : null}
             </div>
           ) : null}
-          <div className={cn('flex min-w-0 items-start gap-2', shift.urgent && 'gap-0')}>
-            {!shift.urgent ? (
-              shift.photoUrl ? (
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={shift.photoUrl} alt={compactTitle} />
-                  <AvatarFallback
-                    className={cn(
-                      'bg-primary text-sm font-extrabold leading-none text-primary-foreground'
-                    )}
-                  >
-                    {avatarFallback}
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className={SHIFT_CARD_LOGO_CLASS}>{avatarFallback}</div>
-              )
-            ) : null}
+          <div className="flex min-w-0 items-start gap-2">
+            {shift.photoUrl ? (
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={shift.photoUrl} alt={compactTitle} />
+                <AvatarFallback
+                  className={cn(
+                    'bg-primary text-sm font-extrabold leading-none text-primary-foreground'
+                  )}
+                >
+                  {avatarFallback}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              <div className={SHIFT_CARD_LOGO_CLASS}>{avatarFallback}</div>
+            )}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <h3 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h3>
               <p className={SHIFT_CARD_SUB_CLASS}>{compactSubtitle}</p>
