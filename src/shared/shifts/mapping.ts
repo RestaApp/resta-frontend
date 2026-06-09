@@ -10,6 +10,7 @@ import {
 import { toLocationArray } from '@/shared/utils/location'
 import { toLocalISODateKey } from '@/shared/utils/datetime'
 import i18n from '@/shared/i18n/config'
+import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 
 const toNumber = (v?: string | number | null): number => {
   if (v === null || v === undefined) return 0
@@ -108,7 +109,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   return {
     id: item.id,
     title: item.title?.trim() || null,
-    restaurant: item.user?.full_name || item.user?.name || item.title || '—',
+    restaurant: formatUserDisplayName(item.user) || item.title?.trim() || '—',
     rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
 
     position: item.position ?? 'chef',
@@ -172,7 +173,8 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
 
 export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   const { date, dateKey, time } = getVacancyScheduleFields(v)
-  const restaurant = v.user?.name || v.user?.full_name || v.title || i18n.t('feedFallback.venue')
+  const restaurant =
+    formatUserDisplayName(v.user) || v.title?.trim() || i18n.t('feedFallback.venue')
   const applicationId = v.my_application?.id ?? null
 
   return {

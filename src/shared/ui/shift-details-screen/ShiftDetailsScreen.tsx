@@ -1,20 +1,16 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { DrawerFooter } from '@/components/ui/drawer'
-import { Tabs } from '@/components/ui/tabs'
-import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/shared/shifts/types'
-import { useLabels } from '@/shared/i18n/hooks'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
+import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { DetailsTab } from './DetailsTab'
-import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
-import { TAB_ACTIVE_INDICATOR_CLASS, TAB_ACTIVE_TRIGGER_CLASS } from '@/components/ui/ui-patterns'
 
 export interface ShiftDetailsOwnerActions {
   onEdit: (id: number) => void
@@ -51,8 +47,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const { getEmployeePositionLabel } = useLabels()
   const { hourlyRate, vacancyTitle, positionLabel } = useShiftDetails(shift, vacancyData)
+  const ownerDisplayName = useMemo(
+    () => formatUserDisplayName(vacancyData?.user),
+    [vacancyData?.user]
+  )
 
   const controller = useShiftDetailsScreenController({
     shift,
@@ -149,79 +148,23 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         onClose={controller.handleClose}
         footer={ownerFooter ?? applicantFooter}
       >
-        {controller.showTabs ? (
-          <Tabs
-            options={[
-              { id: 'applicants', label: t('shift.applicants') },
-              { id: 'details', label: t('shift.details', 'Детали') },
-            ]}
-            activeId={controller.activeTab}
-            onChange={id => controller.setActiveTab(id as 'applicants' | 'details')}
-            className="mb-4"
-            activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
-            activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
-          />
-        ) : null}
-
-        {!controller.showTabs || controller.activeTab === 'details' ? (
-          <DetailsTab
-            shift={shift}
-            vacancyTitle={vacancyTitle}
-            positionLabel={positionLabel ?? ''}
-            shiftDate={shift.date}
-            shiftTime={shift.time}
-            duration={shift.duration}
-            locationPoints={controller.locationPoints}
-            pay={shift.pay}
-            currency={shift.currency}
-            hourlyRate={hourlyRate}
-            description={controller.description}
-            requirements={controller.requirements}
-            t={t}
-          />
-        ) : null}
-
-        {controller.showTabs && controller.activeTab === 'applicants' ? (
-          <ApplicantsTab
-            applicants={controller.applicants}
-            applicationsCount={controller.applicationsCount}
-            moderating={controller.moderating}
-            getEmployeePositionLabel={value => getEmployeePositionLabel(value ?? '')}
-            onSelectApplicant={(userId, appId) => {
-              controller.setSelectedApplicantId(userId)
-              controller.setSelectedApplicantApplicationId(appId)
-            }}
-            onAcceptApplication={controller.handleAcceptApplication}
-            onRejectApplication={controller.handleRejectApplication}
-            t={t}
-          />
-        ) : null}
+        <DetailsTab
+          shift={shift}
+          vacancyTitle={vacancyTitle}
+          positionLabel={positionLabel ?? ''}
+          ownerDisplayName={ownerDisplayName}
+          shiftDate={shift.date}
+          shiftTime={shift.time}
+          duration={shift.duration}
+          locationPoints={controller.locationPoints}
+          pay={shift.pay}
+          currency={shift.currency}
+          hourlyRate={hourlyRate}
+          description={controller.description}
+          requirements={controller.requirements}
+          t={t}
+        />
       </DetailsScreenFrame>
-
-      <UserProfileDrawer
-        userId={controller.selectedApplicantId}
-        open={controller.selectedApplicantId !== null}
-        applicationId={controller.selectedApplicantApplicationId}
-        canModerate={controller.canModerateSelected}
-        applicationStatus={controller.selectedAppStatus === 'accepted' ? 'accepted' : 'pending'}
-        moderatingAction={
-          controller.moderating?.id === controller.selectedApplicantApplicationId
-            ? controller.moderating.action
-            : null
-        }
-        onAccept={async () => {
-          if (typeof controller.selectedApplicantApplicationId !== 'number') return
-          await controller.handleAcceptApplication(controller.selectedApplicantApplicationId)
-        }}
-        onReject={async () => {
-          if (typeof controller.selectedApplicantApplicationId !== 'number') return
-          await controller.handleRejectApplication(controller.selectedApplicantApplicationId)
-        }}
-        onClose={() => {
-          controller.setSelectedApplicantId(null)
-          controller.setSelectedApplicantApplicationId(null)
-        }}
-      />
 
       <ConfirmDialog
         open={confirmOpen}

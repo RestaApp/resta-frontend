@@ -83,7 +83,7 @@ export const Tabs = <T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       onKeyDown={onKeyDown}
-      className={cn(SEGMENTED_CONTAINER_CLASS, 'flex gap-1', className)}
+      className={cn(SEGMENTED_CONTAINER_CLASS, 'flex gap-0.5', className)}
     >
       {options.map(option => {
         const isActive = option.id === activeId
@@ -104,8 +104,7 @@ export const Tabs = <T extends string>({
               else tabRefs.current.delete(option.id)
             }}
             className={cn(
-              'relative flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-xs transition-colors duration-300',
-              'outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              'relative flex flex-1 items-center justify-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-ring',
               SEGMENTED_TRIGGER_CLASS,
               isActive ? activeTriggerClassName : SEGMENTED_TRIGGER_INACTIVE_CLASS
             )}
@@ -113,17 +112,17 @@ export const Tabs = <T extends string>({
             {isActive ? (
               <motion.span
                 layoutId={resolvedIndicatorLayoutId}
-                className={cn('absolute inset-0 rounded-md', activeIndicatorClassName)}
+                className={cn('absolute inset-0', activeIndicatorClassName)}
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }}
                 aria-hidden="true"
               />
             ) : null}
 
-            <span className="relative z-10 flex items-center justify-center gap-2">
+            <span className="relative z-10 flex items-center justify-center gap-1.5">
               {Icon ? (
-                <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                <Icon className="size-3.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
               ) : null}
-              <span className={isActive ? 'font-semibold' : 'font-medium'}>{option.label}</span>
+              <span className={isActive ? 'font-semibold' : undefined}>{option.label}</span>
             </span>
           </button>
         )

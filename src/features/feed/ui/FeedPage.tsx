@@ -13,8 +13,9 @@ export const FeedPage = () => {
         options={m.feedTypeOptions}
         feedType={m.feedType}
         onChangeFeedType={m.setFeedType}
-        activeFiltersList={m.activeFiltersList}
+        activeFilters={m.activeFilters}
         onResetFilters={m.resetFilters}
+        onRemoveFilter={m.removeFilter}
       />
 
       <FeedBody vm={vm} />

@@ -24,6 +24,7 @@ import {
   formatFiltersForDisplay,
   hasActiveFilters,
   normalizeAdvancedFilters,
+  removeAdvancedFilter,
 } from '@/shared/utils/filters'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 
@@ -256,9 +257,14 @@ export const useFeedPageModel = () => {
 
   const hasActiveFiltersFlag = useMemo(() => hasActiveFilters(advancedFilters), [advancedFilters])
 
-  const activeFiltersList = useMemo(
-    () => formatFiltersForDisplay(advancedFilters),
-    [advancedFilters]
+  const activeFilters = useMemo(() => formatFiltersForDisplay(advancedFilters), [advancedFilters])
+
+  const removeFilter = useCallback(
+    (filterId: string) => {
+      if (!advancedFilters) return
+      applyAdvancedFilters(removeAdvancedFilter(advancedFilters, filterId))
+    },
+    [advancedFilters, applyAdvancedFilters]
   )
   const emptyMessage = useMemo(
     () =>
@@ -344,8 +350,9 @@ export const useFeedPageModel = () => {
     hasActiveFilters: hasActiveFiltersFlag,
     emptyMessage,
     emptyDescription,
-    activeFiltersList,
+    activeFilters,
     resetFilters,
+    removeFilter,
 
     filteredShifts,
     activeList,

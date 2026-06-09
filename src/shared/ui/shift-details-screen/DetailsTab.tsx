@@ -29,6 +29,7 @@ interface DetailsTabProps {
   shift: Shift
   vacancyTitle: string
   positionLabel: string
+  ownerDisplayName?: string
   shiftDate?: string | null
   shiftTime?: string | null
   duration?: string | null
@@ -63,6 +64,7 @@ export const DetailsTab = memo(
     shift,
     vacancyTitle,
     positionLabel,
+    ownerDisplayName = '',
     shiftDate,
     shiftTime,
     duration,
@@ -92,7 +94,7 @@ export const DetailsTab = memo(
       shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' · ')
     const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
-    const compactSubtitle = shift.restaurant || positionLabel || ''
+    const compactSubtitle = shift.restaurant || ownerDisplayName || positionLabel || ''
     const avatarFallback = positionInitial(positionLabel || shift.position)
     const statusTagLabel =
       shift.statusTag === 'expired'

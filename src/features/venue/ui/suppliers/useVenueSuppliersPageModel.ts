@@ -7,7 +7,11 @@ import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole, selectUserCity } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
-import { resolveAppliedCity } from './filtersUtils'
+import {
+  formatSupplierFiltersForDisplay,
+  removeSupplierFilter,
+  resolveAppliedCity,
+} from './filtersUtils'
 import { mapRestaurantUsersToItems, mapSupplierUsersToItems } from './mappers'
 import {
   DEFAULT_SUPPLIER_FILTERS,
@@ -198,49 +202,28 @@ export const useVenueSuppliersPageModel = () => {
     draftFilters,
   })
 
-  const activeFiltersList = useMemo(() => {
-    const result: string[] = []
-    if (isSupplierRole) {
-      const city = resolveAppliedCity(appliedFilters)
-      if (city) result.push(city)
-      if (appliedFilters.restaurantFormats.length > 0) {
-        result.push(
-          ...appliedFilters.restaurantFormats.map(value => getRestaurantFormatLabel(value))
-        )
-      }
-      if (appliedFilters.cuisineTypes.length > 0) {
-        result.push(...appliedFilters.cuisineTypes.map(value => getCuisineTypeLabel(value)))
-      }
-      return result
-    }
-    const city = resolveAppliedCity(appliedFilters)
-    if (city) result.push(city)
-    if (appliedFilters.supplierType) {
-      result.push(getSupplierTypeLabel(appliedFilters.supplierType))
-    }
-    const validSupplierTypes = appliedFilters.supplierType
-      ? getValidSupplierTypesForCategory(
-          appliedFilters.supplierType,
-          appliedFilters.serviceCategories
-        )
-      : []
-    if (validSupplierTypes.length > 0) {
-      result.push(...validSupplierTypes.map(category => getSupplierTypeLabel(category)))
-    }
-    if (appliedFilters.delivery === 'yes') {
-      result.push(t('venueUi.suppliers.filters.deliveryYes', { defaultValue: 'С доставкой' }))
-    } else if (appliedFilters.delivery === 'no') {
-      result.push(t('venueUi.suppliers.filters.deliveryNo', { defaultValue: 'Без доставки' }))
-    }
-    return result
-  }, [
-    appliedFilters,
-    getRestaurantFormatLabel,
-    getSupplierTypeLabel,
-    getCuisineTypeLabel,
-    isSupplierRole,
-    t,
-  ])
+  const activeFilters = useMemo(
+    () =>
+      formatSupplierFiltersForDisplay(
+        appliedFilters,
+        {
+          getRestaurantFormatLabel,
+          getCuisineTypeLabel,
+          getSupplierTypeLabel,
+          deliveryYes: t('venueUi.suppliers.filters.deliveryYes', { defaultValue: 'С доставкой' }),
+          deliveryNo: t('venueUi.suppliers.filters.deliveryNo', { defaultValue: 'Без доставки' }),
+        },
+        isSupplierRole
+      ),
+    [
+      appliedFilters,
+      getRestaurantFormatLabel,
+      getSupplierTypeLabel,
+      getCuisineTypeLabel,
+      isSupplierRole,
+      t,
+    ]
+  )
 
   const handleLoadMore = useCallback(() => {
     if (isLoading || isFetching || !hasMore) return
@@ -253,6 +236,16 @@ export const useVenueSuppliersPageModel = () => {
     setDraftFilters(next)
     setVisibleCount(SUPPLIERS_PER_PAGE)
   }, [defaultFilters])
+
+  const handleRemoveFilter = useCallback(
+    (filterId: string) => {
+      const next = removeSupplierFilter(appliedFilters, filterId)
+      setAppliedFilters(next)
+      setDraftFilters(next)
+      setVisibleCount(SUPPLIERS_PER_PAGE)
+    },
+    [appliedFilters]
+  )
 
   const handleResetDraftFilters = useCallback(() => {
     setDraftFilters({ ...defaultFilters, city: '' })
@@ -301,11 +294,12 @@ export const useVenueSuppliersPageModel = () => {
     suppliers,
     suppliersCount: suppliers.length,
     hasMore,
-    activeFiltersList,
+    activeFilters,
     onlyActive,
     setOnlyActive,
     handleLoadMore,
     handleResetFilters,
+    handleRemoveFilter,
 
     // selection
     selectedSupplier,

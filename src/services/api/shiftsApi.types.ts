@@ -141,6 +141,7 @@ export interface ApplicantPreviewApi {
 export interface UserApi {
   id: number
   name: string
+  last_name?: string
   full_name?: string
   city?: string
   location?: string[]
@@ -165,6 +166,7 @@ export interface ApplicantUserApi {
   name?: string
   last_name?: string
   full_name?: string
+  city?: string
   photo_url?: string | null
   profile_photo_url?: string | null
   position?: string
@@ -248,6 +250,7 @@ export interface VacancyApiItem {
   requirements?: string
   status?: string
   applications_count?: number
+  views_count?: number
   applications_preview?: ApplicationPreviewApiItem[]
   can_apply?: boolean
   distance?: string | number | null
@@ -261,7 +264,10 @@ export interface VacancyApiItem {
   review_target?: UserBasicApi | null
   my_review?: ReviewBasicApi | null
   review_deadline?: string | null
-  /** Детальный просмотр для владельца (ShiftBlueprint view :detail) */
+  /**
+   * Краткий список откликов без id заявки (legacy / дубль).
+   * В UI используйте только `applications_preview`.
+   */
   applicants?: ApplicantPreviewApi[]
   selected_applicant?: ApplicantPreviewApi | null
 }

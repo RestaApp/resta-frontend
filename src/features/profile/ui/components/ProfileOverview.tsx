@@ -220,7 +220,7 @@ const ProfileInfoSectionView = ({
   section: ProfileInfoSection
   variant: 'page' | 'drawer'
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(variant === 'drawer')
 
   if (section.rows.length === 0) return null
 
@@ -247,7 +247,7 @@ const ProfileInfoSectionView = ({
 
       {isOpen ? (
         <motion.div
-          initial={{ opacity: 0, height: 0 }}
+          initial={variant === 'drawer' ? false : { opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           className="overflow-hidden"
         >
@@ -288,7 +288,7 @@ export const ProfileOverview = memo(function ProfileOverview({
       />
 
       <ProfileOpenToWorkCard
-        visible={isEmployee}
+        visible={isEmployee && Boolean(onOpenToWorkToggle)}
         checked={isOpenToWork}
         disabled={isOpenToWorkUpdating}
         onToggle={onOpenToWorkToggle}

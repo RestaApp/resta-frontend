@@ -14,6 +14,7 @@ import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsRespo
 import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'
 import { useAuth } from '@/app/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
+import { hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
 
 export type ActivityTab = 'applications' | 'shifts'
 
@@ -107,6 +108,15 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
 
   const handleOpenAddShiftFromEvent = useCallback(() => {
     if (isVenue) return
+    if (!isVenue && !isSupplier && hasActiveEmployeeShift(shifts)) {
+      showToast(
+        t('activity.employeeActiveShiftLimit', {
+          defaultValue: 'Можно создать только одну активную смену.',
+        }),
+        'warning'
+      )
+      return
+    }
     if (!profileCompleteness.isFilled) {
       showToast(
         t('venueUi.profileRequiredToCreate', {
@@ -117,7 +127,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
       return
     }
     openDrawer()
-  }, [isVenue, openDrawer, profileCompleteness.isFilled, showToast, t])
+  }, [isSupplier, isVenue, openDrawer, profileCompleteness.isFilled, shifts, showToast, t])
 
   useEffect(() => {
     return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => handleOpenAddShiftFromEvent())

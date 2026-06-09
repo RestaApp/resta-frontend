@@ -10,18 +10,20 @@ export const TAG_ACTIVE_CLASS = 'border-transparent bg-primary text-primary-fore
 
 export const TAG_DISABLED_CLASS = 'cursor-not-allowed opacity-50'
 
-export const SEGMENTED_CONTAINER_CLASS = 'relative inline-flex rounded-sm bg-card p-1'
+export const SEGMENTED_CONTAINER_CLASS =
+  'relative inline-flex rounded-full border border-border/50 bg-card p-0.5'
 
-export const SEGMENTED_INDICATOR_CLASS = 'absolute bottom-1 top-1 rounded-sm bg-elevated'
+export const SEGMENTED_INDICATOR_CLASS = 'absolute bottom-0.5 top-0.5 rounded-full bg-elevated'
 
 export const SEGMENTED_TRIGGER_CLASS =
-  'relative z-10 inline-flex min-h-8 items-center justify-center rounded-sm px-3 py-2 text-xs font-semibold transition-colors'
+  'relative z-10 inline-flex min-h-7 items-center justify-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors duration-200'
 
 export const SEGMENTED_TRIGGER_ACTIVE_CLASS = 'text-primary-foreground'
 
-export const SEGMENTED_TRIGGER_INACTIVE_CLASS = 'text-muted-foreground'
+export const SEGMENTED_TRIGGER_INACTIVE_CLASS = 'text-muted-foreground hover:text-foreground/80'
 
-export const TAB_ACTIVE_INDICATOR_CLASS = 'shadow-sm bg-primary'
+export const TAB_ACTIVE_INDICATOR_CLASS =
+  'rounded-full bg-[image:var(--gradient-primary)] shadow-[0_2px_8px_rgba(255,107,44,0.22)]'
 
 export const TAB_ACTIVE_TRIGGER_CLASS = 'text-primary-foreground'
 

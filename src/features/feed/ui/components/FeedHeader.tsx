@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { SearchFilters } from '@/shared/ui/SearchFilters'
 import type { FeedType } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
+import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import {
   APP_HEADER_ACTION_BUTTON_CLASS,
   APP_HEADER_ACTION_ICON_CLASS,
@@ -21,14 +22,16 @@ type Props = {
   options: TabOption<FeedType>[]
   feedType: FeedType
   onChangeFeedType: (t: FeedType) => void
-  activeFiltersList: string[]
+  activeFilters: ActiveFilterItem[]
   onResetFilters: () => void
+  onRemoveFilter: (id: string) => void
 }
 
 export const FeedHeader = memo((props: Props) => {
-  const { options, feedType, onChangeFeedType, activeFiltersList, onResetFilters } = props
+  const { options, feedType, onChangeFeedType, activeFilters, onResetFilters, onRemoveFilter } =
+    props
   const { t } = useTranslation()
-  const hasActiveFilters = activeFiltersList.length > 0
+  const hasActiveFilters = activeFilters.length > 0
 
   return (
     <div
@@ -65,7 +68,11 @@ export const FeedHeader = memo((props: Props) => {
         </Button>
       </div>
 
-      <SearchFilters activeFiltersList={activeFiltersList} onResetFilters={onResetFilters} />
+      <SearchFilters
+        activeFilters={activeFilters}
+        onResetFilters={onResetFilters}
+        onRemoveFilter={onRemoveFilter}
+      />
     </div>
   )
 })

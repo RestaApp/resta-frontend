@@ -6,6 +6,7 @@ import { SupplierCard } from '@/components/ui/shift-card/SupplierCard'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/shared/utils/cn'
+import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import type { SupplierItem } from './types'
 
 interface VenueSuppliersListProps {
@@ -13,10 +14,11 @@ interface VenueSuppliersListProps {
   isLoading: boolean
   isFetching: boolean
   suppliersCount: number
-  activeFiltersList: string[]
+  activeFilters: ActiveFilterItem[]
   onlyActive: boolean
   onOnlyActiveChange: (value: boolean) => void
   onResetFilters: () => void
+  onRemoveFilter: (id: string) => void
   list: SupplierItem[]
   hasMore: boolean
   onLoadMore: () => void
@@ -28,10 +30,11 @@ export const VenueSuppliersList = ({
   isLoading,
   isFetching,
   suppliersCount,
-  activeFiltersList,
+  activeFilters,
   onlyActive,
   onOnlyActiveChange,
   onResetFilters,
+  onRemoveFilter,
   list,
   hasMore,
   onLoadMore,
@@ -42,12 +45,16 @@ export const VenueSuppliersList = ({
 
   return (
     <div>
-      <SearchFilters activeFiltersList={activeFiltersList} onResetFilters={onResetFilters} />
+      <SearchFilters
+        activeFilters={activeFilters}
+        onResetFilters={onResetFilters}
+        onRemoveFilter={onRemoveFilter}
+      />
       {!isRestaurantsMode ? (
         <div
           className={cn(
             'flex flex-wrap items-center justify-between gap-3 ui-density-page ui-density-py-sm bg-background',
-            activeFiltersList.length > 0 ? 'border-t border-border' : 'border-b border-border'
+            activeFilters.length > 0 ? 'border-t border-border' : 'border-b border-border'
           )}
         >
           <label className="flex items-center gap-2 text-sm">

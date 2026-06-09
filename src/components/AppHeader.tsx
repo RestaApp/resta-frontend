@@ -14,6 +14,10 @@ import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
+import { useGetMyShiftsQuery } from '@/services/api/shiftsApi'
+import { useAuth } from '@/app/contexts/auth'
+import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
+import { hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
 
 interface AppHeaderProps {
   onAddShift?: () => void
@@ -54,8 +58,9 @@ const getHeaderAction = (params: {
   onAddShift?: () => void
   role?: UiRole
   isEmployeeFlow: boolean
+  canEmployeeOfferShift?: boolean
 }): HeaderAction | null => {
-  const { activeTab, t, onAddShift, role, isEmployeeFlow } = params
+  const { activeTab, t, onAddShift, role, isEmployeeFlow, canEmployeeOfferShift = true } = params
 
   const venueAddShiftAction = (): HeaderAction => ({
     ariaLabel: t('feed.venueEmptyCta', {
@@ -83,6 +88,10 @@ const getHeaderAction = (params: {
   if (activeTab === 'activity' || activeTab === 'myshifts') {
     if (role === 'venue') {
       return venueAddShiftAction()
+    }
+
+    if (isEmployeeFlow && !canEmployeeOfferShift) {
+      return null
     }
 
     return {
@@ -127,13 +136,27 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   const [showAddShiftOnboarding, setShowAddShiftOnboarding] = useState(false)
   const actionButtonRef = useRef<HTMLButtonElement | null>(null)
   const isEmployeeFlow = role != null && UI_ROLE_TO_API_ROLE[role] === 'employee'
+  const { isAuthenticated } = useAuth()
+  const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
+    skip: !isAuthenticated || !isEmployeeFlow,
+  })
+  const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
+  const canEmployeeOfferShift = !hasActiveEmployeeShift(myShifts)
 
   const isActivity = activeTab === 'activity' || activeTab === 'myshifts'
 
   const title = useMemo(() => getHeaderTitle(activeTab, t), [activeTab, t])
   const action = useMemo(
-    () => getHeaderAction({ activeTab, t, onAddShift, role, isEmployeeFlow }),
-    [activeTab, isEmployeeFlow, onAddShift, role, t]
+    () =>
+      getHeaderAction({
+        activeTab,
+        t,
+        onAddShift,
+        role,
+        isEmployeeFlow,
+        canEmployeeOfferShift,
+      }),
+    [activeTab, canEmployeeOfferShift, isEmployeeFlow, onAddShift, role, t]
   )
 
   const dismissAddShiftOnboarding = useCallback(() => {
@@ -153,7 +176,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
 
   return (
     <>
-      {isActivity && showAddShiftOnboarding ? (
+      {isActivity && showAddShiftOnboarding && action ? (
         <AddShiftOnboardingOverlay
           visible
           targetRef={actionButtonRef}
