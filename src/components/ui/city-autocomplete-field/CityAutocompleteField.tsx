@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -29,6 +29,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
   hideLabel = false,
 }: CityAutocompleteFieldProps) {
   const { t } = useTranslation()
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const {
     isValid,
     errorMessage,
@@ -113,7 +114,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
         filteredOptions={cityOptions}
         searchInputRef={inputRef}
         scrollContainerRef={listRef}
-        dropdownRef={containerRef}
+        dropdownRef={dropdownRef}
         onClose={handleInputBlur}
         onChangeSearch={() => undefined}
         onKeyDown={() => undefined}
