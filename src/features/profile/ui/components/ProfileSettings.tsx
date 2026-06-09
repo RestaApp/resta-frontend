@@ -19,6 +19,7 @@ import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_INTERACTIVE_CLASS,
   SHIFT_CARD_LOGO_CLASS,
+  SHIFT_CARD_SUB_LOGO_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
@@ -106,9 +107,7 @@ export const ProfileSettings = memo(function ProfileSettings({
               <div className="flex flex-col divide-y divide-border/50 px-3">
                 <div className="flex items-center justify-between gap-2 py-3">
                   <div className="flex min-w-0 items-center gap-2">
-                    <span
-                      className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
-                    >
+                    <span className={SHIFT_CARD_SUB_LOGO_CLASS}>
                       <Languages className="h-4 w-4" />
                     </span>
                     <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
@@ -125,9 +124,7 @@ export const ProfileSettings = memo(function ProfileSettings({
 
                 <div className="flex items-center justify-between gap-2 py-3">
                   <div className="flex min-w-0 items-center gap-2">
-                    <span
-                      className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
-                    >
+                    <span className={SHIFT_CARD_SUB_LOGO_CLASS}>
                       <Palette className="h-4 w-4" />
                     </span>
                     <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
@@ -147,9 +144,7 @@ export const ProfileSettings = memo(function ProfileSettings({
                     disabled={!onNotificationSettingsClick}
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span
-                        className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
-                      >
+                      <span className={SHIFT_CARD_SUB_LOGO_CLASS}>
                         <Settings className="h-4 w-4" />
                       </span>
                       <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
@@ -231,9 +226,7 @@ export const ProfileSettings = memo(function ProfileSettings({
                     onClick={onPrivacyPress}
                     data-haptic="light"
                   >
-                    <span
-                      className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
-                    >
+                    <span className={SHIFT_CARD_SUB_LOGO_CLASS}>
                       <FileText className="h-4 w-4" />
                     </span>
                     <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
@@ -250,9 +243,7 @@ export const ProfileSettings = memo(function ProfileSettings({
                     onClick={onTermsPress}
                     data-haptic="light"
                   >
-                    <span
-                      className={cn(SHIFT_CARD_LOGO_CLASS, 'h-8 w-8 bg-secondary text-primary')}
-                    >
+                    <span className={SHIFT_CARD_SUB_LOGO_CLASS}>
                       <FileText className="h-4 w-4" />
                     </span>
                     <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
@@ -272,7 +263,7 @@ export const ProfileSettings = memo(function ProfileSettings({
                     <span
                       className={cn(
                         SHIFT_CARD_LOGO_CLASS,
-                        'h-8 w-8 border border-destructive/30 bg-destructive/10 text-destructive'
+                        'h-8 w-8 border border-destructive/30 bg-destructive/10 text-destructive [&_svg]:text-destructive'
                       )}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -300,7 +291,7 @@ export const ProfileSettings = memo(function ProfileSettings({
           <span
             className={cn(
               SHIFT_CARD_LOGO_CLASS,
-              'border border-destructive/30 bg-destructive/10 text-destructive'
+              'border border-destructive/30 bg-destructive/10 text-destructive [&_svg]:text-destructive'
             )}
           >
             <LogOut className="h-5 w-5" />

@@ -24,7 +24,7 @@ export const PersonalShiftCard = ({
 
   const { data: detailVacancy } = useGetShiftByIdQuery(String(shift.id))
 
-  const applicantsVacancyData = detailVacancy ?? null
+  const applicantsVacancyData = detailVacancy ?? shift
 
   const mapToShift = useCallback(
     (vacancy: VacancyApiItem) => {
@@ -52,7 +52,11 @@ export const PersonalShiftCard = ({
         ownerActions={{ onEdit, onDelete, isDeleting }}
       />
 
-      <ShiftApplicantsSection shiftId={shift.id} vacancyData={applicantsVacancyData} />
+      <ShiftApplicantsSection
+        shiftId={shift.id}
+        vacancyData={applicantsVacancyData}
+        alwaysShow
+      />
     </div>
   )
 }

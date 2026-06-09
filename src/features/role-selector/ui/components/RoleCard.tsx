@@ -34,11 +34,7 @@ function defaultSocialProofFromI18n(
   }
 }
 
-export const RoleCard = memo(function RoleCard({
-  role,
-  isSelected,
-  onSelect,
-}: RoleCardProps) {
+export const RoleCard = memo(function RoleCard({ role, isSelected, onSelect }: RoleCardProps) {
   const { t } = useTranslation()
   const proof = defaultSocialProofFromI18n(role.id, t)
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
@@ -60,7 +56,7 @@ export const RoleCard = memo(function RoleCard({
         )}
       >
         <div className="flex items-center gap-2">
-          <div className={cn(SHIFT_CARD_LOGO_CLASS, '[&_svg]:text-primary-foreground')} aria-hidden>
+          <div className={SHIFT_CARD_LOGO_CLASS} aria-hidden>
             {createElement(getRoleIcon(role.id), { className: ICON_MD_CLASS })}
           </div>
 

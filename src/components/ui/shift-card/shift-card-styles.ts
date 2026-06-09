@@ -17,7 +17,11 @@ export const SHIFT_CARD_BADGE_CLASS =
   'inline-flex items-center gap-0.5 rounded-sm bg-primary px-1.5 py-0.5 font-mono-resta text-xs font-bold uppercase tracking-widest text-primary-foreground'
 
 export const SHIFT_CARD_LOGO_CLASS =
-  'grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary text-sm font-extrabold leading-none text-primary-foreground'
+  'grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary text-sm font-extrabold leading-none text-primary-foreground [&_svg]:text-primary-foreground'
+
+/** Вложенный пункт настроек: приглушённый фон, оранжевая иконка. */
+export const SHIFT_CARD_SUB_LOGO_CLASS =
+  'grid h-8 w-8 shrink-0 place-items-center rounded-md bg-secondary text-primary [&_svg]:text-primary'
 
 export const SHIFT_CARD_TITLE_CLASS = 'text-sm font-semibold leading-snug text-foreground'
 

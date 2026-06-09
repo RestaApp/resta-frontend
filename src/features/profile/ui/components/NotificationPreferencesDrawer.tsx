@@ -164,91 +164,88 @@ export const NotificationPreferencesDrawer = memo(
     return (
       <Drawer open={open} onOpenChange={handleClose}>
         <DrawerFrame className="flex-1">
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>{t('profile.notificationSettings')}</DrawerTitle>
-            <DrawerCloseButton
-              onClick={() => handleClose(false)}
-              ariaLabel={t('common.close')}
-            />
-          </div>
-        </DrawerHeader>
+          <DrawerHeader>
+            <div className="flex items-center justify-between gap-2">
+              <DrawerTitle>{t('profile.notificationSettings')}</DrawerTitle>
+              <DrawerCloseButton onClick={() => handleClose(false)} ariaLabel={t('common.close')} />
+            </div>
+          </DrawerHeader>
 
-        <DrawerBody className="flex flex-col gap-3 pb-4 pt-2">
-          {isLoading && (
-            <div className="flex justify-center py-8">
-              <Loader size="lg" />
-            </div>
-          )}
-          {isError && <InlineAlert message={t('profile.loadError')} className="my-4" />}
-          {effectivePrefs
-            ? visibleSections.map(section => (
-                <section key={section.id} className="flex flex-col gap-2">
-                  <div className={PROFILE_SECTION_LABEL_CLASS}>
-                    {t(section.title, { defaultValue: section.id })}
-                  </div>
-                  <Card className={cn(SHIFT_CARD_CLASS, 'overflow-hidden p-0')}>
-                    <div className="flex flex-col divide-y divide-border/50 px-3">
-                      {section.keys.map(key => {
-                        const label = t(PREFERENCE_I18N[key].label)
-                        const preferenceIcon = PREFERENCE_I18N[key].icon
-                        return (
-                          <div key={key} className="flex items-center justify-between gap-2 py-3">
-                            <div className="flex min-w-0 flex-1 items-center gap-2">
-                              <span className={cn(SHIFT_CARD_LOGO_CLASS, '[&_svg]:text-muted-foreground')}>
-                                {preferenceIcon
-                                  ? createElement(preferenceIcon, {
-                                      className: ICON_MD_CLASS,
-                                      'aria-hidden': true,
-                                    })
-                                  : label.slice(0, 1)}
-                              </span>
-                              <div className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 truncate')}>
-                                {label}
-                              </div>
-                            </div>
-                            <Switch
-                              checked={effectivePrefs[key]}
-                              onCheckedChange={checked => handleToggle(key, checked)}
-                              disabled={isUpdating}
-                              className="shrink-0"
-                              ariaLabel={label}
-                            />
-                          </div>
-                        )
-                      })}
+          <DrawerBody className="flex flex-col gap-3 pb-4 pt-2">
+            {isLoading && (
+              <div className="flex justify-center py-8">
+                <Loader size="lg" />
+              </div>
+            )}
+            {isError && <InlineAlert message={t('profile.loadError')} className="my-4" />}
+            {effectivePrefs
+              ? visibleSections.map(section => (
+                  <section key={section.id} className="flex flex-col gap-2">
+                    <div className={PROFILE_SECTION_LABEL_CLASS}>
+                      {t(section.title, { defaultValue: section.id })}
                     </div>
-                  </Card>
-                </section>
-              ))
-            : null}
-        </DrawerBody>
-        {effectivePrefs ? (
-          <DrawerFooter>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                onClick={() => handleClose(false)}
-                variant="outline"
-                size="md"
-                className="flex-1"
-                disabled={isUpdating}
-              >
-                {t('common.cancel')}
-              </Button>
-              <Button
-                type="button"
-                onClick={handleApply}
-                variant="gradient"
-                size="md"
-                className="flex-1"
-                disabled={isUpdating}
-              >
-                {t('common.save')}
-              </Button>
-            </div>
-          </DrawerFooter>
-        ) : null}
+                    <Card className={cn(SHIFT_CARD_CLASS, 'overflow-hidden p-0')}>
+                      <div className="flex flex-col divide-y divide-border/50 px-3">
+                        {section.keys.map(key => {
+                          const label = t(PREFERENCE_I18N[key].label)
+                          const preferenceIcon = PREFERENCE_I18N[key].icon
+                          return (
+                            <div key={key} className="flex items-center justify-between gap-2 py-3">
+                              <div className="flex min-w-0 flex-1 items-center gap-2">
+                                <span className={SHIFT_CARD_LOGO_CLASS}>
+                                  {preferenceIcon
+                                    ? createElement(preferenceIcon, {
+                                        className: ICON_MD_CLASS,
+                                        'aria-hidden': true,
+                                      })
+                                    : label.slice(0, 1)}
+                                </span>
+                                <div className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 truncate')}>
+                                  {label}
+                                </div>
+                              </div>
+                              <Switch
+                                checked={effectivePrefs[key]}
+                                onCheckedChange={checked => handleToggle(key, checked)}
+                                disabled={isUpdating}
+                                className="shrink-0"
+                                ariaLabel={label}
+                              />
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </Card>
+                  </section>
+                ))
+              : null}
+          </DrawerBody>
+          {effectivePrefs ? (
+            <DrawerFooter>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => handleClose(false)}
+                  variant="outline"
+                  size="md"
+                  className="flex-1"
+                  disabled={isUpdating}
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleApply}
+                  variant="gradient"
+                  size="md"
+                  className="flex-1"
+                  disabled={isUpdating}
+                >
+                  {t('common.save')}
+                </Button>
+              </div>
+            </DrawerFooter>
+          ) : null}
         </DrawerFrame>
       </Drawer>
     )

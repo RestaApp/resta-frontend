@@ -10,9 +10,15 @@ import { useShiftApplicantsModeration } from './useShiftApplicantsModeration'
 interface ShiftApplicantsSectionProps {
   shiftId: number
   vacancyData?: VacancyApiItem | null
+  /** Владелец смены: блок откликов всегда виден, при 0 — empty state с иконкой. */
+  alwaysShow?: boolean
 }
 
-export const ShiftApplicantsSection = ({ shiftId, vacancyData }: ShiftApplicantsSectionProps) => {
+export const ShiftApplicantsSection = ({
+  shiftId,
+  vacancyData,
+  alwaysShow = false,
+}: ShiftApplicantsSectionProps) => {
   const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
 
@@ -26,11 +32,11 @@ export const ShiftApplicantsSection = ({ shiftId, vacancyData }: ShiftApplicants
   const applicantsCount = moderation.applicationsCount ?? applicationsPreview.length
   const viewsCount = vacancyData?.views_count
   const hasViewsCount = typeof viewsCount === 'number' && Number.isFinite(viewsCount)
-  const hasApplicationsPreview =
+  const hasApplicants =
     applicationsPreview.length > 0 ||
     (typeof moderation.applicationsCount === 'number' && moderation.applicationsCount > 0)
 
-  if (!hasApplicationsPreview && !hasViewsCount) return null
+  if (!alwaysShow && !hasApplicants && !hasViewsCount) return null
 
   return (
     <section className="ui-density-stack">
@@ -46,20 +52,18 @@ export const ShiftApplicantsSection = ({ shiftId, vacancyData }: ShiftApplicants
         ) : null}
       </div>
 
-      {hasApplicationsPreview ? (
-        <ApplicantsTab
-          applicationsPreview={applicationsPreview}
-          applicationsCount={moderation.applicationsCount}
-          fallbackCity={vacancyData?.city}
-          getEmployeePositionLabel={value => getEmployeePositionLabel(value ?? '')}
-          getSpecializationLabel={getSpecializationLabel}
-          onSelectApplicant={(userId, appId) => {
-            moderation.setSelectedApplicantId(userId)
-            moderation.setSelectedApplicantApplicationId(appId)
-          }}
-          t={t}
-        />
-      ) : null}
+      <ApplicantsTab
+        applicationsPreview={applicationsPreview}
+        applicationsCount={moderation.applicationsCount}
+        fallbackCity={vacancyData?.city}
+        getEmployeePositionLabel={value => getEmployeePositionLabel(value ?? '')}
+        getSpecializationLabel={getSpecializationLabel}
+        onSelectApplicant={(userId, appId) => {
+          moderation.setSelectedApplicantId(userId)
+          moderation.setSelectedApplicantApplicationId(appId)
+        }}
+        t={t}
+      />
 
       <UserProfileDrawer
         userId={moderation.selectedApplicantId}
