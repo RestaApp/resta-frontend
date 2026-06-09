@@ -27,7 +27,7 @@ const FeedCardSkeleton = memo(function FeedCardSkeleton({
     >
       <div className={SHIFT_CARD_ROW_CLASS}>
         <div className="flex min-w-0 flex-1 items-start gap-2">
-          <Skeleton className="h-9 w-9 shrink-0 rounded-sm" />
+          <Skeleton className="h-9 w-9 shrink-0 rounded-md" />
           <div className="flex min-w-0 flex-1 flex-col gap-2 pt-px">
             <Skeleton className="h-4 w-3/4 rounded-md" />
             <Skeleton className="h-3 w-1/2 rounded-md" />

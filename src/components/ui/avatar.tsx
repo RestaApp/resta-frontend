@@ -20,7 +20,9 @@ export const Avatar = ({
   return (
     <SetLoadedCtx.Provider value={setLoaded}>
       <LoadedCtx.Provider value={loaded}>
-        <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>
+        <div
+          className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-xl', className)}
+        >
           {children}
         </div>
       </LoadedCtx.Provider>
@@ -91,7 +93,7 @@ export const AvatarFallback = ({
   if (loaded) return null
 
   return (
-    <div className={cn('flex h-full w-full items-center justify-center rounded-full', className)}>
+    <div className={cn('flex h-full w-full items-center justify-center rounded-xl', className)}>
       {children}
     </div>
   )

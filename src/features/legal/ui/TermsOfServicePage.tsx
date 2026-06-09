@@ -1,7 +1,8 @@
-import { memo, useEffect } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { resetAppScroll } from '@/shared/ui/appScroll'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
 interface TermsOfServicePageProps {
   onBack: () => void
@@ -12,18 +13,23 @@ export const TermsOfServicePage = memo(function TermsOfServicePage({
 }: TermsOfServicePageProps) {
   const { t } = useTranslation()
 
+  const onBackRef = useRef(onBack)
+  useLayoutEffect(() => {
+    onBackRef.current = onBack
+  })
+  const stableBack = useCallback(() => onBackRef.current(), [])
+
   useEffect(() => {
     resetAppScroll()
   }, [])
 
+  useEffect(() => {
+    return setupTelegramBackButton(stableBack)
+  }, [stableBack])
+
   return (
     <div className="flex flex-col bg-background">
-      <PageHeader
-        title={t('legal.termsOfService')}
-        leadingAction="back"
-        onLeadingAction={onBack}
-        leadingAriaLabel={t('common.back')}
-      />
+      <PageHeader title={t('legal.termsOfService')} />
       <div className="ui-density-page pb-24 pt-3">
         <article className="flex flex-col gap-4 text-sm leading-relaxed text-foreground">
           <section>

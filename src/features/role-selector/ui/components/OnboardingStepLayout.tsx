@@ -1,7 +1,8 @@
-import { memo, type ReactNode } from 'react'
+import { memo, useEffect, type ReactNode } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { cn } from '@/shared/utils/cn'
 import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
+import { resetAppScroll } from '@/shared/ui/appScroll'
 import { OnboardingProgress } from './OnboardingProgress'
 
 interface OnboardingStepLayoutProps {
@@ -21,6 +22,12 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
   children,
   bottomSpace,
 }: OnboardingStepLayoutProps) {
+  useEffect(() => {
+    resetAppScroll()
+    const raf = requestAnimationFrame(() => resetAppScroll())
+    return () => cancelAnimationFrame(raf)
+  }, [currentStep])
+
   return (
     <div className="bg-background flex flex-col">
       <PageHeader

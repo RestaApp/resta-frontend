@@ -121,9 +121,9 @@ export const DetailsTab = memo(
             <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
             <div className="flex min-w-0 items-center gap-2">
               {shift.photoUrl ? (
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-9 w-9 rounded-md">
                   <AvatarImage src={shift.photoUrl} alt={compactTitle} />
-                  <AvatarFallback className="bg-primary text-sm font-extrabold leading-none text-primary-foreground">
+                  <AvatarFallback className="rounded-md bg-primary text-sm font-extrabold leading-none text-primary-foreground">
                     {avatarFallback}
                   </AvatarFallback>
                 </Avatar>

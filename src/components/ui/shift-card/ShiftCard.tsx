@@ -202,11 +202,11 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           ) : null}
           <div className="flex min-w-0 items-start gap-2">
             {shift.photoUrl ? (
-              <Avatar className="h-9 w-9">
+              <Avatar className="h-9 w-9 rounded-md">
                 <AvatarImage src={shift.photoUrl} alt={compactTitle} />
                 <AvatarFallback
                   className={cn(
-                    'bg-primary text-sm font-extrabold leading-none text-primary-foreground'
+                    'rounded-md bg-primary text-sm font-extrabold leading-none text-primary-foreground'
                   )}
                 >
                   {avatarFallback}
