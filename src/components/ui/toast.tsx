@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
+import { useTelegramFullscreenOffset } from '@/app/contexts/telegram/useTelegramFullscreenOffset'
 import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
@@ -41,6 +42,7 @@ export const Toast = memo(function Toast({
   className,
 }: ToastProps) {
   const { t } = useTranslation()
+  const { shouldApply: shouldApplyFullscreenOffset } = useTelegramFullscreenOffset()
   const Icon = TOAST_ICONS[type]
   const colorClass = TOAST_COLORS[type]
 
@@ -61,7 +63,11 @@ export const Toast = memo(function Toast({
           exit={{ opacity: 0, y: -20, scale: 0.96 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
           style={{ zIndex: Z_INDEX.toast }}
-          className={cn('fixed left-1/2 top-4 -translate-x-1/2', className)}
+          className={cn(
+            'fixed left-1/2 -translate-x-1/2',
+            shouldApplyFullscreenOffset ? 'top-20' : 'top-4',
+            className
+          )}
         >
           <Card padding="md" className={cn('min-w-70 max-w-[90vw]', SHADOW_MODAL_CLASS)}>
             <div className="flex items-start gap-3">
