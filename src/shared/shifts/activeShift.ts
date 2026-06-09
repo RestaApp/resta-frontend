@@ -21,4 +21,4 @@ export const isActiveShift = (shift: VacancyApiItem, now = new Date()): boolean 
 
 /** Сотрудник может создать только одну активную смену. */
 export const hasActiveEmployeeShift = (shifts: VacancyApiItem[]): boolean =>
-  shifts.some(isActiveShift)
+  shifts.some((shift) => isActiveShift(shift))
