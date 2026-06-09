@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { cn } from '@/shared/utils/cn'
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
@@ -21,7 +22,11 @@ export const Avatar = ({
     <SetLoadedCtx.Provider value={setLoaded}>
       <LoadedCtx.Provider value={loaded}>
         <div
-          className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-xl', className)}
+          className={cn(
+            'relative flex h-9 w-9 shrink-0 overflow-hidden',
+            AVATAR_SHAPE_CLASS,
+            className
+          )}
         >
           {children}
         </div>
@@ -93,7 +98,13 @@ export const AvatarFallback = ({
   if (loaded) return null
 
   return (
-    <div className={cn('flex h-full w-full items-center justify-center rounded-xl', className)}>
+    <div
+      className={cn(
+        'flex h-full w-full items-center justify-center',
+        AVATAR_SHAPE_CLASS,
+        className
+      )}
+    >
       {children}
     </div>
   )

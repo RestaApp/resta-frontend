@@ -5,6 +5,7 @@ import type { Shift } from '@/shared/shifts/types'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { formatMoney } from '@/shared/shifts/formatting'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/shared/utils/cn'
@@ -15,10 +16,7 @@ import {
   PROFILE_SECTION_LABEL_CLASS,
   SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
-import {
-  SHIFT_CARD_LOGO_CLASS,
-  SHIFT_CARD_SUB_CLASS,
-} from '@/components/ui/shift-card/shift-card-styles'
+import { SHIFT_CARD_SUB_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import {
   formatDistanceKm,
   stripVacancyPrefix,
@@ -122,16 +120,10 @@ export const DetailsTab = memo(
           <div className="flex flex-col gap-1">
             <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
             <div className="flex min-w-0 items-center gap-2">
-              {shift.photoUrl ? (
-                <Avatar className="h-9 w-9 rounded-md">
-                  <AvatarImage src={shift.photoUrl} alt={compactTitle} />
-                  <AvatarFallback className="rounded-md bg-primary text-sm font-extrabold leading-none text-primary-foreground">
-                    {avatarFallback}
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className={SHIFT_CARD_LOGO_CLASS}>{avatarFallback}</div>
-              )}
+              <Avatar className={AVATAR_SM_CLASS}>
+                <AvatarImage src={shift.photoUrl ?? undefined} alt={compactTitle} />
+                <AvatarFallback className={AVATAR_FALLBACK_CLASS}>{avatarFallback}</AvatarFallback>
+              </Avatar>
               <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
             </div>
           </div>

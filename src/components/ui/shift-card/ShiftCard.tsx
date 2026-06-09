@@ -12,13 +12,13 @@ import { firstLocation } from '@/shared/utils/location'
 import { addDaysToISODate, toLocalISODateKey } from '@/shared/utils/datetime'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import {
   SHIFT_CARD_BADGE_CLASS,
   SHIFT_CARD_BADGE_ROW_CLASS,
   SHIFT_CARD_CLASS,
   SHIFT_CARD_CURRENCY_CLASS,
   SHIFT_CARD_INTERACTIVE_CLASS,
-  SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_META_CLASS,
   SHIFT_CARD_PRICE_CLASS,
   SHIFT_CARD_ROW_CLASS,
@@ -201,20 +201,10 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
             </div>
           ) : null}
           <div className="flex min-w-0 items-start gap-2">
-            {shift.photoUrl ? (
-              <Avatar className="h-9 w-9 rounded-md">
-                <AvatarImage src={shift.photoUrl} alt={compactTitle} />
-                <AvatarFallback
-                  className={cn(
-                    'rounded-md bg-primary text-sm font-extrabold leading-none text-primary-foreground'
-                  )}
-                >
-                  {avatarFallback}
-                </AvatarFallback>
-              </Avatar>
-            ) : (
-              <div className={SHIFT_CARD_LOGO_CLASS}>{avatarFallback}</div>
-            )}
+            <Avatar className={AVATAR_SM_CLASS}>
+              <AvatarImage src={shift.photoUrl ?? undefined} alt={compactTitle} />
+              <AvatarFallback className={AVATAR_FALLBACK_CLASS}>{avatarFallback}</AvatarFallback>
+            </Avatar>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <h3 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h3>
               <p className={SHIFT_CARD_SUB_CLASS}>{compactSubtitle}</p>

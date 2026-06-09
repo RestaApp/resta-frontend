@@ -1,7 +1,13 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
+import { getAppScrollRoot } from '@/shared/ui/appScroll'
 
 let lockCount = 0
 const KEY = 'data-prev-scroll-lock'
+
+/** Активен ли хотя бы один overlay с блокировкой скролла (drawer, modal, …). */
+export function isBodyScrollLocked(): boolean {
+  return lockCount > 0
+}
 
 interface ScrollLockSnapshot {
   body?: {
@@ -15,16 +21,23 @@ interface ScrollLockSnapshot {
   html?: {
     overflow?: string
   }
+  appScrollRoot?: {
+    overflow?: string
+    overscrollBehaviorY?: string
+    pointerEvents?: string
+    touchAction?: string
+  }
   scrollY?: number
 }
 
 export function useBodyScrollLock(locked: boolean) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!locked) return
     if (typeof document === 'undefined') return
 
     const body = document.body
     const html = document.documentElement
+    const appScrollRoot = getAppScrollRoot()
     lockCount += 1
     if (lockCount === 1) {
       const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
@@ -40,6 +53,14 @@ export function useBodyScrollLock(locked: boolean) {
             width: body.style.width,
           },
           html: { overflow: html.style.overflow },
+          appScrollRoot: appScrollRoot
+            ? {
+                overflow: appScrollRoot.style.overflow,
+                overscrollBehaviorY: appScrollRoot.style.overscrollBehaviorY,
+                pointerEvents: appScrollRoot.style.pointerEvents,
+                touchAction: appScrollRoot.style.touchAction,
+              }
+            : undefined,
           scrollY,
         })
       )
@@ -51,6 +72,13 @@ export function useBodyScrollLock(locked: boolean) {
       body.style.right = '0'
       body.style.width = '100%'
       html.style.overflow = 'hidden'
+
+      if (appScrollRoot) {
+        appScrollRoot.style.overflow = 'hidden'
+        appScrollRoot.style.overscrollBehaviorY = 'none'
+        appScrollRoot.style.pointerEvents = 'none'
+        appScrollRoot.style.touchAction = 'none'
+      }
     }
 
     return () => {
@@ -63,7 +91,9 @@ export function useBodyScrollLock(locked: boolean) {
             : null
           const prevBody = parsed?.body
           const prevHtml = parsed?.html
+          const prevAppScrollRoot = parsed?.appScrollRoot
           const scrollY = typeof parsed?.scrollY === 'number' ? parsed.scrollY : 0
+          const appScrollRoot = getAppScrollRoot()
 
           body.style.overflow = prevBody?.overflow ?? ''
           body.style.position = prevBody?.position ?? ''
@@ -73,8 +103,16 @@ export function useBodyScrollLock(locked: boolean) {
           body.style.width = prevBody?.width ?? ''
           html.style.overflow = prevHtml?.overflow ?? ''
 
+          if (appScrollRoot && prevAppScrollRoot) {
+            appScrollRoot.style.overflow = prevAppScrollRoot.overflow ?? ''
+            appScrollRoot.style.overscrollBehaviorY = prevAppScrollRoot.overscrollBehaviorY ?? ''
+            appScrollRoot.style.pointerEvents = prevAppScrollRoot.pointerEvents ?? ''
+            appScrollRoot.style.touchAction = prevAppScrollRoot.touchAction ?? ''
+          }
+
           if (typeof window !== 'undefined') window.scrollTo(0, scrollY)
         } catch {
+          const appScrollRoot = getAppScrollRoot()
           body.style.overflow = ''
           body.style.position = ''
           body.style.top = ''
@@ -82,6 +120,12 @@ export function useBodyScrollLock(locked: boolean) {
           body.style.right = ''
           body.style.width = ''
           html.style.overflow = ''
+          if (appScrollRoot) {
+            appScrollRoot.style.overflow = ''
+            appScrollRoot.style.overscrollBehaviorY = ''
+            appScrollRoot.style.pointerEvents = ''
+            appScrollRoot.style.touchAction = ''
+          }
         } finally {
           body.removeAttribute(KEY)
         }

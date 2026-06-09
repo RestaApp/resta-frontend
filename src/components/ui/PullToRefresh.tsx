@@ -3,6 +3,7 @@ import type { TouchEvent, ReactNode } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { cn } from '@/shared/utils/cn'
 import { getAppScrollTop } from '@/shared/ui/appScroll'
+import { isBodyScrollLocked } from '@/shared/lib/hooks/useBodyScrollLock'
 
 interface PullToRefreshProps {
   children: ReactNode
@@ -25,40 +26,57 @@ export function PullToRefresh({
   const [pullDistance, setPullDistance] = useState(0)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
+  const containerRef = useRef<HTMLDivElement>(null)
   const startYRef = useRef<number | null>(null)
   const isDraggingRef = useRef(false)
 
+  const isTouchInsideContainer = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    const target = event.target
+    if (!(target instanceof Node)) return false
+    return containerRef.current?.contains(target) ?? false
+  }, [])
+
   const canStartPull = useCallback(() => {
-    return !disabled && !isRefreshing && getAppScrollTop() <= 0
+    return !disabled && !isRefreshing && !isBodyScrollLocked() && getAppScrollTop() <= 0
   }, [disabled, isRefreshing])
 
   const handleTouchStart = useCallback(
     (event: TouchEvent<HTMLDivElement>) => {
+      if (!isTouchInsideContainer(event)) return
       if (!canStartPull()) return
       if (event.touches.length !== 1) return
 
       startYRef.current = event.touches[0].clientY
       isDraggingRef.current = true
     },
-    [canStartPull]
+    [canStartPull, isTouchInsideContainer]
   )
 
-  const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current || startYRef.current === null) return
+  const handleTouchMove = useCallback(
+    (event: TouchEvent<HTMLDivElement>) => {
+      if (!isTouchInsideContainer(event)) {
+        startYRef.current = null
+        isDraggingRef.current = false
+        setPullDistance(0)
+        return
+      }
+      if (!isDraggingRef.current || startYRef.current === null) return
 
-    const currentY = event.touches[0]?.clientY
-    if (typeof currentY !== 'number') return
+      const currentY = event.touches[0]?.clientY
+      if (typeof currentY !== 'number') return
 
-    const delta = currentY - startYRef.current
-    if (delta <= 0) {
-      setPullDistance(0)
-      return
-    }
+      const delta = currentY - startYRef.current
+      if (delta <= 0) {
+        setPullDistance(0)
+        return
+      }
 
-    const nextDistance = Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE)
-    setPullDistance(nextDistance)
-    event.preventDefault()
-  }, [])
+      const nextDistance = Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE)
+      setPullDistance(nextDistance)
+      event.preventDefault()
+    },
+    [isTouchInsideContainer]
+  )
 
   const finishPull = useCallback(async () => {
     const shouldRefresh = pullDistance >= threshold
@@ -100,6 +118,7 @@ export function PullToRefresh({
 
   return (
     <div
+      ref={containerRef}
       className={cn('relative overscroll-y-contain', className)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}

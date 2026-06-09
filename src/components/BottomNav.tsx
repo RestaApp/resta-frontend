@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { getTabsForRole } from '@/shared/constants/tabs'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { Tab } from '@/shared/types/navigation.types'
@@ -82,6 +83,7 @@ export const BottomNav = ({
                   {id === 'myshifts' ? (
                     <Avatar
                       className={cn(
+                        AVATAR_SHAPE_CLASS,
                         'size-6 border transition-colors',
                         isActive ? 'border-primary' : 'border-border'
                       )}

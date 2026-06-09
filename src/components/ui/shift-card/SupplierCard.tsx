@@ -2,12 +2,12 @@ import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin, Phone, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/shared/utils/cn'
 import {
   SHIFT_CARD_CLASS,
   SHIFT_CARD_INTERACTIVE_CLASS,
-  SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_META_CLASS,
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
@@ -130,9 +130,9 @@ const SupplierCardComponent = ({
       ) : null}
 
       <div className="flex items-start gap-2">
-        <Avatar className={cn(SHIFT_CARD_LOGO_CLASS, 'shrink-0 self-start p-0')}>
+        <Avatar className={cn(AVATAR_SM_CLASS, 'self-start')}>
           <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-sm font-extrabold">
+          <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
             {supplier.name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>

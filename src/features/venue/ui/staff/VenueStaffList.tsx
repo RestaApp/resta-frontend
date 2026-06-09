@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 import type { ApplicationPreviewApiItem } from '@/services/api/shiftsApi'
 import { getLogoByPosition } from '@/shared/shifts/mapping'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import {
   SHIFT_CARD_CLASS,
-  SHIFT_CARD_LOGO_CLASS,
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
@@ -143,11 +143,9 @@ export const VenueStaffList = ({
                           onOpenDetails(item)
                         }}
                       >
-                        <Avatar
-                          className={cn(SHIFT_CARD_LOGO_CLASS, 'h-9 w-9 shrink-0 self-start p-0')}
-                        >
+                        <Avatar className={cn(AVATAR_SM_CLASS, 'self-start')}>
                           <AvatarImage src={photoUrl} alt={fullName} />
-                          <AvatarFallback>
+                          <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
                             {getLogoByPosition(rawPosition)}
                           </AvatarFallback>
                         </Avatar>

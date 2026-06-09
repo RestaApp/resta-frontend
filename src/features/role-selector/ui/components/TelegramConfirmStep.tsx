@@ -12,6 +12,8 @@ import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/shared/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
 import { getRoleCategory } from '@/shared/types/roles.types'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
@@ -72,11 +74,17 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE}
     >
       <Card className="text-center">
-        <div className="mx-auto mb-3 h-14 w-14 overflow-hidden rounded-xl bg-[image:var(--gradient-primary)]">
-          {user?.photo_url ? (
-            <img src={user.photo_url} alt={displayName} className="h-full w-full object-cover" />
-          ) : null}
-        </div>
+        <Avatar className={cn(AVATAR_SHAPE_CLASS, 'mx-auto mb-3 h-14 w-14')}>
+          <AvatarImage src={user?.photo_url} alt={displayName} />
+          <AvatarFallback
+            className={cn(
+              AVATAR_SHAPE_CLASS,
+              'bg-[image:var(--gradient-primary)] text-lg font-extrabold text-white'
+            )}
+          >
+            {displayName.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
         {isEditingName ? (
           <Input
             autoFocus

@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Building2, Globe, Mail, MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_FALLBACK_CLASS, AVATAR_MD_CLASS } from '@/components/ui/avatar-styles'
 import { Card } from '@/components/ui/card'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import type { SupplierCardData } from '@/components/ui/shift-card/SupplierCard'
@@ -65,9 +66,9 @@ export const SupplierDetailsScreen = memo(
         closeAriaLabel={t('common.close')}
         title={
           <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="h-11 w-11">
+            <Avatar className={AVATAR_MD_CLASS}>
               <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
-              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+              <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
                 {supplier.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

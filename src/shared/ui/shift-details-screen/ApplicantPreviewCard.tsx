@@ -2,6 +2,7 @@ import { memo, type KeyboardEvent } from 'react'
 import { Calendar, ChevronRight, MapPin, Star } from 'lucide-react'
 import type { TFunction } from 'i18next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/shared/utils/cn'
 import { formatExperienceText } from '@/shared/utils/experience'
@@ -102,9 +103,9 @@ export const ApplicantPreviewCard = memo(
         )}
       >
         <div className="flex items-start gap-3">
-          <Avatar className="h-11 w-11 shrink-0">
+          <Avatar className={AVATAR_SM_CLASS}>
             <AvatarImage src={photoUrl ?? undefined} alt={name} />
-            <AvatarFallback className="bg-primary text-sm font-semibold text-primary-foreground">
+            <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
               {getApplicantInitial(name)}
             </AvatarFallback>
           </Avatar>
