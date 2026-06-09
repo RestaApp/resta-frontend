@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, memo, useId, useMemo }
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/shared/utils/cn'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { ModalA11yContext } from './modal-a11y'
@@ -39,6 +40,7 @@ export const Modal = memo(function Modal({
   initialFocusSelector,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null)
+  const reduceVisualEffects = useReducedVisualEffects()
   const titleId = useId()
   const descriptionId = useId()
   const onCloseRef = useRef(onClose)
@@ -134,7 +136,10 @@ export const Modal = memo(function Modal({
             exit={{ opacity: 0 }}
           >
             <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              className={cn(
+                'absolute inset-0 bg-black/50',
+                reduceVisualEffects ? undefined : 'backdrop-blur-sm'
+              )}
               aria-hidden
               onPointerDown={handleBackdropPointerDown}
             />

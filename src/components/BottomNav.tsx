@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { getTabsForRole } from '@/shared/constants/tabs'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
@@ -27,6 +28,7 @@ export const BottomNav = ({
   const { t } = useTranslation()
   const tabs = useMemo(() => getTabsForRole(role), [role])
   const reduceMotion = useReducedMotion()
+  const reduceVisualEffects = useReducedVisualEffects()
   const activeIndex = Math.max(
     tabs.findIndex(tab => tab.id === activeTab),
     0
@@ -43,7 +45,8 @@ export const BottomNav = ({
       <div className="ui-app-frame pointer-events-none">
         <div
           className={cn(
-            'pointer-events-auto relative mx-auto flex h-15 w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 bg-background/65 p-0.5 backdrop-blur-xl',
+            'pointer-events-auto relative mx-auto flex h-15 w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 p-0.5',
+            reduceVisualEffects ? 'bg-background/95' : 'bg-background/65 backdrop-blur-xl',
             tabs.length === 4 ? 'grid grid-cols-4' : 'grid grid-cols-2'
           )}
         >

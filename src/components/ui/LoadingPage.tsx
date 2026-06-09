@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { LogoWithText } from '@/components/ui/logo-with-text'
 import { HERO_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { cn } from '@/shared/utils/cn'
 
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
+  const reduceVisualEffects = useReducedVisualEffects()
   const roleColorVar = 'var(--primary)'
 
   const logoIcon = (
@@ -21,7 +23,7 @@ export const LoadingPage = memo(function LoadingPage() {
         transition={
           reduceMotion ? { duration: 0 } : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
         }
-        className="absolute inset-0 -z-10 blur-3xl"
+        className={cn('absolute inset-0 -z-10', reduceVisualEffects ? 'opacity-40' : 'blur-3xl')}
         style={{
           background: `color-mix(in srgb, ${roleColorVar} 55%, transparent)`,
         }}
@@ -67,27 +69,37 @@ export const LoadingPage = memo(function LoadingPage() {
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={
-            reduceMotion
+            reduceVisualEffects
               ? { scale: 1, opacity: 0.12, rotate: 0 }
               : { scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, 180, 360] }
           }
           transition={
-            reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
+            reduceVisualEffects
+              ? { duration: 0 }
+              : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className="absolute -left-1/2 -top-1/2 h-full w-full blur-3xl"
+          className={cn(
+            'absolute -left-1/2 -top-1/2 h-full w-full',
+            reduceVisualEffects ? 'opacity-10' : 'blur-3xl'
+          )}
           style={{ background: 'var(--gradient-primary)' }}
           aria-hidden="true"
         />
         <motion.div
           animate={
-            reduceMotion
+            reduceVisualEffects
               ? { scale: 1, opacity: 0.12, rotate: 0 }
               : { scale: [1.2, 1, 1.2], opacity: [0.1, 0.2, 0.1], rotate: [360, 180, 0] }
           }
           transition={
-            reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
+            reduceVisualEffects
+              ? { duration: 0 }
+              : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl"
+          className={cn(
+            'absolute -bottom-1/2 -right-1/2 h-full w-full',
+            reduceVisualEffects ? 'opacity-10' : 'blur-3xl'
+          )}
           style={{
             background: 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
           }}

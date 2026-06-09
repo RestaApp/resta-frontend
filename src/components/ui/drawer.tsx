@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
@@ -33,16 +34,21 @@ export type DrawerProps = {
 
 type OverlayProps = {
   className?: string
+  reduceVisualEffects?: boolean
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
+const DrawerOverlay = memo(({ className, reduceVisualEffects, onClick }: OverlayProps) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1, pointerEvents: 'auto' }}
     exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
-    className={cn('fixed inset-0 bg-[rgba(5,7,14,0.78)] backdrop-blur-[2px]', className)}
+    className={cn(
+      'fixed inset-0 bg-[rgba(5,7,14,0.78)]',
+      reduceVisualEffects ? undefined : 'backdrop-blur-[2px]',
+      className
+    )}
     onClick={onClick}
     aria-hidden="true"
   />
@@ -67,6 +73,7 @@ const DrawerContent = memo(function DrawerContent({
   bottomOffsetPx,
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
+  const reduceVisualEffects = useReducedVisualEffects()
   const dragControls = useDragControls()
   const contentRef = useRef<HTMLDivElement | null>(null)
   const isClosingBySwipeRef = useRef(false)
@@ -130,13 +137,19 @@ const DrawerContent = memo(function DrawerContent({
 
   return (
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
-      <DrawerOverlay className={overlayClassName} onClick={handleOverlayClick} />
+      <DrawerOverlay
+        className={overlayClassName}
+        reduceVisualEffects={reduceVisualEffects}
+        onClick={handleOverlayClick}
+      />
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0, pointerEvents: 'auto' }}
         exit={{ y: '100%', pointerEvents: 'none' }}
         transition={
-          reduceMotion ? { duration: 0 } : { type: 'spring', damping: 25, stiffness: 200 }
+          reduceVisualEffects
+            ? { duration: reduceMotion ? 0 : 0.22, ease: 'easeOut' }
+            : { type: 'spring', damping: 25, stiffness: 200 }
         }
         drag={preventClose ? false : 'y'}
         dragControls={dragControls}
