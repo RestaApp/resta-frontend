@@ -6,7 +6,7 @@ import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'
 import { VenueSuppliersList } from './suppliers/VenueSuppliersList'
 import { useVenueSuppliersPageModel } from './suppliers/useVenueSuppliersPageModel'
-import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 /**
  * Страница‑оркестратор:

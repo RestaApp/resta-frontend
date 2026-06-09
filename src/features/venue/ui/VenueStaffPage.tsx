@@ -11,7 +11,7 @@ import { useToast } from '@/shared/lib/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
 import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'
-import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 export function VenueStaffPage() {
   const { t } = useTranslation()

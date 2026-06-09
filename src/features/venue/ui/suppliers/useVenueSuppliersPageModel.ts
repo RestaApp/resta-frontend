@@ -6,7 +6,7 @@ import { useCities } from '@/shared/lib/hooks/useCities'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole, selectUserCity } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
-import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import { resolveAppliedCity } from './filtersUtils'
 import { mapRestaurantUsersToItems, mapSupplierUsersToItems } from './mappers'
 import {

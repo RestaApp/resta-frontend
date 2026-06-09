@@ -6,7 +6,7 @@ import {
   ShiftDetailsScreen,
   type ShiftDetailsOwnerActions,
 } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
-import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 type ShiftDetailsScreenBindings = Omit<
   ComponentProps<typeof ShiftDetailsScreen>,
@@ -81,10 +81,7 @@ export const VacancyCardWithDetails = ({
 
   return (
     <>
-      <FeedCard
-        shift={mappedShift}
-        onOpenDetails={handleOpenDetails}
-      />
+      <FeedCard shift={mappedShift} onOpenDetails={handleOpenDetails} />
 
       <ShiftDetailsScreen
         shift={mappedShift}

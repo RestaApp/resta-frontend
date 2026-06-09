@@ -60,7 +60,7 @@ export const RoleCard = memo(function RoleCard({
         )}
       >
         <div className="flex items-center gap-2">
-          <div className={cn(SHIFT_CARD_LOGO_CLASS, '[&_svg]:text-muted-foreground')} aria-hidden>
+          <div className={cn(SHIFT_CARD_LOGO_CLASS, '[&_svg]:text-primary-foreground')} aria-hidden>
             {createElement(getRoleIcon(role.id), { className: ICON_MD_CLASS })}
           </div>
 

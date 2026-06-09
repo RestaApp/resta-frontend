@@ -1,25 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useCallback, useRef, useState, type ReactNode } from 'react'
 import { type DetailOverlay, buildDetailPath } from './detailPaths'
-
-interface DetailOverlayContextValue {
-  overlay: DetailOverlay | null
-  /** True when overlay was opened by deep link, not by a feature page. */
-  isDeepLinked: boolean
-  openShiftDetail: (id: number) => void
-  openVacancyDetail: (id: number) => void
-  openUserProfile: (id: number) => void
-  closeOverlay: () => void
-  setOverlay: (overlay: DetailOverlay | null) => void
-}
-
-const DetailOverlayContext = createContext<DetailOverlayContextValue | null>(null)
+import { DetailOverlayContext } from './overlayContextHooks'
 
 export function DetailOverlayProvider({ children }: { children: ReactNode }) {
   const [overlay, setOverlayState] = useState<DetailOverlay | null>(null)
@@ -62,6 +43,13 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
     window.history.back()
   }, [overlay])
 
+  const replaceOverlayWithPath = useCallback((path: string) => {
+    deepLinkedRef.current = false
+    setIsDeepLinked(false)
+    setOverlayState(null)
+    window.history.replaceState(null, '', path)
+  }, [])
+
   return (
     <DetailOverlayContext.Provider
       value={{
@@ -71,29 +59,11 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
         openVacancyDetail,
         openUserProfile,
         closeOverlay,
+        replaceOverlayWithPath,
         setOverlay,
       }}
     >
       {children}
     </DetailOverlayContext.Provider>
   )
-}
-
-export function useDetailOverlay(): Omit<DetailOverlayContextValue, 'setOverlay'> {
-  const ctx = useContext(DetailOverlayContext)
-  if (!ctx) throw new Error('useDetailOverlay must be used within DetailOverlayProvider')
-  return {
-    overlay: ctx.overlay,
-    isDeepLinked: ctx.isDeepLinked,
-    openShiftDetail: ctx.openShiftDetail,
-    openVacancyDetail: ctx.openVacancyDetail,
-    openUserProfile: ctx.openUserProfile,
-    closeOverlay: ctx.closeOverlay,
-  }
-}
-
-export function useDetailOverlayInternal(): DetailOverlayContextValue {
-  const ctx = useContext(DetailOverlayContext)
-  if (!ctx) throw new Error('useDetailOverlayInternal must be used within DetailOverlayProvider')
-  return ctx
 }

@@ -4,9 +4,11 @@ import { Trash2 } from 'lucide-react'
 
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useSuccessOverlay } from '@/shared/lib/hooks/useSuccessOverlay'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
+import { getScreenForTab } from '@/shared/constants/navigation'
+import { getPathForScreen } from '@/shared/constants/routePaths'
 
 import { useFeedFiltersState } from '../hooks/useFeedFiltersState'
 import { useVacanciesInfiniteList } from '../hooks/useVacanciesInfiniteList'
@@ -25,18 +27,19 @@ import {
 } from '@/shared/utils/filters'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 
-
 import type { FeedType } from '@/shared/shifts/types'
 import type { Shift } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
-import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { overlay, openShiftDetail, closeOverlay } = useDetailOverlay()
+  const selectedRole = useAppSelector(selectSelectedRole)
+  const { overlay, openShiftDetail, closeOverlay, replaceOverlayWithPath } = useDetailOverlay()
 
   const { toast, showToast, hideToast } = useToast()
   const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
@@ -197,17 +200,26 @@ export const useFeedPageModel = () => {
     closeOverlay()
   }, [setSelectedShiftId, closeOverlay])
 
+  const replaceDetailRouteWithActivity = useCallback(() => {
+    if (!selectedRole) return
+    const screen = getScreenForTab(selectedRole, 'activity')
+    if (!screen) return
+    replaceOverlayWithPath(getPathForScreen(selectedRole, screen))
+  }, [replaceOverlayWithPath, selectedRole])
+
   const handleOpenApplications = useCallback(() => {
     closeApplicationSuccess()
+    replaceDetailRouteWithActivity()
     setSelectedShiftId(null)
     setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
     dispatch(navigateToTab('activity'))
-  }, [closeApplicationSuccess, dispatch, setSelectedShiftId])
+  }, [closeApplicationSuccess, dispatch, replaceDetailRouteWithActivity, setSelectedShiftId])
 
   const handleSearchMoreAfterApply = useCallback(() => {
     closeApplicationSuccess()
     setSelectedShiftId(null)
-  }, [closeApplicationSuccess, setSelectedShiftId])
+    closeOverlay()
+  }, [closeApplicationSuccess, closeOverlay, setSelectedShiftId])
 
   const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
   const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])

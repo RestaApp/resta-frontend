@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getTabsForRole } from '@/shared/constants/tabs'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { Tab } from '@/shared/types/navigation.types'
@@ -12,6 +13,7 @@ interface BottomNavProps {
   onTabChange: (tab: Tab) => void
   role: UiRole
   hasIncompleteProfile?: boolean
+  currentUserPhotoUrl?: string | null
 }
 
 export const BottomNav = ({
@@ -19,6 +21,7 @@ export const BottomNav = ({
   onTabChange,
   role,
   hasIncompleteProfile = false,
+  currentUserPhotoUrl = null,
 }: BottomNavProps) => {
   const { t } = useTranslation()
   const tabs = useMemo(() => getTabsForRole(role), [role])
@@ -76,14 +79,35 @@ export const BottomNav = ({
                 )}
               >
                 <span className="relative flex size-5.5 items-center justify-center">
-                  <Icon
-                    className={cn(
-                      'size-5.5 transition-colors',
-                      isActive ? 'text-primary' : 'text-muted-foreground'
-                    )}
-                    strokeWidth={isActive ? 2.5 : 2}
-                    aria-hidden="true"
-                  />
+                  {id === 'myshifts' ? (
+                    <Avatar
+                      className={cn(
+                        'size-6 border transition-colors',
+                        isActive ? 'border-primary' : 'border-border'
+                      )}
+                    >
+                      <AvatarImage src={currentUserPhotoUrl} alt="" />
+                      <AvatarFallback className="bg-transparent">
+                        <Icon
+                          className={cn(
+                            'size-5.5 transition-colors',
+                            isActive ? 'text-primary' : 'text-muted-foreground'
+                          )}
+                          strokeWidth={isActive ? 2.5 : 2}
+                          aria-hidden="true"
+                        />
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <Icon
+                      className={cn(
+                        'size-5.5 transition-colors',
+                        isActive ? 'text-primary' : 'text-muted-foreground'
+                      )}
+                      strokeWidth={isActive ? 2.5 : 2}
+                      aria-hidden="true"
+                    />
+                  )}
 
                   {showProfileDot && (
                     <span

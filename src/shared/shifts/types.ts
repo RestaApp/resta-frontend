@@ -29,6 +29,7 @@ export interface Shift {
   urgent?: boolean
   applicationId?: number | null
   ownerId?: number | null
+  photoUrl?: string | null
   canApply?: boolean
   applicationsCount?: number
   isMine?: boolean

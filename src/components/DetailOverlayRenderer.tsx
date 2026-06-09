@@ -1,6 +1,6 @@
 import { lazy } from 'react'
 import { PageSuspense } from '@/components/ui/PageSuspense'
-import { useDetailOverlay } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 const ShiftDetailOverlay = lazy(() =>
   import('./ShiftDetailOverlay').then(m => ({ default: m.ShiftDetailOverlay }))

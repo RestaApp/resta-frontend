@@ -11,6 +11,7 @@ import { cn } from '@/shared/utils/cn'
 import { firstLocation } from '@/shared/utils/location'
 import { addDaysToISODate, toLocalISODateKey } from '@/shared/utils/datetime'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   SHIFT_CARD_BADGE_CLASS,
   SHIFT_CARD_BADGE_ROW_CLASS,
@@ -142,6 +143,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
   const compactSchedule = formatCompactSchedule(shift.date, shift.time)
   const compactPrice = shift.pay == null || Number(shift.pay) === 0 ? null : formatMoney(shift.pay)
   const urgentDateTag = getUrgentDateTag(shift.dateKey)
+  const avatarFallback = positionInitial(shift.position)
   const compactSubtitle =
     [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
     positionText
@@ -200,7 +202,20 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           ) : null}
           <div className={cn('flex min-w-0 items-start gap-2', shift.urgent && 'gap-0')}>
             {!shift.urgent ? (
-              <div className={SHIFT_CARD_LOGO_CLASS}>{positionInitial(shift.position)}</div>
+              shift.photoUrl ? (
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={shift.photoUrl} alt={compactTitle} />
+                  <AvatarFallback
+                    className={cn(
+                      'bg-primary text-sm font-extrabold leading-none text-primary-foreground'
+                    )}
+                  >
+                    {avatarFallback}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <div className={SHIFT_CARD_LOGO_CLASS}>{avatarFallback}</div>
+              )
             ) : null}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <h3 className={cn(SHIFT_CARD_TITLE_CLASS, 'line-clamp-2')}>{compactTitle}</h3>

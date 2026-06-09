@@ -13,6 +13,9 @@ import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { resetAppScroll } from '@/shared/ui/appScroll'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
+import { getScreenForTab } from '@/shared/constants/navigation'
+import { getPathForScreen } from '@/shared/constants/routePaths'
 
 interface DashboardProps {
   role: UiRole
@@ -22,12 +25,19 @@ interface DashboardProps {
 
 export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) => {
   const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
+  const { overlay, replaceOverlayWithPath } = useDetailOverlay()
   const profileCompleteness = useProfileCompleteness()
   const hasIncompleteFields = !profileCompleteness?.isFilled
 
   /** При переходе на профиль с незаполненными обязательными полями сразу открываем форму редактирования. */
   const onTabChange = useCallback(
     (tab: Tab) => {
+      if (overlay) {
+        const screen = getScreenForTab(role, tab)
+        if (screen) {
+          replaceOverlayWithPath(getPathForScreen(role, screen))
+        }
+      }
       if (tab === 'profile' && hasIncompleteFields) {
         setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT, 'true')
       }
@@ -38,7 +48,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
         })
       }
     },
-    [handleTabChange, hasIncompleteFields]
+    [handleTabChange, hasIncompleteFields, overlay, replaceOverlayWithPath, role]
   )
 
   useEffect(() => {
@@ -49,7 +59,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
 
   return (
     <div className="bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
-      <AppHeader activeTab={activeTab} role={role} />
+      {activeTab === 'feed' ? null : <AppHeader activeTab={activeTab} role={role} />}
       {role === 'venue' ? <VenueAddShiftListener /> : null}
       <main className="ui-app-frame">
         <TabContent activeTab={activeTab} />

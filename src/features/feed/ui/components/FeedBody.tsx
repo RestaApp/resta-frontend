@@ -78,6 +78,7 @@ export function FeedBody({ vm }: FeedBodyProps) {
       ) : null}
 
       <ApplyCoverLetterModal
+        key={vm.applyCoverShift?.id ?? 'closed'}
         open={vm.isApplyCoverModalOpen}
         isSubmitting={vm.isApplyCoverModalSubmitting}
         shift={vm.applyCoverShift}

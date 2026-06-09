@@ -49,6 +49,10 @@ const getDistanceKm = (item: VacancyApiItem): number | null => {
   return null
 }
 
+const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
+  return item.user?.photo_url ?? item.user?.profile_photo_url ?? null
+}
+
 /**
  * Оплата за период: для вакансии без конкретного окна времени — «за месяц»;
  * если указаны начало и конец смены — сумма относится к этой смене («за смену»).
@@ -156,6 +160,7 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     urgent: Boolean(item.urgent),
     applicationId: null,
     ownerId: item.user?.id ?? null,
+    photoUrl: getUserPhotoUrl(item),
     canApply: false,
     applicationsCount: item.applications_count ?? 0,
     isMine: true,

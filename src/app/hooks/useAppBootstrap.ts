@@ -18,7 +18,7 @@ import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { authService } from '@/services/auth'
 import { getPathForScreen, getScreenForPath } from '@/shared/constants/routePaths'
 import { parseDetailPath, buildDetailPath } from '@/shared/navigation/detailPaths'
-import { useDetailOverlayInternal } from '@/shared/navigation/DetailOverlayContext'
+import { useDetailOverlayInternal } from '@/shared/navigation/overlayContextHooks'
 
 type AppScreen = 'loading' | 'role' | 'dashboard'
 

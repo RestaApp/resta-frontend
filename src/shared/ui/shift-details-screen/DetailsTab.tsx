@@ -4,6 +4,7 @@ import { Clock, Flame, MapPin } from 'lucide-react'
 import type { Shift } from '@/shared/shifts/types'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { formatMoney } from '@/shared/shifts/formatting'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/shared/utils/cn'
@@ -92,6 +93,7 @@ export const DetailsTab = memo(
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' · ')
     const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
     const compactSubtitle = shift.restaurant || positionLabel || ''
+    const avatarFallback = positionInitial(positionLabel || shift.position)
     const statusTagLabel =
       shift.statusTag === 'expired'
         ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
@@ -118,9 +120,16 @@ export const DetailsTab = memo(
           <div className="flex flex-col gap-1">
             <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
             <div className="flex min-w-0 items-center gap-2">
-              <div className={SHIFT_CARD_LOGO_CLASS}>
-                {positionInitial(positionLabel || shift.position)}
-              </div>
+              {shift.photoUrl ? (
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={shift.photoUrl} alt={compactTitle} />
+                  <AvatarFallback className="bg-primary text-sm font-extrabold leading-none text-primary-foreground">
+                    {avatarFallback}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <div className={SHIFT_CARD_LOGO_CLASS}>{avatarFallback}</div>
+              )}
               <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{compactSubtitle}</p>
             </div>
           </div>
