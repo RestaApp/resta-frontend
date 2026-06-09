@@ -1,4 +1,4 @@
-import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
+import type { ShiftType } from '@/shared/shifts/types'
 
 export type DrawerCopy = {
   drawerTitle: string

@@ -12,6 +12,7 @@ import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { useLabels } from '@/shared/i18n/hooks'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
+import { formatProfileDisplayName } from '@/shared/utils/userDisplayName'
 import { useAuth } from '@/app/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 import { buildProfileViewModel } from '../buildProfileViewModel'
@@ -64,14 +65,10 @@ export const useProfilePageModel = () => {
 
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
 
-  const userName = useMemo(() => {
-    if (!userProfile) return t('common.user')
-    if (apiRole === 'restaurant') {
-      const venue = userProfile.restaurant_profile?.name?.trim()
-      if (venue) return venue
-    }
-    return userProfile.full_name || userProfile.name || t('common.user')
-  }, [userProfile, apiRole, t])
+  const userName = useMemo(
+    () => formatProfileDisplayName(userProfile, apiRole, t('common.user')),
+    [userProfile, apiRole, t]
+  )
 
   const roleLabel = useMemo(() => {
     if (!userProfile) return t('common.user')

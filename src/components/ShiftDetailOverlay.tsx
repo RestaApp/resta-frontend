@@ -2,7 +2,7 @@ import { useMemo, useCallback, useState } from 'react'
 import { useGetShiftByIdQuery } from '@/services/api/shiftsApi'
 import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
 import { vacancyToShift } from '@/shared/shifts/mapping'
-import { useShiftApplication } from '@/features/feed/model/hooks/useShiftApplication'
+import { useShiftApplication } from '@/shared/shifts/useShiftApplication'
 import { Loader } from '@/components/ui/loader'
 
 interface ShiftDetailOverlayProps {

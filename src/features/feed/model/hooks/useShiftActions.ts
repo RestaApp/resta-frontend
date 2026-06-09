@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { useShiftApplication } from './useShiftApplication'
+import { useShiftApplication } from '@/shared/shifts/useShiftApplication'
 import { useAppliedShifts } from './useAppliedShifts'
 
 interface UseShiftActionsReturn {

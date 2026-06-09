@@ -1,8 +1,8 @@
+import type { AddShiftFieldErrors } from '@/features/activity/model/utils/addShiftValidation'
+
 export type StepIndex = 0 | 1 | 2
 
-export type DrawerFieldErrors = Partial<
-  Record<'location' | 'city' | 'requirements' | 'description' | 'specializations', string>
->
+export type DrawerFieldErrors = AddShiftFieldErrors
 
 export interface AddShiftDrawerFormState {
   title: string

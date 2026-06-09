@@ -2,13 +2,13 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApplyToShiftMutation, useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { useToast } from '@/shared/lib/hooks/useToast'
-import { normalizeApiError } from '../utils/apiErrors'
+import { normalizeApiError } from '@/shared/utils/apiErrors'
 
 export const useShiftApplication = () => {
   const { t } = useTranslation()
   const { showToast } = useToast()
-  const [applyToShift] = useApplyToShiftMutation()
-  const [cancelApplication] = useCancelApplicationMutation()
+  const [applyToShift, { isLoading: isApplying }] = useApplyToShiftMutation()
+  const [cancelApplication, { isLoading: isCancelling }] = useCancelApplicationMutation()
 
   const apply = useCallback(
     async (shiftId: number, message?: string) => {
@@ -49,5 +49,5 @@ export const useShiftApplication = () => {
     [cancelApplication, showToast, t]
   )
 
-  return { apply, cancel }
+  return { apply, cancel, isApplying, isCancelling }
 }

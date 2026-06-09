@@ -51,8 +51,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
   }, [])
 
   const getCategoryLabel = useCallback(
-    (category: string) =>
-      t(`roles.supplierCategories.${category}`, { defaultValue: category }),
+    (category: string) => t(`roles.supplierCategories.${category}`, { defaultValue: category }),
     [t]
   )
 
@@ -90,8 +89,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
           onToggle: handleToggle,
           getLabel: getCategoryLabel,
           getIcon: getSupplierCategoryIcon,
-          getAriaLabel: (_category, label) =>
-            t('aria.selectSupplierCategory', { label }),
+          getAriaLabel: (_category, label) => t('aria.selectSupplierCategory', { label }),
         },
         ...(selected
           ? [

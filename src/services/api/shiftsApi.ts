@@ -12,7 +12,6 @@ import {
   type CreateShiftRequest,
   type CreateShiftResponse,
   type DeleteShiftResponse,
-  type GetShiftsListParams,
   type GetVacanciesParams,
   type MutateShiftResponse,
   type ReceivedShiftApplicationsResponse,
@@ -23,18 +22,6 @@ import {
 
 const shiftsApi = api.injectEndpoints({
   endpoints: builder => ({
-    // GET /api/v1/shifts — параметры как в API.md (без legacy status/role)
-    getShifts: builder.query<VacanciesResponse, GetShiftsListParams | void>({
-      query: params => {
-        const queryString = params ? buildQueryParams(params) : ''
-        return {
-          url: `/api/v1/shifts${queryString ? `?${queryString}` : ''}`,
-          method: 'GET',
-        }
-      },
-      providesTags: result => provideListTags('Shift', result),
-    }),
-
     // Получить вакансии (смены с shift_type=vacancy)
     getVacancies: builder.query<VacanciesResponse, GetVacanciesParams>({
       query: params => {
@@ -190,9 +177,7 @@ const shiftsApi = api.injectEndpoints({
 
 // Экспорт хуков для использования в компонентах
 export const {
-  useGetShiftsQuery,
   useGetVacanciesQuery,
-  useLazyGetVacanciesQuery,
   useGetShiftByIdQuery,
   useCreateShiftMutation,
   useUpdateShiftMutation,

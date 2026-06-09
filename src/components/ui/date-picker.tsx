@@ -53,7 +53,7 @@ export const DatePicker = ({
           className={cn(
             'relative flex min-h-10 w-full items-center rounded-lg border border-border/50 bg-input-background py-2.5 pl-4 pr-10 text-left text-base transition-all',
             'focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-0',
-            !!error && 'border-destructive ring-2 ring-destructive/20',
+            !!error && 'border-destructive ring-2 ring-destructive/20'
           )}
           aria-label={label ?? t('datePicker.ariaLabel')}
           aria-invalid={!!error}

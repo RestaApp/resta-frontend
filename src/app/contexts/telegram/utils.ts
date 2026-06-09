@@ -6,7 +6,7 @@ export type TelegramWebApp = ReturnType<typeof getTelegramWebApp>
  * Сравнение версии WebApp с целевой (`isVersionAtLeast` появился не сразу,
  * fallback — ручной numeric‑split).
  */
-export const isVersionAtLeast = (webApp: TelegramWebApp, target: string): boolean => {
+const isVersionAtLeast = (webApp: TelegramWebApp, target: string): boolean => {
   if (!webApp) return false
   if (webApp.isVersionAtLeast) return webApp.isVersionAtLeast(target)
   const current = typeof webApp.version === 'string' ? webApp.version : null
@@ -24,7 +24,7 @@ export const isVersionAtLeast = (webApp: TelegramWebApp, target: string): boolea
   return true
 }
 
-export const isMobileDevice = (): boolean => {
+const isMobileDevice = (): boolean => {
   if (typeof navigator === 'undefined') return false
   const ua = navigator.userAgent || ''
   return /Android|iPhone|iPad|iPod|Mobile/i.test(ua)

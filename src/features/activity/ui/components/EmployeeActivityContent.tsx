@@ -25,7 +25,6 @@ export const EmployeeActivityContent = ({ model }: EmployeeActivityContentProps)
             isDeleting={model.isDeleting}
             onEdit={model.handleEdit}
             onDelete={model.handleDelete}
-            showToast={model.showToast}
             onRefresh={model.refreshList}
           />
         </div>

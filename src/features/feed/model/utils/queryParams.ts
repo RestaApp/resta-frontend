@@ -1,9 +1,9 @@
 /** Параметры GET /api/v1/shifts — см. SEARCH_FILTERS_SPEC.md § Shifts */
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'
-import type { AdvancedFiltersData } from '@/shared/shifts/types'
+import type { AdvancedFiltersData, ShiftType } from '@/shared/shifts/types'
 
-export type ShiftType = 'replacement' | 'vacancy'
+export type { ShiftType }
 
 export interface BaseQueryParams {
   advanced?: AdvancedFiltersData | null

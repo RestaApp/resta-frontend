@@ -6,7 +6,7 @@ import {
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
 import { useToast } from '@/shared/lib/hooks/useToast'
-import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
+import { normalizeApiError } from '@/shared/utils/apiErrors'
 import { getApplicationsPreview } from '@/shared/shifts/applicationsPreview'
 
 interface UseShiftApplicantsModerationParams {

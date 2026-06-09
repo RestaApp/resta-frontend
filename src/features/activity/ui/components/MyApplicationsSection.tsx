@@ -9,12 +9,10 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { EmptyState } from '@/components/ui/EmptyState'
-import type { ToastType } from '@/components/ui/toast'
 import { cn } from '@/shared/utils/cn'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]
-  showToast: (m: string, t?: ToastType) => void
 }
 
 type AppliedStatusGroup = ReturnType<typeof groupAppliedByStatus>[number]
@@ -23,14 +21,12 @@ interface AppliedStatusGroupsProps {
   groups: AppliedStatusGroup[]
   isRejectedCollapsed: boolean
   onToggleRejected: () => void
-  showToast: MyApplicationsSectionProps['showToast']
 }
 
 const AppliedStatusGroups = ({
   groups,
   isRejectedCollapsed,
   onToggleRejected,
-  showToast,
 }: AppliedStatusGroupsProps) => {
   const { t } = useTranslation()
 
@@ -61,7 +57,7 @@ const AppliedStatusGroups = ({
             {!isCollapsed ? (
               <div className="ui-density-stack">
                 {items.map(shift => (
-                  <AppliedShiftCard key={shift.id} shift={shift} showToast={showToast} />
+                  <AppliedShiftCard key={shift.id} shift={shift} />
                 ))}
               </div>
             ) : null}
@@ -72,7 +68,7 @@ const AppliedStatusGroups = ({
   )
 }
 
-export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicationsSectionProps) {
+export function MyApplicationsSection({ appliedShifts }: MyApplicationsSectionProps) {
   const { t } = useTranslation()
   const sectionRef = useRef<HTMLElement>(null)
   const [isRejectedCollapsed, setIsRejectedCollapsed] = useState(true)
@@ -132,7 +128,6 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
                 groups={replacementApplicationsByStatus}
                 isRejectedCollapsed={isRejectedCollapsed}
                 onToggleRejected={handleToggleRejected}
-                showToast={showToast}
               />
             </section>
           ) : null}
@@ -148,7 +143,6 @@ export function MyApplicationsSection({ appliedShifts, showToast }: MyApplicatio
                 groups={vacancyApplicationsByStatus}
                 isRejectedCollapsed={isRejectedCollapsed}
                 onToggleRejected={handleToggleRejected}
-                showToast={showToast}
               />
             </section>
           ) : null}

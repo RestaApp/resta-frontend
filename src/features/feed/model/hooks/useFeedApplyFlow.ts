@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import type { TFunction } from 'i18next'
-import { normalizeApiError } from '@/features/feed/model/utils/apiErrors'
+import { normalizeApiError } from '@/shared/utils/apiErrors'
 import { openProfileEditFlow } from '@/shared/lib/openProfileEditFlow'
 import type { AppDispatch } from '@/store'
 

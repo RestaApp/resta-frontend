@@ -93,7 +93,10 @@ export const ModalContent = memo(function ModalContent({
         </h2>
 
         {description ? (
-          <p id={descriptionId} className={cn('text-sm text-muted-foreground', FORMATTED_USER_TEXT_CLASS)}>
+          <p
+            id={descriptionId}
+            className={cn('text-sm text-muted-foreground', FORMATTED_USER_TEXT_CLASS)}
+          >
             {description}
           </p>
         ) : (

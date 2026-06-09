@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
+import type { ShiftType } from '@/shared/shifts/types'
 import {
   buildDrawerErrorState,
   findFirstInvalidStep,

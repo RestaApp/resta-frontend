@@ -37,14 +37,6 @@ export interface RestaurantFormatsResponse {
   data: string[]
 }
 
-/**
- * GET /api/v1/catalogs/cuisine_types
- */
-export interface CuisineTypesResponse {
-  success: boolean
-  data: string[]
-}
-
 const rolesApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить список доступных ролей для страницы выбора роли
@@ -70,10 +62,6 @@ const rolesApi = api.injectEndpoints({
     getRestaurantFormats: createCatalogQuery<RestaurantFormatsResponse, void>(builder, {
       url: '/api/v1/catalogs/restaurant_formats',
     }),
-
-    getCuisineTypes: createCatalogQuery<CuisineTypesResponse, void>(builder, {
-      url: '/api/v1/catalogs/cuisine_types',
-    }),
   }),
 })
 
@@ -83,5 +71,4 @@ export const {
   useGetSupplierCategoriesQuery,
   useGetSupplierTypesQuery,
   useGetRestaurantFormatsQuery,
-  useGetCuisineTypesQuery,
 } = rolesApi

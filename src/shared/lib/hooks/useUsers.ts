@@ -11,21 +11,7 @@ import {
   type UpdateUserResponse,
 } from '@/services/api/usersApi'
 import { updateUserDataInStore } from '@/shared/utils/userData'
-
-const extractApiErrors = (error: unknown): string[] => {
-  if (!error || typeof error !== 'object' || !('data' in error)) return []
-
-  const data = (error as { data?: unknown }).data
-  if (!data || typeof data !== 'object') return []
-
-  const apiData = data as { errors?: unknown; message?: unknown; error?: unknown }
-  if (Array.isArray(apiData.errors)) {
-    return apiData.errors.filter((value): value is string => typeof value === 'string')
-  }
-  if (typeof apiData.message === 'string' && apiData.message.trim()) return [apiData.message]
-  if (typeof apiData.error === 'string' && apiData.error.trim()) return [apiData.error]
-  return []
-}
+import { getErrorMessages } from '@/shared/utils/getErrorMessage'
 
 /**
  * Хук для обновления данных пользователя
@@ -42,7 +28,7 @@ export const useUpdateUser = () => {
       } catch (requestError) {
         return {
           success: false,
-          errors: extractApiErrors(requestError),
+          errors: getErrorMessages(requestError),
         }
       }
 

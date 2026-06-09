@@ -3,7 +3,7 @@ import type { TFunction } from 'i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/shared/shifts/types'
 import { useCurrentUserId } from '@/shared/shifts/useCurrentUserId'
-import type { ShiftStatus } from '@/components/ui/StatusPill'
+import type { ShiftStatus } from '@/shared/shifts/types'
 import { sanitizeLocations } from '@/shared/utils/location'
 
 interface UseShiftDetailsScreenControllerParams {

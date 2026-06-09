@@ -4,10 +4,7 @@ import type { Shift } from './types'
 import { formatHourlyRate, getVacancyTitle } from './formatting'
 import { useLabels } from '@/shared/i18n/hooks'
 
-export const useShiftDetails = (
-  shift: Shift | null,
-  vacancyData?: VacancyApiItem | null
-) => {
+export const useShiftDetails = (shift: Shift | null, vacancyData?: VacancyApiItem | null) => {
   const { getEmployeePositionLabel } = useLabels()
 
   const hourlyRate = useMemo(

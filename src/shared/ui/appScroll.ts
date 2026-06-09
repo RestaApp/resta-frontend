@@ -1,5 +1,5 @@
 /** Селектор единого scroll-root приложения (`TelegramMiniAppShell`). */
-export const APP_SCROLL_ROOT_SELECTOR = '[data-app-scroll-root]'
+const APP_SCROLL_ROOT_SELECTOR = '[data-app-scroll-root]'
 
 export const getAppScrollRoot = (): HTMLElement | null => {
   if (typeof document === 'undefined') return null
@@ -12,7 +12,7 @@ export const getAppScrollTop = (): number => {
   return root ? root.scrollTop : window.scrollY
 }
 
-export const scrollAppTo = (top: number, behavior: ScrollBehavior = 'auto'): void => {
+const scrollAppTo = (top: number, behavior: ScrollBehavior = 'auto'): void => {
   const root = getAppScrollRoot()
   if (root) {
     root.scrollTo({ top, left: 0, behavior })

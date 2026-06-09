@@ -13,7 +13,8 @@ export const TAG_DISABLED_CLASS = 'cursor-not-allowed opacity-50'
 export const SEGMENTED_CONTAINER_CLASS =
   'relative inline-flex rounded-full border border-border/50 bg-card p-0.5'
 
-export const SEGMENTED_INDICATOR_CLASS = 'absolute bottom-0.5 top-0.5 rounded-full bg-elevated'
+export const SEGMENTED_INDICATOR_CLASS =
+  'absolute bottom-0.5 top-0.5 rounded-full bg-[image:var(--gradient-primary)] shadow-[0_2px_8px_rgba(255,107,44,0.22)]'
 
 export const SEGMENTED_TRIGGER_CLASS =
   'relative z-10 inline-flex min-h-7 items-center justify-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors duration-200'
@@ -36,10 +37,6 @@ export const SCREEN_TITLE_CLASS =
 /** Заголовок модалки / drawer / bottom sheet — `h2` в overlay. */
 export const MODAL_TITLE_CLASS =
   'font-display text-xl font-semibold leading-tight tracking-tight text-foreground'
-
-/** Акцентная цена / тариф (`text-xl`, extrabold). */
-export const PRICE_EMPHASIS_CLASS =
-  'font-display text-xl font-extrabold leading-tight tracking-tight text-foreground'
 
 /** Hero / splash / крупный промо-заголовок (`text-4xl`). */
 export const HERO_TITLE_CLASS =

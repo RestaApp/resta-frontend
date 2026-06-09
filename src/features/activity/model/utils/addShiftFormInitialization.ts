@@ -1,9 +1,5 @@
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import {
-  formatMoney,
-  parseApiDateTime,
-  parseMoneyInput,
-} from '@/shared/shifts/formatting'
+import { formatMoney, parseApiDateTime, parseMoneyInput } from '@/shared/shifts/formatting'
 
 const toInputDate = (date: Date): string => {
   const yyyy = date.getFullYear()

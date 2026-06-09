@@ -42,7 +42,6 @@ export const AdvancedFilters = ({
   </Drawer>
 )
 
-
 const AdvancedFiltersSheet = ({
   onClose,
   onApply,

@@ -10,6 +10,11 @@ export type PayPeriod = 'shift' | 'month'
 
 export type ShiftType = 'vacancy' | 'replacement'
 
+export type KnownShiftStatus = 'pending' | 'processing' | 'accepted' | 'rejected'
+
+/** Статус заявки на смену — известные значения + произвольные строки API. */
+export type ShiftStatus = KnownShiftStatus | (string & {}) | null | undefined
+
 export interface Shift {
   id: number
   title?: string | null

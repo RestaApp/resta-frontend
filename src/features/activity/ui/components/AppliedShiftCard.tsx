@@ -1,33 +1,27 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { useCancelApplicationMutation } from '@/services/api/shiftsApi'
+import { useShiftApplication } from '@/shared/shifts/useShiftApplication'
 import { mapVacancyToCardShift } from '@/shared/shifts/mapping'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
-import type { ToastType } from '@/components/ui/toast'
+import { useToast } from '@/shared/lib/hooks/useToast'
 
 interface AppliedShiftCardProps {
   shift: VacancyApiItem
-  showToast: (message: string, type?: ToastType) => void
 }
 
-export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) => {
+export const AppliedShiftCard = ({ shift }: AppliedShiftCardProps) => {
   const { t } = useTranslation()
-  const [cancelApplication, { isLoading: isCancelling }] = useCancelApplicationMutation()
+  const { showToast } = useToast()
+  const { cancel, isCancelling } = useShiftApplication()
 
   const applicationId = shift.my_application?.id ?? null
 
-  const cancel = useCallback(
+  const handleCancel = useCallback(
     async (appId?: number | null) => {
-      if (!appId) return
-      try {
-        await cancelApplication(appId).unwrap()
-        showToast(t('shift.applicationCancelled'), 'warning')
-      } catch {
-        showToast(t('shift.cancelApplicationError'), 'error')
-      }
+      await cancel(appId ?? applicationId)
     },
-    [cancelApplication, showToast, t]
+    [applicationId, cancel]
   )
 
   return (
@@ -40,9 +34,7 @@ export const AppliedShiftCard = ({ shift, showToast }: AppliedShiftCardProps) =>
           showToast(t('shift.applyNotAvailable'), 'warning')
         },
         isApplied: Boolean(applicationId),
-        onCancel: async appId => {
-          await cancel(appId ?? applicationId)
-        },
+        onCancel: handleCancel,
         isLoading: isCancelling,
       }}
     />

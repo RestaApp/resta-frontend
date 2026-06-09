@@ -115,7 +115,9 @@ export const VenueSuppliersFiltersDrawer = ({
 
         <DrawerBody className="ui-density-stack-lg">
           <div className="ui-density-stack-sm">
-            <p className={PROFILE_SECTION_LABEL_CLASS}>{t('profile.city', { defaultValue: 'Город' })}</p>
+            <p className={PROFILE_SECTION_LABEL_CLASS}>
+              {t('profile.city', { defaultValue: 'Город' })}
+            </p>
             <CitySelect
               value={draftFilters.city}
               onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}

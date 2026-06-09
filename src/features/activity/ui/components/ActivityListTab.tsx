@@ -7,8 +7,6 @@ import { MyApplicationsSection } from '@/features/activity/ui/components/MyAppli
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
-import type { ToastType } from '@/components/ui/toast'
-
 interface ActivityListTabProps {
   activeTab: ActivityTab
   isLoading: boolean
@@ -19,7 +17,6 @@ interface ActivityListTabProps {
   isDeleting: boolean
   onEdit: (id: number) => void
   onDelete: (id: number) => void
-  showToast: (m: string, t?: ToastType) => void
   onRefresh: () => Promise<void>
 }
 
@@ -33,7 +30,6 @@ export function ActivityListTab({
   isDeleting,
   onEdit,
   onDelete,
-  showToast,
   onRefresh,
 }: ActivityListTabProps) {
   const { t } = useTranslation()
@@ -61,7 +57,7 @@ export function ActivityListTab({
       />
     )
   } else {
-    content = <MyApplicationsSection appliedShifts={appliedShifts} showToast={showToast} />
+    content = <MyApplicationsSection appliedShifts={appliedShifts} />
   }
 
   return (

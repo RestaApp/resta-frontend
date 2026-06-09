@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
+import type { ShiftType } from '@/shared/shifts/types'
 
 export type SelectFieldOption = {
   value: string

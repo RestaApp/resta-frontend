@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import type { ShiftType } from '@/features/activity/model/hooks/useAddShiftForm'
+import type { ShiftType } from '@/shared/shifts/types'
 
 interface FormSetters {
   setTitle: (value: string) => void

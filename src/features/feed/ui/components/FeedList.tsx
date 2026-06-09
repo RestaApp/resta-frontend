@@ -3,7 +3,7 @@ import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
 import type { Shift } from '@/shared/shifts/types'
 import type { UseVacanciesInfiniteListReturn } from '@/features/feed/model/hooks/useVacanciesInfiniteList'
-import type { ShiftStatus } from '@/components/ui/StatusPill'
+import type { ShiftStatus } from '@/shared/shifts/types'
 
 interface FeedListProps {
   shifts: Shift[]
@@ -39,11 +39,7 @@ export function FeedList({
   return (
     <>
       {sortedShifts.map(shift => (
-        <FeedCard
-          key={shift.id}
-          shift={shift}
-          onOpenDetails={onOpenDetails}
-        />
+        <FeedCard key={shift.id} shift={shift} onOpenDetails={onOpenDetails} />
       ))}
 
       {shifts.length > 0 ? (

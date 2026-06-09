@@ -52,11 +52,7 @@ export const PersonalShiftCard = ({
         ownerActions={{ onEdit, onDelete, isDeleting }}
       />
 
-      <ShiftApplicantsSection
-        shiftId={shift.id}
-        vacancyData={applicantsVacancyData}
-        alwaysShow
-      />
+      <ShiftApplicantsSection shiftId={shift.id} vacancyData={applicantsVacancyData} alwaysShow />
     </div>
   )
 }
