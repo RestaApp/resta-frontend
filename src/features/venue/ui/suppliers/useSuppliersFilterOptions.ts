@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { getRestaurantProfile } from './mappers'
+import { getSupplierProfile, getSupplierTypes } from '@/shared/utils/supplierProfile'
 import {
   DEFAULT_SERVICE_CATEGORY_OPTIONS,
   DEFAULT_SUPPLIER_TYPES,
@@ -35,24 +36,17 @@ export const useSuppliersFilterOptions = ({
   const supplierTypeOptions = useMemo(() => {
     if (isSupplierRole) return []
     const fromApi = supplierUsers
-      .map(
-        item =>
-          item.supplier_profile?.supplier_category ??
-          item.supplier_profile_attributes?.supplier_category ??
-          item.supplier_profile?.supplier_type ??
-          item.supplier_profile_attributes?.supplier_type
-      )
+      .map(item => {
+        const profile = getSupplierProfile(item)
+        return profile?.supplier_category ?? profile?.supplier_type ?? null
+      })
       .filter((value): value is string => Boolean(value))
     return Array.from(new Set([...DEFAULT_SUPPLIER_TYPES, ...fromApi]))
   }, [isSupplierRole, supplierUsers])
 
   const allServiceCategoryOptions = useMemo(() => {
     if (isSupplierRole) return []
-    const fromApi = supplierUsers.flatMap(item => {
-      const categories =
-        item.supplier_profile?.supplier_types ?? item.supplier_profile_attributes?.supplier_types
-      return Array.isArray(categories) ? categories : []
-    })
+    const fromApi = supplierUsers.flatMap(item => getSupplierTypes(getSupplierProfile(item)))
     return Array.from(new Set([...DEFAULT_SERVICE_CATEGORY_OPTIONS, ...fromApi]))
   }, [isSupplierRole, supplierUsers])
 

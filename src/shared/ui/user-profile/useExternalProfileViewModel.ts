@@ -5,6 +5,7 @@ import { mapRoleFromApi } from '@/shared/utils/roles'
 import { useLabels } from '@/shared/i18n/hooks'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { formatProfileDisplayName } from '@/shared/utils/userDisplayName'
+import { getSupplierCategory, getSupplierProfile } from '@/shared/utils/supplierProfile'
 import { buildProfileViewModel, type ProfileViewModel } from './buildProfileViewModel'
 import type { ApiRole } from '@/shared/types/roles.types'
 import { useAppSelector } from '@/store/hooks'
@@ -61,21 +62,11 @@ export const useExternalProfileViewModel = ({
       return format ? getRestaurantFormatLabel(format) : getUiRoleLabel(apiRole)
     }
     if (apiRole === 'supplier') {
-      const supplierProfile =
-        userProfile?.supplier_profile ?? userProfile?.supplier_profile_attributes
-      const category = supplierProfile?.supplier_category?.trim()
+      const category = getSupplierCategory(getSupplierProfile(userProfile))
       return category ? getSupplierTypeLabel(category) : getUiRoleLabel(apiRole)
     }
     return getUiRoleLabel(apiRole)
-  }, [
-    apiRole,
-    getRestaurantFormatLabel,
-    getSupplierTypeLabel,
-    getUiRoleLabel,
-    userProfile?.restaurant_profile?.restaurant_format,
-    userProfile?.supplier_profile,
-    userProfile?.supplier_profile_attributes,
-  ])
+  }, [apiRole, getRestaurantFormatLabel, getSupplierTypeLabel, getUiRoleLabel, userProfile])
 
   const positionLabel = (() => {
     if (apiRole !== 'employee' || !userProfile?.employee_profile?.position) return null

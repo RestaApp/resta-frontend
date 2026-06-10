@@ -2,6 +2,7 @@ import type { TFunction } from 'i18next'
 import type { RestaurantApiUser, SupplierApiUser, SupplierItem } from './types'
 import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
 import { toLocationArray } from '@/shared/utils/location'
+import { getSupplierProfile, getSupplierTypes } from '@/shared/utils/supplierProfile'
 import {
   getUserPhotoUrl,
   normalizeRating,
@@ -9,20 +10,13 @@ import {
 } from '@/shared/utils/userFieldNormalizers'
 
 const getSupplierName = (item: SupplierApiUser, fallback: string) => {
-  const profile = item.supplier_profile ?? item.supplier_profile_attributes ?? null
+  const profile = getSupplierProfile(item)
   const fromParts = [item.name, item.last_name].filter(Boolean).join(' ').trim()
   return item.full_name || profile?.name || fromParts || fallback
 }
 
-const getSupplierProfile = (item: SupplierApiUser) =>
-  item.supplier_profile ?? item.supplier_profile_attributes ?? null
-
-const getSupplierCategories = (item: SupplierApiUser): string[] => {
-  const profile = getSupplierProfile(item)
-  const fromApi =
-    profile?.supplier_types && Array.isArray(profile.supplier_types) ? profile.supplier_types : []
-  return fromApi.filter(Boolean)
-}
+const getSupplierCategories = (item: SupplierApiUser): string[] =>
+  getSupplierTypes(getSupplierProfile(item))
 
 export const getRestaurantProfile = (item: RestaurantApiUser) =>
   item.restaurant_profile ?? item.restaurant_profile_attributes ?? null

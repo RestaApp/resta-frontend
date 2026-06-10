@@ -8,6 +8,7 @@ import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
 import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { splitSkillByDots } from '@/shared/utils/profileSkills'
+import { getSupplierProfile, getSupplierTypes } from '@/shared/utils/supplierProfile'
 import { buildBusinessProfileInfoRows } from '@/shared/ui/user-profile/buildBusinessProfileInfoRows'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
@@ -216,13 +217,8 @@ const buildTagSections = ({
   }
 
   if (apiRole === 'supplier') {
-    const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
-    const rawSupplierTypes = supplierProfile?.supplier_types
-    const types = Array.isArray(rawSupplierTypes)
-      ? rawSupplierTypes
-      : supplierProfile?.supplier_type
-        ? [supplierProfile.supplier_type]
-        : []
+    const supplierProfile = getSupplierProfile(userProfile)
+    const types = getSupplierTypes(supplierProfile)
 
     sections.push({
       id: 'supplier-types',
@@ -283,7 +279,7 @@ const buildInfoSections = ({
   const businessHours = isBusinessRole
     ? businessHoursRecordToFormValue(userProfile.business_hours)
     : ''
-  const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
+  const supplierProfile = getSupplierProfile(userProfile)
 
   pushTextRow(rows, {
     id: 'bio',
@@ -393,8 +389,7 @@ const buildInfoSections = ({
 }
 
 export const buildProfileViewModel = (params: BuildProfileViewModelParams): ProfileViewModel => {
-  const { t, apiRole, userProfile, userName, roleLabel, completeness, hideMetrics = false } =
-    params
+  const { t, apiRole, userProfile, userName, roleLabel, completeness, hideMetrics = false } = params
 
   return {
     userProfile,

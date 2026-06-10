@@ -19,6 +19,7 @@ import { useAuth } from '@/app/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 import { buildProfileViewModel } from '@/shared/ui/user-profile/buildProfileViewModel'
 import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
+import { getSupplierCategory, getSupplierProfile } from '@/shared/utils/supplierProfile'
 
 export const useProfilePageModel = () => {
   const { t } = useTranslation()
@@ -113,9 +114,7 @@ export const useProfilePageModel = () => {
       return format ? getRestaurantFormatLabel(format) : t('profile.subtitle.venue')
     }
     if (apiRole === 'supplier') {
-      const supplierProfile =
-        userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
-      const category = supplierProfile?.supplier_category?.trim()
+      const category = getSupplierCategory(getSupplierProfile(userProfile))
       return category ? getSupplierTypeLabel(category) : t('profile.subtitle.supplier')
     }
     return t('common.user')
@@ -175,9 +174,6 @@ export const useProfilePageModel = () => {
     showToast(t('legal.deleteAccount.success'), 'success')
     window.location.reload()
   }, [clearUserData, showToast, t, userProfile])
-  const handleEditSuccess = useCallback(() => {
-    // cache is updated automatically via onQueryStarted in the mutation
-  }, [])
 
   const handleOpenToWorkToggle = useCallback(
     async (nextValue: boolean) => {
@@ -240,7 +236,6 @@ export const useProfilePageModel = () => {
     venueHiresCount,
 
     isEditDrawerOpen,
-    handleEditSuccess,
     setIsEditDrawerOpen,
 
     isNotificationPrefsDrawerOpen,

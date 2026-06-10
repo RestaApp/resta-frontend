@@ -22,15 +22,11 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
+import { useScrollToRefWhen } from '@/shared/lib/hooks/useScrollToRefWhen'
 import { StepPanel } from '@/components/ui/step-panel'
 import { StepProgress } from '@/components/ui/step-progress'
-import { EditProfileStepBasic } from './edit-profile/EditProfileStepBasic'
-import { EditProfileStepProfessional } from './edit-profile/EditProfileStepProfessional'
-import { EditProfileStepAbout } from './edit-profile/EditProfileStepAbout'
-import { EditProfileStepBusinessSchedule } from './edit-profile/EditProfileStepBusinessSchedule'
-import { EditProfileStepVenueInfo } from './edit-profile/EditProfileStepVenueInfo'
-import { EditProfileStepSupplierInfo } from './edit-profile/EditProfileStepSupplierInfo'
 import { getEditProfileStepNameKey } from './edit-profile/editProfileStepNames'
+import { EditProfileStepContent } from './edit-profile/EditProfileStepContent'
 
 interface EditProfileDrawerProps {
   open: boolean
@@ -89,177 +85,20 @@ export const EditProfileDrawer = memo(
 
     const handleCancel = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
 
-    useEffect(() => {
-      if (!open || initialSection !== 'specializations' || apiRole !== 'employee' || step !== 1) {
-        return
-      }
-
-      const frame = requestAnimationFrame(() => {
-        specializationRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
-      })
-
-      return () => cancelAnimationFrame(frame)
-    }, [apiRole, initialSection, open, step])
-
-    useEffect(() => {
-      if (!open || initialSection !== 'supplierTypes' || apiRole !== 'supplier' || step !== 2) {
-        return
-      }
-
-      const frame = requestAnimationFrame(() => {
-        supplierTypesRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
-      })
-
-      return () => cancelAnimationFrame(frame)
-    }, [apiRole, initialSection, open, step])
+    useScrollToRefWhen(
+      open && initialSection === 'specializations' && apiRole === 'employee' && step === 1,
+      specializationRef
+    )
+    useScrollToRefWhen(
+      open && initialSection === 'supplierTypes' && apiRole === 'supplier' && step === 2,
+      supplierTypesRef
+    )
 
     if (!userProfile) return null
 
     const bioSuffix = getBioLabelSuffix(apiRole)
     const isLastStep = step === totalSteps - 1
     const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
-
-    const renderStepContent = () => {
-      if (apiRole === 'employee') {
-        if (step === 0) {
-          return (
-            <EditProfileStepBasic
-              apiRole={apiRole}
-              formData={formData}
-              fieldErrors={fieldErrors}
-              cities={cities}
-              isCitiesLoading={isCitiesLoading}
-              isLoading={isLoading}
-              photoUrl={photoUrl}
-              updateField={updateField}
-            />
-          )
-        }
-
-        if (step === 1) {
-          return (
-            <EditProfileStepProfessional
-              formData={formData}
-              fieldErrors={fieldErrors}
-              experienceYearsValue={experienceYearsForSlider}
-              positions={positions}
-              isPositionsLoading={isPositionsLoading}
-              specializationOptions={specializationOptions}
-              isSpecializationsLoading={isSpecializationsLoading}
-              specializationRef={specializationRef}
-              disabled={isLoading}
-              updateField={updateField}
-            />
-          )
-        }
-
-        return (
-          <EditProfileStepAbout
-            formData={formData}
-            bioSuffix={bioSuffix}
-            isLoading={isLoading}
-            updateField={updateField}
-          />
-        )
-      }
-
-      if (apiRole === 'restaurant') {
-        if (step === 0) {
-          return (
-            <EditProfileStepBasic
-              apiRole={apiRole}
-              formData={formData}
-              fieldErrors={fieldErrors}
-              cities={cities}
-              isCitiesLoading={isCitiesLoading}
-              isLoading={isLoading}
-              updateField={updateField}
-            />
-          )
-        }
-
-        if (step === 1) {
-          return (
-            <EditProfileStepBusinessSchedule
-              formData={formData}
-              isLoading={isLoading}
-              updateField={updateField}
-            />
-          )
-        }
-
-        return (
-          <EditProfileStepVenueInfo
-            apiRole={apiRole}
-            formData={formData}
-            bioSuffix={bioSuffix}
-            isLoading={isLoading}
-            updateField={updateField}
-          />
-        )
-      }
-
-      if (apiRole === 'supplier') {
-        if (step === 0) {
-          return (
-            <EditProfileStepBasic
-              apiRole={apiRole}
-              formData={formData}
-              fieldErrors={fieldErrors}
-              cities={cities}
-              isCitiesLoading={isCitiesLoading}
-              isLoading={isLoading}
-              updateField={updateField}
-            />
-          )
-        }
-
-        if (step === 1) {
-          return (
-            <EditProfileStepBusinessSchedule
-              formData={formData}
-              isLoading={isLoading}
-              updateField={updateField}
-            />
-          )
-        }
-
-        return (
-          <EditProfileStepSupplierInfo
-            formData={formData}
-            bioSuffix={bioSuffix}
-            isLoading={isLoading}
-            supplierTypeOptions={supplierTypeOptions}
-            isSupplierTypesLoading={isSupplierTypesLoading}
-            supplierTypesRef={supplierTypesRef}
-            updateField={updateField}
-          />
-        )
-      }
-
-      if (step === 0) {
-        return (
-          <EditProfileStepBasic
-            apiRole={apiRole}
-            formData={formData}
-            fieldErrors={fieldErrors}
-            cities={cities}
-            isCitiesLoading={isCitiesLoading}
-            isLoading={isLoading}
-            updateField={updateField}
-          />
-        )
-      }
-
-      return (
-        <EditProfileStepAbout
-          formData={formData}
-          bioSuffix={bioSuffix}
-          isLoading={isLoading}
-          updateField={updateField}
-        />
-      )
-    }
 
     const stepNameKey = getEditProfileStepNameKey(apiRole, step)
 
@@ -279,7 +118,29 @@ export const EditProfileDrawer = memo(
           </DrawerHeader>
 
           <DrawerBody>
-            <StepPanel stepKey={step}>{renderStepContent()}</StepPanel>
+            <StepPanel stepKey={step}>
+              <EditProfileStepContent
+                apiRole={apiRole}
+                step={step}
+                formData={formData}
+                fieldErrors={fieldErrors}
+                cities={cities}
+                isCitiesLoading={isCitiesLoading}
+                isLoading={isLoading}
+                photoUrl={photoUrl}
+                bioSuffix={bioSuffix}
+                experienceYearsForSlider={experienceYearsForSlider}
+                positions={positions}
+                isPositionsLoading={isPositionsLoading}
+                specializationOptions={specializationOptions}
+                isSpecializationsLoading={isSpecializationsLoading}
+                specializationRef={specializationRef}
+                supplierTypeOptions={supplierTypeOptions}
+                isSupplierTypesLoading={isSupplierTypesLoading}
+                supplierTypesRef={supplierTypesRef}
+                updateField={updateField}
+              />
+            </StepPanel>
           </DrawerBody>
 
           <DrawerFooter

@@ -16,7 +16,23 @@ type LegalScreen = 'none' | 'privacy' | 'terms'
 
 export const ProfilePage = memo(() => {
   const { t } = useTranslation()
-  const m = useProfilePageModel()
+  const {
+    userProfile,
+    isProfileLoading,
+    apiRole,
+    profileViewModel,
+    venueInfoRows,
+    venueOpenShiftsCount,
+    venueHiresCount,
+    isEditDrawerOpen,
+    setIsEditDrawerOpen,
+    isNotificationPrefsDrawerOpen,
+    setIsNotificationPrefsDrawerOpen,
+    isUpdatingUser,
+    handleOpenToWorkToggle,
+    handleLogout,
+    handleDeleteAccount,
+  } = useProfilePageModel()
   const [legalScreen, setLegalScreen] = useState<LegalScreen>('none')
   const [editProfileSection, setEditProfileSection] = useState<
     'specializations' | 'supplierTypes' | null
@@ -29,13 +45,13 @@ export const ProfilePage = memo(() => {
 
   const handleEditSpecializations = useCallback(() => {
     setEditProfileSection('specializations')
-    m.setIsEditDrawerOpen(true)
-  }, [m])
+    setIsEditDrawerOpen(true)
+  }, [setIsEditDrawerOpen])
 
   const handleEditSupplierTypes = useCallback(() => {
     setEditProfileSection('supplierTypes')
-    m.setIsEditDrawerOpen(true)
-  }, [m])
+    setIsEditDrawerOpen(true)
+  }, [setIsEditDrawerOpen])
 
   if (legalScreen === 'privacy') {
     return <PrivacyPolicyPage onBack={handleLegalBack} />
@@ -45,7 +61,7 @@ export const ProfilePage = memo(() => {
     return <TermsOfServicePage onBack={handleLegalBack} />
   }
 
-  if (m.isProfileLoading) {
+  if (isProfileLoading) {
     return (
       <div className="pb-24 ui-density-page ui-density-py">
         <ProfileSkeleton variant="page" />
@@ -53,7 +69,7 @@ export const ProfilePage = memo(() => {
     )
   }
 
-  if (!m.userProfile || !m.profileViewModel) {
+  if (!userProfile || !profileViewModel) {
     return (
       <div className="pb-24 ui-density-page ui-density-py">
         <ErrorState title={t('profile.loadError')} />
@@ -63,54 +79,53 @@ export const ProfilePage = memo(() => {
 
   return (
     <div className="pb-4 pt-2 ui-density-page ui-density-stack">
-      {m.apiRole === 'restaurant' ? (
+      {apiRole === 'restaurant' ? (
         <VenueProfileOverview
-          profile={m.profileViewModel}
-          infoRows={m.venueInfoRows}
-          openShiftsCount={m.venueOpenShiftsCount}
-          hiresCount={m.venueHiresCount}
-          onFill={() => m.setIsEditDrawerOpen(true)}
+          profile={profileViewModel}
+          infoRows={venueInfoRows}
+          openShiftsCount={venueOpenShiftsCount}
+          hiresCount={venueHiresCount}
+          onFill={() => setIsEditDrawerOpen(true)}
         />
       ) : (
         <ProfileOverview
-          profile={m.profileViewModel}
-          onFill={() => m.setIsEditDrawerOpen(true)}
+          profile={profileViewModel}
+          onFill={() => setIsEditDrawerOpen(true)}
           onEditSpecializations={handleEditSpecializations}
           onEditSupplierTypes={handleEditSupplierTypes}
-          onOpenToWorkToggle={m.handleOpenToWorkToggle}
-          isOpenToWorkUpdating={m.isUpdatingUser}
+          onOpenToWorkToggle={handleOpenToWorkToggle}
+          isOpenToWorkUpdating={isUpdatingUser}
         />
       )}
 
       <ProfileSettings
-        onLogout={m.handleLogout}
-        onNotificationSettingsClick={() => m.setIsNotificationPrefsDrawerOpen(true)}
-        showNotificationSettings={m.profileViewModel.showNotificationSettings}
-        showSupport={m.profileViewModel.showSupport}
+        onLogout={handleLogout}
+        onNotificationSettingsClick={() => setIsNotificationPrefsDrawerOpen(true)}
+        showNotificationSettings={profileViewModel.showNotificationSettings}
+        showSupport={profileViewModel.showSupport}
         onPrivacyPress={() => setLegalScreen('privacy')}
         onTermsPress={() => setLegalScreen('terms')}
-        onDeleteAccount={m.handleDeleteAccount}
+        onDeleteAccount={handleDeleteAccount}
       />
 
       <EditProfileDrawer
-        open={m.isEditDrawerOpen}
+        open={isEditDrawerOpen}
         onOpenChange={open => {
-          m.setIsEditDrawerOpen(open)
+          setIsEditDrawerOpen(open)
           if (!open) setEditProfileSection(null)
         }}
         initialSection={editProfileSection}
         onSuccess={() => {
           setEditProfileSection(null)
-          m.setIsEditDrawerOpen(false)
-          void m.handleEditSuccess()
+          setIsEditDrawerOpen(false)
         }}
       />
 
-      {m.profileViewModel.showNotificationSettings ? (
+      {profileViewModel.showNotificationSettings ? (
         <NotificationPreferencesDrawer
-          open={m.isNotificationPrefsDrawerOpen}
-          onOpenChange={m.setIsNotificationPrefsDrawerOpen}
-          apiRole={m.apiRole}
+          open={isNotificationPrefsDrawerOpen}
+          onOpenChange={setIsNotificationPrefsDrawerOpen}
+          apiRole={apiRole}
         />
       ) : null}
     </div>

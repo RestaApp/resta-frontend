@@ -12,6 +12,11 @@ import { formatPhoneInput, validatePhone } from '@/shared/utils/phone'
 import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { toLocationArray } from '@/shared/utils/location'
+import {
+  getSupplierCategory,
+  getSupplierProfile,
+  getSupplierTypes,
+} from '@/shared/utils/supplierProfile'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 
@@ -44,11 +49,7 @@ export const useEditProfileModel = (
 
   const supplierCategory = useMemo(() => {
     if (apiRole !== 'supplier') return null
-    return (
-      userProfile?.supplier_profile?.supplier_category ??
-      userProfile?.supplier_profile_attributes?.supplier_category ??
-      null
-    )
+    return getSupplierCategory(getSupplierProfile(userProfile))
   }, [apiRole, userProfile])
 
   const {
@@ -85,7 +86,7 @@ export const useEditProfileModel = (
     }
 
     const ep = userProfile.employee_profile
-    const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
+    const supplierProfile = getSupplierProfile(userProfile)
     return {
       name:
         apiRole === 'restaurant'
@@ -121,13 +122,7 @@ export const useEditProfileModel = (
             )
           : [],
       supplierCategory: supplierProfile?.supplier_category ?? '',
-      supplierTypes: supplierProfile
-        ? Array.isArray(supplierProfile.supplier_types)
-          ? Array.from(new Set(supplierProfile.supplier_types.filter(Boolean)))
-          : supplierProfile.supplier_type
-            ? [supplierProfile.supplier_type]
-            : []
-        : [],
+      supplierTypes: getSupplierTypes(supplierProfile),
     }
   }, [apiRole, userProfile])
 
