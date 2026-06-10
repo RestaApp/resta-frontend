@@ -31,11 +31,9 @@ export const BottomNav = ({
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
   const collapse = useBottomNavCollapse()
-  const barHeight = useTransform(collapse, [0, 1], ['3.25rem', '2.75rem'])
-  const labelOpacity = useTransform(collapse, [0, 0.45], [1, 0])
-  const labelMaxHeight = useTransform(collapse, [0, 1], ['0.75rem', '0rem'])
-  const iconSize = useTransform(collapse, [0, 1], ['1.375rem', '1.25rem'])
-  const buttonGap = useTransform(collapse, [0, 1], ['0.25rem', '0rem'])
+  const barScale = useTransform(collapse, [0, 1], [1, 0.9])
+  const labelOpacity = useTransform(collapse, [0, 0.35], [1, 0])
+  const labelMaxHeight = useTransform(collapse, [0, 1], ['0.5625rem', '0rem'])
   const activeIndex = Math.max(
     tabs.findIndex(tab => tab.id === activeTab),
     0
@@ -51,16 +49,16 @@ export const BottomNav = ({
     >
       <div className="ui-app-frame pointer-events-none">
         <motion.div
-          style={{ height: barHeight }}
+          style={{ scale: barScale, transformOrigin: '50% 100%' }}
           className={cn(
-            'pointer-events-auto relative mx-auto flex w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 p-0.5',
+            'pointer-events-auto relative mx-auto flex h-13 w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 p-0.5',
             reduceVisualEffects ? 'bg-background/95' : 'bg-background/65 backdrop-blur-xl',
             tabs.length === 4 ? 'grid grid-cols-4' : 'grid grid-cols-2'
           )}
         >
           <motion.span
-            className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-elevated/95 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18),inset_0_-1px_1px_rgba(0,0,0,0.2)]"
-            style={{ width: `${100 / tabs.length}%` }}
+            className="pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 rounded-full bg-elevated/95 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18),inset_0_-1px_1px_rgba(0,0,0,0.2)]"
+            style={{ width: `calc((100% - 0.25rem) / ${tabs.length})` }}
             animate={{ x: `${activeIndex * 100}%` }}
             transition={
               reduceMotion ? { duration: 0 } : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }
@@ -83,18 +81,14 @@ export const BottomNav = ({
                 aria-label={ariaLabel}
                 aria-current={isActive ? 'page' : undefined}
                 data-haptic="light"
-                style={{ gap: buttonGap }}
                 whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                 onClick={() => onTabChange(id)}
                 className={cn(
-                  'relative z-10 flex h-full min-h-11 flex-col items-center justify-center rounded-full px-2 py-0.5',
+                  'relative z-10 flex h-full min-h-11 flex-col items-center justify-center gap-0.5 rounded-full px-1 py-0.5',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
                 )}
               >
-                <motion.span
-                  className="relative flex items-center justify-center"
-                  style={{ width: iconSize, height: iconSize }}
-                >
+                <span className="relative flex size-[1.375rem] items-center justify-center">
                   {id === 'myshifts' ? (
                     <Avatar
                       className={cn(
@@ -132,12 +126,12 @@ export const BottomNav = ({
                       aria-hidden="true"
                     />
                   )}
-                </motion.span>
+                </span>
 
                 <motion.span
                   style={{ opacity: labelOpacity, maxHeight: labelMaxHeight }}
                   className={cn(
-                    'overflow-hidden text-xs font-semibold uppercase leading-none tracking-wider transition-colors',
+                    'w-full overflow-hidden text-center text-[9px] font-medium uppercase leading-none tracking-normal transition-colors',
                     isActive ? 'text-primary' : 'text-muted-foreground'
                   )}
                 >
