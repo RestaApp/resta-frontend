@@ -13,6 +13,7 @@ interface MultiSelectSpecializationsProps {
   placeholder?: string
   disabled?: boolean
   hint?: string
+  hintPlacement?: 'label' | 'below'
   isLoading?: boolean
   error?: string
 }
@@ -25,6 +26,7 @@ export const MultiSelectSpecializations = ({
   placeholder,
   disabled = false,
   hint,
+  hintPlacement = 'label',
   isLoading = false,
   error,
 }: MultiSelectSpecializationsProps) => {
@@ -40,7 +42,7 @@ export const MultiSelectSpecializations = ({
   }
 
   return (
-    <Field label={label} hint={hint} error={error}>
+    <Field label={label} hint={hint} hintPlacement={hintPlacement} error={error}>
       <div className="flex flex-col gap-3">
         {isLoading ? (
           <div className="flex items-center gap-2 py-2">

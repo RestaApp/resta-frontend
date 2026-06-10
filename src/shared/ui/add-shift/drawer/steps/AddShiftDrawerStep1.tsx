@@ -98,6 +98,7 @@ export const AddShiftDrawerStep1 = ({
       <div ref={specializationRef}>
         <MultiSelectSpecializations
           label={t('shift.specialization')}
+          hint={t('roles.specializationMultiHint')}
           value={specializations}
           onChange={onSpecializationsChange}
           options={availableSpecializations}

@@ -166,7 +166,13 @@ export function VenueStaffPage() {
         open={selectedItem != null}
         onClose={handleCloseDetails}
         applicationId={selectedItem?.applicationId ?? null}
-        applicationStatus={selectedItem?.applicationStatus === 'accepted' ? 'accepted' : 'pending'}
+        applicationStatus={
+          selectedItem?.applicationStatus === 'accepted'
+            ? 'accepted'
+            : selectedItem?.applicationStatus === 'rejected'
+              ? 'rejected'
+              : 'pending'
+        }
         canModerate={selectedItem?.applicationStatus !== 'rejected'}
         moderatingAction={moderatingAction}
         onAccept={handleDrawerAccept}

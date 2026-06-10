@@ -22,8 +22,8 @@ interface UserProfileDrawerProps {
   onClose: () => void
   applicationId?: number | null
   canModerate?: boolean
-  /** Статус заявки: при 'accepted' показывается только кнопка «Отклонить» */
-  applicationStatus?: 'pending' | 'accepted'
+  /** Статус заявки: hire — только при 'pending'; reject — при 'pending' и 'accepted' */
+  applicationStatus?: 'pending' | 'accepted' | 'rejected'
   moderatingAction?: 'accept' | 'reject' | null
   onAccept?: () => Promise<void>
   onReject?: () => Promise<void>
@@ -54,12 +54,16 @@ export const UserProfileDrawer = memo(
       onClose()
     }
 
-    const canReject = canModerate && typeof applicationId === 'number' && Boolean(onReject)
+    const canReject =
+      canModerate &&
+      typeof applicationId === 'number' &&
+      Boolean(onReject) &&
+      applicationStatus !== 'rejected'
     const canAccept =
       canModerate &&
       typeof applicationId === 'number' &&
       Boolean(onAccept) &&
-      applicationStatus !== 'accepted'
+      applicationStatus === 'pending'
     const showModerationActions = canReject || canAccept
 
     return (

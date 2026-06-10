@@ -100,6 +100,7 @@ export const ApplicantPreviewCard = memo(
     const appId = app.shift_application_id ?? app.id ?? null
     const appStatus = app.shift_application_status ?? app.status ?? 'pending'
     const isAccepted = appStatus === 'accepted'
+    const isRejected = appStatus === 'rejected'
     const userId = app.user_id || user?.id
     const isThisAccepting =
       isAccepting && typeof appId === 'number' && acceptingApplicationId === appId
@@ -189,7 +190,7 @@ export const ApplicantPreviewCard = memo(
             </div>
 
             <div className="flex w-[4.75rem] shrink-0 flex-col justify-center gap-2 self-stretch">
-              {!isAccepted && typeof appId === 'number' ? (
+              {!isAccepted && !isRejected && typeof appId === 'number' ? (
                 <Button
                   type="button"
                   variant="gradient"

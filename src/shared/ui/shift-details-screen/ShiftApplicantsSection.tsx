@@ -77,7 +77,13 @@ export const ShiftApplicantsSection = ({
         open={moderation.selectedApplicantId !== null}
         applicationId={moderation.selectedApplicantApplicationId}
         canModerate={moderation.canModerateSelected}
-        applicationStatus={moderation.selectedAppStatus === 'accepted' ? 'accepted' : 'pending'}
+        applicationStatus={
+          moderation.selectedAppStatus === 'accepted'
+            ? 'accepted'
+            : moderation.selectedAppStatus === 'rejected'
+              ? 'rejected'
+              : 'pending'
+        }
         moderatingAction={
           moderation.moderating?.id === moderation.selectedApplicantApplicationId
             ? moderation.moderating.action

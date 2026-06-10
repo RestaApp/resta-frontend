@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { TFunction } from 'i18next'
 import {
   type VacancyApiItem,
@@ -6,6 +6,7 @@ import {
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
 import { useToast } from '@/shared/lib/hooks/useToast'
+import type { KnownShiftStatus } from '@/shared/shifts/types'
 import { normalizeApiError } from '@/shared/utils/apiErrors'
 import { getApplicationsPreview } from '@/shared/shifts/applicationsPreview'
 
@@ -36,8 +37,24 @@ export const useShiftApplicantsModeration = ({
   const [moderating, setModerating] = useState<{ id: number; action: 'accept' | 'reject' } | null>(
     null
   )
+  const [statusOverrides, setStatusOverrides] = useState<Record<number, KnownShiftStatus>>({})
 
-  const applicationsPreview = getApplicationsPreview(vacancyData)
+  const applicationsPreview = useMemo(() => {
+    const base = getApplicationsPreview(vacancyData)
+    return base.map(app => {
+      const id = app.shift_application_id ?? app.id
+      if (typeof id !== 'number') return app
+
+      const override = statusOverrides[id]
+      if (!override) return app
+
+      return {
+        ...app,
+        shift_application_status: override,
+        status: override,
+      }
+    })
+  }, [vacancyData, statusOverrides])
   const applicationsCount = vacancyData?.applications_count
 
   const selectedApp = applicationsPreview.find(
@@ -57,6 +74,7 @@ export const useShiftApplicantsModeration = ({
           applicationId: id,
           shiftId,
         }).unwrap()
+        setStatusOverrides(prev => ({ ...prev, [id]: 'accepted' }))
         showToast(extractModerationMessage(result) ?? t('shift.applicationAccepted'), 'success')
       } catch (e) {
         const err = normalizeApiError(e, t('shift.acceptApplicationError'), t)
@@ -77,6 +95,7 @@ export const useShiftApplicantsModeration = ({
           applicationId: id,
           shiftId,
         }).unwrap()
+        setStatusOverrides(prev => ({ ...prev, [id]: 'rejected' }))
         showToast(extractModerationMessage(result) ?? t('shift.applicationRejected'), 'warning')
       } catch (e) {
         const err = normalizeApiError(e, t('shift.rejectApplicationError'), t)

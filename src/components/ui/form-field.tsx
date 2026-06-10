@@ -6,6 +6,8 @@ interface FormFieldProps {
   label?: string
   htmlFor?: string
   hint?: string
+  /** `label` — справа от заголовка; `below` — под полем (по умолчанию). */
+  hintPlacement?: 'label' | 'below'
   error?: string
   required?: boolean
   className?: string
@@ -18,6 +20,7 @@ export const FormField = ({
   label,
   htmlFor,
   hint,
+  hintPlacement = 'below',
   error,
   required = false,
   className,
@@ -27,18 +30,30 @@ export const FormField = ({
 }: FormFieldProps) => {
   const errorText = error?.trim() ? error : undefined
   const hintText = !errorText ? hint?.trim() : undefined
-  const hasMessage = Boolean(errorText || hintText)
+  const labelHintText = hintPlacement === 'label' ? hintText : undefined
+  const belowHintText = hintPlacement === 'below' ? hintText : undefined
+  const hasMessage = Boolean(errorText || belowHintText)
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {label ? (
-        <label
-          htmlFor={htmlFor}
-          className={cn('block', PROFILE_SECTION_LABEL_CLASS, labelClassName)}
-        >
-          {label}
-          {required ? ' *' : ''}
-        </label>
+        hintPlacement === 'label' && labelHintText ? (
+          <div className="flex items-center justify-between gap-2">
+            <label htmlFor={htmlFor} className={cn(PROFILE_SECTION_LABEL_CLASS, labelClassName)}>
+              {label}
+              {required ? ' *' : ''}
+            </label>
+            <span className="shrink-0 text-xs text-muted-foreground">{labelHintText}</span>
+          </div>
+        ) : (
+          <label
+            htmlFor={htmlFor}
+            className={cn('block', PROFILE_SECTION_LABEL_CLASS, labelClassName)}
+          >
+            {label}
+            {required ? ' *' : ''}
+          </label>
+        )
       ) : null}
 
       {children}
@@ -52,7 +67,7 @@ export const FormField = ({
           )}
           role={errorText ? 'alert' : undefined}
         >
-          {errorText ?? hintText}
+          {errorText ?? belowHintText}
         </p>
       ) : null}
     </div>
