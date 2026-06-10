@@ -1,5 +1,4 @@
 import { OwnerShiftCardsList } from '@/features/activity/ui/components/OwnerShiftCardsList'
-import { groupOwnerByListingStatus } from '@/shared/shifts/groupOwnerByListingStatus'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 interface VenueShiftsSectionProps {
@@ -21,7 +20,6 @@ export const VenueShiftsSection = ({
       onEdit={onEdit}
       onDelete={onDelete}
       isDeleting={isDeleting}
-      groupBy={groupOwnerByListingStatus}
     />
   </section>
 )
