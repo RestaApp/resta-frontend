@@ -19,7 +19,7 @@ type TagSize = 'md' | 'lg'
 
 const SIZE_CLASS: Record<TagSize, string> = {
   md: '',
-  lg: 'px3 py-2 text-sm font-semibold',
+  lg: 'px-3 py-2 text-sm font-semibold',
 }
 
 interface SelectableTagButtonProps {

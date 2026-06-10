@@ -97,12 +97,10 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
         options={specializationOptions}
         disabled={disabled || !formData.position}
         isLoading={isSpecializationsLoading}
+        error={fieldErrors.specializations}
         containerRef={specializationRef}
         onChange={next => updateField('specializations', next)}
       />
-      {fieldErrors.specializations ? (
-        <p className="-mt-2 text-sm text-destructive">{fieldErrors.specializations}</p>
-      ) : null}
 
       <FormField label={t('profile.experienceYearsLabel')} required>
         <div className="mb-3">

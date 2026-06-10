@@ -76,15 +76,10 @@ const renderInfoValue = (row: ProfileInfoRow) => {
 const ProfileTagBadge = ({ item }: { item: ProfileTagSection['items'][number] }) => (
   <Badge
     variant="tag"
-    className={cn(
-      'rounded-sm px-2 py-1 font-mono-resta text-xs font-semibold tracking-wide',
-      item.id === 'experience'
-        ? 'border-primary/30 bg-primary/10 text-primary'
-        : 'border-border bg-card text-foreground'
-    )}
+    className={cn(item.id === 'experience' && 'border-primary/30 bg-primary/10 text-primary')}
   >
     {item.id === 'experience' ? (
-      <BriefcaseBusiness className="mr-1.5 h-3 w-3 text-primary" aria-hidden="true" />
+      <BriefcaseBusiness className="h-3 w-3 text-primary" aria-hidden="true" />
     ) : null}
     {item.label}
   </Badge>
@@ -148,13 +143,7 @@ const ProfileOpenToWorkCard = ({
 }) => {
   if (!visible || !onToggle) return null
 
-  return (
-    <OpenToWorkButton
-      checked={checked}
-      disabled={disabled}
-      onToggle={onToggle}
-    />
-  )
+  return <OpenToWorkButton checked={checked} disabled={disabled} onToggle={onToggle} />
 }
 
 const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {

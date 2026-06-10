@@ -107,7 +107,7 @@ export const EmployeeFieldsSection = memo(
             className="resize-none"
           />
           {skillsList.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {skillsList.map(skill => (
                 <Badge key={skill} variant="tag">
                   {skill}

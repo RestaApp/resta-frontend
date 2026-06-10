@@ -141,51 +141,54 @@ export const ApplicantPreviewCard = memo(
               </Avatar>
 
               <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{name}</p>
-                {isAccepted ? (
-                  <Badge variant="accepted" className="shrink-0">
-                    {t('shift.applicantSelected')}
-                  </Badge>
-                ) : null}
-              </div>
-              <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
-
-              <div
-                className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"
-                aria-label={t('common.rating')}
-              >
-                {hasRating ? (
-                  <span className="inline-flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden />
-                    {t('shift.ownerReviewsSummary', {
-                      rating: normalizedRating.toFixed(1),
-                      count: reviewsCount ?? 0,
-                    })}
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
-                    {t('shift.applicantNoReviews')}
-                  </span>
-                )}
-                {completedShifts != null ? (
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className={ICON_SM_CLASS} aria-hidden />
-                    {t('shift.venueCompletedShifts', { count: completedShifts })}
-                  </span>
-                ) : null}
-              </div>
-
-              {specializationTags.length > 0 ? (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {specializationTags.map(tag => (
-                    <Badge key={tag} variant="tag" className="font-normal">
-                      {tag}
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{name}</p>
+                  {isAccepted ? (
+                    <Badge variant="accepted" className="shrink-0">
+                      {t('shift.applicantSelected')}
                     </Badge>
-                  ))}
+                  ) : null}
                 </div>
-              ) : null}
+                <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
+
+                <div
+                  className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"
+                  aria-label={t('common.rating')}
+                >
+                  {hasRating ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Star
+                        className="h-3.5 w-3.5 shrink-0 fill-warning text-warning"
+                        aria-hidden
+                      />
+                      {t('shift.ownerReviewsSummary', {
+                        rating: normalizedRating.toFixed(1),
+                        count: reviewsCount ?? 0,
+                      })}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
+                      {t('shift.applicantNoReviews')}
+                    </span>
+                  )}
+                  {completedShifts != null ? (
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className={ICON_SM_CLASS} aria-hidden />
+                      {t('shift.venueCompletedShifts', { count: completedShifts })}
+                    </span>
+                  ) : null}
+                </div>
+
+                {specializationTags.length > 0 ? (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {specializationTags.map(tag => (
+                      <Badge key={tag} variant="tag">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </div>
 
@@ -278,9 +281,9 @@ export const ApplicantPreviewCard = memo(
         </div>
 
         {specializationTags.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {specializationTags.map(tag => (
-              <Badge key={tag} variant="tag" className="font-normal">
+              <Badge key={tag} variant="tag">
                 {tag}
               </Badge>
             ))}

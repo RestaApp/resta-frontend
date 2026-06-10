@@ -11,6 +11,7 @@ interface EmployeeSpecializationsFieldProps {
   options: string[]
   disabled: boolean
   isLoading: boolean
+  error?: string
   onChange: (value: string[]) => void
   containerRef?: RefObject<HTMLDivElement | null>
 }
@@ -20,6 +21,7 @@ export const EmployeeSpecializationsField = memo(function EmployeeSpecialization
   options,
   disabled,
   isLoading,
+  error,
   onChange,
   containerRef,
 }: EmployeeSpecializationsFieldProps) {
@@ -42,6 +44,7 @@ export const EmployeeSpecializationsField = memo(function EmployeeSpecialization
       hint={t('roles.specializationMultiHint')}
       hintPlacement="label"
       required
+      error={error}
       className="scroll-mt-4"
     >
       <div ref={containerRef} />

@@ -2,6 +2,10 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { Check, EyeOff } from 'lucide-react'
+import {
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 
 export interface OpenToWorkButtonProps {
@@ -70,14 +74,14 @@ export const OpenToWorkButton = memo(function OpenToWorkButton({
             {icon}
             <span
               className={cn(
-                'text-sm font-semibold',
+                SHIFT_CARD_TITLE_CLASS,
                 checked ? 'text-success' : 'text-muted-foreground'
               )}
             >
               {statusLabel}
             </span>
           </span>
-          <span className="shrink-0 text-xs text-muted-foreground">{hintLabel}</span>
+          <span className={cn(SHIFT_CARD_SUB_CLASS, 'shrink-0')}>{hintLabel}</span>
         </>
       )}
     </motion.button>
