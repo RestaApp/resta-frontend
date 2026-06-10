@@ -9,12 +9,12 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/states'
-import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
-import { APP_HEADER_ACTION_BUTTON_CLASS, APP_HEADER_ACTION_ICON_CLASS } from '@/components/ui/ui-patterns'
-import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
-import { SearchFilters } from '@/shared/ui/SearchFilters'
+import {
+  APP_HEADER_ACTION_BUTTON_CLASS,
+  APP_HEADER_ACTION_ICON_CLASS,
+} from '@/components/ui/ui-patterns'
+import { CatalogListShell } from '@/shared/ui/CatalogListShell'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { Toast } from '@/components/ui/toast'
 import { cn } from '@/shared/utils/cn'
@@ -58,14 +58,8 @@ export const EmployeeCatalogDrawer = () => {
             </div>
           </DrawerHeader>
 
-          <SearchFilters
-            activeFilters={m.activeFilters}
-            onResetFilters={m.handleResetFilters}
-            onRemoveFilter={m.handleRemoveFilter}
-          />
-
-          <DrawerBody className="ui-density-page ui-density-py">
-            {m.isError ? (
+          {m.isError ? (
+            <DrawerBody className="ui-density-page ui-density-py">
               <ErrorState
                 title={t('venueUi.staff.catalog.loadError', {
                   defaultValue: 'Не удалось загрузить сотрудников',
@@ -73,20 +67,28 @@ export const EmployeeCatalogDrawer = () => {
                 onRetry={() => void m.refetch()}
                 retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
               />
-            ) : m.isLoading && m.employeesCount === 0 ? (
-              <FeedCardSkeletonList variant="staff" className="ui-density-stack" />
-            ) : m.employees.length === 0 ? (
-              <EmptyState
-                image="shift-applicants"
-                message={t('venueUi.staff.catalog.emptyTitle', {
+            </DrawerBody>
+          ) : (
+            <DrawerBody className="p-0">
+              <CatalogListShell
+                activeFilters={m.activeFilters}
+                onResetFilters={m.handleResetFilters}
+                onRemoveFilter={m.handleRemoveFilter}
+                isLoading={m.isLoading}
+                itemsCount={m.employeesCount}
+                isEmpty={m.employees.length === 0}
+                skeletonVariant="staff"
+                emptyMessage={t('venueUi.staff.catalog.emptyTitle', {
                   defaultValue: 'Сотрудники не найдены',
                 })}
-                description={t('venueUi.staff.catalog.emptyDescription', {
+                emptyDescription={t('venueUi.staff.catalog.emptyDescription', {
                   defaultValue: 'Измените фильтры или попробуйте обновить список',
                 })}
-              />
-            ) : (
-              <>
+                emptyImage="shift-applicants"
+                hasMore={m.hasMore}
+                isFetching={m.isFetching}
+                onLoadMore={m.handleLoadMore}
+              >
                 <div className="ui-density-stack">
                   {m.employees.map(employee => (
                     <ApplicantPreviewCard
@@ -101,15 +103,9 @@ export const EmployeeCatalogDrawer = () => {
                     />
                   ))}
                 </div>
-                <InfiniteScrollTrigger
-                  onLoadMore={m.handleLoadMore}
-                  hasMore={m.hasMore}
-                  isLoading={m.isFetching}
-                  isError={false}
-                />
-              </>
-            )}
-          </DrawerBody>
+              </CatalogListShell>
+            </DrawerBody>
+          )}
         </DrawerFrame>
       </Drawer>
 

@@ -61,8 +61,7 @@ export const useDropdownAutoScroll = ({
     const viewportBottom = portaled
       ? window.innerHeight - SCROLL_PADDING_BUFFER
       : (dialogRect?.bottom ?? scrollContainerRect?.bottom ?? window.innerHeight)
-    const effectiveBottomOffset =
-      portaled || scrollContainerRect || dialogRect ? 0 : bottomOffsetPx
+    const effectiveBottomOffset = portaled || scrollContainerRect || dialogRect ? 0 : bottomOffsetPx
 
     let spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
     const deficit = DESIRED_DROPDOWN_HEIGHT - spaceBelow

@@ -1,9 +1,5 @@
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/shared/utils/cn'
-import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
-import { groupOwnerByListingStatus } from '@/features/activity/model/utils/groupOwnerByListingStatus'
+import { OwnerShiftCardsList } from '@/features/activity/ui/components/OwnerShiftCardsList'
+import { groupOwnerByListingStatus } from '@/shared/shifts/groupOwnerByListingStatus'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 interface VenueShiftsSectionProps {
@@ -18,28 +14,14 @@ export const VenueShiftsSection = ({
   onEdit,
   onDelete,
   isDeleting,
-}: VenueShiftsSectionProps) => {
-  const { t } = useTranslation()
-  const groups = useMemo(() => groupOwnerByListingStatus(items), [items])
-
-  return (
-    <section className="ui-density-stack">
-      {groups.map(({ status, label, items: groupItems }) => (
-        <div key={status} className="ui-density-stack">
-          <p className={cn(PROFILE_SECTION_LABEL_CLASS, 'mb-0')}>{t(label)}</p>
-          <div className="ui-density-stack">
-            {groupItems.map(shift => (
-              <PersonalShiftCard
-                key={shift.id}
-                shift={shift}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                isDeleting={isDeleting}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
-  )
-}
+}: VenueShiftsSectionProps) => (
+  <section className="ui-density-stack">
+    <OwnerShiftCardsList
+      items={items}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      isDeleting={isDeleting}
+      groupBy={groupOwnerByListingStatus}
+    />
+  </section>
+)

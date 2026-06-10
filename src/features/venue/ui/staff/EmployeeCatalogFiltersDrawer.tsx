@@ -92,7 +92,7 @@ export const EmployeeCatalogFiltersDrawer = ({
         <DrawerBody className="ui-density-stack">
           <div className="ui-density-stack">
             <p className={PROFILE_SECTION_LABEL_CLASS}>
-              {t('common.city', { defaultValue: 'Город' })}
+              {t('profile.city', { defaultValue: 'Город' })}
             </p>
             <CitySelect
               value={draftFilters.city}

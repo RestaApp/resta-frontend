@@ -39,15 +39,9 @@ const ScreenTabsHeaderInner = <T extends string>({
   const hasTabs = tabOptions != null && activeTabId != null && onTabChange != null
 
   return (
-    <header
-      className={cn(SCREEN_HEADER_SHELL_CLASS)}
-      style={{ zIndex: Z_INDEX.stickyHeader }}
-    >
+    <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
       <div
-        className={cn(
-          SCREEN_HEADER_ROW_CLASS,
-          showBorderBottom ? 'border-b border-border' : null
-        )}
+        className={cn(SCREEN_HEADER_ROW_CLASS, showBorderBottom ? 'border-b border-border' : null)}
       >
         <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>{title}</h1>
 

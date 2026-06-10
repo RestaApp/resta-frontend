@@ -10,19 +10,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SectionHeader } from '@/components/ui/section-header'
-import {
-  SHIFT_CARD_CLASS,
-  SHIFT_CARD_SUB_CLASS,
-  SHIFT_CARD_TITLE_CLASS,
-} from '@/components/ui/shift-card/shift-card-styles'
-import {
-  formatOwnerShiftScheduleLine,
-  getOwnerShiftTitle,
-} from '@/shared/shifts/ownerShiftDisplay'
-import { cn } from '@/shared/utils/cn'
+import { OwnerListingCardWithInvite } from '@/components/ui/shift-card/OwnerListingCard'
+import { partitionListingsByShiftType } from '@/shared/shifts/mapping'
 import type { EmployeeCatalogItem } from './employeeCatalogTypes'
 
 interface EmployeeInviteDrawerProps {
@@ -34,52 +25,6 @@ interface EmployeeInviteDrawerProps {
   onInvite: (vacancy: VacancyApiItem) => void
   getEmployeePositionLabel: (value: string) => string
   getSpecializationLabel: (value: string) => string
-}
-
-interface InviteListingCardProps {
-  listing: VacancyApiItem
-  invitingShiftId: number | null
-  inviteLabel: string
-  onInvite: (vacancy: VacancyApiItem) => void
-  getEmployeePositionLabel: (value: string) => string
-  getSpecializationLabel: (value: string) => string
-}
-
-const InviteListingCard = ({
-  listing,
-  invitingShiftId,
-  inviteLabel,
-  onInvite,
-  getEmployeePositionLabel,
-  getSpecializationLabel,
-}: InviteListingCardProps) => {
-  const positionLabel = getEmployeePositionLabel(listing.position ?? '')
-  const specializationLabel = listing.specialization
-    ? getSpecializationLabel(listing.specialization)
-    : listing.specializations?.[0]
-      ? getSpecializationLabel(listing.specializations[0])
-      : null
-  const listingTitle = getOwnerShiftTitle(listing, positionLabel, specializationLabel)
-  const schedule = formatOwnerShiftScheduleLine(listing.start_time, listing.end_time)
-  const isLoading = invitingShiftId === listing.id
-
-  return (
-    <div className={cn(SHIFT_CARD_CLASS, 'ui-density-stack')}>
-      <div>
-        <p className={SHIFT_CARD_TITLE_CLASS}>{listingTitle}</p>
-        {schedule ? <p className={SHIFT_CARD_SUB_CLASS}>{schedule}</p> : null}
-      </div>
-      <Button
-        type="button"
-        size="sm"
-        className="w-full"
-        loading={isLoading}
-        onClick={() => onInvite(listing)}
-      >
-        {inviteLabel}
-      </Button>
-    </div>
-  )
 }
 
 export const EmployeeInviteDrawer = ({
@@ -104,13 +49,8 @@ export const EmployeeInviteDrawer = ({
     })
   }, [employee, t])
 
-  const replacementShifts = useMemo(
-    () => vacancies.filter(item => item.shift_type !== 'vacancy'),
-    [vacancies]
-  )
-
-  const vacancyListings = useMemo(
-    () => vacancies.filter(item => item.shift_type === 'vacancy'),
+  const { replacements: replacementShifts, vacancies: vacancyListings } = useMemo(
+    () => partitionListingsByShiftType(vacancies),
     [vacancies]
   )
 
@@ -165,7 +105,7 @@ export const EmployeeInviteDrawer = ({
                   />
                   <div className="ui-density-stack">
                     {replacementShifts.map(listing => (
-                      <InviteListingCard
+                      <OwnerListingCardWithInvite
                         key={listing.id}
                         listing={listing}
                         inviteLabel={inviteToShiftLabel}
@@ -185,7 +125,7 @@ export const EmployeeInviteDrawer = ({
                   />
                   <div className="ui-density-stack">
                     {vacancyListings.map(listing => (
-                      <InviteListingCard
+                      <OwnerListingCardWithInvite
                         key={listing.id}
                         listing={listing}
                         inviteLabel={inviteToVacancyLabel}

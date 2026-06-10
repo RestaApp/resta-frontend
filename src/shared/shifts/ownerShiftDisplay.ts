@@ -1,18 +1,26 @@
+import type { TFunction } from 'i18next'
 import i18n from '@/shared/i18n/config'
-import { parseApiDateTime } from '@/shared/shifts/formatting'
+import { parseApiDateTime, stripVacancyPrefix } from '@/shared/shifts/formatting'
 import { isExpiredOwnerListing } from '@/shared/shifts/mapping'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { toLocationArray } from '@/shared/utils/location'
-import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
-import { stripVacancyPrefix } from '@/components/ui/shift-card/shift-card-utils'
 
 const STALE_APPLICATIONS_HOURS = 3
 
-const CLOSED_STATUSES = new Set(['completed', 'cancelled', 'canceled', 'closed'])
+export const OWNER_CLOSED_STATUSES = new Set(['completed', 'cancelled', 'canceled', 'closed'])
 
 export type OwnerShiftListingStatus = 'open' | 'filled' | 'urgent' | 'closed'
 
+export const OWNER_LISTING_STATUS_LABEL_KEYS: Record<OwnerShiftListingStatus, string> = {
+  urgent: 'shift.urgentBadge',
+  open: 'shift.statusOpen',
+  filled: 'shift.statusFilled',
+  closed: 'shift.statusClosed',
+}
+
 const resolveLocale = (): string => (i18n.language.startsWith('ru') ? 'ru-RU' : 'en-GB')
+
+export const getOwnerListingStatusLabel = (status: OwnerShiftListingStatus, t: TFunction): string =>
+  t(OWNER_LISTING_STATUS_LABEL_KEYS[status])
 
 export const formatOwnerShiftScheduleLine = (
   startTime?: string | null,
@@ -30,21 +38,6 @@ export const formatOwnerShiftScheduleLine = (
   return `${datePart} • ${timeFmt.format(start)} – ${timeFmt.format(end)}`
 }
 
-export const getOwnerShiftSubtitle = (vacancy: VacancyApiItem): string => {
-  const fromProfile = vacancy.user?.restaurant_profile?.name?.trim()
-  if (fromProfile) return fromProfile
-
-  const fromLocation = toLocationArray(vacancy.location)[0]
-    ?.replace(/^Минск,\s*/i, '')
-    .trim()
-  if (fromLocation) return fromLocation
-
-  const fromUser = formatUserDisplayName(vacancy.user)
-  if (fromUser) return fromUser
-
-  return vacancy.city?.trim() ?? ''
-}
-
 export const getOwnerShiftTitle = (
   vacancy: VacancyApiItem,
   positionLabel: string,
@@ -59,21 +52,21 @@ export const getOwnerShiftTitle = (
 
 export const getOwnerShiftListingStatus = (vacancy: VacancyApiItem): OwnerShiftListingStatus => {
   const status = vacancy.status?.trim().toLowerCase()
-  if (status && CLOSED_STATUSES.has(status)) return 'closed'
+  if (status && OWNER_CLOSED_STATUSES.has(status)) return 'closed'
   if (status === 'filled') return 'filled'
   if (isExpiredOwnerListing(vacancy)) return 'closed'
   if (vacancy.urgent) return 'urgent'
   return 'open'
 }
 
-export const formatOwnerShiftLocationLine = (vacancy: VacancyApiItem): string => {
-  const street = toLocationArray(vacancy.location)[0]
-    ?.replace(/^Минск,\s*/i, '')
-    .trim()
-  const city = vacancy.city?.trim()
+export const isInviteableOwnerListing = (vacancy: VacancyApiItem): boolean => {
+  const status = getOwnerShiftListingStatus(vacancy)
+  return status === 'open' || status === 'urgent'
+}
 
-  if (street && city) return `${street}, ${city}`
-  return street || city || ''
+export const isOpenForVenueKpi = (vacancy: VacancyApiItem): boolean => {
+  const status = getOwnerShiftListingStatus(vacancy)
+  return status === 'open' || status === 'urgent'
 }
 
 export const shouldShowStaleApplicationsAlert = (vacancy: VacancyApiItem): boolean => {

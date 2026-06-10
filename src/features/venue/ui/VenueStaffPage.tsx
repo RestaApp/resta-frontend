@@ -15,7 +15,7 @@ import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
 import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
-import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
+import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
@@ -134,11 +134,7 @@ export function VenueStaffPage() {
 
   const mappedShift = useMemo(() => {
     if (!detailVacancy) return null
-    const mapped = mapOwnerVacancyToCardShift(detailVacancy)
-    return {
-      ...mapped,
-      photoUrl: mapped.photoUrl ?? ownerPhotoUrl,
-    }
+    return mapOwnerVacancyToCardShiftWithPhoto(detailVacancy, ownerPhotoUrl)
   }, [detailVacancy, ownerPhotoUrl])
 
   const handleOpenShiftDetails = useCallback(
@@ -176,11 +172,7 @@ export function VenueStaffPage() {
     [closeOverlay, deleteShift, refetch, showToast, t]
   )
 
-  const handleSelectApplicant = (
-    userId: number,
-    applicationId: number | null,
-    shiftId: number
-  ) => {
+  const handleSelectApplicant = (userId: number, applicationId: number | null, shiftId: number) => {
     const item =
       staffItems.find(
         candidate =>

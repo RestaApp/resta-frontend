@@ -109,7 +109,10 @@ export interface ReviewBasicApi {
   reviewer_name?: string
 }
 
-/** ApplicantPreviewBlueprint — пользователь-откликнувшийся в детальном просмотре смены */
+/**
+ * ApplicantPreviewBlueprint — пользователь-откликнувшийся в детальном просмотре смены.
+ * @remarks legacy — предпочтительно `applications_preview`; поле может отсутствовать в новых ответах API.
+ */
 export interface ApplicantPreviewApi {
   user_id: number
   full_name?: string

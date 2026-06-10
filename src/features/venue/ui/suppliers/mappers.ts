@@ -1,31 +1,17 @@
 import type { TFunction } from 'i18next'
 import type { RestaurantApiUser, SupplierApiUser, SupplierItem } from './types'
 import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
-import type { UserData } from '@/services/api/usersApi'
 import { toLocationArray } from '@/shared/utils/location'
+import {
+  getUserPhotoUrl,
+  normalizeRating,
+  normalizeReviewsCount,
+} from '@/shared/utils/userFieldNormalizers'
 
 const getSupplierName = (item: SupplierApiUser, fallback: string) => {
   const profile = item.supplier_profile ?? item.supplier_profile_attributes ?? null
   const fromParts = [item.name, item.last_name].filter(Boolean).join(' ').trim()
   return item.full_name || profile?.name || fromParts || fallback
-}
-
-const normalizeRating = (value: unknown): number => {
-  if (typeof value === 'number') return value
-  if (typeof value === 'string') {
-    const parsed = Number.parseFloat(value)
-    return Number.isFinite(parsed) ? parsed : 0
-  }
-  return 0
-}
-
-const normalizeReviewsCount = (value: unknown): number => {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : 0
-  if (typeof value === 'string') {
-    const parsed = Number.parseInt(value, 10)
-    return Number.isFinite(parsed) ? parsed : 0
-  }
-  return 0
 }
 
 const getSupplierProfile = (item: SupplierApiUser) =>
@@ -36,15 +22,6 @@ const getSupplierCategories = (item: SupplierApiUser): string[] => {
   const fromApi =
     profile?.supplier_types && Array.isArray(profile.supplier_types) ? profile.supplier_types : []
   return fromApi.filter(Boolean)
-}
-
-const getUserPhotoUrl = (
-  item: Pick<UserData, 'photo_url' | 'profile_photo_url'>
-): string | null => {
-  const raw = item.photo_url ?? item.profile_photo_url
-  if (typeof raw !== 'string') return null
-  const normalized = raw.trim()
-  return normalized.length > 0 ? normalized : null
 }
 
 export const getRestaurantProfile = (item: RestaurantApiUser) =>

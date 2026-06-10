@@ -5,7 +5,9 @@ import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { DetailOverlayProvider } from '@/shared/navigation/DetailOverlayContext'
 
-const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })))
+const Dashboard = lazy(() =>
+  import('@/pages/Dashboard/Dashboard').then(m => ({ default: m.Dashboard }))
+)
 
 /**
  * Маршрутизация bootstrap:

@@ -32,7 +32,5 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
     [activeTab, isEmployeeFlow, onAddShift, role, t]
   )
 
-  return (
-    <ScreenTabsHeader title={title} action={action} />
-  )
+  return <ScreenTabsHeader title={title} action={action} />
 }

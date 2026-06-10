@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import type { Shift } from '@/shared/shifts/types'
 import { useLabels } from '@/shared/i18n/hooks'
-import { formatMoney } from '@/shared/shifts/formatting'
 import { useCurrentUserId } from '@/shared/shifts/useCurrentUserId'
 import { cn } from '@/shared/utils/cn'
 import { firstLocation } from '@/shared/utils/location'
@@ -17,10 +16,8 @@ import {
   SHIFT_CARD_BADGE_CLASS,
   SHIFT_CARD_BADGE_ROW_CLASS,
   SHIFT_CARD_CLASS,
-  SHIFT_CARD_CURRENCY_CLASS,
   SHIFT_CARD_INTERACTIVE_CLASS,
   SHIFT_CARD_META_CLASS,
-  SHIFT_CARD_PRICE_CLASS,
   SHIFT_CARD_ROW_CLASS,
   SHIFT_CARD_SOS_CLASS,
   SHIFT_CARD_SUB_CLASS,
@@ -28,6 +25,7 @@ import {
 } from '@/components/ui/shift-card/shift-card-styles'
 import { formatDistanceKm, stripVacancyPrefix, positionInitial } from './shift-card-utils'
 import { OwnerShiftStatusBadge } from './OwnerShiftStatusBadge'
+import { ShiftCardPriceBlock } from './ShiftCardPriceBlock'
 import { ShiftCardMetaLine } from './ShiftCardMetaLine'
 import { formatViewsCount } from '@/shared/utils/viewsCount'
 
@@ -163,7 +161,6 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     : stripVacancyPrefix(displayTitle ?? positionText)
   const locationMeta = formatDistanceKm(shift.distanceKm) ?? locationText
   const compactSchedule = formatCompactSchedule(shift.date, shift.time)
-  const compactPrice = shift.pay == null || Number(shift.pay) === 0 ? null : formatMoney(shift.pay)
   const urgentDateTag = getUrgentDateTag(shift.dateKey)
   const avatarFallback = positionInitial(shift.position)
   const compactSubtitle = isApplicationCard
@@ -240,18 +237,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           </div>
         </div>
 
-        <div className="shrink-0 text-right leading-none tabular-nums text-foreground">
-          {compactPrice ? (
-            <>
-              <span className={SHIFT_CARD_PRICE_CLASS}>{compactPrice}</span>
-              <span className={SHIFT_CARD_CURRENCY_CLASS}>{shift.currency}</span>
-            </>
-          ) : (
-            <span className={cn(SHIFT_CARD_SUB_CLASS, 'font-semibold')}>
-              {t('shift.payNegotiable')}
-            </span>
-          )}
-        </div>
+        <ShiftCardPriceBlock amount={shift.pay} currency={shift.currency} />
       </div>
 
       <div className={cn(SHIFT_CARD_META_CLASS, 'min-w-0')}>

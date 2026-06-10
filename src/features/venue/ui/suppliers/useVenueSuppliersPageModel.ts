@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetUsersQuery, type GetUsersParams } from '@/services/api/usersApi'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useCities } from '@/shared/lib/hooks/useCities'
+import { computeHasMore, usePaginatedFilterState } from '@/shared/lib/hooks/usePaginatedFilterState'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole, selectUserCity } from '@/features/navigation/model/userSlice'
-import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
+import { APP_EVENTS } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import {
   formatSupplierFiltersForDisplay,
@@ -47,24 +48,26 @@ export const useVenueSuppliersPageModel = () => {
 
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null)
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
-  const [appliedFilters, setAppliedFilters] = useState<SupplierFilters>(defaultFilters)
-  const [draftFilters, setDraftFilters] = useState<SupplierFilters>(defaultFilters)
-  const [visibleCount, setVisibleCount] = useState(SUPPLIERS_PER_PAGE)
 
-  // Sync ref для глобального event listener (избегаем stale closure).
-  const appliedFiltersRef = useRef(appliedFilters)
-  useEffect(() => {
-    appliedFiltersRef.current = appliedFilters
-  }, [appliedFilters])
-
-  // Subscription на global app event "открыть фильтры" — лежит снаружи компонента.
-  useEffect(() => {
-    return onAppEvent(APP_EVENTS.OPEN_SUPPLIERS_FILTERS, () => {
-      setDraftFilters(appliedFiltersRef.current)
-      setIsFiltersOpen(true)
-    })
-  }, [])
+  const {
+    appliedFilters,
+    draftFilters,
+    setDraftFilters,
+    visibleCount,
+    isFiltersOpen,
+    setIsFiltersOpen,
+    incrementVisibleCount,
+    handleResetFilters,
+    handleRemoveFilter,
+    handleResetDraftFilters,
+    handleApplyFilters,
+  } = usePaginatedFilterState<SupplierFilters>({
+    defaultFilters,
+    pageSize: SUPPLIERS_PER_PAGE,
+    removeFilter: removeSupplierFilter,
+    openAppEvent: APP_EVENTS.OPEN_SUPPLIERS_FILTERS,
+    openFiltersOnAppEvent: true,
+  })
 
   const queryParams = useMemo<GetUsersParams>(() => {
     if (isSupplierRole) {
@@ -178,18 +181,7 @@ export const useVenueSuppliersPageModel = () => {
     selectedRestaurantId !== null ? (suppliersMap.get(selectedRestaurantId) ?? null) : null
 
   const pagination = data?.pagination || data?.meta
-
-  const hasMore = (() => {
-    if (!pagination) return false
-    if (typeof pagination.total_count === 'number') {
-      return suppliers.length < pagination.total_count
-    }
-    if (pagination.next_page !== undefined && pagination.next_page !== null) return true
-    if (pagination.current_page && pagination.total_pages) {
-      return pagination.current_page < pagination.total_pages
-    }
-    return false
-  })()
+  const hasMore = computeHasMore(pagination, suppliers.length)
 
   const {
     supplierTypeOptions,
@@ -229,35 +221,8 @@ export const useVenueSuppliersPageModel = () => {
 
   const handleLoadMore = useCallback(() => {
     if (isLoading || isFetching || !hasMore) return
-    setVisibleCount(prev => prev + SUPPLIERS_PER_PAGE)
-  }, [hasMore, isFetching, isLoading])
-
-  const handleResetFilters = useCallback(() => {
-    const next = { ...defaultFilters, city: '' }
-    setAppliedFilters(next)
-    setDraftFilters(next)
-    setVisibleCount(SUPPLIERS_PER_PAGE)
-  }, [defaultFilters])
-
-  const handleRemoveFilter = useCallback(
-    (filterId: string) => {
-      const next = removeSupplierFilter(appliedFilters, filterId)
-      setAppliedFilters(next)
-      setDraftFilters(next)
-      setVisibleCount(SUPPLIERS_PER_PAGE)
-    },
-    [appliedFilters]
-  )
-
-  const handleResetDraftFilters = useCallback(() => {
-    setDraftFilters({ ...defaultFilters, city: '' })
-  }, [defaultFilters])
-
-  const handleApplyFilters = useCallback(() => {
-    setAppliedFilters(draftFilters)
-    setVisibleCount(SUPPLIERS_PER_PAGE)
-    setIsFiltersOpen(false)
-  }, [draftFilters])
+    incrementVisibleCount()
+  }, [hasMore, incrementVisibleCount, isFetching, isLoading])
 
   const { openUserProfile } = useDetailOverlay()
 
@@ -275,19 +240,12 @@ export const useVenueSuppliersPageModel = () => {
   )
 
   return {
-    // role
     isSupplierRole,
-
-    // labels
     getSupplierTypeLabel,
     getRestaurantFormatLabel,
     getCuisineTypeLabel,
-
-    // cities (for filters drawer)
     cities,
     isCitiesLoading,
-
-    // list state
     isLoading,
     isFetching,
     isError,
@@ -300,8 +258,6 @@ export const useVenueSuppliersPageModel = () => {
     handleLoadMore,
     handleResetFilters,
     handleRemoveFilter,
-
-    // selection
     selectedSupplier,
     selectedSupplierId,
     setSelectedSupplierId,
@@ -309,8 +265,6 @@ export const useVenueSuppliersPageModel = () => {
     selectedRestaurantId,
     setSelectedRestaurantId,
     handleOpenDetails,
-
-    // filters drawer
     isFiltersOpen,
     setIsFiltersOpen,
     draftFilters,

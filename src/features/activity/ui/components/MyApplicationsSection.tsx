@@ -6,6 +6,7 @@ import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { AppliedShiftCard } from '@/features/activity/ui/components/AppliedShiftCard'
 import { groupAppliedByStatus } from '@/features/activity/model/utils/groupAppliedShifts'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { partitionListingsByShiftType } from '@/shared/shifts/mapping'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { Button } from '@/components/ui/button'
@@ -90,12 +91,8 @@ export function MyApplicationsSection({ appliedShifts }: MyApplicationsSectionPr
     })
   }, [])
 
-  const vacancyApplications = useMemo(
-    () => appliedShifts.filter(shift => shift.shift_type === 'vacancy'),
-    [appliedShifts]
-  )
-  const replacementApplications = useMemo(
-    () => appliedShifts.filter(shift => shift.shift_type !== 'vacancy'),
+  const { vacancies: vacancyApplications, replacements: replacementApplications } = useMemo(
+    () => partitionListingsByShiftType(appliedShifts),
     [appliedShifts]
   )
   const vacancyApplicationsByStatus = useMemo(

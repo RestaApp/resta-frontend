@@ -182,6 +182,24 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
   }
 }
 
+export const mapOwnerVacancyToCardShiftWithPhoto = (
+  item: VacancyApiItem,
+  ownerPhotoUrl?: string | null
+): Shift => {
+  const mapped = mapOwnerVacancyToCardShift(item)
+  return {
+    ...mapped,
+    photoUrl: mapped.photoUrl ?? ownerPhotoUrl ?? null,
+  }
+}
+
+export const partitionListingsByShiftType = <T extends { shift_type?: string | null }>(
+  items: T[]
+): { vacancies: T[]; replacements: T[] } => ({
+  vacancies: items.filter(item => item.shift_type === 'vacancy'),
+  replacements: items.filter(item => item.shift_type !== 'vacancy'),
+})
+
 export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   const { date, dateKey, time } = getVacancyScheduleFields(v)
   const restaurant =

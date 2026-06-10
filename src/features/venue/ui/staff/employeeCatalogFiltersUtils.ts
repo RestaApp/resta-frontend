@@ -1,5 +1,6 @@
-import { Briefcase, MapPin, Sparkles } from 'lucide-react'
+import { Briefcase, Sparkles } from 'lucide-react'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
+import { buildCityFilterChip, resolveFilterCity } from '@/shared/utils/filterChips'
 import type { EmployeeCatalogFilters } from './employeeCatalogTypes'
 
 interface EmployeeFilterLabels {
@@ -8,22 +9,15 @@ interface EmployeeFilterLabels {
 }
 
 export const resolveEmployeeCatalogCity = (filters: EmployeeCatalogFilters): string =>
-  filters.city.trim()
+  resolveFilterCity(filters.city)
 
 export const formatEmployeeCatalogFiltersForDisplay = (
   filters: EmployeeCatalogFilters,
   labels: EmployeeFilterLabels
 ): ActiveFilterItem[] => {
   const result: ActiveFilterItem[] = []
-  const city = resolveEmployeeCatalogCity(filters)
-
-  if (city) {
-    result.push({
-      id: 'city',
-      label: city,
-      icon: MapPin,
-    })
-  }
+  const cityChip = buildCityFilterChip(filters.city)
+  if (cityChip) result.push(cityChip)
 
   if (filters.position) {
     result.push({

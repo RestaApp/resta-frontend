@@ -1,20 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetUsersQuery } from '@/services/api/usersApi'
-import {
-  useGetMyShiftsQuery,
-  useInviteToShiftMutation,
-} from '@/services/api/shiftsApi'
+import { useGetMyShiftsQuery, useInviteToShiftMutation } from '@/services/api/shiftsApi'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useCities } from '@/shared/lib/hooks/useCities'
+import { computeHasMore, usePaginatedFilterState } from '@/shared/lib/hooks/usePaginatedFilterState'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserCity } from '@/features/navigation/model/userSlice'
-import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
+import { APP_EVENTS } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
-import { getOwnerShiftListingStatus } from '@/shared/shifts/ownerShiftDisplay'
+import { isInviteableOwnerListing } from '@/shared/shifts/ownerShiftDisplay'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
@@ -49,26 +47,31 @@ export const useEmployeeCatalogModel = () => {
   )
 
   const [isCatalogOpen, setIsCatalogOpen] = useState(false)
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [inviteEmployee, setInviteEmployee] = useState<EmployeeCatalogItem | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null)
-  const [appliedFilters, setAppliedFilters] = useState<EmployeeCatalogFilters>(defaultFilters)
-  const [draftFilters, setDraftFilters] = useState<EmployeeCatalogFilters>(defaultFilters)
-  const [visibleCount, setVisibleCount] = useState(EMPLOYEES_PER_PAGE)
   const [invitingShiftId, setInvitingShiftId] = useState<number | null>(null)
 
-  const appliedFiltersRef = useRef(appliedFilters)
-  useEffect(() => {
-    appliedFiltersRef.current = appliedFilters
-  }, [appliedFilters])
-
-  useEffect(() => {
-    return onAppEvent(APP_EVENTS.OPEN_STAFF_EMPLOYEE_CATALOG, () => {
-      setDraftFilters(appliedFiltersRef.current)
-      setIsCatalogOpen(true)
-    })
-  }, [])
+  const {
+    appliedFilters,
+    draftFilters,
+    setDraftFilters,
+    visibleCount,
+    isFiltersOpen,
+    setIsFiltersOpen,
+    incrementVisibleCount,
+    handleResetFilters,
+    handleRemoveFilter,
+    handleResetDraftFilters,
+    handleApplyFilters,
+    handleOpenFilters,
+  } = usePaginatedFilterState<EmployeeCatalogFilters>({
+    defaultFilters,
+    pageSize: EMPLOYEES_PER_PAGE,
+    removeFilter: removeEmployeeCatalogFilter,
+    openAppEvent: APP_EVENTS.OPEN_STAFF_EMPLOYEE_CATALOG,
+    onOpenAppEvent: () => setIsCatalogOpen(true),
+  })
 
   const queryParams = useMemo(() => {
     const city = resolveEmployeeCatalogCity(appliedFilters)
@@ -93,18 +96,7 @@ export const useEmployeeCatalogModel = () => {
   }, [data?.data, getEmployeePositionLabel, t])
 
   const pagination = data?.pagination || data?.meta
-
-  const hasMore = (() => {
-    if (!pagination) return false
-    if (typeof pagination.total_count === 'number') {
-      return employees.length < pagination.total_count
-    }
-    if (pagination.next_page !== undefined && pagination.next_page !== null) return true
-    if (pagination.current_page && pagination.total_pages) {
-      return pagination.current_page < pagination.total_pages
-    }
-    return false
-  })()
+  const hasMore = computeHasMore(pagination, employees.length)
 
   const activeFilters = useMemo(
     () =>
@@ -112,7 +104,7 @@ export const useEmployeeCatalogModel = () => {
         getEmployeePositionLabel,
         getSpecializationLabel,
       }),
-    [appliedFilters, getEmployeePositionLabel, getSpecializationLabel, t]
+    [appliedFilters, getEmployeePositionLabel, getSpecializationLabel]
   )
 
   const { positions } = useUserPositions({ enabled: isFiltersOpen || isCatalogOpen })
@@ -127,50 +119,15 @@ export const useEmployeeCatalogModel = () => {
 
   const inviteableVacancies = useMemo(() => {
     const shifts = normalizeVacanciesResponse(myShiftsData)
-    return shifts.filter(
-      shift =>
-        getOwnerShiftListingStatus(shift) === 'open' || getOwnerShiftListingStatus(shift) === 'urgent'
-    )
+    return shifts.filter(isInviteableOwnerListing)
   }, [myShiftsData])
 
   const [inviteToShift] = useInviteToShiftMutation()
 
   const handleLoadMore = useCallback(() => {
     if (isLoading || isFetching || !hasMore) return
-    setVisibleCount(prev => prev + EMPLOYEES_PER_PAGE)
-  }, [hasMore, isFetching, isLoading])
-
-  const handleResetFilters = useCallback(() => {
-    const next = { ...defaultFilters, city: '' }
-    setAppliedFilters(next)
-    setDraftFilters(next)
-    setVisibleCount(EMPLOYEES_PER_PAGE)
-  }, [defaultFilters])
-
-  const handleRemoveFilter = useCallback(
-    (filterId: string) => {
-      const next = removeEmployeeCatalogFilter(appliedFilters, filterId)
-      setAppliedFilters(next)
-      setDraftFilters(next)
-      setVisibleCount(EMPLOYEES_PER_PAGE)
-    },
-    [appliedFilters]
-  )
-
-  const handleResetDraftFilters = useCallback(() => {
-    setDraftFilters({ ...defaultFilters, city: '' })
-  }, [defaultFilters])
-
-  const handleApplyFilters = useCallback(() => {
-    setAppliedFilters(draftFilters)
-    setVisibleCount(EMPLOYEES_PER_PAGE)
-    setIsFiltersOpen(false)
-  }, [draftFilters])
-
-  const handleOpenFilters = useCallback(() => {
-    setDraftFilters(appliedFilters)
-    setIsFiltersOpen(true)
-  }, [appliedFilters])
+    incrementVisibleCount()
+  }, [hasMore, incrementVisibleCount, isFetching, isLoading])
 
   const handleOpenProfile = useCallback(
     (id: number) => {
@@ -223,14 +180,17 @@ export const useEmployeeCatalogModel = () => {
     [handleCloseInvite, inviteEmployee, invitingShiftId, inviteToShift, showToast, t]
   )
 
-  const handleCatalogOpenChange = useCallback((open: boolean) => {
-    setIsCatalogOpen(open)
-    if (!open) {
-      setIsFiltersOpen(false)
-      handleCloseInvite()
-      setSelectedProfileId(null)
-    }
-  }, [handleCloseInvite])
+  const handleCatalogOpenChange = useCallback(
+    (open: boolean) => {
+      setIsCatalogOpen(open)
+      if (!open) {
+        setIsFiltersOpen(false)
+        handleCloseInvite()
+        setSelectedProfileId(null)
+      }
+    },
+    [handleCloseInvite, setIsFiltersOpen]
+  )
 
   return {
     isCatalogOpen,

@@ -231,81 +231,81 @@ const AddShiftDrawerKeyed = ({
 
           <DrawerBody className="ui-density-stack gap-3">
             <StepPanel stepKey={controller.state.step} className="gap-3">
-            {controller.state.step === 0 ? (
-              <AddShiftDrawerStep0
-                titleRef={controller.refs.titleRef}
-                dateRef={controller.refs.dateRef}
-                timeRef={controller.refs.timeRef}
-                payRef={controller.refs.payRef}
-                showScheduleFields={!isVacancyType}
-                showShiftTypeSelect={isVenueRole && !lockedShiftType}
-                shiftType={form.shiftType}
-                onShiftTypeChange={controller.actions.handleShiftTypeChange}
-                shiftTypeOptions={shiftTypeOptions}
-                titleLabel={drawerCopy.titleLabel}
-                titlePlaceholder={drawerCopy.titlePlaceholder}
-                title={form.title}
-                onTitleChange={controller.actions.handleTitleChange}
-                titleError={controller.derived.errors.titleError}
-                date={form.date}
-                onDateChange={controller.actions.handleDateChange}
-                dateError={controller.derived.errors.dateFieldError ?? undefined}
-                startTime={form.startTime}
-                onStartTimeChange={controller.actions.handleStartTimeChange}
-                startTimeError={controller.derived.errors.startTimeError}
-                endTime={form.endTime}
-                onEndTimeChange={controller.actions.handleEndTimeChange}
-                endTimeError={controller.derived.errors.endTimeError}
-                pay={form.pay}
-                onPayChange={controller.actions.handlePayChange}
-                payLabel={drawerCopy.payLabel}
-                payPlaceholder={drawerCopy.payPlaceholder}
-                payError={controller.derived.errors.payFieldError}
-              />
-            ) : null}
+              {controller.state.step === 0 ? (
+                <AddShiftDrawerStep0
+                  titleRef={controller.refs.titleRef}
+                  dateRef={controller.refs.dateRef}
+                  timeRef={controller.refs.timeRef}
+                  payRef={controller.refs.payRef}
+                  showScheduleFields={!isVacancyType}
+                  showShiftTypeSelect={isVenueRole && !lockedShiftType}
+                  shiftType={form.shiftType}
+                  onShiftTypeChange={controller.actions.handleShiftTypeChange}
+                  shiftTypeOptions={shiftTypeOptions}
+                  titleLabel={drawerCopy.titleLabel}
+                  titlePlaceholder={drawerCopy.titlePlaceholder}
+                  title={form.title}
+                  onTitleChange={controller.actions.handleTitleChange}
+                  titleError={controller.derived.errors.titleError}
+                  date={form.date}
+                  onDateChange={controller.actions.handleDateChange}
+                  dateError={controller.derived.errors.dateFieldError ?? undefined}
+                  startTime={form.startTime}
+                  onStartTimeChange={controller.actions.handleStartTimeChange}
+                  startTimeError={controller.derived.errors.startTimeError}
+                  endTime={form.endTime}
+                  onEndTimeChange={controller.actions.handleEndTimeChange}
+                  endTimeError={controller.derived.errors.endTimeError}
+                  pay={form.pay}
+                  onPayChange={controller.actions.handlePayChange}
+                  payLabel={drawerCopy.payLabel}
+                  payPlaceholder={drawerCopy.payPlaceholder}
+                  payError={controller.derived.errors.payFieldError}
+                />
+              ) : null}
 
-            {controller.state.step === 1 ? (
-              <AddShiftDrawerStep1
-                locationRef={controller.refs.locationRef}
-                positionRef={controller.refs.positionRef}
-                specializationRef={controller.refs.specializationRef}
-                location={form.location}
-                onLocationChange={controller.actions.handleLocationChange}
-                locationError={controller.derived.errors.locationFieldError}
-                city={form.city}
-                onCityChange={controller.actions.handleCityChange}
-                cityError={controller.derived.errors.cityFieldError}
-                profileAddresses={profileAddresses}
-                isEmployeeMode={isEmployeeUser}
-                employeePositionLabel={employeePositionLabel}
-                formPosition={form.position}
-                onPositionChange={controller.actions.handlePositionChange}
-                positionOptions={positionOptions}
-                isPositionsLoading={isPositionsLoading}
-                positionError={controller.derived.errors.positionFieldError}
-                specializations={form.specializations}
-                onSpecializationsChange={controller.actions.handleSpecializationsChange}
-                availableSpecializations={availableSpecializations}
-                isSpecializationsLoading={isSpecializationsLoading}
-                specializationError={controller.derived.errors.specializationFieldError}
-              />
-            ) : null}
+              {controller.state.step === 1 ? (
+                <AddShiftDrawerStep1
+                  locationRef={controller.refs.locationRef}
+                  positionRef={controller.refs.positionRef}
+                  specializationRef={controller.refs.specializationRef}
+                  location={form.location}
+                  onLocationChange={controller.actions.handleLocationChange}
+                  locationError={controller.derived.errors.locationFieldError}
+                  city={form.city}
+                  onCityChange={controller.actions.handleCityChange}
+                  cityError={controller.derived.errors.cityFieldError}
+                  profileAddresses={profileAddresses}
+                  isEmployeeMode={isEmployeeUser}
+                  employeePositionLabel={employeePositionLabel}
+                  formPosition={form.position}
+                  onPositionChange={controller.actions.handlePositionChange}
+                  positionOptions={positionOptions}
+                  isPositionsLoading={isPositionsLoading}
+                  positionError={controller.derived.errors.positionFieldError}
+                  specializations={form.specializations}
+                  onSpecializationsChange={controller.actions.handleSpecializationsChange}
+                  availableSpecializations={availableSpecializations}
+                  isSpecializationsLoading={isSpecializationsLoading}
+                  specializationError={controller.derived.errors.specializationFieldError}
+                />
+              ) : null}
 
-            {controller.state.step === 2 ? (
-              <AddShiftDrawerStep2
-                descriptionRef={controller.refs.descriptionRef}
-                requirementsRef={controller.refs.requirementsRef}
-                description={form.description}
-                onDescriptionChange={controller.actions.handleDescriptionChange}
-                descriptionError={controller.derived.errors.descriptionFieldError}
-                requirements={form.requirements}
-                onRequirementsChange={controller.actions.handleRequirementsChange}
-                requirementsError={controller.derived.errors.requirementsFieldError}
-                urgent={form.urgent}
-                onUrgentChange={controller.actions.handleUrgentChange}
-                isVacancyType={isVacancyType}
-              />
-            ) : null}
+              {controller.state.step === 2 ? (
+                <AddShiftDrawerStep2
+                  descriptionRef={controller.refs.descriptionRef}
+                  requirementsRef={controller.refs.requirementsRef}
+                  description={form.description}
+                  onDescriptionChange={controller.actions.handleDescriptionChange}
+                  descriptionError={controller.derived.errors.descriptionFieldError}
+                  requirements={form.requirements}
+                  onRequirementsChange={controller.actions.handleRequirementsChange}
+                  requirementsError={controller.derived.errors.requirementsFieldError}
+                  urgent={form.urgent}
+                  onUrgentChange={controller.actions.handleUrgentChange}
+                  isVacancyType={isVacancyType}
+                />
+              ) : null}
             </StepPanel>
 
             <AddShiftDrawerBanner message={controller.derived.bannerError} />

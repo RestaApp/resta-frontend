@@ -8,6 +8,7 @@ import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
 import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { splitSkillByDots } from '@/shared/utils/profileSkills'
+import { buildBusinessProfileInfoRows } from '@/shared/ui/user-profile/buildBusinessProfileInfoRows'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
 
@@ -291,25 +292,37 @@ const buildInfoSections = ({
     value: userProfile.bio,
     multiline: true,
   })
-  pushTextRow(rows, { id: 'city', label: t('profile.city'), value: cityValue })
-  pushTextRow(rows, {
-    id: 'address',
-    label: t('profileFields.address', { defaultValue: 'Адрес' }),
-    value: addressValue,
-    multiline: true,
-  })
-  pushTextRow(rows, {
-    id: 'website',
-    label: t('profile.venueWebsite'),
-    value: userProfile.website,
-    href: userProfile.website ? normalizeExternalUrl(userProfile.website) : undefined,
-  })
-  pushTextRow(rows, {
-    id: 'business-hours',
-    label: t('profile.businessHours'),
-    value: businessHours,
-    multiline: true,
-  })
+
+  if (apiRole === 'restaurant') {
+    rows.push(
+      ...buildBusinessProfileInfoRows({
+        t,
+        userProfile,
+        includeCity: true,
+        includePhone: false,
+      })
+    )
+  } else {
+    pushTextRow(rows, { id: 'city', label: t('profile.city'), value: cityValue })
+    pushTextRow(rows, {
+      id: 'address',
+      label: t('profileFields.address', { defaultValue: 'Адрес' }),
+      value: addressValue,
+      multiline: true,
+    })
+    pushTextRow(rows, {
+      id: 'website',
+      label: t('profile.venueWebsite'),
+      value: userProfile.website,
+      href: userProfile.website ? normalizeExternalUrl(userProfile.website) : undefined,
+    })
+    pushTextRow(rows, {
+      id: 'business-hours',
+      label: t('profile.businessHours'),
+      value: businessHours,
+      multiline: true,
+    })
+  }
 
   if (apiRole === 'employee') {
     pushTextRow(rows, { id: 'name', label: t('profile.nameLabel'), value: userProfile.name })

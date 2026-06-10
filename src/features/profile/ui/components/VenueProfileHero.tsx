@@ -5,6 +5,7 @@ import { AVATAR_LG_CLASS, AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styl
 import { HERO_TITLE_CLASS, SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
+import { getAvatarInitials } from '@/shared/utils/avatarInitials'
 
 type VenueProfileHeroUser = {
   profile_photo_url?: string | null
@@ -19,19 +20,6 @@ interface VenueProfileHeroProps {
   roleLabel: string
   isHiringOpen: boolean
   hiringOpenLabel: string
-}
-
-const getInitials = (name: string) => {
-  const parts = name
-    .replace(/[^\p{L}\p{N}\s.-]/gu, '')
-    .split(/\s+/)
-    .map(part => part.replace(/\./g, '').trim())
-    .filter(Boolean)
-
-  if (parts.length === 0) return 'R'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
 }
 
 export const VenueProfileHero = memo(function VenueProfileHero({
@@ -51,7 +39,7 @@ export const VenueProfileHero = memo(function VenueProfileHero({
       <Avatar className={AVATAR_LG_CLASS}>
         <AvatarImage src={photoUrl} alt={userName} />
         <AvatarFallback className={cn(AVATAR_SHAPE_CLASS, 'bg-[image:var(--gradient-primary)]')}>
-          <span className={cn(HERO_TITLE_CLASS, 'text-white')}>{getInitials(userName)}</span>
+          <span className={cn(HERO_TITLE_CLASS, 'text-white')}>{getAvatarInitials(userName)}</span>
         </AvatarFallback>
       </Avatar>
 

@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
+import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
@@ -22,13 +22,7 @@ export const PersonalShiftCard = ({
   const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
 
   const mapToShift = useCallback(
-    (vacancy: VacancyApiItem) => {
-      const mapped = mapOwnerVacancyToCardShift(vacancy)
-      return {
-        ...mapped,
-        photoUrl: mapped.photoUrl ?? ownerPhotoUrl,
-      }
-    },
+    (vacancy: VacancyApiItem) => mapOwnerVacancyToCardShiftWithPhoto(vacancy, ownerPhotoUrl),
     [ownerPhotoUrl]
   )
 

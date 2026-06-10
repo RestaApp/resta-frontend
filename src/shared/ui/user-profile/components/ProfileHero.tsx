@@ -8,6 +8,8 @@ import {
 } from '@/components/ui/ui-patterns'
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
+import { getAvatarInitials } from '@/shared/utils/avatarInitials'
+import { normalizeRating } from '@/shared/utils/userFieldNormalizers'
 
 type ProfileHeroUser = {
   profile_photo_url?: string | null
@@ -24,22 +26,9 @@ interface ProfileHeroProps {
   roleLabel: string
 }
 
-const getInitials = (name: string) => {
-  const parts = name
-    .replace(/[^\p{L}\p{N}\s.-]/gu, '')
-    .split(/\s+/)
-    .map(part => part.replace(/\./g, '').trim())
-    .filter(Boolean)
-
-  if (parts.length === 0) return 'R'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
-}
-
-const normalizeRating = (value: number | string | null | undefined) => {
-  const rating = Number(value)
-  return Number.isFinite(rating) && rating > 0 ? Math.min(5, Math.max(0, rating)) : null
+const getDisplayRating = (value: number | string | null | undefined) => {
+  const rating = normalizeRating(value)
+  return rating > 0 ? Math.min(5, rating) : null
 }
 
 export const ProfileHero = memo(({ userProfile, userName, roleLabel }: ProfileHeroProps) => {
@@ -47,7 +36,7 @@ export const ProfileHero = memo(({ userProfile, userName, roleLabel }: ProfileHe
   const firstLocation = userProfile.location?.find(line => line.trim().length > 0)
   const cityOrLocation = userProfile.city || firstLocation
   const username = userProfile.username?.trim()
-  const rating = normalizeRating(userProfile.average_rating)
+  const rating = getDisplayRating(userProfile.average_rating)
   const ratingPercent = rating ? (rating / 5) * 100 : 0
   const metaItems = [username ? `@${username}` : null, cityOrLocation, roleLabel].filter(Boolean)
 
@@ -57,7 +46,9 @@ export const ProfileHero = memo(({ userProfile, userName, roleLabel }: ProfileHe
         <Avatar className={AVATAR_LG_CLASS}>
           <AvatarImage src={photoUrl} alt={userName} />
           <AvatarFallback className={cn(AVATAR_SHAPE_CLASS, 'bg-[image:var(--gradient-primary)]')}>
-            <span className={cn(HERO_TITLE_CLASS, 'text-white')}>{getInitials(userName)}</span>
+            <span className={cn(HERO_TITLE_CLASS, 'text-white')}>
+              {getAvatarInitials(userName)}
+            </span>
           </AvatarFallback>
         </Avatar>
 

@@ -1,13 +1,13 @@
-import { CheckCircle2, MapPin, Package, Store, Truck, UtensilsCrossed } from 'lucide-react'
+import { CheckCircle2, Package, Store, Truck, UtensilsCrossed } from 'lucide-react'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import { getSupplierCategoryIcon } from '@/shared/constants/role-icons'
+import { buildCityFilterChip, resolveFilterCity } from '@/shared/utils/filterChips'
 import type { SupplierFilters } from './types'
 import { getValidSupplierTypesForCategory } from './types'
 
 /** Город для запроса: только явно выбранный в фильтре. */
-export const resolveAppliedCity = (filters: SupplierFilters): string => {
-  return filters.city.trim()
-}
+export const resolveAppliedCity = (filters: SupplierFilters): string =>
+  resolveFilterCity(filters.city)
 
 interface SupplierFilterLabels {
   getRestaurantFormatLabel: (value: string) => string
@@ -24,15 +24,8 @@ export const formatSupplierFiltersForDisplay = (
   isSupplierRole: boolean
 ): ActiveFilterItem[] => {
   const result: ActiveFilterItem[] = []
-  const city = resolveAppliedCity(filters)
-
-  if (city) {
-    result.push({
-      id: 'city',
-      label: city,
-      icon: MapPin,
-    })
-  }
+  const cityChip = buildCityFilterChip(filters.city)
+  if (cityChip) result.push(cityChip)
 
   if (isSupplierRole) {
     for (const format of filters.restaurantFormats) {

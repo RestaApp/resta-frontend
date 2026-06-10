@@ -72,3 +72,10 @@ export const formatHourlyRate = (hourlyRate?: string | number | null): string | 
 export const getVacancyTitle = (title?: string | null, position?: string | null): string => {
   return title || position || i18n.t('feedFallback.vacancy')
 }
+
+export const stripVacancyPrefix = (title: string): string => {
+  return title
+    .replace(/^вакансия:\s*/i, '')
+    .replace(/^(?:\s|🔥)+/u, '')
+    .trim()
+}

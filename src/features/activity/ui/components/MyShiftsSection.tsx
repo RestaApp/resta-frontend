@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
-import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
+import { OwnerShiftCardsList } from '@/features/activity/ui/components/OwnerShiftCardsList'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 interface MyShiftsSectionProps {
   shifts: VacancyApiItem[]
@@ -34,17 +34,12 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
           }
         />
       ) : (
-        <div className="ui-density-stack">
-          {shifts.map(shift => (
-            <PersonalShiftCard
-              key={shift.id}
-              shift={shift}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              isDeleting={isDeleting}
-            />
-          ))}
-        </div>
+        <OwnerShiftCardsList
+          items={shifts}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          isDeleting={isDeleting}
+        />
       )}
     </section>
   )

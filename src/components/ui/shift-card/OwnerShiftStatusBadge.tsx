@@ -2,7 +2,10 @@ import { Circle, Clock, Star, UserCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
-import type { OwnerShiftListingStatus } from '@/shared/shifts/ownerShiftDisplay'
+import {
+  getOwnerListingStatusLabel,
+  type OwnerShiftListingStatus,
+} from '@/shared/shifts/ownerShiftDisplay'
 
 interface OwnerShiftStatusBadgeProps {
   status: OwnerShiftListingStatus
@@ -15,26 +18,17 @@ const STATUS_VARIANT: Record<OwnerShiftListingStatus, 'ok' | 'accepted' | 'warni
   closed: 'default',
 }
 
+const STATUS_ICON: Record<OwnerShiftListingStatus, typeof Circle> = {
+  open: Circle,
+  filled: UserCheck,
+  urgent: Clock,
+  closed: Star,
+}
+
 export const OwnerShiftStatusBadge = ({ status }: OwnerShiftStatusBadgeProps) => {
   const { t } = useTranslation()
-
-  const label =
-    status === 'urgent'
-      ? t('shift.urgentBadge')
-      : status === 'closed'
-        ? t('shift.statusClosed')
-        : status === 'filled'
-          ? t('shift.statusFilled')
-          : t('shift.statusOpen')
-
-  const Icon =
-    status === 'urgent'
-      ? Clock
-      : status === 'closed'
-        ? Star
-        : status === 'filled'
-          ? UserCheck
-          : Circle
+  const label = getOwnerListingStatusLabel(status, t)
+  const Icon = STATUS_ICON[status]
 
   return (
     <Badge variant={STATUS_VARIANT[status]} className="rounded-full px-2">

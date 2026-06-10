@@ -106,8 +106,7 @@ export const SelectDropdown = ({
           aria-label={label ?? displayPlaceholder}
           className="overflow-y-auto overflow-x-hidden overscroll-contain"
           style={{
-            maxHeight:
-              portaled && anchoredRect ? `${anchoredRect.maxHeight}px` : '215px',
+            maxHeight: portaled && anchoredRect ? `${anchoredRect.maxHeight}px` : '215px',
           }}
         >
           {isLoading ? (

@@ -13,7 +13,7 @@ export const APP_EVENTS = {
   SET_VENUE_CREATE_TYPE: 'setVenueCreateType',
 } as const
 
-type AppEventName = (typeof APP_EVENTS)[keyof typeof APP_EVENTS]
+export type AppEventName = (typeof APP_EVENTS)[keyof typeof APP_EVENTS]
 
 type AppEventDetailMap = {
   [APP_EVENTS.AUTH_AUTHORIZED]: undefined
