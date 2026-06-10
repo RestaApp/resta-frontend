@@ -18,7 +18,9 @@ export const ProfilePage = memo(() => {
   const { t } = useTranslation()
   const m = useProfilePageModel()
   const [legalScreen, setLegalScreen] = useState<LegalScreen>('none')
-  const [editProfileSection, setEditProfileSection] = useState<'specializations' | null>(null)
+  const [editProfileSection, setEditProfileSection] = useState<
+    'specializations' | 'supplierTypes' | null
+  >(null)
 
   const handleLegalBack = useCallback(() => {
     setLegalScreen('none')
@@ -27,6 +29,11 @@ export const ProfilePage = memo(() => {
 
   const handleEditSpecializations = useCallback(() => {
     setEditProfileSection('specializations')
+    m.setIsEditDrawerOpen(true)
+  }, [m])
+
+  const handleEditSupplierTypes = useCallback(() => {
+    setEditProfileSection('supplierTypes')
     m.setIsEditDrawerOpen(true)
   }, [m])
 
@@ -69,6 +76,7 @@ export const ProfilePage = memo(() => {
           profile={m.profileViewModel}
           onFill={() => m.setIsEditDrawerOpen(true)}
           onEditSpecializations={handleEditSpecializations}
+          onEditSupplierTypes={handleEditSupplierTypes}
           onOpenToWorkToggle={m.handleOpenToWorkToggle}
           isOpenToWorkUpdating={m.isUpdatingUser}
         />

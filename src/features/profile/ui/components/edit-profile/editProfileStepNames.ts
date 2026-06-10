@@ -14,6 +14,7 @@ const RESTAURANT_STEP_NAME_KEYS = [
 
 const SUPPLIER_STEP_NAME_KEYS = [
   'profile.editProfileSteps.basic',
+  'profile.editProfileSteps.schedule',
   'profile.editProfileSteps.details',
 ] as const
 

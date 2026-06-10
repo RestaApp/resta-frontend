@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
-import { BusinessFieldsSection } from './edit-profile/BusinessFieldsSection'
 import { StepPanel } from '@/components/ui/step-panel'
 import { StepProgress } from '@/components/ui/step-progress'
 import { EditProfileStepBasic } from './edit-profile/EditProfileStepBasic'
@@ -30,21 +29,24 @@ import { EditProfileStepProfessional } from './edit-profile/EditProfileStepProfe
 import { EditProfileStepAbout } from './edit-profile/EditProfileStepAbout'
 import { EditProfileStepBusinessSchedule } from './edit-profile/EditProfileStepBusinessSchedule'
 import { EditProfileStepVenueInfo } from './edit-profile/EditProfileStepVenueInfo'
+import { EditProfileStepSupplierInfo } from './edit-profile/EditProfileStepSupplierInfo'
 import { getEditProfileStepNameKey } from './edit-profile/editProfileStepNames'
 
 interface EditProfileDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
-  initialSection?: 'specializations' | null
+  initialSection?: 'specializations' | 'supplierTypes' | null
 }
 
 export const EditProfileDrawer = memo(
   ({ open, onOpenChange, onSuccess, initialSection = null }: EditProfileDrawerProps) => {
     const { t } = useTranslation()
     const specializationRef = useRef<HTMLDivElement | null>(null)
+    const supplierTypesRef = useRef<HTMLDivElement | null>(null)
     const { getBioLabelSuffix } = useProfileFormLabels()
-    const initialStep = initialSection === 'specializations' ? 1 : 0
+    const initialStep =
+      initialSection === 'specializations' ? 1 : initialSection === 'supplierTypes' ? 2 : 0
     const {
       userProfile,
       apiRole,
@@ -99,9 +101,20 @@ export const EditProfileDrawer = memo(
       return () => cancelAnimationFrame(frame)
     }, [apiRole, initialSection, open, step])
 
+    useEffect(() => {
+      if (!open || initialSection !== 'supplierTypes' || apiRole !== 'supplier' || step !== 2) {
+        return
+      }
+
+      const frame = requestAnimationFrame(() => {
+        supplierTypesRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      })
+
+      return () => cancelAnimationFrame(frame)
+    }, [apiRole, initialSection, open, step])
+
     if (!userProfile) return null
 
-    const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
     const bioSuffix = getBioLabelSuffix(apiRole)
     const isLastStep = step === totalSteps - 1
     const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
@@ -186,6 +199,44 @@ export const EditProfileDrawer = memo(
         )
       }
 
+      if (apiRole === 'supplier') {
+        if (step === 0) {
+          return (
+            <EditProfileStepBasic
+              apiRole={apiRole}
+              formData={formData}
+              fieldErrors={fieldErrors}
+              cities={cities}
+              isCitiesLoading={isCitiesLoading}
+              isLoading={isLoading}
+              updateField={updateField}
+            />
+          )
+        }
+
+        if (step === 1) {
+          return (
+            <EditProfileStepBusinessSchedule
+              formData={formData}
+              isLoading={isLoading}
+              updateField={updateField}
+            />
+          )
+        }
+
+        return (
+          <EditProfileStepSupplierInfo
+            formData={formData}
+            bioSuffix={bioSuffix}
+            isLoading={isLoading}
+            supplierTypeOptions={supplierTypeOptions}
+            isSupplierTypesLoading={isSupplierTypesLoading}
+            supplierTypesRef={supplierTypesRef}
+            updateField={updateField}
+          />
+        )
+      }
+
       if (step === 0) {
         return (
           <EditProfileStepBasic
@@ -201,24 +252,12 @@ export const EditProfileDrawer = memo(
       }
 
       return (
-        <>
-          <EditProfileStepAbout
-            formData={formData}
-            bioSuffix={bioSuffix}
-            isLoading={isLoading}
-            updateField={updateField}
-          />
-          {isBusinessRole ? (
-            <BusinessFieldsSection
-              apiRole={apiRole}
-              formData={formData}
-              isLoading={isLoading}
-              supplierTypeOptions={supplierTypeOptions}
-              isSupplierTypesLoading={isSupplierTypesLoading}
-              updateField={updateField}
-            />
-          ) : null}
-        </>
+        <EditProfileStepAbout
+          formData={formData}
+          bioSuffix={bioSuffix}
+          isLoading={isLoading}
+          updateField={updateField}
+        />
       )
     }
 

@@ -35,6 +35,7 @@ interface ProfileOverviewProps {
   variant?: 'page' | 'drawer'
   onFill?: () => void
   onEditSpecializations?: () => void
+  onEditSupplierTypes?: () => void
   onOpenToWorkToggle?: (nextValue: boolean) => void
   isOpenToWorkUpdating?: boolean
 }
@@ -88,9 +89,11 @@ const ProfileTagBadge = ({ item }: { item: ProfileTagSection['items'][number] })
 const ProfileTagSectionView = ({
   section,
   onEdit,
+  editAriaLabel,
 }: {
   section: ProfileTagSection
   onEdit?: () => void
+  editAriaLabel?: string
 }) => {
   const { t } = useTranslation()
   const hasItems = section.items.length > 0
@@ -105,7 +108,7 @@ const ProfileTagSectionView = ({
       onClick={onEdit}
       data-haptic="selection"
       className="inline-flex min-h-7 items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
-      aria-label={t('aria.editSpecializations')}
+      aria-label={editAriaLabel}
     >
       <Plus className="h-3.5 w-3.5" aria-hidden="true" />
       {t('common.add')}
@@ -245,6 +248,7 @@ export const ProfileOverview = memo(function ProfileOverview({
   variant = 'page',
   onFill,
   onEditSpecializations,
+  onEditSupplierTypes,
   onOpenToWorkToggle,
   isOpenToWorkUpdating = false,
 }: ProfileOverviewProps) {
@@ -303,9 +307,18 @@ export const ProfileOverview = memo(function ProfileOverview({
           key={section.id}
           section={section}
           onEdit={
-            section.id === 'employee-specializations' && variant === 'page'
+            variant === 'page' && section.id === 'employee-specializations'
               ? onEditSpecializations
-              : undefined
+              : variant === 'page' && section.id === 'supplier-types'
+                ? onEditSupplierTypes
+                : undefined
+          }
+          editAriaLabel={
+            section.id === 'employee-specializations'
+              ? t('aria.editSpecializations')
+              : section.id === 'supplier-types'
+                ? t('aria.editSupplierTypes')
+                : undefined
           }
         />
       ))}

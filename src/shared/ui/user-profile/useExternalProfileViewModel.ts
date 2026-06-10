@@ -7,6 +7,8 @@ import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { formatProfileDisplayName } from '@/shared/utils/userDisplayName'
 import { buildProfileViewModel, type ProfileViewModel } from './buildProfileViewModel'
 import type { ApiRole } from '@/shared/types/roles.types'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 
 interface UseExternalProfileViewModelOptions {
   userId: number | null | undefined
@@ -26,6 +28,7 @@ export const useExternalProfileViewModel = ({
   skip = false,
 }: UseExternalProfileViewModelOptions): UseExternalProfileViewModelResult => {
   const { t } = useTranslation()
+  const viewerRole = useAppSelector(selectSelectedRole)
   const {
     getUiRoleLabel,
     getEmployeePositionLabel,
@@ -91,6 +94,8 @@ export const useExternalProfileViewModel = ({
     return getProfileCompleteness(userProfile, apiRole)
   }, [userProfile, apiRole])
 
+  const hideRestaurantMetrics = viewerRole === 'supplier' && apiRole === 'restaurant'
+
   const profileViewModel = useMemo(() => {
     if (!userProfile) return null
 
@@ -105,12 +110,14 @@ export const useExternalProfileViewModel = ({
       myShiftsCount: 0,
       getSpecializationLabel,
       getSupplierTypeLabel,
+      hideMetrics: hideRestaurantMetrics,
     })
   }, [
     apiRole,
     getSpecializationLabel,
     getSupplierTypeLabel,
     heroRoleOrPositionLabel,
+    hideRestaurantMetrics,
     profileCompleteness,
     t,
     userName,

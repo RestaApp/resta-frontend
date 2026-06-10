@@ -84,6 +84,8 @@ interface BuildProfileViewModelParams extends ProfileStats, ProfileLabelHelpers 
   userName: string
   roleLabel: string
   completeness: ProfileCompleteness | null
+  /** Скрыть KPI и блок отзывов (например, поставщик смотрит карточку ресторана). */
+  hideMetrics?: boolean
 }
 
 const normalizeText = (value: string | null | undefined) => value?.trim() || ''
@@ -215,22 +217,18 @@ const buildTagSections = ({
 
   if (apiRole === 'supplier') {
     const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
-    const category = normalizeText(supplierProfile?.supplier_category)
     const rawSupplierTypes = supplierProfile?.supplier_types
     const types = Array.isArray(rawSupplierTypes)
       ? rawSupplierTypes
       : supplierProfile?.supplier_type
         ? [supplierProfile.supplier_type]
         : []
-    const supplierTags = uniqueValues([category, ...types])
 
-    if (supplierTags.length > 0) {
-      sections.push({
-        id: 'supplier-tags',
-        title: t('profile.supplierCategorySection'),
-        items: toTagItems(supplierTags, getSupplierTypeLabel),
-      })
-    }
+    sections.push({
+      id: 'supplier-types',
+      title: t('profile.supplierTypesLabel'),
+      items: toTagItems(uniqueValues(types), getSupplierTypeLabel),
+    })
   }
 
   return sections
@@ -395,7 +393,8 @@ const buildInfoSections = ({
 }
 
 export const buildProfileViewModel = (params: BuildProfileViewModelParams): ProfileViewModel => {
-  const { t, apiRole, userProfile, userName, roleLabel, completeness } = params
+  const { t, apiRole, userProfile, userName, roleLabel, completeness, hideMetrics = false } =
+    params
 
   return {
     userProfile,
@@ -404,10 +403,10 @@ export const buildProfileViewModel = (params: BuildProfileViewModelParams): Prof
     roleLabel,
     isProfileFilled: completeness?.isFilled ?? false,
     fillRequiredText: getFillRequiredText(t, apiRole),
-    kpis: buildKpis(params),
+    kpis: hideMetrics ? [] : buildKpis(params),
     tagSections: buildTagSections(params),
     infoSections: buildInfoSections(params),
-    reviewSummary: buildReviewSummary(userProfile),
+    reviewSummary: hideMetrics ? null : buildReviewSummary(userProfile),
     showNotificationSettings: apiRole !== 'supplier',
     showSupport: apiRole != null && apiRole !== 'unverified',
   }

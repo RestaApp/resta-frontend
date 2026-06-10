@@ -805,6 +805,7 @@
   "aria": {
     "editProfile": "Edit profile",
     "editSpecializations": "Edit specializations",
+    "editSupplierTypes": "Edit supplier types",
     "selectPosition": "Select position: {{label}}",
     "selectSpecialization": "Select specialization: {{label}}",
     "selectRole": "Select role: {{label}}",

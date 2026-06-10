@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FormField } from '@/components/ui/form-field'
 import { MultiSelectTagsList } from '@/shared/ui/MultiSelectTagsList'
@@ -9,6 +9,7 @@ interface SupplierTypesFieldProps {
   isLoading: boolean
   selected: string[]
   disabled: boolean
+  containerRef?: RefObject<HTMLDivElement | null>
   onChange: (next: string[]) => void
 }
 
@@ -18,6 +19,7 @@ export const SupplierTypesField = memo(function SupplierTypesField({
   isLoading,
   selected,
   disabled,
+  containerRef,
   onChange,
 }: SupplierTypesFieldProps) {
   const { t } = useTranslation()
@@ -38,7 +40,9 @@ export const SupplierTypesField = memo(function SupplierTypesField({
       hint={t('profile.supplierTypesHint', {
         defaultValue: 'Можно выбрать несколько направлений',
       })}
+      className="scroll-mt-4"
     >
+      <div ref={containerRef} />
       <MultiSelectTagsList
         options={options}
         selectedValues={selected}

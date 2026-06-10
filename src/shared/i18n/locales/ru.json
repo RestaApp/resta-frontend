@@ -813,6 +813,7 @@
   "aria": {
     "editProfile": "Редактировать профиль",
     "editSpecializations": "Редактировать специализации",
+    "editSupplierTypes": "Редактировать типы поставщика",
     "selectPosition": "Выбрать позицию: {{label}}",
     "selectSpecialization": "Выбрать специализацию: {{label}}",
     "selectRole": "Выбрать роль: {{label}}",

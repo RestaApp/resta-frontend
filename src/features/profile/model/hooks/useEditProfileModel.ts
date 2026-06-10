@@ -20,8 +20,7 @@ type EditProfileErrors = Partial<Record<EditProfileField, string>>
 type EditProfileStep = 0 | 1 | 2
 
 const getTotalSteps = (apiRole: ApiRole | null) => {
-  if (apiRole === 'employee' || apiRole === 'restaurant') return 3
-  if (apiRole === 'supplier') return 2
+  if (apiRole === 'employee' || apiRole === 'restaurant' || apiRole === 'supplier') return 3
   return 1
 }
 

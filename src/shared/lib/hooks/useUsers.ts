@@ -21,7 +21,7 @@ export const useUpdateUser = () => {
   const [updateUserMutation, { isLoading, error }] = useUpdateUserMutation()
 
   const updateUser = useCallback(
-    async (id: number, data: UpdateUserRequest) => {
+    async (id: number, data: UpdateUserRequest, options?: { preserveSelectedRole?: boolean }) => {
       let result: UpdateUserResponse
       try {
         result = await updateUserMutation({ id, data }).unwrap()
@@ -35,7 +35,7 @@ export const useUpdateUser = () => {
       // Обновляем данные пользователя в Redux только при успешном обновлении
       // и только если success: true и есть данные
       if (result.success && result.data) {
-        updateUserDataInStore(dispatch, result.data)
+        updateUserDataInStore(dispatch, result.data, options)
       }
 
       // Если success: false, возвращаем результат с ошибками, но не обновляем Redux

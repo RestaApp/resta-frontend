@@ -135,7 +135,7 @@ const SupplierCardComponent = ({
       <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{subtitleText}</p>
 
       <div className={PREVIEW_CARD_STATS_CLASS}>
-        {hasRating ? (
+        {!isRestaurantsMode && hasRating ? (
           <span className="inline-flex items-center gap-1" aria-label={t('common.rating')}>
             <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden />
             {t('shift.ownerReviewsSummary', {

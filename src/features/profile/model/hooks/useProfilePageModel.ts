@@ -112,9 +112,21 @@ export const useProfilePageModel = () => {
       const format = userProfile.restaurant_profile?.restaurant_format?.trim()
       return format ? getRestaurantFormatLabel(format) : t('profile.subtitle.venue')
     }
-    if (apiRole === 'supplier') return t('profile.subtitle.supplier')
+    if (apiRole === 'supplier') {
+      const supplierProfile =
+        userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
+      const category = supplierProfile?.supplier_category?.trim()
+      return category ? getSupplierTypeLabel(category) : t('profile.subtitle.supplier')
+    }
     return t('common.user')
-  }, [apiRole, userProfile, getEmployeePositionLabel, getRestaurantFormatLabel, t])
+  }, [
+    apiRole,
+    userProfile,
+    getEmployeePositionLabel,
+    getRestaurantFormatLabel,
+    getSupplierTypeLabel,
+    t,
+  ])
 
   const venueInfoRows = useMemo(() => {
     if (!userProfile || apiRole !== 'restaurant') return []

@@ -60,7 +60,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
           user: { role: mapUiRoleToApiRole(role) },
         }
 
-        const result = await updateUser(userId, updateData)
+        const result = await updateUser(userId, updateData, { preserveSelectedRole: true })
 
         // если updateUser возвращает success/errors — проверяем
         if (
@@ -117,7 +117,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
           throw new Error(saveErrorFallback)
         }
 
-        const result = await updateUser(userId, updateData)
+        const result = await updateUser(userId, updateData, { preserveSelectedRole: true })
 
         if (!result.success) {
           const errors = result.errors || [saveErrorFallback]
