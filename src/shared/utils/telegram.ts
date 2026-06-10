@@ -133,6 +133,27 @@ let telegramBackButtonHandlerId = 0
 let telegramBackButtonHandlers: TelegramBackButtonHandler[] = []
 let telegramBackButtonWebApp: TelegramWebApp | null = null
 let telegramBackButtonBound = false
+let telegramBackButtonVisible = false
+
+const isTelegramVersionAtLeast = (webApp: TelegramWebApp, target: string): boolean => {
+  if (webApp.isVersionAtLeast) return webApp.isVersionAtLeast(target)
+  const current = typeof webApp.version === 'string' ? webApp.version : null
+  if (!current) return false
+  const parse = (value: string) => value.split('.').map(part => Number(part))
+  const currentParts = parse(current)
+  const targetParts = parse(target)
+  const length = Math.max(currentParts.length, targetParts.length)
+  for (let index = 0; index < length; index += 1) {
+    const currentPart = currentParts[index] ?? 0
+    const targetPart = targetParts[index] ?? 0
+    if (currentPart > targetPart) return true
+    if (currentPart < targetPart) return false
+  }
+  return true
+}
+
+const isTelegramBackButtonSupported = (webApp: TelegramWebApp): boolean =>
+  isTelegramVersionAtLeast(webApp, '6.1')
 
 const handleTelegramBackButtonClick = () => {
   const activeHandler = telegramBackButtonHandlers.at(-1)
@@ -166,17 +187,25 @@ const bindTelegramBackButton = (webApp: TelegramWebApp) => {
 }
 
 const syncTelegramBackButton = (webApp: TelegramWebApp) => {
+  if (!isTelegramBackButtonSupported(webApp)) return
+
   try {
     if (telegramBackButtonHandlers.length > 0) {
       bindTelegramBackButton(webApp)
-      webApp.BackButton.show()
+      if (!telegramBackButtonVisible) {
+        webApp.BackButton.show()
+        telegramBackButtonVisible = true
+      }
       return
     }
 
     if (telegramBackButtonBound) {
       webApp.BackButton.offClick(handleTelegramBackButtonClick)
     }
-    webApp.BackButton.hide()
+    if (telegramBackButtonVisible) {
+      webApp.BackButton.hide()
+      telegramBackButtonVisible = false
+    }
     telegramBackButtonWebApp = null
     telegramBackButtonBound = false
   } catch {

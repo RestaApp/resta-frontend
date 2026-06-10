@@ -231,9 +231,9 @@ export const Drawer = ({
 
   useEffect(() => {
     if (!open) return
-    if (preventClose && !onTelegramBack) return
+    if (preventClose && !telegramBackRef.current) return
     return setupTelegramBackButton(stableTelegramBack)
-  }, [stableTelegramBack, onTelegramBack, open, preventClose])
+  }, [stableTelegramBack, open, preventClose])
 
   const node = (
     <AnimatePresence>
