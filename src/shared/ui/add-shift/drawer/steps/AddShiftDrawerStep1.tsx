@@ -91,7 +91,6 @@ export const AddShiftDrawerStep1 = ({
             searchable={false}
             disabled={isPositionsLoading}
             error={positionError}
-            portaled
           />
         </div>
       )}

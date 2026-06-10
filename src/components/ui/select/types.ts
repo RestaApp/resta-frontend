@@ -16,6 +16,8 @@ export interface SelectProps {
   searchable?: boolean
   /** Рендер дропдауна в portal с fixed-позицией (drawer, footer). */
   portaled?: boolean
+  /** Затемнение фона при открытии (по умолчанию выключено — inline-дропдаун под полем). */
+  withOverlay?: boolean
   /** Отступ снизу (например высота BottomNav) для автоскролла при открытии дропдауна */
   bottomOffsetPx?: number
 }

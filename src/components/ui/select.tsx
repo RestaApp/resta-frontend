@@ -2,10 +2,12 @@ import { memo, useState, useRef, useEffect, useCallback, useMemo, useId } from '
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
+import { useScrollContainerLock } from '@/shared/lib/hooks/useScrollContainerLock'
 import { FormField } from '@/components/ui/form-field'
 import { SelectDropdown } from './select/SelectDropdown'
 import { SelectTrigger } from './select/SelectTrigger'
 import { useDropdownAutoScroll } from './select/useDropdownAutoScroll'
+import { useEffectivePortaled } from './select/useEffectivePortaled'
 import type { SelectProps } from './select/types'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 
@@ -23,6 +25,7 @@ export const Select = memo(function Select({
   error,
   searchable = true,
   portaled = false,
+  withOverlay = false,
   bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
 }: SelectProps) {
   const { t } = useTranslation()
@@ -35,13 +38,17 @@ export const Select = memo(function Select({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  useBodyScrollLock(isOpen)
+  const effectivePortaled = useEffectivePortaled(isOpen, containerRef, portaled)
+
+  useBodyScrollLock(isOpen && withOverlay)
+  useScrollContainerLock(isOpen, containerRef)
 
   useDropdownAutoScroll({
     isOpen,
     containerRef,
     bottomOffsetPx,
-    portaled,
+    portaled: effectivePortaled,
+    enabled: !effectivePortaled,
   })
 
   const selectedOption = options.find(opt => opt.value === value)
@@ -56,6 +63,20 @@ export const Select = memo(function Select({
       opt => opt.label.toLowerCase().includes(query) || opt.value.toLowerCase().includes(query)
     )
   }, [options, searchQuery, searchable])
+
+  useEffect(() => {
+    if (!isOpen || withOverlay) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node
+      if (containerRef.current?.contains(target) || dropdownRef.current?.contains(target)) return
+      setIsOpen(false)
+      setSearchQuery('')
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown, true)
+    return () => document.removeEventListener('pointerdown', handlePointerDown, true)
+  }, [isOpen, withOverlay])
 
   useEffect(() => {
     if (!isOpen || !searchable) return
@@ -116,7 +137,7 @@ export const Select = memo(function Select({
 
   return (
     <FormField label={label} hint={hint} error={error} className={cn('w-full', className)}>
-      <div className="relative" ref={containerRef}>
+      <div className={cn('relative', isOpen && 'z-10')} ref={containerRef}>
         <SelectTrigger
           isOpen={isOpen}
           disabled={disabled}
@@ -130,7 +151,8 @@ export const Select = memo(function Select({
 
         <SelectDropdown
           isOpen={isOpen}
-          portaled={portaled}
+          withOverlay={withOverlay}
+          portaled={effectivePortaled}
           anchorRef={containerRef}
           searchable={searchable}
           displayPlaceholder={displayPlaceholder}

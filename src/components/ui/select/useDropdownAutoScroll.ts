@@ -104,7 +104,7 @@ export const useDropdownAutoScroll = ({
   }, [containerRef, bottomOffsetPx, portaled])
 
   useEffect(() => {
-    if (!enabled || !isOpen || !containerRef.current) return
+    if (!enabled || !isOpen || portaled || !containerRef.current) return
 
     let rafId: number | null = null
     const throttledEnsure = () => {

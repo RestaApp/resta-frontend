@@ -32,22 +32,14 @@ export const useAnchoredDropdownRect = (
       const el = anchorRef.current
       if (!el) return
       const r = el.getBoundingClientRect()
-      const viewportHeight = window.innerHeight
-      const spaceBelow = viewportHeight - r.bottom - DROPDOWN_GAP_PX - VIEWPORT_PADDING
-      const spaceAbove = r.top - DROPDOWN_GAP_PX - VIEWPORT_PADDING
-      const openBelow = spaceBelow >= spaceAbove
-      const available = openBelow ? spaceBelow : spaceAbove
+      const spaceBelow = window.innerHeight - r.bottom - DROPDOWN_GAP_PX - VIEWPORT_PADDING
       const maxHeight = Math.min(
         DROPDOWN_MAX_HEIGHT,
-        Math.max(available, DROPDOWN_MIN_HEIGHT)
+        Math.max(spaceBelow, DROPDOWN_MIN_HEIGHT)
       )
 
-      const top = openBelow
-        ? r.bottom + DROPDOWN_GAP_PX
-        : Math.max(VIEWPORT_PADDING, r.top - DROPDOWN_GAP_PX - maxHeight)
-
       setRect({
-        top,
+        top: r.bottom + DROPDOWN_GAP_PX,
         left: r.left,
         width: r.width,
         maxHeight,

@@ -36,7 +36,7 @@ interface SelectDropdownProps {
 
 export const SelectDropdown = ({
   isOpen,
-  withOverlay = true,
+  withOverlay = false,
   portaled = false,
   anchorRef,
   isLoading = false,
@@ -105,7 +105,10 @@ export const SelectDropdown = ({
           role="listbox"
           aria-label={label ?? displayPlaceholder}
           className="overflow-y-auto overflow-x-hidden overscroll-contain"
-          style={{ maxHeight: '215px' }}
+          style={{
+            maxHeight:
+              portaled && anchoredRect ? `${anchoredRect.maxHeight}px` : '215px',
+          }}
         >
           {isLoading ? (
             loadingContent
