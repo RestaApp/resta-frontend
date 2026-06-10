@@ -32,7 +32,7 @@ const AppBootstrapRoutes = () => {
     content = <Dashboard role={role} onNavigate={navigate} currentScreen={currentScreen} />
   }
 
-  return <Suspense fallback={null}>{content}</Suspense>
+  return <Suspense fallback={<LoadingPage />}>{content}</Suspense>
 }
 
 export const App = () => {

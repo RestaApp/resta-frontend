@@ -71,7 +71,7 @@ export function useAppBootstrap() {
   }, [])
 
   const shouldShowLoading =
-    (isLoading && !userData) ||
+    isLoading ||
     (authService.isAuthenticated() && !userData) ||
     (postLogoutLoading && !selectedRole)
 
