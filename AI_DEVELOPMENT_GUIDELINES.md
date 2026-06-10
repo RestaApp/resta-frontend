@@ -621,7 +621,7 @@ npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 - `npm run test:visual` (или `test:visual:update` после намеренных изменений).
 - Design‑system violations (`text-[Npx]`, `bg-[#hex]`, `z-[N]`, legacy токены) — `0` или allowlist.
 
-**Smoke screens (минимум при системных UI‑изменениях):** Boot · Onboarding · Feed · Activity · Profile · Venue Suppliers · Dark/Light.
+**Smoke screens (минимум при системных UI‑изменениях):** Boot · Onboarding · Feed · Applied · Mine · Me · Restaurants · Suppliers · Dark/Light.
 
 ---
 
