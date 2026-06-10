@@ -54,6 +54,34 @@ const TONE_CONFIG = {
   },
 } as const
 
+const SUCCESS_CONFETTI = [
+  { top: '8%', left: '18%', size: 6, className: 'bg-primary' },
+  { top: '14%', left: '78%', size: 5, className: 'bg-warning' },
+  { top: '28%', left: '6%', size: 4, className: 'bg-success' },
+  { top: '22%', left: '88%', size: 5, className: 'bg-destructive/70' },
+  { top: '72%', left: '12%', size: 4, className: 'bg-primary/80' },
+  { top: '68%', left: '82%', size: 6, className: 'bg-success/80' },
+  { top: '82%', left: '48%', size: 4, className: 'bg-warning/80' },
+] as const
+
+const SuccessResultIcon = () => (
+  <div className="relative grid h-28 w-28 place-items-center" aria-hidden>
+    <div className="absolute inset-0 rounded-full border border-success/10" />
+    <div className="absolute inset-3 rounded-full border border-success/15 bg-success/5" />
+    <div className="absolute inset-6 rounded-full border border-success/20 bg-success/10" />
+    {SUCCESS_CONFETTI.map(({ top, left, size, className }, index) => (
+      <span
+        key={index}
+        className={cn('absolute rounded-full', className)}
+        style={{ top, left, width: size, height: size }}
+      />
+    ))}
+    <div className="relative grid h-18 w-18 place-items-center rounded-xl bg-success text-white shadow-[var(--shadow-success-cta)]">
+      <Check className="h-9 w-9" strokeWidth={2.2} />
+    </div>
+  </div>
+)
+
 const ResultAction = ({
   action,
   fallbackSize,
@@ -120,12 +148,16 @@ export const ResultOverlay = ({
 
       <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center ui-density-page ui-density-py">
         <div className="flex w-full max-w-sm flex-col items-center gap-4 pb-6 text-center">
-          <div
-            className={cn('grid h-18 w-18 place-items-center rounded-lg', config.iconClassName)}
-            aria-hidden
-          >
-            <Icon className="h-9 w-9" strokeWidth={2.2} />
-          </div>
+          {tone === 'success' && !icon ? (
+            <SuccessResultIcon />
+          ) : (
+            <div
+              className={cn('grid h-18 w-18 place-items-center rounded-lg', config.iconClassName)}
+              aria-hidden
+            >
+              <Icon className="h-9 w-9" strokeWidth={2.2} />
+            </div>
+          )}
 
           <div className="flex flex-col items-center gap-2">
             <h2 className={SECTION_TITLE_CLASS}>{title}</h2>
@@ -145,7 +177,7 @@ export const ResultOverlay = ({
           mode="static"
           transparent
           className="relative"
-          contentClassName="flex flex-col gap-2"
+          contentClassName="flex flex-col items-center gap-2"
         >
           {primaryAction ? <ResultAction action={primaryAction} fallbackSize="md" /> : null}
           {secondaryAction ? <ResultAction action={secondaryAction} fallbackSize="md" /> : null}
