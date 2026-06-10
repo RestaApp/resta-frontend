@@ -1,4 +1,4 @@
-import type { AddShiftFieldErrors } from '@/features/activity/model/utils/addShiftValidation'
+import type { AddShiftFieldErrors } from '../model/addShiftValidation'
 
 export type StepIndex = 0 | 1 | 2
 

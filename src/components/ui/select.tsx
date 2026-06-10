@@ -1,4 +1,4 @@
-import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { memo, useState, useRef, useEffect, useCallback, useMemo, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
@@ -25,6 +25,7 @@ export const Select = memo(function Select({
   bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
 }: SelectProps) {
   const { t } = useTranslation()
+  const listboxId = useId()
   const displayPlaceholder = placeholder ?? t('common.selectValue')
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -121,6 +122,7 @@ export const Select = memo(function Select({
           displayPlaceholder={displayPlaceholder}
           displayValue={displayValue}
           value={value}
+          listboxId={listboxId}
           onToggle={handleToggle}
         />
 
@@ -135,6 +137,7 @@ export const Select = memo(function Select({
           searchInputRef={searchInputRef}
           scrollContainerRef={scrollContainerRef}
           dropdownRef={dropdownRef}
+          listboxId={listboxId}
           onClose={handleClose}
           onChangeSearch={handleInputChange}
           onKeyDown={handleInputKeyDown}

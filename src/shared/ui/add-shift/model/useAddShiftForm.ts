@@ -7,8 +7,9 @@ import {
 } from '@/services/api/shiftsApi'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
 import { useAuth } from '@/app/contexts/auth'
-import { findDuplicatePosition, validateDate, validateTimeRange } from '../utils/addShiftValidation'
-import { useAddShiftFormState, type ShiftType } from './useAddShiftFormState'
+import { findDuplicatePosition, validateDate, validateTimeRange } from './addShiftValidation'
+import { useAddShiftFormState } from './useAddShiftFormState'
+import type { ShiftType } from '@/shared/shifts/types'
 import { useAddShiftFormSubmission } from './useAddShiftFormSubmission'
 
 type UseAddShiftFormOptions = {

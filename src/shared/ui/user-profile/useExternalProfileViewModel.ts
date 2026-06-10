@@ -5,7 +5,7 @@ import { mapRoleFromApi } from '@/shared/utils/roles'
 import { useLabels } from '@/shared/i18n/hooks'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { formatProfileDisplayName } from '@/shared/utils/userDisplayName'
-import { buildProfileViewModel, type ProfileViewModel } from '../buildProfileViewModel'
+import { buildProfileViewModel, type ProfileViewModel } from './buildProfileViewModel'
 import type { ApiRole } from '@/shared/types/roles.types'
 
 interface UseExternalProfileViewModelOptions {

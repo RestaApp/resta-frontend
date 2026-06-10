@@ -5,9 +5,9 @@ import type { ApiRole } from '@/shared/types/roles.types'
 import { formatPhoneDisplay, toE164 } from '@/shared/utils/phone'
 import { formatExperienceText } from '@/shared/utils/experience'
 import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
-import { businessHoursRecordToFormValue } from './utils/businessHoursForm'
+import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
-import { splitSkillByDots } from '../ui/components/profile-info/skills'
+import { splitSkillByDots } from '@/shared/utils/profileSkills'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
 

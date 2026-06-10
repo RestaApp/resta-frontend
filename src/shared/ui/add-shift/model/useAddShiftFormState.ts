@@ -7,8 +7,8 @@ import {
   getInitialShiftDate,
   getInitialShiftTime,
   getInitialSpecializations,
-} from '../utils/addShiftFormInitialization'
-import type { AddShiftFieldErrors } from '../utils/addShiftValidation'
+} from './addShiftFormInitialization'
+import type { AddShiftFieldErrors } from './addShiftValidation'
 
 export type { ShiftType } from '@/shared/shifts/types'
 import type { ShiftType } from '@/shared/shifts/types'

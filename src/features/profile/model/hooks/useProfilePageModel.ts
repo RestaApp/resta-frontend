@@ -15,7 +15,7 @@ import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { formatProfileDisplayName } from '@/shared/utils/userDisplayName'
 import { useAuth } from '@/app/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
-import { buildProfileViewModel } from '../buildProfileViewModel'
+import { buildProfileViewModel } from '@/shared/ui/user-profile/buildProfileViewModel'
 import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
 
 export const useProfilePageModel = () => {

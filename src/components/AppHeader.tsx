@@ -8,7 +8,7 @@ import {
   APP_HEADER_ACTION_ICON_CLASS,
   SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
-import { AddShiftOnboardingOverlay } from '@/features/activity/ui/components/AddShiftOnboardingOverlay'
+import { AddShiftOnboardingOverlay } from '@/shared/ui/add-shift/AddShiftOnboardingOverlay'
 import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'

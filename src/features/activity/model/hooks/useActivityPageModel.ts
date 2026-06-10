@@ -15,8 +15,9 @@ import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompletenes
 import { useAuth } from '@/app/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 import { hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
+import type { ActivityTab } from '@/shared/types/activity.types'
 
-export type ActivityTab = 'applications' | 'shifts'
+export type { ActivityTab } from '@/shared/types/activity.types'
 
 export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') => {
   const { t } = useTranslation()

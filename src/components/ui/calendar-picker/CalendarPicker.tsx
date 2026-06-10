@@ -67,7 +67,7 @@ export function CalendarPicker({
         {dayHeaders.map((d, i) => (
           <span
             key={`${d}-${i}`}
-            className="text-center text-[10px] font-bold leading-6 text-foreground"
+            className="text-center text-xs font-bold leading-6 text-foreground"
           >
             {d}
           </span>

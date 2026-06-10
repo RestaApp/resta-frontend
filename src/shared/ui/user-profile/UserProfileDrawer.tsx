@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { ProfileOverview } from './components/ProfileOverview'
 import { Loader } from '@/components/ui/loader'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { useExternalProfileViewModel } from '../model/hooks/useExternalProfileViewModel'
+import { useExternalProfileViewModel } from './useExternalProfileViewModel'
 
 interface UserProfileDrawerProps {
   userId: number | null

@@ -9,7 +9,7 @@ import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { ErrorState } from '@/components/ui/states'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
-import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
+import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 

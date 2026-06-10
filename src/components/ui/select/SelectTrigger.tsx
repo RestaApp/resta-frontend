@@ -14,6 +14,7 @@ interface SelectTriggerProps {
   displayPlaceholder: string
   displayValue: string
   value: string
+  listboxId: string
   onToggle: () => void
 }
 
@@ -24,6 +25,7 @@ export const SelectTrigger = ({
   displayPlaceholder,
   displayValue,
   value,
+  listboxId,
   onToggle,
 }: SelectTriggerProps) => {
   return (
@@ -31,6 +33,7 @@ export const SelectTrigger = ({
       type="button"
       role="combobox"
       aria-haspopup="listbox"
+      aria-controls={listboxId}
       aria-expanded={isOpen}
       onClick={onToggle}
       disabled={disabled}

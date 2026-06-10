@@ -1,7 +1,7 @@
 import { Eye } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import { UserProfileDrawer } from '@/features/profile/ui/UserProfileDrawer'
+import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { useLabels } from '@/shared/i18n/hooks'
 import { formatViewsCount } from '@/shared/utils/viewsCount'
 import { ApplicantsTab } from './ApplicantsTab'

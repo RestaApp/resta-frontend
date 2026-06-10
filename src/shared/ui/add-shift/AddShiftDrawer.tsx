@@ -18,8 +18,9 @@ import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
 import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { toLocationArray } from '@/shared/utils/location'
-import { useAddShiftForm, type ShiftType } from '../../model/hooks/useAddShiftForm'
-import { AddShiftDrawerFooter } from './add-shift-drawer/AddShiftDrawerFooter'
+import { useAddShiftForm } from './model/useAddShiftForm'
+import type { ShiftType } from '@/shared/shifts/types'
+import { AddShiftDrawerFooter } from './drawer/AddShiftDrawerFooter'
 import {
   AddShiftDrawerBanner,
   AddShiftDrawerProgress,
@@ -27,15 +28,10 @@ import {
   AddShiftDrawerStep0,
   AddShiftDrawerStep1,
   AddShiftDrawerStep2,
-} from './add-shift-drawer/AddShiftDrawerSteps'
+} from './drawer/AddShiftDrawerSteps'
 import { ResultOverlay } from '@/components/ui/result-overlay'
-import { useAddShiftDrawerController } from './add-shift-drawer/useAddShiftDrawerController'
-import {
-  getDrawerCopy,
-  getLockedShiftType,
-  INITIAL_SHIFT_TYPE,
-  TOTAL_STEPS,
-} from './add-shift-drawer/config'
+import { useAddShiftDrawerController } from './drawer/useAddShiftDrawerController'
+import { getDrawerCopy, getLockedShiftType, INITIAL_SHIFT_TYPE, TOTAL_STEPS } from './drawer/config'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'
 
 type AddShiftDrawerProps = {

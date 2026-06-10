@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { ProfileOverview } from '@/features/profile/ui/components/ProfileOverview'
+import { ProfileOverview } from './components/ProfileOverview'
 import { Loader } from '@/components/ui/loader'
 import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
-import { useExternalProfileViewModel } from '@/features/profile/model/hooks/useExternalProfileViewModel'
+import { useExternalProfileViewModel } from './useExternalProfileViewModel'
 
 interface UserProfileOverlayProps {
   id: number

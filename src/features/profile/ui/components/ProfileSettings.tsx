@@ -26,7 +26,7 @@ import { cn } from '@/shared/utils/cn'
 import type { Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'
-import { DeleteAccountDrawer } from '@/features/legal/ui/DeleteAccountDrawer'
+import { DeleteAccountDrawer } from '@/shared/ui/legal/DeleteAccountDrawer'
 
 interface ProfileSettingsProps {
   onLogout: () => void

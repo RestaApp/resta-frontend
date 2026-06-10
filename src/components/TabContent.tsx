@@ -2,7 +2,7 @@ import { lazy, type ComponentType, type ReactNode } from 'react'
 import { PageSuspense } from '@/components/ui/PageSuspense'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import type { Tab } from '@/shared/types/navigation.types'
-import type { ActivityTab } from '@/features/activity/model/hooks/useActivityPageModel'
+import type { ActivityTab } from '@/shared/types/activity.types'
 
 const FeedPage = lazy(() =>
   import('@/features/feed/ui/FeedPage').then(m => ({ default: m.FeedPage }))

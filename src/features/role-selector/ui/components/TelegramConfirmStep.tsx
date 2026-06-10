@@ -17,9 +17,9 @@ import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBottomCta'
-import { LegalConsentCheckbox } from '@/features/legal/ui/LegalConsentCheckbox'
-import { PrivacyPolicyPage } from '@/features/legal/ui/PrivacyPolicyPage'
-import { TermsOfServicePage } from '@/features/legal/ui/TermsOfServicePage'
+import { LegalConsentCheckbox } from '@/shared/ui/legal/LegalConsentCheckbox'
+import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
+import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void

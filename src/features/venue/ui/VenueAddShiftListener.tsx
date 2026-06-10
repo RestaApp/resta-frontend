@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
+import { AddShiftDrawer } from '@/shared/ui/add-shift/AddShiftDrawer'
 import type { ShiftType } from '@/shared/shifts/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'

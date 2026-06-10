@@ -1,4 +1,4 @@
-import { AddShiftDrawer } from '@/features/activity/ui/components/AddShiftDrawer'
+import { AddShiftDrawer } from '@/shared/ui/add-shift/AddShiftDrawer'
 import { SuccessOverlay } from '@/components/ui/success-overlay'
 import { Toast } from '@/components/ui/toast'
 import { ActivityListTab } from './ActivityListTab'

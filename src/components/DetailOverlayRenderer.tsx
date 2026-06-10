@@ -6,7 +6,9 @@ const ShiftDetailOverlay = lazy(() =>
   import('./ShiftDetailOverlay').then(m => ({ default: m.ShiftDetailOverlay }))
 )
 const UserProfileOverlay = lazy(() =>
-  import('./UserProfileOverlay').then(m => ({ default: m.UserProfileOverlay }))
+  import('@/shared/ui/user-profile/UserProfileOverlay').then(m => ({
+    default: m.UserProfileOverlay,
+  }))
 )
 
 export function DetailOverlayRenderer() {

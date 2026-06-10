@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from 'react'
+import { useCallback, useMemo, type ComponentProps } from 'react'
 import { useGetShiftByIdQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/shared/shifts/types'
 import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
@@ -20,6 +20,14 @@ interface VacancyCardWithDetailsProps {
   ownerActions?: ShiftDetailsOwnerActions
 }
 
+const isVacancyDetailOverlay = (
+  overlay: { type: string; id: number } | null,
+  vacancyId: number
+): boolean =>
+  overlay != null &&
+  (overlay.type === 'shift' || overlay.type === 'vacancy') &&
+  overlay.id === vacancyId
+
 export const VacancyCardWithDetails = ({
   vacancy,
   mapToShift,
@@ -27,15 +35,8 @@ export const VacancyCardWithDetails = ({
   ownerActions,
 }: VacancyCardWithDetailsProps) => {
   const { overlay, openShiftDetail, closeOverlay } = useDetailOverlay()
-  const [isOpen, setIsOpen] = useState(false)
+  const isOpen = isVacancyDetailOverlay(overlay, vacancy.id)
 
-  const prevOverlayRef = useRef(overlay)
-  useEffect(() => {
-    if (prevOverlayRef.current && !overlay && isOpen) {
-      setIsOpen(false)
-    }
-    prevOverlayRef.current = overlay
-  }, [overlay, isOpen])
   const { data: detailVacancy } = useGetShiftByIdQuery(String(vacancy.id), {
     skip: !isOpen,
   })
@@ -53,11 +54,10 @@ export const VacancyCardWithDetails = ({
   const mappedShift = useMemo(() => mapToShift(resolvedVacancy), [resolvedVacancy, mapToShift])
 
   const handleOpenDetails = useCallback(() => {
-    setIsOpen(true)
     openShiftDetail(vacancy.id)
   }, [openShiftDetail, vacancy.id])
+
   const handleCloseDetails = useCallback(() => {
-    setIsOpen(false)
     closeOverlay()
   }, [closeOverlay])
 
@@ -66,17 +66,17 @@ export const VacancyCardWithDetails = ({
   const handleDetailsApply = useCallback(
     async (id: number, message?: string) => {
       await onApply(id, message)
-      setIsOpen(false)
+      closeOverlay()
     },
-    [onApply]
+    [closeOverlay, onApply]
   )
 
   const handleDetailsCancel = useCallback(
     async (appId: number | null | undefined, shiftId: number) => {
       await onCancel(appId, shiftId)
-      setIsOpen(false)
+      closeOverlay()
     },
-    [onCancel]
+    [closeOverlay, onCancel]
   )
 
   return (

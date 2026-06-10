@@ -6,7 +6,7 @@ import { MyShiftsSection } from '@/features/activity/ui/components/MyShiftsSecti
 import { MyApplicationsSection } from '@/features/activity/ui/components/MyApplicationsSection'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
-import type { ActivityTab } from '../../model/hooks/useActivityPageModel'
+import type { ActivityTab } from '@/shared/types/activity.types'
 interface ActivityListTabProps {
   activeTab: ActivityTab
   isLoading: boolean

@@ -19,6 +19,7 @@ interface SelectDropdownProps {
   searchInputRef: RefObject<HTMLInputElement | null>
   scrollContainerRef: RefObject<HTMLDivElement | null>
   dropdownRef: RefObject<HTMLDivElement | null>
+  listboxId: string
   onClose: () => void
   onChangeSearch: (e: ChangeEvent<HTMLInputElement>) => void
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void
@@ -41,6 +42,7 @@ export const SelectDropdown = ({
   searchInputRef,
   scrollContainerRef,
   dropdownRef,
+  listboxId,
   onClose,
   onChangeSearch,
   onKeyDown,
@@ -96,6 +98,7 @@ export const SelectDropdown = ({
               ) : null}
 
               <div
+                id={listboxId}
                 ref={scrollContainerRef}
                 role="listbox"
                 aria-label={label ?? displayPlaceholder}

@@ -56,7 +56,6 @@ export const DatePicker = ({
             !!error && 'border-destructive ring-2 ring-destructive/20'
           )}
           aria-label={label ?? t('datePicker.ariaLabel')}
-          aria-invalid={!!error}
           aria-expanded={open}
         >
           {value ? (

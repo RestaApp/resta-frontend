@@ -19,7 +19,7 @@ import type {
   ProfileInfoSection,
   ProfileTagSection,
   ProfileViewModel,
-} from '../../model/buildProfileViewModel'
+} from '../buildProfileViewModel'
 import { ProfileHero } from './ProfileHero'
 import {
   InfoRow,
