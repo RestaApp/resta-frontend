@@ -1,11 +1,10 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 
-const STEP_TRANSITION = { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const }
-const LABEL_TRANSITION = { duration: 0.22, ease: [0.4, 0, 0.2, 1] as const }
+const STEP_TRANSITION = { duration: 0.4, ease: [0.4, 0, 0.2, 1] as const }
 
 export interface StepProgressProps {
   /** Текущий шаг (1-based). */
@@ -31,62 +30,56 @@ export const StepProgress = memo(function StepProgress({
   const reduceMotion = useReducedMotion()
   const safeCurrent = Math.min(Math.max(current, 1), total)
   const ariaLabel = t(labelKey, { current: safeCurrent, total })
+  const fillRatio = total <= 1 ? 0 : (safeCurrent - 1) / (total - 1)
 
   return (
     <div className={cn('flex w-full flex-col gap-2', className)}>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.p
-          key={safeCurrent}
-          className={META_MONO_CLASS}
-          initial={reduceMotion ? false : { opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
-          transition={reduceMotion ? { duration: 0 } : LABEL_TRANSITION}
-        >
-          {ariaLabel}
-        </motion.p>
-      </AnimatePresence>
+      <p className={cn(META_MONO_CLASS, 'tabular-nums')} aria-live="polite" aria-atomic="true">
+        {ariaLabel}
+      </p>
 
       <div
-        className="flex w-full items-center"
+        className="relative flex w-full items-center justify-between"
         role="progressbar"
         aria-valuenow={safeCurrent}
         aria-valuemin={1}
         aria-valuemax={total}
         aria-label={ariaLabel}
       >
+        {total > 1 ? (
+          <>
+            <div
+              className="bg-muted-foreground/20 absolute top-1/2 right-[5px] left-[5px] h-0.5 -translate-y-1/2 rounded-full"
+              aria-hidden
+            />
+            <motion.div
+              className="bg-primary absolute top-1/2 left-[5px] h-0.5 origin-left -translate-y-1/2 rounded-full"
+              aria-hidden
+              initial={false}
+              animate={{
+                width: `calc((100% - 10px) * ${fillRatio})`,
+              }}
+              transition={reduceMotion ? { duration: 0 } : STEP_TRANSITION}
+            />
+          </>
+        ) : null}
+
         {Array.from({ length: total }, (_, index) => {
           const stepNumber = index + 1
           const isCompleted = stepNumber < safeCurrent
           const isActive = stepNumber === safeCurrent
-          const isLast = index === total - 1
 
           return (
-            <div key={stepNumber} className={cn('flex items-center', !isLast && 'min-w-0 flex-1')}>
-              <motion.div
-                className={cn(
-                  'h-2.5 w-2.5 shrink-0 rounded-full border-2 transition-colors duration-300 ease-out',
-                  isCompleted || isActive
-                    ? 'border-primary bg-primary'
-                    : 'border-muted-foreground/30 bg-background'
-                )}
-                initial={false}
-                animate={{
-                  scale: reduceMotion ? 1 : isActive ? 1.12 : 1,
-                }}
-                transition={reduceMotion ? { duration: 0 } : STEP_TRANSITION}
-              />
-              {!isLast ? (
-                <div className="relative mx-1.5 h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted-foreground/20">
-                  <motion.div
-                    className="absolute inset-0 origin-left rounded-full bg-primary"
-                    initial={false}
-                    animate={{ scaleX: isCompleted ? 1 : 0 }}
-                    transition={reduceMotion ? { duration: 0 } : STEP_TRANSITION}
-                  />
-                </div>
-              ) : null}
-            </div>
+            <div
+              key={stepNumber}
+              className={cn(
+                'relative z-10 h-2.5 w-2.5 shrink-0 rounded-full border-2 transition-colors duration-300 ease-out',
+                isCompleted || isActive
+                  ? 'border-primary bg-primary'
+                  : 'bg-background border-muted-foreground/30'
+              )}
+              aria-hidden
+            />
           )
         })}
       </div>

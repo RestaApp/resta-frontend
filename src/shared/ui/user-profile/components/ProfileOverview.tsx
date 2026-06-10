@@ -104,10 +104,10 @@ const ProfileTagSectionView = ({
       type="button"
       onClick={onEdit}
       data-haptic="selection"
-      className="inline-flex min-h-8 items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+      className="inline-flex min-h-7 items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
       aria-label={t('aria.editSpecializations')}
     >
-      <Plus className="h-4 w-4" aria-hidden="true" />
+      <Plus className="h-3.5 w-3.5" aria-hidden="true" />
       {t('common.add')}
     </button>
   ) : null
