@@ -35,9 +35,7 @@ export const mapRestaurantUsersToItems = (
   return users.map(item => {
     const profile = getRestaurantProfile(item)
     const restaurantFormatCode = profile?.restaurant_format ?? profile?.format ?? null
-    const cuisines = Array.isArray(profile?.cuisine_types)
-      ? profile.cuisine_types.filter(Boolean)
-      : []
+    const cuisines = (profile?.cuisine_types ?? []).filter(Boolean)
     const formatLabel = restaurantFormatCode
       ? getRestaurantFormatLabel(restaurantFormatCode)
       : t('common.notSpecified', { defaultValue: 'Не указано' })

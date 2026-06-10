@@ -216,8 +216,9 @@ const buildTagSections = ({
   if (apiRole === 'supplier') {
     const supplierProfile = userProfile.supplier_profile ?? userProfile.supplier_profile_attributes
     const category = normalizeText(supplierProfile?.supplier_category)
-    const types = Array.isArray(supplierProfile?.supplier_types)
-      ? supplierProfile.supplier_types
+    const rawSupplierTypes = supplierProfile?.supplier_types
+    const types = Array.isArray(rawSupplierTypes)
+      ? rawSupplierTypes
       : supplierProfile?.supplier_type
         ? [supplierProfile.supplier_type]
         : []
