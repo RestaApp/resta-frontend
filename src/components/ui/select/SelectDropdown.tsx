@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { createPortal } from 'react-dom'
+import { OVERLAY_SCRIM_CLASS } from '@/components/ui/ui-patterns'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { ChangeEvent, KeyboardEvent, ReactNode, RefObject } from 'react'
@@ -56,6 +58,7 @@ export const SelectDropdown = ({
   onSelect,
   t,
 }: SelectDropdownProps) => {
+  const reduceVisualEffects = useReducedVisualEffects()
   const anchoredRect = useAnchoredDropdownRect(isOpen && portaled, anchorRef ?? { current: null })
 
   const dropdownPanel = (
@@ -152,7 +155,11 @@ export const SelectDropdown = ({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               style={{ zIndex: Z_INDEX.popover }}
-              className="fixed inset-0 bg-black/20 dark:bg-black/40"
+              className={cn(
+                'fixed inset-0',
+                OVERLAY_SCRIM_CLASS,
+                reduceVisualEffects ? 'backdrop-blur-none' : undefined
+              )}
               onPointerDown={e => {
                 if (e.target === e.currentTarget) onClose()
               }}

@@ -13,6 +13,7 @@ import { cn } from '@/shared/utils/cn'
 import { Card } from './card'
 import { Button } from './button'
 import { MODAL_TITLE_CLASS, OVERLAY_SCRIM_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
@@ -44,6 +45,7 @@ export const AlertDialog = memo(function AlertDialog({
   children,
   preventClose = false,
 }: AlertDialogProps) {
+  const reduceVisualEffects = useReducedVisualEffects()
   const contentRef = useRef<HTMLDivElement | null>(null)
   const onOpenChangeRef = useRef(onOpenChange)
   const preventCloseRef = useRef(preventClose)
@@ -121,7 +123,15 @@ export const AlertDialog = memo(function AlertDialog({
         role="presentation"
         style={{ zIndex: Z_INDEX.alertDialog }}
       >
-        <div className={cn('fixed inset-0', OVERLAY_SCRIM_CLASS)} onClick={onOverlayClick} aria-hidden="true" />
+        <div
+          className={cn(
+            'fixed inset-0',
+            OVERLAY_SCRIM_CLASS,
+            reduceVisualEffects ? 'backdrop-blur-none' : undefined
+          )}
+          onClick={onOverlayClick}
+          aria-hidden="true"
+        />
         {children}
       </div>
     </AlertDialogRefContext.Provider>

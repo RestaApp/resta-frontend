@@ -7,6 +7,8 @@ interface UseDropdownAutoScrollParams {
   isOpen: boolean
   containerRef: RefObject<HTMLElement | null>
   bottomOffsetPx: number
+  /** Fixed portal: считаем место от viewport, а не от dialog/scroll-контейнера. */
+  portaled?: boolean
   enabled?: boolean
 }
 
@@ -28,6 +30,7 @@ export const useDropdownAutoScroll = ({
   isOpen,
   containerRef,
   bottomOffsetPx,
+  portaled = false,
   enabled = true,
 }: UseDropdownAutoScrollParams): void => {
   const didAutoScrollRef = useRef(false)
@@ -55,9 +58,11 @@ export const useDropdownAutoScroll = ({
     const scrollContainerRect = scrollContainer?.getBoundingClientRect()
     const dialogEl = container.closest('[role="dialog"]')
     const dialogRect = dialogEl?.getBoundingClientRect()
-    const viewportBottom =
-      dialogRect?.bottom ?? scrollContainerRect?.bottom ?? window.innerHeight
-    const effectiveBottomOffset = scrollContainerRect || dialogRect ? 0 : bottomOffsetPx
+    const viewportBottom = portaled
+      ? window.innerHeight - SCROLL_PADDING_BUFFER
+      : (dialogRect?.bottom ?? scrollContainerRect?.bottom ?? window.innerHeight)
+    const effectiveBottomOffset =
+      portaled || scrollContainerRect || dialogRect ? 0 : bottomOffsetPx
 
     let spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
     const deficit = DESIRED_DROPDOWN_HEIGHT - spaceBelow
@@ -96,7 +101,7 @@ export const useDropdownAutoScroll = ({
         window.scrollBy({ top: scrollDelta, behavior: 'auto' })
       }
     }
-  }, [containerRef, bottomOffsetPx])
+  }, [containerRef, bottomOffsetPx, portaled])
 
   useEffect(() => {
     if (!enabled || !isOpen || !containerRef.current) return

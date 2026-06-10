@@ -41,7 +41,7 @@ export const Select = memo(function Select({
     isOpen,
     containerRef,
     bottomOffsetPx,
-    enabled: !portaled,
+    portaled,
   })
 
   const selectedOption = options.find(opt => opt.value === value)

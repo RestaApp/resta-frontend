@@ -2,7 +2,13 @@ import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { BODY_TEXT_CLASS, SHADOW_MODAL_CLASS } from '@/components/ui/ui-patterns'
+import {
+  BODY_TEXT_CLASS,
+  OVERLAY_SCRIM_CLASS,
+  SHADOW_MODAL_CLASS,
+} from '@/components/ui/ui-patterns'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
+import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 
 interface AddShiftOnboardingOverlayProps {
@@ -25,6 +31,7 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
   tooltipText,
 }: AddShiftOnboardingOverlayProps) {
   const { t } = useTranslation()
+  const reduceVisualEffects = useReducedVisualEffects()
   const resolvedAria = ariaLabel ?? t('shift.addShiftAria')
   const resolvedTooltip = tooltipText ?? t('activity.addShiftOnboardingText')
   const [rect, setRect] = useState<{
@@ -83,7 +90,11 @@ export const AddShiftOnboardingOverlay = memo(function AddShiftOnboardingOverlay
       <button
         type="button"
         aria-label={t('common.close', { defaultValue: 'Закрыть' })}
-        className="absolute inset-0 bg-overlay-scrim cursor-default"
+        className={cn(
+          'absolute inset-0 cursor-default',
+          OVERLAY_SCRIM_CLASS,
+          reduceVisualEffects ? 'backdrop-blur-none' : undefined
+        )}
         onClick={onClose}
       />
 
