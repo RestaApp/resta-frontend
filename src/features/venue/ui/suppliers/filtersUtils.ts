@@ -1,4 +1,4 @@
-import { MapPin, Package, Store, Truck, UtensilsCrossed } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Store, Truck, UtensilsCrossed } from 'lucide-react'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import { getSupplierCategoryIcon } from '@/shared/constants/role-icons'
 import type { SupplierFilters } from './types'
@@ -15,6 +15,7 @@ interface SupplierFilterLabels {
   getSupplierTypeLabel: (value: string) => string
   deliveryYes: string
   deliveryNo: string
+  onlyActive: string
 }
 
 export const formatSupplierFiltersForDisplay = (
@@ -88,6 +89,14 @@ export const formatSupplierFiltersForDisplay = (
     })
   }
 
+  if (filters.onlyActive) {
+    result.push({
+      id: 'onlyActive',
+      label: labels.onlyActive,
+      icon: CheckCircle2,
+    })
+  }
+
   return result
 }
 
@@ -118,6 +127,8 @@ export const removeSupplierFilter = (
     next.cuisineTypes = next.cuisineTypes.filter(item => item !== cuisine)
   } else if (filterId === 'delivery') {
     next.delivery = 'all'
+  } else if (filterId === 'onlyActive') {
+    next.onlyActive = false
   }
 
   return next

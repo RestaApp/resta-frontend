@@ -45,7 +45,6 @@ export const useVenueSuppliersPageModel = () => {
     [userCity]
   )
 
-  const [onlyActive, setOnlyActive] = useState(false)
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null)
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
@@ -154,13 +153,15 @@ export const useVenueSuppliersPageModel = () => {
         return true
       })
     }
-    return onlyActive ? suppliers.filter(item => item.status === 'active') : suppliers
+    return appliedFilters.onlyActive
+      ? suppliers.filter(item => item.status === 'active')
+      : suppliers
   }, [
     appliedFilters.cuisineTypes,
+    appliedFilters.onlyActive,
     appliedFilters.restaurantFormats,
     getRestaurantFormatLabel,
     isSupplierRole,
-    onlyActive,
     suppliers,
   ])
 
@@ -212,6 +213,7 @@ export const useVenueSuppliersPageModel = () => {
           getSupplierTypeLabel,
           deliveryYes: t('venueUi.suppliers.filters.deliveryYes', { defaultValue: 'С доставкой' }),
           deliveryNo: t('venueUi.suppliers.filters.deliveryNo', { defaultValue: 'Без доставки' }),
+          onlyActive: t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' }),
         },
         isSupplierRole
       ),
@@ -295,8 +297,6 @@ export const useVenueSuppliersPageModel = () => {
     suppliersCount: suppliers.length,
     hasMore,
     activeFilters,
-    onlyActive,
-    setOnlyActive,
     handleLoadMore,
     handleResetFilters,
     handleRemoveFilter,

@@ -57,8 +57,22 @@ export const useExternalProfileViewModel = ({
       const format = userProfile?.restaurant_profile?.restaurant_format?.trim()
       return format ? getRestaurantFormatLabel(format) : getUiRoleLabel(apiRole)
     }
+    if (apiRole === 'supplier') {
+      const supplierProfile =
+        userProfile?.supplier_profile ?? userProfile?.supplier_profile_attributes
+      const category = supplierProfile?.supplier_category?.trim()
+      return category ? getSupplierTypeLabel(category) : getUiRoleLabel(apiRole)
+    }
     return getUiRoleLabel(apiRole)
-  }, [apiRole, getRestaurantFormatLabel, getUiRoleLabel, userProfile?.restaurant_profile?.restaurant_format])
+  }, [
+    apiRole,
+    getRestaurantFormatLabel,
+    getSupplierTypeLabel,
+    getUiRoleLabel,
+    userProfile?.restaurant_profile?.restaurant_format,
+    userProfile?.supplier_profile,
+    userProfile?.supplier_profile_attributes,
+  ])
 
   const positionLabel = (() => {
     if (apiRole !== 'employee' || !userProfile?.employee_profile?.position) return null

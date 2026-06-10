@@ -14,6 +14,7 @@ export interface SupplierFilters {
   supplierType: string | null
   serviceCategories: string[]
   delivery: DeliveryFilter
+  onlyActive: boolean
   restaurantFormats: string[]
   cuisineTypes: string[]
 }
@@ -50,6 +51,7 @@ export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   supplierType: null,
   serviceCategories: [],
   delivery: 'all',
+  onlyActive: false,
   restaurantFormats: [],
   cuisineTypes: [],
 }

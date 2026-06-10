@@ -63,9 +63,7 @@ export const ExpandableTagList = <T,>({
           className="mt-1 inline-flex w-fit items-center gap-1 py-0.5 text-sm font-semibold text-primary transition-opacity hover:opacity-80 active:opacity-70"
           aria-expanded={expanded}
         >
-          {expanded
-            ? t('feed.showLessSpecializations')
-            : t('feed.showAllSpecializations', { count: items.length })}
+          {expanded ? t('common.showLess') : t('common.showAll', { count: items.length })}
           <ChevronDown
             className={cn('h-4 w-4 shrink-0 transition-transform', expanded && 'rotate-180')}
             aria-hidden

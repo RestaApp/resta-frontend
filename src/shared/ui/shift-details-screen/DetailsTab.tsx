@@ -133,9 +133,9 @@ export const DetailsTab = memo(
     const ownerReviewsLabel =
       ratingValue != null
         ? t('shift.ownerReviewsSummary', {
-            rating: ratingValue,
-            count: reviewsCount ?? 0,
-          })
+          rating: ratingValue,
+          count: reviewsCount ?? 0,
+        })
         : null
 
     const requirementLines = parseRequirementLines(requirements)

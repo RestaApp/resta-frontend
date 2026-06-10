@@ -1,17 +1,21 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapPin, Phone, Truck } from 'lucide-react'
+import { MapPin, Phone, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import { Badge } from '@/components/ui/badge'
-import { cn } from '@/shared/utils/cn'
 import {
-  SHIFT_CARD_CLASS,
-  SHIFT_CARD_INTERACTIVE_CLASS,
-  SHIFT_CARD_META_CLASS,
+  PREVIEW_CARD_STATS_CLASS,
+  PREVIEW_CARD_TAGS_CLASS,
+  PreviewCardLayout,
+} from '@/components/ui/shift-card/PreviewCardLayout'
+import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
+import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
+import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
+import { cn } from '@/shared/utils/cn'
 
 export interface SupplierCardData {
   id: number
@@ -69,101 +73,108 @@ const SupplierCardComponent = ({
     return { locationText: notSpecified, extraLocationsLabel: null }
   }, [isRestaurantsMode, notSpecified, supplier.city, supplier.location, t])
 
-  const ariaLabel = useMemo(
-    () => [supplier.name, supplier.supplierType, supplier.city].filter(Boolean).join(', '),
-    [supplier.city, supplier.name, supplier.supplierType]
-  )
+  const hasRating = supplier.averageRating > 0
+  const normalizedRating = hasRating ? Math.min(5, Math.max(0, supplier.averageRating)) : 0
   const phoneText = supplier.phone.trim() || notSpecified
   const subtitleText =
     isRestaurantsMode || !supplier.supplierCategory.trim()
       ? supplier.supplierType
       : supplier.supplierCategory
 
+  const categoryTags = useMemo(() => {
+    const labelPrefix = isRestaurantsMode ? 'labels.cuisineType' : 'labels.supplierType'
+    return supplier.serviceCategories
+      .map(category => {
+        const key = `${labelPrefix}.${category}`
+        const label = t(key, { defaultValue: formatServiceCategory(category) })
+        return label === key ? formatServiceCategory(category) : label
+      })
+      .filter(Boolean)
+  }, [isRestaurantsMode, supplier.serviceCategories, t])
+
+  const deliveryLabel =
+    supplier.deliveryAvailable == null
+      ? notSpecified
+      : supplier.deliveryAvailable
+        ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
+        : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
+
+  const showDeliveryIcon = !isRestaurantsMode && supplier.deliveryAvailable !== null
+
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={ariaLabel}
-      data-haptic="light"
-      onClick={() => onOpenDetails(supplier.id)}
-      onKeyDown={event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          onOpenDetails(supplier.id)
-        }
-      }}
-      className={cn(SHIFT_CARD_CLASS, SHIFT_CARD_INTERACTIVE_CLASS, 'relative dark:shadow-none')}
-    >
-      {!isRestaurantsMode ? (
-        <div className="absolute right-3 top-3">
+    <PreviewCardLayout
+      interactive
+      ariaLabel={t('shift.openVenueProfile', {
+        name: supplier.name,
+        defaultValue: 'Открыть профиль {{name}}',
+      })}
+      onActivate={() => onOpenDetails(supplier.id)}
+      topRight={
+        showDeliveryIcon ? (
           <span
             className={cn(
-              'relative inline-flex h-8 w-8 items-center justify-center rounded-md border',
-              supplier.deliveryAvailable
-                ? 'text-primary border-primary/30 bg-primary/10'
-                : 'text-muted-foreground border-border bg-secondary/30'
+              'flex h-5 w-5 items-center justify-center',
+              supplier.deliveryAvailable ? 'text-primary' : 'text-muted-foreground'
             )}
-            title={
-              supplier.deliveryAvailable == null
-                ? t('common.notSpecified', { defaultValue: 'Не указано' })
-                : supplier.deliveryAvailable
-                  ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-                  : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
-            }
-            aria-label={
-              supplier.deliveryAvailable == null
-                ? t('common.notSpecified', { defaultValue: 'Не указано' })
-                : supplier.deliveryAvailable
-                  ? t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })
-                  : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })
-            }
+            title={deliveryLabel}
+            aria-label={deliveryLabel}
           >
-            <Truck className="h-4 w-4" />
-            {supplier.deliveryAvailable === false ? (
-              <span
-                aria-hidden="true"
-                className="absolute h-0.5 w-5 rotate-[-30deg] rounded-full bg-current"
-              />
-            ) : null}
+            <Truck className="h-4 w-4 shrink-0" aria-hidden />
           </span>
-        </div>
-      ) : null}
-
-      <div className="flex items-start gap-2">
-        <Avatar className={cn(AVATAR_SM_CLASS, 'self-start')}>
-          <AvatarImage src={supplier.photoUrl} alt={supplier.name} />
+        ) : undefined
+      }
+      avatar={
+        <Avatar className={AVATAR_SM_CLASS}>
+          <AvatarImage src={supplier.photoUrl ?? undefined} alt={supplier.name} />
           <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
             {supplier.name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
+      }
+    >
+      <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{supplier.name}</p>
+      <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{subtitleText}</p>
 
-        <div className={cn('min-w-0 flex-1', !isRestaurantsMode && 'pr-9')}>
-          <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{supplier.name}</p>
-          <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{subtitleText}</p>
-
-          <div className={SHIFT_CARD_META_CLASS}>
-            <p className="inline-flex min-w-0 items-center gap-1">
-              <MapPin className="h3 w3 shrink-0" />
-              <span className="min-w-0 flex items-center gap-1">
-                <span className="truncate">{locationText}</span>
-                {extraLocationsLabel ? (
-                  <Badge
-                    variant="tag"
-                    className="shrink-0 px-1.5 py-0 text-xs font-bold text-primary border-primary/30 bg-primary/10"
-                  >
-                    {extraLocationsLabel}
-                  </Badge>
-                ) : null}
-              </span>
-            </p>
-            <p className="inline-flex min-w-0 items-center gap-1">
-              <Phone className="h3 w3 shrink-0" />
-              <span className="truncate">{phoneText}</span>
-            </p>
-          </div>
-        </div>
+      <div className={PREVIEW_CARD_STATS_CLASS}>
+        {hasRating ? (
+          <span className="inline-flex items-center gap-1" aria-label={t('common.rating')}>
+            <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden />
+            {t('shift.ownerReviewsSummary', {
+              rating: normalizedRating.toFixed(1),
+              count: supplier.totalReviews,
+            })}
+          </span>
+        ) : null}
+        <span className="inline-flex min-w-0 items-center gap-1">
+          <MapPin className={ICON_SM_CLASS} aria-hidden />
+          <span className="min-w-0 flex items-center gap-1">
+            <span className="truncate">{locationText}</span>
+            {extraLocationsLabel ? (
+              <Badge
+                variant="tag"
+                className="shrink-0 px-1.5 py-0 text-xs font-bold text-primary border-primary/30 bg-primary/10"
+              >
+                {extraLocationsLabel}
+              </Badge>
+            ) : null}
+          </span>
+        </span>
+        <span className="inline-flex min-w-0 items-center gap-1">
+          <Phone className={ICON_SM_CLASS} aria-hidden />
+          <span className="truncate">{phoneText}</span>
+        </span>
       </div>
-    </div>
+
+      {categoryTags.length > 0 ? (
+        <div className={PREVIEW_CARD_TAGS_CLASS}>
+          {categoryTags.map(tag => (
+            <Badge key={tag} variant="tag">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
+    </PreviewCardLayout>
   )
 }
 

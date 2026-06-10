@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
-import { SupplierDetailsScreen } from '@/shared/ui/shift-details-screen/SupplierDetailsScreen'
 import { ErrorState } from '@/components/ui/states'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'
@@ -33,6 +32,8 @@ export function VenueSuppliersPage() {
     )
   }
 
+  const selectedUserId = m.isSupplierRole ? m.selectedRestaurantId : m.selectedSupplierId
+
   return (
     <PullToRefresh onRefresh={() => m.refetch()} disabled={m.isLoading}>
       <VenueSuppliersList
@@ -41,8 +42,6 @@ export function VenueSuppliersPage() {
         isFetching={m.isFetching}
         suppliersCount={m.suppliersCount}
         activeFilters={m.activeFilters}
-        onlyActive={m.onlyActive}
-        onOnlyActiveChange={m.setOnlyActive}
         onResetFilters={m.handleResetFilters}
         onRemoveFilter={m.handleRemoveFilter}
         list={m.list}
@@ -51,25 +50,18 @@ export function VenueSuppliersPage() {
         onOpenDetails={m.handleOpenDetails}
       />
 
-      {m.isSupplierRole ? (
-        <UserProfileDrawer
-          userId={m.selectedRestaurant?.id ?? null}
-          open={m.selectedRestaurantId !== null}
-          onClose={() => {
+      <UserProfileDrawer
+        userId={selectedUserId}
+        open={selectedUserId !== null}
+        onClose={() => {
+          if (m.isSupplierRole) {
             m.setSelectedRestaurantId(null)
-            closeOverlay()
-          }}
-        />
-      ) : (
-        <SupplierDetailsScreen
-          supplier={m.selectedSupplier}
-          isOpen={m.selectedSupplierId !== null}
-          onClose={() => {
+          } else {
             m.setSelectedSupplierId(null)
-            closeOverlay()
-          }}
-        />
-      )}
+          }
+          closeOverlay()
+        }}
+      />
 
       <VenueSuppliersFiltersDrawer
         mode={m.isSupplierRole ? 'restaurants' : 'suppliers'}

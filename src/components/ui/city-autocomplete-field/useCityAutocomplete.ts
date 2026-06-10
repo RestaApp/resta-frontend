@@ -233,6 +233,11 @@ export const useCityAutocomplete = ({
     [onChange]
   )
 
+  const handleDropdownClose = useCallback(() => {
+    setShowSuggestions(false)
+    setIsFocused(false)
+  }, [])
+
   const hasSuggestions = filteredCities.length > 0 && showSuggestions
 
   return {
@@ -255,5 +260,6 @@ export const useCityAutocomplete = ({
     handleInputFocus,
     handleInputBlur,
     handleCitySelect,
+    handleDropdownClose,
   }
 }

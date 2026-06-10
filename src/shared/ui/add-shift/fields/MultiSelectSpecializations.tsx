@@ -1,7 +1,7 @@
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field } from './Field'
-import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
-import { Loader } from '@/components/ui/loader'
+import { MultiSelectTagsList } from '@/shared/ui/MultiSelectTagsList'
 import { useLabels } from '@/shared/i18n/hooks'
 import { cn } from '@/shared/utils/cn'
 
@@ -32,52 +32,28 @@ export const MultiSelectSpecializations = ({
 }: MultiSelectSpecializationsProps) => {
   const { t } = useTranslation()
   const { getSpecializationLabel } = useLabels()
-  const handleToggle = (spec: string) => {
-    if (disabled) return
-    if (value.includes(spec)) {
-      onChange(value.filter(s => s !== spec))
-    } else {
-      onChange([...value, spec])
-    }
-  }
+
+  const handleToggle = useCallback(
+    (spec: string) => {
+      onChange(value.includes(spec) ? value.filter(s => s !== spec) : [...value, spec])
+    },
+    [onChange, value]
+  )
 
   return (
     <Field label={label} hint={hint} hintPlacement={hintPlacement} error={error}>
-      <div className="flex flex-col gap-3">
-        {isLoading ? (
-          <div className="flex items-center gap-2 py-2">
-            <Loader size="sm" />
-          </div>
-        ) : options.length === 0 ? (
-          <div className="text-sm text-muted-foreground py-2">
-            {placeholder || t('shift.noSpecializations')}
-          </div>
-        ) : (
-          <div
-            className={cn(
-              'flex flex-wrap gap-2',
-              error && 'rounded-lg ring-2 ring-destructive/20 p-2 -m-2'
-            )}
-          >
-            {options.map(spec => (
-              <SelectableTagButton
-                key={spec}
-                value={spec}
-                label={getSpecializationLabel(spec)}
-                isSelected={value.includes(spec)}
-                onClick={handleToggle}
-                disabled={disabled}
-                ariaLabel={t('aria.selectSpecialization', { label: getSpecializationLabel(spec) })}
-              />
-            ))}
-          </div>
-        )}
-        {value.length > 0 && (
-          <div className="text-xs text-muted-foreground">
-            {t('shift.specializationCount', { count: value.length })}
-          </div>
-        )}
-      </div>
+      <MultiSelectTagsList
+        className={cn(error && 'rounded-lg ring-2 ring-destructive/20 p-2 -m-2')}
+        options={options}
+        selectedValues={value}
+        onToggle={handleToggle}
+        getLabel={getSpecializationLabel}
+        getAriaLabel={(_value, labelText) => t('aria.selectSpecialization', { label: labelText })}
+        disabled={disabled}
+        isLoading={isLoading}
+        emptyMessage={placeholder || t('shift.noSpecializations')}
+        countLabel={count => t('shift.specializationCount', { count })}
+      />
     </Field>
   )
 }

@@ -6,6 +6,7 @@ import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
 import { useDropdownAutoScroll } from '@/components/ui/select/useDropdownAutoScroll'
+import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { useCityAutocomplete } from './useCityAutocomplete'
 
@@ -35,7 +36,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
     isValid,
     errorMessage,
     isLoadingCities,
-    hasSuggestions,
+    showSuggestions,
     filteredCities,
     inputRef,
     containerRef,
@@ -44,13 +45,15 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
     handleInputFocus,
     handleInputBlur,
     handleCitySelect,
+    handleDropdownClose,
   } = useCityAutocomplete({
     value,
     onChange,
   })
 
+  useBodyScrollLock(showSuggestions)
   useDropdownAutoScroll({
-    isOpen: hasSuggestions,
+    isOpen: showSuggestions,
     containerRef,
     bottomOffsetPx: BOTTOM_NAV_HEIGHT_PX,
   })
@@ -99,9 +102,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
       </FormField>
 
       <SelectDropdown
-        isOpen={hasSuggestions}
-        withOverlay={false}
-        portaled
+        isOpen={showSuggestions}
         anchorRef={containerRef}
         isLoading={isLoadingCities}
         loadingContent={
@@ -119,7 +120,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
         scrollContainerRef={listRef}
         dropdownRef={dropdownRef}
         listboxId={listboxId}
-        onClose={handleInputBlur}
+        onClose={handleDropdownClose}
         onChangeSearch={() => undefined}
         onKeyDown={() => undefined}
         onSelect={handleCitySelect}

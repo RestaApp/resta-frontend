@@ -33,10 +33,6 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
   )
 
   return (
-    <ScreenTabsHeader
-      title={title}
-      action={action}
-      showBorderBottom={activeTab !== 'profile'}
-    />
+    <ScreenTabsHeader title={title} action={action} />
   )
 }

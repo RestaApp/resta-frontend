@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next'
 import type { RestaurantApiUser, SupplierApiUser, SupplierItem } from './types'
-import { formatServiceCategory } from '@/shared/ui/shift-details-screen/formatServiceCategory'
+import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
 import type { UserData } from '@/services/api/usersApi'
 import { toLocationArray } from '@/shared/utils/location'
 

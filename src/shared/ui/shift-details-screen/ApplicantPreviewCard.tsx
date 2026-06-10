@@ -1,4 +1,4 @@
-import { memo, type KeyboardEvent, type MouseEvent } from 'react'
+import { memo, type MouseEvent } from 'react'
 import { Calendar, MapPin, Star } from 'lucide-react'
 import type { TFunction } from 'i18next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -9,7 +9,13 @@ import { cn } from '@/shared/utils/cn'
 import { formatExperienceText } from '@/shared/utils/experience'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import {
-  SHIFT_CARD_CLASS,
+  PREVIEW_CARD_BELOW_TAGS_CLASS,
+  PREVIEW_CARD_ACTION_BUTTON_CLASS,
+  PREVIEW_CARD_STATS_CLASS,
+  PREVIEW_CARD_TAGS_CLASS,
+  PreviewCardLayout,
+} from '@/components/ui/shift-card/PreviewCardLayout'
+import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
@@ -29,6 +35,8 @@ interface ApplicantPreviewCardProps {
   acceptingApplicationId?: number | null
 }
 
+const ACCEPTED_CARD_CLASS = 'ring-2 ring-primary/30 bg-primary/5'
+
 const getApplicantName = (app: ApplicationPreviewApiItem, t: TFunction): string => {
   const user = app.user
   return formatUserDisplayName(
@@ -40,6 +48,82 @@ const getApplicantName = (app: ApplicationPreviewApiItem, t: TFunction): string 
 }
 
 const getApplicantInitial = (name: string): string => name.charAt(0).toUpperCase() || '?'
+
+const applicantAvatar = (photoUrl: string | null, name: string) => (
+  <Avatar className={AVATAR_SM_CLASS}>
+    <AvatarImage src={photoUrl ?? undefined} alt={name} />
+    <AvatarFallback className={AVATAR_FALLBACK_CLASS}>{getApplicantInitial(name)}</AvatarFallback>
+  </Avatar>
+)
+
+const applicantTitleRow = (name: string, isAccepted: boolean, t: TFunction) => (
+  <div className="flex flex-wrap items-center gap-2">
+    <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{name}</p>
+    {isAccepted ? (
+      <Badge variant="accepted" className="shrink-0">
+        {t('shift.applicantSelected')}
+      </Badge>
+    ) : null}
+  </div>
+)
+
+const ratingSummary = (
+  hasRating: boolean,
+  normalizedRating: number,
+  reviewsCount: number | null,
+  t: TFunction
+) =>
+  hasRating ? (
+    <span className="inline-flex items-center gap-1">
+      <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden />
+      {t('shift.ownerReviewsSummary', {
+        rating: normalizedRating.toFixed(1),
+        count: reviewsCount ?? 0,
+      })}
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1">
+      <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
+      {t('shift.applicantNoReviews')}
+    </span>
+  )
+
+const ratingStars = (hasRating: boolean, normalizedRating: number, t: TFunction) => (
+  <div
+    className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground"
+    aria-label={t('common.rating')}
+  >
+    {hasRating ? (
+      [0, 1, 2, 3, 4].map(i => (
+        <Star
+          key={i}
+          className={cn(
+            'h-3.5 w-3.5 shrink-0',
+            normalizedRating >= i + 0.5
+              ? 'fill-warning text-warning'
+              : 'fill-muted text-muted-foreground/30'
+          )}
+        />
+      ))
+    ) : (
+      <>
+        <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
+        <span>{t('shift.applicantNoReviews')}</span>
+      </>
+    )}
+  </div>
+)
+
+const specializationBadges = (tags: string[]) =>
+  tags.length > 0 ? (
+    <div className={PREVIEW_CARD_TAGS_CLASS}>
+      {tags.map(tag => (
+        <Badge key={tag} variant="tag">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+  ) : null
 
 export const ApplicantPreviewCard = memo(
   ({
@@ -80,8 +164,8 @@ export const ApplicantPreviewCard = memo(
     const completedShiftsRaw = app.completed_shifts ?? user?.completed_shifts
     const completedShifts =
       completedShiftsRaw !== undefined &&
-        completedShiftsRaw !== null &&
-        Number.isFinite(Number(completedShiftsRaw))
+      completedShiftsRaw !== null &&
+      Number.isFinite(Number(completedShiftsRaw))
         ? Math.max(0, Math.floor(Number(completedShiftsRaw)))
         : null
 
@@ -110,13 +194,6 @@ export const ApplicantPreviewCard = memo(
       onSelect(userId, appId)
     }
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-      if (variant === 'moderation') return
-      if (event.key !== 'Enter' && event.key !== ' ') return
-      event.preventDefault()
-      handleSelect()
-    }
-
     const handleAccept = (event: MouseEvent) => {
       event.stopPropagation()
       if (typeof appId !== 'number' || !onAccept) return
@@ -130,75 +207,17 @@ export const ApplicantPreviewCard = memo(
 
     if (variant === 'moderation') {
       return (
-        <div className={cn(SHIFT_CARD_CLASS, isAccepted && 'ring-2 ring-primary/30 bg-primary/5')}>
-          <div className="flex gap-3">
-            <div className="flex min-w-0 flex-1 items-start gap-3">
-              <Avatar className={AVATAR_SM_CLASS}>
-                <AvatarImage src={photoUrl ?? undefined} alt={name} />
-                <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
-                  {getApplicantInitial(name)}
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>{name}</p>
-                  {isAccepted ? (
-                    <Badge variant="accepted" className="shrink-0">
-                      {t('shift.applicantSelected')}
-                    </Badge>
-                  ) : null}
-                </div>
-                <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
-
-                <div
-                  className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"
-                  aria-label={t('common.rating')}
-                >
-                  {hasRating ? (
-                    <span className="inline-flex items-center gap-1">
-                      <Star
-                        className="h-3.5 w-3.5 shrink-0 fill-warning text-warning"
-                        aria-hidden
-                      />
-                      {t('shift.ownerReviewsSummary', {
-                        rating: normalizedRating.toFixed(1),
-                        count: reviewsCount ?? 0,
-                      })}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1">
-                      <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
-                      {t('shift.applicantNoReviews')}
-                    </span>
-                  )}
-                  {completedShifts != null ? (
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className={ICON_SM_CLASS} aria-hidden />
-                      {t('shift.venueCompletedShifts', { count: completedShifts })}
-                    </span>
-                  ) : null}
-                </div>
-
-                {specializationTags.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {specializationTags.map(tag => (
-                      <Badge key={tag} variant="tag">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="flex w-[4.75rem] shrink-0 flex-col justify-center gap-2 self-stretch">
+        <PreviewCardLayout
+          className={cn(isAccepted && ACCEPTED_CARD_CLASS)}
+          avatar={applicantAvatar(photoUrl, name)}
+          actions={
+            <>
               {!isAccepted && !isRejected && typeof appId === 'number' ? (
                 <Button
                   type="button"
                   variant="gradient"
                   size="sm"
-                  className="h-9 w-full px-2 text-xs"
+                  className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
                   disabled={isAccepting}
                   loading={isThisAccepting}
                   onClick={handleAccept}
@@ -210,103 +229,76 @@ export const ApplicantPreviewCard = memo(
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-9 w-full px-2 text-xs"
+                className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
                 onClick={handleOpenProfile}
               >
                 {t('tabs.employee.profileShort')}
               </Button>
-            </div>
+            </>
+          }
+        >
+          {applicantTitleRow(name, isAccepted, t)}
+          <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
+
+          <div className={PREVIEW_CARD_STATS_CLASS} aria-label={t('common.rating')}>
+            {ratingSummary(hasRating, normalizedRating, reviewsCount, t)}
+            {completedShifts != null ? (
+              <span className="inline-flex items-center gap-1">
+                <MapPin className={ICON_SM_CLASS} aria-hidden />
+                {t('shift.venueCompletedShifts', { count: completedShifts })}
+              </span>
+            ) : null}
           </div>
-        </div>
+
+          {specializationBadges(specializationTags)}
+        </PreviewCardLayout>
       )
     }
 
-    return (
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label={t('applicants.openProfileAria', { name, defaultValue: name })}
-        onClick={handleSelect}
-        onKeyDown={handleKeyDown}
-        className={cn(
-          SHIFT_CARD_CLASS,
-          'ui-density-stack cursor-pointer outline-none transition-all duration-200 active:scale-[0.99] hover:border-border/80 focus-visible:ring-2 focus-visible:ring-ring',
-          isAccepted && 'ring-2 ring-primary/30 bg-primary/5'
-        )}
-      >
-        <div className="flex items-start gap-3">
-          <Avatar className={AVATAR_SM_CLASS}>
-            <AvatarImage src={photoUrl ?? undefined} alt={name} />
-            <AvatarFallback className={AVATAR_FALLBACK_CLASS}>
-              {getApplicantInitial(name)}
-            </AvatarFallback>
-          </Avatar>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="truncate text-sm font-semibold text-foreground">{name}</p>
-              {isAccepted ? (
-                <Badge variant="accepted" className="shrink-0">
-                  {t('shift.applicantSelected')}
+    const belowContent =
+      specializationTags.length > 0 || experienceLabel || city ? (
+        <>
+          {specializationTags.length > 0 ? (
+            <div className={PREVIEW_CARD_BELOW_TAGS_CLASS}>
+              {specializationTags.map(tag => (
+                <Badge key={tag} variant="tag">
+                  {tag}
                 </Badge>
+              ))}
+            </div>
+          ) : null}
+          {experienceLabel || city ? (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              {experienceLabel ? (
+                <span className="inline-flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  {experienceLabel}
+                </span>
+              ) : null}
+              {city ? (
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  {city}
+                </span>
               ) : null}
             </div>
-            <p className="truncate text-xs text-muted-foreground">{position}</p>
-            <div
-              className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground"
-              aria-label={t('common.rating')}
-            >
-              {hasRating ? (
-                <>
-                  {[0, 1, 2, 3, 4].map(i => (
-                    <Star
-                      key={i}
-                      className={cn(
-                        'h-3.5 w-3.5 shrink-0',
-                        normalizedRating >= i + 0.5
-                          ? 'fill-warning text-warning'
-                          : 'fill-muted text-muted-foreground/30'
-                      )}
-                    />
-                  ))}
-                </>
-              ) : (
-                <>
-                  <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
-                  <span>{t('shift.applicantNoReviews')}</span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+          ) : null}
+        </>
+      ) : undefined
 
-        {specializationTags.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {specializationTags.map(tag => (
-              <Badge key={tag} variant="tag">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        ) : null}
-
-        {experienceLabel || city ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            {experienceLabel ? (
-              <span className="inline-flex items-center gap-1">
-                <Calendar className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                {experienceLabel}
-              </span>
-            ) : null}
-            {city ? (
-              <span className="inline-flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                {city}
-              </span>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+    return (
+      <PreviewCardLayout
+        interactive
+        className={cn(isAccepted && ACCEPTED_CARD_CLASS)}
+        ariaLabel={t('applicants.openProfileAria', { name, defaultValue: name })}
+        onActivate={handleSelect}
+        avatar={applicantAvatar(photoUrl, name)}
+        below={belowContent}
+      >
+        {applicantTitleRow(name, isAccepted, t)}
+        <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
+        {ratingStars(hasRating, normalizedRating, t)}
+      </PreviewCardLayout>
     )
   }
 )

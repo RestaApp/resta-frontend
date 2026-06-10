@@ -19,7 +19,6 @@ export interface RoleDetailsGroup {
   getIcon?: (value: string) => LucideIcon | undefined
   getAriaLabel?: (value: string, label: string) => string
   emptyText?: ReactNode
-  expandable?: boolean
 }
 
 interface RoleDetailsStepProps {
@@ -77,7 +76,6 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
                 getLabel={group.getLabel}
                 getIcon={group.getIcon}
                 getAriaLabel={group.getAriaLabel}
-                expandable={group.expandable}
                 size="md"
               />
             ) : group.emptyText ? (

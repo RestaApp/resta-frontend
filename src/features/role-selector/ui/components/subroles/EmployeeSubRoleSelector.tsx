@@ -88,7 +88,6 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
           onToggle: handleSpecializationToggle,
           getLabel: getSpecializationLabel,
           getAriaLabel: (_, label) => t('aria.selectSpecialization', { label }),
-          expandable: true,
         },
       ]}
       ctaText={t('roles.continuePosition')}

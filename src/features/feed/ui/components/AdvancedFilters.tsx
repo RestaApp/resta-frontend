@@ -88,12 +88,14 @@ const AdvancedFiltersSheet = ({
         {c.positions.length > 0 ? (
           <div className="flex flex-col gap-2">
             <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.sectionPosition')}</p>
-            <div className="flex flex-wrap gap-2">
-              {c.positions.map(position => {
+            <ExpandableTagList
+              items={c.positions}
+              getKey={position => position.originalValue || position.id}
+              priorityKeys={c.selectedPosition ? [c.selectedPosition] : []}
+              renderItem={position => {
                 const positionValue = position.originalValue || position.id
                 return (
                   <SelectableTagButton
-                    key={positionValue}
                     value={positionValue}
                     label={position.title}
                     isSelected={c.selectedPosition === positionValue}
@@ -101,8 +103,8 @@ const AdvancedFiltersSheet = ({
                     ariaLabel={t('aria.selectPosition', { label: position.title })}
                   />
                 )
-              })}
-            </div>
+              }}
+            />
           </div>
         ) : null}
 

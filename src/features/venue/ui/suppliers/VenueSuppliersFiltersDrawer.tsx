@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
-import { formatServiceCategory } from '@/shared/ui/shift-details-screen/formatServiceCategory'
+import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
+import { ExpandableTagList } from '@/shared/ui/ExpandableTagList'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 
@@ -114,20 +115,6 @@ export const VenueSuppliersFiltersDrawer = ({
         </DrawerHeader>
 
         <DrawerBody className="ui-density-stack">
-          <div className="ui-density-stack">
-            <p className={PROFILE_SECTION_LABEL_CLASS}>
-              {t('profile.city', { defaultValue: 'Город' })}
-            </p>
-            <CitySelect
-              value={draftFilters.city}
-              onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
-              options={cities}
-              disabled={isCitiesLoading}
-              placeholder={t('venueUi.suppliers.filters.cityPlaceholder', {
-                defaultValue: 'Например, Минск',
-              })}
-            />
-          </div>
           {!isRestaurantsMode && (
             <div className="ui-density-stack">
               <p className={PROFILE_SECTION_LABEL_CLASS}>
@@ -169,10 +156,12 @@ export const VenueSuppliersFiltersDrawer = ({
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.categories', { defaultValue: 'Категории услуг' })}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {serviceCategoryOptions.map(value => (
+              <ExpandableTagList
+                items={serviceCategoryOptions}
+                getKey={value => value}
+                priorityKeys={draftFilters.serviceCategories}
+                renderItem={value => (
                   <Button
-                    key={value}
                     size="sm"
                     variant={draftFilters.serviceCategories.includes(value) ? 'primary' : 'outline'}
                     onClick={() => toggleDraftServiceCategory(value)}
@@ -181,7 +170,31 @@ export const VenueSuppliersFiltersDrawer = ({
                       defaultValue: formatServiceCategory(value),
                     })}
                   </Button>
-                ))}
+                )}
+              />
+            </div>
+          )}
+
+          {!isRestaurantsMode && (
+            <div className="ui-density-stack">
+              <p className={PROFILE_SECTION_LABEL_CLASS}>
+                {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant={!draftFilters.onlyActive ? 'primary' : 'outline'}
+                  onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: false }))}
+                >
+                  {t('common.all', { defaultValue: 'Все' })}
+                </Button>
+                <Button
+                  size="sm"
+                  variant={draftFilters.onlyActive ? 'primary' : 'outline'}
+                  onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: true }))}
+                >
+                  {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
+                </Button>
               </div>
             </div>
           )}
@@ -222,18 +235,20 @@ export const VenueSuppliersFiltersDrawer = ({
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('supplierUi.restaurants.filters.format', { defaultValue: 'Формат заведения' })}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {restaurantFormatOptions.map(value => (
+              <ExpandableTagList
+                items={restaurantFormatOptions}
+                getKey={value => value}
+                priorityKeys={draftFilters.restaurantFormats}
+                renderItem={value => (
                   <Button
-                    key={value}
                     size="sm"
                     variant={draftFilters.restaurantFormats.includes(value) ? 'primary' : 'outline'}
                     onClick={() => toggleDraftRestaurantFormat(value)}
                   >
                     {getRestaurantFormatLabel?.(value) ?? value}
                   </Button>
-                ))}
-              </div>
+                )}
+              />
             </div>
           )}
 
@@ -242,20 +257,37 @@ export const VenueSuppliersFiltersDrawer = ({
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('supplierUi.restaurants.filters.cuisines', { defaultValue: 'Кухни' })}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {cuisineTypeOptions.map(value => (
+              <ExpandableTagList
+                items={cuisineTypeOptions}
+                getKey={value => value}
+                priorityKeys={draftFilters.cuisineTypes}
+                renderItem={value => (
                   <Button
-                    key={value}
                     size="sm"
                     variant={draftFilters.cuisineTypes.includes(value) ? 'primary' : 'outline'}
                     onClick={() => toggleDraftCuisineType(value)}
                   >
                     {getCuisineTypeLabel?.(value) ?? value}
                   </Button>
-                ))}
-              </div>
+                )}
+              />
             </div>
           )}
+
+          <div className="ui-density-stack">
+            <p className={PROFILE_SECTION_LABEL_CLASS}>
+              {t('profile.city', { defaultValue: 'Город' })}
+            </p>
+            <CitySelect
+              value={draftFilters.city}
+              onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
+              options={cities}
+              disabled={isCitiesLoading}
+              placeholder={t('venueUi.suppliers.filters.cityPlaceholder', {
+                defaultValue: 'Например, Минск',
+              })}
+            />
+          </div>
         </DrawerBody>
 
         <DrawerFooter>
