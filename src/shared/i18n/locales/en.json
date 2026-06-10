@@ -301,8 +301,21 @@
     "whenPreset": {
       "today": "Today",
       "tomorrow": "Tomorrow",
-      "week": "This week"
+      "week": "This week",
+      "custom": "Custom"
     },
+    "salaryRange": {
+      "0-80": "0 – 80",
+      "80-120": "80 – 120",
+      "120-160": "120 – 160",
+      "160+": "160+"
+    },
+    "filterSalaryRangeAria": "Select rate range {{label}}",
+    "showAllSpecializations": "Show all ({{count}})",
+    "showLessSpecializations": "Show less",
+    "filterDatePresetAria": "Select period {{label}}",
+    "customDateFrom": "From",
+    "customDateTo": "To",
     "period": "Period",
     "showShiftsCount": "Show results",
     "showVacanciesCount": "Show results",

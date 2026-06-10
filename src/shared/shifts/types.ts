@@ -1,10 +1,17 @@
+import type { DateFilterPreset, SalaryRangeId } from './filterConstants'
+
 export type FeedType = 'shifts' | 'jobs'
 
-/** Состояние расширенных фильтров ленты (город, позиция, специализации). */
+/** Состояние расширенных фильтров ленты. */
 export interface AdvancedFiltersData {
   selectedCity?: string | null
   selectedPosition?: string | null
   selectedSpecializations?: string[]
+  selectedSalaryRange?: SalaryRangeId | null
+  /** Только для смен (replacement). */
+  selectedDatePreset?: DateFilterPreset | null
+  customStartDate?: string | null
+  customEndDate?: string | null
 }
 export type PayPeriod = 'shift' | 'month'
 

@@ -1,6 +1,7 @@
 /** Параметры GET /api/v1/shifts — см. SEARCH_FILTERS_SPEC.md § Shifts */
 import type { GetVacanciesParams } from '@/services/api/shiftsApi'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'
+import { resolveDateFilterParams, resolveSalaryRangeParams } from '@/shared/shifts/filterMappings'
 import type { AdvancedFiltersData, ShiftType } from '@/shared/shifts/types'
 
 export type { ShiftType }
@@ -25,6 +26,14 @@ export const buildVacanciesBaseParams = (
 
     if (adv.selectedCity?.trim()) {
       params.city = adv.selectedCity.trim()
+    }
+
+    if (adv.selectedSalaryRange) {
+      Object.assign(params, resolveSalaryRangeParams(adv.selectedSalaryRange))
+    }
+
+    if (options.shiftType === 'replacement') {
+      Object.assign(params, resolveDateFilterParams(adv))
     }
   }
   return params

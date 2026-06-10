@@ -9,10 +9,14 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
+import { DatePicker } from '@/components/ui/date-picker'
 import { useLabels } from '@/shared/i18n/hooks'
+import { ExpandableTagList } from '@/shared/ui/ExpandableTagList'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
+import { DATE_FILTER_PRESETS, SALARY_RANGE_OPTIONS } from '@/shared/shifts/filterConstants'
+import { getTodayDateISO } from '@/shared/utils/datetime'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 
@@ -53,6 +57,7 @@ const AdvancedFiltersSheet = ({
   const c = useAdvancedFiltersSheet({
     initialFilters: initialFilters || null,
     onApply,
+    includeDateFilter: !isVacancy,
   })
 
   const handleShowResults = () => {
@@ -104,10 +109,13 @@ const AdvancedFiltersSheet = ({
         {c.selectedPosition && c.displaySpecializations.length > 0 ? (
           <div className="relative flex shrink-0 flex-col gap-2 overflow-visible">
             <p className={PROFILE_SECTION_LABEL_CLASS}>{t('shift.specialization')}</p>
-            <div className="relative flex flex-wrap gap-2">
-              {c.displaySpecializations.map(specialization => (
+            <ExpandableTagList
+              key={c.selectedPosition}
+              items={c.displaySpecializations}
+              getKey={specialization => specialization}
+              priorityKeys={c.selectedSpecializations}
+              renderItem={specialization => (
                 <SelectableTagButton
-                  key={specialization}
                   value={specialization}
                   label={getSpecializationLabel(specialization)}
                   isSelected={c.selectedSpecializations.includes(specialization)}
@@ -116,8 +124,69 @@ const AdvancedFiltersSheet = ({
                     label: getSpecializationLabel(specialization),
                   })}
                 />
+              )}
+            />
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-2">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {SALARY_RANGE_OPTIONS.map(range => (
+              <SelectableTagButton
+                key={range.id}
+                value={range.id}
+                label={t(`feed.salaryRange.${range.id}`)}
+                isSelected={c.selectedSalaryRange === range.id}
+                onClick={() => c.handleSalaryRangeSelect(range.id)}
+                ariaLabel={t('feed.filterSalaryRangeAria', {
+                  label: t(`feed.salaryRange.${range.id}`),
+                })}
+              />
+            ))}
+          </div>
+        </div>
+
+        {!isVacancy ? (
+          <div className="flex flex-col gap-2">
+            <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.sectionWhen')}</p>
+            <div className="flex flex-wrap gap-2">
+              {DATE_FILTER_PRESETS.map(preset => (
+                <SelectableTagButton
+                  key={preset}
+                  value={preset}
+                  label={t(`feed.whenPreset.${preset}`)}
+                  isSelected={c.selectedDatePreset === preset}
+                  onClick={() => c.handleDatePresetSelect(preset)}
+                  ariaLabel={t('feed.filterDatePresetAria', {
+                    label: t(`feed.whenPreset.${preset}`),
+                  })}
+                />
               ))}
             </div>
+            {c.selectedDatePreset === 'custom' ? (
+              <div className="flex flex-col gap-2">
+                <p className={PROFILE_SECTION_LABEL_CLASS}>{t('feed.period')}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <DatePicker
+                    value={c.customStartDate}
+                    onChange={c.setCustomStartDate}
+                    minDate={getTodayDateISO()}
+                    label={t('feed.customDateFrom')}
+                    className="min-w-0"
+                  />
+                  <DatePicker
+                    value={c.customEndDate}
+                    onChange={c.setCustomEndDate}
+                    minDate={c.customStartDate ?? getTodayDateISO()}
+                    label={t('feed.customDateTo')}
+                    className="min-w-0"
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : null}
 

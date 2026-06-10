@@ -304,8 +304,21 @@
     "whenPreset": {
       "today": "Сегодня",
       "tomorrow": "Завтра",
-      "week": "Эта неделя"
+      "week": "Эта неделя",
+      "custom": "Своя дата"
     },
+    "salaryRange": {
+      "0-80": "0 – 80",
+      "80-120": "80 – 120",
+      "120-160": "120 – 160",
+      "160+": "160+"
+    },
+    "filterSalaryRangeAria": "Выбрать диапазон ставки {{label}}",
+    "showAllSpecializations": "Показать все ({{count}})",
+    "showLessSpecializations": "Свернуть",
+    "filterDatePresetAria": "Выбрать период {{label}}",
+    "customDateFrom": "С",
+    "customDateTo": "По",
     "period": "Период",
     "showShiftsCount": "Показать результаты",
     "showVacanciesCount": "Показать результаты",

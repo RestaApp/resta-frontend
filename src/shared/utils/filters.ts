@@ -2,16 +2,23 @@
  * Утилиты для работы с фильтрами
  */
 
-import { MapPin, Tags } from 'lucide-react'
+import { Calendar, MapPin, Tags, Wallet } from 'lucide-react'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import i18n from '@/shared/i18n/config'
 import { getEmployeeRoleIcon } from '@/shared/constants/role-icons'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'
+import { hasActiveDateFilter } from '@/shared/shifts/filterMappings'
 
 const getSpecializationLabel = (spec: string): string =>
   i18n.t(`labels.specialization.${spec}`) || spec
+
+const formatIsoDateLabel = (iso: string): string => {
+  const date = new Date(`${iso}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return iso
+  return new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'short' }).format(date)
+}
 const getEmployeePositionLabel = (value: string): string => {
   const positionKey = normalizeCatalogPosition(value)
   return i18n.t(`labels.position.${positionKey}`) || value
@@ -31,6 +38,21 @@ export const normalizeAdvancedFilters = (
     selectedSpecializations: filters.selectedSpecializations?.length
       ? filters.selectedSpecializations
       : undefined,
+    selectedSalaryRange: filters.selectedSalaryRange || undefined,
+    selectedDatePreset: filters.selectedDatePreset || undefined,
+    customStartDate: filters.customStartDate?.trim() || undefined,
+    customEndDate: filters.customEndDate?.trim() || undefined,
+  }
+
+  if (normalized.selectedDatePreset === 'custom' && !normalized.customStartDate) {
+    normalized.selectedDatePreset = undefined
+    normalized.customEndDate = undefined
+  }
+
+  if (!hasActiveDateFilter(normalized)) {
+    normalized.selectedDatePreset = undefined
+    normalized.customStartDate = undefined
+    normalized.customEndDate = undefined
   }
 
   return hasActiveFilters(normalized) ? normalized : null
@@ -74,6 +96,33 @@ export const formatFiltersForDisplay = (
     }
   }
 
+  if (filters.selectedSalaryRange) {
+    result.push({
+      id: 'salary',
+      label: i18n.t(`feed.salaryRange.${filters.selectedSalaryRange}`),
+      icon: Wallet,
+    })
+  }
+
+  if (hasActiveDateFilter(filters)) {
+    const preset = filters.selectedDatePreset
+    const label =
+      preset === 'custom' && filters.customStartDate
+        ? filters.customEndDate && filters.customEndDate !== filters.customStartDate
+          ? `${formatIsoDateLabel(filters.customStartDate)} – ${formatIsoDateLabel(filters.customEndDate)}`
+          : formatIsoDateLabel(filters.customStartDate)
+        : preset
+          ? i18n.t(`feed.whenPreset.${preset}`)
+          : ''
+    if (label) {
+      result.push({
+        id: 'date',
+        label,
+        icon: Calendar,
+      })
+    }
+  }
+
   return result
 }
 
@@ -95,6 +144,12 @@ export const removeAdvancedFilter = (
     const specialization = filterId.slice('specialization:'.length)
     const remaining = next.selectedSpecializations?.filter(item => item !== specialization)
     next.selectedSpecializations = remaining?.length ? remaining : undefined
+  } else if (filterId === 'salary') {
+    next.selectedSalaryRange = undefined
+  } else if (filterId === 'date') {
+    next.selectedDatePreset = undefined
+    next.customStartDate = undefined
+    next.customEndDate = undefined
   }
 
   return normalizeAdvancedFilters(next)
@@ -112,5 +167,7 @@ export const hasActiveFilters = (filters: AdvancedFiltersData | null): boolean =
     filters.selectedCity !== undefined &&
     filters.selectedCity !== ''
   const hasSpecializations = (filters.selectedSpecializations?.length ?? 0) > 0
-  return hasPosition || hasCity || hasSpecializations
+  const hasSalary = Boolean(filters.selectedSalaryRange)
+  const hasDate = hasActiveDateFilter(filters)
+  return hasPosition || hasCity || hasSpecializations || hasSalary || hasDate
 }

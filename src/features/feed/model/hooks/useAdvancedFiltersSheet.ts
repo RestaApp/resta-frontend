@@ -7,6 +7,7 @@ import type { AdvancedFiltersData } from '@/shared/shifts/types'
 interface UseAdvancedFiltersSheetParams {
   initialFilters: AdvancedFiltersData | null
   onApply: (filters: AdvancedFiltersData | null) => void
+  includeDateFilter?: boolean
 }
 
 /**
@@ -15,8 +16,9 @@ interface UseAdvancedFiltersSheetParams {
 export const useAdvancedFiltersSheet = ({
   initialFilters,
   onApply,
+  includeDateFilter = true,
 }: UseAdvancedFiltersSheetParams) => {
-  const filters = useAdvancedFilters({ initialFilters, onApply })
+  const filters = useAdvancedFilters({ initialFilters, onApply, includeDateFilter })
   const { selectedPosition } = filters
   const [previousSpecializations, setPreviousSpecializations] = useState<string[]>([])
 
