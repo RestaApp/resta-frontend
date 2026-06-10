@@ -11,9 +11,9 @@ interface LoadingStateProps {
 
 export const LoadingState = memo(function LoadingState({ message }: LoadingStateProps) {
   return (
-    <div className="bg-gradient-to-br from-background via-background to-muted/20 flex flex-col items-center justify-center py-12 gap-4">
+    <div className="flex flex-col items-center justify-center py-12 gap-4 ui-density-page">
       <Loader size="lg" />
-      {message && <p className="text-muted-foreground text-sm">{message}</p>}
+      {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
     </div>
   )
 })

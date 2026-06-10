@@ -8,7 +8,7 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
 import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
-import { Loader } from '@/components/ui/loader'
+import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
 
 type LegalScreen = 'none' | 'privacy' | 'terms'
@@ -40,9 +40,7 @@ export const ProfilePage = memo(() => {
   if (m.isProfileLoading) {
     return (
       <div className="pb-24 ui-density-page ui-density-py">
-        <div className="flex flex-col items-center justify-center py-12 gap-4">
-          <Loader size="lg" />
-        </div>
+        <ProfileSkeleton variant="page" />
       </div>
     )
   }

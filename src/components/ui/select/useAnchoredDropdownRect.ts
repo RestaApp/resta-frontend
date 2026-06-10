@@ -40,8 +40,7 @@ export const useAnchoredDropdownRect = (
     window.addEventListener('resize', update)
     window.addEventListener('scroll', update, true)
 
-    const ro =
-      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null
     ro?.observe(anchor)
 
     return () => {

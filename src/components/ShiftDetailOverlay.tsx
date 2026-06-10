@@ -1,9 +1,10 @@
 import { useMemo, useCallback, useState } from 'react'
 import { useGetShiftByIdQuery } from '@/services/api/shiftsApi'
 import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
+import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
+import { ShiftDetailsSkeleton } from '@/components/ui/shift-details-skeleton'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 import { useShiftApplication } from '@/shared/shifts/useShiftApplication'
-import { Loader } from '@/components/ui/loader'
 
 interface ShiftDetailOverlayProps {
   id: number
@@ -49,9 +50,16 @@ export function ShiftDetailOverlay({ id, onClose }: ShiftDetailOverlayProps) {
 
   if (isVacancyLoading || !shift) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
-        <Loader size="lg" />
-      </div>
+      <DetailsScreenFrame
+        variant="page"
+        open
+        onOpenChange={open => {
+          if (!open) onClose()
+        }}
+        onClose={onClose}
+      >
+        <ShiftDetailsSkeleton />
+      </DetailsScreenFrame>
     )
   }
 

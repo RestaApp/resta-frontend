@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { useCalendar } from './useCalendar'
 
 interface CalendarPickerProps {
@@ -39,11 +40,12 @@ export function CalendarPicker({
     <div
       ref={panelRef}
       className={cn(
-        'absolute left-0 right-0 top-full z-50 mt-1.5',
+        'absolute left-0 right-0 top-full mt-1.5',
         'rounded-xl border border-border bg-popover p-3',
         'shadow-[var(--shadow-modal)]',
         'animate-fade-in'
       )}
+      style={{ zIndex: Z_INDEX.popover }}
     >
       <div className="mb-2 grid grid-cols-[32px_1fr_32px] items-center gap-1">
         <button

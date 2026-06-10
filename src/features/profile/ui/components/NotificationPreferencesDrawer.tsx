@@ -14,7 +14,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { InlineAlert } from '@/components/ui/inline-alert'
-import { Loader } from '@/components/ui/loader'
+import { SettingsRowsSkeleton } from '@/components/ui/settings-rows-skeleton'
 import { Card } from '@/components/ui/card'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import {
@@ -172,11 +172,7 @@ export const NotificationPreferencesDrawer = memo(
           </DrawerHeader>
 
           <DrawerBody className="flex flex-col gap-3 pb-4 pt-2">
-            {isLoading && (
-              <div className="flex justify-center py-8">
-                <Loader size="lg" />
-              </div>
-            )}
+            {isLoading ? <SettingsRowsSkeleton rowCount={3} className="gap-3" /> : null}
             {isError && <InlineAlert message={t('profile.loadError')} className="my-4" />}
             {effectivePrefs
               ? visibleSections.map(section => (

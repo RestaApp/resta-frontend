@@ -1,5 +1,6 @@
 import { lazy, type ComponentType, type ReactNode } from 'react'
 import { PageSuspense } from '@/components/ui/PageSuspense'
+import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { ActivityTab } from '@/shared/types/activity.types'
@@ -21,6 +22,11 @@ const VenueSuppliersPage = lazy(() =>
 )
 
 const cardSkeletonFallback = <FeedCardSkeletonList className="ui-density-page ui-density-py" />
+const profileSkeletonFallback = (
+  <div className="pb-24 ui-density-page ui-density-py">
+    <ProfileSkeleton variant="page" />
+  </div>
+)
 const staffSkeletonFallback = (
   <FeedCardSkeletonList variant="staff" className="ui-density-page ui-density-py" />
 )
@@ -28,7 +34,7 @@ const staffSkeletonFallback = (
 const TAB_CONFIG: Partial<Record<Tab, { component: ComponentType; fallback?: ReactNode }>> = {
   feed: { component: FeedPage, fallback: cardSkeletonFallback },
   activity: { component: ActivityPage, fallback: cardSkeletonFallback },
-  profile: { component: ProfilePage },
+  profile: { component: ProfilePage, fallback: profileSkeletonFallback },
   staff: { component: VenueStaffPage, fallback: staffSkeletonFallback },
   suppliers: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
   home: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },

@@ -16,6 +16,7 @@
  *  popover       — выпадающие меню, тултипы.
  *  alertDialog   — критические подтверждения, должны быть выше modal.
  *  toast         — глобальные уведомления, перекрывают всё.
+ *  boot          — splash / auth bootstrap, выше toast.
  */
 export const Z_INDEX = {
   base: 0,
@@ -28,6 +29,7 @@ export const Z_INDEX = {
   popover: 70,
   alertDialog: 80,
   toast: 90,
+  boot: 100,
 } as const
 
 export type ZIndexLayer = keyof typeof Z_INDEX

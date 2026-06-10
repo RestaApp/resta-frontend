@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { ProfileOverview } from './components/ProfileOverview'
-import { Loader } from '@/components/ui/loader'
+import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
+import { ErrorState } from '@/components/ui/states'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useExternalProfileViewModel } from './useExternalProfileViewModel'
 
@@ -74,13 +75,9 @@ export const UserProfileDrawer = memo(
 
             <DrawerBody className="ui-density-stack">
               {isLoading ? (
-                <div className="flex items-center justify-center py-20">
-                  <Loader size="lg" />
-                </div>
+                <ProfileSkeleton variant="drawer" />
               ) : isError ? (
-                <div className="text-center py-10 text-muted-foreground">
-                  {t('errors.loadError')}
-                </div>
+                <ErrorState title={t('errors.loadError')} className="min-h-0 py-10" />
               ) : profileViewModel ? (
                 <ProfileOverview profile={profileViewModel} variant="drawer" />
               ) : null}

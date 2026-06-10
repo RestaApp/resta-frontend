@@ -133,7 +133,7 @@ export const DetailsTab = memo(
               className={cn(
                 isPayNegotiable
                   ? 'text-base font-semibold leading-snug text-foreground'
-                  : cn(DISPLAY_PRICE_CLASS, 'price-xl'),
+                  : cn(DISPLAY_PRICE_CLASS, 'price-xl')
               )}
             >
               {payValue}

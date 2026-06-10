@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion, useTransform } from 'motion/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { getTabsForRole } from '@/shared/constants/tabs'
+import { useBottomNavCollapse } from '@/shared/lib/hooks/useBottomNavCollapse'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import type { Tab } from '@/shared/types/navigation.types'
@@ -29,6 +30,12 @@ export const BottomNav = ({
   const tabs = useMemo(() => getTabsForRole(role), [role])
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
+  const collapse = useBottomNavCollapse()
+  const barHeight = useTransform(collapse, [0, 1], ['3.25rem', '2.75rem'])
+  const labelOpacity = useTransform(collapse, [0, 0.45], [1, 0])
+  const labelMaxHeight = useTransform(collapse, [0, 1], ['0.75rem', '0rem'])
+  const iconSize = useTransform(collapse, [0, 1], ['1.375rem', '1.25rem'])
+  const buttonGap = useTransform(collapse, [0, 1], ['0.25rem', '0rem'])
   const activeIndex = Math.max(
     tabs.findIndex(tab => tab.id === activeTab),
     0
@@ -43,9 +50,10 @@ export const BottomNav = ({
       className="fixed bottom-0 left-0 right-0 px-2.5 pb-safe-nav"
     >
       <div className="ui-app-frame pointer-events-none">
-        <div
+        <motion.div
+          style={{ height: barHeight }}
           className={cn(
-            'pointer-events-auto relative mx-auto flex h-15 w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 p-0.5',
+            'pointer-events-auto relative mx-auto flex w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 p-0.5',
             reduceVisualEffects ? 'bg-background/95' : 'bg-background/65 backdrop-blur-xl',
             tabs.length === 4 ? 'grid grid-cols-4' : 'grid grid-cols-2'
           )}
@@ -75,14 +83,18 @@ export const BottomNav = ({
                 aria-label={ariaLabel}
                 aria-current={isActive ? 'page' : undefined}
                 data-haptic="light"
+                style={{ gap: buttonGap }}
                 whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                 onClick={() => onTabChange(id)}
                 className={cn(
-                  'relative z-10 flex h-full min-h-13 flex-col items-center justify-center gap-1 rounded-full px-2 py-1',
+                  'relative z-10 flex h-full min-h-11 flex-col items-center justify-center rounded-full px-2 py-0.5',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
                 )}
               >
-                <span className="relative flex size-5.5 items-center justify-center">
+                <motion.span
+                  className="relative flex items-center justify-center"
+                  style={{ width: iconSize, height: iconSize }}
+                >
                   {id === 'myshifts' ? (
                     <Avatar
                       className={cn(
@@ -95,7 +107,7 @@ export const BottomNav = ({
                       <AvatarFallback className="bg-transparent">
                         <Icon
                           className={cn(
-                            'size-5.5 transition-colors',
+                            'size-5 transition-colors',
                             isActive ? 'text-primary' : 'text-muted-foreground'
                           )}
                           strokeWidth={isActive ? 2.5 : 2}
@@ -106,7 +118,7 @@ export const BottomNav = ({
                   ) : (
                     <Icon
                       className={cn(
-                        'size-5.5 transition-colors',
+                        'size-full transition-colors',
                         isActive ? 'text-primary' : 'text-muted-foreground'
                       )}
                       strokeWidth={isActive ? 2.5 : 2}
@@ -120,20 +132,21 @@ export const BottomNav = ({
                       aria-hidden="true"
                     />
                   )}
-                </span>
+                </motion.span>
 
-                <span
+                <motion.span
+                  style={{ opacity: labelOpacity, maxHeight: labelMaxHeight }}
                   className={cn(
-                    'text-xs font-semibold uppercase leading-none tracking-wider transition-colors',
+                    'overflow-hidden text-xs font-semibold uppercase leading-none tracking-wider transition-colors',
                     isActive ? 'text-primary' : 'text-muted-foreground'
                   )}
                 >
                   {labelText}
-                </span>
+                </motion.span>
               </motion.button>
             )
           })}
-        </div>
+        </motion.div>
       </div>
     </nav>
   )

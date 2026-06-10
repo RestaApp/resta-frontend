@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { LogoWithText } from '@/components/ui/logo-with-text'
 import { HERO_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
+import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
 
 export const LoadingPage = memo(function LoadingPage() {
@@ -64,7 +65,7 @@ export const LoadingPage = memo(function LoadingPage() {
   return (
     <div
       className="fixed inset-0 flex flex-col items-center justify-center bg-background"
-      style={{ zIndex: 100 }}
+      style={{ zIndex: Z_INDEX.boot }}
     >
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
