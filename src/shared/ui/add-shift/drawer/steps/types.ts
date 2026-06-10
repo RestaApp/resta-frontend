@@ -16,6 +16,7 @@ export interface AddShiftDrawerStep0Props {
   titleRef: RefObject<HTMLDivElement | null>
   dateRef: RefObject<HTMLDivElement | null>
   timeRef: RefObject<HTMLDivElement | null>
+  payRef: RefObject<HTMLDivElement | null>
   showScheduleFields: boolean
   showShiftTypeSelect: boolean
   shiftType: ShiftType
@@ -39,6 +40,7 @@ export interface AddShiftDrawerStep0Props {
   onPayChange: (value: string) => void
   payLabel?: string
   payPlaceholder?: string
+  payError?: string
 }
 
 export interface AddShiftDrawerStep1Props {

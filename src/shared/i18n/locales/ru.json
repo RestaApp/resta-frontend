@@ -460,7 +460,8 @@
     "duplicatePosition": "У вас уже есть активная смена с такой позицией.",
     "specializationRequired": "Необходимо выбрать хотя бы одну специализацию.",
     "requiredField": "Обязательное поле.",
-    "fillRequired": "Заполните все обязательные поля."
+    "fillRequired": "Заполните все обязательные поля.",
+    "paymentTooHigh": "Сумма оплаты не должна превышать {{max}}."
   },
   "roles": {
     "whoAreYou": "Кто ты в HoReCa?",

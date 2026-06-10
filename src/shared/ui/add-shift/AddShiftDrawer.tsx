@@ -207,6 +207,7 @@ const AddShiftDrawerKeyed = ({
                 titleRef={controller.refs.titleRef}
                 dateRef={controller.refs.dateRef}
                 timeRef={controller.refs.timeRef}
+                payRef={controller.refs.payRef}
                 showScheduleFields={!isVacancyType}
                 showShiftTypeSelect={isVenueRole && !lockedShiftType}
                 shiftType={form.shiftType}
@@ -230,6 +231,7 @@ const AddShiftDrawerKeyed = ({
                 onPayChange={controller.actions.handlePayChange}
                 payLabel={drawerCopy.payLabel}
                 payPlaceholder={drawerCopy.payPlaceholder}
+                payError={controller.derived.errors.payFieldError}
               />
             ) : null}
 

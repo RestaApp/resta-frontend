@@ -45,11 +45,15 @@ type UseAddShiftDrawerControllerParams = {
     submitError: string | null
     clearSubmitError: () => void
     isCreating: boolean
+    payError: string | null
     timeRangeError: string | null
     dateError: string | null
     positionError: string | null
     fieldErrors: Partial<
-      Record<'location' | 'city' | 'requirements' | 'description' | 'specializations', string>
+      Record<
+        'location' | 'city' | 'requirements' | 'description' | 'specializations' | 'pay',
+        string
+      >
     >
     handleSave: () => Promise<boolean>
     resetForm: () => void
@@ -73,6 +77,7 @@ export const useAddShiftDrawerController = ({
   const titleRef = useRef<HTMLDivElement | null>(null)
   const dateRef = useRef<HTMLDivElement | null>(null)
   const timeRef = useRef<HTMLDivElement | null>(null)
+  const payRef = useRef<HTMLDivElement | null>(null)
   const locationRef = useRef<HTMLDivElement | null>(null)
   const positionRef = useRef<HTMLDivElement | null>(null)
   const specializationRef = useRef<HTMLDivElement | null>(null)
@@ -122,6 +127,7 @@ export const useAddShiftDrawerController = ({
           if (!form.date || form.dateError) return scrollTo(dateRef)
           if (!form.startTime || !form.endTime || form.timeRangeError) return scrollTo(timeRef)
         }
+        if (form.payError) return scrollTo(payRef)
       }
       if (targetStep === 1) {
         if (!hasLocation(form.location)) return scrollTo(locationRef)
@@ -210,6 +216,7 @@ export const useAddShiftDrawerController = ({
       titleRef,
       dateRef,
       timeRef,
+      payRef,
       locationRef,
       positionRef,
       specializationRef,

@@ -458,7 +458,8 @@
     "duplicatePosition": "You already have an active shift with this position.",
     "specializationRequired": "Select at least one specialization.",
     "requiredField": "Required field.",
-    "fillRequired": "Fill in all required fields."
+    "fillRequired": "Fill in all required fields.",
+    "paymentTooHigh": "Payment must be less than {{max}}."
   },
   "roles": {
     "whoAreYou": "Who are you in HoReCa?",

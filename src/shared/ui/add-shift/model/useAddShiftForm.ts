@@ -7,7 +7,12 @@ import {
 } from '@/services/api/shiftsApi'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
 import { useAuth } from '@/app/contexts/auth'
-import { findDuplicatePosition, validateDate, validateTimeRange } from './addShiftValidation'
+import {
+  findDuplicatePosition,
+  validateDate,
+  validatePayment,
+  validateTimeRange,
+} from './addShiftValidation'
 import { useAddShiftFormState } from './useAddShiftFormState'
 import type { ShiftType } from '@/shared/shifts/types'
 import { useAddShiftFormSubmission } from './useAddShiftFormSubmission'
@@ -65,6 +70,7 @@ export const useAddShiftForm = ({
   // Стоимость каждой функции — единицы микросекунд.
   const timeRangeError = validateTimeRange(state.startTime, state.endTime, t)
   const dateError = validateDate(state.date, state.startTime, t)
+  const payError = validatePayment(state.pay, t) ?? state.fieldErrors.pay ?? null
   const positionError = !initialValues?.id
     ? findDuplicatePosition(existingShifts, state.position, undefined)
       ? t('validation.duplicatePosition')
@@ -82,6 +88,7 @@ export const useAddShiftForm = ({
     (state.shiftType === 'replacement' && (!state.date || !state.startTime || !state.endTime)) ||
     (state.shiftType === 'replacement' && !!timeRangeError) ||
     (state.shiftType === 'replacement' && !!dateError) ||
+    !!payError ||
     !!positionError
 
   const canSubmit = useCallback(() => !isFormInvalid, [isFormInvalid])
@@ -127,6 +134,7 @@ export const useAddShiftForm = ({
     isFormInvalid,
     timeRangeError,
     dateError,
+    payError,
     positionError,
     fieldErrors: state.fieldErrors,
     handleSave,

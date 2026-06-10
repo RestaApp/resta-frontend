@@ -180,13 +180,14 @@ export const useAddShiftFormSubmission = ({
           triggerHapticFeedback('success')
         } catch (error: unknown) {
           const { messages, single } = extractServerErrors(error)
-          if (messages) {
-            const { message } = applyServerErrors(messages)
+          const serverMessages = messages ?? (single ? [single] : [])
+          if (serverMessages.length > 0) {
+            const { message } = applyServerErrors(serverMessages)
             if (message) showToast?.(message, 'error')
             else triggerHapticFeedback('warning')
             return false
           }
-          const errorMessage = translateServerError(single || t('shift.createError'), t)
+          const errorMessage = translateServerError(t('shift.createError'), t)
           state.setSubmitError(errorMessage)
           showToast?.(errorMessage, 'error')
           return false
@@ -198,13 +199,14 @@ export const useAddShiftFormSubmission = ({
       return true
     } catch (error: unknown) {
       const { messages, single } = extractServerErrors(error)
-      if (messages) {
-        const { message } = applyServerErrors(messages)
+      const serverMessages = messages ?? (single ? [single] : [])
+      if (serverMessages.length > 0) {
+        const { message } = applyServerErrors(serverMessages)
         if (message) showToast?.(message, 'error')
         else triggerHapticFeedback('warning')
         return false
       }
-      const errorMessage = translateServerError(single || t('shift.updateError'), t)
+      const errorMessage = translateServerError(t('shift.updateError'), t)
       state.setSubmitError(errorMessage)
       showToast?.(errorMessage, 'error')
       return false

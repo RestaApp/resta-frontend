@@ -1,12 +1,33 @@
 import type { TFunction } from 'i18next'
+import { formatMoney, parseMoneyInput } from '@/shared/shifts/formatting'
 import { toMinutes } from '@/shared/utils/datetime'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 /** SRP: чистые функции валидации формы AddShift. Никаких React/Redux зависимостей. */
 
+/** Максимальная оплата в основных единицах валюты (бэкенд: payment < 100_000_000 в копейках). */
+export const MAX_SHIFT_PAYMENT = 1_000_000
+
 export type AddShiftFieldErrors = Partial<
-  Record<'location' | 'city' | 'requirements' | 'description' | 'specializations', string>
+  Record<'location' | 'city' | 'requirements' | 'description' | 'specializations' | 'pay', string>
 >
+
+const paymentTooHighMessage = (t: TFunction): string =>
+  t('validation.paymentTooHigh', { max: formatMoney(MAX_SHIFT_PAYMENT) })
+
+export const isPaymentLimitServerError = (error: string): boolean => {
+  const lower = error.toLowerCase()
+  return (
+    lower.includes('payment must be less than') ||
+    (lower.includes('payment') && lower.includes('less than'))
+  )
+}
+
+export const validatePayment = (pay: string, t: TFunction): string | null => {
+  const amount = parseMoneyInput(pay)
+  if (amount === null || amount <= MAX_SHIFT_PAYMENT) return null
+  return paymentTooHighMessage(t)
+}
 
 export const validateTimeRange = (
   startTime: string,
@@ -107,6 +128,9 @@ export const translateServerError = (error: string, t: TFunction): string => {
   if (lower.includes("location can't be blank") || lower.includes('локац')) {
     return t('validation.requiredField')
   }
+  if (isPaymentLimitServerError(error)) {
+    return paymentTooHighMessage(t)
+  }
   if (lower.includes('active shift') || lower.includes('позицией') || lower.includes('position')) {
     return t('validation.duplicatePosition')
   }
@@ -150,6 +174,10 @@ export const mapServerErrorsToFields = (
     }
     if (lower.includes('location')) {
       fieldErrors.location = t('validation.requiredField')
+      continue
+    }
+    if (isPaymentLimitServerError(msg) || lower.includes('payment')) {
+      fieldErrors.pay = paymentTooHighMessage(t)
       continue
     }
 

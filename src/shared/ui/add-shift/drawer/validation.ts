@@ -18,6 +18,7 @@ export interface AddShiftDrawerFormState {
   specializations: string[]
   submitError: string | null
   fieldErrors: DrawerFieldErrors
+  payError: string | null
   timeRangeError: string | null
   dateError: string | null
   positionError: string | null
@@ -36,10 +37,15 @@ export const isStepValid = (form: AddShiftDrawerFormState, targetStep: StepIndex
     if (!form.title.trim()) return false
     if (form.shiftType === 'replacement') {
       return (
-        !!form.date && !!form.startTime && !!form.endTime && !form.timeRangeError && !form.dateError
+        !!form.date &&
+        !!form.startTime &&
+        !!form.endTime &&
+        !form.timeRangeError &&
+        !form.dateError &&
+        !form.payError
       )
     }
-    return true
+    return !form.payError
   }
 
   if (targetStep === 1) {
@@ -62,6 +68,7 @@ export const findFirstInvalidStep = (form: AddShiftDrawerFormState): StepIndex =
     if (!form.date || form.dateError) return 0
     if (!form.startTime || !form.endTime || form.timeRangeError) return 0
   }
+  if (form.payError) return 0
   if (!form.city.trim()) return 1
   if (!hasLocation(form.location)) return 1
   if (!form.position || form.positionError) return 1
@@ -92,6 +99,7 @@ export const buildDrawerErrorState = (params: {
   const startTimeError = showStep0Errors && !form.startTime ? requiredMarker : undefined
   const endTimeError =
     form.timeRangeError ?? (showStep0Errors && !form.endTime ? requiredMarker : undefined)
+  const payFieldError = showStep0Errors && form.payError ? form.payError : undefined
   const cityFieldError = showStep1Errors && !form.city.trim() ? requiredMarker : undefined
   const locationFieldError =
     normalizeRequiredText(form.fieldErrors.location, requiredFieldError) ??
@@ -138,6 +146,7 @@ export const buildDrawerErrorState = (params: {
       dateFieldError,
       startTimeError,
       endTimeError,
+      payFieldError,
       cityFieldError,
       locationFieldError,
       positionFieldError,

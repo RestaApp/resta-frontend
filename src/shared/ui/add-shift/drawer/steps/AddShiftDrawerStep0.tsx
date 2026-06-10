@@ -9,6 +9,7 @@ export const AddShiftDrawerStep0 = ({
   titleRef,
   dateRef,
   timeRef,
+  payRef,
   showScheduleFields,
   showShiftTypeSelect,
   shiftType,
@@ -32,6 +33,7 @@ export const AddShiftDrawerStep0 = ({
   onPayChange,
   payLabel,
   payPlaceholder,
+  payError,
 }: AddShiftDrawerStep0Props) => {
   const { t } = useTranslation()
 
@@ -93,12 +95,15 @@ export const AddShiftDrawerStep0 = ({
         </>
       ) : null}
 
-      <MoneyField
-        value={pay}
-        onChange={onPayChange}
-        label={payLabel}
-        placeholder={payPlaceholder}
-      />
+      <div ref={payRef}>
+        <MoneyField
+          value={pay}
+          onChange={onPayChange}
+          label={payLabel}
+          placeholder={payPlaceholder}
+          error={payError}
+        />
+      </div>
     </>
   )
 }
