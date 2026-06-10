@@ -80,6 +80,9 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     handleSupplierCategoryContinue,
     handleRestaurantFormatContinue: subRoleSubmission.handleRestaurantFormatContinue,
 
+    completedRole: subRoleSubmission.completedRole,
+    handleRegistrationComplete: subRoleSubmission.handleRegistrationComplete,
+
     handleBack,
 
     errorDialogOpen: subRoleSubmission.errorDialogOpen,

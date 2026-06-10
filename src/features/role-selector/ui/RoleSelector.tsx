@@ -11,6 +11,7 @@ import { LoadingState } from './components/subroles/shared/LoadingState'
 import { LoadingPage } from '@/components/ui/LoadingPage'
 import { TelegramConfirmStep } from './components/TelegramConfirmStep'
 import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './components/OnboardingBottomCta'
+import { RegistrationCompleteOverlay } from './components/RegistrationCompleteOverlay'
 
 import { useRoleSelector } from '../model/useRoleSelector'
 import { useSwipeBack } from '../model/useSwipeBack'
@@ -23,10 +24,21 @@ interface RoleSelectorProps {
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
-  const canSwipeBack = vm.flow !== 'main' || vm.selectedRole !== null
+  const canSwipeBack = !vm.completedRole && (vm.flow !== 'main' || vm.selectedRole !== null)
   useSwipeBack({ enabled: canSwipeBack, onBack: vm.handleBack })
 
+  const completionOverlay = vm.completedRole ? (
+    <RegistrationCompleteOverlay
+      role={vm.completedRole}
+      open
+      onContinue={vm.handleRegistrationComplete}
+    />
+  ) : null
+
   // Sub-flows — early returns AFTER all hooks
+  if (vm.completedRole) {
+    return completionOverlay
+  }
   if (vm.flow === 'employee') {
     return (
       <EmployeeSubRoleSelector

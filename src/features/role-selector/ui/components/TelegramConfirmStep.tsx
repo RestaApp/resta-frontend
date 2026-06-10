@@ -1,6 +1,6 @@
-import { memo, useState, createElement } from 'react'
+import { memo, useState, createElement, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Lock, Pencil, Shield, Star, Store } from 'lucide-react'
+import { Check, Lock, MapPin, Pencil, Shield, Star, Store } from 'lucide-react'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { Input } from '@/components/ui/input'
 import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
@@ -21,6 +21,7 @@ import { LegalConsentCheckbox } from '@/shared/ui/legal/LegalConsentCheckbox'
 import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
 import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
 import { Z_INDEX } from '@/shared/ui/zIndex'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 interface TelegramConfirmStepProps {
   onContinue: () => void
@@ -50,6 +51,13 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   const [legalConsent, setLegalConsent] = useState(false)
   const [consentError, setConsentError] = useState(false)
   const [legalOverlay, setLegalOverlay] = useState<LegalOverlay>('none')
+  const consentRef = useRef<HTMLDivElement>(null)
+
+  const scrollToConsent = useCallback(() => {
+    setTimeout(() => {
+      consentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 0)
+  }, [])
   const {
     displayName,
     editedName,
@@ -57,8 +65,11 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     displayUsername,
     manualPhone,
     selectedCity,
+    address,
+    requiresAddress,
     phoneError,
     cityError,
+    addressError,
     isPhoneFilled,
     isPhoneShared,
     isRequestingPhone,
@@ -69,9 +80,11 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     handleContinue,
     setManualPhone,
     setSelectedCity,
+    setAddress,
     setPhoneError,
     setCityError,
-  } = useTelegramConfirmStep({ onContinue, onBack })
+    setAddressError,
+  } = useTelegramConfirmStep({ onContinue, onBack, selectedRole })
 
   return (
     <OnboardingStepLayout
@@ -173,6 +186,30 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         {cityError ? <p className="text-xs text-destructive">{cityError}</p> : null}
       </OnboardingSection>
 
+      {requiresAddress ? (
+        <OnboardingSection
+          label={
+            copyRole === 'venue'
+              ? t('onboarding.telegram.venueAddressLabel')
+              : t('onboarding.telegram.addressLabel')
+          }
+        >
+          <div className="flex h-11 items-center gap-2 rounded-md border border-border bg-input-background px-3 text-sm">
+            <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+            <Input
+              variant="inline"
+              value={address}
+              onChange={e => {
+                setAddress(e.target.value)
+                setAddressError(null)
+              }}
+              placeholder={t('profile.form.singleAddressPlaceholder')}
+            />
+          </div>
+          {addressError ? <p className="text-xs text-destructive">{addressError}</p> : null}
+        </OnboardingSection>
+      ) : null}
+
       <div role="note" className="rounded-lg border border-primary/40 bg-card px-3 py-3">
         <div className="flex items-start gap-2">
           {createElement(COPY_ROLE_ICONS[copyRole], {
@@ -188,21 +225,25 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         </div>
       </div>
 
-      <LegalConsentCheckbox
-        checked={legalConsent}
-        onChange={value => {
-          setLegalConsent(value)
-          if (value) setConsentError(false)
-        }}
-        onPrivacyPress={() => setLegalOverlay('privacy')}
-        onTermsPress={() => setLegalOverlay('terms')}
-        error={consentError}
-      />
+      <div ref={consentRef}>
+        <LegalConsentCheckbox
+          checked={legalConsent}
+          onChange={value => {
+            setLegalConsent(value)
+            if (value) setConsentError(false)
+          }}
+          onPrivacyPress={() => setLegalOverlay('privacy')}
+          onTermsPress={() => setLegalOverlay('terms')}
+          error={consentError}
+        />
+      </div>
 
       <OnboardingBottomCta
         onClick={() => {
           if (!legalConsent) {
             setConsentError(true)
+            triggerHapticFeedback('warning')
+            scrollToConsent()
             return
           }
           handleContinue()

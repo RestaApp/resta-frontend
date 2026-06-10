@@ -74,7 +74,6 @@ interface ProfileStats {
 interface ProfileLabelHelpers {
   getSpecializationLabel: (value: string) => string
   getSupplierTypeLabel: (value: string) => string
-  getRestaurantFormatLabel: (value: string) => string
 }
 
 interface BuildProfileViewModelParams extends ProfileStats, ProfileLabelHelpers {
@@ -188,15 +187,9 @@ const buildTagSections = ({
   userProfile,
   getSpecializationLabel,
   getSupplierTypeLabel,
-  getRestaurantFormatLabel,
 }: Pick<
   BuildProfileViewModelParams,
-  | 't'
-  | 'apiRole'
-  | 'userProfile'
-  | 'getSpecializationLabel'
-  | 'getSupplierTypeLabel'
-  | 'getRestaurantFormatLabel'
+  't' | 'apiRole' | 'userProfile' | 'getSpecializationLabel' | 'getSupplierTypeLabel'
 >): ProfileTagSection[] => {
   const sections: ProfileTagSection[] = []
 
@@ -217,17 +210,6 @@ const buildTagSections = ({
       title: t('profile.specializationSection'),
       items: tags,
     })
-  }
-
-  if (apiRole === 'restaurant') {
-    const format = normalizeText(userProfile.restaurant_profile?.restaurant_format)
-    if (format) {
-      sections.push({
-        id: 'restaurant-format',
-        title: t('profile.venueType'),
-        items: toTagItems([format], getRestaurantFormatLabel),
-      })
-    }
   }
 
   if (apiRole === 'supplier') {

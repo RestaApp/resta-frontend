@@ -1,11 +1,9 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
-import {
-  SHIFT_CARD_CLASS,
-  SHIFT_CARD_TITLE_CLASS,
-} from '@/components/ui/shift-card/shift-card-styles'
+import { TimeInput } from '@/components/ui/time-input'
+import { ActivityToggleButton } from '@/shared/ui/ActivityToggleButton'
+import { SHIFT_CARD_TITLE_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 
 interface CompactTimeRowProps {
   label: string
@@ -19,8 +17,7 @@ interface CompactTimeRowProps {
 }
 
 /**
- * Компактная строка ввода временного диапазона: label + switch + from/to inputs.
- * Используется в Будни / Сб / Вс быстром режиме business hours.
+ * Компактная карточка диапазона времени: заголовок + кнопка активности + пара TimeInput.
  */
 export const CompactTimeRow = memo(
   ({
@@ -32,33 +29,53 @@ export const CompactTimeRow = memo(
     onToggle,
     onFromChange,
     onToChange,
-  }: CompactTimeRowProps) => (
-    <Card padding="none" className={SHIFT_CARD_CLASS}>
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div className={SHIFT_CARD_TITLE_CLASS}>{label}</div>
-        <Switch checked={enabled} disabled={disabled} onCheckedChange={onToggle} />
-      </div>
+  }: CompactTimeRowProps) => {
+    const { t } = useTranslation()
+    const isTimeDisabled = disabled || !enabled
+    const startLabel = t('shift.start')
+    const endLabel = t('shift.end')
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
-        <Input
-          type="time"
-          inputMode="numeric"
-          value={from}
-          disabled={disabled || !enabled}
-          onChange={e => onFromChange(e.target.value)}
-          className="min-h-11 min-w-0 px-2 py-2 text-center text-sm font-medium tabular-nums"
-        />
-        <span className="text-xs font-medium text-muted-foreground">-</span>
-        <Input
-          type="time"
-          inputMode="numeric"
-          value={to}
-          disabled={disabled || !enabled}
-          onChange={e => onToChange(e.target.value)}
-          className="min-h-11 min-w-0 px-2 py-2 text-center text-sm font-medium tabular-nums"
-        />
-      </div>
-    </Card>
-  )
+    return (
+      <Card padding="none" className="rounded-lg border border-border bg-card p-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className={SHIFT_CARD_TITLE_CLASS}>{label}</div>
+          <ActivityToggleButton
+            variant="compact"
+            checked={enabled}
+            disabled={disabled}
+            onToggle={onToggle}
+            checkedLabel={t('profile.scheduleDayOpen')}
+            uncheckedLabel={t('profile.scheduleDayClosed')}
+            checkedHint={t('profile.scheduleDayOpenHint')}
+            uncheckedHint={t('profile.scheduleDayClosedHint')}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <TimeInput
+              size="compact"
+              value={from}
+              onChange={onFromChange}
+              disabled={isTimeDisabled}
+              ariaLabel={`${label}, ${startLabel}`}
+            />
+          </div>
+          <span className="shrink-0 text-sm text-muted-foreground" aria-hidden="true">
+            -
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <TimeInput
+              size="compact"
+              value={to}
+              onChange={onToChange}
+              disabled={isTimeDisabled}
+              ariaLabel={`${label}, ${endLabel}`}
+            />
+          </div>
+        </div>
+      </Card>
+    )
+  }
 )
 CompactTimeRow.displayName = 'CompactTimeRow'

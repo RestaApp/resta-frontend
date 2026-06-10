@@ -33,6 +33,8 @@ interface ResultOverlayProps {
   className?: string
   /** Кастомная иконка — переопределяет дефолтную для текущего tone. */
   icon?: ComponentType<LucideProps>
+  /** Полностью кастомный блок иконки — приоритетнее `icon`. */
+  iconSlot?: ReactNode
 }
 
 const TONE_CONFIG = {
@@ -77,6 +79,7 @@ export const ResultOverlay = ({
   onClose,
   className,
   icon,
+  iconSlot,
 }: ResultOverlayProps) => {
   const { t } = useTranslation()
   const config = TONE_CONFIG[tone]
@@ -96,15 +99,19 @@ export const ResultOverlay = ({
         />
 
         <div className="flex flex-col items-center gap-4 text-center">
-          <div
-            className={cn(
-              'grid h-14 w-14 place-items-center rounded-xl',
-              icon ? 'bg-secondary/50 text-foreground' : config.iconClassName
-            )}
-            aria-hidden
-          >
-            <Icon className="h-7 w-7" strokeWidth={2.2} />
-          </div>
+          {iconSlot ? (
+            iconSlot
+          ) : (
+            <div
+              className={cn(
+                'grid h-14 w-14 place-items-center rounded-xl',
+                icon ? 'bg-secondary/50 text-foreground' : config.iconClassName
+              )}
+              aria-hidden
+            >
+              <Icon className="h-7 w-7" strokeWidth={2.2} />
+            </div>
+          )}
 
           <div className="flex flex-col items-center gap-2">
             <h2 className={MODAL_TITLE_CLASS}>{title}</h2>

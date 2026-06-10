@@ -14,6 +14,8 @@ export interface SelectProps {
   hint?: string
   error?: string
   searchable?: boolean
+  /** Рендер дропдауна в portal с fixed-позицией (drawer, footer). */
+  portaled?: boolean
   /** Отступ снизу (например высота BottomNav) для автоскролла при открытии дропдауна */
   bottomOffsetPx?: number
 }

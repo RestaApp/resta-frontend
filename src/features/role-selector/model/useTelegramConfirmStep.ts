@@ -9,13 +9,39 @@ import { formatPhoneInput, toE164, validatePhone } from '@/shared/utils/phone'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
+import type { UiRole } from '@/shared/types/roles.types'
+import { firstLocation, sanitizeLocations } from '@/shared/utils/location'
 
 interface UseTelegramConfirmStepProps {
   onContinue: () => void
   onBack: () => void
+  selectedRole: UiRole | null
 }
 
-export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfirmStepProps) => {
+const isBusinessRole = (role: UiRole | null): role is 'venue' | 'supplier' =>
+  role === 'venue' || role === 'supplier'
+
+const mapServerErrorToField = (
+  error: string,
+  isBusiness: boolean
+): 'phone' | 'city' | 'address' | 'general' => {
+  const lower = error.toLowerCase()
+  if (lower.includes('phone') || lower.includes('телефон')) return 'phone'
+  if (lower.includes('city') || lower.includes('город')) return 'city'
+  if (
+    isBusiness &&
+    (lower.includes('location') || lower.includes('локац') || lower.includes('адрес'))
+  ) {
+    return 'address'
+  }
+  return 'general'
+}
+
+export const useTelegramConfirmStep = ({
+  onContinue,
+  onBack,
+  selectedRole,
+}: UseTelegramConfirmStepProps) => {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
   const { updateUserWithData } = useUserUpdate()
@@ -30,6 +56,10 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
   const [editedName, setEditedName] = useState('')
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [cityError, setCityError] = useState<string | null>(null)
+  const [address, setAddress] = useState('')
+  const [addressError, setAddressError] = useState<string | null>(null)
+
+  const requiresAddress = isBusinessRole(selectedRole)
 
   const tgName =
     user?.full_name?.trim() || user?.name?.trim() || t('onboarding.telegram.fallbackName')
@@ -39,6 +69,7 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     : t('onboarding.telegram.noUsername')
   const phoneFromProfile = user?.phone?.trim() || ''
   const cityFromProfile = user?.city?.trim() || ''
+  const addressFromProfile = firstLocation(user?.location) ?? ''
   const userId = user?.id
 
   const resolvedPhone = phoneFromProfile || manualPhone.trim()
@@ -58,6 +89,11 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     if (selectedCity || !cityFromProfile) return
     setSelectedCity(cityFromProfile)
   }, [cityFromProfile, selectedCity])
+
+  useEffect(() => {
+    if (address || !addressFromProfile) return
+    setAddress(addressFromProfile)
+  }, [address, addressFromProfile])
 
   const onBackRef = useRef(onBack)
   useLayoutEffect(() => {
@@ -148,15 +184,25 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     }
     setCityError(null)
 
+    const finalAddress = address.trim() || addressFromProfile
+    if (requiresAddress && !finalAddress) {
+      setAddressError(t('validation.requiredField'))
+      triggerHapticFeedback('warning')
+      return
+    }
+    setAddressError(null)
+
     setIsSaving(true)
     try {
       const trimmedName = editedName.trim()
       const nameChanged = trimmedName.length > 0 && trimmedName !== tgName
+      const sanitizedLocation = requiresAddress ? sanitizeLocations([finalAddress]) : undefined
       await updateUserWithData(
         {
           user: {
             ...(isPhoneShared ? {} : { phone: toE164(resolvedPhone) }),
             city: finalCity,
+            ...(sanitizedLocation ? { location: sanitizedLocation } : {}),
             ...(nameChanged ? { name: trimmedName } : {}),
           },
         },
@@ -166,17 +212,40 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
         },
         error => {
           triggerHapticFeedback('error')
-          setPhoneError(error)
+          const lines = error
+            .split('\n')
+            .map(line => line.trim())
+            .filter(Boolean)
+          let hasFieldError = false
+          for (const line of lines) {
+            const field = mapServerErrorToField(line, requiresAddress)
+            if (field === 'phone') {
+              setPhoneError(line)
+              hasFieldError = true
+            } else if (field === 'city') {
+              setCityError(line)
+              hasFieldError = true
+            } else if (field === 'address') {
+              setAddressError(line)
+              hasFieldError = true
+            }
+          }
+          if (!hasFieldError) {
+            setPhoneError(error)
+          }
         }
       )
     } finally {
       setIsSaving(false)
     }
   }, [
+    address,
+    addressFromProfile,
     cityFromProfile,
     editedName,
     isPhoneShared,
     onContinue,
+    requiresAddress,
     resolvedPhone,
     selectedCity,
     t,
@@ -191,8 +260,11 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     displayUsername,
     manualPhone,
     selectedCity,
+    address,
+    requiresAddress,
     phoneError,
     cityError,
+    addressError,
     isPhoneFilled,
     isPhoneShared,
     isRequestingPhone,
@@ -203,7 +275,9 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     handleContinue,
     setManualPhone,
     setSelectedCity,
+    setAddress,
     setPhoneError,
     setCityError,
+    setAddressError,
   }
 }

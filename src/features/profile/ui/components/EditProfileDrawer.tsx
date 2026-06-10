@@ -28,6 +28,9 @@ import { StepProgress } from '@/components/ui/step-progress'
 import { EditProfileStepBasic } from './edit-profile/EditProfileStepBasic'
 import { EditProfileStepProfessional } from './edit-profile/EditProfileStepProfessional'
 import { EditProfileStepAbout } from './edit-profile/EditProfileStepAbout'
+import { EditProfileStepBusinessSchedule } from './edit-profile/EditProfileStepBusinessSchedule'
+import { EditProfileStepVenueInfo } from './edit-profile/EditProfileStepVenueInfo'
+import { getEditProfileStepNameKey } from './edit-profile/editProfileStepNames'
 
 interface EditProfileDrawerProps {
   open: boolean
@@ -68,7 +71,7 @@ export const EditProfileDrawer = memo(
       handleSaveWithoutCity,
       resetForm,
       openForm,
-    } = useEditProfileModel(open, onSuccess, initialStep as 0 | 1)
+    } = useEditProfileModel(open, onSuccess, initialStep as 0 | 1 | 2)
 
     useEffect(() => {
       if (open) openForm()
@@ -147,6 +150,42 @@ export const EditProfileDrawer = memo(
         )
       }
 
+      if (apiRole === 'restaurant') {
+        if (step === 0) {
+          return (
+            <EditProfileStepBasic
+              apiRole={apiRole}
+              formData={formData}
+              fieldErrors={fieldErrors}
+              cities={cities}
+              isCitiesLoading={isCitiesLoading}
+              isLoading={isLoading}
+              updateField={updateField}
+            />
+          )
+        }
+
+        if (step === 1) {
+          return (
+            <EditProfileStepBusinessSchedule
+              formData={formData}
+              isLoading={isLoading}
+              updateField={updateField}
+            />
+          )
+        }
+
+        return (
+          <EditProfileStepVenueInfo
+            apiRole={apiRole}
+            formData={formData}
+            bioSuffix={bioSuffix}
+            isLoading={isLoading}
+            updateField={updateField}
+          />
+        )
+      }
+
       if (step === 0) {
         return (
           <EditProfileStepBasic
@@ -183,6 +222,8 @@ export const EditProfileDrawer = memo(
       )
     }
 
+    const stepNameKey = getEditProfileStepNameKey(apiRole, step)
+
     return (
       <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
         <DrawerFrame className="flex-1">
@@ -193,7 +234,7 @@ export const EditProfileDrawer = memo(
                 <DrawerCloseButton onClick={handleCancel} ariaLabel={t('common.close')} />
               </div>
               {totalSteps > 1 ? (
-                <StepProgress current={step + 1} total={totalSteps} />
+                <StepProgress current={step + 1} total={totalSteps} stepNameKey={stepNameKey} />
               ) : null}
             </div>
           </DrawerHeader>

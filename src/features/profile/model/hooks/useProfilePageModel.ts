@@ -92,10 +92,13 @@ export const useProfilePageModel = () => {
       const position = userProfile.position || userProfile.employee_profile?.position
       return position ? getEmployeePositionLabel(position) : t('profile.subtitle.employee')
     }
-    if (apiRole === 'restaurant') return t('profile.subtitle.venue')
+    if (apiRole === 'restaurant') {
+      const format = userProfile.restaurant_profile?.restaurant_format?.trim()
+      return format ? getRestaurantFormatLabel(format) : t('profile.subtitle.venue')
+    }
     if (apiRole === 'supplier') return t('profile.subtitle.supplier')
     return t('common.user')
-  }, [apiRole, userProfile, getEmployeePositionLabel, t])
+  }, [apiRole, userProfile, getEmployeePositionLabel, getRestaurantFormatLabel, t])
 
   const employeeStats = useMemo(() => {
     const completedShifts = myShifts.reduce((acc, s) => {
@@ -174,12 +177,10 @@ export const useProfilePageModel = () => {
       myShiftsCount: myShifts.length,
       getSpecializationLabel,
       getSupplierTypeLabel,
-      getRestaurantFormatLabel,
     })
   }, [
     apiRole,
     employeeStats.completedShifts,
-    getRestaurantFormatLabel,
     getSpecializationLabel,
     getSupplierTypeLabel,
     myShifts.length,

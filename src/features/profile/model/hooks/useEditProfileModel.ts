@@ -20,8 +20,8 @@ type EditProfileErrors = Partial<Record<EditProfileField, string>>
 type EditProfileStep = 0 | 1 | 2
 
 const getTotalSteps = (apiRole: ApiRole | null) => {
-  if (apiRole === 'employee') return 3
-  if (apiRole === 'restaurant' || apiRole === 'supplier') return 2
+  if (apiRole === 'employee' || apiRole === 'restaurant') return 3
+  if (apiRole === 'supplier') return 2
   return 1
 }
 
@@ -122,11 +122,13 @@ export const useEditProfileModel = (
             )
           : [],
       supplierCategory: supplierProfile?.supplier_category ?? '',
-      supplierTypes: Array.isArray(supplierProfile?.supplier_types)
-        ? Array.from(new Set(supplierProfile.supplier_types.filter(Boolean)))
-        : supplierProfile?.supplier_type
-          ? [supplierProfile.supplier_type]
-          : [],
+      supplierTypes: supplierProfile
+        ? Array.isArray(supplierProfile.supplier_types)
+          ? Array.from(new Set(supplierProfile.supplier_types.filter(Boolean)))
+          : supplierProfile.supplier_type
+            ? [supplierProfile.supplier_type]
+            : []
+        : [],
     }
   }, [apiRole, userProfile])
 

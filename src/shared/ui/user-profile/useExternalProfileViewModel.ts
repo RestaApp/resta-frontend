@@ -51,10 +51,14 @@ export const useExternalProfileViewModel = ({
     [userProfile]
   )
 
-  const roleLabel = useMemo(
-    () => (apiRole ? getUiRoleLabel(apiRole) : ''),
-    [apiRole, getUiRoleLabel]
-  )
+  const roleLabel = useMemo(() => {
+    if (!apiRole) return ''
+    if (apiRole === 'restaurant') {
+      const format = userProfile?.restaurant_profile?.restaurant_format?.trim()
+      return format ? getRestaurantFormatLabel(format) : getUiRoleLabel(apiRole)
+    }
+    return getUiRoleLabel(apiRole)
+  }, [apiRole, getRestaurantFormatLabel, getUiRoleLabel, userProfile?.restaurant_profile?.restaurant_format])
 
   const positionLabel = (() => {
     if (apiRole !== 'employee' || !userProfile?.employee_profile?.position) return null
@@ -87,11 +91,9 @@ export const useExternalProfileViewModel = ({
       myShiftsCount: 0,
       getSpecializationLabel,
       getSupplierTypeLabel,
-      getRestaurantFormatLabel,
     })
   }, [
     apiRole,
-    getRestaurantFormatLabel,
     getSpecializationLabel,
     getSupplierTypeLabel,
     heroRoleOrPositionLabel,

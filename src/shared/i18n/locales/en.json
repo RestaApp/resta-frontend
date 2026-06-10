@@ -223,12 +223,28 @@
     "supplierTypesEmpty": "No available types for selected category",
     "supplierTypesCount": "Selected: {{count}}",
     "businessHours": "Opening hours",
+    "businessHoursHint": "Set weekday and weekend hours separately if needed.",
+    "scheduleQuickActions": "Quick setup",
+    "scheduleDayOpen": "Open",
+    "scheduleDayClosed": "Closed",
+    "scheduleDayOpenHint": "Venue is open during this period",
+    "scheduleDayClosedHint": "Venue is closed during this period",
+    "scheduleNotesLabel": "Schedule exceptions",
+    "scheduleNotesHint": "Breaks, holidays, and other exceptions to the regular schedule.",
+    "editProfileSteps": {
+      "basic": "Basics",
+      "professional": "Work",
+      "about": "About",
+      "schedule": "Schedule",
+      "venue": "Venue",
+      "details": "Details"
+    },
     "addAddress": "Add address",
     "set247": "24/7",
     "weekdays": "Weekdays",
     "saturdayShort": "Sat",
     "sundayShort": "Sun",
-    "showDetailedDays": "Configure",
+    "showDetailedDays": "Configure by day",
     "hideDetailedDays": "Hide detailed days",
     "cityNotSet": "City not set",
     "cityWarningDescription": "Without a city you won't see relevant vacancies and shifts in your region. We recommend adding a city for better matches.",
@@ -594,6 +610,36 @@
       "profile": "Profile"
     },
     "doneEmoji": "",
+    "complete": {
+      "title": "You're all set!",
+      "employee": {
+        "subtitle": "Welcome to Resta. Let's find your first opportunity.",
+        "cta": "Go to feed",
+        "features": {
+          "search": "Find shifts and part-time jobs in your city",
+          "notifications": "Get notified about urgent shifts and new vacancies",
+          "chat": "Chat with venues directly in Telegram"
+        }
+      },
+      "restaurant": {
+        "subtitle": "Welcome to Resta. Publish your first shift in under a minute.",
+        "cta": "Go to activity",
+        "features": {
+          "publish": "Post shifts and find staff for your venue",
+          "candidates": "Review applications and hire the best candidates",
+          "chat": "Chat with candidates directly in Telegram"
+        }
+      },
+      "supplier": {
+        "subtitle": "Welcome to Resta. Connect with venues in your city.",
+        "cta": "Go to home",
+        "features": {
+          "venues": "Reach 230+ venues looking for suppliers",
+          "catalog": "Showcase your products in your supplier profile",
+          "chat": "Chat with venue managers directly in Telegram"
+        }
+      }
+    },
     "telegram": {
       "title": "Confirm your contact",
       "subtitle": "Venues will message you directly in Telegram",
@@ -611,6 +657,8 @@
       "cityLabel": "CITY",
       "cityFallback": "Not provided",
       "cityHint": "from geolocation ✓",
+      "addressLabel": "ADDRESS",
+      "venueAddressLabel": "VENUE ADDRESS",
       "copy": {
         "employee": {
           "subtitle": "Venues can contact you in Telegram",
@@ -628,7 +676,7 @@
           "subtitle": "Venues can contact your sales manager",
           "phoneHint": "This number will be shown in your supplier profile.",
           "shieldTitle": "30-day PRO trial.",
-          "shieldText": "Access to 230+ venues in Minsk."
+          "shieldText": "Access to 230+ venues in Belarus."
         }
       },
       "next": "Next"

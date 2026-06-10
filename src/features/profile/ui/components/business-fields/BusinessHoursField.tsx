@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { FormField } from '@/components/ui/form-field'
 import { Textarea } from '@/components/ui/textarea'
+import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
+import { cn } from '@/shared/utils/cn'
 import {
   parseBusinessHours,
   serializeBusinessHours,
@@ -12,10 +14,13 @@ import { CompactTimeRow } from './CompactTimeRow'
 import { DayDetailRow } from './DayDetailRow'
 import { DAY_LABELS, DAY_ORDER, WEEKDAY_KEYS } from './constants'
 
+type BusinessHoursFieldVariant = 'full' | 'schedule' | 'notes'
+
 interface BusinessHoursFieldProps {
   value: string
   disabled: boolean
   onChange: (next: string) => void
+  variant?: BusinessHoursFieldVariant
 }
 
 const isWeekday = (day: DayKey): boolean => WEEKDAY_KEYS.includes(day)
@@ -24,10 +29,18 @@ const isWeekday = (day: DayKey): boolean => WEEKDAY_KEYS.includes(day)
  * Часы работы заведения: будни одной строкой + Сб + Вс + раскрываемые
  * детальные настройки по дням + быстрые действия (24/7, очистить) + заметки.
  */
-export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursFieldProps) => {
+export const BusinessHoursField = ({
+  value,
+  disabled,
+  onChange,
+  variant = 'full',
+}: BusinessHoursFieldProps) => {
   const { t } = useTranslation()
   const parsed = useMemo(() => parseBusinessHours(value), [value])
   const [showDetailedDays, setShowDetailedDays] = useState(false)
+
+  const showSchedule = variant === 'full' || variant === 'schedule'
+  const showNotes = variant === 'full' || variant === 'notes'
 
   const weekdays = useMemo(
     () => parsed.schedule.filter(item => isWeekday(item.day)),
@@ -83,11 +96,34 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
   const setNotes = (nextNotes: string) =>
     onChange(serializeBusinessHours(parsed.schedule, nextNotes))
 
+  const notesField = showNotes ? (
+    <FormField
+      label={variant === 'notes' ? t('profile.scheduleNotesLabel') : t('profile.businessHours')}
+      hint={variant === 'notes' ? t('profile.scheduleNotesHint') : undefined}
+    >
+      <Textarea
+        value={parsed.notes}
+        onChange={e => setNotes(e.target.value)}
+        placeholder={t('profile.form.businessHoursNotesPlaceholder')}
+        disabled={disabled}
+        rows={variant === 'notes' ? 4 : 2}
+        className={cn('resize-y', variant === 'notes' ? 'min-h-24' : 'min-h-14')}
+      />
+    </FormField>
+  ) : null
+
+  if (!showSchedule) {
+    return notesField
+  }
+
   return (
-    <FormField label={t('profile.businessHours')}>
+    <FormField
+      label={t('profile.businessHours')}
+      hint={variant === 'schedule' ? t('profile.businessHoursHint') : undefined}
+    >
       <div className="flex flex-col gap-2">
         <CompactTimeRow
-          label={t('profile.weekdays', { defaultValue: 'Будни' })}
+          label={t('profile.weekdays')}
           enabled={weekdaysSummary.enabled}
           from={weekdaysSummary.from}
           to={weekdaysSummary.to}
@@ -98,7 +134,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
         />
 
         <CompactTimeRow
-          label={t('profile.saturdayShort', { defaultValue: 'Сб' })}
+          label={t('profile.saturdayShort')}
           enabled={Boolean(saturday?.enabled)}
           from={saturday?.from ?? '09:00'}
           to={saturday?.to ?? '18:00'}
@@ -109,7 +145,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
         />
 
         <CompactTimeRow
-          label={t('profile.sundayShort', { defaultValue: 'Вс' })}
+          label={t('profile.sundayShort')}
           enabled={Boolean(sunday?.enabled)}
           from={sunday?.from ?? '09:00'}
           to={sunday?.to ?? '18:00'}
@@ -120,7 +156,7 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
         />
 
         {(showDetailedDays || hasWeekdayCustomPattern) && (
-          <div className="flex flex-col gap-1 rounded-lg border border-dashed border-border p-2">
+          <div className="flex flex-col gap-2 rounded-xl border border-dashed border-border/80 bg-muted/30 p-2.5">
             {DAY_ORDER.map(day => {
               const row = parsed.schedule.find(item => item.day === day)
               if (!row) return null
@@ -146,44 +182,40 @@ export const BusinessHoursField = ({ value, disabled, onChange }: BusinessHoursF
           size="sm"
           disabled={disabled}
           onClick={() => setShowDetailedDays(prev => !prev)}
-          className="justify-start px-1 text-muted-foreground"
+          className="h-auto justify-start px-0 py-1 text-muted-foreground"
         >
           {showDetailedDays || hasWeekdayCustomPattern
-            ? t('profile.hideDetailedDays', { defaultValue: 'Скрыть точные дни' })
-            : t('profile.showDetailedDays', { defaultValue: 'Настроить по дням' })}
+            ? t('profile.hideDetailedDays')
+            : t('profile.showDetailedDays')}
         </Button>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={disabled}
-            onClick={setAlwaysOpen}
-          >
-            {t('profile.set247', { defaultValue: '24/7' })}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={disabled}
-            onClick={clearSchedule}
-          >
-            {t('common.clear', { defaultValue: 'Очистить' })}
-          </Button>
+        <div className="flex flex-col gap-2 pt-1">
+          <p className={cn(META_MONO_CLASS, 'text-muted-foreground')}>
+            {t('profile.scheduleQuickActions')}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={setAlwaysOpen}
+            >
+              {t('profile.set247')}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={clearSchedule}
+            >
+              {t('common.clear')}
+            </Button>
+          </div>
         </div>
 
-        <Textarea
-          value={parsed.notes}
-          onChange={e => setNotes(e.target.value)}
-          placeholder={t('profile.form.businessHoursNotesPlaceholder', {
-            defaultValue: 'Дополнительно: перерыв, праздничные дни, особые условия',
-          })}
-          disabled={disabled}
-          rows={2}
-          className="min-h-14 resize-y"
-        />
+        {variant === 'full' ? notesField : null}
       </div>
     </FormField>
   )

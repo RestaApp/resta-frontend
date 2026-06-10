@@ -7,6 +7,7 @@ interface UseDropdownAutoScrollParams {
   isOpen: boolean
   containerRef: RefObject<HTMLElement | null>
   bottomOffsetPx: number
+  enabled?: boolean
 }
 
 const getScrollableAncestor = (element: HTMLElement | null): HTMLElement | null => {
@@ -27,6 +28,7 @@ export const useDropdownAutoScroll = ({
   isOpen,
   containerRef,
   bottomOffsetPx,
+  enabled = true,
 }: UseDropdownAutoScrollParams): void => {
   const didAutoScrollRef = useRef(false)
   const addedPaddingRef = useRef<{ container: HTMLElement; original: string } | null>(null)
@@ -51,10 +53,13 @@ export const useDropdownAutoScroll = ({
       (container.closest('[data-scroll-container="true"]') as HTMLElement | null) ??
       getScrollableAncestor(container)
     const scrollContainerRect = scrollContainer?.getBoundingClientRect()
-    const viewportHeight = scrollContainerRect?.bottom ?? window.innerHeight
-    const effectiveBottomOffset = scrollContainerRect ? 0 : bottomOffsetPx
+    const dialogEl = container.closest('[role="dialog"]')
+    const dialogRect = dialogEl?.getBoundingClientRect()
+    const viewportBottom =
+      dialogRect?.bottom ?? scrollContainerRect?.bottom ?? window.innerHeight
+    const effectiveBottomOffset = scrollContainerRect || dialogRect ? 0 : bottomOffsetPx
 
-    let spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
+    let spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
     const deficit = DESIRED_DROPDOWN_HEIGHT - spaceBelow
     if (deficit <= 0) return
 
@@ -80,7 +85,7 @@ export const useDropdownAutoScroll = ({
         didAutoScrollRef.current = true
         scrollContainer.scrollBy({ top: scrollDelta, behavior: 'auto' })
         rect = container.getBoundingClientRect()
-        spaceBelow = viewportHeight - rect.bottom - effectiveBottomOffset
+        spaceBelow = viewportBottom - rect.bottom - effectiveBottomOffset
       }
     } else {
       const maxWindowScroll = document.documentElement.scrollHeight - window.innerHeight
@@ -94,7 +99,7 @@ export const useDropdownAutoScroll = ({
   }, [containerRef, bottomOffsetPx])
 
   useEffect(() => {
-    if (!isOpen || !containerRef.current) return
+    if (!enabled || !isOpen || !containerRef.current) return
 
     let rafId: number | null = null
     const throttledEnsure = () => {
@@ -116,5 +121,5 @@ export const useDropdownAutoScroll = ({
       window.removeEventListener('scroll', throttledEnsure, true)
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
-  }, [isOpen, containerRef, ensureRoomBelow])
+  }, [enabled, isOpen, containerRef, ensureRoomBelow])
 }

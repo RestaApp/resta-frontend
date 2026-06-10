@@ -22,6 +22,7 @@ export const Select = memo(function Select({
   hint,
   error,
   searchable = true,
+  portaled = false,
   bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
 }: SelectProps) {
   const { t } = useTranslation()
@@ -40,6 +41,7 @@ export const Select = memo(function Select({
     isOpen,
     containerRef,
     bottomOffsetPx,
+    enabled: !portaled,
   })
 
   const selectedOption = options.find(opt => opt.value === value)
@@ -128,6 +130,8 @@ export const Select = memo(function Select({
 
         <SelectDropdown
           isOpen={isOpen}
+          portaled={portaled}
+          anchorRef={containerRef}
           searchable={searchable}
           displayPlaceholder={displayPlaceholder}
           label={label}

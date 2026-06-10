@@ -6,7 +6,6 @@
 import { useState, useCallback } from 'react'
 import { useUserUpdate } from './useUserUpdate'
 import type { UiRole, EmployeeRole } from '@/shared/types/roles.types'
-import { mapApiRoleToDefaultUiRole } from '@/shared/utils/roles'
 import type { EmployeeFormData } from './useEmployeeSubRoleSelector'
 import { buildRegistrationUpdateUserRequest } from '@/shared/utils/buildRegistrationRequest'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
@@ -28,6 +27,7 @@ interface UseSubRoleSubmissionProps {
 export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmissionProps) => {
   const [selectedSubRole, setSelectedSubRole] = useState<EmployeeRole | null>(null)
   const [selectedPositionValue, setSelectedPositionValue] = useState<string | null>(null)
+  const [completedRole, setCompletedRole] = useState<UiRole | null>(null)
   const [errorDialogOpen, setErrorDialogOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -54,7 +54,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         updateData,
         () => {
           triggerHapticFeedback('success')
-          onSelectRole(mapApiRoleToDefaultUiRole('employee') ?? 'chef')
+          setCompletedRole(selectedSubRole)
         },
         error => {
           triggerHapticFeedback('error')
@@ -66,7 +66,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       return success
     },
-    [selectedSubRole, selectedPositionValue, onSelectRole, updateUserWithData, onError]
+    [selectedSubRole, selectedPositionValue, updateUserWithData, onError]
   )
 
   const handleSupplierContinue = useCallback(
@@ -85,7 +85,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         updateData,
         () => {
           triggerHapticFeedback('success')
-          onSelectRole('supplier')
+          setCompletedRole('supplier')
         },
         error => {
           triggerHapticFeedback('error')
@@ -97,7 +97,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       return success
     },
-    [onSelectRole, updateUserWithData, onError]
+    [updateUserWithData, onError]
   )
 
   const handleRestaurantFormatContinue = useCallback(
@@ -115,7 +115,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
         updateData,
         () => {
           triggerHapticFeedback('success')
-          onSelectRole('venue')
+          setCompletedRole('venue')
         },
         error => {
           triggerHapticFeedback('error')
@@ -127,7 +127,7 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
 
       return success
     },
-    [onSelectRole, updateUserWithData, onError]
+    [updateUserWithData, onError]
   )
 
   const handleCloseError = useCallback(() => {
@@ -139,12 +139,20 @@ export const useSubRoleSubmission = ({ onSelectRole, onError }: UseSubRoleSubmis
     setSelectedPositionValue(null)
   }, [])
 
+  const handleRegistrationComplete = useCallback(() => {
+    if (!completedRole) return
+    onSelectRole(completedRole)
+    setCompletedRole(null)
+  }, [completedRole, onSelectRole])
+
   return {
     selectedSubRole,
     handleSubRoleSelect,
     handleSubRoleContinue,
     handleSupplierContinue,
     handleRestaurantFormatContinue,
+    completedRole,
+    handleRegistrationComplete,
     errorDialogOpen,
     errorMessage,
     handleCloseError,
