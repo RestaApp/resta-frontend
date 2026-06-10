@@ -13,6 +13,8 @@ interface OnboardingStepLayoutProps {
   totalSteps: number
   children: ReactNode
   bottomSpace?: string
+  /** i18n-ключ названия шага для индикатора «Step N of M · Name». */
+  stepNameKey?: string
 }
 
 export const OnboardingStepLayout = memo(function OnboardingStepLayout({
@@ -22,6 +24,7 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
   totalSteps,
   children,
   bottomSpace,
+  stepNameKey,
 }: OnboardingStepLayoutProps) {
   useEffect(() => {
     resetAppScroll()
@@ -34,7 +37,9 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
       <PageHeader
         title={title}
         subtitle={subtitle}
-        progress={<StepProgress current={currentStep} total={totalSteps} />}
+        progress={
+          <StepProgress current={currentStep} total={totalSteps} stepNameKey={stepNameKey} />
+        }
       />
       <div className={cn('ui-density-page pt-3', bottomSpace)}>
         <StepPanel stepKey={currentStep}>{children}</StepPanel>

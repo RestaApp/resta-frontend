@@ -56,6 +56,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
 
   return (
     <RoleDetailsStep
+      stepNameKey="onboarding.stepNames.profession"
       title={t('roles.positionScreenTitle')}
       subtitle={t('roles.positionScreenDescription')}
       groups={[
@@ -87,6 +88,7 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
           onToggle: handleSpecializationToggle,
           getLabel: getSpecializationLabel,
           getAriaLabel: (_, label) => t('aria.selectSpecialization', { label }),
+          expandable: true,
         },
       ]}
       ctaText={t('roles.continuePosition')}

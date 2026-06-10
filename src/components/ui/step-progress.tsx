@@ -14,6 +14,8 @@ export interface StepProgressProps {
   className?: string
   /** i18n-ключ подписи шага. По умолчанию — `onboarding.stepOf`. */
   labelKey?: string
+  /** i18n-ключ названия шага для подписи «Step N of M · Name». */
+  stepNameKey?: string
 }
 
 /**
@@ -25,11 +27,18 @@ export const StepProgress = memo(function StepProgress({
   total,
   className,
   labelKey = 'onboarding.stepOf',
+  stepNameKey,
 }: StepProgressProps) {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
   const safeCurrent = Math.min(Math.max(current, 1), total)
-  const ariaLabel = t(labelKey, { current: safeCurrent, total })
+  const ariaLabel = stepNameKey
+    ? t('onboarding.stepOfNamed', {
+        current: safeCurrent,
+        total,
+        name: t(stepNameKey),
+      })
+    : t(labelKey, { current: safeCurrent, total })
   const fillRatio = total <= 1 ? 0 : (safeCurrent - 1) / (total - 1)
 
   return (

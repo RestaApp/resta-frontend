@@ -78,6 +78,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
 
   return (
     <RoleDetailsStep
+      stepNameKey="onboarding.stepNames.supplier"
       title={t('roles.supplierCategoryTitle')}
       subtitle={t('roles.supplierCategoryDescription')}
       groups={[
@@ -107,7 +108,7 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
             ]
           : []),
       ]}
-      ctaText={t('roles.supplierCategoryCta', { defaultValue: 'Смотреть рестораны' })}
+      ctaText={t('roles.supplierCategoryCta', { defaultValue: 'Смотреть заведения' })}
       onContinue={handleConfirm}
       onBack={onBack}
       canContinue={canContinue}

@@ -39,6 +39,7 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
 
   return (
     <RoleDetailsStep
+      stepNameKey="onboarding.stepNames.venue"
       title={t('roles.venueInfoTitle')}
       subtitle={t('roles.venueInfoDescription')}
       groups={[

@@ -4,7 +4,6 @@ import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import {
   SHIFT_CARD_LOGO_CLASS,
-  SHIFT_CARD_META_CLASS,
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
@@ -18,81 +17,55 @@ interface RoleCardProps {
   onSelect: (roleId: UiRole) => void
 }
 
-function defaultSocialProofFromI18n(
+function roleHighlightFromI18n(
   roleId: UiRole,
   translate: (key: string) => string
 ): string | undefined {
-  switch (roleId) {
-    case 'chef':
-      return translate('roles.socialProof.chef')
-    case 'venue':
-      return translate('roles.socialProof.venue')
-    case 'supplier':
-      return translate('roles.socialProof.supplier')
-    default:
-      return undefined
-  }
+  const key = `roles.highlights.${roleId}`
+  const text = translate(key)
+  return text !== key ? text : undefined
 }
 
 export const RoleCard = memo(function RoleCard({ role, isSelected, onSelect }: RoleCardProps) {
   const { t } = useTranslation()
-  const proof = defaultSocialProofFromI18n(role.id, t)
+  const highlight = roleHighlightFromI18n(role.id, t)
   const handleClick = useCallback(() => onSelect(role.id), [role.id, onSelect])
 
   return (
-    <div className="relative">
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.985 }}
-        onClick={handleClick}
-        aria-label={t('aria.selectRole', { label: role.title })}
-        aria-pressed={isSelected}
-        data-haptic="selection"
-        className={cn(
-          'flex w-full flex-col gap-2 rounded-lg border p-3 text-left transition-all duration-150',
-          isSelected
-            ? 'border-primary bg-primary/15'
-            : 'border-border bg-card hover:border-foreground/20'
-        )}
-      >
-        <div className="flex items-center gap-2">
-          <div className={SHIFT_CARD_LOGO_CLASS} aria-hidden>
-            {createElement(getRoleIcon(role.id), { className: ICON_MD_CLASS })}
-          </div>
-
-          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <div className={SHIFT_CARD_TITLE_CLASS}>{role.title}</div>
-            {role.description ? (
-              <div className={SHIFT_CARD_SUB_CLASS}>{role.description}</div>
-            ) : null}
-          </div>
-
-          <div
-            className={cn(
-              'grid h-7 w-7 shrink-0 place-items-center rounded-sm border',
-              isSelected
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border text-transparent'
-            )}
-            aria-hidden
-          >
-            {isSelected ? <Check className="h-4 w-4" strokeWidth={3} /> : null}
-          </div>
+    <motion.button
+      type="button"
+      whileTap={{ scale: 0.985 }}
+      onClick={handleClick}
+      aria-label={t('aria.selectRole', { label: role.title })}
+      aria-pressed={isSelected}
+      data-haptic="selection"
+      className={cn(
+        'relative flex w-full gap-3 rounded-lg border p-4 text-left transition-all duration-150',
+        isSelected ? 'border-primary bg-card' : 'border-border bg-card hover:border-foreground/20'
+      )}
+    >
+      {isSelected ? (
+        <div
+          className="border-primary bg-primary text-primary-foreground absolute top-3 right-3 grid h-7 w-7 place-items-center rounded-sm border"
+          aria-hidden
+        >
+          <Check className="h-4 w-4" strokeWidth={3} />
         </div>
+      ) : null}
 
-        {proof ? (
-          <div className="flex items-center gap-1">
-            <span
-              className={cn(
-                SHIFT_CARD_META_CLASS,
-                isSelected ? 'text-primary' : 'text-muted-foreground'
-              )}
-            >
-              {proof}
-            </span>
-          </div>
+      <div className={cn(SHIFT_CARD_LOGO_CLASS, 'h-11 w-11 rounded-lg')} aria-hidden>
+        {createElement(getRoleIcon(role.id), { className: ICON_MD_CLASS })}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-1 pr-8">
+        <div className={cn(SHIFT_CARD_TITLE_CLASS, 'text-base')}>{role.title}</div>
+        {role.description ? (
+          <div className={cn(SHIFT_CARD_SUB_CLASS, 'whitespace-normal')}>{role.description}</div>
         ) : null}
-      </motion.button>
-    </div>
+        {highlight ? (
+          <div className={cn(SHIFT_CARD_SUB_CLASS, 'whitespace-normal')}>{highlight}</div>
+        ) : null}
+      </div>
+    </motion.button>
   )
 })

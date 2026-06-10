@@ -19,6 +19,7 @@ export interface RoleDetailsGroup {
   getIcon?: (value: string) => LucideIcon | undefined
   getAriaLabel?: (value: string, label: string) => string
   emptyText?: ReactNode
+  expandable?: boolean
 }
 
 interface RoleDetailsStepProps {
@@ -31,6 +32,7 @@ interface RoleDetailsStepProps {
   canContinue: boolean
   isSubmitting?: boolean
   continueButtonAriaLabel?: string
+  stepNameKey?: string
 }
 
 export const RoleDetailsStep = memo(function RoleDetailsStep({
@@ -43,6 +45,7 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
   canContinue,
   isSubmitting = false,
   continueButtonAriaLabel,
+  stepNameKey = 'onboarding.stepNames.profile',
 }: RoleDetailsStepProps) {
   const onBackRef = useRef(onBack)
   useLayoutEffect(() => {
@@ -58,11 +61,12 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
     <OnboardingStepLayout
       currentStep={3}
       totalSteps={3}
+      stepNameKey={stepNameKey}
       title={title}
       subtitle={subtitle}
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE_WITH_HINT}
     >
-      <div className="flex w-full max-w-md flex-col gap-3">
+      <div className="flex w-full max-w-md flex-col gap-4">
         {groups.map(group => (
           <OnboardingSection key={group.id} label={group.label} hint={group.hint}>
             {group.values.length > 0 ? (
@@ -73,6 +77,7 @@ export const RoleDetailsStep = memo(function RoleDetailsStep({
                 getLabel={group.getLabel}
                 getIcon={group.getIcon}
                 getAriaLabel={group.getAriaLabel}
+                expandable={group.expandable}
                 size="md"
               />
             ) : group.emptyText ? (

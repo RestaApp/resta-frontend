@@ -107,7 +107,7 @@
       "moreLocations": "+{{count}}",
       "emptyTitle": "No venues found",
       "emptyDescription": "Try refreshing the list or changing filters",
-      "loadError": "Failed to load restaurants",
+      "loadError": "Failed to load venues",
       "filters": {
         "title": "Venue filters",
         "format": "Venue format",
@@ -217,6 +217,7 @@
     "addressesHint": "If you have multiple locations, add each address separately",
     "venueWebsite": "Website",
     "venueWebsiteHint": "Venue website or social page",
+    "venueType": "Venue type",
     "supplierTypesLabel": "Types",
     "supplierTypesHint": "You can select several options",
     "supplierTypesEmpty": "No available types for selected category",
@@ -246,7 +247,7 @@
     },
     "subtitle": {
       "employee": "HoReCa employee",
-      "venue": "Restaurateur",
+      "venue": "Venue owner",
       "supplier": "Supplier"
     },
     "specializationSection": "Specialization",
@@ -499,7 +500,7 @@
   },
   "roles": {
     "whoAreYou": "Who are you in HoReCa?",
-    "roleChoiceHint": "Choose one role — navigation and features are different",
+    "roleChoiceHint": "We'll customize the app for you",
     "mostPopularBadge": "Most popular",
     "loadRolesError": "Failed to load roles",
     "noRoles": "No roles found",
@@ -507,7 +508,7 @@
     "supplierTypesError": "Failed to load supplier types",
     "categoriesError": "Failed to load supplier categories",
     "supplierCategoryTitle": "What do you supply?",
-    "supplierCategoryDescription": "We'll show you to restaurants that need this",
+    "supplierCategoryDescription": "We'll show you to venues that need this",
     "supplierCategories": {
       "products": "Products",
       "equipment": "Equipment",
@@ -522,16 +523,16 @@
       "services": "Cleaning, maintenance, training, consulting",
       "logistics": "Delivery and logistics"
     },
-    "restaurantFormatsError": "Failed to load restaurant formats",
+    "restaurantFormatsError": "Failed to load venue formats",
     "positionLabel": "POSITION",
     "supplierCategoriesLabel": "CATEGORIES",
-    "supplierCategoryCta": "Browse restaurants",
+    "supplierCategoryCta": "Browse venues",
     "positionScreenTitle": "What is your profession?",
     "positionScreenDescription": "We'll match vacancies and shifts for you",
     "shiftsDefault": "Shifts",
     "specializationLabel": "SPECIALIZATION",
     "specializationMultiHint": "you can select multiple",
-    "venueInfoTitle": "Restaurant info",
+    "venueInfoTitle": "Venue info",
     "venueInfoDescription": "Fill in your venue details",
     "venueTypeLabel": "Venue type",
     "supplierInfoTitle": "Information",
@@ -552,7 +553,7 @@
       "admin": "Admin",
       "manager": "Manager",
       "support": "Support",
-      "venue": "I have a venue",
+      "venue": "I run a business",
       "supplier": "I am a supplier"
     },
     "descriptions": {
@@ -567,8 +568,13 @@
       "admin": "I manage the venue and staff",
       "manager": "I lead teams and operations",
       "support": "I provide support and help",
-      "venue": "Restaurant · cafe · bar · chain",
+      "venue": "Venue · cafe · bar · club · chain",
       "supplier": "Products · equipment · services"
+    },
+    "highlights": {
+      "chef": "Shifts · part-time jobs · urgent replacements",
+      "venue": "Publish shifts · hire staff · manage applications",
+      "supplier": "B2B catalog · leads from venues"
     },
     "socialProof": {
       "chef": "892 online · 234 shifts now",
@@ -578,13 +584,23 @@
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
+    "stepOfNamed": "Step {{current}} of {{total}} · {{name}}",
+    "stepNames": {
+      "role": "Role",
+      "contacts": "Contacts",
+      "profession": "Profession",
+      "venue": "Venue",
+      "supplier": "Supplier",
+      "profile": "Profile"
+    },
     "doneEmoji": "",
     "telegram": {
       "title": "Confirm your contact",
-      "subtitle": "Restaurants will message you directly in Telegram",
+      "subtitle": "Venues will message you directly in Telegram",
       "editName": "Name",
       "phoneFromTelegram": "Phone from Telegram",
-      "connected": "✓ TELEGRAM CONNECTED",
+      "connected": "✓ Telegram connected",
+      "imported": "Imported",
       "fallbackName": "Telegram user",
       "noUsername": "username is not set",
       "phoneRequiredLabel": "PHONE",
@@ -597,19 +613,22 @@
       "cityHint": "from geolocation ✓",
       "copy": {
         "employee": {
-          "subtitle": "Restaurants will message you directly in Telegram",
+          "subtitle": "Venues can contact you in Telegram",
+          "phoneHint": "Your phone number is hidden until your application is accepted.",
           "shieldTitle": "No middlemen.",
-          "shieldText": "Resta only connects you. Payment is handled directly between you and the employer."
+          "shieldText": "No deposits. Resta only connects you."
         },
         "venue": {
-          "subtitle": "Candidates will message your manager in Telegram",
+          "subtitle": "Candidates can contact your manager",
+          "phoneHint": "This number will be visible to candidates after you hire them.",
           "shieldTitle": "First shift is free.",
-          "shieldText": "No verification, no deposit. Publish in 60 seconds."
+          "shieldText": "No verification. No deposit. Publish in 60 seconds."
         },
         "supplier": {
-          "subtitle": "Restaurants will message your sales manager in Telegram",
-          "shieldTitle": "7-day PRO trial.",
-          "shieldText": "Access to 230+ restaurants in Minsk. No card — pay later with Telegram Stars."
+          "subtitle": "Venues can contact your sales manager",
+          "phoneHint": "This number will be shown in your supplier profile.",
+          "shieldTitle": "30-day PRO trial.",
+          "shieldText": "Access to 230+ venues in Minsk."
         }
       },
       "next": "Next"
@@ -909,11 +928,11 @@
     "termsOfService": "Terms of Service",
     "legalDocuments": "Legal documents",
     "consent": {
-      "prefix": "I accept the",
+      "prefix": "I accept",
       "privacyLink": "Privacy Policy",
       "and": "and",
       "termsLink": "Terms of Service",
-      "suffix": ", confirm that I am at least 16 years old, and consent to the processing of my personal data.",
+      "suffix": " and confirm that I am at least 16 years old.",
       "required": "You must accept the terms to continue"
     },
     "privacy": {
@@ -931,7 +950,7 @@
         "Telegram ID and username",
         "Professional experience and skills",
         "Geolocation (with explicit user consent)",
-        "Venue addresses (for the \"restaurant\" role)",
+        "Venue addresses (for the \"venue\" role)",
         "Supply categories (for the \"supplier\" role)"
       ],
       "purposeTitle": "4. Purposes of processing",

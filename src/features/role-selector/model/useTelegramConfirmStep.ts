@@ -194,6 +194,7 @@ export const useTelegramConfirmStep = ({ onContinue, onBack }: UseTelegramConfir
     phoneError,
     cityError,
     isPhoneFilled,
+    isPhoneShared,
     isRequestingPhone,
     isRequestingLocation,
     isSaving,

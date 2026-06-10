@@ -22,7 +22,7 @@ export function VenueSuppliersPage() {
 
   if (m.isError) {
     const errorTitle = m.isSupplierRole
-      ? t('supplierUi.restaurants.loadError', { defaultValue: 'Не удалось загрузить рестораны' })
+      ? t('supplierUi.restaurants.loadError', { defaultValue: 'Не удалось загрузить заведения' })
       : t('venueUi.suppliers.loadError', { defaultValue: 'Не удалось загрузить поставщиков' })
     return (
       <ErrorState

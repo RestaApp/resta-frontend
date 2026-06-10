@@ -85,6 +85,7 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
       <OnboardingStepLayout
         currentStep={1}
         totalSteps={3}
+        stepNameKey="onboarding.stepNames.role"
         title={t('roles.whoAreYou')}
         subtitle={t('roles.roleChoiceHint')}
         bottomSpace={vm.selectedRole ? ONBOARDING_BOTTOM_CTA_SPACE : undefined}

@@ -1,17 +1,17 @@
 import { memo, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pencil } from 'lucide-react'
-import { ICON_SM_CLASS, ROLE_CATEGORY_ICONS } from '@/shared/constants/role-icons'
+import { Check, Lock, Pencil, Shield, Star, Store } from 'lucide-react'
+import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { Input } from '@/components/ui/input'
 import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { OnboardingSection, OnboardingStepLayout } from './OnboardingStepLayout'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useTelegramConfirmStep } from '../../model/useTelegramConfirmStep'
 import { formatPhoneInput } from '@/shared/utils/phone'
 import type { UiRole } from '@/shared/types/roles.types'
-import { getRoleCategory } from '@/shared/types/roles.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AVATAR_SHAPE_CLASS } from '@/components/ui/avatar-styles'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
@@ -29,6 +29,13 @@ interface TelegramConfirmStepProps {
 }
 
 type LegalOverlay = 'none' | 'privacy' | 'terms'
+type CopyRole = 'employee' | 'venue' | 'supplier'
+
+const COPY_ROLE_ICONS = {
+  employee: Shield,
+  venue: Store,
+  supplier: Star,
+} as const
 
 export const TelegramConfirmStep = memo(function TelegramConfirmStep({
   onContinue,
@@ -37,9 +44,8 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
 }: TelegramConfirmStepProps) {
   const { t } = useTranslation()
   const user = useAppSelector(selectUserData)
-  const copyRole =
+  const copyRole: CopyRole =
     selectedRole === 'venue' || selectedRole === 'supplier' ? selectedRole : 'employee'
-  const roleCategory = getRoleCategory(selectedRole ?? 'chef')
   const [isEditingName, setIsEditingName] = useState(false)
   const [legalConsent, setLegalConsent] = useState(false)
   const [consentError, setConsentError] = useState(false)
@@ -54,6 +60,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     phoneError,
     cityError,
     isPhoneFilled,
+    isPhoneShared,
     isRequestingPhone,
     isRequestingLocation,
     isSaving,
@@ -70,12 +77,13 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
     <OnboardingStepLayout
       currentStep={2}
       totalSteps={3}
+      stepNameKey="onboarding.stepNames.contacts"
       title={t('onboarding.telegram.title')}
       subtitle={t(`onboarding.telegram.copy.${copyRole}.subtitle`)}
       bottomSpace={ONBOARDING_BOTTOM_CTA_SPACE}
     >
-      <Card className="text-center">
-        <Avatar className={cn(AVATAR_SHAPE_CLASS, 'mx-auto mb-3 h-14 w-14')}>
+      <Card className="flex flex-col gap-2 text-center" padding="md">
+        <Avatar className={cn(AVATAR_SHAPE_CLASS, 'mx-auto h-14 w-14')}>
           <AvatarImage src={user?.photo_url} alt={displayName} />
           <AvatarFallback
             className={cn(
@@ -109,13 +117,11 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             <Pencil className="h-3 w-3 text-muted-foreground" aria-hidden />
           </button>
         )}
-        <div className="mt-0.5 text-sm text-muted-foreground">{displayUsername}</div>
-        <div className="mt-2.5 font-mono-resta text-xs uppercase tracking-widest text-success">
-          {t('onboarding.telegram.connected')}
-        </div>
+        <div className="text-sm text-muted-foreground">{displayUsername}</div>
+        <div className="text-xs text-success">{t('onboarding.telegram.connected')}</div>
       </Card>
 
-      <OnboardingSection label={t('onboarding.telegram.phoneRequiredLabel')} className="mt-3">
+      <OnboardingSection label={t('onboarding.telegram.phoneRequiredLabel')}>
         <div className="flex h-11 items-center gap-2 rounded-md border border-border bg-input-background px-3 text-sm">
           <Input
             variant="inline"
@@ -126,19 +132,32 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             }}
             placeholder={t('phone.placeholderExample')}
           />
-          <button
-            type="button"
-            onClick={handlePhoneShare}
-            className="whitespace-nowrap text-sm font-semibold leading-none text-primary disabled:opacity-60"
-            disabled={isRequestingPhone}
-          >
-            {isPhoneFilled ? t('onboarding.telegram.shared') : t('onboarding.telegram.share')}
-          </button>
+          {isPhoneShared ? (
+            <div className="flex shrink-0 items-center gap-1" aria-hidden>
+              <Badge variant="ok">{t('onboarding.telegram.imported')}</Badge>
+              <Check className="h-4 w-4 text-success" strokeWidth={2.5} />
+            </div>
+          ) : isPhoneFilled ? (
+            <Check className="h-4 w-4 shrink-0 text-success" strokeWidth={2.5} aria-hidden />
+          ) : (
+            <button
+              type="button"
+              onClick={handlePhoneShare}
+              className="shrink-0 whitespace-nowrap text-sm font-semibold leading-none text-primary disabled:opacity-60"
+              disabled={isRequestingPhone}
+            >
+              {t('onboarding.telegram.share')}
+            </button>
+          )}
         </div>
-        {phoneError ? <p className="mt-1 text-xs text-destructive">{phoneError}</p> : null}
+        <p className="flex items-start gap-1.5 text-xs leading-snug text-muted-foreground">
+          <Lock className="mt-0.5 h-3 w-3 shrink-0" aria-hidden />
+          {t(`onboarding.telegram.copy.${copyRole}.phoneHint`)}
+        </p>
+        {phoneError ? <p className="text-xs text-destructive">{phoneError}</p> : null}
       </OnboardingSection>
 
-      <OnboardingSection label={t('onboarding.telegram.cityLabel')} className="mt-3">
+      <OnboardingSection label={t('onboarding.telegram.cityLabel')}>
         <div className="w-full">
           <CityAutocompleteField
             value={selectedCity}
@@ -151,12 +170,12 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
             hideLabel
           />
         </div>
-        {cityError ? <p className="mt-1 text-xs text-destructive">{cityError}</p> : null}
+        {cityError ? <p className="text-xs text-destructive">{cityError}</p> : null}
       </OnboardingSection>
 
-      <div role="note" className="mt-3 rounded-xl border border-primary bg-primary/10 px-3 py-2.5">
+      <div role="note" className="rounded-lg border border-primary/40 bg-card px-3 py-3">
         <div className="flex items-start gap-2">
-          {createElement(ROLE_CATEGORY_ICONS[roleCategory], {
+          {createElement(COPY_ROLE_ICONS[copyRole], {
             'aria-hidden': true,
             className: cn(ICON_SM_CLASS, 'mt-0.5 text-primary'),
           })}
@@ -178,7 +197,6 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         onPrivacyPress={() => setLegalOverlay('privacy')}
         onTermsPress={() => setLegalOverlay('terms')}
         error={consentError}
-        className="mt-3"
       />
 
       <OnboardingBottomCta
