@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useGetShiftByIdQuery, type VacancyApiItem } from '@/services/api/shiftsApi'
+import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
@@ -21,10 +21,6 @@ export const PersonalShiftCard = ({
 }: PersonalShiftCardProps) => {
   const userData = useAppSelector(selectUserData)
   const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
-
-  const { data: detailVacancy } = useGetShiftByIdQuery(String(shift.id))
-
-  const applicantsVacancyData = detailVacancy ?? shift
 
   const mapToShift = useCallback(
     (vacancy: VacancyApiItem) => {
@@ -52,7 +48,7 @@ export const PersonalShiftCard = ({
         ownerActions={{ onEdit, onDelete, isDeleting }}
       />
 
-      <ShiftApplicantsSection shiftId={shift.id} vacancyData={applicantsVacancyData} alwaysShow />
+      <ShiftApplicantsSection shiftId={shift.id} vacancyData={shift} alwaysShow />
     </div>
   )
 }
