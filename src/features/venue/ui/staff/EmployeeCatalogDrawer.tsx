@@ -92,7 +92,7 @@ export const EmployeeCatalogDrawer = () => {
                     <ApplicantPreviewCard
                       key={employee.id}
                       applicant={mapEmployeeCatalogItemToApplicationPreview(employee)}
-                      getEmployeePositionLabel={m.getEmployeePositionLabel}
+                      getEmployeePositionLabel={value => m.getEmployeePositionLabel(value ?? '')}
                       getSpecializationLabel={m.getSpecializationLabel}
                       onSelect={userId => m.handleOpenProfile(userId)}
                       t={t}
