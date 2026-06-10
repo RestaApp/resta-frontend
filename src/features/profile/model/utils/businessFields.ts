@@ -115,13 +115,10 @@ export const parseBusinessHours = (value: string): ParsedBusinessHours => {
   }))
 
   const notes: string[] = []
-  const lines = value
-    .split('\n')
-    .map(line => line.trim())
-    .filter(Boolean)
+  const lines = value.split('\n')
 
   lines.forEach(line => {
-    const parsed = parseLine(line)
+    const parsed = parseLine(line.trim())
     if (!parsed) {
       notes.push(line)
       return
@@ -170,10 +167,8 @@ export const serializeBusinessHours = (schedule: DaySchedule[], notes: string): 
     index = endIndex + 1
   }
 
-  const cleanedNotes = notes
-    .split('\n')
-    .map(line => line.trim())
-    .filter(Boolean)
-
-  return [...lines, ...cleanedNotes].join('\n')
+  const schedulePart = lines.join('\n')
+  if (!notes) return schedulePart
+  if (!schedulePart) return notes
+  return `${schedulePart}\n${notes}`
 }
