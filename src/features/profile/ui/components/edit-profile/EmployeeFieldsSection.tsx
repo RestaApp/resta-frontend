@@ -5,7 +5,11 @@ import { OpenToWorkButton } from '@/shared/ui/OpenToWorkButton'
 import { RangeSlider } from '@/components/ui/range-slider'
 import { Badge } from '@/components/ui/badge'
 import { FormField } from '@/components/ui/form-field'
-import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { BLOCK_TITLE_CLASS, DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import {
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { formatExperienceText } from '@/shared/utils/experience'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
@@ -24,7 +28,7 @@ interface EmployeeFieldsSectionProps {
 }
 
 /**
- * Поля профиля сотрудника: опыт (slider), open‑to‑work (кнопка), skills (textarea + chips).
+ * Поля профиля сотрудника: опыт (slider), open‑to‑work (строка с кнопкой), skills (textarea + chips).
  *
  * SRP: только поля для apiRole === 'employee'. Не знает про другие роли.
  */
@@ -73,11 +77,18 @@ export const EmployeeFieldsSection = memo(
             tickCount={5}
           />
         </FormField>
-        <OpenToWorkButton
-          checked={openToWork}
-          disabled={disabled}
-          onToggle={next => updateField('openToWork', next)}
-        />
+        <div className={DRAWER_SETTING_ROW_CLASS}>
+          <div className="min-w-0">
+            <p className={SHIFT_CARD_TITLE_CLASS}>{t('profile.openToWork')}</p>
+            <p className={SHIFT_CARD_SUB_CLASS}>{t('profile.openToWorkDescription')}</p>
+          </div>
+          <OpenToWorkButton
+            checked={openToWork}
+            disabled={disabled}
+            variant="compact"
+            onToggle={next => updateField('openToWork', next)}
+          />
+        </div>
         <EmployeeSpecializationsField
           value={specializations}
           options={specializationOptions}

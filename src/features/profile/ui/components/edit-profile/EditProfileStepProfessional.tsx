@@ -7,7 +7,11 @@ import { RangeSlider } from '@/components/ui/range-slider'
 import { Badge } from '@/components/ui/badge'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
-import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { BLOCK_TITLE_CLASS, DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
+import {
+  SHIFT_CARD_SUB_CLASS,
+  SHIFT_CARD_TITLE_CLASS,
+} from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { formatExperienceText } from '@/shared/utils/experience'
 import type { EmployeeSubRole } from '@/shared/types/roles.types'
@@ -117,11 +121,18 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
         />
       </FormField>
 
-      <OpenToWorkButton
-        checked={formData.openToWork}
-        disabled={disabled}
-        onToggle={next => updateField('openToWork', next)}
-      />
+      <div className={DRAWER_SETTING_ROW_CLASS}>
+        <div className="min-w-0">
+          <p className={SHIFT_CARD_TITLE_CLASS}>{t('profile.openToWork')}</p>
+          <p className={SHIFT_CARD_SUB_CLASS}>{t('profile.openToWorkDescription')}</p>
+        </div>
+        <OpenToWorkButton
+          checked={formData.openToWork}
+          disabled={disabled}
+          variant="compact"
+          onToggle={next => updateField('openToWork', next)}
+        />
+      </div>
 
       <FormField label={t('profile.skills')} hint={t('profile.skillsExample')}>
         <Textarea
