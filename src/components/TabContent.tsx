@@ -30,14 +30,17 @@ const profileSkeletonFallback = (
 const staffSkeletonFallback = (
   <FeedCardSkeletonList variant="staff" className="ui-density-page ui-density-py" />
 )
+const suppliersSkeletonFallback = (
+  <FeedCardSkeletonList variant="supplier" className="ui-density-page ui-density-py" />
+)
 
 const TAB_CONFIG: Partial<Record<Tab, { component: ComponentType; fallback?: ReactNode }>> = {
   feed: { component: FeedPage, fallback: cardSkeletonFallback },
   profile: { component: ProfilePage, fallback: profileSkeletonFallback },
   staff: { component: VenueStaffPage, fallback: staffSkeletonFallback },
-  suppliers: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
-  home: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
-  showcase: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
+  suppliers: { component: VenueSuppliersPage, fallback: suppliersSkeletonFallback },
+  home: { component: VenueSuppliersPage, fallback: suppliersSkeletonFallback },
+  showcase: { component: VenueSuppliersPage, fallback: suppliersSkeletonFallback },
 }
 
 interface TabContentProps {

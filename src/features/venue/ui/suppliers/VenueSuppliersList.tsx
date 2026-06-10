@@ -46,7 +46,7 @@ export const VenueSuppliersList = ({
       />
       <div className="ui-density-page ui-density-py">
         {isLoading && suppliersCount === 0 ? (
-          <FeedCardSkeletonList className="ui-density-stack" />
+          <FeedCardSkeletonList variant="supplier" className="ui-density-stack" />
         ) : list.length === 0 ? (
           <EmptyState
             message={
