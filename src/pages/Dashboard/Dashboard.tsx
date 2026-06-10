@@ -59,7 +59,9 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
 
   return (
     <div className="bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
-      {activeTab === 'feed' ? null : <AppHeader activeTab={activeTab} role={role} />}
+      {activeTab === 'feed' || activeTab === 'activity' || activeTab === 'myshifts' ? null : (
+        <AppHeader activeTab={activeTab} role={role} />
+      )}
       {role === 'venue' ? <VenueAddShiftListener /> : null}
       <main className="ui-app-frame">
         <TabContent activeTab={activeTab} />

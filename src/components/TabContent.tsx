@@ -33,13 +33,11 @@ const staffSkeletonFallback = (
 
 const TAB_CONFIG: Partial<Record<Tab, { component: ComponentType; fallback?: ReactNode }>> = {
   feed: { component: FeedPage, fallback: cardSkeletonFallback },
-  activity: { component: ActivityPage, fallback: cardSkeletonFallback },
   profile: { component: ProfilePage, fallback: profileSkeletonFallback },
   staff: { component: VenueStaffPage, fallback: staffSkeletonFallback },
   suppliers: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
   home: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
   showcase: { component: VenueSuppliersPage, fallback: cardSkeletonFallback },
-  requests: { component: ActivityPage, fallback: cardSkeletonFallback },
 }
 
 interface TabContentProps {
@@ -53,7 +51,11 @@ export const TabContent = ({ activeTab }: TabContentProps) => {
   if (activeTab === 'activity' || activeTab === 'myshifts') {
     return (
       <PageSuspense fallback={cardSkeletonFallback}>
-        <ActivityPage key={activeTab} employeeDefaultTab={employeeActivityDefaultTab} />
+        <ActivityPage
+          key={activeTab}
+          screenTab={activeTab}
+          employeeDefaultTab={employeeActivityDefaultTab}
+        />
       </PageSuspense>
     )
   }

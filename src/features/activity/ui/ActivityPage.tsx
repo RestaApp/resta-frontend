@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useActivityPageModel } from '../model/hooks/useActivityPageModel'
+import { useActivityScreenHeader } from '../model/hooks/useActivityScreenHeader'
 import { useAppSelector } from '@/store/hooks'
 import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 import type { TabOption } from '@/components/ui/tabs'
+import type { Tab } from '@/shared/types/navigation.types'
+import type { ActivityTab } from '@/shared/types/activity.types'
 
+import { ActivityPageHeader } from './components/ActivityPageHeader'
 import { VenueActivityContent } from './components/VenueActivityContent'
 import { EmployeeActivityContent } from './components/EmployeeActivityContent'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
@@ -12,20 +16,33 @@ import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 type VenueTab = 'vacancies' | 'shifts'
 
 interface ActivityPageProps {
-  employeeDefaultTab?: 'applications' | 'shifts'
+  screenTab: Tab
+  employeeDefaultTab?: ActivityTab
 }
 
-export const ActivityPage = ({ employeeDefaultTab = 'applications' }: ActivityPageProps) => {
+export const ActivityPage = ({
+  screenTab,
+  employeeDefaultTab = 'applications',
+}: ActivityPageProps) => {
   const { t } = useTranslation()
   const m = useActivityPageModel(employeeDefaultTab)
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
+  const header = useActivityScreenHeader(screenTab, selectedRole)
   const [venueTab, setVenueTab] = useState<VenueTab>('vacancies')
 
   const venueTabOptions = useMemo<TabOption<VenueTab>[]>(
     () => [
       { id: 'vacancies', label: t('tabs.feed.jobs') },
       { id: 'shifts', label: t('tabs.feed.shifts') },
+    ],
+    [t]
+  )
+
+  const employeeTabOptions = useMemo<TabOption<ActivityTab>[]>(
+    () => [
+      { id: 'applications', label: t('tabs.activity.applications') },
+      { id: 'shifts', label: t('tabs.activity.shifts') },
     ],
     [t]
   )
@@ -78,12 +95,29 @@ export const ActivityPage = ({ employeeDefaultTab = 'applications' }: ActivityPa
   return (
     <div className="bg-background">
       {isVenue ? (
+        <ActivityPageHeader
+          title={header.title}
+          action={header.action}
+          tabOptions={venueTabOptions}
+          activeTabId={venueTab}
+          onTabChange={setVenueTab}
+        />
+      ) : (
+        <ActivityPageHeader
+          title={header.title}
+          action={header.action}
+          showAddShiftOnboarding={header.showAddShiftOnboarding}
+          tabOptions={employeeTabOptions}
+          activeTabId={m.activeTab}
+          onTabChange={m.setActiveTab}
+        />
+      )}
+
+      {isVenue ? (
         <VenueActivityContent
           t={t}
           model={m}
           venueTab={venueTab}
-          setVenueTab={setVenueTab}
-          venueTabOptions={venueTabOptions}
           venueItems={venueItems}
           venueEmptyContent={venueEmptyContent}
         />
