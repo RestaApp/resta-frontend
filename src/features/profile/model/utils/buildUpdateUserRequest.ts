@@ -20,6 +20,7 @@ export interface ProfileFormData {
   /** Заведение: время работы (многострочный текст → business_hours.schedule) */
   businessHours: string
   // Для employee
+  position: string
   experienceYears: number | ''
   openToWork: boolean
   skills: string
@@ -172,6 +173,13 @@ export const buildUpdateUserRequest = (
     const employeeProfileAttributes: NonNullable<
       UpdateUserRequest['user']['employee_profile_attributes']
     > = {}
+    const currentPosition = formData.position.trim()
+    const initialPosition = source.position.trim()
+
+    if (currentPosition && currentPosition !== initialPosition) {
+      user.position = currentPosition
+      employeeProfileAttributes.position = currentPosition
+    }
 
     if (formData.experienceYears !== source.experienceYears && formData.experienceYears !== '') {
       user.experience_years = formData.experienceYears

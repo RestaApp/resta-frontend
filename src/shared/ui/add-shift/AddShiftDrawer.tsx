@@ -21,9 +21,9 @@ import { toLocationArray } from '@/shared/utils/location'
 import { useAddShiftForm } from './model/useAddShiftForm'
 import type { ShiftType } from '@/shared/shifts/types'
 import { AddShiftDrawerFooter } from './drawer/AddShiftDrawerFooter'
+import { StepProgress } from '@/components/ui/step-progress'
 import {
   AddShiftDrawerBanner,
-  AddShiftDrawerProgress,
   type SelectFieldOption,
   AddShiftDrawerStep0,
   AddShiftDrawerStep1,
@@ -101,6 +101,16 @@ const AddShiftDrawerKeyed = ({
     () => (employeeFixedPosition ? getEmployeePositionLabel(employeeFixedPosition) : ''),
     [employeeFixedPosition, getEmployeePositionLabel]
   )
+  const employeeProfileSpecializations = useMemo(() => {
+    if (!isEmployeeUser || !userProfile) return []
+    const ep = userProfile.employee_profile
+    const raw = ep?.specializations?.length
+      ? ep.specializations
+      : userProfile.specialization
+        ? [userProfile.specialization]
+        : []
+    return Array.from(new Set(raw.filter(Boolean)))
+  }, [isEmployeeUser, userProfile])
 
   const form = useAddShiftForm({
     initialShiftType: lockedShiftType ?? initialShiftType ?? INITIAL_SHIFT_TYPE,
@@ -110,6 +120,7 @@ const AddShiftDrawerKeyed = ({
     initialCity: userCity,
     userCity,
   })
+  const { position, specializations, setPosition, setSpecializations } = form
   const controller = useAddShiftDrawerController({
     onOpenChange,
     t,
@@ -119,11 +130,15 @@ const AddShiftDrawerKeyed = ({
   const { positions: positionsForDisplay, isLoading: isPositionsLoading } = useUserPositions({
     enabled: open && !isEmployeeUser,
   })
-  const { specializations: availableSpecializations, isLoading: isSpecializationsLoading } =
+  const { specializations: catalogSpecializations, isLoading: isCatalogSpecializationsLoading } =
     useUserSpecializations({
-      position: form.position || null,
-      enabled: open && !!form.position,
+      position: position || null,
+      enabled: open && !!position && !isEmployeeUser,
     })
+  const availableSpecializations = isEmployeeUser
+    ? employeeProfileSpecializations
+    : catalogSpecializations
+  const isSpecializationsLoading = isEmployeeUser ? false : isCatalogSpecializationsLoading
 
   const positionOptions: SelectFieldOption[] = useMemo(
     () =>
@@ -139,19 +154,34 @@ const AddShiftDrawerKeyed = ({
 
   useEffect(() => {
     if (!open || !isEmployeeUser || !employeeFixedPosition) return
-    if (form.position === employeeFixedPosition) return
-    form.setPosition(employeeFixedPosition)
-  }, [open, isEmployeeUser, employeeFixedPosition, form])
+    if (position === employeeFixedPosition) return
+    setPosition(employeeFixedPosition)
+  }, [open, isEmployeeUser, employeeFixedPosition, position, setPosition])
 
-  const stepTitle = useMemo(() => {
-    if (controller.state.step === 0) {
-      return form.shiftType === 'vacancy'
-        ? t('shift.addStep1TitleVacancy', { defaultValue: 'Основные данные' })
-        : t('shift.addStep1Title')
+  useEffect(() => {
+    if (!open || !isEmployeeUser || employeeProfileSpecializations.length === 0) return
+
+    const validSelected = specializations.filter(spec =>
+      employeeProfileSpecializations.includes(spec)
+    )
+    const shouldAutoSelect = !initialValues?.id && validSelected.length === 0
+
+    if (shouldAutoSelect) {
+      setSpecializations(employeeProfileSpecializations)
+      return
     }
-    if (controller.state.step === 1) return t('shift.addStep2Title')
-    return t('shift.addStep3Title')
-  }, [controller.state.step, form.shiftType, t])
+
+    if (validSelected.length !== specializations.length) {
+      setSpecializations(validSelected.length > 0 ? validSelected : employeeProfileSpecializations)
+    }
+  }, [
+    open,
+    isEmployeeUser,
+    employeeProfileSpecializations,
+    specializations,
+    setSpecializations,
+    initialValues?.id,
+  ])
 
   const isVacancyType = form.shiftType === 'vacancy'
   const drawerCopy = useMemo(
@@ -183,25 +213,22 @@ const AddShiftDrawerKeyed = ({
       >
         <DrawerFrame className="flex-1">
           <DrawerHeader>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col gap-1">
-                <DrawerTitle>{drawerCopy.drawerTitle}</DrawerTitle>
-                <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <DrawerTitle>{drawerCopy.drawerTitle}</DrawerTitle>
+                  <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
+                </div>
+                <DrawerCloseButton
+                  onClick={() => controller.actions.handleDrawerOpenChange(false)}
+                  ariaLabel={t('common.close')}
+                />
               </div>
-              <DrawerCloseButton
-                onClick={() => controller.actions.handleDrawerOpenChange(false)}
-                ariaLabel={t('common.close')}
-              />
+              <StepProgress current={controller.state.step + 1} total={TOTAL_STEPS} />
             </div>
           </DrawerHeader>
 
           <DrawerBody className="ui-density-stack gap-3">
-            <AddShiftDrawerProgress
-              step={controller.state.step}
-              totalSteps={TOTAL_STEPS}
-              stepTitle={stepTitle}
-            />
-
             {controller.state.step === 0 ? (
               <AddShiftDrawerStep0
                 titleRef={controller.refs.titleRef}
@@ -305,18 +332,13 @@ const AddShiftDrawerKeyed = ({
         title={successCopy.title}
         description={successCopy.description}
         onClose={controller.actions.close}
-        primaryAction={{
-          label: t('common.close'),
-          onClick: controller.actions.close,
-          variant: 'gradient',
-        }}
-        secondaryAction={
-          initialValues?.id
+        primaryAction={
+          initialValues?.id || isEmployeeUser
             ? undefined
             : {
                 label: t('shift.createAnother'),
                 onClick: controller.actions.handleCreateAnother,
-                variant: 'outline',
+                variant: 'gradient',
               }
         }
       />

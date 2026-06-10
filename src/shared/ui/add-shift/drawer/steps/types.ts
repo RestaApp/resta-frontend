@@ -6,12 +6,6 @@ export type SelectFieldOption = {
   label: string
 }
 
-export interface AddShiftDrawerProgressProps {
-  step: number
-  totalSteps: number
-  stepTitle: string
-}
-
 export interface AddShiftDrawerStep0Props {
   titleRef: RefObject<HTMLDivElement | null>
   dateRef: RefObject<HTMLDivElement | null>

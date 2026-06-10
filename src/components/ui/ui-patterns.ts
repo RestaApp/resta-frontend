@@ -103,4 +103,7 @@ export const DRAWER_SETTING_ROW_CLASS =
 
 export const SHADOW_MODAL_CLASS = 'shadow-[var(--shadow-modal)]'
 
+/** Затемнение под modal / drawer / result overlay — `--overlay-scrim` в index.css. */
+export const OVERLAY_SCRIM_CLASS = 'bg-overlay-scrim backdrop-blur-sm'
+
 export const MODAL_SURFACE_CLASS = `w-full rounded-2xl border border-border bg-card ${SHADOW_MODAL_CLASS}`

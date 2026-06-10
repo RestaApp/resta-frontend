@@ -1,7 +1,8 @@
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { ArrowRight, BriefcaseBusiness, ChevronDown, SquarePen, Star } from 'lucide-react'
+import { ArrowRight, BriefcaseBusiness, ChevronDown, Plus, Star } from 'lucide-react'
+import { OpenToWorkButton } from '@/shared/ui/OpenToWorkButton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -72,6 +73,23 @@ const renderInfoValue = (row: ProfileInfoRow) => {
   )
 }
 
+const ProfileTagBadge = ({ item }: { item: ProfileTagSection['items'][number] }) => (
+  <Badge
+    variant="tag"
+    className={cn(
+      'rounded-sm px-2 py-1 font-mono-resta text-xs font-semibold tracking-wide',
+      item.id === 'experience'
+        ? 'border-primary/30 bg-primary/10 text-primary'
+        : 'border-border bg-card text-foreground'
+    )}
+  >
+    {item.id === 'experience' ? (
+      <BriefcaseBusiness className="mr-1.5 h-3 w-3 text-primary" aria-hidden="true" />
+    ) : null}
+    {item.label}
+  </Badge>
+)
+
 const ProfileTagSectionView = ({
   section,
   onEdit,
@@ -80,43 +98,39 @@ const ProfileTagSectionView = ({
   onEdit?: () => void
 }) => {
   const { t } = useTranslation()
-  if (section.items.length === 0) return null
+  const hasItems = section.items.length > 0
+  if (!hasItems && !onEdit) return null
+
+  const specializationItems = section.items.filter(item => item.id !== 'experience')
+  const experienceItem = section.items.find(item => item.id === 'experience')
+
+  const addButton = onEdit ? (
+    <button
+      type="button"
+      onClick={onEdit}
+      data-haptic="selection"
+      className="inline-flex min-h-8 items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+      aria-label={t('aria.editSpecializations')}
+    >
+      <Plus className="h-4 w-4" aria-hidden="true" />
+      {t('common.add')}
+    </button>
+  ) : null
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <SectionLabel>{section.title}</SectionLabel>
-        {onEdit ? (
-          <button
-            type="button"
-            onClick={onEdit}
-            data-haptic="selection"
-            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] border border-primary/25 bg-primary/10 text-primary transition-colors hover:border-primary/40 hover:bg-primary/15"
-            aria-label={t('aria.editProfile')}
-          >
-            <SquarePen className="h-3 w-3" aria-hidden="true" />
-          </button>
-        ) : null}
+        {addButton}
       </div>
-      <div className="flex flex-wrap gap-2">
-        {section.items.map(item => (
-          <Badge
-            key={item.id}
-            variant="tag"
-            className={cn(
-              'rounded-sm px-2 py-1 font-mono-resta text-xs font-semibold tracking-wide',
-              item.id === 'experience'
-                ? 'border-primary/30 bg-primary/10 text-primary'
-                : 'border-border bg-card text-foreground'
-            )}
-          >
-            {item.id === 'experience' ? (
-              <BriefcaseBusiness className="mr-1.5 h-3 w-3 text-primary" aria-hidden="true" />
-            ) : null}
-            {item.label}
-          </Badge>
-        ))}
-      </div>
+      {hasItems ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {specializationItems.map(item => (
+            <ProfileTagBadge key={item.id} item={item} />
+          ))}
+          {experienceItem ? <ProfileTagBadge item={experienceItem} /> : null}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -132,43 +146,14 @@ const ProfileOpenToWorkCard = ({
   disabled?: boolean
   onToggle?: (nextValue: boolean) => void
 }) => {
-  const { t } = useTranslation()
-  if (!visible) return null
+  if (!visible || !onToggle) return null
 
   return (
-    <Card className={SHIFT_CARD_CLASS}>
-      <button
-        type="button"
-        className="flex w-full items-center gap-2 text-left disabled:cursor-not-allowed disabled:opacity-70"
-        onClick={() => onToggle?.(!checked)}
-        disabled={disabled || !onToggle}
-        data-haptic="selection"
-        role="switch"
-        aria-checked={checked}
-      >
-        <span
-          className={cn(
-            'relative inline-flex h-8 w-15 shrink-0 rounded-full transition-colors',
-            checked ? 'bg-primary' : 'bg-secondary'
-          )}
-        >
-          <span
-            className={cn(
-              'absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition-transform',
-              checked ? 'translate-x-8' : 'translate-x-1'
-            )}
-          />
-        </span>
-        <div className="min-w-0">
-          <div className={SHIFT_CARD_TITLE_CLASS}>
-            {checked ? t('profile.openToWorkShort') : t('profile.openToWorkOff')}
-          </div>
-          <div className={SHIFT_CARD_SUB_CLASS}>
-            {checked ? t('profile.openToWorkCatalogHint') : t('profile.openToWorkHiddenHint')}
-          </div>
-        </div>
-      </button>
-    </Card>
+    <OpenToWorkButton
+      checked={checked}
+      disabled={disabled}
+      onToggle={onToggle}
+    />
   )
 }
 

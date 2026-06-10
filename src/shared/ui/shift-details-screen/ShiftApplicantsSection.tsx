@@ -1,9 +1,8 @@
-import { Eye } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { useLabels } from '@/shared/i18n/hooks'
-import { formatViewsCount } from '@/shared/utils/viewsCount'
+import { SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { ApplicantsTab } from './ApplicantsTab'
 import { useShiftApplicantsModeration } from './useShiftApplicantsModeration'
 
@@ -12,12 +11,14 @@ interface ShiftApplicantsSectionProps {
   vacancyData?: VacancyApiItem | null
   /** Владелец смены: блок откликов всегда виден, при 0 — empty state с иконкой. */
   alwaysShow?: boolean
+  variant?: 'default' | 'owner'
 }
 
 export const ShiftApplicantsSection = ({
   shiftId,
   vacancyData,
   alwaysShow = false,
+  variant = 'default',
 }: ShiftApplicantsSectionProps) => {
   const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
@@ -30,27 +31,25 @@ export const ShiftApplicantsSection = ({
 
   const applicationsPreview = moderation.applicationsPreview
   const applicantsCount = moderation.applicationsCount ?? applicationsPreview.length
-  const viewsCount = vacancyData?.views_count
-  const hasViewsCount = typeof viewsCount === 'number' && Number.isFinite(viewsCount)
   const hasApplicants =
     applicationsPreview.length > 0 ||
     (typeof moderation.applicationsCount === 'number' && moderation.applicationsCount > 0)
 
-  if (!alwaysShow && !hasApplicants && !hasViewsCount) return null
+  if (!alwaysShow && !hasApplicants) return null
+
+  const isOwnerLayout = variant === 'owner'
+  const applicantsVariant = isOwnerLayout ? 'moderation' : 'default'
+  const isAccepting = moderation.moderating?.action === 'accept'
+  const acceptingApplicationId =
+    isAccepting && typeof moderation.moderating?.id === 'number' ? moderation.moderating.id : null
 
   return (
     <section className="ui-density-stack">
-      <div className="flex items-center justify-between gap-3 px-1">
-        <h2 className="text-sm font-semibold text-foreground">
-          {t('shift.applicantsCount', { count: applicantsCount })}
-        </h2>
-        {hasViewsCount ? (
-          <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-            <Eye className="h-3.5 w-3.5" aria-hidden />
-            {formatViewsCount(viewsCount)}
-          </span>
-        ) : null}
-      </div>
+      <h2
+        className={isOwnerLayout ? SUBSECTION_TITLE_CLASS : 'text-sm font-semibold text-foreground'}
+      >
+        {t('shift.applicantsCount', { count: applicantsCount })}
+      </h2>
 
       <ApplicantsTab
         applicationsPreview={applicationsPreview}
@@ -63,6 +62,14 @@ export const ShiftApplicantsSection = ({
           moderation.setSelectedApplicantApplicationId(appId)
         }}
         t={t}
+        variant={applicantsVariant}
+        onAcceptApplicant={
+          isOwnerLayout
+            ? applicationId => void moderation.handleAcceptApplication(applicationId)
+            : undefined
+        }
+        isAccepting={isAccepting}
+        acceptingApplicationId={acceptingApplicationId}
       />
 
       <UserProfileDrawer

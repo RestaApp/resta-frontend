@@ -73,6 +73,7 @@ export const findFirstInvalidStep = (form: AddShiftDrawerFormState): StepIndex =
   if (!hasLocation(form.location)) return 1
   if (!form.position || form.positionError) return 1
   if (form.position && form.specializations.length === 0) return 1
+  if (form.fieldErrors.specializations) return 1
   if (!form.description.trim()) return 2
   if (!form.requirements.trim()) return 2
   return 2
@@ -109,7 +110,7 @@ export const buildDrawerErrorState = (params: {
 
   const canValidateSpecializations = !!form.position && !form.positionError
   const specializationFieldError =
-    (form.fieldErrors.specializations ? requiredMarker : undefined) ??
+    normalizeRequiredText(form.fieldErrors.specializations, requiredFieldError) ??
     (canValidateSpecializations && showStep1Errors && form.specializations.length === 0
       ? requiredMarker
       : undefined)

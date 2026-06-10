@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom'
 import { cn } from '@/shared/utils/cn'
 import { Card } from './card'
 import { Button } from './button'
-import { MODAL_TITLE_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
+import { MODAL_TITLE_CLASS, OVERLAY_SCRIM_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
@@ -121,7 +121,7 @@ export const AlertDialog = memo(function AlertDialog({
         role="presentation"
         style={{ zIndex: Z_INDEX.alertDialog }}
       >
-        <div className="fixed inset-0 bg-black/50" onClick={onOverlayClick} aria-hidden="true" />
+        <div className={cn('fixed inset-0', OVERLAY_SCRIM_CLASS)} onClick={onOverlayClick} aria-hidden="true" />
         {children}
       </div>
     </AlertDialogRefContext.Provider>

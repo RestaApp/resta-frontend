@@ -12,6 +12,10 @@ interface ApplicantsTabProps {
   getSpecializationLabel: (value: string) => string
   onSelectApplicant: (userId: number, applicationId: number | null) => void
   t: TFunction
+  variant?: 'default' | 'moderation'
+  onAcceptApplicant?: (applicationId: number) => void
+  isAccepting?: boolean
+  acceptingApplicationId?: number | null
 }
 
 export const ApplicantsTab = memo(
@@ -23,6 +27,10 @@ export const ApplicantsTab = memo(
     getSpecializationLabel,
     onSelectApplicant,
     t,
+    variant = 'default',
+    onAcceptApplicant,
+    isAccepting = false,
+    acceptingApplicationId = null,
   }: ApplicantsTabProps) => {
     if (!applicationsPreview.length) {
       return (
@@ -50,6 +58,10 @@ export const ApplicantsTab = memo(
               getSpecializationLabel={getSpecializationLabel}
               onSelect={onSelectApplicant}
               t={t}
+              variant={variant}
+              onAccept={onAcceptApplicant}
+              isAccepting={isAccepting}
+              acceptingApplicationId={acceptingApplicationId}
             />
           )
         })}

@@ -212,13 +212,11 @@ const buildTagSections = ({
       })
     }
 
-    if (tags.length > 0) {
-      sections.push({
-        id: 'employee-specializations',
-        title: t('profile.specializationSection'),
-        items: tags,
-      })
-    }
+    sections.push({
+      id: 'employee-specializations',
+      title: t('profile.specializationSection'),
+      items: tags,
+    })
   }
 
   if (apiRole === 'restaurant') {

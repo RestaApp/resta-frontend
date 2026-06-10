@@ -8,7 +8,6 @@ import {
   DrawerHeader,
   DrawerFooter,
   DrawerTitle,
-  DrawerDescription,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,9 +22,11 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
-import { BasicProfileFields } from './edit-profile/BasicProfileFields'
-import { EmployeeFieldsSection } from './edit-profile/EmployeeFieldsSection'
 import { BusinessFieldsSection } from './edit-profile/BusinessFieldsSection'
+import { StepProgress } from '@/components/ui/step-progress'
+import { EditProfileStepBasic } from './edit-profile/EditProfileStepBasic'
+import { EditProfileStepProfessional } from './edit-profile/EditProfileStepProfessional'
+import { EditProfileStepAbout } from './edit-profile/EditProfileStepAbout'
 
 interface EditProfileDrawerProps {
   open: boolean
@@ -34,21 +35,12 @@ interface EditProfileDrawerProps {
   initialSection?: 'specializations' | null
 }
 
-/**
- * Drawer редактирования профиля — оркестратор:
- *  • header / описание (роль‑зависимое);
- *  • `BasicProfileFields` — общие поля (имя/фамилия/bio/email/phone/city);
- *  • `EmployeeFieldsSection` — только для employee;
- *  • `BusinessFieldsSection` — только для restaurant/supplier;
- *  • footer CTA + диалог подтверждения для save без города.
- *
- * Public API (`EditProfileDrawerProps`) и поведение reset/save сохранены 1:1.
- */
 export const EditProfileDrawer = memo(
   ({ open, onOpenChange, onSuccess, initialSection = null }: EditProfileDrawerProps) => {
     const { t } = useTranslation()
     const specializationRef = useRef<HTMLDivElement | null>(null)
     const { getBioLabelSuffix } = useProfileFormLabels()
+    const initialStep = initialSection === 'specializations' ? 1 : 0
     const {
       userProfile,
       apiRole,
@@ -56,11 +48,17 @@ export const EditProfileDrawer = memo(
       cities,
       isCitiesLoading,
       isLoading,
+      positions,
+      isPositionsLoading,
       specializationOptions,
       isSpecializationsLoading,
       supplierTypeOptions,
       isSupplierTypesLoading,
       experienceYearsForSlider,
+      step,
+      totalSteps,
+      handleNext,
+      handleBack,
       handleSave,
       updateField,
       showCityWarning,
@@ -68,7 +66,12 @@ export const EditProfileDrawer = memo(
       fieldErrors,
       handleSaveWithoutCity,
       resetForm,
-    } = useEditProfileModel(open, onSuccess)
+      openForm,
+    } = useEditProfileModel(open, onSuccess, initialStep as 0 | 1)
+
+    useEffect(() => {
+      if (open) openForm()
+    }, [open, openForm])
 
     const handleDrawerOpenChange = useCallback(
       (next: boolean) => {
@@ -81,96 +84,160 @@ export const EditProfileDrawer = memo(
     const handleCancel = useCallback(() => handleDrawerOpenChange(false), [handleDrawerOpenChange])
 
     useEffect(() => {
-      if (!open || initialSection !== 'specializations' || apiRole !== 'employee') return
+      if (!open || initialSection !== 'specializations' || apiRole !== 'employee' || step !== 1) {
+        return
+      }
 
       const frame = requestAnimationFrame(() => {
         specializationRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
       })
 
       return () => cancelAnimationFrame(frame)
-    }, [apiRole, initialSection, open])
+    }, [apiRole, initialSection, open, step])
 
     if (!userProfile) return null
 
     const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
     const bioSuffix = getBioLabelSuffix(apiRole)
-    const editProfileDescription =
-      apiRole === 'restaurant'
-        ? t('profile.editProfileDescriptionRestaurant')
-        : apiRole === 'supplier'
-          ? t('profile.editProfileDescriptionSupplier')
-          : t('profile.editProfileDescription')
+    const isLastStep = step === totalSteps - 1
+    const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
 
-    return (
-      <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
-        <DrawerFrame className="flex-1">
-          <DrawerHeader>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col gap-1">
-                <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
-                <DrawerDescription>{editProfileDescription}</DrawerDescription>
-              </div>
-              <DrawerCloseButton onClick={handleCancel} ariaLabel={t('common.close')} />
-            </div>
-          </DrawerHeader>
-
-          <DrawerBody className="ui-density-stack">
-            <BasicProfileFields
+    const renderStepContent = () => {
+      if (apiRole === 'employee') {
+        if (step === 0) {
+          return (
+            <EditProfileStepBasic
               apiRole={apiRole}
               formData={formData}
               fieldErrors={fieldErrors}
               cities={cities}
               isCitiesLoading={isCitiesLoading}
               isLoading={isLoading}
-              bioSuffix={bioSuffix}
+              photoUrl={photoUrl}
               updateField={updateField}
             />
+          )
+        }
 
-            {apiRole === 'employee' && (
-              <EmployeeFieldsSection
-                experienceYearsValue={experienceYearsForSlider}
-                openToWork={formData.openToWork}
-                skills={formData.skills}
-                specializations={formData.specializations}
-                specializationOptions={specializationOptions}
-                isSpecializationsLoading={isSpecializationsLoading}
-                specializationRef={specializationRef}
-                updateField={updateField}
+        if (step === 1) {
+          return (
+            <EditProfileStepProfessional
+              formData={formData}
+              fieldErrors={fieldErrors}
+              experienceYearsValue={experienceYearsForSlider}
+              positions={positions}
+              isPositionsLoading={isPositionsLoading}
+              specializationOptions={specializationOptions}
+              isSpecializationsLoading={isSpecializationsLoading}
+              specializationRef={specializationRef}
+              disabled={isLoading}
+              updateField={updateField}
+            />
+          )
+        }
+
+        return (
+          <EditProfileStepAbout
+            formData={formData}
+            bioSuffix={bioSuffix}
+            isLoading={isLoading}
+            updateField={updateField}
+          />
+        )
+      }
+
+      if (step === 0) {
+        return (
+          <EditProfileStepBasic
+            apiRole={apiRole}
+            formData={formData}
+            fieldErrors={fieldErrors}
+            cities={cities}
+            isCitiesLoading={isCitiesLoading}
+            isLoading={isLoading}
+            updateField={updateField}
+          />
+        )
+      }
+
+      return (
+        <>
+          <EditProfileStepAbout
+            formData={formData}
+            bioSuffix={bioSuffix}
+            isLoading={isLoading}
+            updateField={updateField}
+          />
+          {isBusinessRole ? (
+            <BusinessFieldsSection
+              apiRole={apiRole}
+              formData={formData}
+              isLoading={isLoading}
+              supplierTypeOptions={supplierTypeOptions}
+              isSupplierTypesLoading={isSupplierTypesLoading}
+              updateField={updateField}
+            />
+          ) : null}
+        </>
+      )
+    }
+
+    return (
+      <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
+        <DrawerFrame className="flex-1">
+          <DrawerHeader>
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex items-start justify-between gap-2">
+                <DrawerTitle>{t('profile.editProfile')}</DrawerTitle>
+                <DrawerCloseButton onClick={handleCancel} ariaLabel={t('common.close')} />
+              </div>
+              {totalSteps > 1 ? (
+                <StepProgress current={step + 1} total={totalSteps} />
+              ) : null}
+            </div>
+          </DrawerHeader>
+
+          <DrawerBody className="ui-density-stack">{renderStepContent()}</DrawerBody>
+
+          <DrawerFooter
+            contentClassName={step === 0 && totalSteps > 1 ? undefined : 'grid grid-cols-2 gap-2'}
+          >
+            {step === 0 && totalSteps > 1 ? (
+              <Button
+                onClick={handleNext}
                 disabled={isLoading}
-              />
+                className="w-full"
+                variant="gradient"
+                size="md"
+              >
+                {t('onboarding.telegram.next')}
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={step === 0 ? handleCancel : handleBack}
+                  disabled={isLoading}
+                  variant="outline"
+                  size="md"
+                  className="flex-1"
+                >
+                  {step === 0 ? t('common.cancel') : t('common.back')}
+                </Button>
+                <Button
+                  onClick={isLastStep ? handleSave : handleNext}
+                  disabled={isLoading}
+                  className="flex-1"
+                  variant="gradient"
+                  size="md"
+                >
+                  {isLastStep
+                    ? isLoading
+                      ? t('common.saving')
+                      : t('common.save')
+                    : t('onboarding.telegram.next')}
+                </Button>
+              </>
             )}
-
-            {isBusinessRole && (
-              <BusinessFieldsSection
-                apiRole={apiRole}
-                formData={formData}
-                isLoading={isLoading}
-                supplierTypeOptions={supplierTypeOptions}
-                isSupplierTypesLoading={isSupplierTypesLoading}
-                updateField={updateField}
-              />
-            )}
-          </DrawerBody>
-
-          <DrawerFooter contentClassName="grid grid-cols-2 gap-2">
-            <Button
-              onClick={handleCancel}
-              disabled={isLoading}
-              variant="outline"
-              size="md"
-              className="flex-1"
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isLoading}
-              className="flex-1"
-              variant="gradient"
-              size="md"
-            >
-              {isLoading ? t('common.saving') : t('common.save')}
-            </Button>
           </DrawerFooter>
         </DrawerFrame>
         <AlertDialog open={showCityWarning} onOpenChange={setShowCityWarning}>

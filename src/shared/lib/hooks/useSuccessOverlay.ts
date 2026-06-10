@@ -15,7 +15,7 @@ export interface SuccessOverlayState {
 const CLOSED_STATE: SuccessOverlayState = { open: false, title: '' }
 
 /**
- * Простая state-машина для полноэкранного success-overlay.
+ * Простая state-машина для success-overlay (ResultOverlay).
  * SRP: один источник правды о том, какой текст показать и какие действия предложить.
  */
 export const useSuccessOverlay = () => {

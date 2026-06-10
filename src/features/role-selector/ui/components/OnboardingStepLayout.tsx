@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { cn } from '@/shared/utils/cn'
 import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
 import { resetAppScroll } from '@/shared/ui/appScroll'
-import { OnboardingProgress } from './OnboardingProgress'
+import { StepProgress } from '@/components/ui/step-progress'
 
 interface OnboardingStepLayoutProps {
   title: ReactNode
@@ -33,7 +33,7 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
       <PageHeader
         title={title}
         subtitle={subtitle}
-        progress={<OnboardingProgress current={currentStep} total={totalSteps} />}
+        progress={<StepProgress current={currentStep} total={totalSteps} />}
       />
       <div className={cn('ui-density-page pt-3', bottomSpace)}>{children}</div>
     </div>

@@ -90,6 +90,14 @@ const getHeaderAction = (params: {
       return venueAddShiftAction()
     }
 
+    if (activeTab === 'myshifts' && isEmployeeFlow && !canEmployeeOfferShift) {
+      return {
+        ariaLabel: t('shift.editShiftAria', { defaultValue: 'Edit shift' }),
+        Icon: Edit2,
+        onClick: () => emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT),
+      }
+    }
+
     if (isEmployeeFlow && !canEmployeeOfferShift) {
       return null
     }

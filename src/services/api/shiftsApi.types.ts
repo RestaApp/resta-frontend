@@ -80,6 +80,7 @@ export interface GetVacanciesParams {
  * Профиль ресторана из API
  */
 export interface RestaurantProfileApi {
+  name?: string
   city?: string
   cuisine_types?: string[]
   format?: string
@@ -153,6 +154,9 @@ export interface ApplicantUserApi {
   photo_url?: string | null
   profile_photo_url?: string | null
   position?: string
+  average_rating?: string | number
+  total_reviews?: number
+  completed_shifts?: number
   employee_profile?: EmployeeProfilePreviewApi | null
 }
 
@@ -175,6 +179,8 @@ export interface ApplicationPreviewApiItem {
   specializations?: string[]
   average_rating?: string | number
   experience_years?: number
+  total_reviews?: number
+  completed_shifts?: number
 }
 
 export interface ReceivedShiftApplicationApiItem extends ApplicationPreviewApiItem {

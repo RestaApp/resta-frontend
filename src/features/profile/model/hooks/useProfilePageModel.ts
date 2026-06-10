@@ -36,7 +36,10 @@ export const useProfilePageModel = () => {
     const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
     return shouldOpenEdit === 'true'
   })
-  const [isNotificationPrefsDrawerOpen, setIsNotificationPrefsDrawerOpen] = useState(false)
+  const [isNotificationPrefsDrawerOpen, setIsNotificationPrefsDrawerOpen] = useState(() => {
+    const shouldOpen = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_NOTIFICATION_PREFERENCES)
+    return shouldOpen === 'true'
+  })
 
   // legacy: open drawer by localStorage flag
   useEffect(() => {
@@ -46,10 +49,23 @@ export const useProfilePageModel = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const shouldOpen = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_NOTIFICATION_PREFERENCES)
+    if (shouldOpen === 'true') {
+      removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_NOTIFICATION_PREFERENCES)
+    }
+  }, [])
+
   // legacy: open drawer by window event
   useEffect(() => {
     return onAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT, () => {
       setIsEditDrawerOpen(true)
+    })
+  }, [])
+
+  useEffect(() => {
+    return onAppEvent(APP_EVENTS.OPEN_NOTIFICATION_PREFERENCES, () => {
+      setIsNotificationPrefsDrawerOpen(true)
     })
   }, [])
 

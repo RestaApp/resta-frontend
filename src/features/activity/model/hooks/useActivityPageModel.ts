@@ -81,13 +81,12 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
             defaultValue: 'Смена удалена и больше не показывается соискателям.',
           }),
           icon: Trash2,
-          primaryAction: { label: t('common.close'), onClick: closeSuccess, variant: 'gradient' },
         })
       } catch {
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, showToast, showSuccess, closeSuccess, t]
+    [deleteShift, showToast, showSuccess, t]
   )
 
   const refreshList = useCallback(async () => {
@@ -133,6 +132,17 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
   useEffect(() => {
     return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => handleOpenAddShiftFromEvent())
   }, [handleOpenAddShiftFromEvent])
+
+  useEffect(() => {
+    if (isVenue) return
+    return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT, detail => {
+      const fromEvent = detail?.shift as VacancyApiItem | undefined
+      const found = fromEvent ?? shifts[0] ?? null
+      if (!found) return
+      setEditingShift(found)
+      setIsDrawerOpen(true)
+    })
+  }, [isVenue, shifts])
 
   useEffect(() => {
     if (isLoading) return

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/shared/utils/cn'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
+import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { ModalA11yContext } from './modal-a11y'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
@@ -137,8 +138,9 @@ export const Modal = memo(function Modal({
           >
             <div
               className={cn(
-                'absolute inset-0 bg-black/50',
-                reduceVisualEffects ? undefined : 'backdrop-blur-sm'
+                'absolute inset-0',
+                OVERLAY_SCRIM_CLASS,
+                reduceVisualEffects ? 'backdrop-blur-none' : undefined
               )}
               aria-hidden
               onPointerDown={handleBackdropPointerDown}

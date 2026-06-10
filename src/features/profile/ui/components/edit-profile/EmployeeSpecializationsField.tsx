@@ -40,6 +40,7 @@ export const EmployeeSpecializationsField = memo(function EmployeeSpecialization
     <FormField
       label={t('roles.specializationLabel')}
       hint={t('roles.specializationMultiHint')}
+      required
       className="scroll-mt-4"
     >
       <div ref={containerRef} />

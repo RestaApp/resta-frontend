@@ -126,14 +126,13 @@ export const useFeedPageModel = () => {
             defaultValue: 'Смена удалена и больше не показывается соискателям.',
           }),
           icon: Trash2,
-          primaryAction: { label: t('common.close'), onClick: closeSuccess, variant: 'gradient' },
         })
       } catch {
         hideToast()
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, t, showToast, hideToast, showSuccess, closeSuccess]
+    [deleteShift, t, showToast, hideToast, showSuccess]
   )
 
   const shiftsBaseQuery = useMemo(

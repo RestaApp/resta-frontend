@@ -1,10 +1,13 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { useGetShiftByIdQuery } from '@/services/api/shiftsApi'
 import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { ShiftApplicantsSection } from '@/shared/ui/shift-details-screen/ShiftApplicantsSection'
-import { VacancyCardWithDetails } from './VacancyCardWithDetails'
+import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
+import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
+import { OwnerShiftSummaryCard } from './OwnerShiftSummaryCard'
 
 interface PersonalShiftCardProps {
   shift: VacancyApiItem
@@ -21,34 +24,66 @@ export const PersonalShiftCard = ({
 }: PersonalShiftCardProps) => {
   const userData = useAppSelector(selectUserData)
   const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
+  const { overlay, openShiftDetail, closeOverlay } = useDetailOverlay()
 
-  const mapToShift = useCallback(
-    (vacancy: VacancyApiItem) => {
-      const mapped = mapOwnerVacancyToCardShift(vacancy)
-      return {
-        ...mapped,
-        photoUrl: mapped.photoUrl ?? ownerPhotoUrl,
-      }
-    },
-    [ownerPhotoUrl]
+  const isOpen =
+    overlay != null &&
+    (overlay.type === 'shift' || overlay.type === 'vacancy') &&
+    overlay.id === shift.id
+
+  const { data: detailVacancy } = useGetShiftByIdQuery(String(shift.id), {
+    skip: !isOpen,
+  })
+
+  const resolvedVacancy = useMemo(
+    () =>
+      detailVacancy
+        ? {
+            ...detailVacancy,
+            my_application: detailVacancy.my_application ?? shift.my_application,
+          }
+        : shift,
+    [detailVacancy, shift]
   )
+
+  const mappedShift = useMemo(() => {
+    const mapped = mapOwnerVacancyToCardShift(resolvedVacancy)
+    return {
+      ...mapped,
+      photoUrl: mapped.photoUrl ?? ownerPhotoUrl,
+    }
+  }, [ownerPhotoUrl, resolvedVacancy])
+
+  const handleOpenDetails = useCallback(() => {
+    openShiftDetail(shift.id)
+  }, [openShiftDetail, shift.id])
+
+  const handleCloseDetails = useCallback(() => {
+    closeOverlay()
+  }, [closeOverlay])
 
   return (
     <div className="ui-density-stack">
-      <VacancyCardWithDetails
+      <OwnerShiftSummaryCard
         vacancy={shift}
-        mapToShift={mapToShift}
-        detailsProps={{
-          applicationId: null,
-          onApply: async () => {},
-          isApplied: false,
-          onCancel: async () => {},
-          isLoading: false,
-        }}
+        photoUrl={ownerPhotoUrl}
+        onOpenDetails={handleOpenDetails}
+      />
+
+      <ShiftDetailsScreen
+        shift={mappedShift}
+        vacancyData={resolvedVacancy}
+        isOpen={isOpen}
+        onClose={handleCloseDetails}
+        applicationId={null}
+        onApply={async () => {}}
+        isApplied={false}
+        onCancel={async () => {}}
+        isLoading={false}
         ownerActions={{ onEdit, onDelete, isDeleting }}
       />
 
-      <ShiftApplicantsSection shiftId={shift.id} vacancyData={shift} alwaysShow />
+      <ShiftApplicantsSection shiftId={shift.id} vacancyData={shift} alwaysShow variant="owner" />
     </div>
   )
 }

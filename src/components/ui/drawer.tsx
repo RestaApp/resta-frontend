@@ -13,6 +13,7 @@ import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
+import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { Z_INDEX } from '@/shared/ui/zIndex'
@@ -45,8 +46,9 @@ const DrawerOverlay = memo(({ className, reduceVisualEffects, onClick }: Overlay
     exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
     className={cn(
-      'fixed inset-0 bg-[rgba(5,7,14,0.78)]',
-      reduceVisualEffects ? undefined : 'backdrop-blur-[2px]',
+      'fixed inset-0',
+      OVERLAY_SCRIM_CLASS,
+      reduceVisualEffects ? 'backdrop-blur-none' : undefined,
       className
     )}
     onClick={onClick}

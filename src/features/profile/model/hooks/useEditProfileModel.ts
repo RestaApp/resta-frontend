@@ -13,11 +13,23 @@ import { useGetSupplierTypesQuery } from '@/services/api/rolesApi'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { toLocationArray } from '@/shared/utils/location'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
+import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 
-type EditProfileField = 'name' | 'lastName' | 'phone' | 'city'
+type EditProfileField = 'name' | 'lastName' | 'phone' | 'city' | 'position' | 'specializations'
 type EditProfileErrors = Partial<Record<EditProfileField, string>>
+type EditProfileStep = 0 | 1 | 2
 
-export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
+const getTotalSteps = (apiRole: ApiRole | null) => {
+  if (apiRole === 'employee') return 3
+  if (apiRole === 'restaurant' || apiRole === 'supplier') return 2
+  return 1
+}
+
+export const useEditProfileModel = (
+  open: boolean,
+  onSuccess?: () => void,
+  initialStep: EditProfileStep | null = null
+) => {
   const { t } = useTranslation()
   const { userProfile } = useUserProfile({ forceRefetch: open })
   const { updateUser, isLoading } = useUpdateUser()
@@ -63,6 +75,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         workExperienceSummary: '',
         website: '',
         businessHours: '',
+        position: '',
         experienceYears: '',
         openToWork: false,
         skills: '',
@@ -88,6 +101,7 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
       workExperienceSummary: userProfile.work_experience_summary || '',
       website: userProfile.website?.trim() || '',
       businessHours: businessHoursRecordToFormValue(userProfile.business_hours),
+      position: apiRole === 'employee' ? (ep?.position ?? userProfile.position ?? '').trim() : '',
       experienceYears:
         apiRole === 'employee' && ep
           ? typeof ep.experience_years === 'number'
@@ -116,19 +130,24 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     }
   }, [apiRole, userProfile])
 
-  const employeePosition =
-    apiRole === 'employee'
-      ? (userProfile?.employee_profile?.position ?? userProfile?.position ?? null)
-      : null
+  const { positions, isLoading: isPositionsLoading } = useUserPositions({
+    enabled: open && apiRole === 'employee',
+  })
 
-  const { specializations: specializationOptions, isLoading: isSpecializationsLoading } =
-    useUserSpecializations({
-      position: employeePosition,
-      enabled: open && apiRole === 'employee' && Boolean(employeePosition),
-    })
+  const [step, setStep] = useState<EditProfileStep>(initialStep ?? 0)
+  const totalSteps = getTotalSteps(apiRole)
 
   const [draftFormData, setDraftFormData] = useState<ProfileFormData | null>(null)
   const formData = draftFormData ?? baseFormData
+
+  const activePosition =
+    apiRole === 'employee' ? formData.position || baseFormData.position || null : null
+
+  const { specializations: specializationOptions, isLoading: isSpecializationsLoading } =
+    useUserSpecializations({
+      position: activePosition,
+      enabled: open && apiRole === 'employee' && Boolean(activePosition),
+    })
 
   // Состояние для модалки подтверждения сохранения без города
   const [showCityWarning, setShowCityWarning] = useState(false)
@@ -177,9 +196,40 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         nextErrors.city = t('validation.requiredField')
       }
 
+      if (apiRole === 'employee') {
+        if (!data.position.trim()) {
+          nextErrors.position = t('validation.requiredField')
+        }
+        if (data.specializations.length === 0) {
+          nextErrors.specializations = t('validation.specializationRequired')
+        }
+      }
+
       return nextErrors
     },
     [apiRole, t]
+  )
+
+  const buildStepValidationErrors = useCallback(
+    (targetStep: EditProfileStep, data: ProfileFormData): EditProfileErrors => {
+      if (targetStep === 0) {
+        return buildValidationErrors(data, false)
+      }
+
+      if (apiRole === 'employee' && targetStep === 1) {
+        const nextErrors: EditProfileErrors = {}
+        if (!data.position.trim()) {
+          nextErrors.position = t('validation.requiredField')
+        }
+        if (data.specializations.length === 0) {
+          nextErrors.specializations = t('validation.specializationRequired')
+        }
+        return nextErrors
+      }
+
+      return {}
+    },
+    [apiRole, buildValidationErrors, t]
   )
 
   const performSave = useCallback(async () => {
@@ -253,6 +303,23 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     await performSave()
   }, [buildValidationErrors, formData, performSave, showToast, t])
 
+  const handleNext = useCallback(() => {
+    const nextErrors = buildStepValidationErrors(step, formData)
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      triggerHapticFeedback('warning')
+      showToast(t('validation.fillRequired'), 'warning')
+      return
+    }
+
+    setStep(prev => Math.min(prev + 1, totalSteps - 1) as EditProfileStep)
+  }, [buildStepValidationErrors, formData, showToast, step, t, totalSteps])
+
+  const handleBack = useCallback(() => {
+    setFieldErrors({})
+    setStep(prev => Math.max(prev - 1, 0) as EditProfileStep)
+  }, [])
+
   const updateField = useCallback(
     <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => {
       let nextFormData: ProfileFormData | null = null
@@ -261,6 +328,9 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
         const next: ProfileFormData = { ...base, [field]: value }
         if (field === 'phone' && typeof value === 'string') {
           next.phone = formatPhoneInput(value)
+        }
+        if (field === 'position' && value !== base.position) {
+          next.specializations = []
         }
         nextFormData = next
         return next
@@ -286,7 +356,12 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     setShowCityWarning(false)
     setHasAttemptedSave(false)
     setFieldErrors({})
+    setStep(0)
   }, [])
+
+  const openForm = useCallback(() => {
+    setStep((initialStep ?? 0) as EditProfileStep)
+  }, [initialStep])
 
   return {
     userProfile,
@@ -295,12 +370,18 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     cities,
     isCitiesLoading,
     isLoading,
+    positions,
+    isPositionsLoading,
     specializationOptions,
     isSpecializationsLoading,
     supplierTypeOptions,
     isSupplierTypesLoading: isSupplierTypesLoading || isSupplierTypesFetching,
     supplierCategory,
     experienceYearsForSlider,
+    step,
+    totalSteps,
+    handleNext,
+    handleBack,
     handleSave,
     updateField,
     showCityWarning,
@@ -308,5 +389,6 @@ export const useEditProfileModel = (open: boolean, onSuccess?: () => void) => {
     fieldErrors,
     handleSaveWithoutCity,
     resetForm,
+    openForm,
   }
 }

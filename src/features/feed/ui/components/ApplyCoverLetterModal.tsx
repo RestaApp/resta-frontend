@@ -103,7 +103,7 @@ export function ApplyCoverLetterModal({
   if (!open) return null
 
   return (
-    <Drawer open onOpenChange={openState => !openState && onClose()} overlayClassName="bg-black/50">
+    <Drawer open onOpenChange={openState => !openState && onClose()}>
       <DrawerFrame className="flex-1">
         <DrawerHeader>
           <div className="flex items-start justify-between gap-2">

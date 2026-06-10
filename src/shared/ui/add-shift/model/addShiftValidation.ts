@@ -108,6 +108,9 @@ export const findDuplicatePosition = (
  */
 export const translateServerError = (error: string, t: TFunction): string => {
   const lower = error.toLowerCase()
+  if (lower.includes('not in your profile') || lower.includes('не в вашем профиле')) {
+    return t('validation.specializationNotInProfile')
+  }
   if (
     lower.includes("specialization can't be blank") ||
     lower.includes('specialization is required') ||
@@ -156,6 +159,10 @@ export const mapServerErrorsToFields = (
     if (!msg) continue
     const lower = msg.toLowerCase()
 
+    if (lower.includes('not in your profile') || lower.includes('не в вашем профиле')) {
+      fieldErrors.specializations = t('validation.specializationNotInProfile')
+      continue
+    }
     if (lower.includes('specialization')) {
       fieldErrors.specializations = t('validation.specializationRequired')
       continue
