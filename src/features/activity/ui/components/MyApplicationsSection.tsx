@@ -8,8 +8,11 @@ import { groupAppliedByStatus } from '@/features/activity/model/utils/groupAppli
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
+import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 import { cn } from '@/shared/utils/cn'
+import { useAppDispatch } from '@/store/hooks'
 
 interface MyApplicationsSectionProps {
   appliedShifts: VacancyApiItem[]
@@ -70,6 +73,7 @@ const AppliedStatusGroups = ({
 
 export function MyApplicationsSection({ appliedShifts }: MyApplicationsSectionProps) {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const sectionRef = useRef<HTMLElement>(null)
   const [isRejectedCollapsed, setIsRejectedCollapsed] = useState(true)
 
@@ -114,6 +118,16 @@ export function MyApplicationsSection({ appliedShifts }: MyApplicationsSectionPr
           image="applications"
           message={t('activity.noApplicationsYet')}
           description={t('activity.applicationsWillAppearHere')}
+          action={
+            <Button
+              variant="gradient"
+              size="md"
+              className="px-6"
+              onClick={() => dispatch(navigateToTab('feed'))}
+            >
+              {t('activity.findWorkCta')}
+            </Button>
+          }
         />
       ) : (
         <div className="ui-density-stack-lg">

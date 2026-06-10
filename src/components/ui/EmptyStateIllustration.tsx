@@ -1,13 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import {
-  CalendarDays,
-  ClipboardList,
-  Inbox,
-  Search,
-  SlidersHorizontal,
-  UserPlus,
-  Users,
-} from 'lucide-react'
+import { Briefcase, Clock, Inbox, Search, SlidersHorizontal, UserPlus, Users } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 import type { EmptyIllustrationId } from '@/components/ui/empty-state-illustrations'
 
@@ -58,12 +50,12 @@ export const EmptyStateIllustration = ({ id, className }: EmptyStateIllustration
     case 'search':
       return <SingleIconIllustration icon={Search} className={className} />
     case 'applications':
-      return <SingleIconIllustration icon={ClipboardList} className={className} />
+      return <SingleIconIllustration icon={Briefcase} className={className} />
     case 'shift-applicants':
       return <CombinedIconIllustration primary={Users} secondary={UserPlus} className={className} />
     case 'inbox':
       return <SingleIconIllustration icon={Inbox} className={className} />
     case 'shifts':
-      return <SingleIconIllustration icon={CalendarDays} className={className} />
+      return <SingleIconIllustration icon={Clock} className={className} />
   }
 }

@@ -29,7 +29,7 @@ export function MyShiftsSection({ shifts, onEdit, onDelete, isDeleting }: MyShif
               className="px-6"
               onClick={() => emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)}
             >
-              {t('activity.offerShiftCta')}
+              {t('activity.createShiftEmptyCta')}
             </Button>
           }
         />

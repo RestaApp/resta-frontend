@@ -67,7 +67,7 @@ export const VenueActivityContent = ({
             <FeedCardSkeletonList />
           ) : venueItems.length === 0 ? (
             <EmptyState
-              image="inbox"
+              image={venueTab === 'vacancies' ? 'applications' : 'shifts'}
               message={venueEmptyContent.title}
               description={venueEmptyContent.description}
               action={

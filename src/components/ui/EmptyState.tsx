@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CookingPot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { EmptyStateIllustration } from '@/components/ui/EmptyStateIllustration'
 import { BLOCK_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
@@ -15,6 +16,7 @@ interface EmptyStateProps {
   onReset?: () => void
   showResetButton?: boolean
   density?: 'default' | 'compact'
+  className?: string
 }
 
 export const EmptyState = ({
@@ -25,21 +27,25 @@ export const EmptyState = ({
   onReset,
   showResetButton = false,
   density = 'default',
+  className,
 }: EmptyStateProps) => {
   const { t } = useTranslation()
   const displayMessage = message ?? t('feed.noShifts')
   const resetButton =
     showResetButton && onReset ? (
-      <Button size="md" className="px-6" variant="outline" onClick={onReset}>
+      <Button size="md" className="px-6" variant="gradient" onClick={onReset}>
         {t('feed.resetFilters')}
       </Button>
     ) : null
+  const isCompact = density === 'compact'
 
   return (
-    <div
+    <Card
+      padding={isCompact ? 'md' : 'lg'}
       className={cn(
-        'flex flex-col items-center justify-center gap-4 text-center',
-        density === 'compact' ? 'py-6' : 'ui-density-page py-12'
+        'flex w-full flex-col items-center justify-center gap-4 text-center',
+        isCompact ? 'py-6' : 'py-10',
+        className
       )}
     >
       {image ? (
@@ -59,6 +65,6 @@ export const EmptyState = ({
         ) : null}
       </div>
       {action ?? resetButton}
-    </div>
+    </Card>
   )
 }
