@@ -23,6 +23,7 @@ import {
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
 import { BusinessFieldsSection } from './edit-profile/BusinessFieldsSection'
+import { StepPanel } from '@/components/ui/step-panel'
 import { StepProgress } from '@/components/ui/step-progress'
 import { EditProfileStepBasic } from './edit-profile/EditProfileStepBasic'
 import { EditProfileStepProfessional } from './edit-profile/EditProfileStepProfessional'
@@ -197,7 +198,9 @@ export const EditProfileDrawer = memo(
             </div>
           </DrawerHeader>
 
-          <DrawerBody className="ui-density-stack">{renderStepContent()}</DrawerBody>
+          <DrawerBody>
+            <StepPanel stepKey={step}>{renderStepContent()}</StepPanel>
+          </DrawerBody>
 
           <DrawerFooter
             contentClassName={step === 0 && totalSteps > 1 ? undefined : 'grid grid-cols-2 gap-2'}

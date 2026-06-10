@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { cn } from '@/shared/utils/cn'
 import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
 import { resetAppScroll } from '@/shared/ui/appScroll'
+import { StepPanel } from '@/components/ui/step-panel'
 import { StepProgress } from '@/components/ui/step-progress'
 
 interface OnboardingStepLayoutProps {
@@ -35,7 +36,9 @@ export const OnboardingStepLayout = memo(function OnboardingStepLayout({
         subtitle={subtitle}
         progress={<StepProgress current={currentStep} total={totalSteps} />}
       />
-      <div className={cn('ui-density-page pt-3', bottomSpace)}>{children}</div>
+      <div className={cn('ui-density-page pt-3', bottomSpace)}>
+        <StepPanel stepKey={currentStep}>{children}</StepPanel>
+      </div>
     </div>
   )
 })

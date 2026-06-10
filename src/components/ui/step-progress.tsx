@@ -65,7 +65,7 @@ export const StepProgress = memo(function StepProgress({
             <div key={stepNumber} className={cn('flex items-center', !isLast && 'min-w-0 flex-1')}>
               <motion.div
                 className={cn(
-                  'h-2.5 w-2.5 shrink-0 rounded-full border-2',
+                  'h-2.5 w-2.5 shrink-0 rounded-full border-2 transition-colors duration-300 ease-out',
                   isCompleted || isActive
                     ? 'border-primary bg-primary'
                     : 'border-muted-foreground/30 bg-background'

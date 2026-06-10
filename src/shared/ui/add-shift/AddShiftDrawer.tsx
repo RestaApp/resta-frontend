@@ -21,6 +21,7 @@ import { toLocationArray } from '@/shared/utils/location'
 import { useAddShiftForm } from './model/useAddShiftForm'
 import type { ShiftType } from '@/shared/shifts/types'
 import { AddShiftDrawerFooter } from './drawer/AddShiftDrawerFooter'
+import { StepPanel } from '@/components/ui/step-panel'
 import { StepProgress } from '@/components/ui/step-progress'
 import {
   AddShiftDrawerBanner,
@@ -229,6 +230,7 @@ const AddShiftDrawerKeyed = ({
           </DrawerHeader>
 
           <DrawerBody className="ui-density-stack gap-3">
+            <StepPanel stepKey={controller.state.step} className="gap-3">
             {controller.state.step === 0 ? (
               <AddShiftDrawerStep0
                 titleRef={controller.refs.titleRef}
@@ -304,6 +306,7 @@ const AddShiftDrawerKeyed = ({
                 isVacancyType={isVacancyType}
               />
             ) : null}
+            </StepPanel>
 
             <AddShiftDrawerBanner message={controller.derived.bannerError} />
           </DrawerBody>
