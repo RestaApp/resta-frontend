@@ -54,6 +54,13 @@ const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
   return item.user?.photo_url ?? item.user?.profile_photo_url ?? null
 }
 
+const resolveVacancySpecialization = (item: VacancyApiItem): string | null => {
+  const direct = item.specialization?.trim()
+  if (direct) return direct
+  const fromList = item.specializations?.map(value => value?.trim()).find(Boolean)
+  return fromList ?? null
+}
+
 /**
  * Оплата за период: для вакансии без конкретного окна времени — «за месяц»;
  * если указаны начало и конец смены — сумма относится к этой смене («за смену»).
@@ -113,7 +120,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
 
     position: item.position ?? 'chef',
-    specialization: item.specialization ?? null,
+    specialization: resolveVacancySpecialization(item),
 
     date,
     dateKey: start ? toLocalISODateKey(start) : null,
@@ -150,7 +157,7 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     restaurant: '',
     rating: 0,
     position: item.position ?? 'chef',
-    specialization: item.specialization ?? null,
+    specialization: resolveVacancySpecialization(item),
     date,
     dateKey,
     time,
@@ -183,7 +190,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     restaurant,
     rating: 0,
     position: v.position ?? 'chef',
-    specialization: v.specialization ?? null,
+    specialization: resolveVacancySpecialization(v),
     date,
     dateKey,
     time,

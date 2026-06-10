@@ -97,6 +97,11 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     return `${position}${specialization}`
   }, [shift.position, shift.specialization, getEmployeePositionLabel, getSpecializationLabel])
 
+  const subcategoryText = useMemo(() => {
+    if (shift.specialization) return getSpecializationLabel(shift.specialization)
+    return getEmployeePositionLabel(shift.position)
+  }, [shift.position, shift.specialization, getEmployeePositionLabel, getSpecializationLabel])
+
   const locationText = useMemo(() => {
     const first = firstLocation(shift.location)
     if (!first) return shift.city ?? ''
@@ -114,9 +119,14 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     [shift.title]
   )
 
+  const isApplicationCard = !isOwner && Boolean(shift.applicationId)
+
   const cardAriaLabel = useMemo(
-    () => [displayTitle, shift.restaurant, positionText, locationText].filter(Boolean).join(', '),
-    [displayTitle, shift.restaurant, positionText, locationText]
+    () =>
+      isApplicationCard
+        ? [shift.restaurant, subcategoryText, locationText].filter(Boolean).join(', ')
+        : [displayTitle, shift.restaurant, positionText, locationText].filter(Boolean).join(', '),
+    [displayTitle, isApplicationCard, shift.restaurant, positionText, subcategoryText, locationText]
   )
 
   const handleOpen = useCallback(() => onOpenDetails(shift.id), [onOpenDetails, shift.id])
@@ -138,17 +148,19 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     return { count, hasResponses: count > 0 }
   }, [isOwner, shift.applicationsCount])
 
-  const compactTitle = stripVacancyPrefix(displayTitle ?? positionText)
+  const compactTitle = isApplicationCard
+    ? shift.restaurant || stripVacancyPrefix(displayTitle ?? positionText)
+    : stripVacancyPrefix(displayTitle ?? positionText)
   const locationMeta = formatDistanceKm(shift.distanceKm) ?? locationText
   const compactSchedule = formatCompactSchedule(shift.date, shift.time)
   const compactPrice = shift.pay == null || Number(shift.pay) === 0 ? null : formatMoney(shift.pay)
   const urgentDateTag = getUrgentDateTag(shift.dateKey)
   const avatarFallback = positionInitial(shift.position)
-  const compactSubtitle =
-    [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
-    positionText
-  const applicationStatus =
-    !isOwner && shift.applicationId ? (shift.applicationStatus ?? 'pending') : null
+  const compactSubtitle = isApplicationCard
+    ? subcategoryText
+    : [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
+      positionText
+  const applicationStatus = isApplicationCard ? (shift.applicationStatus ?? 'pending') : null
   const applicationBadgeVariant = getApplicationBadgeVariant(applicationStatus)
   const applicationBadgeLabel = applicationStatus
     ? applicationStatus === 'accepted'
