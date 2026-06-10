@@ -101,6 +101,8 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
       <SelectDropdown
         isOpen={hasSuggestions}
         withOverlay={false}
+        portaled
+        anchorRef={containerRef}
         isLoading={isLoadingCities}
         loadingContent={
           <div className="flex items-center justify-center gap-2 px-4 py-3">
