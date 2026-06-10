@@ -1,11 +1,13 @@
 import { memo, useId, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin } from 'lucide-react'
+import { cn } from '@/shared/utils/cn'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
 import { useDropdownAutoScroll } from '@/components/ui/select/useDropdownAutoScroll'
+import { useEffectivePortaled } from '@/components/ui/select/useEffectivePortaled'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { useCityAutocomplete } from './useCityAutocomplete'
@@ -18,6 +20,7 @@ interface CityAutocompleteFieldProps {
   isLoading?: boolean
   clearOnFocus?: boolean
   hideLabel?: boolean
+  portaled?: boolean
 }
 
 export const CityAutocompleteField = memo(function CityAutocompleteField({
@@ -28,6 +31,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
   isLoading = false,
   clearOnFocus = false,
   hideLabel = false,
+  portaled = false,
 }: CityAutocompleteFieldProps) {
   const { t } = useTranslation()
   const listboxId = useId()
@@ -49,19 +53,24 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
   } = useCityAutocomplete({
     value,
     onChange,
+    dropdownRef,
   })
+
+  const effectivePortaled = useEffectivePortaled(showSuggestions, containerRef, portaled)
 
   useBodyScrollLock(showSuggestions)
   useDropdownAutoScroll({
     isOpen: showSuggestions,
     containerRef,
     bottomOffsetPx: BOTTOM_NAV_HEIGHT_PX,
+    portaled: effectivePortaled,
+    enabled: !effectivePortaled,
   })
 
   const cityOptions = filteredCities.map(city => ({ value: city, label: city }))
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className={cn('relative', showSuggestions && 'z-10')}>
       <FormField
         label={hideLabel ? undefined : t('profile.city')}
         error={!isValid ? (errorMessage ?? undefined) : undefined}
@@ -103,6 +112,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
 
       <SelectDropdown
         isOpen={showSuggestions}
+        portaled={effectivePortaled}
         anchorRef={containerRef}
         isLoading={isLoadingCities}
         loadingContent={

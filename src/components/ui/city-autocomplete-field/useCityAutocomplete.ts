@@ -1,10 +1,11 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCities } from '@/shared/lib/hooks/useCities'
 
 interface UseCityAutocompleteProps {
   value: string
   onChange: (value: string) => void
+  dropdownRef?: RefObject<HTMLElement | null>
   initialVisibleCount?: number
   loadMoreThreshold?: number
   loadMoreStep?: number
@@ -21,6 +22,7 @@ const OPEN_SCROLL_GUARD_MS = 450
 export const useCityAutocomplete = ({
   value,
   onChange,
+  dropdownRef,
   initialVisibleCount = 10,
   loadMoreThreshold = 0.8,
   loadMoreStep = 10,
@@ -93,18 +95,21 @@ export const useCityAutocomplete = ({
   ])
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false)
-        setIsFocused(false)
-      }
+    if (!showSuggestions) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node
+      if (containerRef.current?.contains(target)) return
+      if (dropdownRef?.current?.contains(target)) return
+      setShowSuggestions(false)
+      setIsFocused(false)
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('pointerdown', handlePointerDown, true)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('pointerdown', handlePointerDown, true)
     }
-  }, [])
+  }, [dropdownRef, showSuggestions])
 
   useEffect(() => {
     if (!showSuggestions) return

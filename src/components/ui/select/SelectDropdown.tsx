@@ -126,6 +126,7 @@ export const SelectDropdown = ({
                       role="option"
                       aria-selected={isSelected}
                       data-haptic="selection"
+                      onMouseDown={e => e.preventDefault()}
                       onClick={() => onSelect(option.value)}
                       className={cn(
                         'w-full px-4 py-2 text-left text-sm text-foreground transition-colors',
