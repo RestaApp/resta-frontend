@@ -8,6 +8,7 @@ import type { Shift } from '@/shared/shifts/types'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { DetailsTab } from './DetailsTab'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
@@ -47,6 +48,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [ownerProfileOpen, setOwnerProfileOpen] = useState(false)
   const { hourlyRate, vacancyTitle, positionLabel } = useShiftDetails(shift, vacancyData)
   const ownerDisplayName = useMemo(
     () => formatUserDisplayName(vacancyData?.user),
@@ -69,6 +71,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const handleDeleteRequest = useCallback(() => {
     setConfirmOpen(true)
+  }, [])
+
+  const handleOpenOwnerProfile = useCallback(() => {
+    if (shift?.ownerId) setOwnerProfileOpen(true)
+  }, [shift?.ownerId])
+
+  const handleCloseOwnerProfile = useCallback(() => {
+    setOwnerProfileOpen(false)
   }, [])
 
   const confirmDelete = useCallback(() => {
@@ -130,7 +140,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             >
               {isLoading
                 ? t('shift.sending')
-                : t('shift.applyNow', { defaultValue: 'Откликнуться' })}
+                : t('shift.applyForThisShift', { defaultValue: 'Откликнуться на смену' })}
             </Button>
           )}
         </div>
@@ -153,6 +163,11 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           vacancyTitle={vacancyTitle}
           positionLabel={positionLabel ?? ''}
           ownerDisplayName={ownerDisplayName}
+          ownerRating={vacancyData?.user?.average_rating ?? null}
+          ownerReviews={vacancyData?.user?.total_reviews ?? null}
+          applicationsCount={vacancyData?.applications_count ?? shift.applicationsCount ?? null}
+          showVenueCard={!controller.isOwner && Boolean(shift.ownerId)}
+          onOpenOwnerProfile={handleOpenOwnerProfile}
           shiftDate={shift.date}
           shiftTime={shift.time}
           duration={shift.duration}
@@ -165,6 +180,12 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           t={t}
         />
       </DetailsScreenFrame>
+
+      <UserProfileDrawer
+        userId={shift.ownerId ?? null}
+        open={ownerProfileOpen}
+        onClose={handleCloseOwnerProfile}
+      />
 
       <ConfirmDialog
         open={confirmOpen}
