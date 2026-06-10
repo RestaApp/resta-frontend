@@ -44,7 +44,7 @@ export const ApplicantsTab = memo(
     }
 
     return (
-      <div className="ui-density-stack-sm">
+      <div className="ui-density-stack">
         {applicationsPreview.map((app, index) => {
           const appId = app.shift_application_id ?? app.id
           const key = appId || index

@@ -69,30 +69,30 @@ export const VenueSuppliersList = ({
       ) : null}
       <div className="ui-density-page ui-density-py">
         {isLoading && suppliersCount === 0 ? (
-          <FeedCardSkeletonList className="ui-density-stack-sm" />
+          <FeedCardSkeletonList className="ui-density-stack" />
         ) : list.length === 0 ? (
           <EmptyState
             message={
               isRestaurantsMode
                 ? t('supplierUi.restaurants.emptyTitle', {
-                    defaultValue: 'Заведения не найдены',
-                  })
+                  defaultValue: 'Заведения не найдены',
+                })
                 : t('venueUi.suppliers.emptyTitle', { defaultValue: 'Поставщики не найдены' })
             }
             description={
               isRestaurantsMode
                 ? t('supplierUi.restaurants.emptyDescription', {
-                    defaultValue: 'Попробуйте обновить список или изменить фильтры',
-                  })
+                  defaultValue: 'Попробуйте обновить список или изменить фильтры',
+                })
                 : t('venueUi.suppliers.emptyDescription', {
-                    defaultValue: 'Отключите фильтр или добавьте нового поставщика',
-                  })
+                  defaultValue: 'Отключите фильтр или добавьте нового поставщика',
+                })
             }
             image="inbox"
           />
         ) : (
           <>
-            <div className="ui-density-stack-sm">
+            <div className="ui-density-stack">
               {list.map(item => {
                 return (
                   <SupplierCard

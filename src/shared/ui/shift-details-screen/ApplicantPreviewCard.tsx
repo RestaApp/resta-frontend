@@ -80,8 +80,8 @@ export const ApplicantPreviewCard = memo(
     const completedShiftsRaw = app.completed_shifts ?? user?.completed_shifts
     const completedShifts =
       completedShiftsRaw !== undefined &&
-      completedShiftsRaw !== null &&
-      Number.isFinite(Number(completedShiftsRaw))
+        completedShiftsRaw !== null &&
+        Number.isFinite(Number(completedShiftsRaw))
         ? Math.max(0, Math.floor(Number(completedShiftsRaw)))
         : null
 
@@ -230,7 +230,7 @@ export const ApplicantPreviewCard = memo(
         onKeyDown={handleKeyDown}
         className={cn(
           SHIFT_CARD_CLASS,
-          'ui-density-stack-sm cursor-pointer outline-none transition-all duration-200 active:scale-[0.99] hover:border-border/80 focus-visible:ring-2 focus-visible:ring-ring',
+          'ui-density-stack cursor-pointer outline-none transition-all duration-200 active:scale-[0.99] hover:border-border/80 focus-visible:ring-2 focus-visible:ring-ring',
           isAccepted && 'ring-2 ring-primary/30 bg-primary/5'
         )}
       >

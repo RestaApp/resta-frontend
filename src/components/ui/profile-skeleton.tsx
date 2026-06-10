@@ -60,11 +60,10 @@ ProfileSettingsSkeleton.displayName = 'ProfileSettingsSkeleton'
 
 export const ProfileSkeleton = memo(function ProfileSkeleton({
   variant = 'page',
-  className,
 }: ProfileSkeletonProps) {
   return (
     <div
-      className={cn(variant === 'drawer' ? 'ui-density-stack' : 'ui-density-stack-lg', className)}
+      className='ui-density-stack'
     >
       <ProfileHeroSkeleton />
       <ProfileKpiSkeleton />

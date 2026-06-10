@@ -34,7 +34,7 @@ const AppliedStatusGroups = ({
   const { t } = useTranslation()
 
   return (
-    <div className="ui-density-stack-lg">
+    <div className="ui-density-stack">
       {groups.map(({ status, label, items }) => {
         const isRejectedGroup = status === 'rejected'
         const isCollapsed = isRejectedGroup && isRejectedCollapsed
@@ -130,7 +130,7 @@ export function MyApplicationsSection({ appliedShifts }: MyApplicationsSectionPr
           }
         />
       ) : (
-        <div className="ui-density-stack-lg">
+        <div className="ui-density-stack">
           {replacementApplications.length > 0 ? (
             <section className="ui-density-stack">
               <SectionHeader

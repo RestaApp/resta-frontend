@@ -113,8 +113,8 @@ export const VenueSuppliersFiltersDrawer = ({
           </div>
         </DrawerHeader>
 
-        <DrawerBody className="ui-density-stack-lg">
-          <div className="ui-density-stack-sm">
+        <DrawerBody className="ui-density-stack">
+          <div className="ui-density-stack">
             <p className={PROFILE_SECTION_LABEL_CLASS}>
               {t('profile.city', { defaultValue: 'Город' })}
             </p>
@@ -129,7 +129,7 @@ export const VenueSuppliersFiltersDrawer = ({
             />
           </div>
           {!isRestaurantsMode && (
-            <div className="ui-density-stack-sm">
+            <div className="ui-density-stack">
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
               </p>
@@ -165,7 +165,7 @@ export const VenueSuppliersFiltersDrawer = ({
           )}
 
           {!isRestaurantsMode && (
-            <div className="ui-density-stack-sm">
+            <div className="ui-density-stack">
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.categories', { defaultValue: 'Категории услуг' })}
               </p>
@@ -187,7 +187,7 @@ export const VenueSuppliersFiltersDrawer = ({
           )}
 
           {!isRestaurantsMode && (
-            <div className="ui-density-stack-sm">
+            <div className="ui-density-stack">
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('venueUi.suppliers.filters.delivery', { defaultValue: 'Доставка' })}
               </p>
@@ -218,7 +218,7 @@ export const VenueSuppliersFiltersDrawer = ({
           )}
 
           {isRestaurantsMode && (
-            <div className="ui-density-stack-sm">
+            <div className="ui-density-stack">
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('supplierUi.restaurants.filters.format', { defaultValue: 'Формат заведения' })}
               </p>
@@ -238,7 +238,7 @@ export const VenueSuppliersFiltersDrawer = ({
           )}
 
           {isRestaurantsMode && (
-            <div className="ui-density-stack-sm">
+            <div className="ui-density-stack">
               <p className={PROFILE_SECTION_LABEL_CLASS}>
                 {t('supplierUi.restaurants.filters.cuisines', { defaultValue: 'Кухни' })}
               </p>

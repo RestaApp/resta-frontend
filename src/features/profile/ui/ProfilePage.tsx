@@ -54,7 +54,7 @@ export const ProfilePage = memo(() => {
   }
 
   return (
-    <div className="pb-4 pt-2 ui-density-page ui-density-stack-lg">
+    <div className="pb-4 pt-2 ui-density-page ui-density-stack">
       <ProfileOverview
         profile={m.profileViewModel}
         onFill={() => m.setIsEditDrawerOpen(true)}

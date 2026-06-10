@@ -94,7 +94,7 @@ export const VenueStaffList = ({
   return (
     <div className="ui-density-page ui-density-py">
       {isLoading ? (
-        <FeedCardSkeletonList variant="staff" className="ui-density-stack-sm" />
+        <FeedCardSkeletonList variant="staff" className="ui-density-stack" />
       ) : items.length === 0 ? (
         <EmptyState
           image="shift-applicants"
@@ -102,11 +102,11 @@ export const VenueStaffList = ({
           description={t('shift.noApplicantsDescription')}
         />
       ) : (
-        <div className="ui-density-stack-sm">
+        <div className="ui-density-stack">
           {groupedItems
             .filter(group => group.items.length > 0)
             .map(group => (
-              <div key={group.id} className="ui-density-stack-sm">
+              <div key={group.id} className="ui-density-stack">
                 <div className={cn('mb-1', PROFILE_SECTION_LABEL_CLASS)}>
                   {group.label} ({group.items.length})
                 </div>
@@ -130,7 +130,7 @@ export const VenueStaffList = ({
                   return (
                     <div
                       key={`${item.shiftId}-${item.applicationId}`}
-                      className={cn(SHIFT_CARD_CLASS, 'ui-density-stack-sm')}
+                      className={cn(SHIFT_CARD_CLASS, 'ui-density-stack')}
                     >
                       <div
                         className="flex cursor-pointer items-start gap-2 rounded-lg transition-colors"
@@ -172,8 +172,8 @@ export const VenueStaffList = ({
                             : item.applicationStatus === 'rejected'
                               ? t('venueUi.staff.status.rejected', { defaultValue: 'Отклонён' })
                               : t('venueUi.staff.status.pending', {
-                                  defaultValue: 'На рассмотрении',
-                                })}
+                                defaultValue: 'На рассмотрении',
+                              })}
                         </Badge>
                       </div>
 

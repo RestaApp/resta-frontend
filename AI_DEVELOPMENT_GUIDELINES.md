@@ -239,7 +239,7 @@ export const Z_INDEX = {
 
 | ❌ Запрещено для стеков                           | ✅ Используй                                                                                 |
 | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `space-y-*`                                       | `flex flex-col gap-*` или `ui-density-stack` / `ui-density-stack-sm` / `ui-density-stack-lg` |
+| `space-y-*`                                       | `flex flex-col gap-*` или `ui-density-stack` |
 | `mt-*` / `mb-*` между соседними блоками в колонке | `gap` на родителе                                                                            |
 | `ui-density-mb` на заголовках секций              | `ui-density-stack` на обёртке секции                                                         |
 
