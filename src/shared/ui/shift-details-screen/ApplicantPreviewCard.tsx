@@ -20,6 +20,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import type { ApplicationPreviewApiItem } from '@/services/api/shiftsApi'
+import { resolveApplicantSpecializations } from '@/shared/shifts/resolveApplicantSpecializations'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 
 interface ApplicantPreviewCardProps {
@@ -29,10 +30,11 @@ interface ApplicantPreviewCardProps {
   getSpecializationLabel: (value: string) => string
   onSelect: (userId: number, applicationId: number | null) => void
   t: TFunction
-  variant?: 'default' | 'moderation'
+  variant?: 'default' | 'moderation' | 'catalog'
   onAccept?: (applicationId: number) => void
   isAccepting?: boolean
   acceptingApplicationId?: number | null
+  onInvite?: () => void
 }
 
 const ACCEPTED_CARD_CLASS = 'ring-2 ring-primary/30 bg-primary/5'
@@ -114,16 +116,33 @@ const ratingStars = (hasRating: boolean, normalizedRating: number, t: TFunction)
   </div>
 )
 
-const specializationBadges = (tags: string[]) =>
-  tags.length > 0 ? (
-    <div className={PREVIEW_CARD_TAGS_CLASS}>
-      {tags.map(tag => (
+const APPLICANT_PREVIEW_MAX_TAGS = 3
+
+const specializationBadges = (
+  tags: string[],
+  t: TFunction,
+  className: string = PREVIEW_CARD_TAGS_CLASS
+) => {
+  if (tags.length === 0) return null
+
+  const visibleTags = tags.slice(0, APPLICANT_PREVIEW_MAX_TAGS)
+  const hiddenCount = tags.length - visibleTags.length
+
+  return (
+    <div className={className}>
+      {visibleTags.map(tag => (
         <Badge key={tag} variant="tag">
           {tag}
         </Badge>
       ))}
+      {hiddenCount > 0 ? (
+        <Badge variant="tag" className="text-muted-foreground">
+          {t('shift.applicantTagsMore', { count: hiddenCount })}
+        </Badge>
+      ) : null}
     </div>
-  ) : null
+  )
+}
 
 export const ApplicantPreviewCard = memo(
   ({
@@ -137,6 +156,7 @@ export const ApplicantPreviewCard = memo(
     onAccept,
     isAccepting = false,
     acceptingApplicationId = null,
+    onInvite,
   }: ApplicantPreviewCardProps) => {
     const user = app.user
     const name = getApplicantName(app, t)
@@ -177,7 +197,7 @@ export const ApplicantPreviewCard = memo(
 
     const city = user?.city?.trim() || fallbackCity?.trim() || null
 
-    const specializationTags = (app.specializations ?? [])
+    const specializationTags = resolveApplicantSpecializations(app)
       .map(item => getSpecializationLabel(item))
       .filter(Boolean)
 
@@ -205,14 +225,22 @@ export const ApplicantPreviewCard = memo(
       handleSelect()
     }
 
-    if (variant === 'moderation') {
+    const handleInvite = (event: MouseEvent) => {
+      event.stopPropagation()
+      onInvite?.()
+    }
+
+    if (variant === 'moderation' || variant === 'catalog') {
+      const showHireAction =
+        variant === 'moderation' && !isAccepted && !isRejected && typeof appId === 'number'
+
       return (
         <PreviewCardLayout
-          className={cn(isAccepted && ACCEPTED_CARD_CLASS)}
+          className={cn(variant === 'moderation' && isAccepted && ACCEPTED_CARD_CLASS)}
           avatar={applicantAvatar(photoUrl, name)}
           actions={
             <>
-              {!isAccepted && !isRejected && typeof appId === 'number' ? (
+              {showHireAction ? (
                 <Button
                   type="button"
                   variant="gradient"
@@ -223,6 +251,17 @@ export const ApplicantPreviewCard = memo(
                   onClick={handleAccept}
                 >
                   {t('shift.hireShort')}
+                </Button>
+              ) : null}
+              {variant === 'catalog' && onInvite ? (
+                <Button
+                  type="button"
+                  variant="gradient"
+                  size="sm"
+                  className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
+                  onClick={handleInvite}
+                >
+                  {t('venueUi.staff.catalog.invite', { defaultValue: 'Пригласить' })}
                 </Button>
               ) : null}
               <Button
@@ -237,12 +276,12 @@ export const ApplicantPreviewCard = memo(
             </>
           }
         >
-          {applicantTitleRow(name, isAccepted, t)}
+          {applicantTitleRow(name, variant === 'moderation' && isAccepted, t)}
           <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
 
           <div className={PREVIEW_CARD_STATS_CLASS} aria-label={t('common.rating')}>
             {ratingSummary(hasRating, normalizedRating, reviewsCount, t)}
-            {completedShifts != null ? (
+            {variant === 'moderation' && completedShifts != null ? (
               <span className="inline-flex items-center gap-1">
                 <MapPin className={ICON_SM_CLASS} aria-hidden />
                 {t('shift.venueCompletedShifts', { count: completedShifts })}
@@ -250,7 +289,7 @@ export const ApplicantPreviewCard = memo(
             ) : null}
           </div>
 
-          {specializationBadges(specializationTags)}
+          {specializationBadges(specializationTags, t)}
         </PreviewCardLayout>
       )
     }
@@ -258,15 +297,7 @@ export const ApplicantPreviewCard = memo(
     const belowContent =
       specializationTags.length > 0 || experienceLabel || city ? (
         <>
-          {specializationTags.length > 0 ? (
-            <div className={PREVIEW_CARD_BELOW_TAGS_CLASS}>
-              {specializationTags.map(tag => (
-                <Badge key={tag} variant="tag">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          ) : null}
+          {specializationBadges(specializationTags, t, PREVIEW_CARD_BELOW_TAGS_CLASS)}
           {experienceLabel || city ? (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
               {experienceLabel ? (

@@ -5,7 +5,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/states'
 import { Button } from '@/components/ui/button'
 import { SuccessOverlay } from '@/components/ui/success-overlay'
-import { PersonalShiftCard } from './PersonalShiftCard'
+import { VenueShiftsSection } from './VenueShiftsSection'
 import type { useActivityPageModel } from '../../model/hooks/useActivityPageModel'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
@@ -57,17 +57,12 @@ export const VenueActivityContent = ({
               }
             />
           ) : (
-            <div className="ui-density-stack">
-              {venueItems.map(shift => (
-                <PersonalShiftCard
-                  key={shift.id}
-                  shift={shift}
-                  onEdit={model.handleEdit}
-                  onDelete={model.handleDelete}
-                  isDeleting={model.isDeleting}
-                />
-              ))}
-            </div>
+            <VenueShiftsSection
+              items={venueItems}
+              onEdit={model.handleEdit}
+              onDelete={model.handleDelete}
+              isDeleting={model.isDeleting}
+            />
           )}
         </PullToRefresh>
       </div>

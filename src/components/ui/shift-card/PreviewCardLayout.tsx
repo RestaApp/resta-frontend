@@ -8,9 +8,9 @@ import {
 export const PREVIEW_CARD_STATS_CLASS =
   'mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground'
 
-export const PREVIEW_CARD_TAGS_CLASS = 'mt-2 flex flex-wrap gap-2'
+export const PREVIEW_CARD_TAGS_CLASS = 'mt-2 flex flex-wrap gap-1'
 
-export const PREVIEW_CARD_BELOW_TAGS_CLASS = 'flex flex-wrap gap-2'
+export const PREVIEW_CARD_BELOW_TAGS_CLASS = 'flex flex-wrap gap-1'
 
 export const PREVIEW_CARD_ACTIONS_CLASS =
   'flex w-[4.75rem] shrink-0 flex-col justify-center gap-2 self-stretch'

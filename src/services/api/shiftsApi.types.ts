@@ -143,6 +143,8 @@ export interface UserApi {
 export interface EmployeeProfilePreviewApi {
   experience_years?: number
   position?: string
+  specialization?: string
+  specializations?: string[]
 }
 
 export interface ApplicantUserApi {
@@ -154,6 +156,7 @@ export interface ApplicantUserApi {
   photo_url?: string | null
   profile_photo_url?: string | null
   position?: string
+  specialization?: string
   average_rating?: string | number
   total_reviews?: number
   completed_shifts?: number
@@ -288,6 +291,8 @@ export interface VacanciesResponse {
  */
 export interface ApplyToShiftRequest {
   shift_id?: number // Когда формируем тело из клиента, сюда попадёт id смены
+  /** Приглашение сотрудника рестораном на вакансию */
+  user_id?: number
   message?: string // Опциональное сообщение
 }
 

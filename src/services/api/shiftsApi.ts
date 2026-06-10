@@ -99,6 +99,19 @@ const shiftsApi = api.injectEndpoints({
       ],
     }),
 
+    // Пригласить сотрудника на вакансию (ресторан)
+    inviteToShift: builder.mutation<ApplyToShiftResponse, { shiftId: number; userId: number }>({
+      query: ({ shiftId, userId }) => ({
+        url: '/api/v1/shift_applications',
+        method: 'POST',
+        body: { shift_id: shiftId, user_id: userId },
+      }),
+      invalidatesTags: [
+        { type: 'AppliedShift', id: 'LIST' },
+        { type: 'Shift', id: 'LIST' },
+      ],
+    }),
+
     // Отменить заявку на смену (id — application id)
     cancelApplication: builder.mutation<CancelApplicationResponse, number>({
       query: id => ({
@@ -183,6 +196,7 @@ export const {
   useUpdateShiftMutation,
   useDeleteShiftMutation,
   useApplyToShiftMutation,
+  useInviteToShiftMutation,
   useCancelApplicationMutation,
   useGetAppliedShiftsQuery,
   useGetReceivedShiftApplicationsQuery,

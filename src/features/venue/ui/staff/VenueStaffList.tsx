@@ -6,6 +6,7 @@ import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { ApplicantsTab } from '@/shared/ui/shift-details-screen/ApplicantsTab'
 import { useLabels } from '@/shared/i18n/hooks'
+import { cn } from '@/shared/utils/cn'
 
 export interface StaffItem {
   shiftId: number
@@ -28,6 +29,7 @@ interface VenueStaffListProps {
   acceptingApplicationId: number | null
   onAccept: (applicationId: number, shiftId: number) => void
   onSelectApplicant: (userId: number, applicationId: number | null, shiftId: number) => void
+  onOpenShiftDetails?: (shiftId: number) => void
 }
 
 export const VenueStaffList = ({
@@ -37,6 +39,7 @@ export const VenueStaffList = ({
   acceptingApplicationId,
   onAccept,
   onSelectApplicant,
+  onOpenShiftDetails,
 }: VenueStaffListProps) => {
   const { t } = useTranslation()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
@@ -74,13 +77,27 @@ export const VenueStaffList = ({
       ) : (
         <div className="ui-density-stack">
           {shiftGroups.map(group => (
-            <section key={group.shiftId} className="ui-density-stack">
+            <section key={group.shiftId} className="flex flex-col gap-2">
               {group.shiftTitle ? (
-                <h2 className={SUBSECTION_TITLE_CLASS}>{group.shiftTitle}</h2>
+                onOpenShiftDetails ? (
+                  <button
+                    type="button"
+                    onClick={() => onOpenShiftDetails(group.shiftId)}
+                    className={cn(
+                      SUBSECTION_TITLE_CLASS,
+                      'text-left transition-colors hover:text-primary active:opacity-70'
+                    )}
+                    aria-label={t('venueUi.staff.openShiftDetailsAria', {
+                      title: group.shiftTitle,
+                      defaultValue: `Открыть детали смены «${group.shiftTitle}»`,
+                    })}
+                  >
+                    {group.shiftTitle}
+                  </button>
+                ) : (
+                  <h2 className={SUBSECTION_TITLE_CLASS}>{group.shiftTitle}</h2>
+                )
               ) : null}
-              <h3 className={SUBSECTION_TITLE_CLASS}>
-                {t('shift.applicantsCount', { count: group.applications.length })}
-              </h3>
               <ApplicantsTab
                 applicationsPreview={group.applications}
                 applicationsCount={group.applications.length}

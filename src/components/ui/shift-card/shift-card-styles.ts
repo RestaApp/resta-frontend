@@ -34,3 +34,5 @@ export const SHIFT_CARD_CURRENCY_CLASS =
 
 export const SHIFT_CARD_META_CLASS =
   'flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 font-mono-resta text-xs tracking-wide text-muted-foreground'
+
+export const SHIFT_CARD_META_STACK_CLASS = 'flex min-w-0 flex-col gap-1.5'

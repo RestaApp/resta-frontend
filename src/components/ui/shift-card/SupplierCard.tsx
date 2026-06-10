@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapPin, Phone, Star, Truck } from 'lucide-react'
+import { MapPin, Star, Truck } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AVATAR_FALLBACK_CLASS, AVATAR_SM_CLASS } from '@/components/ui/avatar-styles'
 import { Badge } from '@/components/ui/badge'
@@ -75,7 +75,6 @@ const SupplierCardComponent = ({
 
   const hasRating = supplier.averageRating > 0
   const normalizedRating = hasRating ? Math.min(5, Math.max(0, supplier.averageRating)) : 0
-  const phoneText = supplier.phone.trim() || notSpecified
   const subtitleText =
     isRestaurantsMode || !supplier.supplierCategory.trim()
       ? supplier.supplierType
@@ -158,10 +157,6 @@ const SupplierCardComponent = ({
               </Badge>
             ) : null}
           </span>
-        </span>
-        <span className="inline-flex min-w-0 items-center gap-1">
-          <Phone className={ICON_SM_CLASS} aria-hidden />
-          <span className="truncate">{phoneText}</span>
         </span>
       </div>
 

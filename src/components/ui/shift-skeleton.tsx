@@ -66,7 +66,6 @@ const SupplierCardSkeleton = memo(function SupplierCardSkeleton() {
           <div className={PREVIEW_CARD_STATS_CLASS}>
             <Skeleton className="h-3 w-14 rounded-sm" />
             <Skeleton className="h-3 w-22 rounded-sm" />
-            <Skeleton className="h-3 w-18 rounded-sm" />
           </div>
           <div className={PREVIEW_CARD_TAGS_CLASS}>
             <Skeleton className="h-5 w-14 rounded-full" />

@@ -8,6 +8,7 @@ export const APP_EVENTS = {
   OPEN_ACTIVITY_EDIT_SHIFT: 'openActivityEditShift',
   OPEN_FEED_FILTERS: 'openFeedFilters',
   OPEN_SUPPLIERS_FILTERS: 'openSuppliersFilters',
+  OPEN_STAFF_EMPLOYEE_CATALOG: 'openStaffEmployeeCatalog',
   SHOW_ACTIVITY_ADD_SHIFT_ONBOARDING: 'showActivityAddShiftOnboarding',
   SET_VENUE_CREATE_TYPE: 'setVenueCreateType',
 } as const
@@ -24,6 +25,7 @@ type AppEventDetailMap = {
   [APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT]: { shift?: unknown } | undefined
   [APP_EVENTS.OPEN_FEED_FILTERS]: undefined
   [APP_EVENTS.OPEN_SUPPLIERS_FILTERS]: undefined
+  [APP_EVENTS.OPEN_STAFF_EMPLOYEE_CATALOG]: undefined
   [APP_EVENTS.SHOW_ACTIVITY_ADD_SHIFT_ONBOARDING]: undefined
   [APP_EVENTS.SET_VENUE_CREATE_TYPE]: { type?: 'vacancy' | 'replacement' } | undefined
 }

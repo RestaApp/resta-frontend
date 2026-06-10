@@ -44,7 +44,11 @@ export const ShiftApplicantsSection = ({
     isAccepting && typeof moderation.moderating?.id === 'number' ? moderation.moderating.id : null
 
   return (
-    <section className="ui-density-stack">
+    <section
+      className={
+        isOwnerLayout ? 'flex flex-col gap-2 border-t border-border pt-4' : 'flex flex-col gap-2'
+      }
+    >
       <h2
         className={isOwnerLayout ? SUBSECTION_TITLE_CLASS : 'text-sm font-semibold text-foreground'}
       >

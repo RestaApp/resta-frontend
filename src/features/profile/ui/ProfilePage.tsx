@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { resetAppScroll } from '@/shared/ui/appScroll'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileOverview } from '@/shared/ui/user-profile/components/ProfileOverview'
+import { VenueProfileOverview } from './components/VenueProfileOverview'
 import { ProfileSettings } from './components/ProfileSettings'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
@@ -55,13 +56,23 @@ export const ProfilePage = memo(() => {
 
   return (
     <div className="pb-4 pt-2 ui-density-page ui-density-stack">
-      <ProfileOverview
-        profile={m.profileViewModel}
-        onFill={() => m.setIsEditDrawerOpen(true)}
-        onEditSpecializations={handleEditSpecializations}
-        onOpenToWorkToggle={m.handleOpenToWorkToggle}
-        isOpenToWorkUpdating={m.isUpdatingUser}
-      />
+      {m.apiRole === 'restaurant' ? (
+        <VenueProfileOverview
+          profile={m.profileViewModel}
+          infoRows={m.venueInfoRows}
+          openShiftsCount={m.venueOpenShiftsCount}
+          hiresCount={m.venueHiresCount}
+          onFill={() => m.setIsEditDrawerOpen(true)}
+        />
+      ) : (
+        <ProfileOverview
+          profile={m.profileViewModel}
+          onFill={() => m.setIsEditDrawerOpen(true)}
+          onEditSpecializations={handleEditSpecializations}
+          onOpenToWorkToggle={m.handleOpenToWorkToggle}
+          isOpenToWorkUpdating={m.isUpdatingUser}
+        />
+      )}
 
       <ProfileSettings
         onLogout={m.handleLogout}

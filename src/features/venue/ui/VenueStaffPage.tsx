@@ -1,21 +1,34 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useAcceptApplicationMutation,
   useGetReceivedShiftApplicationsQuery,
+  useGetShiftByIdQuery,
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { ErrorState } from '@/components/ui/states'
+import { ShiftDetailsSkeleton } from '@/components/ui/shift-details-skeleton'
 import { useToast } from '@/shared/lib/hooks/useToast'
+import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
+import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
+import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
+import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
+import { useAppSelector } from '@/store/hooks'
+import { selectUserData } from '@/features/navigation/model/userSlice'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
+import { EmployeeCatalogDrawer } from './staff/EmployeeCatalogDrawer'
 import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 export function VenueStaffPage() {
   const { t } = useTranslation()
   const { showToast } = useToast()
+  const userData = useAppSelector(selectUserData)
+  const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
+  const { deleteShift, isLoading: isDeletingShift } = useDeleteShift()
   const { data, isLoading, isError, refetch } = useGetReceivedShiftApplicationsQuery()
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
@@ -101,7 +114,67 @@ export function VenueStaffPage() {
     }
   }
 
-  const { openUserProfile, closeOverlay } = useDetailOverlay()
+  const { openUserProfile, openShiftDetail, closeOverlay, overlay } = useDetailOverlay()
+
+  const openShiftId = useMemo(() => {
+    if (overlay == null) return null
+    if (overlay.type !== 'shift' && overlay.type !== 'vacancy') return null
+    if (!staffItems.some(item => item.shiftId === overlay.id && item.shiftId > 0)) return null
+    return overlay.id
+  }, [overlay, staffItems])
+
+  const isShiftDetailOpen = openShiftId != null
+
+  const { data: detailVacancy, isLoading: isShiftDetailLoading } = useGetShiftByIdQuery(
+    String(openShiftId),
+    {
+      skip: !isShiftDetailOpen,
+    }
+  )
+
+  const mappedShift = useMemo(() => {
+    if (!detailVacancy) return null
+    const mapped = mapOwnerVacancyToCardShift(detailVacancy)
+    return {
+      ...mapped,
+      photoUrl: mapped.photoUrl ?? ownerPhotoUrl,
+    }
+  }, [detailVacancy, ownerPhotoUrl])
+
+  const handleOpenShiftDetails = useCallback(
+    (shiftId: number) => {
+      if (shiftId <= 0) return
+      openShiftDetail(shiftId)
+    },
+    [openShiftDetail]
+  )
+
+  const handleCloseShiftDetails = useCallback(() => {
+    closeOverlay()
+  }, [closeOverlay])
+
+  const handleEditShift = useCallback(
+    (id: number) => {
+      if (detailVacancy?.id === id) {
+        emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT, { shift: detailVacancy })
+      }
+    },
+    [detailVacancy]
+  )
+
+  const handleDeleteShift = useCallback(
+    async (id: number) => {
+      try {
+        await deleteShift(String(id))
+        showToast(t('shift.deleted'), 'success')
+        closeOverlay()
+        void refetch()
+      } catch {
+        showToast(t('shift.deleteError'), 'error')
+      }
+    },
+    [closeOverlay, deleteShift, refetch, showToast, t]
+  )
 
   const handleSelectApplicant = (
     userId: number,
@@ -178,8 +251,43 @@ export function VenueStaffPage() {
           acceptingApplicationId={acceptingApplicationId}
           onAccept={handleAccept}
           onSelectApplicant={handleSelectApplicant}
+          onOpenShiftDetails={handleOpenShiftDetails}
         />
       </PullToRefresh>
+
+      <EmployeeCatalogDrawer />
+
+      {isShiftDetailOpen && (isShiftDetailLoading || !mappedShift) ? (
+        <DetailsScreenFrame
+          variant="page"
+          open
+          onOpenChange={open => {
+            if (!open) handleCloseShiftDetails()
+          }}
+          onClose={handleCloseShiftDetails}
+        >
+          <ShiftDetailsSkeleton />
+        </DetailsScreenFrame>
+      ) : null}
+
+      {mappedShift && isShiftDetailOpen ? (
+        <ShiftDetailsScreen
+          shift={mappedShift}
+          vacancyData={detailVacancy}
+          isOpen={isShiftDetailOpen}
+          onClose={handleCloseShiftDetails}
+          applicationId={null}
+          onApply={async () => {}}
+          isApplied={false}
+          onCancel={async () => {}}
+          isLoading={false}
+          ownerActions={{
+            onEdit: handleEditShift,
+            onDelete: handleDeleteShift,
+            isDeleting: isDeletingShift,
+          }}
+        />
+      ) : null}
 
       <UserProfileDrawer
         userId={selectedItem?.person.user_id ?? selectedItem?.person.user?.id ?? null}

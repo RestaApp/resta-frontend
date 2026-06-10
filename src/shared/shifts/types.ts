@@ -1,4 +1,5 @@
 import type { DateFilterPreset, SalaryRangeId } from './filterConstants'
+import type { OwnerShiftListingStatus } from './ownerShiftDisplay'
 
 export type FeedType = 'shifts' | 'jobs'
 
@@ -53,4 +54,8 @@ export interface Shift {
   distanceKm?: number | null
   /** Тип: вакансия — без даты/времени на карточке */
   shiftType?: 'vacancy' | 'replacement'
+  /** Статус публикации владельца (activity venue / мои смены). */
+  listingStatus?: OwnerShiftListingStatus
+  viewsCount?: number
+  showStaleAlert?: boolean
 }

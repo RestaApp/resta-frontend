@@ -10,6 +10,7 @@ import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { DetailsTab } from './DetailsTab'
+import { ShiftApplicantsSection } from './ShiftApplicantsSection'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
 
@@ -158,27 +159,38 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         onClose={controller.handleClose}
         footer={ownerFooter ?? applicantFooter}
       >
-        <DetailsTab
-          shift={shift}
-          vacancyTitle={vacancyTitle}
-          positionLabel={positionLabel ?? ''}
-          ownerDisplayName={ownerDisplayName}
-          ownerRating={vacancyData?.user?.average_rating ?? null}
-          ownerReviews={vacancyData?.user?.total_reviews ?? null}
-          applicationsCount={vacancyData?.applications_count ?? shift.applicationsCount ?? null}
-          showVenueCard={!controller.isOwner && Boolean(shift.ownerId)}
-          onOpenOwnerProfile={handleOpenOwnerProfile}
-          shiftDate={shift.date}
-          shiftTime={shift.time}
-          duration={shift.duration}
-          locationPoints={controller.locationPoints}
-          pay={shift.pay}
-          currency={shift.currency}
-          hourlyRate={hourlyRate}
-          description={controller.description}
-          requirements={controller.requirements}
-          t={t}
-        />
+        <div className="ui-density-stack">
+          <DetailsTab
+            shift={shift}
+            vacancyTitle={vacancyTitle}
+            positionLabel={positionLabel ?? ''}
+            ownerDisplayName={ownerDisplayName}
+            ownerRating={vacancyData?.user?.average_rating ?? null}
+            ownerReviews={vacancyData?.user?.total_reviews ?? null}
+            applicationsCount={vacancyData?.applications_count ?? shift.applicationsCount ?? null}
+            showVenueCard={!controller.isOwner && Boolean(shift.ownerId)}
+            onOpenOwnerProfile={handleOpenOwnerProfile}
+            shiftDate={shift.date}
+            shiftTime={shift.time}
+            duration={shift.duration}
+            locationPoints={controller.locationPoints}
+            pay={shift.pay}
+            currency={shift.currency}
+            hourlyRate={hourlyRate}
+            description={controller.description}
+            requirements={controller.requirements}
+            t={t}
+          />
+
+          {controller.isOwner ? (
+            <ShiftApplicantsSection
+              shiftId={shift.id}
+              vacancyData={vacancyData}
+              alwaysShow
+              variant="owner"
+            />
+          ) : null}
+        </div>
       </DetailsScreenFrame>
 
       <UserProfileDrawer

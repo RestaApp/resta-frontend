@@ -73,6 +73,7 @@
       "acceptError": "Failed to accept application",
       "acceptClosedError": "Shift is no longer open for accepting applications",
       "rejectError": "Failed to reject application",
+      "openShiftDetailsAria": "Open shift details for «{{title}}»",
       "status": {
         "accepted": "Accepted",
         "rejected": "Rejected",
@@ -81,6 +82,31 @@
       "actions": {
         "accept": "Accept",
         "reject": "Reject"
+      },
+      "catalog": {
+        "title": "Employee catalog",
+        "openAria": "Employee catalog",
+        "invite": "Invite",
+        "inviteTitle": "Invite",
+        "inviteTitleFor": "Invite {{name}}",
+        "inviteToShift": "Invite to this shift",
+        "inviteToVacancy": "Invite to this vacancy",
+        "inviteSuccess": "Invitation sent",
+        "inviteError": "Failed to send invitation",
+        "loadError": "Failed to load employees",
+        "emptyTitle": "No employees found",
+        "emptyDescription": "Change filters or try refreshing the list",
+        "noOpenListingsTitle": "No open shifts or vacancies",
+        "noOpenListingsDescription": "Create a shift or vacancy in Activity to invite an employee",
+        "filters": {
+          "openAria": "Employee filters",
+          "title": "Employee filters",
+          "position": "Position",
+          "specialization": "Specialization",
+          "allPositions": "All positions",
+          "allSpecializations": "All specializations",
+          "apply": "Show employees"
+        }
       }
     },
     "suppliers": {
@@ -282,6 +308,18 @@
       "shifts": "Shifts",
       "created": "Shifts",
       "rating": "Rating"
+    },
+    "venue": {
+      "hiringOpen": "Hiring open",
+      "createVacancy": "Create vacancy",
+      "urgentReplacement": "Urgent replacement",
+      "viewApplications": "View applications",
+      "aboutUs": "About us",
+      "readMore": "Read more",
+      "kpi": {
+        "openShifts": "Open shifts",
+        "hires": "Hires"
+      }
     }
   },
   "feed": {
@@ -392,6 +430,10 @@
     "applyForThisShift": "Apply for this shift",
     "apply": "Apply",
     "urgentBadge": "URGENT",
+    "statusOpen": "OPEN",
+    "statusFilled": "FILLED",
+    "statusClosed": "CLOSED",
+    "noApplicationsStale": "No applications – for more than 3 hours",
     "ownerReviewsSummary": "{{rating}} ({{count}} reviews)",
     "venueCompletedShifts_one": "{{count}} completed shift",
     "venueCompletedShifts_other": "{{count}} completed shifts",
@@ -431,6 +473,7 @@
     "viewsCount_one": "{{count}} view",
     "viewsCount_other": "{{count}} views",
     "applicantNoReviews": "No reviews yet",
+    "applicantTagsMore": "+{{count}}",
     "noApplicants": "No applications yet",
     "noApplicantsDescription": "Candidates who apply for your shift will appear here",
     "applicantsPreviewNote": "Showing {{shown}} of {{total}}",

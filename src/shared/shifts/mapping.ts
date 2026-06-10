@@ -11,6 +11,7 @@ import { toLocationArray } from '@/shared/utils/location'
 import { toLocalISODateKey } from '@/shared/utils/datetime'
 import i18n from '@/shared/i18n/config'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
+import { getOwnerShiftListingStatus, shouldShowStaleApplicationsAlert } from './ownerShiftDisplay'
 
 const toNumber = (v?: string | number | null): number => {
   if (v === null || v === undefined) return 0
@@ -85,7 +86,7 @@ const getVacancyScheduleFields = (item: VacancyApiItem) => {
   }
 }
 
-const isExpiredOwnerListing = (item: VacancyApiItem): boolean => {
+export const isExpiredOwnerListing = (item: VacancyApiItem): boolean => {
   const status = item.status?.trim().toLowerCase()
   if (status === 'completed' || status === 'cancelled' || status === 'canceled') return false
 
@@ -175,6 +176,9 @@ export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     isMine: true,
     statusTag: isExpiredOwnerListing(item) ? 'expired' : undefined,
     city: getCityFromUser(item) ?? null,
+    listingStatus: getOwnerShiftListingStatus(item),
+    viewsCount: item.views_count,
+    showStaleAlert: shouldShowStaleApplicationsAlert(item),
   }
 }
 

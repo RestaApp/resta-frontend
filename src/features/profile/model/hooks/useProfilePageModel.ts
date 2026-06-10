@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
 import { useUser } from '@/shared/lib/hooks/useUser'
 import { useToast } from '@/shared/lib/hooks/useToast'
-import { useGetMyShiftsQuery } from '@/services/api/shiftsApi'
+import { useGetMyShiftsQuery, useGetReceivedShiftApplicationsQuery } from '@/services/api/shiftsApi'
+import { buildVenueProfileInfoRows } from '../utils/buildVenueProfileInfoRows'
+import { countAcceptedHires, countOpenVenueListings } from '../utils/venueProfileStats'
 import { mapRoleFromApi } from '@/shared/utils/roles'
 import type { ApiRole } from '@/shared/types/roles.types'
 import { authService } from '@/services/auth'
@@ -79,7 +81,21 @@ export const useProfilePageModel = () => {
     skip: !isAuthenticated,
   })
 
+  const { data: receivedApplicationsData } = useGetReceivedShiftApplicationsQuery(undefined, {
+    skip: !isAuthenticated || apiRole !== 'restaurant',
+  })
+
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
+
+  const venueOpenShiftsCount = useMemo(() => countOpenVenueListings(myShifts), [myShifts])
+
+  const venueHiresCount = useMemo(() => {
+    const applications =
+      receivedApplicationsData?.data && Array.isArray(receivedApplicationsData.data)
+        ? receivedApplicationsData.data
+        : []
+    return countAcceptedHires(applications)
+  }, [receivedApplicationsData])
 
   const userName = useMemo(
     () => formatProfileDisplayName(userProfile, apiRole, t('common.user')),
@@ -99,6 +115,16 @@ export const useProfilePageModel = () => {
     if (apiRole === 'supplier') return t('profile.subtitle.supplier')
     return t('common.user')
   }, [apiRole, userProfile, getEmployeePositionLabel, getRestaurantFormatLabel, t])
+
+  const venueInfoRows = useMemo(() => {
+    if (!userProfile || apiRole !== 'restaurant') return []
+
+    return buildVenueProfileInfoRows({
+      t,
+      userProfile,
+      venueTypeLabel: roleLabel,
+    })
+  }, [apiRole, roleLabel, t, userProfile])
 
   const employeeStats = useMemo(() => {
     const completedShifts = myShifts.reduce((acc, s) => {
@@ -197,6 +223,9 @@ export const useProfilePageModel = () => {
 
     apiRole,
     profileViewModel,
+    venueInfoRows,
+    venueOpenShiftsCount,
+    venueHiresCount,
 
     isEditDrawerOpen,
     handleEditSuccess,

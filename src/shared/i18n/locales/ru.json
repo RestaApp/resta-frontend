@@ -73,6 +73,7 @@
       "acceptError": "Не удалось принять заявку",
       "acceptClosedError": "Смена уже закрыта для принятия откликов",
       "rejectError": "Не удалось отклонить заявку",
+      "openShiftDetailsAria": "Открыть детали смены «{{title}}»",
       "status": {
         "accepted": "Принят",
         "rejected": "Отклонён",
@@ -81,6 +82,31 @@
       "actions": {
         "accept": "Принять",
         "reject": "Отклонить"
+      },
+      "catalog": {
+        "title": "Каталог сотрудников",
+        "openAria": "Каталог сотрудников",
+        "invite": "Пригласить",
+        "inviteTitle": "Пригласить",
+        "inviteTitleFor": "Пригласить {{name}}",
+        "inviteToShift": "Пригласить на эту смену",
+        "inviteToVacancy": "Пригласить на эту вакансию",
+        "inviteSuccess": "Приглашение отправлено",
+        "inviteError": "Не удалось отправить приглашение",
+        "loadError": "Не удалось загрузить сотрудников",
+        "emptyTitle": "Сотрудники не найдены",
+        "emptyDescription": "Измените фильтры или попробуйте обновить список",
+        "noOpenListingsTitle": "Нет открытых смен и вакансий",
+        "noOpenListingsDescription": "Создайте смену или вакансию в разделе «Активность», чтобы пригласить сотрудника",
+        "filters": {
+          "openAria": "Фильтры сотрудников",
+          "title": "Фильтры сотрудников",
+          "position": "Должность",
+          "specialization": "Специализация",
+          "allPositions": "Все должности",
+          "allSpecializations": "Все специализации",
+          "apply": "Показать сотрудников"
+        }
       }
     },
     "suppliers": {
@@ -282,6 +308,18 @@
       "shifts": "Смен",
       "created": "Смен",
       "rating": "Рейтинг"
+    },
+    "venue": {
+      "hiringOpen": "Набор открыт",
+      "createVacancy": "Создать вакансию",
+      "urgentReplacement": "Срочная замена",
+      "viewApplications": "Просмотреть отклики",
+      "aboutUs": "О нас",
+      "readMore": "Читать далее",
+      "kpi": {
+        "openShifts": "Открытых смен",
+        "hires": "Наймов"
+      }
     }
   },
   "feed": {
@@ -392,6 +430,10 @@
     "applyForThisShift": "Откликнуться на смену",
     "apply": "Откликнуться",
     "urgentBadge": "СРОЧНО",
+    "statusOpen": "ОТКРЫТА",
+    "statusFilled": "ЗАПОЛНЕНА",
+    "statusClosed": "ЗАКРЫТА",
+    "noApplicationsStale": "Нет откликов – более 3 часов",
     "ownerReviewsSummary": "{{rating}} ({{count}} отзывов)",
     "venueCompletedShifts_one": "{{count}} завершённая смена",
     "venueCompletedShifts_few": "{{count}} завершённые смены",
@@ -439,6 +481,7 @@
     "viewsCount_many": "{{count}} просмотров",
     "viewsCount_other": "{{count}} просмотров",
     "applicantNoReviews": "Пока нет отзывов",
+    "applicantTagsMore": "+{{count}}",
     "applicantSelected": "Выбран",
     "noApplicants": "Пока нет заявок",
     "noApplicantsDescription": "Кандидаты, откликнувшиеся на смену, появятся здесь",

@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react'
 import type { KeyboardEvent } from 'react'
-import { Clock, Flame, MapPin, User } from 'lucide-react'
+import { AlertTriangle, Clock, Flame, MapPin, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import type { Shift } from '@/shared/shifts/types'
@@ -27,6 +27,9 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { formatDistanceKm, stripVacancyPrefix, positionInitial } from './shift-card-utils'
+import { OwnerShiftStatusBadge } from './OwnerShiftStatusBadge'
+import { ShiftCardMetaLine } from './ShiftCardMetaLine'
+import { formatViewsCount } from '@/shared/utils/viewsCount'
 
 const formatCompactDate = (date?: string | null): string => {
   if (!date) return ''
@@ -141,12 +144,19 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     [handleOpen]
   )
 
-  const responses = useMemo(() => {
+  const ownerStatsLine = useMemo(() => {
     if (!isOwner) return null
-    const countRaw = shift.applicationsCount
-    const count = typeof countRaw === 'number' && Number.isFinite(countRaw) ? countRaw : 0
-    return { count, hasResponses: count > 0 }
-  }, [isOwner, shift.applicationsCount])
+    const parts: string[] = []
+    const applicantsCount = shift.applicationsCount
+    if (typeof applicantsCount === 'number' && applicantsCount >= 0) {
+      parts.push(t('shift.applicantsLabel', { count: applicantsCount }))
+    }
+    const viewsCount = shift.viewsCount
+    if (typeof viewsCount === 'number' && Number.isFinite(viewsCount)) {
+      parts.push(formatViewsCount(viewsCount))
+    }
+    return parts.length > 0 ? parts.join(' • ') : null
+  }, [isOwner, shift.applicationsCount, shift.viewsCount, t])
 
   const compactTitle = isApplicationCard
     ? shift.restaurant || stripVacancyPrefix(displayTitle ?? positionText)
@@ -169,16 +179,19 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
         ? t('activity.statusRejectedPill')
         : t('activity.statusPendingPill')
     : null
-  const compactApplications = responses?.hasResponses
-    ? responses.count
-    : typeof shift.applicationsCount === 'number' && shift.applicationsCount > 0
+  const compactApplications =
+    !isOwner && typeof shift.applicationsCount === 'number' && shift.applicationsCount > 0
       ? shift.applicationsCount
       : null
+  const isOwnerUrgent = isOwner && shift.listingStatus === 'urgent'
+  const showSosBadge = !isOwner && shift.urgent
+  const showOwnerStatusBadge = isOwner && Boolean(shift.listingStatus)
   const statusTagLabel =
     shift.statusTag === 'expired'
       ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
       : null
-  const hasBottomRightMeta = Boolean(statusTagLabel) || Boolean(compactApplications)
+  const hasBottomRightMeta =
+    Boolean(statusTagLabel) || Boolean(compactApplications) || Boolean(ownerStatsLine)
 
   return (
     <div
@@ -192,14 +205,14 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
         SHIFT_CARD_CLASS,
         SHIFT_CARD_INTERACTIVE_CLASS,
         'flex flex-col gap-2',
-        shift.urgent && SHIFT_CARD_SOS_CLASS
+        (isOwnerUrgent || showSosBadge) && SHIFT_CARD_SOS_CLASS
       )}
     >
       <div className={SHIFT_CARD_ROW_CLASS}>
         <div className="min-w-0 flex-1">
-          {shift.urgent || applicationBadgeLabel ? (
+          {showSosBadge || applicationBadgeLabel || showOwnerStatusBadge ? (
             <div className={cn(SHIFT_CARD_BADGE_ROW_CLASS, 'flex flex-wrap gap-1.5')}>
-              {shift.urgent ? (
+              {showSosBadge ? (
                 <span className={cn(SHIFT_CARD_BADGE_CLASS, 'inline-flex items-center gap-1')}>
                   <Flame className={ICON_SM_CLASS} aria-hidden />
                   SOS{urgentDateTag ? ` · ${urgentDateTag}` : ''}
@@ -209,6 +222,9 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
                 <Badge variant={applicationBadgeVariant} className="shrink-0">
                   {applicationBadgeLabel}
                 </Badge>
+              ) : null}
+              {showOwnerStatusBadge && shift.listingStatus ? (
+                <OwnerShiftStatusBadge status={shift.listingStatus} />
               ) : null}
             </div>
           ) : null}
@@ -247,6 +263,12 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
         ) : null}
         {hasBottomRightMeta ? (
           <span className="ml-auto inline-flex shrink-0 items-center gap-1.5">
+            {ownerStatsLine ? (
+              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                <User className={ICON_SM_CLASS} aria-hidden />
+                {ownerStatsLine}
+              </span>
+            ) : null}
             {compactApplications ? (
               <span className="inline-flex items-center gap-1 text-muted-foreground">
                 <User className={ICON_SM_CLASS} aria-hidden />
@@ -266,6 +288,11 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           <MapPin className={ICON_SM_CLASS} aria-hidden />
           {locationMeta}
         </span>
+      ) : null}
+      {isOwner && shift.showStaleAlert ? (
+        <ShiftCardMetaLine icon={AlertTriangle} className="text-destructive">
+          {t('shift.noApplicationsStale')}
+        </ShiftCardMetaLine>
       ) : null}
     </div>
   )
