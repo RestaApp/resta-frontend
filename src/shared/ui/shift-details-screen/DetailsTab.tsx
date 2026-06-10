@@ -85,9 +85,9 @@ export const DetailsTab = memo(
       return street
     })()
     const distance = formatDistanceKm(shift.distanceKm)
-    const payValue =
-      pay == null || Number(pay) === 0 ? t('shift.payNegotiable') : formatMoney(Number(pay))
-    const payCurrency = pay == null || Number(pay) === 0 ? '' : (currency ?? '')
+    const isPayNegotiable = pay == null || Number(pay) === 0
+    const payValue = isPayNegotiable ? t('shift.payNegotiable') : formatMoney(Number(pay))
+    const payCurrency = isPayNegotiable ? '' : (currency ?? '')
     const payPeriodLabel =
       shift.payPeriod === 'month' ? t('common.payPerMonth') : t('common.payPerShift')
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' · ')
@@ -129,7 +129,13 @@ export const DetailsTab = memo(
           </div>
 
           <div className="flex items-center gap-3">
-            <div className={cn(DISPLAY_PRICE_CLASS, 'price-xl')}>
+            <div
+              className={cn(
+                isPayNegotiable
+                  ? 'text-base font-semibold leading-snug text-foreground'
+                  : cn(DISPLAY_PRICE_CLASS, 'price-xl'),
+              )}
+            >
               {payValue}
               {payCurrency ? (
                 <span className="ml-1 text-base font-semibold text-muted-foreground">
