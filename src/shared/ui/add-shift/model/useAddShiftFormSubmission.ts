@@ -32,18 +32,29 @@ interface ServerErrorBag {
   errors?: unknown
   message?: unknown
   error?: unknown
+  feature?: unknown
+}
+
+const vacancyUniquenessToken = 'vacancy_uniqueness'
+
+const toServerErrorMessages = (bag: ServerErrorBag): string[] => {
+  if (bag.feature === vacancyUniquenessToken) {
+    return [typeof bag.error === 'string' ? bag.error : vacancyUniquenessToken]
+  }
+  if (Array.isArray(bag.errors)) {
+    return bag.errors.map(e => String(e))
+  }
+  if (typeof bag.message === 'string') return [bag.message]
+  if (typeof bag.error === 'string') return [bag.error]
+  return []
 }
 
 const extractServerErrors = (error: unknown): { messages?: string[]; single?: string } => {
   if (error && typeof error === 'object' && 'data' in error) {
     const data = (error as { data?: unknown }).data
     if (data && typeof data === 'object') {
-      const bag = data as ServerErrorBag
-      if (Array.isArray(bag.errors)) {
-        return { messages: bag.errors.map(e => String(e)) }
-      }
-      if (typeof bag.message === 'string') return { single: bag.message }
-      if (typeof bag.error === 'string') return { single: bag.error }
+      const messages = toServerErrorMessages(data as ServerErrorBag)
+      if (messages.length > 0) return { messages }
     }
   }
   if (error instanceof Error) return { single: error.message }
@@ -60,9 +71,7 @@ const hasInlineErrors = (
 
 const inlineErrorMessages = (result: unknown): string[] => {
   if (!result || typeof result !== 'object') return []
-  const r = result as Record<string, unknown>
-  const errs = r.errors ?? (typeof r.message === 'string' ? [r.message] : [])
-  return Array.isArray(errs) ? errs.map(String) : [String(errs)]
+  return toServerErrorMessages(result as ServerErrorBag)
 }
 
 /**

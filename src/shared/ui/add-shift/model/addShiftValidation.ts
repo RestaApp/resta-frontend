@@ -23,6 +23,18 @@ export const isPaymentLimitServerError = (error: string): boolean => {
   )
 }
 
+export const isVacancyUniquenessServerError = (error: string): boolean => {
+  const lower = error.toLowerCase()
+  return (
+    lower === 'vacancy_uniqueness' ||
+    lower.includes('vacancy_uniqueness') ||
+    lower.includes('overlapping specializations') ||
+    lower.includes('пересекающимися специализациями')
+  )
+}
+
+const vacancyUniquenessMessage = (t: TFunction): string => t('validation.duplicateVacancy')
+
 export const validatePayment = (pay: string, t: TFunction): string | null => {
   const amount = parseMoneyInput(pay)
   if (amount === null || amount <= MAX_SHIFT_PAYMENT) return null
@@ -134,6 +146,9 @@ export const translateServerError = (error: string, t: TFunction): string => {
   if (isPaymentLimitServerError(error)) {
     return paymentTooHighMessage(t)
   }
+  if (isVacancyUniquenessServerError(error)) {
+    return vacancyUniquenessMessage(t)
+  }
   if (lower.includes('active shift') || lower.includes('позицией') || lower.includes('position')) {
     return t('validation.duplicatePosition')
   }
@@ -159,6 +174,10 @@ export const mapServerErrorsToFields = (
     if (!msg) continue
     const lower = msg.toLowerCase()
 
+    if (isVacancyUniquenessServerError(msg)) {
+      fieldErrors.specializations = vacancyUniquenessMessage(t)
+      continue
+    }
     if (lower.includes('not in your profile') || lower.includes('не в вашем профиле')) {
       fieldErrors.specializations = t('validation.specializationNotInProfile')
       continue

@@ -509,6 +509,7 @@
     "dateInFuture": "Shift date must be in the future.",
     "timeInFuture": "Start time must be in the future.",
     "duplicatePosition": "You already have an active shift with this position.",
+    "duplicateVacancy": "A vacancy with this position and overlapping specializations already exists.",
     "specializationRequired": "Select at least one specialization.",
     "requiredField": "Required field.",
     "fillRequired": "Fill in all required fields.",

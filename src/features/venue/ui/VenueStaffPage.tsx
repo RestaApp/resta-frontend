@@ -21,6 +21,7 @@ export function VenueStaffPage() {
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
   const [selectedItem, setSelectedItem] = useState<StaffItem | null>(null)
   const [moderatingAction, setModeratingAction] = useState<'accept' | 'reject' | null>(null)
+  const [acceptingApplicationId, setAcceptingApplicationId] = useState<number | null>(null)
 
   const applications = useMemo(
     () => (data?.data && Array.isArray(data.data) ? data.data : []),
@@ -48,6 +49,7 @@ export function VenueStaffPage() {
 
   const handleAccept = async (applicationId: number, shiftId: number) => {
     try {
+      setAcceptingApplicationId(applicationId)
       await acceptApplication({
         applicationId,
         shiftId: shiftId > 0 ? shiftId : undefined,
@@ -76,6 +78,8 @@ export function VenueStaffPage() {
         'error'
       )
       return false
+    } finally {
+      setAcceptingApplicationId(null)
     }
   }
 
@@ -99,9 +103,26 @@ export function VenueStaffPage() {
 
   const { openUserProfile, closeOverlay } = useDetailOverlay()
 
-  const handleOpenDetails = (item: StaffItem) => {
-    const userId = item.person.user_id ?? item.person.user?.id ?? null
-    if (!userId) return
+  const handleSelectApplicant = (
+    userId: number,
+    applicationId: number | null,
+    shiftId: number
+  ) => {
+    const item =
+      staffItems.find(
+        candidate =>
+          candidate.shiftId === shiftId &&
+          (candidate.applicationId === applicationId ||
+            candidate.person.shift_application_id === applicationId ||
+            candidate.person.id === applicationId)
+      ) ??
+      staffItems.find(
+        candidate =>
+          candidate.shiftId === shiftId &&
+          (candidate.person.user_id === userId || candidate.person.user?.id === userId)
+      )
+
+    if (!item) return
     setSelectedItem(item)
     openUserProfile(userId)
   }
@@ -154,10 +175,9 @@ export function VenueStaffPage() {
           isLoading={isLoading}
           items={staffItems}
           isAccepting={isAccepting}
-          isRejecting={isRejecting}
+          acceptingApplicationId={acceptingApplicationId}
           onAccept={handleAccept}
-          onReject={handleReject}
-          onOpenDetails={handleOpenDetails}
+          onSelectApplicant={handleSelectApplicant}
         />
       </PullToRefresh>
 

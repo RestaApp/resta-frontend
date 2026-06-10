@@ -4,7 +4,6 @@ import { useGetShiftByIdQuery } from '@/services/api/shiftsApi'
 import { mapOwnerVacancyToCardShift } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
-import { ShiftApplicantsSection } from '@/shared/ui/shift-details-screen/ShiftApplicantsSection'
 import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import { OwnerShiftSummaryCard } from './OwnerShiftSummaryCard'
@@ -82,8 +81,6 @@ export const PersonalShiftCard = ({
         isLoading={false}
         ownerActions={{ onEdit, onDelete, isDeleting }}
       />
-
-      <ShiftApplicantsSection shiftId={shift.id} vacancyData={shift} alwaysShow variant="owner" />
     </div>
   )
 }
