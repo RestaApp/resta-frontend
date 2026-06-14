@@ -8,17 +8,20 @@ export const FeedPage = () => {
   const vm: FeedBodyVm = m
 
   return (
-    <div className="bg-background ui-density-stack">
-      <FeedHeader
-        options={m.feedTypeOptions}
-        feedType={m.feedType}
-        onChangeFeedType={m.setFeedType}
-        activeFilters={m.activeFilters}
-        onResetFilters={m.resetFilters}
-        onRemoveFilter={m.removeFilter}
+    <div className="bg-background">
+      <FeedBody
+        vm={vm}
+        header={
+          <FeedHeader
+            options={m.feedTypeOptions}
+            feedType={m.feedType}
+            onChangeFeedType={m.setFeedType}
+            activeFilters={m.activeFilters}
+            onResetFilters={m.resetFilters}
+            onRemoveFilter={m.removeFilter}
+          />
+        }
       />
-
-      <FeedBody vm={vm} />
     </div>
   )
 }

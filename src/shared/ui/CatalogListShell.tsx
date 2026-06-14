@@ -45,6 +45,13 @@ export const CatalogListShell = ({
   children,
   className = 'ui-density-page ui-density-py',
 }: CatalogListShellProps) => {
+  const filters = (
+    <SearchFilters
+      activeFilters={activeFilters}
+      onResetFilters={onResetFilters}
+      onRemoveFilter={onRemoveFilter}
+    />
+  )
   const listBody = (
     <div className={className}>
       {isLoading && itemsCount === 0 ? (
@@ -67,17 +74,15 @@ export const CatalogListShell = ({
 
   return (
     <>
-      <SearchFilters
-        activeFilters={activeFilters}
-        onResetFilters={onResetFilters}
-        onRemoveFilter={onRemoveFilter}
-      />
       {onRefresh ? (
-        <PullToRefresh onRefresh={onRefresh} disabled={refreshDisabled}>
+        <PullToRefresh onRefresh={onRefresh} disabled={refreshDisabled} staticContent={filters}>
           {listBody}
         </PullToRefresh>
       ) : (
-        listBody
+        <>
+          {filters}
+          {listBody}
+        </>
       )}
     </>
   )

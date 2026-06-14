@@ -9,13 +9,15 @@ import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverL
 import { ApplicationSuccessOverlay } from '@/features/feed/ui/components/ApplicationSuccessOverlay'
 import { SuccessOverlay } from '@/components/ui/success-overlay'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
+import type { ReactNode } from 'react'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
 
 interface FeedBodyProps {
   vm: FeedBodyVm
+  header?: ReactNode
 }
 
-export function FeedBody({ vm }: FeedBodyProps) {
+export function FeedBody({ vm, header }: FeedBodyProps) {
   const { t } = useTranslation()
   const isEmpty = vm.filteredShifts.length === 0
   const showEmptyState =
@@ -29,6 +31,7 @@ export function FeedBody({ vm }: FeedBodyProps) {
       <PullToRefresh
         onRefresh={vm.onRefresh}
         disabled={vm.activeList.isInitialLoading || vm.activeList.isFetching}
+        staticContent={header}
       >
         <div className="ui-density-page ui-density-py-sm ui-density-stack">
           <FeedListArea

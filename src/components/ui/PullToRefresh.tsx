@@ -8,6 +8,7 @@ import { isBodyScrollLocked } from '@/shared/lib/hooks/useBodyScrollLock'
 interface PullToRefreshProps {
   children: ReactNode
   onRefresh: () => Promise<unknown> | void
+  staticContent?: ReactNode
   className?: string
   disabled?: boolean
   threshold?: number
@@ -19,6 +20,7 @@ const RESISTANCE = 0.45
 export function PullToRefresh({
   children,
   onRefresh,
+  staticContent,
   className,
   disabled = false,
   threshold = 72,
@@ -128,28 +130,32 @@ export function PullToRefresh({
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
     >
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-end justify-center overflow-hidden transition-[height,opacity] duration-200"
-        style={{
-          height: indicatorHeight,
-          opacity: indicatorHeight > 0 ? 1 : 0,
-        }}
-        aria-hidden="true"
-      >
-        <div className="pb-2">
-          <Loader size="sm" className={cn(!isRefreshing && !isReady && 'opacity-50')} />
+      {staticContent}
+
+      <div className="relative">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-end justify-center overflow-hidden transition-[height,opacity] duration-200"
+          style={{
+            height: indicatorHeight,
+            opacity: indicatorHeight > 0 ? 1 : 0,
+          }}
+          aria-hidden="true"
+        >
+          <div className="pb-2">
+            <Loader size="sm" className={cn(!isRefreshing && !isReady && 'opacity-50')} />
+          </div>
         </div>
-      </div>
-      <div
-        className={cn(
-          'will-change-transform',
-          !isDragging && 'transition-transform duration-200 ease-out'
-        )}
-        style={{
-          transform: contentOffset > 0 ? `translate3d(0, ${contentOffset}px, 0)` : undefined,
-        }}
-      >
-        {children}
+        <div
+          className={cn(
+            'will-change-transform',
+            !isDragging && 'transition-transform duration-200 ease-out'
+          )}
+          style={{
+            transform: contentOffset > 0 ? `translate3d(0, ${contentOffset}px, 0)` : undefined,
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   )
