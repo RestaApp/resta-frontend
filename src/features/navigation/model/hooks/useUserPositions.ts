@@ -9,7 +9,7 @@ import { useGetUserPositionsQuery } from '@/services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '@/shared/utils/roleMappers'
 import { useAuth } from '@/app/contexts/auth'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectPositions, setPositions } from '@/features/navigation/model/catalogSlice'
+import { selectPositions, setPositions } from '@/shared/store/catalog'
 
 interface UseUserPositionsOptions {
   /**

@@ -33,7 +33,7 @@ import type { TabOption } from '@/components/ui/tabs'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
-import { navigateToTab, } from '@/shared/store/navigation'
+import { navigateToTab } from '@/shared/store/navigation'
 import { selectSelectedRole } from '@/shared/store/user'
 
 export const useFeedPageModel = () => {

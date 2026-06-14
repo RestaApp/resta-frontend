@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/navigation/model/userSlice'
+import { selectUserData } from '@/shared/store/user'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
 
 interface PersonalShiftCardProps {

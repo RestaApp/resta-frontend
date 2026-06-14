@@ -32,7 +32,7 @@ export const TermsOfServicePage = memo(function TermsOfServicePage({
   return (
     <div className="flex flex-col bg-background">
       <PageHeader title={t('legal.termsOfService')} />
-      <div className="ui-density-page pb-24 pt-3">
+      <div className="ui-density-page pt-3">
         <article className="flex flex-col gap-4 text-sm leading-relaxed text-foreground">
           <section className="flex flex-col gap-2">
             <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.generalTitle')}</h2>

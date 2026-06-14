@@ -20,10 +20,7 @@ export const useAnchoredDropdownRect = (
   const [rect, setRect] = useState<AnchoredDropdownRect | null>(null)
 
   useLayoutEffect(() => {
-    if (!isOpen) {
-      setRect(null)
-      return
-    }
+    if (!isOpen) return
 
     const anchor = anchorRef.current
     if (!anchor) return
@@ -58,5 +55,5 @@ export const useAnchoredDropdownRect = (
     }
   }, [isOpen, anchorRef])
 
-  return rect
+  return isOpen ? rect : null
 }
