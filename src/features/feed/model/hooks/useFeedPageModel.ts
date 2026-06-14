@@ -18,7 +18,6 @@ import { useShiftActions } from '../hooks/useShiftActions'
 import { useFeedApplyFlow } from '../hooks/useFeedApplyFlow'
 import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
 import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
-import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 
 import {
   formatFiltersForDisplay,
@@ -34,7 +33,8 @@ import type { TabOption } from '@/components/ui/tabs'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { navigateToTab, } from '@/shared/store/navigation'
+import { selectSelectedRole } from '@/shared/store/user'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()

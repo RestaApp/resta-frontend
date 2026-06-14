@@ -17,7 +17,7 @@ interface OwnerListingCardProps {
   className?: string
 }
 
-export const OwnerListingCard = ({
+const OwnerListingCard = ({
   listing,
   getEmployeePositionLabel,
   getSpecializationLabel,

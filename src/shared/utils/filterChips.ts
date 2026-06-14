@@ -13,12 +13,3 @@ export const buildCityFilterChip = (city: string): ActiveFilterItem | null => {
     icon: MapPin,
   }
 }
-
-export const removeFilterById = <TFilters extends Record<string, unknown>>(
-  filters: TFilters,
-  filterId: string,
-  handlers: Record<string, (current: TFilters) => TFilters>
-): TFilters => {
-  const handler = handlers[filterId]
-  return handler ? handler(filters) : filters
-}

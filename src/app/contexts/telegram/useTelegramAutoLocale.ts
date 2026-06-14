@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/navigation/model/userSlice'
+import { selectUserData } from '@/shared/store/user'
 import { getTelegramLanguageCode } from '@/shared/utils/telegram'
 import i18n, { telegramCodeToLocale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/shared/constants/storage'

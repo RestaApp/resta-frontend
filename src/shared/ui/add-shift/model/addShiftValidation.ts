@@ -6,7 +6,7 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 /** SRP: чистые функции валидации формы AddShift. Никаких React/Redux зависимостей. */
 
 /** Максимальная оплата в основных единицах валюты (бэкенд: payment < 100_000_000 в копейках). */
-export const MAX_SHIFT_PAYMENT = 1_000_000
+const MAX_SHIFT_PAYMENT = 1_000_000
 
 export type AddShiftFieldErrors = Partial<
   Record<'location' | 'city' | 'requirements' | 'description' | 'specializations' | 'pay', string>
@@ -15,7 +15,7 @@ export type AddShiftFieldErrors = Partial<
 const paymentTooHighMessage = (t: TFunction): string =>
   t('validation.paymentTooHigh', { max: formatMoney(MAX_SHIFT_PAYMENT) })
 
-export const isPaymentLimitServerError = (error: string): boolean => {
+const isPaymentLimitServerError = (error: string): boolean => {
   const lower = error.toLowerCase()
   return (
     lower.includes('payment must be less than') ||
@@ -23,7 +23,7 @@ export const isPaymentLimitServerError = (error: string): boolean => {
   )
 }
 
-export const isVacancyUniquenessServerError = (error: string): boolean => {
+const isVacancyUniquenessServerError = (error: string): boolean => {
   const lower = error.toLowerCase()
   return (
     lower === 'vacancy_uniqueness' ||

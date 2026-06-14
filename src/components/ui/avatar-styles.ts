@@ -6,9 +6,6 @@ export const AVATAR_SHAPE_CLASS = 'rounded-md'
 /** Компактный аватар для карточек смен, откликов, поставщиков (36px). */
 export const AVATAR_SM_CLASS = cn('h-9 w-9', AVATAR_SHAPE_CLASS)
 
-/** Средний аватар для заголовков drawer (44px). */
-export const AVATAR_MD_CLASS = cn('h-11 w-11', AVATAR_SHAPE_CLASS)
-
 /** Крупный аватар для профиля (96px). */
 export const AVATAR_LG_CLASS = cn('h-24 w-24', AVATAR_SHAPE_CLASS)
 

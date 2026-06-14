@@ -9,7 +9,6 @@ export const STORAGE_KEYS = {
   REFRESH_TOKEN: 'refresh_token',
   NAVIGATE_TO_FEED_SHIFTS: 'navigate_to_feed_shifts',
   NAVIGATE_TO_PROFILE_EDIT: 'navigate_to_profile_edit',
-  NAVIGATE_TO_NOTIFICATION_PREFERENCES: 'navigate_to_notification_preferences',
   NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS: 'navigate_to_activity_my_applications',
   EDIT_SHIFT_ID: 'edit_shift_id',
   ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN: 'activity_add_shift_onboarding_shown',

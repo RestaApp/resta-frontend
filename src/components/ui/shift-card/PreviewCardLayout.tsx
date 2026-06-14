@@ -12,7 +12,7 @@ export const PREVIEW_CARD_TAGS_CLASS = 'mt-2 flex flex-wrap gap-1'
 
 export const PREVIEW_CARD_BELOW_TAGS_CLASS = 'flex flex-wrap gap-1'
 
-export const PREVIEW_CARD_ACTIONS_CLASS =
+const PREVIEW_CARD_ACTIONS_CLASS =
   'flex w-[4.75rem] shrink-0 flex-col justify-center gap-2 self-stretch'
 
 export const PREVIEW_CARD_ACTION_BUTTON_CLASS = 'h-9 w-full px-2 text-xs'

@@ -4,13 +4,9 @@
  */
 
 import type { AppDispatch } from '@/store'
-import {
-  selectSelectedRole,
-  setSelectedRole,
-  setUserData,
-} from '@/features/navigation/model/userSlice'
 import type { UserData } from '@/services/api/authApi'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
+import { selectSelectedRole, setSelectedRole, setUserData } from '@/shared/store/user'
 
 /**
  * Обновляет данные пользователя в Redux store

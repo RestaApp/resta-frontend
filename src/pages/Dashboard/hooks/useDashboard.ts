@@ -18,7 +18,7 @@ import { isEmployeeRole } from '@/shared/utils/roles'
 import {
   consumeCommand,
   selectNavigationCommand,
-} from '@/features/navigation/model/navigationSlice'
+} from '@/shared/store/navigation'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 interface UseDashboardProps {

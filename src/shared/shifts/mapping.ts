@@ -20,22 +20,6 @@ const toNumber = (v?: string | number | null): number => {
   return Number.isFinite(n) ? n : 0
 }
 
-export const getLogoByPosition = (position?: string | null): string => {
-  const normalized = (position ?? '').trim().toLowerCase()
-
-  const map: Record<string, string> = {
-    chef: 'C',
-    waiter: 'W',
-    bartender: 'B',
-    barista: 'B',
-    manager: 'M',
-    support: 'S',
-  }
-
-  if (normalized && map[normalized]) return map[normalized]
-  return (normalized[0] ?? 'R').toUpperCase()
-}
-
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {
   return item.city ?? item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
 }
@@ -149,7 +133,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
 }
 
 /** Карточка «моя смена/вакансия» в activity venue — без названия ресторана, isMine */
-export const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
+const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
   const { date, dateKey, time } = getVacancyScheduleFields(item)
 
   return {

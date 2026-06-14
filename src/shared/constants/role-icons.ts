@@ -14,9 +14,7 @@ import {
   Leaf,
   Martini,
   Package,
-  Shield,
   ShoppingBasket,
-  Star,
   Store,
   Truck,
   UserCog,
@@ -24,9 +22,8 @@ import {
   UtensilsCrossed,
   Wine,
   Wrench,
-  Zap,
 } from 'lucide-react'
-import type { EmployeeRole, RoleCategory, UiRole } from '@/shared/types/roles.types'
+import type { EmployeeRole, UiRole } from '@/shared/types/roles.types'
 
 export const ICON_SM_CLASS = 'h-4 w-4 shrink-0 stroke-[1.5]'
 export const ICON_MD_CLASS = 'h-5 w-5 shrink-0 stroke-[1.5]'
@@ -65,12 +62,6 @@ const SUPPLIER_CATEGORY_ICONS: Record<string, LucideIcon> = {
   consumables: ShoppingBasket,
   services: Headphones,
   logistics: Truck,
-}
-
-export const ROLE_CATEGORY_ICONS: Record<RoleCategory, LucideIcon> = {
-  employee: Shield,
-  restaurant: Zap,
-  supplier: Star,
 }
 
 export const getRoleIcon = (role: UiRole): LucideIcon => ROLE_ICONS[role] ?? DEFAULT_ROLE_ICON

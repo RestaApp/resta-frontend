@@ -6,11 +6,11 @@ import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 const STALE_APPLICATIONS_HOURS = 3
 
-export const OWNER_CLOSED_STATUSES = new Set(['completed', 'cancelled', 'canceled', 'closed'])
+const OWNER_CLOSED_STATUSES = new Set(['completed', 'cancelled', 'canceled', 'closed'])
 
 export type OwnerShiftListingStatus = 'open' | 'filled' | 'urgent' | 'closed'
 
-export const OWNER_LISTING_STATUS_LABEL_KEYS: Record<OwnerShiftListingStatus, string> = {
+const OWNER_LISTING_STATUS_LABEL_KEYS: Record<OwnerShiftListingStatus, string> = {
   urgent: 'shift.urgentBadge',
   open: 'shift.statusOpen',
   filled: 'shift.statusFilled',

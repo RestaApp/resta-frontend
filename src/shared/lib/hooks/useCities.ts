@@ -8,7 +8,7 @@ import { useMemo, useEffect } from 'react'
 import { useGetCitiesQuery } from '@/services/api/usersApi'
 import { useAuth } from '@/app/contexts/auth'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectCities, setCities } from '@/features/navigation/model/catalogSlice'
+import { selectCities, setCities } from '@/shared/store/catalog'
 
 interface UseCitiesOptions {
   /**

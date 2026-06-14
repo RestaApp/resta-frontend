@@ -14,8 +14,8 @@ import { normalizeCatalogPosition } from '@/shared/utils/roles'
 import { sanitizeLocations } from '@/shared/utils/location'
 import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/navigation/model/userSlice'
 import { mapServerErrorsToFields, translateServerError } from './addShiftValidation'
+import { selectUserData } from '@/shared/store/user'
 import type { AddShiftFormState } from './useAddShiftFormState'
 
 interface UseAddShiftFormSubmissionOptions {
