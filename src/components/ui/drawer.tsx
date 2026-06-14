@@ -169,7 +169,7 @@ const DrawerContent = memo(function DrawerContent({
         style={{
           y,
           bottom: bottomOffsetPx,
-          maxHeight: `min(80vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
+          maxHeight: `min(90vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
         }}
         role="dialog"
         aria-modal="true"

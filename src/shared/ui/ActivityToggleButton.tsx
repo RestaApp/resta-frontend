@@ -40,16 +40,15 @@ export const ActivityToggleButton = memo(function ActivityToggleButton({
   const icon = (
     <span
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full transition-colors duration-300 ease-out',
-        isCompact ? 'size-6' : 'size-5',
+        'flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ease-out',
         checked ? 'bg-success text-white' : 'bg-muted-foreground/25 text-muted-foreground'
       )}
       aria-hidden="true"
     >
       {checked ? (
-        <Check className={cn(isCompact ? 'h-3.5 w-3.5' : 'h-3 w-3')} strokeWidth={3} />
+        <Check className="h-3.5 w-3.5" strokeWidth={3} />
       ) : (
-        <EyeOff className={cn(isCompact ? 'h-3.5 w-3.5' : 'h-3 w-3')} />
+        <EyeOff className="h-3.5 w-3.5" />
       )}
     </span>
   )
@@ -58,12 +57,13 @@ export const ActivityToggleButton = memo(function ActivityToggleButton({
     <motion.button
       type="button"
       className={cn(
-        'flex items-center text-left transition-colors duration-300 ease-out',
+        'flex shrink-0 items-center text-left transition-colors duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70',
         isCompact
-          ? 'size-9 shrink-0 items-center justify-center rounded-full p-0'
-          : 'h-11 w-full justify-between gap-3 rounded-full px-4',
-        checked ? 'bg-success/10' : 'bg-secondary',
-        'disabled:cursor-not-allowed disabled:opacity-70',
+          ? 'justify-center p-0'
+          : cn(
+            'h-11 w-full justify-between gap-3 rounded-full px-4',
+            checked ? 'bg-success/10' : 'bg-secondary'
+          ),
         className
       )}
       onClick={() => onToggle(!checked)}
