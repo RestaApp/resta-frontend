@@ -3,7 +3,9 @@ import { LoadingPage } from '@/components/ui/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
+import { useSwipeBack } from '@/shared/lib/hooks/useSwipeBack'
 import { DetailOverlayProvider } from '@/shared/navigation/DetailOverlayContext'
+import { triggerTelegramBack } from '@/shared/utils/telegram'
 
 const Dashboard = lazy(() =>
   import('@/pages/Dashboard/Dashboard').then(m => ({ default: m.Dashboard }))
@@ -19,6 +21,16 @@ const Dashboard = lazy(() =>
  */
 const AppBootstrapRoutes = () => {
   const { screen, role, currentScreen, navigate, onSelectRole } = useAppBootstrap()
+
+  useSwipeBack({
+    enabled: screen !== 'loading',
+    onBack: () => {
+      if (triggerTelegramBack()) return
+      if (typeof window !== 'undefined' && window.history.length > 1) {
+        window.history.back()
+      }
+    },
+  })
 
   let content: ReactNode
 

@@ -155,14 +155,20 @@ const isTelegramVersionAtLeast = (webApp: TelegramWebApp, target: string): boole
 const isTelegramBackButtonSupported = (webApp: TelegramWebApp): boolean =>
   isTelegramVersionAtLeast(webApp, '6.1')
 
-const handleTelegramBackButtonClick = () => {
+export const triggerTelegramBack = (): boolean => {
   const activeHandler = telegramBackButtonHandlers.at(-1)
+  if (!activeHandler) return false
   try {
     telegramBackButtonWebApp?.HapticFeedback?.impactOccurred('light')
   } catch {
     // ignore
   }
-  activeHandler?.onBack()
+  activeHandler.onBack()
+  return true
+}
+
+const handleTelegramBackButtonClick = () => {
+  triggerTelegramBack()
 }
 
 const bindTelegramBackButton = (webApp: TelegramWebApp) => {

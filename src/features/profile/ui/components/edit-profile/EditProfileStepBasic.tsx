@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
-import { CitySelect } from '@/components/ui/city-select'
+import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import type { ApiRole } from '@/shared/types/roles.types'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 import { EditProfileAvatar } from './EditProfileAvatar'
@@ -64,7 +64,7 @@ export const EditProfileStepBasic = memo(function EditProfileStepBasic({
       ) : null}
 
       <FormField label={t('profile.cityRequired')} required error={fieldErrors.city}>
-        <CitySelect
+        <CityAutocompleteField
           value={formData.city}
           onChange={value => updateField('city', value)}
           options={cities}
@@ -72,6 +72,7 @@ export const EditProfileStepBasic = memo(function EditProfileStepBasic({
           disabled={isLoading}
           isLoading={isCitiesLoading}
           embedded
+          showLocationButton={false}
         />
       </FormField>
 

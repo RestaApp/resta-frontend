@@ -32,8 +32,6 @@ export function VenueSuppliersPage() {
     )
   }
 
-  const selectedUserId = m.isSupplierRole ? m.selectedRestaurantId : m.selectedSupplierId
-
   return (
     <PullToRefresh onRefresh={() => m.refetch()} disabled={m.isLoading}>
       <VenueSuppliersList
@@ -51,14 +49,10 @@ export function VenueSuppliersPage() {
       />
 
       <UserProfileDrawer
-        userId={selectedUserId}
-        open={selectedUserId !== null}
+        userId={m.selectedUserId}
+        open={m.selectedUserId !== null}
         onClose={() => {
-          if (m.isSupplierRole) {
-            m.setSelectedRestaurantId(null)
-          } else {
-            m.setSelectedSupplierId(null)
-          }
+          m.handleCloseDetails()
           closeOverlay()
         }}
       />

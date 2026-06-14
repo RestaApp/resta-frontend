@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { CitySelect } from '@/components/ui/city-select'
+import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { useCities } from '@/shared/lib/hooks/useCities'
@@ -43,7 +43,7 @@ export const AddShiftDrawerStep1 = ({
     <>
       <div ref={locationRef} className="flex flex-col gap-3">
         <Field label={t('profile.city')} error={cityError}>
-          <CitySelect
+          <CityAutocompleteField
             value={city}
             onChange={onCityChange}
             options={cities}
@@ -52,6 +52,7 @@ export const AddShiftDrawerStep1 = ({
             isLoading={isCitiesLoading}
             error={cityError}
             embedded
+            showLocationButton={false}
           />
         </Field>
 

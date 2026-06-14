@@ -21,6 +21,7 @@ type ScreenTabsHeaderProps<T extends string> = {
   activeTabId?: T
   onTabChange?: (id: T) => void
   action?: HeaderAction | null
+  actionsSlot?: React.ReactNode
   actionButtonRef?: React.RefObject<HTMLButtonElement | null>
   footer?: React.ReactNode
   showBorderBottom?: boolean
@@ -32,6 +33,7 @@ const ScreenTabsHeaderInner = <T extends string>({
   activeTabId,
   onTabChange,
   action,
+  actionsSlot,
   actionButtonRef,
   footer,
   showBorderBottom = true,
@@ -58,7 +60,9 @@ const ScreenTabsHeaderInner = <T extends string>({
           <div className={SCREEN_HEADER_TABS_CLASS} aria-hidden="true" />
         )}
 
-        {action ? (
+        {actionsSlot ? (
+          actionsSlot
+        ) : action ? (
           <Button
             ref={actionButtonRef}
             variant="ghost"

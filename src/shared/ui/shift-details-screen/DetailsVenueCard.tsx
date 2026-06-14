@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AVATAR_FALLBACK_CLASS } from '@/components/ui/avatar-styles'
 import { Card } from '@/components/ui/card'
+import { BODY_MUTED_CLASS, BODY_TEXT_CLASS } from '@/components/ui/ui-patterns'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { cn } from '@/shared/utils/cn'
 import { SHIFT_CARD_INTERACTIVE_CLASS } from '@/components/ui/shift-card/shift-card-styles'
@@ -47,17 +48,15 @@ export const DetailsVenueCard = memo(
           </AvatarFallback>
         </Avatar>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-semibold text-foreground">{name}</p>
+        <div className="min-w-0 flex flex-1 flex-col gap-1">
+          <p className={cn(BODY_TEXT_CLASS, 'truncate font-semibold')}>{name}</p>
           {ratingLabel ? (
-            <p className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground">
+            <p className={cn(BODY_MUTED_CLASS, 'inline-flex items-center gap-1')}>
               <Star className={cn(ICON_SM_CLASS, 'fill-primary text-primary')} aria-hidden />
               {ratingLabel}
             </p>
           ) : null}
-          {completedShiftsLabel ? (
-            <p className="mt-0.5 text-sm text-muted-foreground">{completedShiftsLabel}</p>
-          ) : null}
+          {completedShiftsLabel ? <p className={BODY_MUTED_CLASS}>{completedShiftsLabel}</p> : null}
         </div>
 
         <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />

@@ -1,18 +1,10 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { CitySelect } from '@/components/ui/city-select'
+import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
 import { ExpandableTagList } from '@/shared/ui/ExpandableTagList'
+import { CatalogFiltersDrawerShell } from '@/shared/ui/CatalogFiltersDrawerShell'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { getValidSupplierTypesForCategory, type SupplierFilters } from './types'
 
@@ -93,209 +85,196 @@ export const VenueSuppliersFiltersDrawer = ({
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerFrame className="flex-1">
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>
-              {isRestaurantsMode
-                ? t('supplierUi.restaurants.filters.title', { defaultValue: 'Фильтры заведений' })
-                : t('venueUi.suppliers.filters.title', { defaultValue: 'Фильтры поставщиков' })}
-            </DrawerTitle>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="secondary" onClick={onReset}>
-                {t('common.reset', { defaultValue: 'Сбросить' })}
+    <CatalogFiltersDrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={
+        isRestaurantsMode
+          ? t('supplierUi.restaurants.filters.title', { defaultValue: 'Фильтры заведений' })
+          : t('venueUi.suppliers.filters.title', { defaultValue: 'Фильтры поставщиков' })
+      }
+      applyLabel={
+        isRestaurantsMode
+          ? t('supplierUi.restaurants.filters.apply', { defaultValue: 'Показать заведения' })
+          : t('venueUi.suppliers.filters.apply', { defaultValue: 'Показать поставщиков' })
+      }
+      onApply={onApply}
+      onReset={onReset}
+      frameClassName="flex-1"
+      applyVariant="gradient"
+    >
+      {!isRestaurantsMode && (
+        <div className="ui-density-stack">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={draftFilters.supplierType === null ? 'primary' : 'outline'}
+              onClick={() => setDraftFilters(prev => ({ ...prev, supplierType: null }))}
+            >
+              {t('common.all', { defaultValue: 'Все' })}
+            </Button>
+            {supplierTypeOptions.map(value => (
+              <Button
+                key={value}
+                size="sm"
+                variant={draftFilters.supplierType === value ? 'primary' : 'outline'}
+                onClick={() =>
+                  setDraftFilters(prev => ({
+                    ...prev,
+                    supplierType: value,
+                    serviceCategories: getValidSupplierTypesForCategory(
+                      value,
+                      prev.serviceCategories
+                    ),
+                  }))
+                }
+              >
+                {getSupplierTypeLabel(value)}
               </Button>
-              <DrawerCloseButton
-                onClick={() => onOpenChange(false)}
-                ariaLabel={t('common.close')}
-              />
-            </div>
+            ))}
           </div>
-        </DrawerHeader>
+        </div>
+      )}
 
-        <DrawerBody className="ui-density-stack">
-          {!isRestaurantsMode && (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant={draftFilters.supplierType === null ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, supplierType: null }))}
-                >
-                  {t('common.all', { defaultValue: 'Все' })}
-                </Button>
-                {supplierTypeOptions.map(value => (
-                  <Button
-                    key={value}
-                    size="sm"
-                    variant={draftFilters.supplierType === value ? 'primary' : 'outline'}
-                    onClick={() =>
-                      setDraftFilters(prev => ({
-                        ...prev,
-                        supplierType: value,
-                        serviceCategories: getValidSupplierTypesForCategory(
-                          value,
-                          prev.serviceCategories
-                        ),
-                      }))
-                    }
-                  >
-                    {getSupplierTypeLabel(value)}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!isRestaurantsMode && (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('venueUi.suppliers.filters.categories', { defaultValue: 'Категории услуг' })}
-              </p>
-              <ExpandableTagList
-                items={serviceCategoryOptions}
-                getKey={value => value}
-                priorityKeys={draftFilters.serviceCategories}
-                renderItem={value => (
-                  <Button
-                    size="sm"
-                    variant={draftFilters.serviceCategories.includes(value) ? 'primary' : 'outline'}
-                    onClick={() => toggleDraftServiceCategory(value)}
-                  >
-                    {t(`labels.supplierType.${value}`, {
-                      defaultValue: formatServiceCategory(value),
-                    })}
-                  </Button>
-                )}
-              />
-            </div>
-          )}
-
-          {!isRestaurantsMode && (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant={!draftFilters.onlyActive ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: false }))}
-                >
-                  {t('common.all', { defaultValue: 'Все' })}
-                </Button>
-                <Button
-                  size="sm"
-                  variant={draftFilters.onlyActive ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: true }))}
-                >
-                  {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {!isRestaurantsMode && (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('venueUi.suppliers.filters.delivery', { defaultValue: 'Доставка' })}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant={draftFilters.delivery === 'all' ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'all' }))}
-                >
-                  {t('common.all', { defaultValue: 'Все' })}
-                </Button>
-                <Button
-                  size="sm"
-                  variant={draftFilters.delivery === 'yes' ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'yes' }))}
-                >
-                  {t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })}
-                </Button>
-                <Button
-                  size="sm"
-                  variant={draftFilters.delivery === 'no' ? 'primary' : 'outline'}
-                  onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'no' }))}
-                >
-                  {t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {isRestaurantsMode && (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('supplierUi.restaurants.filters.format', { defaultValue: 'Формат заведения' })}
-              </p>
-              <ExpandableTagList
-                items={restaurantFormatOptions}
-                getKey={value => value}
-                priorityKeys={draftFilters.restaurantFormats}
-                renderItem={value => (
-                  <Button
-                    size="sm"
-                    variant={draftFilters.restaurantFormats.includes(value) ? 'primary' : 'outline'}
-                    onClick={() => toggleDraftRestaurantFormat(value)}
-                  >
-                    {getRestaurantFormatLabel?.(value) ?? value}
-                  </Button>
-                )}
-              />
-            </div>
-          )}
-
-          {isRestaurantsMode && (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('supplierUi.restaurants.filters.cuisines', { defaultValue: 'Кухни' })}
-              </p>
-              <ExpandableTagList
-                items={cuisineTypeOptions}
-                getKey={value => value}
-                priorityKeys={draftFilters.cuisineTypes}
-                renderItem={value => (
-                  <Button
-                    size="sm"
-                    variant={draftFilters.cuisineTypes.includes(value) ? 'primary' : 'outline'}
-                    onClick={() => toggleDraftCuisineType(value)}
-                  >
-                    {getCuisineTypeLabel?.(value) ?? value}
-                  </Button>
-                )}
-              />
-            </div>
-          )}
-
-          <CitySelect
-            label={t('profile.city', { defaultValue: 'Город' })}
-            value={draftFilters.city}
-            onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
-            options={cities}
-            disabled={isCitiesLoading}
-            isLoading={isCitiesLoading}
-            placeholder={t('venueUi.suppliers.filters.cityPlaceholder', {
-              defaultValue: 'Например, Минск',
-            })}
-            validateOnBlur={false}
+      {!isRestaurantsMode && (
+        <div className="ui-density-stack">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {t('venueUi.suppliers.filters.categories', { defaultValue: 'Категории услуг' })}
+          </p>
+          <ExpandableTagList
+            items={serviceCategoryOptions}
+            getKey={value => value}
+            priorityKeys={draftFilters.serviceCategories}
+            renderItem={value => (
+              <Button
+                size="sm"
+                variant={draftFilters.serviceCategories.includes(value) ? 'primary' : 'outline'}
+                onClick={() => toggleDraftServiceCategory(value)}
+              >
+                {t(`labels.supplierType.${value}`, {
+                  defaultValue: formatServiceCategory(value),
+                })}
+              </Button>
+            )}
           />
-        </DrawerBody>
+        </div>
+      )}
 
-        <DrawerFooter>
-          <Button variant="gradient" size="md" className="w-full" onClick={onApply}>
-            {isRestaurantsMode
-              ? t('supplierUi.restaurants.filters.apply', { defaultValue: 'Показать заведения' })
-              : t('venueUi.suppliers.filters.apply', { defaultValue: 'Показать поставщиков' })}
-          </Button>
-        </DrawerFooter>
-      </DrawerFrame>
-    </Drawer>
+      {!isRestaurantsMode && (
+        <div className="ui-density-stack">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={!draftFilters.onlyActive ? 'primary' : 'outline'}
+              onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: false }))}
+            >
+              {t('common.all', { defaultValue: 'Все' })}
+            </Button>
+            <Button
+              size="sm"
+              variant={draftFilters.onlyActive ? 'primary' : 'outline'}
+              onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: true }))}
+            >
+              {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!isRestaurantsMode && (
+        <div className="ui-density-stack">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {t('venueUi.suppliers.filters.delivery', { defaultValue: 'Доставка' })}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={draftFilters.delivery === 'all' ? 'primary' : 'outline'}
+              onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'all' }))}
+            >
+              {t('common.all', { defaultValue: 'Все' })}
+            </Button>
+            <Button
+              size="sm"
+              variant={draftFilters.delivery === 'yes' ? 'primary' : 'outline'}
+              onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'yes' }))}
+            >
+              {t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })}
+            </Button>
+            <Button
+              size="sm"
+              variant={draftFilters.delivery === 'no' ? 'primary' : 'outline'}
+              onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'no' }))}
+            >
+              {t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {isRestaurantsMode && (
+        <div className="ui-density-stack">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {t('supplierUi.restaurants.filters.format', { defaultValue: 'Формат заведения' })}
+          </p>
+          <ExpandableTagList
+            items={restaurantFormatOptions}
+            getKey={value => value}
+            priorityKeys={draftFilters.restaurantFormats}
+            renderItem={value => (
+              <Button
+                size="sm"
+                variant={draftFilters.restaurantFormats.includes(value) ? 'primary' : 'outline'}
+                onClick={() => toggleDraftRestaurantFormat(value)}
+              >
+                {getRestaurantFormatLabel?.(value) ?? value}
+              </Button>
+            )}
+          />
+        </div>
+      )}
+
+      {isRestaurantsMode && (
+        <div className="ui-density-stack">
+          <p className={PROFILE_SECTION_LABEL_CLASS}>
+            {t('supplierUi.restaurants.filters.cuisines', { defaultValue: 'Кухни' })}
+          </p>
+          <ExpandableTagList
+            items={cuisineTypeOptions}
+            getKey={value => value}
+            priorityKeys={draftFilters.cuisineTypes}
+            renderItem={value => (
+              <Button
+                size="sm"
+                variant={draftFilters.cuisineTypes.includes(value) ? 'primary' : 'outline'}
+                onClick={() => toggleDraftCuisineType(value)}
+              >
+                {getCuisineTypeLabel?.(value) ?? value}
+              </Button>
+            )}
+          />
+        </div>
+      )}
+
+      <CityAutocompleteField
+        label={t('profile.city', { defaultValue: 'Город' })}
+        value={draftFilters.city}
+        onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
+        options={cities}
+        disabled={isCitiesLoading}
+        isLoading={isCitiesLoading}
+        placeholder={t('venueUi.suppliers.filters.cityPlaceholder', {
+          defaultValue: 'Например, Минск',
+        })}
+        showLocationButton={false}
+        validateOnBlur={false}
+      />
+    </CatalogFiltersDrawerShell>
   )
 }

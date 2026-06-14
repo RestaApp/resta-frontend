@@ -26,7 +26,7 @@ export const LegalConsentCheckbox = memo(function LegalConsentCheckbox({
   }, [checked, onChange])
 
   return (
-    <div className={cn('flex flex-col gap-1', className)}>
+    <div className={cn('flex flex-col gap-2', className)}>
       <label className="flex items-start gap-3 cursor-pointer">
         <button
           type="button"
@@ -83,7 +83,7 @@ export const LegalConsentCheckbox = memo(function LegalConsentCheckbox({
         </span>
       </label>
       {error ? (
-        <p className="ml-8 text-xs text-destructive">{t('legal.consent.required')}</p>
+        <p className="pl-8 text-xs text-destructive">{t('legal.consent.required')}</p>
       ) : null}
     </div>
   )

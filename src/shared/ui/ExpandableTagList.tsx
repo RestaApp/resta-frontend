@@ -46,7 +46,7 @@ export const ExpandableTagList = <T,>({
   }, [items, getKey, collapsedLimit, expanded, canCollapse, priorityKeys])
 
   return (
-    <div className={cn('flex flex-col', className)}>
+    <div className={cn('flex flex-col gap-1', className)}>
       <div className="flex flex-wrap gap-2">
         {visibleItems.map(item => (
           <span key={getKey(item)} className="contents">
@@ -60,7 +60,7 @@ export const ExpandableTagList = <T,>({
           type="button"
           onClick={() => setExpanded(value => !value)}
           data-haptic="light"
-          className="mt-1 inline-flex w-fit items-center gap-1 py-0.5 text-sm font-semibold text-primary transition-opacity hover:opacity-80 active:opacity-70"
+          className="inline-flex w-fit items-center gap-1 py-0.5 text-sm font-semibold text-primary transition-opacity hover:opacity-80 active:opacity-70"
           aria-expanded={expanded}
         >
           {expanded ? t('common.showLess') : t('common.showAll', { count: items.length })}

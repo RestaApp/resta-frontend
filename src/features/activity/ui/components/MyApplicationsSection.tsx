@@ -41,11 +41,11 @@ const AppliedStatusGroups = ({
         const isCollapsed = isRejectedGroup && isRejectedCollapsed
 
         return (
-          <div key={status}>
+          <div key={status} className="flex flex-col gap-2">
             <button
               type="button"
               className={cn(
-                'mb-2 flex w-full items-center justify-between',
+                'flex w-full items-center justify-between',
                 PROFILE_SECTION_LABEL_CLASS
               )}
               onClick={isRejectedGroup ? onToggleRejected : undefined}

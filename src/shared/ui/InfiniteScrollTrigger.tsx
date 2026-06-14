@@ -20,6 +20,9 @@ export const InfiniteScrollTrigger = ({
   const { t } = useTranslation()
   const observerTarget = useRef<HTMLDivElement>(null)
   const loadLockedRef = useRef(false)
+  const showLoader = isLoading
+  const showError = !isLoading && Boolean(isError)
+  const showComplete = !isLoading && !hasMore && !isError
 
   useEffect(() => {
     if (!isLoading) {
@@ -54,33 +57,31 @@ export const InfiniteScrollTrigger = ({
   return (
     <div
       ref={observerTarget}
-      className="w-full flex flex-col items-center justify-center text-muted-foreground "
+      className="flex w-full flex-col items-center justify-center text-muted-foreground"
     >
-      {/* Состояние 1: Загрузка */}
-      {isLoading && <Loader size="md" />}
+      {showLoader ? <Loader size="md" /> : null}
 
-      {/* Состояние 2: Ошибка загрузки */}
-      {!isLoading && isError && (
+      {showError ? (
         <Button
           onClick={onLoadMore}
           variant="outline"
           size="sm"
-          className="flex items-center gap-2 rounded-full text-destructive border-destructive"
+          className="flex items-center gap-2 rounded-full border-destructive text-destructive"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="h-4 w-4" />
           {t('feed.networkError')}
         </Button>
-      )}
+      ) : null}
 
-      {!isLoading && !hasMore && !isError && (
-        <div className="flex flex-col items-center gap-1 opacity-60">
-          <div className="w-12 h-1 bg-border rounded-full mb-2" />
+      {showComplete ? (
+        <div className="flex flex-col items-center gap-2 opacity-60">
+          <div className="h-1 w-12 rounded-full bg-border" />
           <div className="flex items-center gap-2 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-success" />
+            <CheckCircle2 className="h-4 w-4 text-success" />
             <span>{t('feed.sawAll')}</span>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

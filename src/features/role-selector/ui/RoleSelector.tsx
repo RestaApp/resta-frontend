@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { OnboardingStepLayout } from './components/OnboardingStepLayout'
 import { RoleCard } from './components/RoleCard'
@@ -14,8 +14,8 @@ import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './components/O
 import { RegistrationCompleteOverlay } from './components/RegistrationCompleteOverlay'
 
 import { useRoleSelector } from '../model/useRoleSelector'
-import { useSwipeBack } from '../model/useSwipeBack'
 import type { UiRole } from '@/shared/types/roles.types'
+import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
 interface RoleSelectorProps {
   onSelectRole: (role: UiRole) => void
@@ -25,7 +25,11 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
   const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
   const canSwipeBack = !vm.completedRole && (vm.flow !== 'main' || vm.selectedRole !== null)
-  useSwipeBack({ enabled: canSwipeBack, onBack: vm.handleBack })
+
+  useEffect(() => {
+    if (!canSwipeBack) return undefined
+    return setupTelegramBackButton(vm.handleBack)
+  }, [canSwipeBack, vm.handleBack])
 
   const completionOverlay = vm.completedRole ? (
     <RegistrationCompleteOverlay

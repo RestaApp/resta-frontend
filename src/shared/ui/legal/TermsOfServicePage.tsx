@@ -1,7 +1,9 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { BODY_TEXT_CLASS, SECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { resetAppScroll } from '@/shared/ui/appScroll'
+import { cn } from '@/shared/utils/cn'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
 interface TermsOfServicePageProps {
@@ -32,58 +34,58 @@ export const TermsOfServicePage = memo(function TermsOfServicePage({
       <PageHeader title={t('legal.termsOfService')} />
       <div className="ui-density-page pb-24 pt-3">
         <article className="flex flex-col gap-4 text-sm leading-relaxed text-foreground">
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.generalTitle')}</h2>
-            <p>{t('legal.terms.generalText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.generalTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.generalText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.subjectTitle')}</h2>
-            <p>{t('legal.terms.subjectText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.subjectTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.subjectText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.platformTitle')}</h2>
-            <p>{t('legal.terms.platformText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.platformTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.platformText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.userTitle')}</h2>
-            <ul className="list-disc pl-5 flex flex-col gap-1">
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.userTitle')}</h2>
+            <ul className={cn(BODY_TEXT_CLASS, 'flex list-disc flex-col gap-1 pl-5')}>
               {(t('legal.terms.userList', { returnObjects: true }) as string[]).map((item, idx) => (
                 <li key={idx}>{item}</li>
               ))}
             </ul>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.paymentTitle')}</h2>
-            <p>{t('legal.terms.paymentText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.paymentTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.paymentText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.subscriptionTitle')}</h2>
-            <p>{t('legal.terms.subscriptionText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.subscriptionTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.subscriptionText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.reviewsTitle')}</h2>
-            <p>{t('legal.terms.reviewsText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.reviewsTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.reviewsText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.liabilityTitle')}</h2>
-            <p>{t('legal.terms.liabilityText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.liabilityTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.liabilityText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.terminationTitle')}</h2>
-            <p>{t('legal.terms.terminationText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.terminationTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.terminationText')}</p>
           </section>
 
-          <section>
-            <h2 className="mb-2 text-base font-semibold">{t('legal.terms.lawTitle')}</h2>
-            <p>{t('legal.terms.lawText')}</p>
+          <section className="flex flex-col gap-2">
+            <h2 className={SECTION_TITLE_CLASS}>{t('legal.terms.lawTitle')}</h2>
+            <p className={BODY_TEXT_CLASS}>{t('legal.terms.lawText')}</p>
           </section>
 
           <p className="text-xs text-muted-foreground">{t('legal.terms.lastUpdated')}</p>

@@ -1,17 +1,8 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
-import { Button } from '@/components/ui/button'
-import { CitySelect } from '@/components/ui/city-select'
+import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { Select } from '@/components/ui/select'
+import { CatalogFiltersDrawerShell } from '@/shared/ui/CatalogFiltersDrawerShell'
 import type { EmployeeSubRole } from '@/shared/types/roles.types'
 import type { EmployeeCatalogFilters } from './employeeCatalogTypes'
 
@@ -74,77 +65,62 @@ export const EmployeeCatalogFiltersDrawer = ({
   ]
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerFrame>
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>
-              {t('venueUi.staff.catalog.filters.title', { defaultValue: 'Фильтры сотрудников' })}
-            </DrawerTitle>
-            <DrawerCloseButton
-              onClick={() => onOpenChange(false)}
-              ariaLabel={t('common.close', { defaultValue: 'Закрыть' })}
-            />
-          </div>
-        </DrawerHeader>
+    <CatalogFiltersDrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('venueUi.staff.catalog.filters.title', { defaultValue: 'Фильтры сотрудников' })}
+      applyLabel={t('venueUi.staff.catalog.filters.apply', {
+        defaultValue: 'Показать сотрудников',
+      })}
+      onApply={onApply}
+      onReset={onReset}
+    >
+      <CityAutocompleteField
+        label={t('profile.city', { defaultValue: 'Город' })}
+        value={draftFilters.city}
+        onChange={city => setDraftFilters(prev => ({ ...prev, city }))}
+        options={cities}
+        disabled={isCitiesLoading}
+        isLoading={isCitiesLoading}
+        placeholder={t('common.selectCity', { defaultValue: 'Выберите город' })}
+        showLocationButton={false}
+        validateOnBlur={false}
+      />
 
-        <DrawerBody className="ui-density-stack">
-          <CitySelect
-            label={t('profile.city', { defaultValue: 'Город' })}
-            value={draftFilters.city}
-            onChange={city => setDraftFilters(prev => ({ ...prev, city }))}
-            options={cities}
-            disabled={isCitiesLoading}
-            isLoading={isCitiesLoading}
-            placeholder={t('common.selectCity', { defaultValue: 'Выберите город' })}
-            validateOnBlur={false}
-          />
+      <Select
+        label={t('venueUi.staff.catalog.filters.position', { defaultValue: 'Должность' })}
+        value={draftFilters.position ?? ''}
+        onChange={value =>
+          setDraftFilters(prev => ({
+            ...prev,
+            position: value || null,
+            specialization: null,
+          }))
+        }
+        options={positionOptions}
+        placeholder={t('venueUi.staff.catalog.filters.allPositions', {
+          defaultValue: 'Все должности',
+        })}
+      />
 
-          <Select
-            label={t('venueUi.staff.catalog.filters.position', { defaultValue: 'Должность' })}
-            value={draftFilters.position ?? ''}
-            onChange={value =>
-              setDraftFilters(prev => ({
-                ...prev,
-                position: value || null,
-                specialization: null,
-              }))
-            }
-            options={positionOptions}
-            placeholder={t('venueUi.staff.catalog.filters.allPositions', {
-              defaultValue: 'Все должности',
-            })}
-          />
-
-          {draftFilters.position ? (
-            <Select
-              label={t('venueUi.staff.catalog.filters.specialization', {
-                defaultValue: 'Специализация',
-              })}
-              value={draftFilters.specialization ?? ''}
-              onChange={value =>
-                setDraftFilters(prev => ({
-                  ...prev,
-                  specialization: value || null,
-                }))
-              }
-              options={specializationOptions}
-              placeholder={t('venueUi.staff.catalog.filters.allSpecializations', {
-                defaultValue: 'Все специализации',
-              })}
-            />
-          ) : null}
-        </DrawerBody>
-
-        <DrawerFooter className="gap-2">
-          <Button type="button" variant="outline" onClick={onReset}>
-            {t('common.reset', { defaultValue: 'Сбросить' })}
-          </Button>
-          <Button type="button" onClick={onApply}>
-            {t('venueUi.staff.catalog.filters.apply', { defaultValue: 'Показать сотрудников' })}
-          </Button>
-        </DrawerFooter>
-      </DrawerFrame>
-    </Drawer>
+      {draftFilters.position ? (
+        <Select
+          label={t('venueUi.staff.catalog.filters.specialization', {
+            defaultValue: 'Специализация',
+          })}
+          value={draftFilters.specialization ?? ''}
+          onChange={value =>
+            setDraftFilters(prev => ({
+              ...prev,
+              specialization: value || null,
+            }))
+          }
+          options={specializationOptions}
+          placeholder={t('venueUi.staff.catalog.filters.allSpecializations', {
+            defaultValue: 'Все специализации',
+          })}
+        />
+      ) : null}
+    </CatalogFiltersDrawerShell>
   )
 }

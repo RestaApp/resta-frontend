@@ -73,7 +73,7 @@ interface RequirementsSectionProps {
 const RequirementsSection = ({ label, lines }: RequirementsSectionProps) => (
   <section className="flex flex-col gap-2 border-t border-border pt-4">
     <h2 className={SUBSECTION_TITLE_CLASS}>{label}</h2>
-    <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+    <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
       {lines.map(line => (
         <li key={line} className={FORMATTED_USER_TEXT_CLASS}>
           {line}

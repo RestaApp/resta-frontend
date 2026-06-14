@@ -92,7 +92,7 @@ const ratingSummary = (
 
 const ratingStars = (hasRating: boolean, normalizedRating: number, t: TFunction) => (
   <div
-    className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground"
+    className="flex items-center gap-1 text-xs text-muted-foreground"
     aria-label={t('common.rating')}
   >
     {hasRating ? (

@@ -1,15 +1,11 @@
 import { Inbox, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { ScreenTabsHeader } from '@/components/ui/screen-tabs-header'
 import {
   APP_HEADER_ACTION_BUTTON_CLASS,
   APP_HEADER_ACTION_ICON_CLASS,
-  SCREEN_HEADER_ROW_CLASS,
-  SCREEN_HEADER_SHELL_CLASS,
-  SCREEN_HEADER_TABS_CLASS,
-  SCREEN_TITLE_CLASS,
 } from '@/components/ui/ui-patterns'
-import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
 
 interface StaffPageHeaderProps {
@@ -34,14 +30,9 @@ export const StaffPageHeader = ({
       : t('venueUi.staff.applications.openAria', { defaultValue: 'Отклики' })
 
   return (
-    <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
-      <div className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}>
-        <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>
-          {t('tabs.venue.staff', { defaultValue: 'Персонал' })}
-        </h1>
-
-        <div className={SCREEN_HEADER_TABS_CLASS} aria-hidden="true" />
-
+    <ScreenTabsHeader
+      title={t('tabs.venue.staff', { defaultValue: 'Персонал' })}
+      actionsSlot={
         <div className="flex shrink-0 items-center gap-1">
           <Button
             type="button"
@@ -77,7 +68,7 @@ export const StaffPageHeader = ({
             ) : null}
           </div>
         </div>
-      </div>
-    </header>
+      }
+    />
   )
 }

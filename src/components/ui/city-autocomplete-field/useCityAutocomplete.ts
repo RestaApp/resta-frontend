@@ -9,9 +9,6 @@ interface UseCityAutocompleteProps {
   isLoadingOptions?: boolean
   validateOnBlur?: boolean
   disabled?: boolean
-  initialVisibleCount?: number
-  loadMoreThreshold?: number
-  loadMoreStep?: number
 }
 
 interface ValidationResult {
@@ -29,14 +26,10 @@ export const useCityAutocomplete = ({
   isLoadingOptions = false,
   validateOnBlur = true,
   disabled = false,
-  initialVisibleCount = 10,
-  loadMoreThreshold = 0.8,
-  loadMoreStep = 10,
 }: UseCityAutocompleteProps) => {
   const { t } = useTranslation()
   const [isFocused, setIsFocused] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [visibleCount, setVisibleCount] = useState(initialVisibleCount)
   const [isValid, setIsValid] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -53,7 +46,7 @@ export const useCityAutocomplete = ({
   const cities = usesExternalOptions ? options : fetchedCities
   const isLoadingCities = usesExternalOptions ? isLoadingOptions : isFetchingCities
 
-  const allFilteredCities = useMemo(() => {
+  const filteredCities = useMemo(() => {
     if (!value.trim()) {
       return cities
     }
@@ -61,48 +54,6 @@ export const useCityAutocomplete = ({
     const searchTerm = value.toLowerCase().trim()
     return cities.filter(city => city.toLowerCase().includes(searchTerm))
   }, [cities, value])
-
-  const filteredCities = useMemo(() => {
-    return allFilteredCities.slice(0, visibleCount)
-  }, [allFilteredCities, visibleCount])
-
-  const hasMore = allFilteredCities.length > visibleCount
-
-  const filteredTotalRef = useRef(0)
-  useEffect(() => {
-    filteredTotalRef.current = allFilteredCities.length
-  }, [allFilteredCities.length])
-
-  useEffect(() => {
-    if (!showSuggestions || !hasMore || isLoadingCities) return
-
-    const listElement = listRef.current
-    if (!listElement) return
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = listElement
-      if (scrollHeight <= clientHeight) return
-
-      const fromBottom = scrollHeight - scrollTop - clientHeight
-      const thresholdPx = Math.max(48, scrollHeight * (1 - loadMoreThreshold))
-      if (fromBottom <= thresholdPx) {
-        const cap = filteredTotalRef.current
-        setVisibleCount(prev => Math.min(prev + loadMoreStep, cap))
-      }
-    }
-
-    listElement.addEventListener('scroll', handleScroll, { passive: true })
-    return () => {
-      listElement.removeEventListener('scroll', handleScroll)
-    }
-  }, [
-    hasMore,
-    allFilteredCities.length,
-    loadMoreThreshold,
-    loadMoreStep,
-    showSuggestions,
-    isLoadingCities,
-  ])
 
   useEffect(() => {
     if (!showSuggestions) return
@@ -157,16 +108,16 @@ export const useCityAutocomplete = ({
         }
       }
 
-      if (allFilteredCities.length === 1) {
-        onChange(allFilteredCities[0])
+      if (filteredCities.length === 1) {
+        onChange(filteredCities[0])
         return {
           isValid: true,
           errorMessage: null,
-          normalizedValue: allFilteredCities[0],
+          normalizedValue: filteredCities[0],
         }
       }
 
-      if (allFilteredCities.length > 0) {
+      if (filteredCities.length > 0) {
         return {
           isValid: false,
           errorMessage: t('selectCityFromList'),
@@ -178,24 +129,20 @@ export const useCityAutocomplete = ({
         errorMessage: t('cityNotFound'),
       }
     },
-    [allFilteredCities, cities, onChange, t, validateOnBlur]
+    [cities, filteredCities, onChange, t, validateOnBlur]
   )
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (disabled) return
-      const newValue = e.target.value
-      if (newValue !== value) {
-        setVisibleCount(initialVisibleCount)
-      }
-      onChange(newValue)
+      onChange(e.target.value)
       setShowSuggestions(true)
       if (!isValid) {
         setIsValid(true)
         setErrorMessage(null)
       }
     },
-    [disabled, initialVisibleCount, isValid, onChange, value]
+    [disabled, isValid, onChange]
   )
 
   const handleInputFocus = useCallback(() => {
@@ -255,9 +202,7 @@ export const useCityAutocomplete = ({
     errorMessage,
     isLoadingCities,
     hasSuggestions,
-    hasMore,
     filteredCities,
-    allFilteredCities,
     inputRef,
     containerRef,
     listRef,

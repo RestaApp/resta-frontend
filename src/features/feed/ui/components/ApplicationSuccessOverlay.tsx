@@ -98,7 +98,7 @@ export const ApplicationSuccessOverlay = ({
             </AvatarFallback>
           </Avatar>
 
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex flex-1 flex-col gap-1">
             <div className="flex items-start justify-between gap-2">
               <p className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 flex-1 truncate')}>
                 {shift.restaurant}
@@ -107,7 +107,7 @@ export const ApplicationSuccessOverlay = ({
                 {t('activity.statusPending')}
               </Badge>
             </div>
-            {meta ? <p className={cn(SHIFT_CARD_META_CLASS, 'mt-1')}>{meta}</p> : null}
+            {meta ? <p className={SHIFT_CARD_META_CLASS}>{meta}</p> : null}
           </div>
         </div>
       </Card>

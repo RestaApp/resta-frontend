@@ -84,15 +84,17 @@ export function DetailsScreenFrame({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerFrame>
         <DrawerHeader className="shrink-0">
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <DrawerTitle className="break-words">{title}</DrawerTitle>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <DrawerTitle className="break-words">{title}</DrawerTitle>
+              </div>
+              <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel ?? ''} />
             </div>
-            <DrawerCloseButton onClick={onClose} ariaLabel={closeAriaLabel ?? ''} />
+            {headerMeta ? (
+              <div className="flex flex-wrap items-center gap-2">{headerMeta}</div>
+            ) : null}
           </div>
-          {headerMeta ? (
-            <div className="flex items-center gap-2 flex-wrap mt-3">{headerMeta}</div>
-          ) : null}
         </DrawerHeader>
 
         <DrawerBody className="ui-density-stack pb-5">{children}</DrawerBody>

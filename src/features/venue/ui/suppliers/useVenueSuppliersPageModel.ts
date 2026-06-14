@@ -46,8 +46,7 @@ export const useVenueSuppliersPageModel = () => {
     [userCity]
   )
 
-  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null)
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
 
   const {
     appliedFilters,
@@ -168,18 +167,6 @@ export const useVenueSuppliersPageModel = () => {
     suppliers,
   ])
 
-  const suppliersMap = useMemo(() => {
-    const map = new Map<number, (typeof suppliers)[number]>()
-    for (const item of suppliers) map.set(item.id, item)
-    return map
-  }, [suppliers])
-
-  const selectedSupplier =
-    selectedSupplierId !== null ? (suppliersMap.get(selectedSupplierId) ?? null) : null
-
-  const selectedRestaurant =
-    selectedRestaurantId !== null ? (suppliersMap.get(selectedRestaurantId) ?? null) : null
-
   const pagination = data?.pagination || data?.meta
   const hasMore = computeHasMore(pagination, suppliers.length)
 
@@ -228,16 +215,15 @@ export const useVenueSuppliersPageModel = () => {
 
   const handleOpenDetails = useCallback(
     (id: number) => {
-      if (isSupplierRole) {
-        setSelectedRestaurantId(id)
-        openUserProfile(id)
-        return
-      }
-      setSelectedSupplierId(id)
+      setSelectedUserId(id)
       openUserProfile(id)
     },
-    [isSupplierRole, openUserProfile]
+    [openUserProfile]
   )
+
+  const handleCloseDetails = useCallback(() => {
+    setSelectedUserId(null)
+  }, [])
 
   return {
     isSupplierRole,
@@ -258,13 +244,9 @@ export const useVenueSuppliersPageModel = () => {
     handleLoadMore,
     handleResetFilters,
     handleRemoveFilter,
-    selectedSupplier,
-    selectedSupplierId,
-    setSelectedSupplierId,
-    selectedRestaurant,
-    selectedRestaurantId,
-    setSelectedRestaurantId,
+    selectedUserId,
     handleOpenDetails,
+    handleCloseDetails,
     isFiltersOpen,
     setIsFiltersOpen,
     draftFilters,

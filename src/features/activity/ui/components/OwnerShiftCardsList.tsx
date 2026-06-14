@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
-import { cn } from '@/shared/utils/cn'
 import { PersonalShiftCard } from '@/features/activity/ui/components/PersonalShiftCard'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
@@ -36,7 +35,7 @@ export const OwnerShiftCardsList = ({
     <>
       {groups.map(({ status, label, items: groupItems }) => (
         <div key={status} className="ui-density-stack">
-          {label ? <p className={cn(PROFILE_SECTION_LABEL_CLASS, 'mb-0')}>{t(label)}</p> : null}
+          {label ? <p className={PROFILE_SECTION_LABEL_CLASS}>{t(label)}</p> : null}
           <div className="ui-density-stack">
             {groupItems.map(shift => (
               <PersonalShiftCard
