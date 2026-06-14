@@ -69,7 +69,7 @@ export const PageHeader = ({
   return (
     <header
       className={cn(
-        'bg-background/92 ui-density-page pt-3 pb-3 backdrop-blur-xl',
+        'border-b border-border bg-background/92 ui-density-page pt-3 pb-3 backdrop-blur-xl',
         sticky && 'sticky top-0',
         className
       )}

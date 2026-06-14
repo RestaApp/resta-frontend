@@ -24,7 +24,6 @@ type ScreenTabsHeaderProps<T extends string> = {
   actionsSlot?: React.ReactNode
   actionButtonRef?: React.RefObject<HTMLButtonElement | null>
   footer?: React.ReactNode
-  showBorderBottom?: boolean
 }
 
 const ScreenTabsHeaderInner = <T extends string>({
@@ -36,14 +35,13 @@ const ScreenTabsHeaderInner = <T extends string>({
   actionsSlot,
   actionButtonRef,
   footer,
-  showBorderBottom = true,
 }: ScreenTabsHeaderProps<T>) => {
   const hasTabs = tabOptions != null && activeTabId != null && onTabChange != null
 
   return (
     <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
       <div
-        className={cn(SCREEN_HEADER_ROW_CLASS, showBorderBottom ? 'border-b border-border' : null)}
+        className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}
       >
         <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>{title}</h1>
 

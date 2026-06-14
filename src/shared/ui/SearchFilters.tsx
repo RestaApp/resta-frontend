@@ -20,7 +20,7 @@ function SearchFiltersComponent({
   if (activeFilters.length === 0) return null
 
   return (
-    <div className="border-b border-border/50 bg-background ui-density-page py-2">
+    <div className="border-b border-border bg-background ui-density-page py-2">
       <div className="flex gap-2 overflow-x-auto scrollbar-hide">
         {activeFilters.map(filter => (
           <FilterChip
