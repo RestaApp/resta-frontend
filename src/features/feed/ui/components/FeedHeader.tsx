@@ -21,7 +21,6 @@ export const FeedHeader = memo((props: Props) => {
   const { options, feedType, onChangeFeedType, activeFilters, onResetFilters, onRemoveFilter } =
     props
   const { t } = useTranslation()
-  const hasActiveFilters = activeFilters.length > 0
 
   return (
     <ScreenTabsHeader
@@ -34,7 +33,6 @@ export const FeedHeader = memo((props: Props) => {
         Icon: SlidersHorizontal,
         onClick: () => emitAppEvent(APP_EVENTS.OPEN_FEED_FILTERS),
       }}
-      showBorderBottom={!hasActiveFilters}
       footer={
         <SearchFilters
           activeFilters={activeFilters}
