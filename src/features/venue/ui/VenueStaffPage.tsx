@@ -18,7 +18,7 @@ import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetail
 import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
 import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/shared/store/user'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { EmployeeCatalogFiltersDrawer } from './staff/EmployeeCatalogFiltersDrawer'
 import { EmployeeCatalogList } from './staff/EmployeeCatalogList'

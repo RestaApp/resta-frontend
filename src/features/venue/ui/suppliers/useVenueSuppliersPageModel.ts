@@ -5,7 +5,7 @@ import { useLabels } from '@/shared/i18n/hooks'
 import { useCities } from '@/shared/lib/hooks/useCities'
 import { computeHasMore, usePaginatedFilterState } from '@/shared/lib/hooks/usePaginatedFilterState'
 import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole, selectUserCity } from '@/shared/store/user'
+import { selectSelectedRole, selectUserCity } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import {

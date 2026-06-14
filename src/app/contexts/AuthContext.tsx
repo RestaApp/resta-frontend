@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { authService } from '@/services/auth'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { clearUserData } from '@/shared/store/user'
+import { clearUserData } from '@/features/navigation/model/userSlice'
 import { selectTelegramIsReady } from '@/features/navigation/model/telegramSlice'
 import { AuthContext, type AuthContextValue } from './auth'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'

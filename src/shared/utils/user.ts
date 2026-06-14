@@ -3,7 +3,7 @@
  * Возвращает undefined, если userId недоступен
  */
 import { store } from '@/store'
-import { selectUserId } from '@/shared/store/user'
+import { selectUserId } from '@/features/navigation/model/userSlice'
 
 export function getCurrentUserId(): number | undefined {
   try {

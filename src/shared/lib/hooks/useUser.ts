@@ -4,7 +4,7 @@
 
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import type { UserData } from '@/services/api/authApi'
-import { clearUserData, selectUserData, setUserData } from '@/shared/store/user'
+import { clearUserData, selectUserData, setUserData } from '@/features/navigation/model/userSlice'
 
 export const useUser = () => {
   const dispatch = useAppDispatch()

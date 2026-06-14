@@ -8,7 +8,7 @@ import { useAuth } from '@/app/contexts/auth'
 import { useGetUserQuery } from '@/services/api/usersApi'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { updateUserDataInStore } from '@/shared/utils/userData'
-import { selectUserData } from '@/shared/store/user'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 
 interface UseUserProfileOptions {
   /**

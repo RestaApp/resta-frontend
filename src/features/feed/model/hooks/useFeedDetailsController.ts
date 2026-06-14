@@ -5,8 +5,8 @@ import { setLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { getScreenForTab } from '@/shared/constants/navigation'
 import { getPathForScreen } from '@/shared/constants/routePaths'
-import { navigateToTab } from '@/shared/store/navigation'
-import { selectSelectedRole } from '@/shared/store/user'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
+import { selectSelectedRole } from '@/features/navigation/model/userSlice'
 
 interface UseFeedDetailsControllerParams {
   selectedShiftId: number | null

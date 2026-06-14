@@ -19,7 +19,7 @@ import userReducer from '@/features/navigation/model/userSlice'
 import telegramReducer from '@/features/navigation/model/telegramSlice'
 import navigationReducer from '@/features/navigation/model/navigationSlice'
 import { authSessionExpired } from '@/shared/api/authEvents'
-import { clearUserData } from '@/shared/store/user'
+import { clearUserData } from '@/features/navigation/model/userSlice'
 
 // Импортируем все API endpoints для их регистрации
 import '@/services/api'

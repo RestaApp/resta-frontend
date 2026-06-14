@@ -11,7 +11,7 @@ import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/loca
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { navigateToTab } from '@/shared/store/navigation'
+import { navigateToTab } from '@/features/navigation/model/navigationSlice'
 import { cn } from '@/shared/utils/cn'
 import { useAppDispatch } from '@/store/hooks'
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/shared/store/user'
+import { selectUserData } from '@/features/navigation/model/userSlice'
 import { useUserUpdate } from './useUserUpdate'
 import { useGeolocation, getCityByCoordinates } from '@/shared/lib/hooks/useGeolocation'
 import { requestTelegramContact, requestTelegramLocation } from '@/shared/utils/telegram'
