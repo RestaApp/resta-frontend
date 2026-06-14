@@ -24,12 +24,12 @@ interface RoleSelectorProps {
 export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSelectorProps) {
   const { t } = useTranslation()
   const vm = useRoleSelector({ onSelectRole })
-  const canSwipeBack = !vm.completedRole && (vm.flow !== 'main' || vm.selectedRole !== null)
+  const canGoBack = !vm.completedRole && (vm.flow !== 'main' || vm.selectedRole !== null)
 
   useEffect(() => {
-    if (!canSwipeBack) return undefined
+    if (!canGoBack) return undefined
     return setupTelegramBackButton(vm.handleBack)
-  }, [canSwipeBack, vm.handleBack])
+  }, [canGoBack, vm.handleBack])
 
   const completionOverlay = vm.completedRole ? (
     <RegistrationCompleteOverlay
