@@ -25,7 +25,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
   const selectedRole = useAppSelector(selectSelectedRole)
   const isVenue = selectedRole === 'venue'
   const isSupplier = selectedRole === 'supplier'
-  const [activeTab, setActiveTab] = useState<ActivityTab>(defaultTab)
+  const activeTab = defaultTab
 
   const {
     data,
@@ -162,7 +162,6 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
 
   return {
     activeTab,
-    setActiveTab,
     isLoading,
     isAppliedLoading,
     isError,

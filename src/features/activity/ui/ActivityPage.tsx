@@ -39,14 +39,6 @@ export const ActivityPage = ({
     [t]
   )
 
-  const employeeTabOptions = useMemo<TabOption<ActivityTab>[]>(
-    () => [
-      { id: 'applications', label: t('tabs.activity.applications') },
-      { id: 'shifts', label: t('tabs.activity.shifts') },
-    ],
-    [t]
-  )
-
   const venueItems = useMemo(
     () =>
       m.shifts.filter(item =>
@@ -107,9 +99,6 @@ export const ActivityPage = ({
           title={header.title}
           action={header.action}
           showAddShiftOnboarding={header.showAddShiftOnboarding}
-          tabOptions={employeeTabOptions}
-          activeTabId={m.activeTab}
-          onTabChange={m.setActiveTab}
         />
       )}
 

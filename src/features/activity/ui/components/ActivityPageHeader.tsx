@@ -10,9 +10,9 @@ type ActivityPageHeaderProps<T extends string> = {
   title: string
   action: HeaderAction | null
   showAddShiftOnboarding?: boolean
-  tabOptions: TabOption<T>[]
-  activeTabId: T
-  onTabChange: (id: T) => void
+  tabOptions?: TabOption<T>[]
+  activeTabId?: T
+  onTabChange?: (id: T) => void
 }
 
 const ActivityPageHeaderInner = <T extends string>({

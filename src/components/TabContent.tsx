@@ -67,11 +67,6 @@ const TabSuspenseFallback = ({ activeTab }: TabSuspenseFallbackProps) => {
     { id: 'shifts', label: t('tabs.feed.shifts') },
   ]
 
-  const employeeTabOptions: TabOption<ActivityTab>[] = [
-    { id: 'applications', label: t('tabs.activity.applications') },
-    { id: 'shifts', label: t('tabs.activity.shifts') },
-  ]
-
   if (activeTab === 'feed') {
     return (
       <div className="bg-background ui-density-stack">
@@ -102,9 +97,13 @@ const TabSuspenseFallback = ({ activeTab }: TabSuspenseFallbackProps) => {
             role: selectedRole,
             isEmployeeFlow,
           })}
-          tabOptions={isVenue ? venueTabOptions : employeeTabOptions}
-          activeTabId={isVenue ? 'vacancies' : activeTab === 'myshifts' ? 'shifts' : 'applications'}
-          onTabChange={noop}
+          {...(isVenue
+            ? {
+                tabOptions: venueTabOptions,
+                activeTabId: 'vacancies' as const,
+                onTabChange: noop,
+              }
+            : {})}
         />
         <div className="ui-density-page ui-density-py">
           <FeedCardSkeletonList />
