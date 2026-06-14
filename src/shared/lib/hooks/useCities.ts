@@ -1,14 +1,10 @@
 /**
- * Хук для работы с городами
- * Инкапсулирует логику работы с городами из каталога
- * Использует Redux для кеширования и RTK Query для загрузки
+ * Хук для работы с городами.
+ * Single source of truth — RTK Query cache.
  */
 
-import { useMemo, useEffect } from 'react'
 import { useGetCitiesQuery } from '@/services/api/usersApi'
 import { useAuth } from '@/app/contexts/auth'
-import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectCities, setCities } from '@/shared/store/catalog'
 
 interface UseCitiesOptions {
   /**
@@ -26,41 +22,18 @@ interface UseCitiesOptions {
 export const useCities = (options: UseCitiesOptions = {}) => {
   const { enabled = false } = options
   const { isAuthenticated } = useAuth()
-  const dispatch = useAppDispatch()
-  const citiesFromStore = useAppSelector(selectCities)
-
-  // Пропускаем запрос если:
-  // - не включен
-  // - не авторизован
-  // - города уже есть в Redux
-  const shouldSkipQuery = !enabled || !isAuthenticated || citiesFromStore.length > 0
+  const shouldSkipQuery = !enabled || !isAuthenticated
 
   const { data, isLoading, isFetching, error, refetch } = useGetCitiesQuery(undefined, {
     skip: shouldSkipQuery,
   })
 
-  const citiesFromApi = useMemo(() => data?.data ?? [], [data])
-
-  // Сохраняем города в Redux при загрузке из API
-  useEffect(() => {
-    if (citiesFromApi.length > 0 && citiesFromStore.length === 0) {
-      dispatch(setCities(citiesFromApi))
-    }
-  }, [citiesFromApi, citiesFromStore.length, dispatch])
-
-  // Используем данные из Redux в первую очередь, если они есть
-  // Иначе используем данные из API
-  const cities = useMemo(() => {
-    if (citiesFromStore.length > 0) {
-      return citiesFromStore
-    }
-    return citiesFromApi
-  }, [citiesFromStore, citiesFromApi])
+  const cities = data?.data ?? []
 
   return {
     cities,
-    isLoading: shouldSkipQuery ? false : isLoading,
-    isFetching: shouldSkipQuery ? false : isFetching,
+    isLoading,
+    isFetching,
     error,
     refetch,
   }

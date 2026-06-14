@@ -4,12 +4,12 @@ import type { UserData } from '@/services/api/authApi'
 import { mapRoleFromApi, mapApiRoleToDefaultUiRole, isVerifiedRole } from '@/shared/utils/roles'
 import type { RootState } from '@/store/index'
 
-interface UserState {
+export interface SharedUserState {
   userData: (UserData & { role?: ApiRole | string | null }) | null
   selectedRole: UiRole | null
 }
 
-const initialState: UserState = {
+const initialState: SharedUserState = {
   userData: null,
   selectedRole: null,
 }

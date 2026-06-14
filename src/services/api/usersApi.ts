@@ -219,13 +219,13 @@ export const usersApi = api.injectEndpoints({
     // Получение специализаций для позиции
     getUserSpecializations: builder.query<UserSpecializationsResponse, string>({
       query: position => ({
-        url: `/api/v1/catalogs/specializations?position=${position}`,
+        url: '/api/v1/catalogs/specializations',
         method: 'GET',
+        params: { position },
       }),
-      // КРИТИЧНО: Нормализуем аргумент для корректного кеширования
-      // Это гарантирует, что запросы для "chef" и "Chef" будут различаться
+      // Нормализуем аргумент для консистентного кеш-ключа,
+      // чтобы "chef" и "Chef" не создавали два независимых entry.
       serializeQueryArgs: ({ queryArgs }) => {
-        // Нормализуем позицию к lowercase для консистентности
         return queryArgs.toLowerCase()
       },
       providesTags: (_result, _error, position) => [

@@ -1,15 +1,12 @@
 /**
- * Хук для работы со специализациями
- * Инкапсулирует логику работы со специализациями пользователей
- * Использует Redux как кеш для избежания повторных запросов
+ * Хук для работы со специализациями пользователей.
+ * Single source of truth — RTK Query cache.
  */
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useAuth } from '@/app/contexts/auth'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'
 import { useGetUserSpecializationsQuery } from '@/services/api/usersApi'
-import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { setSpecializations, selectSpecializationsByPosition } from '@/shared/store/catalog'
 
 interface UseUserSpecializationsOptions {
   /**
@@ -31,72 +28,24 @@ interface UseUserSpecializationsOptions {
 export const useUserSpecializations = (options: UseUserSpecializationsOptions) => {
   const { enabled = false, position } = options
   const { isAuthenticated } = useAuth()
-  const dispatch = useAppDispatch()
 
-  // Нормализуем позицию к ключу каталога (legacy operator -> office)
   const normalizedPosition = useMemo(() => normalizeCatalogPosition(position || ''), [position])
+  const shouldSkipQuery = !enabled || !isAuthenticated || !normalizedPosition
 
-  // Получаем специализации из Redux кеша для данной позиции
-  const cachedSpecializations = useAppSelector(state =>
-    selectSpecializationsByPosition(state, normalizedPosition)
-  )
-
-  // Проверяем наличие данных в кеше для текущей позиции
-  const hasCachedData = normalizedPosition ? cachedSpecializations.length > 0 : false
-
-  // Пропускаем запрос если:
-  // 1. Не включен или не авторизован или нет позиции
-  // 2. Данные уже есть в Redux кеше для этой позиции (не делаем повторный запрос)
-  const shouldSkipQuery = !enabled || !isAuthenticated || !normalizedPosition || hasCachedData
-
-  // Выполняем запрос к API
-  const { currentData, isLoading, isFetching, error, refetch } = useGetUserSpecializationsQuery(
+  const { data, isLoading, isFetching, error, refetch } = useGetUserSpecializationsQuery(
     normalizedPosition,
     {
       skip: shouldSkipQuery,
-      // Принудительно обновляем при изменении позиции
       refetchOnMountOrArgChange: true,
     }
   )
 
-  // Сохраняем данные в Redux после успешной загрузки
-  useEffect(() => {
-    if (
-      currentData?.data &&
-      currentData.data.length > 0 &&
-      normalizedPosition &&
-      !hasCachedData &&
-      !shouldSkipQuery
-    ) {
-      dispatch(
-        setSpecializations({
-          position: normalizedPosition,
-          specializations: currentData.data,
-        })
-      )
-    }
-  }, [currentData, normalizedPosition, dispatch, hasCachedData, shouldSkipQuery])
-
-  const specializations = useMemo(() => {
-    if (!normalizedPosition) return []
-
-    // Приоритет 1: данные из Redux кеша (если есть)
-    if (hasCachedData && cachedSpecializations.length > 0) {
-      return cachedSpecializations
-    }
-
-    // Приоритет 2: данные из запроса (если есть)
-    if (currentData?.data && currentData.data.length > 0) {
-      return currentData.data
-    }
-
-    return []
-  }, [normalizedPosition, hasCachedData, cachedSpecializations, currentData?.data])
+  const specializations = data?.data ?? []
 
   return {
     specializations,
-    isLoading: hasCachedData ? false : isLoading,
-    isFetching: hasCachedData ? false : isFetching,
+    isLoading,
+    isFetching,
     error,
     refetch,
   }

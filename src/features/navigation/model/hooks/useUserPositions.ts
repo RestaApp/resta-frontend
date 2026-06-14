@@ -1,15 +1,11 @@
 /**
- * Хук для работы с позициями (подролями сотрудников)
- * Инкапсулирует логику работы с позициями пользователей
- * Использует Redux как кеш для избежания повторных запросов
+ * Хук для работы с позициями (подролями сотрудников).
+ * Single source of truth — RTK Query cache.
  */
 
-import { useEffect } from 'react'
 import { useGetUserPositionsQuery } from '@/services/api/usersApi'
 import { mapEmployeeSubRolesFromApi } from '@/shared/utils/roleMappers'
 import { useAuth } from '@/app/contexts/auth'
-import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { selectPositions, setPositions } from '@/shared/store/catalog'
 
 interface UseUserPositionsOptions {
   /**
@@ -27,35 +23,18 @@ interface UseUserPositionsOptions {
 export const useUserPositions = (options: UseUserPositionsOptions = {}) => {
   const { enabled = false } = options
   const { isAuthenticated } = useAuth()
-  const dispatch = useAppDispatch()
-
-  // Получаем позиции из Redux кеша
-  const cachedPositions = useAppSelector(selectPositions)
-  const hasCachedData = cachedPositions.length > 0
-
-  // Пропускаем запрос если:
-  // 1. Не включен или не авторизован
-  // 2. Данные уже есть в кеше (не делаем повторный запрос)
   const { data, isLoading, isFetching, error, refetch } = useGetUserPositionsQuery(undefined, {
-    skip: !enabled || !isAuthenticated || hasCachedData,
+    skip: !enabled || !isAuthenticated,
   })
 
-  // Сохраняем данные в Redux после успешной загрузки
-  useEffect(() => {
-    if (data?.data && data.data.length > 0 && !hasCachedData) {
-      dispatch(setPositions(data.data))
-    }
-  }, [data, dispatch, hasCachedData])
-
-  // Используем данные из кеша или из запроса
-  const positionsApi = hasCachedData ? cachedPositions : (data?.data ?? [])
+  const positionsApi = data?.data ?? []
   const mappedPositions = mapEmployeeSubRolesFromApi(positionsApi)
 
   return {
     positions: mappedPositions,
     positionsApi,
-    isLoading: hasCachedData ? false : isLoading,
-    isFetching: hasCachedData ? false : isFetching,
+    isLoading,
+    isFetching,
     error,
     refetch,
   }
