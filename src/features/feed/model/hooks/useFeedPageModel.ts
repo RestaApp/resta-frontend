@@ -1,14 +1,10 @@
-import { useMemo, useCallback, useEffect, useRef } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
 
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useSuccessOverlay } from '@/shared/lib/hooks/useSuccessOverlay'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { setLocalStorageItem } from '@/shared/utils/localStorage'
-import { STORAGE_KEYS } from '@/shared/constants/storage'
-import { getScreenForTab } from '@/shared/constants/navigation'
-import { getPathForScreen } from '@/shared/constants/routePaths'
+import { useAppDispatch } from '@/store/hooks'
 
 import { useFeedFiltersState } from '../hooks/useFeedFiltersState'
 import { useVacanciesInfiniteList } from '../hooks/useVacanciesInfiniteList'
@@ -16,31 +12,19 @@ import { buildVacanciesBaseParams } from '../utils/queryParams'
 import { useHotOffers } from '../hooks/useHotOffers'
 import { useShiftActions } from '../hooks/useShiftActions'
 import { useFeedApplyFlow } from '../hooks/useFeedApplyFlow'
+import { useFeedDetailsController } from '../hooks/useFeedDetailsController'
+import { useFeedFiltersController } from '../hooks/useFeedFiltersController'
 import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
-import { syncFiltersPositionAndSpecializations } from '../utils/filterSync'
 
-import {
-  formatFiltersForDisplay,
-  hasActiveFilters,
-  normalizeAdvancedFilters,
-  removeAdvancedFilter,
-} from '@/shared/utils/filters'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 
 import type { FeedType } from '@/shared/shifts/types'
 import type { Shift } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
-import type { AdvancedFiltersData } from '@/shared/shifts/types'
-import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
-import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
-import { navigateToTab } from '@/shared/store/navigation'
-import { selectSelectedRole } from '@/shared/store/user'
 
 export const useFeedPageModel = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const selectedRole = useAppSelector(selectSelectedRole)
-  const { overlay, openShiftDetail, closeOverlay, replaceOverlayWithPath } = useDetailOverlay()
 
   const { toast, showToast, hideToast } = useToast()
   const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
@@ -68,15 +52,6 @@ export const useFeedPageModel = () => {
     setIsFiltersOpen,
     resetFilters,
   } = useFeedFiltersState()
-
-  // Sync: when overlay is cleared externally (back button), clear local selectedShiftId.
-  const prevOverlayRef = useRef(overlay)
-  useEffect(() => {
-    if (prevOverlayRef.current && !overlay && selectedShiftId) {
-      setSelectedShiftId(null)
-    }
-    prevOverlayRef.current = overlay
-  }, [overlay, selectedShiftId, setSelectedShiftId])
 
   const {
     appliedShiftsSet,
@@ -107,13 +82,34 @@ export const useFeedPageModel = () => {
     handleApply,
   })
 
-  const handleEdit = useCallback(
-    (id: number) => {
-      setLocalStorageItem(STORAGE_KEYS.EDIT_SHIFT_ID, String(id))
-      dispatch(navigateToTab('activity'))
-    },
-    [dispatch]
-  )
+  const {
+    openShiftDetails,
+    closeShiftDetails,
+    openApplicationsAfterApply,
+    searchMoreAfterApply,
+    handleEditShift,
+  } = useFeedDetailsController({
+    selectedShiftId,
+    setSelectedShiftId,
+    closeApplicationSuccess,
+  })
+
+  const {
+    hasActiveFilters: hasActiveFiltersFlag,
+    activeFilters,
+    closeFilters,
+    applyAdvancedFilters,
+    removeFilter,
+  } = useFeedFiltersController({
+    feedType,
+    advancedFilters,
+    setAdvancedFilters,
+    shiftsAdvancedFilters,
+    jobsAdvancedFilters,
+    setShiftsAdvancedFilters,
+    setJobsAdvancedFilters,
+    setIsFiltersOpen,
+  })
 
   const handleDelete = useCallback(
     async (id: number) => {
@@ -187,84 +183,6 @@ export const useFeedPageModel = () => {
     for (const s of activeList.items) m.set(s.id, s)
     return m
   }, [activeList.items])
-
-  const openShiftDetails = useCallback(
-    (id: number) => {
-      setSelectedShiftId(id)
-      openShiftDetail(id)
-    },
-    [setSelectedShiftId, openShiftDetail]
-  )
-  const closeShiftDetails = useCallback(() => {
-    setSelectedShiftId(null)
-    closeOverlay()
-  }, [setSelectedShiftId, closeOverlay])
-
-  const replaceDetailRouteWithActivity = useCallback(() => {
-    if (!selectedRole) return
-    const screen = getScreenForTab(selectedRole, 'activity')
-    if (!screen) return
-    replaceOverlayWithPath(getPathForScreen(selectedRole, screen))
-  }, [replaceOverlayWithPath, selectedRole])
-
-  const handleOpenApplications = useCallback(() => {
-    closeApplicationSuccess()
-    replaceDetailRouteWithActivity()
-    setSelectedShiftId(null)
-    setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
-    dispatch(navigateToTab('activity'))
-  }, [closeApplicationSuccess, dispatch, replaceDetailRouteWithActivity, setSelectedShiftId])
-
-  const handleSearchMoreAfterApply = useCallback(() => {
-    closeApplicationSuccess()
-    setSelectedShiftId(null)
-    closeOverlay()
-  }, [closeApplicationSuccess, closeOverlay, setSelectedShiftId])
-
-  const openFilters = useCallback(() => setIsFiltersOpen(true), [setIsFiltersOpen])
-  const closeFilters = useCallback(() => setIsFiltersOpen(false), [setIsFiltersOpen])
-
-  useEffect(() => {
-    return onAppEvent(APP_EVENTS.OPEN_FEED_FILTERS, () => openFilters())
-  }, [openFilters])
-
-  const applyAdvancedFilters = useCallback(
-    (filters: AdvancedFiltersData | null) => {
-      const normalized = normalizeAdvancedFilters(filters)
-      setAdvancedFilters(normalized)
-      if (!normalized) return
-
-      if (feedType === 'shifts') {
-        setJobsAdvancedFilters(
-          syncFiltersPositionAndSpecializations(normalized, jobsAdvancedFilters)
-        )
-      } else {
-        setShiftsAdvancedFilters(
-          syncFiltersPositionAndSpecializations(normalized, shiftsAdvancedFilters)
-        )
-      }
-    },
-    [
-      setAdvancedFilters,
-      feedType,
-      jobsAdvancedFilters,
-      shiftsAdvancedFilters,
-      setJobsAdvancedFilters,
-      setShiftsAdvancedFilters,
-    ]
-  )
-
-  const hasActiveFiltersFlag = useMemo(() => hasActiveFilters(advancedFilters), [advancedFilters])
-
-  const activeFilters = useMemo(() => formatFiltersForDisplay(advancedFilters), [advancedFilters])
-
-  const removeFilter = useCallback(
-    (filterId: string) => {
-      if (!advancedFilters) return
-      applyAdvancedFilters(removeAdvancedFilter(advancedFilters, filterId))
-    },
-    [advancedFilters, applyAdvancedFilters]
-  )
   const emptyMessage = useMemo(
     () =>
       hasActiveFiltersFlag
@@ -372,14 +290,14 @@ export const useFeedPageModel = () => {
     applicationSuccess,
     applicationSuccessShift,
     closeApplicationSuccess,
-    openApplicationsAfterApply: handleOpenApplications,
-    searchMoreAfterApply: handleSearchMoreAfterApply,
+    openApplicationsAfterApply,
+    searchMoreAfterApply,
     handleCancel,
     isApplied,
     getApplicationId: getApplicationIdStable,
     getApplicationStatus: getApplicationStatusStable,
     isShiftLoading,
-    handleEdit,
+    handleEdit: handleEditShift,
     handleDelete,
     isDeleting,
 
