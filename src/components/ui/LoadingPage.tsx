@@ -81,9 +81,13 @@ export const LoadingPage = memo(function LoadingPage() {
           }
           className={cn(
             'absolute -left-1/2 -top-1/2 h-full w-full',
-            reduceVisualEffects ? 'opacity-10' : 'blur-3xl'
+            reduceVisualEffects ? 'opacity-30' : 'blur-3xl'
           )}
-          style={{ background: 'var(--gradient-primary)' }}
+          style={{
+            background: reduceVisualEffects
+              ? 'radial-gradient(circle at center, color-mix(in srgb, var(--primary) 34%, transparent), transparent 68%)'
+              : 'var(--gradient-primary)',
+          }}
           aria-hidden="true"
         />
         <motion.div
@@ -99,10 +103,12 @@ export const LoadingPage = memo(function LoadingPage() {
           }
           className={cn(
             'absolute -bottom-1/2 -right-1/2 h-full w-full',
-            reduceVisualEffects ? 'opacity-10' : 'blur-3xl'
+            reduceVisualEffects ? 'opacity-28' : 'blur-3xl'
           )}
           style={{
-            background: 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
+            background: reduceVisualEffects
+              ? 'radial-gradient(circle at center, color-mix(in srgb, var(--warning) 28%, transparent), color-mix(in srgb, var(--primary) 18%, transparent) 42%, transparent 70%)'
+              : 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
           }}
           aria-hidden="true"
         />
