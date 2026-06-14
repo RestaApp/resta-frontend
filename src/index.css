@@ -107,7 +107,9 @@ textarea:hover {
 [data-slot='input']:not([data-variant='inline']):focus,
 [data-slot='input']:not([data-variant='inline']):focus-visible,
 input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']):focus,
-input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not([type='radio']):focus-visible,
+input:not([data-slot='input']):not([type='range']):not([type='checkbox']):not(
+    [type='radio']
+  ):focus-visible,
 textarea:focus,
 textarea:focus-visible {
   border-color: var(--primary);
