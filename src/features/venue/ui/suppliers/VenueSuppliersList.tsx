@@ -16,6 +16,8 @@ interface VenueSuppliersListProps {
   hasMore: boolean
   onLoadMore: () => void
   onOpenDetails: (id: number) => void
+  onRefresh?: () => Promise<unknown> | void
+  refreshDisabled?: boolean
 }
 
 export const VenueSuppliersList = ({
@@ -30,6 +32,8 @@ export const VenueSuppliersList = ({
   hasMore,
   onLoadMore,
   onOpenDetails,
+  onRefresh,
+  refreshDisabled,
 }: VenueSuppliersListProps) => {
   const { t } = useTranslation()
   const isRestaurantsMode = mode === 'restaurants'
@@ -63,6 +67,8 @@ export const VenueSuppliersList = ({
       hasMore={hasMore}
       isFetching={isFetching}
       onLoadMore={onLoadMore}
+      onRefresh={onRefresh}
+      refreshDisabled={refreshDisabled}
     >
       <div className="ui-density-stack">
         {list.map(item => (

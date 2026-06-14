@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { ErrorState } from '@/components/ui/states'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'
@@ -33,7 +32,7 @@ export function VenueSuppliersPage() {
   }
 
   return (
-    <PullToRefresh onRefresh={() => m.refetch()} disabled={m.isLoading}>
+    <>
       <VenueSuppliersList
         mode={m.isSupplierRole ? 'restaurants' : 'suppliers'}
         isLoading={m.isLoading}
@@ -46,6 +45,8 @@ export function VenueSuppliersPage() {
         hasMore={m.hasMore}
         onLoadMore={m.handleLoadMore}
         onOpenDetails={m.handleOpenDetails}
+        onRefresh={() => m.refetch()}
+        refreshDisabled={m.isLoading}
       />
 
       <UserProfileDrawer
@@ -75,6 +76,6 @@ export function VenueSuppliersPage() {
         onApply={m.handleApplyFilters}
         onReset={m.handleResetDraftFilters}
       />
-    </PullToRefresh>
+    </>
   )
 }

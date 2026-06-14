@@ -6,7 +6,6 @@ import {
   useGetShiftByIdQuery,
   useRejectApplicationMutation,
 } from '@/services/api/shiftsApi'
-import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { ErrorState } from '@/components/ui/states'
 import { ShiftDetailsSkeleton } from '@/components/ui/shift-details-skeleton'
 import { Toast } from '@/components/ui/toast'
@@ -270,31 +269,28 @@ export function VenueStaffPage() {
         onOpenApplications={() => setIsApplicationsOpen(true)}
       />
 
-      <PullToRefresh
+      <EmployeeCatalogList
+        activeFilters={catalog.activeFilters}
+        onResetFilters={catalog.handleResetFilters}
+        onRemoveFilter={catalog.handleRemoveFilter}
+        isLoading={catalog.isLoading}
+        isFetching={catalog.isFetching}
+        employees={catalog.employees}
+        hasMore={catalog.hasMore}
+        onLoadMore={catalog.handleLoadMore}
+        getEmployeePositionLabel={catalog.getEmployeePositionLabel}
+        getSpecializationLabel={catalog.getSpecializationLabel}
+        onOpenProfile={catalog.handleOpenProfile}
+        onInvite={catalog.handleOpenInvite}
         onRefresh={handleRefresh}
-        disabled={
+        refreshDisabled={
           catalog.isLoading ||
           isApplicationsLoading ||
           isAccepting ||
           isRejecting ||
           moderatingAction != null
         }
-      >
-        <EmployeeCatalogList
-          activeFilters={catalog.activeFilters}
-          onResetFilters={catalog.handleResetFilters}
-          onRemoveFilter={catalog.handleRemoveFilter}
-          isLoading={catalog.isLoading}
-          isFetching={catalog.isFetching}
-          employees={catalog.employees}
-          hasMore={catalog.hasMore}
-          onLoadMore={catalog.handleLoadMore}
-          getEmployeePositionLabel={catalog.getEmployeePositionLabel}
-          getSpecializationLabel={catalog.getSpecializationLabel}
-          onOpenProfile={catalog.handleOpenProfile}
-          onInvite={catalog.handleOpenInvite}
-        />
-      </PullToRefresh>
+      />
 
       <StaffApplicationsDrawer
         open={isApplicationsOpen}

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
+import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { FeedCardSkeletonList } from '@/components/ui/shift-skeleton'
 import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
@@ -19,6 +20,8 @@ interface CatalogListShellProps {
   hasMore: boolean
   isFetching: boolean
   onLoadMore: () => void
+  onRefresh?: () => Promise<unknown> | void
+  refreshDisabled?: boolean
   children: ReactNode
   className?: string
 }
@@ -37,15 +40,12 @@ export const CatalogListShell = ({
   hasMore,
   isFetching,
   onLoadMore,
+  onRefresh,
+  refreshDisabled = false,
   children,
   className = 'ui-density-page ui-density-py',
-}: CatalogListShellProps) => (
-  <>
-    <SearchFilters
-      activeFilters={activeFilters}
-      onResetFilters={onResetFilters}
-      onRemoveFilter={onRemoveFilter}
-    />
+}: CatalogListShellProps) => {
+  const listBody = (
     <div className={className}>
       {isLoading && itemsCount === 0 ? (
         <FeedCardSkeletonList variant={skeletonVariant} className="ui-density-stack" />
@@ -63,5 +63,22 @@ export const CatalogListShell = ({
         </>
       )}
     </div>
-  </>
-)
+  )
+
+  return (
+    <>
+      <SearchFilters
+        activeFilters={activeFilters}
+        onResetFilters={onResetFilters}
+        onRemoveFilter={onRemoveFilter}
+      />
+      {onRefresh ? (
+        <PullToRefresh onRefresh={onRefresh} disabled={refreshDisabled}>
+          {listBody}
+        </PullToRefresh>
+      ) : (
+        listBody
+      )}
+    </>
+  )
+}

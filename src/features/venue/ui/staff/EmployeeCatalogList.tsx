@@ -18,6 +18,8 @@ interface EmployeeCatalogListProps {
   getSpecializationLabel: (value: string) => string
   onOpenProfile: (userId: number) => void
   onInvite: (employee: EmployeeCatalogItem) => void
+  onRefresh?: () => Promise<unknown> | void
+  refreshDisabled?: boolean
 }
 
 export const EmployeeCatalogList = ({
@@ -33,6 +35,8 @@ export const EmployeeCatalogList = ({
   getSpecializationLabel,
   onOpenProfile,
   onInvite,
+  onRefresh,
+  refreshDisabled,
 }: EmployeeCatalogListProps) => {
   const { t } = useTranslation()
 
@@ -55,6 +59,8 @@ export const EmployeeCatalogList = ({
       hasMore={hasMore}
       isFetching={isFetching}
       onLoadMore={onLoadMore}
+      onRefresh={onRefresh}
+      refreshDisabled={refreshDisabled}
     >
       <div className="ui-density-stack">
         {employees.map(employee => (
