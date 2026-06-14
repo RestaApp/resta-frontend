@@ -1,0 +1,45 @@
+---
+description: Запрет опасного manualChunks в Vite — регрессия React.Component в Telegram WebView
+globs: vite.config.ts
+alwaysApply: true
+---
+
+# Vite build / manualChunks (критично для Telegram WebView)
+
+## Симптом регрессии
+
+`TypeError: undefined is not an object (evaluating 'd.Component')` в Safari / Telegram WebView.
+
+Причина: **циклические импорты между vendor-чанками** при инициализации модулей, которые наследуют `React.Component` / `React.PureComponent` на top-level (`redux-persist` / `PersistGate`, `motion`).
+
+## Запрещено без явного запроса пользователя
+
+- Добавлять или менять `build.rollupOptions.output.manualChunks` в `vite.config.ts`.
+- Разносить по разным чанкам: `react`, `react-dom`, `react-redux`, `redux-persist`, `@reduxjs/*`, `motion`, `lucide-react`.
+- Возвращать схему вида `vendor-react` + `vendor-state` + `vendor-ui` + `vendor`.
+
+```ts
+// ❌ ЗАПРЕЩЕНО — уже ломало prod в Telegram WebView
+manualChunks(id) {
+  if (id.includes('/react/')) return 'vendor-react'
+  if (id.includes('/react-redux/')) return 'vendor-state'
+  if (id.includes('/motion/')) return 'vendor-ui'
+  return 'vendor'
+}
+```
+
+## Разрешённый дефолт проекта
+
+- **Без `manualChunks`** — дефолтный chunking Vite.
+- Допустимо только `chunkSizeWarningLimit` (сейчас 650).
+
+## Если пользователь явно просит оптимизацию бандла
+
+1. Не отделять React-экосистему от `redux-persist` / `motion`.
+2. После `npm run build` проверить `dist/assets/*.js`: нет циклов `vendor-*` ↔ `vendor-react`, нет `extends *.Component` в чанке, который импортирует React из другого чанка на top-level.
+3. Прогнать smoke в WebView / Safari, не только `tsc` + build.
+
+## Связанные файлы
+
+- `vite.config.ts` — единственная точка конфигурации chunking.
+- `src/main.tsx` — `PersistGate` из `redux-persist/integration/react` (class component).

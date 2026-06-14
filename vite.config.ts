@@ -34,6 +34,8 @@ export default defineConfig({
     port: process.env.PORT ? Number(process.env.PORT) : 5174,
   },
   build: {
+    // Не добавлять manualChunks: разнос react / redux-persist / motion по vendor-чанкам
+    // вызывал циклические импорты и падение «d.Component» в Telegram WebView.
     chunkSizeWarningLimit: 650,
   },
 })

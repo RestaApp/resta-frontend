@@ -137,3 +137,4 @@ features/<X> ──→ shared/* ──→ components/ui/*
 - Мёртвые пропсы / поля типа / неиспользуемые exports / barrel `index.ts` с ≤2 потребителями / deprecated alias без deadline.
 - Тривиальные `useCallback(() => fn(), [fn])` без агрегации логики.
 - UI/design-system нарушения — см. [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md) §12, §14.
+- **`manualChunks` в `vite.config.ts`** — запрещён без явного запроса пользователя: разнос `react` / `react-redux` / `redux-persist` / `motion` по vendor-чанкам давал циклические импорты и падение `undefined is not an object (evaluating 'd.Component')` в Telegram WebView. Дефолт — без `manualChunks`; см. `.cursor/rules/vite-build-chunking.mdc`.
