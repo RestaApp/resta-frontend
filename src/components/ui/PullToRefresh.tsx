@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import type { TouchEvent, ReactNode } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { cn } from '@/shared/utils/cn'
@@ -111,10 +111,7 @@ export function PullToRefresh({
   }, [])
 
   const isReady = pullDistance >= threshold
-  const contentOffset = useMemo(
-    () => (isRefreshing ? threshold : pullDistance),
-    [isRefreshing, pullDistance, threshold]
-  )
+  const indicatorHeight = isRefreshing ? threshold : pullDistance
 
   return (
     <div
@@ -128,8 +125,8 @@ export function PullToRefresh({
       <div
         className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-end justify-center overflow-hidden transition-[height,opacity] duration-200"
         style={{
-          height: contentOffset,
-          opacity: contentOffset > 0 ? 1 : 0,
+          height: indicatorHeight,
+          opacity: indicatorHeight > 0 ? 1 : 0,
         }}
         aria-hidden="true"
       >
@@ -137,12 +134,7 @@ export function PullToRefresh({
           <Loader size="sm" className={cn(!isRefreshing && !isReady && 'opacity-50')} />
         </div>
       </div>
-      <div
-        className="transition-transform duration-200 will-change-transform"
-        style={{ transform: `translate3d(0, ${contentOffset}px, 0)` }}
-      >
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   )
 }
