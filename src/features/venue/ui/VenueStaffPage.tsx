@@ -9,6 +9,7 @@ import {
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import { ErrorState } from '@/components/ui/states'
 import { ShiftDetailsSkeleton } from '@/components/ui/shift-details-skeleton'
+import { Toast } from '@/components/ui/toast'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
@@ -19,26 +20,44 @@ import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/features/navigation/model/userSlice'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
-import { EmployeeCatalogDrawer } from './staff/EmployeeCatalogDrawer'
-import { VenueStaffList, type StaffItem } from './staff/VenueStaffList'
+import { EmployeeCatalogFiltersDrawer } from './staff/EmployeeCatalogFiltersDrawer'
+import { EmployeeCatalogList } from './staff/EmployeeCatalogList'
+import { EmployeeInviteDrawer } from './staff/EmployeeInviteDrawer'
+import { StaffApplicationsDrawer } from './staff/StaffApplicationsDrawer'
+import { StaffPageHeader } from './staff/StaffPageHeader'
+import { type StaffItem } from './staff/VenueStaffList'
+import { countPendingStaffApplications } from './staff/staffApplicationUtils'
+import { useEmployeeCatalogModel } from './staff/useEmployeeCatalogModel'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 export function VenueStaffPage() {
   const { t } = useTranslation()
   const { showToast } = useToast()
+  const catalog = useEmployeeCatalogModel()
   const userData = useAppSelector(selectUserData)
   const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
   const { deleteShift, isLoading: isDeletingShift } = useDeleteShift()
-  const { data, isLoading, isError, refetch } = useGetReceivedShiftApplicationsQuery()
+  const {
+    data: applicationsData,
+    isLoading: isApplicationsLoading,
+    refetch: refetchApplications,
+  } = useGetReceivedShiftApplicationsQuery()
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
+  const [isApplicationsOpen, setIsApplicationsOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<StaffItem | null>(null)
   const [moderatingAction, setModeratingAction] = useState<'accept' | 'reject' | null>(null)
   const [acceptingApplicationId, setAcceptingApplicationId] = useState<number | null>(null)
 
   const applications = useMemo(
-    () => (data?.data && Array.isArray(data.data) ? data.data : []),
-    [data]
+    () =>
+      applicationsData?.data && Array.isArray(applicationsData.data) ? applicationsData.data : [],
+    [applicationsData]
+  )
+
+  const pendingApplicationsCount = useMemo(
+    () => countPendingStaffApplications(applications),
+    [applications]
   )
 
   const staffItems: StaffItem[] = useMemo(() => {
@@ -164,12 +183,12 @@ export function VenueStaffPage() {
         await deleteShift(String(id))
         showToast(t('shift.deleted'), 'success')
         closeOverlay()
-        void refetch()
+        void refetchApplications()
       } catch {
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [closeOverlay, deleteShift, refetch, showToast, t]
+    [closeOverlay, deleteShift, refetchApplications, showToast, t]
   )
 
   const handleSelectApplicant = (userId: number, applicationId: number | null, shiftId: number) => {
@@ -220,34 +239,100 @@ export function VenueStaffPage() {
     }
   }
 
-  if (isError) {
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([catalog.refetch(), refetchApplications()])
+  }, [catalog, refetchApplications])
+
+  if (catalog.isError) {
     return (
-      <ErrorState
-        title={t('feed.loadErrorShifts', { defaultValue: 'Ошибка загрузки' })}
-        onRetry={() => void refetch()}
-        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
-      />
+      <>
+        <StaffPageHeader
+          pendingApplicationsCount={pendingApplicationsCount}
+          onOpenFilters={catalog.handleOpenFilters}
+          onOpenApplications={() => setIsApplicationsOpen(true)}
+        />
+        <ErrorState
+          title={t('venueUi.staff.catalog.loadError', {
+            defaultValue: 'Не удалось загрузить сотрудников',
+          })}
+          onRetry={() => void catalog.refetch()}
+          retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+        />
+      </>
     )
   }
 
   return (
     <>
+      <StaffPageHeader
+        pendingApplicationsCount={pendingApplicationsCount}
+        onOpenFilters={catalog.handleOpenFilters}
+        onOpenApplications={() => setIsApplicationsOpen(true)}
+      />
+
       <PullToRefresh
-        onRefresh={() => refetch()}
-        disabled={isLoading || isAccepting || isRejecting || moderatingAction != null}
+        onRefresh={handleRefresh}
+        disabled={
+          catalog.isLoading ||
+          isApplicationsLoading ||
+          isAccepting ||
+          isRejecting ||
+          moderatingAction != null
+        }
       >
-        <VenueStaffList
-          isLoading={isLoading}
-          items={staffItems}
-          isAccepting={isAccepting}
-          acceptingApplicationId={acceptingApplicationId}
-          onAccept={handleAccept}
-          onSelectApplicant={handleSelectApplicant}
-          onOpenShiftDetails={handleOpenShiftDetails}
+        <EmployeeCatalogList
+          activeFilters={catalog.activeFilters}
+          onResetFilters={catalog.handleResetFilters}
+          onRemoveFilter={catalog.handleRemoveFilter}
+          isLoading={catalog.isLoading}
+          isFetching={catalog.isFetching}
+          employees={catalog.employees}
+          hasMore={catalog.hasMore}
+          onLoadMore={catalog.handleLoadMore}
+          getEmployeePositionLabel={catalog.getEmployeePositionLabel}
+          getSpecializationLabel={catalog.getSpecializationLabel}
+          onOpenProfile={catalog.handleOpenProfile}
+          onInvite={catalog.handleOpenInvite}
         />
       </PullToRefresh>
 
-      <EmployeeCatalogDrawer />
+      <StaffApplicationsDrawer
+        open={isApplicationsOpen}
+        onOpenChange={setIsApplicationsOpen}
+        isLoading={isApplicationsLoading}
+        items={staffItems}
+        isAccepting={isAccepting}
+        acceptingApplicationId={acceptingApplicationId}
+        onAccept={handleAccept}
+        onSelectApplicant={handleSelectApplicant}
+        onOpenShiftDetails={handleOpenShiftDetails}
+      />
+
+      <EmployeeCatalogFiltersDrawer
+        open={catalog.isFiltersOpen}
+        onOpenChange={catalog.setIsFiltersOpen}
+        draftFilters={catalog.draftFilters}
+        setDraftFilters={catalog.setDraftFilters}
+        cities={catalog.cities}
+        isCitiesLoading={catalog.isCitiesLoading}
+        positions={catalog.positions}
+        specializations={catalog.specializations}
+        getEmployeePositionLabel={catalog.getEmployeePositionLabel}
+        getSpecializationLabel={catalog.getSpecializationLabel}
+        onApply={catalog.handleApplyFilters}
+        onReset={catalog.handleResetDraftFilters}
+      />
+
+      <EmployeeInviteDrawer
+        open={catalog.isInviteOpen}
+        employee={catalog.inviteEmployee}
+        vacancies={catalog.inviteableVacancies}
+        invitingShiftId={catalog.invitingShiftId}
+        onClose={catalog.handleCloseInvite}
+        onInvite={catalog.handleInvite}
+        getEmployeePositionLabel={catalog.getEmployeePositionLabel}
+        getSpecializationLabel={catalog.getSpecializationLabel}
+      />
 
       {isShiftDetailOpen && (isShiftDetailLoading || !mappedShift) ? (
         <DetailsScreenFrame
@@ -282,6 +367,12 @@ export function VenueStaffPage() {
       ) : null}
 
       <UserProfileDrawer
+        userId={catalog.selectedProfileId}
+        open={catalog.selectedProfileId !== null}
+        onClose={catalog.handleCloseProfile}
+      />
+
+      <UserProfileDrawer
         userId={selectedItem?.person.user_id ?? selectedItem?.person.user?.id ?? null}
         open={selectedItem != null}
         onClose={handleCloseDetails}
@@ -297,6 +388,13 @@ export function VenueStaffPage() {
         moderatingAction={moderatingAction}
         onAccept={handleDrawerAccept}
         onReject={handleDrawerReject}
+      />
+
+      <Toast
+        message={catalog.toast.message}
+        type={catalog.toast.type}
+        isVisible={catalog.toast.isVisible}
+        onClose={catalog.hideToast}
       />
     </>
   )

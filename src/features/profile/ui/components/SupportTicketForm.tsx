@@ -59,14 +59,12 @@ export function SupportTicketForm({
         />
       </FormField>
 
-      <FormField label={t('profile.supportForm.categoryLabel')} required>
-        <Select
-          value={category}
-          onChange={v => setCategory(v as SupportTicketCategory)}
-          options={categoryOptions}
-          searchable={false}
-        />
-      </FormField>
+      <Select
+        label={t('profile.supportForm.categoryLabel')}
+        value={category}
+        onChange={v => setCategory(v as SupportTicketCategory)}
+        options={categoryOptions}
+      />
 
       <FormField
         label={t('profile.supportForm.message')}

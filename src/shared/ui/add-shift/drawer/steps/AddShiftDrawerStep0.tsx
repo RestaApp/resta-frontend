@@ -46,7 +46,6 @@ export const AddShiftDrawerStep0 = ({
           onChange={onShiftTypeChange}
           options={shiftTypeOptions}
           placeholder={t('shift.selectShiftType')}
-          searchable={false}
         />
       ) : null}
 

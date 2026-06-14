@@ -61,9 +61,9 @@ export const ActivityToggleButton = memo(function ActivityToggleButton({
         isCompact
           ? 'justify-center p-0'
           : cn(
-            'h-11 w-full justify-between gap-3 rounded-full px-4',
-            checked ? 'bg-success/10' : 'bg-secondary'
-          ),
+              'h-11 w-full justify-between gap-3 rounded-full px-4',
+              checked ? 'bg-success/10' : 'bg-secondary'
+            ),
         className
       )}
       onClick={() => onToggle(!checked)}

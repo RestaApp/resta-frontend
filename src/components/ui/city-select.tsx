@@ -1,6 +1,5 @@
-import { memo, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Select, type SelectOption } from './select'
+import { memo } from 'react'
+import { CityAutocompleteField } from './city-autocomplete-field/CityAutocompleteField'
 
 interface CitySelectProps {
   value: string
@@ -8,36 +7,21 @@ interface CitySelectProps {
   options: string[]
   placeholder?: string
   disabled?: boolean
+  isLoading?: boolean
   className?: string
+  label?: string
+  hint?: string
   error?: string
+  validateOnBlur?: boolean
+  embedded?: boolean
 }
 
+/** Выбор города с поиском прямо в поле (combobox). */
 export const CitySelect = memo(function CitySelect({
-  value,
-  onChange,
-  options,
-  placeholder,
-  disabled = false,
-  className,
-  error,
+  validateOnBlur = true,
+  ...props
 }: CitySelectProps) {
-  const { t } = useTranslation()
-  const displayPlaceholder = placeholder ?? t('citySelect.placeholder')
-  const selectOptions: SelectOption[] = useMemo(
-    () => options.map(city => ({ value: city, label: city })),
-    [options]
-  )
-
   return (
-    <Select
-      value={value}
-      onChange={onChange}
-      options={selectOptions}
-      placeholder={displayPlaceholder}
-      searchable={false}
-      disabled={disabled}
-      className={className}
-      error={error}
-    />
+    <CityAutocompleteField {...props} showLocationButton={false} validateOnBlur={validateOnBlur} />
   )
 })

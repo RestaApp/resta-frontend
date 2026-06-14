@@ -1,4 +1,4 @@
-import { Edit2, Plus, SlidersHorizontal, UserPlus } from 'lucide-react'
+import { Edit2, Plus, SlidersHorizontal } from 'lucide-react'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 import { UI_ROLE_TO_API_ROLE } from '@/shared/types/roles.types'
@@ -106,14 +106,6 @@ export const getHeaderAction = (params: {
       ariaLabel: t('aria.editProfile'),
       Icon: Edit2,
       onClick: () => emitAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT),
-    }
-  }
-
-  if (activeTab === 'staff' && role === 'venue') {
-    return {
-      ariaLabel: t('venueUi.staff.catalog.openAria', { defaultValue: 'Каталог сотрудников' }),
-      Icon: UserPlus,
-      onClick: () => emitAppEvent(APP_EVENTS.OPEN_STAFF_EMPLOYEE_CATALOG),
     }
   }
 

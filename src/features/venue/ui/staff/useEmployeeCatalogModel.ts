@@ -9,7 +9,6 @@ import { computeHasMore, usePaginatedFilterState } from '@/shared/lib/hooks/useP
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserCity } from '@/features/navigation/model/userSlice'
-import { APP_EVENTS } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
 import { isInviteableOwnerListing } from '@/shared/shifts/ownerShiftDisplay'
@@ -46,7 +45,6 @@ export const useEmployeeCatalogModel = () => {
     [userCity]
   )
 
-  const [isCatalogOpen, setIsCatalogOpen] = useState(false)
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [inviteEmployee, setInviteEmployee] = useState<EmployeeCatalogItem | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null)
@@ -69,8 +67,6 @@ export const useEmployeeCatalogModel = () => {
     defaultFilters,
     pageSize: EMPLOYEES_PER_PAGE,
     removeFilter: removeEmployeeCatalogFilter,
-    openAppEvent: APP_EVENTS.OPEN_STAFF_EMPLOYEE_CATALOG,
-    onOpenAppEvent: () => setIsCatalogOpen(true),
   })
 
   const queryParams = useMemo(() => {
@@ -85,9 +81,7 @@ export const useEmployeeCatalogModel = () => {
     }
   }, [appliedFilters, visibleCount])
 
-  const { data, isLoading, isFetching, isError, refetch } = useGetUsersQuery(queryParams, {
-    skip: !isCatalogOpen,
-  })
+  const { data, isLoading, isFetching, isError, refetch } = useGetUsersQuery(queryParams)
 
   const employees = useMemo(() => {
     const apiData = data?.data
@@ -107,10 +101,10 @@ export const useEmployeeCatalogModel = () => {
     [appliedFilters, getEmployeePositionLabel, getSpecializationLabel]
   )
 
-  const { positions } = useUserPositions({ enabled: isFiltersOpen || isCatalogOpen })
+  const { positions } = useUserPositions({ enabled: isFiltersOpen })
   const { specializations } = useUserSpecializations({
     position: draftFilters.position ?? '',
-    enabled: Boolean(draftFilters.position) && (isFiltersOpen || isCatalogOpen),
+    enabled: Boolean(draftFilters.position) && isFiltersOpen,
   })
 
   const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
@@ -180,21 +174,7 @@ export const useEmployeeCatalogModel = () => {
     [handleCloseInvite, inviteEmployee, invitingShiftId, inviteToShift, showToast, t]
   )
 
-  const handleCatalogOpenChange = useCallback(
-    (open: boolean) => {
-      setIsCatalogOpen(open)
-      if (!open) {
-        setIsFiltersOpen(false)
-        handleCloseInvite()
-        setSelectedProfileId(null)
-      }
-    },
-    [handleCloseInvite, setIsFiltersOpen]
-  )
-
   return {
-    isCatalogOpen,
-    setIsCatalogOpen: handleCatalogOpenChange,
     isFiltersOpen,
     setIsFiltersOpen,
     isInviteOpen,

@@ -13,6 +13,7 @@ export interface SelectProps {
   label?: string
   hint?: string
   error?: string
+  /** Поиск внутри списка (для длинных каталогов). По умолчанию — простой список опций. */
   searchable?: boolean
   /** Рендер дропдауна в portal с fixed-позицией (drawer, footer). */
   portaled?: boolean

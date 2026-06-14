@@ -1,11 +1,14 @@
-import { useState, useMemo, useRef, useEffect, useCallback, type RefObject } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCities } from '@/shared/lib/hooks/useCities'
 
 interface UseCityAutocompleteProps {
   value: string
   onChange: (value: string) => void
-  dropdownRef?: RefObject<HTMLElement | null>
+  options?: string[]
+  isLoadingOptions?: boolean
+  validateOnBlur?: boolean
+  disabled?: boolean
   initialVisibleCount?: number
   loadMoreThreshold?: number
   loadMoreStep?: number
@@ -22,7 +25,10 @@ const OPEN_SCROLL_GUARD_MS = 450
 export const useCityAutocomplete = ({
   value,
   onChange,
-  dropdownRef,
+  options,
+  isLoadingOptions = false,
+  validateOnBlur = true,
+  disabled = false,
   initialVisibleCount = 10,
   loadMoreThreshold = 0.8,
   loadMoreStep = 10,
@@ -39,9 +45,13 @@ export const useCityAutocomplete = ({
   const listRef = useRef<HTMLDivElement>(null)
   const suggestionsOpenedAtRef = useRef(0)
 
-  const { cities, isLoading: isLoadingCities } = useCities({
-    enabled: isFocused,
+  const usesExternalOptions = options != null
+  const { cities: fetchedCities, isLoading: isFetchingCities } = useCities({
+    enabled: !usesExternalOptions && isFocused,
   })
+
+  const cities = usesExternalOptions ? options : fetchedCities
+  const isLoadingCities = usesExternalOptions ? isLoadingOptions : isFetchingCities
 
   const allFilteredCities = useMemo(() => {
     if (!value.trim()) {
@@ -96,23 +106,6 @@ export const useCityAutocomplete = ({
 
   useEffect(() => {
     if (!showSuggestions) return
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node
-      if (containerRef.current?.contains(target)) return
-      if (dropdownRef?.current?.contains(target)) return
-      setShowSuggestions(false)
-      setIsFocused(false)
-    }
-
-    document.addEventListener('pointerdown', handlePointerDown, true)
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown, true)
-    }
-  }, [dropdownRef, showSuggestions])
-
-  useEffect(() => {
-    if (!showSuggestions) return
     suggestionsOpenedAtRef.current = Date.now()
   }, [showSuggestions])
 
@@ -126,7 +119,6 @@ export const useCityAutocomplete = ({
         return
       }
 
-      // Игнорируем автоскролл, который происходит сразу после открытия.
       if (Date.now() - suggestionsOpenedAtRef.current < OPEN_SCROLL_GUARD_MS) {
         return
       }
@@ -144,7 +136,7 @@ export const useCityAutocomplete = ({
 
   const validateCity = useCallback(
     (cityValue: string): ValidationResult => {
-      if (!cityValue.trim()) {
+      if (!validateOnBlur || !cityValue.trim()) {
         return {
           isValid: true,
           errorMessage: null,
@@ -186,11 +178,12 @@ export const useCityAutocomplete = ({
         errorMessage: t('cityNotFound'),
       }
     },
-    [cities, allFilteredCities, onChange, t]
+    [allFilteredCities, cities, onChange, t, validateOnBlur]
   )
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) return
       const newValue = e.target.value
       if (newValue !== value) {
         setVisibleCount(initialVisibleCount)
@@ -202,20 +195,27 @@ export const useCityAutocomplete = ({
         setErrorMessage(null)
       }
     },
-    [initialVisibleCount, onChange, isValid, value]
+    [disabled, initialVisibleCount, isValid, onChange, value]
   )
 
   const handleInputFocus = useCallback(() => {
+    if (disabled) return
     setIsFocused(true)
     setShowSuggestions(true)
     setIsValid(true)
     setErrorMessage(null)
-  }, [])
+  }, [disabled])
 
   const handleInputBlur = useCallback(() => {
     setTimeout(() => {
       setShowSuggestions(false)
       setIsFocused(false)
+
+      if (!validateOnBlur) {
+        setIsValid(true)
+        setErrorMessage(null)
+        return
+      }
 
       if (value.trim()) {
         const validation = validateCity(value)
@@ -226,16 +226,19 @@ export const useCityAutocomplete = ({
         setErrorMessage(null)
       }
     }, 200)
-  }, [value, validateCity])
+  }, [validateCity, validateOnBlur, value])
 
   const handleCitySelect = useCallback(
     (city: string) => {
+      if (disabled) return
       onChange(city)
       setShowSuggestions(false)
       setIsFocused(false)
+      setIsValid(true)
+      setErrorMessage(null)
       inputRef.current?.blur()
     },
-    [onChange]
+    [disabled, onChange]
   )
 
   const handleDropdownClose = useCallback(() => {
@@ -253,14 +256,11 @@ export const useCityAutocomplete = ({
     isLoadingCities,
     hasSuggestions,
     hasMore,
-
     filteredCities,
     allFilteredCities,
-
     inputRef,
     containerRef,
     listRef,
-
     handleInputChange,
     handleInputFocus,
     handleInputBlur,

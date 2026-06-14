@@ -274,20 +274,18 @@ export const VenueSuppliersFiltersDrawer = ({
             </div>
           )}
 
-          <div className="ui-density-stack">
-            <p className={PROFILE_SECTION_LABEL_CLASS}>
-              {t('profile.city', { defaultValue: 'Город' })}
-            </p>
-            <CitySelect
-              value={draftFilters.city}
-              onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
-              options={cities}
-              disabled={isCitiesLoading}
-              placeholder={t('venueUi.suppliers.filters.cityPlaceholder', {
-                defaultValue: 'Например, Минск',
-              })}
-            />
-          </div>
+          <CitySelect
+            label={t('profile.city', { defaultValue: 'Город' })}
+            value={draftFilters.city}
+            onChange={value => setDraftFilters(prev => ({ ...prev, city: value }))}
+            options={cities}
+            disabled={isCitiesLoading}
+            isLoading={isCitiesLoading}
+            placeholder={t('venueUi.suppliers.filters.cityPlaceholder', {
+              defaultValue: 'Например, Минск',
+            })}
+            validateOnBlur={false}
+          />
         </DrawerBody>
 
         <DrawerFooter>

@@ -49,7 +49,9 @@ export const AddShiftDrawerStep1 = ({
             options={cities}
             placeholder={t('profile.form.cityPlaceholder')}
             disabled={isCitiesLoading}
+            isLoading={isCitiesLoading}
             error={cityError}
+            embedded
           />
         </Field>
 
@@ -88,7 +90,6 @@ export const AddShiftDrawerStep1 = ({
             onChange={onPositionChange}
             options={positionOptions}
             placeholder={t('shift.selectPosition')}
-            searchable={false}
             disabled={isPositionsLoading}
             error={positionError}
           />

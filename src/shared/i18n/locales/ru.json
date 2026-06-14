@@ -83,6 +83,11 @@
         "accept": "Принять",
         "reject": "Отклонить"
       },
+      "applications": {
+        "title": "Отклики",
+        "openAria": "Отклики",
+        "openAriaWithCount": "Отклики, {{count}} новых"
+      },
       "catalog": {
         "title": "Каталог сотрудников",
         "openAria": "Каталог сотрудников",

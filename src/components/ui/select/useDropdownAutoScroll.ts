@@ -125,5 +125,5 @@ export const useDropdownAutoScroll = ({
       window.removeEventListener('scroll', throttledEnsure, true)
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
-  }, [enabled, isOpen, containerRef, ensureRoomBelow])
+  }, [enabled, isOpen, portaled, containerRef, ensureRoomBelow])
 }

@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FormField } from '@/components/ui/form-field'
-import { Loader } from '@/components/ui/loader'
 import { CitySelect } from '@/components/ui/city-select'
 import type { ApiRole } from '@/shared/types/roles.types'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
@@ -105,20 +104,15 @@ export const BasicProfileFields = memo(
         </FormField>
 
         <FormField label={t('profile.cityRequired')} required error={fieldErrors.city}>
-          {isCitiesLoading ? (
-            <div className="flex items-center gap-2 py-2">
-              <Loader size="sm" />
-            </div>
-          ) : (
-            <CitySelect
-              value={formData.city}
-              onChange={value => updateField('city', value)}
-              options={cities}
-              placeholder={t('profile.form.cityPlaceholder')}
-              disabled={isLoading}
-              error={fieldErrors.city}
-            />
-          )}
+          <CitySelect
+            value={formData.city}
+            onChange={value => updateField('city', value)}
+            options={cities}
+            placeholder={t('profile.form.cityPlaceholder')}
+            disabled={isLoading}
+            isLoading={isCitiesLoading}
+            embedded
+          />
         </FormField>
       </>
     )

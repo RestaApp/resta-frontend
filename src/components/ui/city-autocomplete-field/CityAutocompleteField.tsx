@@ -6,36 +6,58 @@ import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
-import { useDropdownAutoScroll } from '@/components/ui/select/useDropdownAutoScroll'
-import { useEffectivePortaled } from '@/components/ui/select/useEffectivePortaled'
+import { useSelectDropdownShell } from '@/components/ui/select/useSelectDropdownShell'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
-import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { useCityAutocomplete } from './useCityAutocomplete'
 
-interface CityAutocompleteFieldProps {
+export interface CityAutocompleteFieldProps {
   value: string
   onChange: (value: string) => void
-  onLocationRequest: () => void
-  showLocationButton?: boolean
+  options?: string[]
+  placeholder?: string
+  disabled?: boolean
   isLoading?: boolean
+  label?: string
+  hint?: string
+  error?: string
+  validateOnBlur?: boolean
+  /** Без обёртки FormField — когда лейбл снаружи. */
+  embedded?: boolean
+  onLocationRequest?: () => void
+  showLocationButton?: boolean
+  isLocationLoading?: boolean
   clearOnFocus?: boolean
   hideLabel?: boolean
   portaled?: boolean
+  className?: string
 }
 
 export const CityAutocompleteField = memo(function CityAutocompleteField({
   value,
   onChange,
+  options,
+  placeholder,
+  disabled = false,
+  isLoading = false,
+  label,
+  hint,
+  error,
+  validateOnBlur = true,
+  embedded = false,
   onLocationRequest,
   showLocationButton = true,
-  isLoading = false,
+  isLocationLoading = false,
   clearOnFocus = false,
   hideLabel = false,
   portaled = false,
+  className,
 }: CityAutocompleteFieldProps) {
   const { t } = useTranslation()
   const listboxId = useId()
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const displayPlaceholder = placeholder ?? t('citySelect.placeholder')
+  const resolvedLabel = hideLabel ? undefined : (label ?? t('profile.city'))
+
   const {
     isValid,
     errorMessage,
@@ -53,62 +75,74 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
   } = useCityAutocomplete({
     value,
     onChange,
-    dropdownRef,
+    options,
+    isLoadingOptions: isLoading,
+    validateOnBlur,
+    disabled,
   })
 
-  const effectivePortaled = useEffectivePortaled(showSuggestions, containerRef, portaled)
+  const { dropdownRef, effectivePortaled } = useSelectDropdownShell({
+    isOpen: showSuggestions,
+    portaled,
+    containerRef,
+    onDismiss: handleDropdownClose,
+  })
 
   useBodyScrollLock(showSuggestions)
-  useDropdownAutoScroll({
-    isOpen: showSuggestions,
-    containerRef,
-    bottomOffsetPx: BOTTOM_NAV_HEIGHT_PX,
-    portaled: effectivePortaled,
-    enabled: !effectivePortaled,
-  })
 
   const cityOptions = filteredCities.map(city => ({ value: city, label: city }))
+  const displayError = error ?? (!isValid ? (errorMessage ?? undefined) : undefined)
+
+  const inputControl = (
+    <div className="relative">
+      <Input
+        ref={inputRef}
+        value={value}
+        onChange={handleInputChange}
+        onFocus={() => {
+          if (clearOnFocus && value) {
+            onChange('')
+          }
+          handleInputFocus()
+        }}
+        onBlur={handleInputBlur}
+        placeholder={displayPlaceholder}
+        className={cn(showLocationButton && 'pr-12')}
+        autoComplete="off"
+        disabled={disabled}
+        aria-invalid={displayError ? true : undefined}
+        role="combobox"
+        aria-expanded={showSuggestions}
+        aria-controls={listboxId}
+        aria-autocomplete="list"
+      />
+      {showLocationButton ? (
+        <button
+          type="button"
+          onClick={onLocationRequest}
+          disabled={disabled || isLocationLoading}
+          className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-lg p-2 transition-colors hover:bg-secondary/50 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label={t('aria.determineLocation')}
+        >
+          {isLocationLoading ? (
+            <Loader size="sm" />
+          ) : (
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+      ) : null}
+    </div>
+  )
 
   return (
-    <div ref={containerRef} className={cn('relative', showSuggestions && 'z-10')}>
-      <FormField
-        label={hideLabel ? undefined : t('profile.city')}
-        error={!isValid ? (errorMessage ?? undefined) : undefined}
-      >
-        <div className="relative">
-          <Input
-            ref={inputRef}
-            value={value}
-            onChange={handleInputChange}
-            onFocus={() => {
-              if (clearOnFocus && value) {
-                onChange('')
-              }
-              handleInputFocus()
-            }}
-            onBlur={handleInputBlur}
-            placeholder={t('citySelect.placeholder')}
-            className="pr-12"
-            autoComplete="off"
-            aria-invalid={!isValid}
-          />
-          {showLocationButton ? (
-            <button
-              onClick={onLocationRequest}
-              disabled={isLoading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-secondary/50 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label={t('aria.determineLocation')}
-              type="button"
-            >
-              {isLoading ? (
-                <Loader size="sm" />
-              ) : (
-                <MapPin className="w-4 h-4 text-muted-foreground" />
-              )}
-            </button>
-          ) : null}
-        </div>
-      </FormField>
+    <div ref={containerRef} className={cn('relative', showSuggestions && 'z-10', className)}>
+      {embedded ? (
+        inputControl
+      ) : (
+        <FormField label={resolvedLabel} hint={hint} error={displayError}>
+          {inputControl}
+        </FormField>
+      )}
 
       <SelectDropdown
         isOpen={showSuggestions}
@@ -120,13 +154,12 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
             <Loader size="sm" />
           </div>
         }
-        footerContent={null}
-        searchable={false}
-        displayPlaceholder={t('citySelect.placeholder')}
+        displayPlaceholder={displayPlaceholder}
+        label={resolvedLabel}
         value={value}
         searchQuery=""
         filteredOptions={cityOptions}
-        searchInputRef={inputRef}
+        searchInputRef={searchInputRef}
         scrollContainerRef={listRef}
         dropdownRef={dropdownRef}
         listboxId={listboxId}

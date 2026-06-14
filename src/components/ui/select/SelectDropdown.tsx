@@ -17,7 +17,7 @@ interface SelectDropdownProps {
   isLoading?: boolean
   loadingContent?: ReactNode
   footerContent?: ReactNode
-  searchable: boolean
+  searchable?: boolean
   displayPlaceholder: string
   label?: string
   value: string
@@ -42,7 +42,7 @@ export const SelectDropdown = ({
   isLoading = false,
   loadingContent,
   footerContent,
-  searchable,
+  searchable = false,
   displayPlaceholder,
   label,
   value,

@@ -6,7 +6,6 @@ import { OpenToWorkButton } from '@/shared/ui/OpenToWorkButton'
 import { RangeSlider } from '@/components/ui/range-slider'
 import { Badge } from '@/components/ui/badge'
 import { FormField } from '@/components/ui/form-field'
-import { Loader } from '@/components/ui/loader'
 import { BLOCK_TITLE_CLASS, DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_SUB_CLASS,
@@ -74,23 +73,15 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
 
   return (
     <>
-      <FormField label={t('common.position')} required error={fieldErrors.position}>
-        {isPositionsLoading ? (
-          <div className="flex items-center gap-2 py-2">
-            <Loader size="sm" />
-          </div>
-        ) : (
-          <Select
-            value={formData.position}
-            onChange={handlePositionChange}
-            options={positionOptions}
-            placeholder={t('common.selectValue')}
-            disabled={disabled || positionOptions.length === 0}
-            searchable={false}
-            error={fieldErrors.position}
-          />
-        )}
-      </FormField>
+      <Select
+        label={t('common.position')}
+        value={formData.position}
+        onChange={handlePositionChange}
+        options={positionOptions}
+        placeholder={t('common.selectValue')}
+        disabled={disabled || isPositionsLoading || positionOptions.length === 0}
+        error={fieldErrors.position}
+      />
 
       <EmployeeSpecializationsField
         value={formData.specializations}

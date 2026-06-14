@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button'
 import { CitySelect } from '@/components/ui/city-select'
 import { Select } from '@/components/ui/select'
 import type { EmployeeSubRole } from '@/shared/types/roles.types'
-import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import type { EmployeeCatalogFilters } from './employeeCatalogTypes'
 
 interface EmployeeCatalogFiltersDrawerProps {
@@ -90,54 +89,50 @@ export const EmployeeCatalogFiltersDrawer = ({
         </DrawerHeader>
 
         <DrawerBody className="ui-density-stack">
-          <div className="ui-density-stack">
-            <p className={PROFILE_SECTION_LABEL_CLASS}>
-              {t('profile.city', { defaultValue: 'Город' })}
-            </p>
-            <CitySelect
-              value={draftFilters.city}
-              onChange={city => setDraftFilters(prev => ({ ...prev, city }))}
-              options={cities}
-              disabled={isCitiesLoading}
-              placeholder={t('common.selectCity', { defaultValue: 'Выберите город' })}
-            />
-          </div>
+          <CitySelect
+            label={t('profile.city', { defaultValue: 'Город' })}
+            value={draftFilters.city}
+            onChange={city => setDraftFilters(prev => ({ ...prev, city }))}
+            options={cities}
+            disabled={isCitiesLoading}
+            isLoading={isCitiesLoading}
+            placeholder={t('common.selectCity', { defaultValue: 'Выберите город' })}
+            validateOnBlur={false}
+          />
 
-          <div className="ui-density-stack">
-            <p className={PROFILE_SECTION_LABEL_CLASS}>
-              {t('venueUi.staff.catalog.filters.position', { defaultValue: 'Должность' })}
-            </p>
+          <Select
+            label={t('venueUi.staff.catalog.filters.position', { defaultValue: 'Должность' })}
+            value={draftFilters.position ?? ''}
+            onChange={value =>
+              setDraftFilters(prev => ({
+                ...prev,
+                position: value || null,
+                specialization: null,
+              }))
+            }
+            options={positionOptions}
+            placeholder={t('venueUi.staff.catalog.filters.allPositions', {
+              defaultValue: 'Все должности',
+            })}
+          />
+
+          {draftFilters.position ? (
             <Select
-              value={draftFilters.position ?? ''}
+              label={t('venueUi.staff.catalog.filters.specialization', {
+                defaultValue: 'Специализация',
+              })}
+              value={draftFilters.specialization ?? ''}
               onChange={value =>
                 setDraftFilters(prev => ({
                   ...prev,
-                  position: value || null,
-                  specialization: null,
+                  specialization: value || null,
                 }))
               }
-              options={positionOptions}
+              options={specializationOptions}
+              placeholder={t('venueUi.staff.catalog.filters.allSpecializations', {
+                defaultValue: 'Все специализации',
+              })}
             />
-          </div>
-
-          {draftFilters.position ? (
-            <div className="ui-density-stack">
-              <p className={PROFILE_SECTION_LABEL_CLASS}>
-                {t('venueUi.staff.catalog.filters.specialization', {
-                  defaultValue: 'Специализация',
-                })}
-              </p>
-              <Select
-                value={draftFilters.specialization ?? ''}
-                onChange={value =>
-                  setDraftFilters(prev => ({
-                    ...prev,
-                    specialization: value || null,
-                  }))
-                }
-                options={specializationOptions}
-              />
-            </div>
           ) : null}
         </DrawerBody>
 

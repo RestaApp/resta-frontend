@@ -83,6 +83,11 @@
         "accept": "Accept",
         "reject": "Reject"
       },
+      "applications": {
+        "title": "Applications",
+        "openAria": "Applications",
+        "openAriaWithCount": "Applications, {{count}} new"
+      },
       "catalog": {
         "title": "Employee catalog",
         "openAria": "Employee catalog",

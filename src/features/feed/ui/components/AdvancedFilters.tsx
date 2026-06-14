@@ -197,11 +197,10 @@ const AdvancedFiltersSheet = ({
           <CityAutocompleteField
             value={c.selectedCity}
             onChange={c.setSelectedCity}
-            onLocationRequest={() => undefined}
             showLocationButton={false}
             clearOnFocus
             hideLabel
-            isLoading={false}
+            validateOnBlur={false}
           />
         </div>
       </DrawerBody>

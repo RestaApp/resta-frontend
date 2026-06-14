@@ -179,7 +179,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
               setCityError(null)
             }}
             onLocationRequest={handleLocationShare}
-            isLoading={isRequestingLocation}
+            isLocationLoading={isRequestingLocation}
             hideLabel
           />
         </div>

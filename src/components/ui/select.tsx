@@ -1,13 +1,10 @@
 import { memo, useState, useRef, useEffect, useCallback, useMemo, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/utils/cn'
-import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
-import { useScrollContainerLock } from '@/shared/lib/hooks/useScrollContainerLock'
 import { FormField } from '@/components/ui/form-field'
 import { SelectDropdown } from './select/SelectDropdown'
 import { SelectTrigger } from './select/SelectTrigger'
-import { useDropdownAutoScroll } from './select/useDropdownAutoScroll'
-import { useEffectivePortaled } from './select/useEffectivePortaled'
+import { useSelectDropdownShell } from './select/useSelectDropdownShell'
 import type { SelectProps } from './select/types'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 
@@ -23,7 +20,7 @@ export const Select = memo(function Select({
   label,
   hint,
   error,
-  searchable = true,
+  searchable = false,
   portaled = false,
   withOverlay = false,
   bottomOffsetPx = BOTTOM_NAV_HEIGHT_PX,
@@ -33,22 +30,20 @@ export const Select = memo(function Select({
   const displayPlaceholder = placeholder ?? t('common.selectValue')
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const effectivePortaled = useEffectivePortaled(isOpen, containerRef, portaled)
+  const handleDismiss = useCallback(() => {
+    setIsOpen(false)
+    setSearchQuery('')
+  }, [])
 
-  useBodyScrollLock(isOpen && withOverlay)
-  useScrollContainerLock(isOpen, containerRef)
-
-  useDropdownAutoScroll({
+  const { containerRef, dropdownRef, effectivePortaled } = useSelectDropdownShell({
     isOpen,
-    containerRef,
+    portaled,
+    withOverlay,
     bottomOffsetPx,
-    portaled: effectivePortaled,
-    enabled: !effectivePortaled,
+    onDismiss: handleDismiss,
   })
 
   const selectedOption = options.find(opt => opt.value === value)
@@ -63,20 +58,6 @@ export const Select = memo(function Select({
       opt => opt.label.toLowerCase().includes(query) || opt.value.toLowerCase().includes(query)
     )
   }, [options, searchQuery, searchable])
-
-  useEffect(() => {
-    if (!isOpen || withOverlay) return
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node
-      if (containerRef.current?.contains(target) || dropdownRef.current?.contains(target)) return
-      setIsOpen(false)
-      setSearchQuery('')
-    }
-
-    document.addEventListener('pointerdown', handlePointerDown, true)
-    return () => document.removeEventListener('pointerdown', handlePointerDown, true)
-  }, [isOpen, withOverlay])
 
   useEffect(() => {
     if (!isOpen || !searchable) return
@@ -120,8 +101,7 @@ export const Select = memo(function Select({
           handleSelect(filteredOptions[0].value)
         }
       } else if (e.key === 'Escape') {
-        setIsOpen(false)
-        setSearchQuery('')
+        handleDismiss()
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
         if (filteredOptions.length > 0 && scrollContainerRef.current) {
@@ -132,7 +112,7 @@ export const Select = memo(function Select({
         }
       }
     },
-    [filteredOptions, handleSelect]
+    [filteredOptions, handleDismiss, handleSelect]
   )
 
   return (
