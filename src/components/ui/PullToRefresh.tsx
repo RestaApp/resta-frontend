@@ -25,6 +25,7 @@ export function PullToRefresh({
 }: PullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const startYRef = useRef<number | null>(null)
@@ -48,6 +49,7 @@ export function PullToRefresh({
 
       startYRef.current = event.touches[0].clientY
       isDraggingRef.current = true
+      setIsDragging(true)
     },
     [canStartPull, isTouchInsideContainer]
   )
@@ -57,6 +59,7 @@ export function PullToRefresh({
       if (!isTouchInsideContainer(event)) {
         startYRef.current = null
         isDraggingRef.current = false
+        setIsDragging(false)
         setPullDistance(0)
         return
       }
@@ -83,6 +86,7 @@ export function PullToRefresh({
 
     startYRef.current = null
     isDraggingRef.current = false
+    setIsDragging(false)
 
     if (!shouldRefresh) {
       setPullDistance(0)
@@ -107,11 +111,13 @@ export function PullToRefresh({
   const handleTouchCancel = useCallback(() => {
     startYRef.current = null
     isDraggingRef.current = false
+    setIsDragging(false)
     setPullDistance(0)
   }, [])
 
   const isReady = pullDistance >= threshold
   const indicatorHeight = isRefreshing ? threshold : pullDistance
+  const contentOffset = isRefreshing ? threshold : pullDistance
 
   return (
     <div
@@ -134,7 +140,17 @@ export function PullToRefresh({
           <Loader size="sm" className={cn(!isRefreshing && !isReady && 'opacity-50')} />
         </div>
       </div>
-      <div>{children}</div>
+      <div
+        className={cn(
+          'will-change-transform',
+          !isDragging && 'transition-transform duration-200 ease-out'
+        )}
+        style={{
+          transform: contentOffset > 0 ? `translate3d(0, ${contentOffset}px, 0)` : undefined,
+        }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
