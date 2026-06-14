@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCities } from '@/shared/lib/hooks/useCities'
 
@@ -17,8 +17,6 @@ interface ValidationResult {
   normalizedValue?: string
 }
 
-const OPEN_SCROLL_GUARD_MS = 450
-
 export const useCityAutocomplete = ({
   value,
   onChange,
@@ -36,7 +34,6 @@ export const useCityAutocomplete = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  const suggestionsOpenedAtRef = useRef(0)
 
   const usesExternalOptions = options != null
   const { cities: fetchedCities, isLoading: isFetchingCities } = useCities({
@@ -54,36 +51,6 @@ export const useCityAutocomplete = ({
     const searchTerm = value.toLowerCase().trim()
     return cities.filter(city => city.toLowerCase().includes(searchTerm))
   }, [cities, value])
-
-  useEffect(() => {
-    if (!showSuggestions) return
-    suggestionsOpenedAtRef.current = Date.now()
-  }, [showSuggestions])
-
-  useEffect(() => {
-    if (!showSuggestions) return
-
-    const handleExternalScroll = (event: Event) => {
-      const target = event.target as Node | null
-
-      if (target && listRef.current?.contains(target)) {
-        return
-      }
-
-      if (Date.now() - suggestionsOpenedAtRef.current < OPEN_SCROLL_GUARD_MS) {
-        return
-      }
-
-      setShowSuggestions(false)
-      setIsFocused(false)
-      inputRef.current?.blur()
-    }
-
-    window.addEventListener('scroll', handleExternalScroll, true)
-    return () => {
-      window.removeEventListener('scroll', handleExternalScroll, true)
-    }
-  }, [showSuggestions])
 
   const validateCity = useCallback(
     (cityValue: string): ValidationResult => {

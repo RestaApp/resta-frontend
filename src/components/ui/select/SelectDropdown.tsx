@@ -80,7 +80,10 @@ export const SelectDropdown = ({
           : undefined),
       }}
     >
-      <div className="overflow-hidden rounded-lg border border-border bg-background shadow-lg">
+      <div
+        className="overflow-hidden rounded-lg border border-border bg-background shadow-lg"
+        onPointerDown={searchable ? undefined : e => e.preventDefault()}
+      >
         {searchable ? (
           <div className="border-b border-border">
             <input
@@ -126,6 +129,7 @@ export const SelectDropdown = ({
                       role="option"
                       aria-selected={isSelected}
                       data-haptic="selection"
+                      onPointerDown={e => e.preventDefault()}
                       onMouseDown={e => e.preventDefault()}
                       onClick={() => onSelect(option.value)}
                       className={cn(

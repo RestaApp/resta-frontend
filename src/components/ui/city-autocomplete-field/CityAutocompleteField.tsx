@@ -7,7 +7,6 @@ import { FormField } from '@/components/ui/form-field'
 import { Loader } from '@/components/ui/loader'
 import { SelectDropdown } from '@/components/ui/select/SelectDropdown'
 import { useSelectDropdownShell } from '@/components/ui/select/useSelectDropdownShell'
-import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
 import { useCityAutocomplete } from './useCityAutocomplete'
 
 export interface CityAutocompleteFieldProps {
@@ -88,7 +87,13 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
     onDismiss: handleDropdownClose,
   })
 
-  useBodyScrollLock(showSuggestions)
+  const handleInputBlurWithGuard = (event: React.FocusEvent<HTMLInputElement>) => {
+    const next = event.relatedTarget as Node | null
+    if (next && (containerRef.current?.contains(next) || dropdownRef.current?.contains(next))) {
+      return
+    }
+    handleInputBlur()
+  }
 
   const cityOptions = filteredCities.map(city => ({ value: city, label: city }))
   const displayError = error ?? (!isValid ? (errorMessage ?? undefined) : undefined)
@@ -105,7 +110,7 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
           }
           handleInputFocus()
         }}
-        onBlur={handleInputBlur}
+        onBlur={handleInputBlurWithGuard}
         placeholder={displayPlaceholder}
         className={cn(showLocationButton && 'pr-12')}
         autoComplete="off"
