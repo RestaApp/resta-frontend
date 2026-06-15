@@ -4,7 +4,6 @@ import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { VenueSuppliersFiltersDrawer } from './suppliers/VenueSuppliersFiltersDrawer'
 import { VenueSuppliersList } from './suppliers/VenueSuppliersList'
 import { useVenueSuppliersPageModel } from './suppliers/useVenueSuppliersPageModel'
-import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 /**
  * Страница‑оркестратор:
@@ -15,7 +14,6 @@ import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
  */
 export function VenueSuppliersPage() {
   const { t } = useTranslation()
-  const { closeOverlay } = useDetailOverlay()
   const m = useVenueSuppliersPageModel()
 
   if (m.isError) {
@@ -52,10 +50,7 @@ export function VenueSuppliersPage() {
       <UserProfileDrawer
         userId={m.selectedUserId}
         open={m.selectedUserId !== null}
-        onClose={() => {
-          m.handleCloseDetails()
-          closeOverlay()
-        }}
+        onClose={m.handleCloseDetails}
       />
 
       <VenueSuppliersFiltersDrawer

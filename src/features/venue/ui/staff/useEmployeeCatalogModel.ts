@@ -35,7 +35,7 @@ export const useEmployeeCatalogModel = () => {
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
   const userCity = useAppSelector(selectUserCity)
-  const { openUserProfile } = useDetailOverlay()
+  const { openUserProfile, closeOverlay, overlay } = useDetailOverlay()
 
   const defaultFilters = useMemo(
     () => ({
@@ -47,8 +47,8 @@ export const useEmployeeCatalogModel = () => {
 
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [inviteEmployee, setInviteEmployee] = useState<EmployeeCatalogItem | null>(null)
-  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null)
   const [invitingShiftId, setInvitingShiftId] = useState<number | null>(null)
+  const selectedProfileId = overlay?.type === 'user' ? overlay.id : null
 
   const {
     appliedFilters,
@@ -67,6 +67,7 @@ export const useEmployeeCatalogModel = () => {
     defaultFilters,
     pageSize: EMPLOYEES_PER_PAGE,
     removeFilter: removeEmployeeCatalogFilter,
+    createResetFilters: filters => ({ ...filters, city: '' }),
   })
 
   const queryParams = useMemo(() => {
@@ -125,15 +126,14 @@ export const useEmployeeCatalogModel = () => {
 
   const handleOpenProfile = useCallback(
     (id: number) => {
-      setSelectedProfileId(id)
       openUserProfile(id)
     },
     [openUserProfile]
   )
 
   const handleCloseProfile = useCallback(() => {
-    setSelectedProfileId(null)
-  }, [])
+    closeOverlay()
+  }, [closeOverlay])
 
   const handleOpenInvite = useCallback((employee: EmployeeCatalogItem) => {
     setInviteEmployee(employee)

@@ -702,6 +702,7 @@
       "subtitle": "Заведения будут писать тебе в Telegram напрямую",
       "editName": "Имя",
       "phoneFromTelegram": "Номер из Telegram",
+      "phoneShareMissing": "Контакт из Telegram не подтвердился. Введите номер вручную или попробуйте снова.",
       "connected": "✓ Telegram подключён",
       "imported": "Импортирован",
       "fallbackName": "Пользователь Telegram",

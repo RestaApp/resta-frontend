@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { onAppEvent, type AppEventName } from '@/shared/utils/appEvents'
+import { resolveResetFilters } from './usePaginatedFilterState.utils'
 
 export interface PaginationMeta {
   total_count?: number
@@ -27,6 +28,7 @@ interface UsePaginatedFilterStateOptions<TFilters> {
   defaultFilters: TFilters
   pageSize: number
   removeFilter: (filters: TFilters, filterId: string) => TFilters
+  createResetFilters?: (defaultFilters: TFilters) => TFilters
   openAppEvent?: AppEventName
   openFiltersOnAppEvent?: boolean
   onOpenAppEvent?: () => void
@@ -36,6 +38,7 @@ export const usePaginatedFilterState = <TFilters>({
   defaultFilters,
   pageSize,
   removeFilter,
+  createResetFilters,
   openAppEvent,
   openFiltersOnAppEvent = false,
   onOpenAppEvent,
@@ -68,11 +71,11 @@ export const usePaginatedFilterState = <TFilters>({
   }, [pageSize])
 
   const handleResetFilters = useCallback(() => {
-    const next = { ...defaultFilters, city: '' } as TFilters
+    const next = resolveResetFilters(defaultFilters, createResetFilters)
     setAppliedFilters(next)
     setDraftFilters(next)
     resetVisibleCount()
-  }, [defaultFilters, resetVisibleCount])
+  }, [createResetFilters, defaultFilters, resetVisibleCount])
 
   const handleRemoveFilter = useCallback(
     (filterId: string) => {
@@ -85,8 +88,8 @@ export const usePaginatedFilterState = <TFilters>({
   )
 
   const handleResetDraftFilters = useCallback(() => {
-    setDraftFilters({ ...defaultFilters, city: '' } as TFilters)
-  }, [defaultFilters])
+    setDraftFilters(resolveResetFilters(defaultFilters, createResetFilters))
+  }, [createResetFilters, defaultFilters])
 
   const handleApplyFilters = useCallback(() => {
     setAppliedFilters(draftFilters)

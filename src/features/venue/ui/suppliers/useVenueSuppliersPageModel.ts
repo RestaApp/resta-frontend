@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetUsersQuery, type GetUsersParams } from '@/services/api/usersApi'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -46,7 +46,8 @@ export const useVenueSuppliersPageModel = () => {
     [userCity]
   )
 
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+  const { openUserProfile, closeOverlay, overlay } = useDetailOverlay()
+  const selectedUserId = overlay?.type === 'user' ? overlay.id : null
 
   const {
     appliedFilters,
@@ -64,6 +65,7 @@ export const useVenueSuppliersPageModel = () => {
     defaultFilters,
     pageSize: SUPPLIERS_PER_PAGE,
     removeFilter: removeSupplierFilter,
+    createResetFilters: filters => ({ ...filters, city: '' }),
     openAppEvent: APP_EVENTS.OPEN_SUPPLIERS_FILTERS,
     openFiltersOnAppEvent: true,
   })
@@ -211,19 +213,16 @@ export const useVenueSuppliersPageModel = () => {
     incrementVisibleCount()
   }, [hasMore, incrementVisibleCount, isFetching, isLoading])
 
-  const { openUserProfile } = useDetailOverlay()
-
   const handleOpenDetails = useCallback(
     (id: number) => {
-      setSelectedUserId(id)
       openUserProfile(id)
     },
     [openUserProfile]
   )
 
   const handleCloseDetails = useCallback(() => {
-    setSelectedUserId(null)
-  }, [])
+    closeOverlay()
+  }, [closeOverlay])
 
   return {
     isSupplierRole,
@@ -238,7 +237,7 @@ export const useVenueSuppliersPageModel = () => {
     refetch,
     list,
     suppliers,
-    suppliersCount: suppliers.length,
+    suppliersCount: list.length,
     hasMore,
     activeFilters,
     handleLoadMore,

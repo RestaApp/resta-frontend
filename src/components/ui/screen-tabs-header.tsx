@@ -40,9 +40,7 @@ const ScreenTabsHeaderInner = <T extends string>({
 
   return (
     <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
-      <div
-        className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}
-      >
+      <div className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}>
         <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>{title}</h1>
 
         {hasTabs ? (

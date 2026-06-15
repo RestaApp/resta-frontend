@@ -694,6 +694,7 @@
       "subtitle": "Venues will message you directly in Telegram",
       "editName": "Name",
       "phoneFromTelegram": "Phone from Telegram",
+      "phoneShareMissing": "Telegram shared the contact, but the number was not confirmed. Enter it manually or try again.",
       "connected": "✓ Telegram connected",
       "imported": "Imported",
       "fallbackName": "Telegram user",

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useAcceptApplicationMutation,
@@ -215,6 +215,14 @@ export function VenueStaffPage() {
     setModeratingAction(null)
     closeOverlay()
   }
+
+  useEffect(() => {
+    if (!selectedItem) return
+    const selectedUserId = selectedItem.person.user_id ?? selectedItem.person.user?.id ?? null
+    if (overlay?.type === 'user' && overlay.id === selectedUserId) return
+    setSelectedItem(null)
+    setModeratingAction(null)
+  }, [overlay, selectedItem])
 
   const handleDrawerAccept = async () => {
     if (!selectedItem) return

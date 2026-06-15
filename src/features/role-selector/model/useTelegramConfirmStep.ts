@@ -11,6 +11,7 @@ import { setupTelegramBackButton } from '@/shared/utils/telegram'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import type { UiRole } from '@/shared/types/roles.types'
 import { firstLocation, sanitizeLocations } from '@/shared/utils/location'
+import { getConfirmedSharedPhone, resolvePreferredPhone } from './telegramConfirmStep.utils'
 
 interface UseTelegramConfirmStepProps {
   onContinue: () => void
@@ -72,7 +73,7 @@ export const useTelegramConfirmStep = ({
   const addressFromProfile = firstLocation(user?.location) ?? ''
   const userId = user?.id
 
-  const resolvedPhone = phoneFromProfile || manualPhone.trim()
+  const resolvedPhone = resolvePreferredPhone({ manualPhone, phoneFromProfile })
   const isPhoneValid = useMemo(() => validatePhone(resolvedPhone).valid, [resolvedPhone])
   const isPhoneFilled = isPhoneValid || isPhoneShared
 
@@ -111,18 +112,27 @@ export const useTelegramConfirmStep = ({
     try {
       const shared = await requestTelegramContact()
       if (shared) {
-        setIsPhoneShared(true)
+        let confirmedPhone: string | null = null
         if (userId) {
           const result = await refetchUser()
           if (result && 'data' in result && result.data?.data?.phone) {
-            setManualPhone(formatPhoneInput(result.data.data.phone) || result.data.data.phone)
+            confirmedPhone = getConfirmedSharedPhone(result.data.data.phone)
           }
         }
-        if (!manualPhone.trim()) {
-          setManualPhone(
-            t('onboarding.telegram.phoneFromTelegram', { defaultValue: 'Номер из Telegram' })
+        if (!confirmedPhone) {
+          setIsPhoneShared(false)
+          setPhoneError(
+            t('onboarding.telegram.phoneShareMissing', {
+              defaultValue:
+                'Номер из Telegram не подтвердился. Введите его вручную или попробуйте снова.',
+            })
           )
+          triggerHapticFeedback('warning')
+          return
         }
+
+        setIsPhoneShared(true)
+        setManualPhone(confirmedPhone)
         setPhoneError(null)
         triggerHapticFeedback('success')
       } else {
@@ -131,7 +141,7 @@ export const useTelegramConfirmStep = ({
     } finally {
       setIsRequestingPhone(false)
     }
-  }, [isRequestingPhone, manualPhone, refetchUser, t, userId])
+  }, [isRequestingPhone, refetchUser, t, userId])
 
   const handleLocationShare = useCallback(async () => {
     if (isRequestingLocation) return
