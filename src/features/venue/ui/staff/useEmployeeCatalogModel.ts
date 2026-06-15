@@ -47,8 +47,10 @@ export const useEmployeeCatalogModel = () => {
 
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [inviteEmployee, setInviteEmployee] = useState<EmployeeCatalogItem | null>(null)
+  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null)
   const [invitingShiftId, setInvitingShiftId] = useState<number | null>(null)
-  const selectedProfileId = overlay?.type === 'user' ? overlay.id : null
+  const isProfileOpen =
+    selectedProfileId != null && overlay?.type === 'user' && overlay.id === selectedProfileId
 
   const {
     appliedFilters,
@@ -126,14 +128,20 @@ export const useEmployeeCatalogModel = () => {
 
   const handleOpenProfile = useCallback(
     (id: number) => {
+      setSelectedProfileId(id)
       openUserProfile(id)
     },
     [openUserProfile]
   )
 
+  const clearSelectedProfile = useCallback(() => {
+    setSelectedProfileId(null)
+  }, [])
+
   const handleCloseProfile = useCallback(() => {
+    clearSelectedProfile()
     closeOverlay()
-  }, [closeOverlay])
+  }, [clearSelectedProfile, closeOverlay])
 
   const handleOpenInvite = useCallback((employee: EmployeeCatalogItem) => {
     setInviteEmployee(employee)
@@ -200,8 +208,10 @@ export const useEmployeeCatalogModel = () => {
     handleApplyFilters,
     handleOpenFilters,
     handleResetDraftFilters,
+    clearSelectedProfile,
     handleOpenProfile,
-    selectedProfileId,
+    selectedProfileId: isProfileOpen ? selectedProfileId : null,
+    isProfileOpen,
     handleCloseProfile,
     cities,
     isCitiesLoading,
