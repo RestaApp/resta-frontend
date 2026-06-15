@@ -14,6 +14,7 @@ Reference doc для UI и frontend engineering. Иерархия докумен
 3. **Production‑first** — TS + ESLint + build без необоснованных warnings.
 4. **Файл >300 LOC** — повод расщепить (controller hook + UI).
 5. **Blast radius** — рефакторинг вне ТЗ → в backlog.
+6. **Senior bias** — по умолчанию выбирать решение, которое уменьшает связность, число источников истины и стоимость следующего изменения, даже если оно требует чуть больше upfront discipline.
 
 ---
 
@@ -313,6 +314,16 @@ export const MyComponent = (props) => {
 | 300–400 | Обоснование требуется в PR. Composition layers (`use*PageModel`) — допустимо.               |
 | 400+    | Обязательное расщепление. Pure type‑файлы — исключение.                                     |
 
+### 3.4.1. Composition layer — не свалка
+
+`use*PageModel`, `use*Controller`, `*Provider` могут быть больше обычного файла, но только если они:
+
+- не дублируют бизнес-логику дочерних sub-hooks;
+- в основном координируют уже вынесенные куски;
+- не тащат одновременно form state, overlay state, data fetching, mapping и validation в одном теле.
+
+Если composition file снова начинает содержать 3+ независимые зоны ответственности — обязателен новый sub-hook.
+
 ### 3.5. Повторяющиеся паттерны → reusable primitives
 
 3+ одинаковых div‑паттерна в кодовой базе = повод для нового примитива.
@@ -403,6 +414,28 @@ useEffect(() => {
 
 `react-hooks/set-state-in-effect` — warn. Локальный `eslint-disable` допустим
 только с осознанным комментарием (external sync с внешней системой).
+
+### 4.7. Hook orchestration standard
+
+Для крупных flows целевая форма такая:
+
+```text
+useXPageModel
+├── useXFiltersController
+├── useXDetailsController
+├── useXFormController
+└── pure utils / selectors
+```
+
+`use*PageModel` не должен быть местом, где одновременно живут:
+
+- запросы;
+- derive/mapping больших списков;
+- modal/drawer orchestration;
+- navigation effects;
+- submit/validation flow.
+
+Если это всё ещё в одном hook — архитектура считается недочищенной.
 
 ---
 
@@ -621,6 +654,13 @@ npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 - `npm run test:visual` (или `test:visual:update` после намеренных изменений).
 - Design‑system violations (`text-[Npx]`, `bg-[#hex]`, `z-[N]`, legacy токены) — `0` или allowlist.
 
+**Если меняется architecture / state / flows — также:**
+
+- Нет новых proxy‑модулей и alias‑слоёв без собственной логики.
+- Нет новых дубликатов server state между RTK Query / Redux / local state.
+- Для нового helper/controller есть либо reuse, либо явное упрощение parent file.
+- Для query params / mapping / form validation / orchestration добавлен или обновлён хотя бы один regression test, если код не purely visual.
+
 **Smoke screens (минимум при системных UI‑изменениях):** Boot · Onboarding · Feed · Applied · Mine · Me · Restaurants · Suppliers · Dark/Light.
 
 ---
@@ -645,6 +685,7 @@ npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 - **Refactor вне ТЗ** → в «Что осталось», **не делай** в текущем PR.
 - **Красная сборка** → чини или откатывай.
 - **Бизнес‑интеграция без контракта** (платежи, Stars, auth) → документируй в `HANDOFF.md`, не выдумывай.
+- **Код формально работает, но увеличивает техдолг** (новый god-hook, proxy layer, второй source of truth, dead API surface) → не мерджить как “нормально”; либо дочистить, либо зафиксировать как blocker.
 
 ---
 
@@ -674,6 +715,9 @@ npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 | `useCallback(() => fn(), [fn])` без агрегации            | Использовать `fn` напрямую                                             |
 | Boolean prop, который никогда не передаётся как `true`   | Удалить из interface и call sites                                      |
 | Поле в типе/маппинге, которое нигде не рендерится        | Удалить из типа и mapping‑функции                                      |
+| `shared/store/*` или иной proxy над slice без логики     | Импортировать канонический slice/module напрямую                       |
+| `RTK Query` данные зеркалятся в Redux “для удобства”     | Оставить RTK Query source of truth                                     |
+| Новый `use*PageModel` снова >300 LOC после правки        | Вынести controller/sub-hook до закрытия задачи                         |
 
 ---
 
@@ -746,6 +790,8 @@ features/<X> ──→ shared/* ──→ components/ui/*  (feature-agnostic)
 - Тривиальный alias (`A = B`) — не создавать.
 - Deprecated export без deadline — удалить в той же PR.
 - Магические числа (`tracking-[0.04em]`, `tracking-[0.08em]`, `tracking-[0.22em]` в одном файле) — перейти на токены или комментировать каждое отклонение.
+- Proxy/re-export слой без логики и без устойчивого API контракта — не создавать.
+- Если helper/controller используется в одном месте и не упрощает parent file заметно — не выносить.
 
 ### 14.6. Перед написанием helper'а
 
@@ -759,6 +805,13 @@ features/<X> ──→ shared/* ──→ components/ui/*  (feature-agnostic)
 ### 14.8. Cleanup перед закрытием задачи
 
 Grep‑аудит: объявленный, но не deструктурируемый prop · поле в типе/маппинге, которое нигде не рендерится · `console.*` · пустые директории · неиспользуемые exports / deprecated alias.
+
+Отдельно проверить:
+
+- не появился ли второй source of truth;
+- не остался ли временный proxy‑module после рефакторинга;
+- уменьшился ли размер/связность исходного god-file после вынесения sub-hooks;
+- не добавили ли новый публичный API слой, который никто не обязан поддерживать.
 
 ### 14.9. Когда оставлять «дубликат»
 

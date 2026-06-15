@@ -88,6 +88,8 @@ features/<X> ──→ shared/* ──→ components/ui/*
 6. **Ранний выход** — guard clauses вместо глубокой вложенности.
 7. **Эффекты** — минимум `useEffect`; derived state — при рендере.
 8. **Перфоманс** — `memo` / `useMemo` / `useCallback` только при реальной нужде.
+9. **Single source of truth** — не дублировать один и тот же state в RTK Query, Redux, local state и helper-слоях без явной причины.
+10. **Senior threshold** — новый код должен уменьшать, а не увеличивать архитектурный долг: если изменение добавляет слой, alias, proxy или wrapper, должна быть реальная польза и минимум 3 потребителя либо иное явное обоснование.
 
 **React:** именованный экспорт `export const Name = ...`; пропсы — `NameProps`; ключи списков — стабильные `id`.
 
@@ -100,6 +102,8 @@ features/<X> ──→ shared/* ──→ components/ui/*
 - Селекторы — `createSelector`; не ходить в сырой `state` без хука/селектора.
 - Не `createAsyncThunk` для того, что закрывает RTK Query.
 - Auth / persist — только через существующие actions и middleware.
+- RTK Query cache — preferred источник истины для server state. Не зеркалить catalog/reference данные в Redux без жёсткой product‑причины.
+- Не создавать proxy‑store модули вида `shared/store/X -> re-export features/.../slice`, если это не стабильный публичный API слоя и не закреплено в каноне.
 
 ---
 
@@ -120,6 +124,8 @@ features/<X> ──→ shared/* ──→ components/ui/*
 
 - Секреты в `.env`; клиентские переменные — префикс `VITE_`.
 - Перед коммитом: `npm run lint`, `npm run format:check`, `npm run build`.
+- Если изменение затрагивает flow / orchestration / mapping / form validation / query params — добавить или обновить тест рядом с кодом, если это технически разумно.
+- Если после правки файл остаётся >300 LOC не как composition layer и не как pure types file — задача считается незакрытой без явного обоснования.
 
 ---
 
@@ -137,4 +143,6 @@ features/<X> ──→ shared/* ──→ components/ui/*
 - Мёртвые пропсы / поля типа / неиспользуемые exports / barrel `index.ts` с ≤2 потребителями / deprecated alias без deadline.
 - Тривиальные `useCallback(() => fn(), [fn])` без агрегации логики.
 - UI/design-system нарушения — см. [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md) §12, §14.
+- Proxy‑модули без собственной логики: re-export ради “красивого пути” без стабильного слоя API.
+- Дублирование одного server state в нескольких местах (`RTK Query` + `Redux` + `local state`) без documented reason.
 - **`manualChunks` в `vite.config.ts`** — запрещён без явного запроса пользователя: разнос `react` / `react-redux` / `redux-persist` / `motion` по vendor-чанкам давал циклические импорты и падение `undefined is not an object (evaluating 'd.Component')` в Telegram WebView. Дефолт — без `manualChunks`; см. `.cursor/rules/vite-build-chunking.mdc`.
