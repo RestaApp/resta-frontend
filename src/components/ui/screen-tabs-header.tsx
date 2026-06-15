@@ -40,39 +40,41 @@ const ScreenTabsHeaderInner = <T extends string>({
 
   return (
     <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
-      <div className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}>
-        <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>{title}</h1>
+      <div className="ui-app-frame">
+        <div className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}>
+          <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>{title}</h1>
 
-        {hasTabs ? (
-          <Tabs
-            options={tabOptions}
-            activeId={activeTabId}
-            onChange={onTabChange}
-            className={SCREEN_HEADER_TABS_CLASS}
-            activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
-            activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
-          />
-        ) : (
-          <div className={SCREEN_HEADER_TABS_CLASS} aria-hidden="true" />
-        )}
+          {hasTabs ? (
+            <Tabs
+              options={tabOptions}
+              activeId={activeTabId}
+              onChange={onTabChange}
+              className={SCREEN_HEADER_TABS_CLASS}
+              activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
+              activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
+            />
+          ) : (
+            <div className={SCREEN_HEADER_TABS_CLASS} aria-hidden="true" />
+          )}
 
-        {actionsSlot ? (
-          actionsSlot
-        ) : action ? (
-          <Button
-            ref={actionButtonRef}
-            variant="ghost"
-            size="sm"
-            onClick={action.onClick}
-            aria-label={action.ariaLabel}
-            className={cn(APP_HEADER_ACTION_BUTTON_CLASS)}
-          >
-            <action.Icon className={APP_HEADER_ACTION_ICON_CLASS} />
-          </Button>
-        ) : null}
+          {actionsSlot ? (
+            actionsSlot
+          ) : action ? (
+            <Button
+              ref={actionButtonRef}
+              variant="ghost"
+              size="sm"
+              onClick={action.onClick}
+              aria-label={action.ariaLabel}
+              className={cn(APP_HEADER_ACTION_BUTTON_CLASS)}
+            >
+              <action.Icon className={APP_HEADER_ACTION_ICON_CLASS} />
+            </Button>
+          ) : null}
+        </div>
+
+        {footer}
       </div>
-
-      {footer}
     </header>
   )
 }
