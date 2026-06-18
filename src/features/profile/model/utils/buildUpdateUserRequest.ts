@@ -2,6 +2,7 @@ import type { ApiRole } from '@/shared/types/roles.types'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import { toE164 } from '@/shared/utils/phone'
 import { sanitizeLocations } from '@/shared/utils/location'
+import { sanitizeWorkHistory, type WorkHistoryFormEntry } from '@/shared/utils/workHistory'
 
 import { formValueToBusinessHoursRecord } from '@/features/profile/model/utils/businessHoursForm'
 
@@ -25,6 +26,8 @@ export interface ProfileFormData {
   openToWork: boolean
   skills: string
   specializations: string[]
+  /** История работы (только для employee) */
+  workHistory: WorkHistoryFormEntry[]
   // Для supplier
   supplierCategory: string
   supplierTypes: string[]
@@ -199,6 +202,13 @@ export const buildUpdateUserRequest = (
     if (hasDiff(currentSpecializations, initialSpecializations)) {
       user.specializations = currentSpecializations
       employeeProfileAttributes.specializations = currentSpecializations
+    }
+
+    // work_history — поле уровня user, передаётся целиком (бэкенд заменяет всё поле).
+    const currentWorkHistory = sanitizeWorkHistory(formData.workHistory)
+    const initialWorkHistory = sanitizeWorkHistory(source.workHistory)
+    if (hasDiff(currentWorkHistory, initialWorkHistory)) {
+      user.work_history = currentWorkHistory
     }
 
     if (Object.keys(employeeProfileAttributes).length > 0) {

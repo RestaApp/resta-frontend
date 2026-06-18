@@ -16,6 +16,7 @@ import {
   getSupplierProfile,
   getSupplierTypes,
 } from '@/shared/utils/supplierProfile'
+import { mapApiWorkHistoryToForm } from '@/shared/utils/workHistory'
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
 import { useEditProfileFormController, type EditProfileStep } from './useEditProfileFormController'
@@ -71,6 +72,7 @@ export const useEditProfileModel = (
         openToWork: false,
         skills: '',
         specializations: [],
+        workHistory: [],
         supplierCategory: '',
         supplierTypes: [],
       }
@@ -112,6 +114,7 @@ export const useEditProfileModel = (
               )
             )
           : [],
+      workHistory: apiRole === 'employee' ? mapApiWorkHistoryToForm(userProfile.work_history) : [],
       supplierCategory: supplierProfile?.supplier_category ?? '',
       supplierTypes: getSupplierTypes(supplierProfile),
     }

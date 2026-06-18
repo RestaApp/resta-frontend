@@ -16,6 +16,7 @@ import { formatExperienceText } from '@/shared/utils/experience'
 import type { EmployeeSubRole } from '@/shared/types/roles.types'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 import { EmployeeSpecializationsField } from './EmployeeSpecializationsField'
+import { EmployeeWorkHistoryField } from './EmployeeWorkHistoryField'
 
 interface EditProfileStepProfessionalProps {
   formData: ProfileFormData
@@ -109,6 +110,12 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
           tickCount={5}
         />
       </FormField>
+
+      <EmployeeWorkHistoryField
+        value={formData.workHistory}
+        disabled={disabled}
+        onChange={next => updateField('workHistory', next)}
+      />
 
       <div className={DRAWER_SETTING_ROW_CLASS}>
         <div className="min-w-0">

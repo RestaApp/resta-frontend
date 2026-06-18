@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { formatPhoneInput, validatePhone } from '@/shared/utils/phone'
+import { hasInvalidWorkHistory } from '@/shared/utils/workHistory'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
 import type { ApiRole } from '@/shared/types/roles.types'
 
@@ -144,6 +145,12 @@ export const useEditProfileFormController = ({
       return
     }
 
+    if (apiRole === 'employee' && hasInvalidWorkHistory(formData.workHistory)) {
+      triggerHapticFeedback('warning')
+      showToast(t('profile.workHistory.invalidEntry'), 'warning')
+      return
+    }
+
     try {
       const updateData = buildUpdateUserRequest(formData, apiRole, baseFormData)
       if (Object.keys(updateData.user).length === 0) {
@@ -214,8 +221,14 @@ export const useEditProfileFormController = ({
       return
     }
 
+    if (apiRole === 'employee' && step === 1 && hasInvalidWorkHistory(formData.workHistory)) {
+      triggerHapticFeedback('warning')
+      showToast(t('profile.workHistory.invalidEntry'), 'warning')
+      return
+    }
+
     setStep(prev => Math.min(prev + 1, totalSteps - 1) as EditProfileStep)
-  }, [buildStepValidationErrors, formData, showToast, step, t, totalSteps])
+  }, [apiRole, buildStepValidationErrors, formData, showToast, step, t, totalSteps])
 
   const handleBack = useCallback(() => {
     setFieldErrors({})

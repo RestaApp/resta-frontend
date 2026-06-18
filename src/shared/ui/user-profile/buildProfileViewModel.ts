@@ -9,6 +9,7 @@ import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
 import { splitSkillByDots } from '@/shared/utils/profileSkills'
 import { getSupplierProfile, getSupplierTypes } from '@/shared/utils/supplierProfile'
+import { formatWorkPeriod } from '@/shared/utils/workHistory'
 import { buildBusinessProfileInfoRows } from '@/shared/ui/user-profile/buildBusinessProfileInfoRows'
 
 type ProfileCompleteness = ReturnType<typeof getProfileCompleteness>
@@ -48,6 +49,17 @@ export interface ProfileInfoSection {
   rows: ProfileInfoRow[]
 }
 
+export interface ProfileWorkHistoryItem {
+  id: string
+  company: string
+  position: string
+  /** «Март 2022 — Январь 2024» или «Март 2022 — по наст. время» */
+  period: string
+  city: string
+  description: string
+  isCurrent: boolean
+}
+
 export interface ProfileReviewSummary {
   rating: string
   reviews: string
@@ -62,6 +74,7 @@ export interface ProfileViewModel {
   fillRequiredText: string
   kpis: KpiItem[]
   tagSections: ProfileTagSection[]
+  workHistory: ProfileWorkHistoryItem[]
   infoSections: ProfileInfoSection[]
   reviewSummary: ProfileReviewSummary | null
   showNotificationSettings: boolean
@@ -228,6 +241,34 @@ const buildTagSections = ({
   }
 
   return sections
+}
+
+const buildWorkHistory = ({
+  apiRole,
+  userProfile,
+}: Pick<BuildProfileViewModelParams, 'apiRole' | 'userProfile'>): ProfileWorkHistoryItem[] => {
+  if (apiRole !== 'employee') return []
+  const entries = userProfile.work_history
+  if (!Array.isArray(entries)) return []
+
+  return entries
+    .map((entry, index) => {
+      const company = normalizeText(entry.company)
+      const position = normalizeText(entry.position)
+      const startedAt = normalizeText(entry.started_at)
+      if (!company && !position && !startedAt) return null
+
+      return {
+        id: `work-${index}`,
+        company,
+        position,
+        period: startedAt ? formatWorkPeriod(startedAt, entry.ended_at) : '',
+        city: normalizeText(entry.city),
+        description: normalizeText(entry.description),
+        isCurrent: !normalizeText(entry.ended_at),
+      }
+    })
+    .filter((item): item is ProfileWorkHistoryItem => item != null)
 }
 
 const pushTextRow = (
@@ -400,6 +441,7 @@ export const buildProfileViewModel = (params: BuildProfileViewModelParams): Prof
     fillRequiredText: getFillRequiredText(t, apiRole),
     kpis: hideMetrics ? [] : buildKpis(params),
     tagSections: buildTagSections(params),
+    workHistory: buildWorkHistory(params),
     infoSections: buildInfoSections(params),
     reviewSummary: hideMetrics ? null : buildReviewSummary(userProfile),
     showNotificationSettings: apiRole !== 'supplier',

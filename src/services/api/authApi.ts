@@ -19,6 +19,19 @@ export interface EmployeeProfile {
   specializations: string[]
 }
 
+/**
+ * Запись истории работы сотрудника (поле уровня `user`, см. ROLES_FRONTEND_SPEC).
+ * Даты — в формате `YYYY-MM`. Отсутствие `ended_at` означает текущее место работы.
+ */
+export interface WorkHistoryEntry {
+  company: string
+  position: string
+  started_at: string
+  ended_at?: string | null
+  city?: string | null
+  description?: string | null
+}
+
 export interface RestaurantProfile {
   name?: string | null
   restaurant_format?: string | null
@@ -51,6 +64,8 @@ export interface UserData {
   language: string
   /** Только для employee в Blueprinter */
   last_name?: string
+  /** История работы сотрудника (только для employee) */
+  work_history?: WorkHistoryEntry[]
   location: string[] | null
   city?: string | null
   name: string

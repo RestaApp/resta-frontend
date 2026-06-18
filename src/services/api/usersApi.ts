@@ -5,7 +5,7 @@
  */
 
 import { api } from '@/shared/api/api'
-import type { UserData } from './authApi'
+import type { UserData, WorkHistoryEntry } from './authApi'
 import { createCatalogQuery } from './helpers'
 
 export type { UserData } from './authApi'
@@ -30,6 +30,8 @@ export interface UpdateUserRequest {
     location?: string[] | null
     city?: string | null
     work_experience_summary?: string | null
+    /** История работы employee — передаётся целиком (бэкенд заменяет поле полностью) */
+    work_history?: WorkHistoryEntry[]
     /** Плоский формат employee (ROLES_FRONTEND_SPEC / API.md) */
     skills?: string[]
     experience_years?: number

@@ -1,7 +1,14 @@
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
-import { ArrowRight, BriefcaseBusiness, ChevronDown, Plus, Star } from 'lucide-react'
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  ChevronDown,
+  Plus,
+  Star,
+  type LucideIcon,
+} from 'lucide-react'
 import { OpenToWorkButton } from '@/shared/ui/OpenToWorkButton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,6 +27,7 @@ import type {
   ProfileInfoSection,
   ProfileTagSection,
   ProfileViewModel,
+  ProfileWorkHistoryItem,
 } from '../buildProfileViewModel'
 import { ProfileHero } from './ProfileHero'
 import {
@@ -190,16 +198,53 @@ const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {
   )
 }
 
-const ProfileInfoSectionView = ({
-  section,
+const WorkHistoryEntryView = ({ item }: { item: ProfileWorkHistoryItem }) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="relative flex flex-col gap-0.5 pl-4">
+      <span
+        className="absolute left-0 top-1.5 h-2 w-2 rounded-full bg-primary/70 ring-2 ring-primary/15"
+        aria-hidden="true"
+      />
+      <div className="flex flex-wrap items-center gap-2">
+        <span className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0')}>
+          {item.position || item.company}
+        </span>
+        {item.isCurrent ? (
+          <Badge variant="tag" className="border-primary/30 bg-primary/10 text-primary">
+            {t('profile.workHistory.currentBadge')}
+          </Badge>
+        ) : null}
+      </div>
+      {item.position && item.company ? (
+        <span className="text-sm text-foreground/80">{item.company}</span>
+      ) : null}
+      <span className={SHIFT_CARD_SUB_CLASS}>
+        {[item.period, item.city].filter(Boolean).join(' · ')}
+      </span>
+      {item.description ? (
+        <p className={cn(FORMATTED_USER_TEXT_CLASS, 'mt-1 text-sm text-foreground/70')}>
+          {item.description}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+/** Сворачиваемая секция профиля (общий каркас для info- и work-history-секций). */
+const CollapsibleProfileSection = ({
+  title,
+  icon: Icon,
   variant,
+  children,
 }: {
-  section: ProfileInfoSection
+  title: string
+  icon?: LucideIcon
   variant: 'page' | 'drawer'
+  children: React.ReactNode
 }) => {
   const [isOpen, setIsOpen] = useState(variant === 'drawer')
-
-  if (section.rows.length === 0) return null
 
   const content = (
     <div className="flex flex-col gap-3">
@@ -210,9 +255,8 @@ const ProfileInfoSectionView = ({
         className="flex w-full items-center gap-2 rounded-sm transition-colors hover:text-primary"
         aria-expanded={isOpen}
       >
-        <h4 className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 flex-1 truncate text-left')}>
-          {section.title}
-        </h4>
+        {Icon ? <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" /> : null}
+        <h4 className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 flex-1 truncate text-left')}>{title}</h4>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -228,9 +272,7 @@ const ProfileInfoSectionView = ({
           animate={{ opacity: 1, height: 'auto' }}
           className="overflow-hidden"
         >
-          <div className="divide-y divide-border/50 text-sm">
-            {section.rows.map(row => renderInfoValue(row))}
-          </div>
+          {children}
         </motion.div>
       ) : null}
     </div>
@@ -240,6 +282,50 @@ const ProfileInfoSectionView = ({
     <div className="py-2">{content}</div>
   ) : (
     <Card className={SHIFT_CARD_CLASS}>{content}</Card>
+  )
+}
+
+const ProfileWorkHistoryView = ({
+  items,
+  variant,
+}: {
+  items: ProfileWorkHistoryItem[]
+  variant: 'page' | 'drawer'
+}) => {
+  const { t } = useTranslation()
+
+  if (items.length === 0) return null
+
+  return (
+    <CollapsibleProfileSection
+      title={t('profile.workHistory.sectionTitle')}
+      icon={BriefcaseBusiness}
+      variant={variant}
+    >
+      <div className="flex flex-col gap-4 border-l border-border/50 pl-1">
+        {items.map(item => (
+          <WorkHistoryEntryView key={item.id} item={item} />
+        ))}
+      </div>
+    </CollapsibleProfileSection>
+  )
+}
+
+const ProfileInfoSectionView = ({
+  section,
+  variant,
+}: {
+  section: ProfileInfoSection
+  variant: 'page' | 'drawer'
+}) => {
+  if (section.rows.length === 0) return null
+
+  return (
+    <CollapsibleProfileSection title={section.title} variant={variant}>
+      <div className="divide-y divide-border/50 text-sm">
+        {section.rows.map(row => renderInfoValue(row))}
+      </div>
+    </CollapsibleProfileSection>
   )
 }
 
@@ -322,6 +408,8 @@ export const ProfileOverview = memo(function ProfileOverview({
           }
         />
       ))}
+
+      <ProfileWorkHistoryView items={profile.workHistory} variant={variant} />
 
       <ProfileReviewSummary profile={profile} />
 

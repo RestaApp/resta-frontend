@@ -43,9 +43,12 @@ export const formatDateRU = (d: Date): string => {
   return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(d)
 }
 
+export const formatTimeRU = (d: Date): string => {
+  return new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit' }).format(d)
+}
+
 export const formatTimeRangeRU = (start: Date, end: Date): string => {
-  const fmt = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit' })
-  return `${fmt.format(start)} – ${fmt.format(end)}`
+  return `${formatTimeRU(start)} – ${formatTimeRU(end)}`
 }
 
 export const formatDuration = (hours?: string | number | null): string | undefined => {

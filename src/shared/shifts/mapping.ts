@@ -65,8 +65,9 @@ const getVacancyScheduleFields = (item: VacancyApiItem) => {
   return {
     date: start ? formatDateRU(start) : '',
     dateKey: start ? toLocalISODateKey(start) : null,
-    time:
-      start && end ? formatTimeRangeRU(start, end) : start ? formatTimeRangeRU(start, start) : '',
+    // Время показываем только при реальном окне смены; одиночное начало без конца
+    // (постоянные вакансии «за месяц») вводит в заблуждение — там оставляем дату.
+    time: start && end && end.getTime() > start.getTime() ? formatTimeRangeRU(start, end) : '',
   }
 }
 
@@ -85,8 +86,12 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   const date = start ? formatDateRU(start) : ''
   const duration = formatDuration(item.duration)
 
+  // Показываем время только при реальном окне смены (start < end). Одиночное
+  // начало (вакансии «за месяц») не выводим — лишь дату, чтобы не путать.
   const time =
-    start && end ? `${formatTimeRangeRU(start, end)}${duration ? ` (${duration})` : ''}` : ''
+    start && end && end.getTime() > start.getTime()
+      ? `${formatTimeRangeRU(start, end)}${duration ? ` (${duration})` : ''}`
+      : ''
 
   const payPeriod: PayPeriod = resolvePayPeriodFromVacancy(item)
 

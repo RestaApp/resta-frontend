@@ -48,10 +48,9 @@ const formatCompactDate = (date?: string | null): string => {
 const formatCompactTime = (time?: string | null): string => {
   if (!time) return ''
   return time
-    .replace(/\s*\([^)]*\)/g, '')
-    .replace(/:00/g, '')
-    .replace(/\b0(\d)/g, '$1')
-    .replace(/\s*[–-]\s*/g, '–')
+    .replace(/\s*\([^)]*\)/g, '') // убрать "(8 ч.)"
+    .replace(/\s*[–-]\s*/g, '–') // нормализовать тире без пробелов
+    .trim()
 }
 
 const formatCompactSchedule = (date?: string | null, time?: string | null): string => {
