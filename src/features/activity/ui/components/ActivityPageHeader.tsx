@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { type TabOption } from '@/components/ui/tabs'
 import { AddShiftOnboardingOverlay } from '@/shared/ui/add-shift/AddShiftOnboardingOverlay'
 import { ScreenTabsHeader } from '@/components/ui/screen-tabs-header'
+import { NotificationsBell } from '@/features/notifications/ui/NotificationsBell'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import type { HeaderAction } from '@/components/appHeaderConfig'
 
@@ -62,6 +63,7 @@ const ActivityPageHeaderInner = <T extends string>({
         activeTabId={activeTabId}
         onTabChange={onTabChange}
         action={action}
+        leadingActionsSlot={<NotificationsBell />}
         actionButtonRef={actionButtonRef}
       />
     </>

@@ -2,6 +2,7 @@ import { Inbox, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { ScreenTabsHeader } from '@/components/ui/screen-tabs-header'
+import { NotificationsBell } from '@/features/notifications/ui/NotificationsBell'
 import {
   APP_HEADER_ACTION_BUTTON_CLASS,
   APP_HEADER_ACTION_ICON_CLASS,
@@ -32,6 +33,7 @@ export const StaffPageHeader = ({
   return (
     <ScreenTabsHeader
       title={t('tabs.venue.staff', { defaultValue: 'Персонал' })}
+      leadingActionsSlot={<NotificationsBell />}
       actionsSlot={
         <div className="flex shrink-0 items-center gap-1">
           <Button

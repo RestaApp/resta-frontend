@@ -58,6 +58,14 @@
     "deleting": "Deleting...",
     "clear": "Clear"
   },
+  "notifications": {
+    "title": "Notifications",
+    "openAria": "Notifications",
+    "markAllRead": "Mark all read",
+    "loadError": "Failed to load notifications",
+    "emptyTitle": "No notifications yet",
+    "emptyDescription": "Shift responses, statuses and other events will show up here"
+  },
   "nav": {
     "bottomNav": "Bottom navigation",
     "fillProfileRequired": "Profile needs to be completed"

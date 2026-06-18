@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScreenTabsHeader } from '@/components/ui/screen-tabs-header'
+import { NotificationsBell } from '@/features/notifications/ui/NotificationsBell'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 import {
@@ -32,5 +33,7 @@ export const AppHeader = ({ onAddShift, activeTab, role }: AppHeaderProps) => {
     [activeTab, isEmployeeFlow, onAddShift, role, t]
   )
 
-  return <ScreenTabsHeader title={title} action={action} />
+  return (
+    <ScreenTabsHeader title={title} action={action} leadingActionsSlot={<NotificationsBell />} />
+  )
 }
