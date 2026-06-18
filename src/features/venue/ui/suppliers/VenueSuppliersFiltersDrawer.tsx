@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
+import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { formatServiceCategory } from '@/shared/utils/formatServiceCategory'
 import { ExpandableTagList } from '@/shared/ui/ExpandableTagList'
@@ -109,18 +109,18 @@ export const VenueSuppliersFiltersDrawer = ({
             {t('venueUi.suppliers.filters.type', { defaultValue: 'Тип поставщика' })}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant={draftFilters.supplierType === null ? 'primary' : 'outline'}
+            <SelectableTagButton
+              value="all"
+              label={t('common.all', { defaultValue: 'Все' })}
+              isSelected={draftFilters.supplierType === null}
               onClick={() => setDraftFilters(prev => ({ ...prev, supplierType: null }))}
-            >
-              {t('common.all', { defaultValue: 'Все' })}
-            </Button>
+            />
             {supplierTypeOptions.map(value => (
-              <Button
+              <SelectableTagButton
                 key={value}
-                size="sm"
-                variant={draftFilters.supplierType === value ? 'primary' : 'outline'}
+                value={value}
+                label={getSupplierTypeLabel(value)}
+                isSelected={draftFilters.supplierType === value}
                 onClick={() =>
                   setDraftFilters(prev => ({
                     ...prev,
@@ -131,9 +131,7 @@ export const VenueSuppliersFiltersDrawer = ({
                     ),
                   }))
                 }
-              >
-                {getSupplierTypeLabel(value)}
-              </Button>
+              />
             ))}
           </div>
         </div>
@@ -149,15 +147,14 @@ export const VenueSuppliersFiltersDrawer = ({
             getKey={value => value}
             priorityKeys={draftFilters.serviceCategories}
             renderItem={value => (
-              <Button
-                size="sm"
-                variant={draftFilters.serviceCategories.includes(value) ? 'primary' : 'outline'}
-                onClick={() => toggleDraftServiceCategory(value)}
-              >
-                {t(`labels.supplierType.${value}`, {
+              <SelectableTagButton
+                value={value}
+                label={t(`labels.supplierType.${value}`, {
                   defaultValue: formatServiceCategory(value),
                 })}
-              </Button>
+                isSelected={draftFilters.serviceCategories.includes(value)}
+                onClick={() => toggleDraftServiceCategory(value)}
+              />
             )}
           />
         </div>
@@ -169,20 +166,18 @@ export const VenueSuppliersFiltersDrawer = ({
             {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant={!draftFilters.onlyActive ? 'primary' : 'outline'}
+            <SelectableTagButton
+              value="all"
+              label={t('common.all', { defaultValue: 'Все' })}
+              isSelected={!draftFilters.onlyActive}
               onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: false }))}
-            >
-              {t('common.all', { defaultValue: 'Все' })}
-            </Button>
-            <Button
-              size="sm"
-              variant={draftFilters.onlyActive ? 'primary' : 'outline'}
+            />
+            <SelectableTagButton
+              value="active"
+              label={t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
+              isSelected={draftFilters.onlyActive}
               onClick={() => setDraftFilters(prev => ({ ...prev, onlyActive: true }))}
-            >
-              {t('venueUi.suppliers.showActive', { defaultValue: 'Только активные' })}
-            </Button>
+            />
           </div>
         </div>
       )}
@@ -193,27 +188,24 @@ export const VenueSuppliersFiltersDrawer = ({
             {t('venueUi.suppliers.filters.delivery', { defaultValue: 'Доставка' })}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant={draftFilters.delivery === 'all' ? 'primary' : 'outline'}
+            <SelectableTagButton
+              value="all"
+              label={t('common.all', { defaultValue: 'Все' })}
+              isSelected={draftFilters.delivery === 'all'}
               onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'all' }))}
-            >
-              {t('common.all', { defaultValue: 'Все' })}
-            </Button>
-            <Button
-              size="sm"
-              variant={draftFilters.delivery === 'yes' ? 'primary' : 'outline'}
+            />
+            <SelectableTagButton
+              value="yes"
+              label={t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })}
+              isSelected={draftFilters.delivery === 'yes'}
               onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'yes' }))}
-            >
-              {t('venueUi.suppliers.deliveryYes', { defaultValue: 'Есть доставка' })}
-            </Button>
-            <Button
-              size="sm"
-              variant={draftFilters.delivery === 'no' ? 'primary' : 'outline'}
+            />
+            <SelectableTagButton
+              value="no"
+              label={t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })}
+              isSelected={draftFilters.delivery === 'no'}
               onClick={() => setDraftFilters(prev => ({ ...prev, delivery: 'no' }))}
-            >
-              {t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' })}
-            </Button>
+            />
           </div>
         </div>
       )}
@@ -228,13 +220,12 @@ export const VenueSuppliersFiltersDrawer = ({
             getKey={value => value}
             priorityKeys={draftFilters.restaurantFormats}
             renderItem={value => (
-              <Button
-                size="sm"
-                variant={draftFilters.restaurantFormats.includes(value) ? 'primary' : 'outline'}
+              <SelectableTagButton
+                value={value}
+                label={getRestaurantFormatLabel?.(value) ?? value}
+                isSelected={draftFilters.restaurantFormats.includes(value)}
                 onClick={() => toggleDraftRestaurantFormat(value)}
-              >
-                {getRestaurantFormatLabel?.(value) ?? value}
-              </Button>
+              />
             )}
           />
         </div>
@@ -250,13 +241,12 @@ export const VenueSuppliersFiltersDrawer = ({
             getKey={value => value}
             priorityKeys={draftFilters.cuisineTypes}
             renderItem={value => (
-              <Button
-                size="sm"
-                variant={draftFilters.cuisineTypes.includes(value) ? 'primary' : 'outline'}
+              <SelectableTagButton
+                value={value}
+                label={getCuisineTypeLabel?.(value) ?? value}
+                isSelected={draftFilters.cuisineTypes.includes(value)}
                 onClick={() => toggleDraftCuisineType(value)}
-              >
-                {getCuisineTypeLabel?.(value) ?? value}
-              </Button>
+              />
             )}
           />
         </div>
