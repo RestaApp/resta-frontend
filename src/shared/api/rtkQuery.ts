@@ -12,17 +12,10 @@ import { applyAuthRefreshPayload } from '@/shared/api/authRefresh'
 
 export const tagTypes = [
   'Shift',
-  'Vacancy',
-  'Application',
   'AppliedShift',
   'Notification',
   'NotificationPreferences',
-  'Review',
   'User',
-  'Profile',
-  'Supplier',
-  'Venue',
-  'News',
   'Catalog',
 ] as const
 

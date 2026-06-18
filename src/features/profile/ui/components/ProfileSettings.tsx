@@ -23,7 +23,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
-import type { Locale } from '@/shared/i18n/config'
+import { setAppLanguage, type Locale } from '@/shared/i18n/config'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'
 import { DeleteAccountDrawer } from '@/shared/ui/legal/DeleteAccountDrawer'
@@ -54,12 +54,9 @@ export const ProfileSettings = memo(function ProfileSettings({
   const [isLegalOpen, setIsLegalOpen] = useState(false)
   const [isDeleteDrawerOpen, setIsDeleteDrawerOpen] = useState(false)
 
-  const handleLanguageChange = useCallback(
-    (locale: Locale) => {
-      i18n.changeLanguage(locale)
-    },
-    [i18n]
-  )
+  const handleLanguageChange = useCallback((locale: Locale) => {
+    void setAppLanguage(locale)
+  }, [])
 
   return (
     <div className="ui-density-stack">

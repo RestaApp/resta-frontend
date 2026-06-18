@@ -32,7 +32,7 @@ const VARIANT_CLASSES = {
   danger: 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
   /** Success — зелёный solid CTA (например, «Нанять на смену»). */
   success:
-    'bg-success text-white hover:bg-success/90 active:bg-success/80 shadow-[var(--shadow-success-cta)]',
+    'bg-success text-success-foreground hover:bg-success/90 active:bg-success/80 shadow-[var(--shadow-success-cta)]',
   /** Telegram Stars — золотой gradient (для платных шагов и paywall CTA). */
   stars:
     'bg-[image:var(--gradient-stars)] text-white hover:opacity-95 active:opacity-90 border-0 shadow-[var(--shadow-stars-cta)]',

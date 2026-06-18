@@ -7,6 +7,7 @@ import { useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
 import { getCurrentUserId } from '@/shared/utils/user'
+import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { logger } from '@/shared/utils/logger'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import type { UiRole } from '@/shared/types/roles.types'
@@ -77,8 +78,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         onSelectRole(role)
         return true
       } catch (error) {
-        const msg = error instanceof Error ? error.message : saveErrorFallback
-        onError?.(msg)
+        onError?.(getErrorMessage(error) ?? saveErrorFallback)
         return false
       }
     },
@@ -133,10 +133,7 @@ export const useUserUpdate = (): UseUserUpdateResult => {
         return true
       } catch (error) {
         logger.error('Ошибка обновления данных пользователя:', error)
-        const errorMessage = error instanceof Error ? error.message : saveErrorRetry
-        if (onError) {
-          onError(errorMessage)
-        }
+        onError?.(getErrorMessage(error) ?? saveErrorRetry)
         return false
       } finally {
         isSubmittingRef.current = false

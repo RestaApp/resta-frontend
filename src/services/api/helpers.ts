@@ -90,7 +90,7 @@ export function buildQueryParams(params: object, opts: BuildQueryParamsOptions =
  * Точечная инвалидация вместо рефетча всего при любом изменении.
  */
 export function provideListTags<T extends { id: number | string }>(
-  type: 'Shift' | 'AppliedShift',
+  type: 'Shift' | 'AppliedShift' | 'User',
   result?: { data?: T[] } | T[]
 ) {
   const items = Array.isArray(result) ? result : result?.data

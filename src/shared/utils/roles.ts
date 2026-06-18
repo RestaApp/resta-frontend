@@ -159,3 +159,17 @@ export const normalizeCatalogPosition = (value: string): string => {
   if (!trimmed) return ''
   return mapPositionFromApi(trimmed) ?? trimmed
 }
+
+/**
+ * ===== Предикаты по ApiRole =====
+ * Для динамических форм/вью профиля, где роль уже нормализована в ApiRole.
+ * (Не путать с `isEmployeeRole`, который работает с UiRole-подролями.)
+ */
+export const isBusinessApiRole = (role: ApiRole | null | undefined): boolean =>
+  role === 'restaurant' || role === 'supplier'
+
+export const isRestaurantApiRole = (role: ApiRole | null | undefined): role is 'restaurant' =>
+  role === 'restaurant'
+
+export const isSupplierApiRole = (role: ApiRole | null | undefined): role is 'supplier' =>
+  role === 'supplier'

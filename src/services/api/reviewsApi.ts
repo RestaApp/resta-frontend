@@ -44,10 +44,10 @@ export const reviewsApi = api.injectEndpoints({
           },
         },
       }),
-      // Обновляем смену (my_review / can_leave_review) и рейтинг пользователя.
-      invalidatesTags: (_result, _error, { shiftId }) => [
+      // Обновляем смену (my_review / can_leave_review) и рейтинг оценённого юзера.
+      invalidatesTags: (_result, _error, { shiftId, reviewedId }) => [
         { type: 'Shift', id: String(shiftId) },
-        'User',
+        { type: 'User', id: reviewedId },
       ],
     }),
   }),

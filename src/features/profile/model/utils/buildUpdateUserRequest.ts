@@ -2,6 +2,7 @@ import type { ApiRole } from '@/shared/types/roles.types'
 import type { UpdateUserRequest } from '@/services/api/usersApi'
 import { toE164 } from '@/shared/utils/phone'
 import { sanitizeLocations } from '@/shared/utils/location'
+import { isBusinessApiRole } from '@/shared/utils/roles'
 import { sanitizeWorkHistory, type WorkHistoryFormEntry } from '@/shared/utils/workHistory'
 
 import { formValueToBusinessHoursRecord } from '@/features/profile/model/utils/businessHoursForm'
@@ -84,7 +85,7 @@ export const buildUpdateUserRequest = (
   apiRole: ApiRole | null,
   initialFormData?: ProfileFormData
 ): UpdateUserRequest => {
-  const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
+  const isBusinessRole = isBusinessApiRole(apiRole)
   const source = initialFormData ?? formData
   const hasDiff = <T>(current: T, initial: T) => {
     return JSON.stringify(current) !== JSON.stringify(initial)

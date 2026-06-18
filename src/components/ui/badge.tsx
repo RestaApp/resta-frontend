@@ -15,7 +15,7 @@ const BADGE_VARIANTS = {
   default: 'bg-muted-foreground/15 text-muted-foreground',
   primary: 'bg-primary text-primary-foreground',
   secondary: 'bg-secondary text-secondary-foreground border border-border',
-  success: 'bg-success text-white',
+  success: 'bg-success text-success-foreground',
   destructive: 'bg-destructive text-destructive-foreground',
   outline: 'border border-border bg-transparent text-foreground',
   tag: `border ${TAG_INACTIVE_CLASS}`,

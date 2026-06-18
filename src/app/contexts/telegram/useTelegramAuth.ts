@@ -11,7 +11,7 @@ import {
   getTelegramLanguageCode,
   isTelegramWebApp,
 } from '@/shared/utils/telegram'
-import i18n, { telegramCodeToLocale, type Locale } from '@/shared/i18n/config'
+import { telegramCodeToLocale, setAppLanguage, type Locale } from '@/shared/i18n/config'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { getLocalStorageItem } from '@/shared/utils/localStorage'
 import type { UserData } from '@/services/api/authApi'
@@ -27,7 +27,7 @@ const applyLanguage = async (userData: UserData | null) => {
   // 1) localStorage явно выбранный пользователем язык — приоритет.
   const saved = getLocalStorageItem(STORAGE_KEYS.LOCALE)
   if (saved === 'ru' || saved === 'en') {
-    await i18n.changeLanguage(saved)
+    await setAppLanguage(saved)
     return
   }
   // 2) Язык из профиля.
@@ -35,11 +35,11 @@ const applyLanguage = async (userData: UserData | null) => {
   const localeFromUser: Locale | null =
     userLang === 'ru' || userLang === 'en' ? (userLang as Locale) : null
   if (localeFromUser) {
-    await i18n.changeLanguage(localeFromUser)
+    await setAppLanguage(localeFromUser)
     return
   }
   // 3) Telegram device language.
-  await i18n.changeLanguage(telegramCodeToLocale(getTelegramLanguageCode()))
+  await setAppLanguage(telegramCodeToLocale(getTelegramLanguageCode()))
 }
 
 const getInitData = async (): Promise<string | null> => {

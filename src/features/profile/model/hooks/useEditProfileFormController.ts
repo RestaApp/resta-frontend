@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { formatPhoneInput, validatePhone } from '@/shared/utils/phone'
+import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { hasInvalidWorkHistory } from '@/shared/utils/workHistory'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
 import type { ApiRole } from '@/shared/types/roles.types'
@@ -177,7 +178,7 @@ export const useEditProfileFormController = ({
 
       showToast(result.errors?.join(', ') || t('errors.profileUpdateError'), 'error')
     } catch (error) {
-      showToast(error instanceof Error ? error.message : t('errors.profileUpdateError'), 'error')
+      showToast(getErrorMessage(error) ?? t('errors.profileUpdateError'), 'error')
     }
   }, [
     apiRole,

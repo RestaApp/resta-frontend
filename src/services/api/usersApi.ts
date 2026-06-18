@@ -6,7 +6,7 @@
 
 import { api } from '@/shared/api/api'
 import type { UserData, WorkHistoryEntry } from './authApi'
-import { createCatalogQuery } from './helpers'
+import { createCatalogQuery, provideListTags } from './helpers'
 
 export type { UserData } from './authApi'
 
@@ -176,7 +176,7 @@ export const usersApi = api.injectEndpoints({
         url: `/api/v1/users/${id}`,
         method: 'GET',
       }),
-      providesTags: ['User'],
+      providesTags: (_result, _error, id) => [{ type: 'User', id }],
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
     }),
 
@@ -187,7 +187,7 @@ export const usersApi = api.injectEndpoints({
         method: 'GET',
         params,
       }),
-      providesTags: ['User'],
+      providesTags: result => provideListTags('User', result?.data),
       keepUnusedDataFor: 300,
     }),
 

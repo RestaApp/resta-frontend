@@ -39,6 +39,10 @@
   --ring: #ff6b2c;
   --success: #3ec97e;
   --warning: #f5b142;
+  /* Тёмный «ink» поверх насыщённых green/gold — контраст проходит WCAG в обеих
+     темах (белый на этих цветах давал ~1.9:1 и не проходил). */
+  --success-foreground: #08130c;
+  --warning-foreground: #1a1205;
 
   --input-background: #0a0a0d;
   --switch-background: rgba(255, 255, 255, 0.12);
@@ -135,7 +139,9 @@ textarea:focus-visible {
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
