@@ -65,7 +65,8 @@ export const OwnerListingCardWithInvite = ({
     action={
       <Button
         type="button"
-        size="sm"
+        variant="gradient"
+        size="md"
         className="w-full"
         loading={invitingShiftId === listing.id}
         onClick={() => onInvite(listing)}

@@ -73,11 +73,13 @@ const expandDayToken = (token: string): DayKey[] => {
   const rangeMatch = normalized.match(/^([a-zа-я]{2,})\s*[-–—]\s*([a-zа-я]{2,})$/u)
   if (!rangeMatch) {
     const singleIndex = toDayIndex(normalized)
-    return singleIndex === null ? [] : [DAY_KEYS[singleIndex]]
+    if (singleIndex === null) return []
+    const day = DAY_KEYS[singleIndex]
+    return day ? [day] : []
   }
 
-  const startIndex = toDayIndex(rangeMatch[1])
-  const endIndex = toDayIndex(rangeMatch[2])
+  const startIndex = toDayIndex(rangeMatch[1] ?? '')
+  const endIndex = toDayIndex(rangeMatch[2] ?? '')
   if (startIndex === null || endIndex === null) return []
 
   if (startIndex <= endIndex) {
@@ -91,11 +93,11 @@ const parseLine = (line: string): { days: DayKey[]; from: string; to: string } |
   const m = line.match(/^(.+?)\s+(\d{1,2}:\d{2})\s*[-–—]\s*(\d{1,2}:\d{2})$/u)
   if (!m) return null
 
-  const from = normalizeTime(m[2])
-  const to = normalizeTime(m[3])
+  const from = normalizeTime(m[2] ?? '')
+  const to = normalizeTime(m[3] ?? '')
   if (!from || !to) return null
 
-  const tokens = m[1]
+  const tokens = (m[1] ?? '')
     .split(',')
     .map(item => item.trim())
     .filter(Boolean)
@@ -145,9 +147,14 @@ const areSameTime = (a: DaySchedule, b: DaySchedule) => {
   return a.enabled && b.enabled && a.from === b.from && a.to === b.to
 }
 
+const labelForDayIndex = (index: number): string => {
+  const key = DAY_KEYS[index]
+  return key ? dayKeyToRuLabel[key] : ''
+}
+
 const toDayLabel = (fromIndex: number, toIndex: number): string => {
-  if (fromIndex === toIndex) return dayKeyToRuLabel[DAY_KEYS[fromIndex]]
-  return `${dayKeyToRuLabel[DAY_KEYS[fromIndex]]}-${dayKeyToRuLabel[DAY_KEYS[toIndex]]}`
+  if (fromIndex === toIndex) return labelForDayIndex(fromIndex)
+  return `${labelForDayIndex(fromIndex)}-${labelForDayIndex(toIndex)}`
 }
 
 export const serializeBusinessHours = (schedule: DaySchedule[], notes: string): string => {
@@ -155,12 +162,14 @@ export const serializeBusinessHours = (schedule: DaySchedule[], notes: string): 
   let index = 0
   while (index < schedule.length) {
     const current = schedule[index]
-    if (!current.enabled) {
+    if (!current || !current.enabled) {
       index += 1
       continue
     }
     let endIndex = index
-    while (endIndex + 1 < schedule.length && areSameTime(current, schedule[endIndex + 1])) {
+    while (endIndex + 1 < schedule.length) {
+      const next = schedule[endIndex + 1]
+      if (!next || !areSameTime(current, next)) break
       endIndex += 1
     }
     lines.push(`${toDayLabel(index, endIndex)} ${current.from}-${current.to}`)

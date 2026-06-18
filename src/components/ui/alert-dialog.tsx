@@ -11,7 +11,7 @@ import {
 import { createPortal } from 'react-dom'
 import { cn } from '@/shared/utils/cn'
 import { Card } from './card'
-import { Button } from './button'
+import { Button, type ButtonProps } from './button'
 import { MODAL_TITLE_CLASS, OVERLAY_SCRIM_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
@@ -90,6 +90,7 @@ export const AlertDialog = memo(function AlertDialog({
 
         const first = list[0]
         const last = list[list.length - 1]
+        if (!first || !last) return
         const active = document.activeElement
 
         if (e.shiftKey && active === first) {
@@ -236,13 +237,15 @@ export const AlertDialogAction = memo(function AlertDialogAction({
   children,
   onClick,
   className,
+  variant = 'gradient',
 }: {
   children: React.ReactNode
   onClick?: () => void
   className?: string
+  variant?: ButtonProps['variant']
 }) {
   return (
-    <Button onClick={onClick} className={className}>
+    <Button variant={variant} size="md" onClick={onClick} className={className}>
       {children}
     </Button>
   )
@@ -258,7 +261,7 @@ export const AlertDialogCancel = memo(function AlertDialogCancel({
   className?: string
 }) {
   return (
-    <Button variant="outline" onClick={onClick} className={className}>
+    <Button variant="outline" size="md" onClick={onClick} className={className}>
       {children}
     </Button>
   )

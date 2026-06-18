@@ -17,6 +17,8 @@ export interface ConfirmDialogProps {
   description?: React.ReactNode
   cancelLabel: string
   confirmLabel: string
+  /** Вариант кнопки подтверждения. Для удаления/отклонения — 'destructive'. */
+  confirmVariant?: 'gradient' | 'destructive'
   onConfirm: () => void
 }
 
@@ -27,6 +29,7 @@ export const ConfirmDialog = memo(function ConfirmDialog({
   description,
   cancelLabel,
   confirmLabel,
+  confirmVariant = 'gradient',
   onConfirm,
 }: ConfirmDialogProps) {
   const handleCancel = () => onOpenChange(false)
@@ -40,7 +43,9 @@ export const ConfirmDialog = memo(function ConfirmDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancel}>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>{confirmLabel}</AlertDialogAction>
+          <AlertDialogAction variant={confirmVariant} onClick={onConfirm}>
+            {confirmLabel}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

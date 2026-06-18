@@ -5,7 +5,7 @@ import { parseDate } from '@/shared/utils/datetime'
 export const formatMoney = (value: number): string => {
   const v = Number.isFinite(value) ? value : 0
   const fixed = v.toFixed(2)
-  const [integerPart, fractionPart] = fixed.split('.')
+  const [integerPart = '0', fractionPart = '00'] = fixed.split('.')
   const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
   if (fractionPart === '00') return groupedInteger
   return `${groupedInteger}.${fractionPart}`

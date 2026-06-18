@@ -97,8 +97,9 @@ export const Select = memo(function Select({
   const handleInputKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
-        if (filteredOptions.length > 0) {
-          handleSelect(filteredOptions[0].value)
+        const firstOption = filteredOptions[0]
+        if (firstOption) {
+          handleSelect(firstOption.value)
         }
       } else if (e.key === 'Escape') {
         handleDismiss()

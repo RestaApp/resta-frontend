@@ -68,7 +68,7 @@ export const validateDate = (
   if (selectedDate < today) return t('validation.dateInFuture')
   if (selectedDate.getTime() === today.getTime() && startTime) {
     const [hours, minutes] = startTime.split(':').map(Number)
-    if (!isNaN(hours) && !isNaN(minutes)) {
+    if (hours != null && minutes != null && !isNaN(hours) && !isNaN(minutes)) {
       const selectedDateTime = new Date(
         now.getFullYear(),
         now.getMonth(),

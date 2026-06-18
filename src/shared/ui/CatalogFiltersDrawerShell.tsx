@@ -34,7 +34,7 @@ export const CatalogFiltersDrawerShell = ({
   children,
   frameClassName,
   bodyClassName = 'ui-density-stack',
-  applyVariant = 'primary',
+  applyVariant = 'gradient',
 }: CatalogFiltersDrawerShellProps) => {
   const { t } = useTranslation()
 
@@ -54,10 +54,16 @@ export const CatalogFiltersDrawerShell = ({
         <DrawerBody className={bodyClassName}>{children}</DrawerBody>
 
         <DrawerFooter className="gap-2">
-          <Button type="button" variant="outline" onClick={onReset}>
+          <Button type="button" variant="outline" size="md" className="flex-1" onClick={onReset}>
             {t('common.reset', { defaultValue: 'Сбросить' })}
           </Button>
-          <Button type="button" variant={applyVariant} onClick={onApply}>
+          <Button
+            type="button"
+            variant={applyVariant}
+            size="md"
+            className="flex-1"
+            onClick={onApply}
+          >
             {applyLabel}
           </Button>
         </DrawerFooter>

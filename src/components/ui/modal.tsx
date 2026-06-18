@@ -121,6 +121,7 @@ export const Modal = memo(function Modal({
 
         const first = focusables[0]
         const last = focusables[focusables.length - 1]
+        if (!first || !last) return
         const active = document.activeElement
 
         if (e.shiftKey && active === first) {

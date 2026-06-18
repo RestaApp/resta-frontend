@@ -130,6 +130,7 @@ export const UserProfileDrawer = memo(
             description={t('shift.rejectApplicationConfirmDescription')}
             cancelLabel={t('common.cancel')}
             confirmLabel={t('shift.rejectApplication')}
+            confirmVariant="destructive"
             onConfirm={() => {
               void (async () => {
                 setRejectConfirmOpen(false)

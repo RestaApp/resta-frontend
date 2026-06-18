@@ -6,7 +6,7 @@ export const getAvatarInitials = (name: string): string => {
     .filter(Boolean)
 
   if (parts.length === 0) return 'R'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  if (parts.length === 1) return (parts[0] ?? '').slice(0, 2).toUpperCase()
 
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+  return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase()
 }

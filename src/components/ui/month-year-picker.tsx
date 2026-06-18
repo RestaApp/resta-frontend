@@ -13,7 +13,7 @@ interface MonthYearValue {
 
 const parseValue = (value: string | null | undefined): MonthYearValue => {
   const match = /^(\d{4})-(\d{2})$/.exec((value ?? '').trim())
-  return match ? { year: match[1], month: match[2] } : { year: '', month: '' }
+  return match ? { year: match[1] ?? '', month: match[2] ?? '' } : { year: '', month: '' }
 }
 
 interface MonthYearPickerProps {

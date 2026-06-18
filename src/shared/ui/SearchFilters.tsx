@@ -47,6 +47,7 @@ const areFiltersEqual = (prev: ActiveFilterItem[], next: ActiveFilterItem[]) => 
   if (prev.length !== next.length) return false
   return prev.every((filter, index) => {
     const other = next[index]
+    if (!other) return false
     return (
       filter.id === other.id && filter.label === other.label && filter.variant === other.variant
     )

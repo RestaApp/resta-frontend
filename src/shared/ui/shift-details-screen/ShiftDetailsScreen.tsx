@@ -95,7 +95,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       <DrawerFooter className="pb-3">
         <div className="flex gap-4">
           <Button
-            variant="outline"
+            variant="destructive"
             size="md"
             onClick={handleDeleteRequest}
             disabled={ownerActions.isDeleting}
@@ -209,6 +209,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         description={t('shift.deleteConfirmDesc')}
         cancelLabel={t('common.cancel')}
         confirmLabel={t('common.delete')}
+        confirmVariant="destructive"
         onConfirm={confirmDelete}
       />
     </>

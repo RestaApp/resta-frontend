@@ -52,6 +52,7 @@ export const Tabs = <T extends string>({
 
       const move = (nextIdx: number) => {
         const nextId = ids[nextIdx]
+        if (nextId == null) return
         onChange(nextId)
         tabRefs.current.get(nextId)?.focus()
       }

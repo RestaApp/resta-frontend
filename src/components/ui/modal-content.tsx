@@ -27,7 +27,7 @@ interface ModalActionButtonProps {
 const ModalActionButton = memo(function ModalActionButton({
   label,
   onClick,
-  variant = 'primary',
+  variant = 'gradient',
   loading,
   disabled,
   className,
@@ -36,6 +36,7 @@ const ModalActionButton = memo(function ModalActionButton({
     <motion.div whileTap={{ scale: 0.98 }} className="flex-1">
       <Button
         variant={variant}
+        size="md"
         onClick={onClick}
         disabled={disabled || loading}
         aria-busy={loading || undefined}

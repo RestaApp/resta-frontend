@@ -75,12 +75,13 @@ export const useCityAutocomplete = ({
         }
       }
 
-      if (filteredCities.length === 1) {
-        onChange(filteredCities[0])
+      const singleCity = filteredCities.length === 1 ? filteredCities[0] : undefined
+      if (singleCity) {
+        onChange(singleCity)
         return {
           isValid: true,
           errorMessage: null,
-          normalizedValue: filteredCities[0],
+          normalizedValue: singleCity,
         }
       }
 

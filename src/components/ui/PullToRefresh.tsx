@@ -48,8 +48,10 @@ export function PullToRefresh({
       if (!isTouchInsideContainer(event)) return
       if (!canStartPull()) return
       if (event.touches.length !== 1) return
+      const touch = event.touches[0]
+      if (!touch) return
 
-      startYRef.current = event.touches[0].clientY
+      startYRef.current = touch.clientY
       isDraggingRef.current = true
       setIsDragging(true)
     },

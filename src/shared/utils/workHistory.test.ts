@@ -89,14 +89,16 @@ describe('workHistory · валидация', () => {
 
 describe('workHistory · mapApiWorkHistoryToForm', () => {
   it('isCurrent выводится из отсутствия ended_at, присваивает стабильные id', () => {
-    const [current, past] = mapApiWorkHistoryToForm([
+    const entries = mapApiWorkHistoryToForm([
       { company: 'A', position: 'P', started_at: '2022-01' },
       { company: 'B', position: 'Q', started_at: '2020-01', ended_at: '2021-01' },
     ])
-    expect(current.isCurrent).toBe(true)
-    expect(past.isCurrent).toBe(false)
-    expect(current.id).toBeTruthy()
-    expect(current.id).not.toBe(past.id)
+    expect(entries).toHaveLength(2)
+    const [current, past] = entries
+    expect(current?.isCurrent).toBe(true)
+    expect(past?.isCurrent).toBe(false)
+    expect(current?.id).toBeTruthy()
+    expect(current?.id).not.toBe(past?.id)
   })
 
   it('некорректный вход → пустой массив', () => {
@@ -109,7 +111,8 @@ describe('workHistory · форматирование', () => {
   it('getMonthNames возвращает 12 месяцев с заглавной буквы', () => {
     const names = getMonthNames('ru')
     expect(names).toHaveLength(12)
-    expect(names[0][0]).toBe(names[0][0].toUpperCase())
+    const firstInitial = (names[0] ?? '').charAt(0)
+    expect(firstInitial).toBe(firstInitial.toUpperCase())
   })
 
   it('formatYearMonth содержит год и название месяца', () => {

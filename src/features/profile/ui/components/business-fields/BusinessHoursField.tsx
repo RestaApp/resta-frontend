@@ -53,7 +53,7 @@ export const BusinessHoursField = ({
     const enabledDays = weekdays.filter(item => item.enabled)
     if (enabledDays.length === 0) return { enabled: false, from: '09:00', to: '18:00' }
     const [first] = enabledDays
-    return { enabled: true, from: first.from, to: first.to }
+    return { enabled: true, from: first?.from ?? '09:00', to: first?.to ?? '18:00' }
   }, [weekdays])
 
   const hasWeekdayCustomPattern = useMemo(() => {

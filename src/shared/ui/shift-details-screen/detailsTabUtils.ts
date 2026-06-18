@@ -15,8 +15,9 @@ export const extractDurationHours = (duration?: string | null): number | null =>
   const value = normalizeDuration(duration)
   if (!value) return null
   const match = value.match(/(\d+(?:[.,]\d+)?)/)
-  if (!match) return null
-  const parsed = Number(match[1].replace(',', '.'))
+  const rawNumber = match?.[1]
+  if (!rawNumber) return null
+  const parsed = Number(rawNumber.replace(',', '.'))
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null
 }
 

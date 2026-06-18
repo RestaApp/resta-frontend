@@ -71,8 +71,8 @@ export const RangeSlider = memo(function RangeSlider({
 
   const rangeLeft = useTransform(minSpring, toPct)
   const rangeWidth = useTransform([minSpring, maxSpring], ([a, b]: number[]) => {
-    const minPct = (clamp(a, min, max) - min) / span
-    const maxPct = (clamp(b, min, max) - min) / span
+    const minPct = (clamp(a ?? min, min, max) - min) / span
+    const maxPct = (clamp(b ?? max, min, max) - min) / span
     return `${(maxPct - minPct) * 100}%`
   })
   const minThumbLeft = useTransform(

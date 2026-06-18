@@ -79,6 +79,7 @@ const decodeToken = (
       return null
     }
     const payload = parts[1]
+    if (!payload) return null
     const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
     return JSON.parse(decoded) as {
       exp?: number
