@@ -53,19 +53,21 @@ export const CatalogFiltersDrawerShell = ({
 
         <DrawerBody className={bodyClassName}>{children}</DrawerBody>
 
-        <DrawerFooter className="gap-2">
-          <Button type="button" variant="outline" size="md" className="flex-1" onClick={onReset}>
-            {t('common.reset', { defaultValue: 'Сбросить' })}
-          </Button>
-          <Button
-            type="button"
-            variant={applyVariant}
-            size="md"
-            className="flex-1"
-            onClick={onApply}
-          >
-            {applyLabel}
-          </Button>
+        <DrawerFooter>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="md" className="flex-1" onClick={onReset}>
+              {t('common.reset', { defaultValue: 'Сбросить' })}
+            </Button>
+            <Button
+              type="button"
+              variant={applyVariant}
+              size="md"
+              className="flex-1"
+              onClick={onApply}
+            >
+              {applyLabel}
+            </Button>
+          </div>
         </DrawerFooter>
       </DrawerFrame>
     </Drawer>
