@@ -15,8 +15,6 @@ import { useUserPositions } from '@/features/navigation/model/hooks/useUserPosit
 import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
-import { Toast } from '@/components/ui/toast'
-import { useToast } from '@/shared/lib/hooks/useToast'
 import { toLocationArray } from '@/shared/utils/location'
 import { useAddShiftForm } from './model/useAddShiftForm'
 import type { ShiftType } from '@/shared/shifts/types'
@@ -62,7 +60,6 @@ const AddShiftDrawerKeyed = ({
   const { t } = useTranslation()
   const { getEmployeePositionLabel } = useLabels()
   const { userProfile } = useUserProfile()
-  const { toast, hideToast } = useToast()
   const isVenueRole = userProfile?.role === 'restaurant' || userProfile?.role === 'venue'
   const isEmployeeUser = userProfile?.role === 'employee'
   const roleLockedShiftType = getLockedShiftType(userProfile?.role)
@@ -320,12 +317,6 @@ const AddShiftDrawerKeyed = ({
               isCreating={form.isCreating}
             />
           </DrawerFooter>
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            isVisible={toast.isVisible}
-            onClose={hideToast}
-          />
         </DrawerFrame>
       </Drawer>
 

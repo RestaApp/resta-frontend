@@ -42,9 +42,7 @@ const OwnerListingCard = ({
   const listingTitle = getOwnerShiftTitle(listing, positionLabel, specializationLabel)
   const schedule = formatOwnerShiftScheduleLine(listing.start_time, listing.end_time)
   const hasCustomTitle = Boolean(listing.title?.trim())
-  const roleLine = specializationLabel
-    ? `${positionLabel} · ${specializationLabel}`
-    : positionLabel
+  const roleLine = specializationLabel ? `${positionLabel} · ${specializationLabel}` : positionLabel
   const subtitle = schedule || (hasCustomTitle ? roleLine : null)
   const payAmount = resolveListingPay(listing)
 

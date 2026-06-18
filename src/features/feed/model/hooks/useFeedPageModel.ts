@@ -22,7 +22,7 @@ export const useFeedPageModel = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
 
-  const { toast, showToast, hideToast } = useToast()
+  const { showToast } = useToast()
   const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
 
   const feedTypeOptions = useMemo<TabOption<FeedType>[]>(
@@ -119,7 +119,6 @@ export const useFeedPageModel = () => {
     async (id: number) => {
       try {
         await deleteShift(String(id))
-        hideToast()
         showSuccess({
           title: t('shift.deleted'),
           description: t('shift.deletedDescription', {
@@ -128,11 +127,10 @@ export const useFeedPageModel = () => {
           icon: Trash2,
         })
       } catch {
-        hideToast()
         showToast(t('shift.deleteError'), 'error')
       }
     },
-    [deleteShift, t, showToast, hideToast, showSuccess]
+    [deleteShift, t, showToast, showSuccess]
   )
 
   const {
@@ -194,9 +192,6 @@ export const useFeedPageModel = () => {
     handleEdit: handleEditShift,
     handleDelete,
     isDeleting,
-
-    toast,
-    hideToast,
 
     successState,
     closeSuccess,

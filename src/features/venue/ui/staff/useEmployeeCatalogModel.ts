@@ -31,7 +31,7 @@ import {
 
 export const useEmployeeCatalogModel = () => {
   const { t } = useTranslation()
-  const { toast, showToast, hideToast } = useToast()
+  const { showToast } = useToast()
   const { getEmployeePositionLabel, getSpecializationLabel } = useLabels()
   const { cities, isLoading: isCitiesLoading } = useCities({ enabled: true })
   const userCity = useAppSelector(selectUserCity)
@@ -219,7 +219,5 @@ export const useEmployeeCatalogModel = () => {
     specializations,
     getEmployeePositionLabel,
     getSpecializationLabel,
-    toast,
-    hideToast,
   }
 }

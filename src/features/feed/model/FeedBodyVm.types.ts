@@ -31,8 +31,6 @@ export type FeedBodyVm = Pick<
   | 'selectedShift'
   | 'selectedVacancy'
   | 'closeShiftDetails'
-  | 'toast'
-  | 'hideToast'
   | 'successState'
   | 'closeSuccess'
   | 'hasActiveFilters'

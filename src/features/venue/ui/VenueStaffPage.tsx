@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ErrorState } from '@/components/ui/states'
 import { ShiftDetailsSkeleton } from '@/components/ui/shift-details-skeleton'
-import { Toast } from '@/components/ui/toast'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
 import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
@@ -175,13 +174,6 @@ export function VenueStaffPage() {
         moderatingAction={staff.moderatingAction}
         onAccept={staff.handleDrawerAccept}
         onReject={staff.handleDrawerReject}
-      />
-
-      <Toast
-        message={catalog.toast.message}
-        type={catalog.toast.type}
-        isVisible={catalog.toast.isVisible}
-        onClose={catalog.hideToast}
       />
     </>
   )

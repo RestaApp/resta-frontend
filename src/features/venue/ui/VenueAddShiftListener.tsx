@@ -5,13 +5,12 @@ import type { ShiftType } from '@/shared/shifts/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'
 import { useToast } from '@/shared/lib/hooks/useToast'
-import { Toast } from '@/components/ui/toast'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 
 export function VenueAddShiftListener() {
   const { t } = useTranslation()
   const profileCompleteness = useProfileCompleteness()
-  const { toast, showToast, hideToast } = useToast()
+  const { showToast } = useToast()
   const [open, setOpen] = useState(false)
   const [currentCreateType, setCurrentCreateType] = useState<ShiftType>('vacancy')
   const [initialShiftType, setInitialShiftType] = useState<ShiftType | null>(null)
@@ -82,13 +81,6 @@ export function VenueAddShiftListener() {
         onSave={handleSave}
         initialValues={editingShift}
         initialShiftType={initialShiftType}
-      />
-
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.isVisible}
-        onClose={hideToast}
       />
     </>
   )

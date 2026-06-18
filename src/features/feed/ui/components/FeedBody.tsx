@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { Toast } from '@/components/ui/toast'
 import { AdvancedFilters } from '@/features/feed/ui/components/AdvancedFilters'
 import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
@@ -54,13 +53,6 @@ export function FeedBody({ vm, header }: FeedBodyProps) {
           </FeedListArea>
         </div>
       </PullToRefresh>
-
-      <Toast
-        message={vm.toast.message}
-        type={vm.toast.type}
-        isVisible={vm.toast.isVisible}
-        onClose={vm.hideToast}
-      />
 
       {vm.selectedShiftId ? (
         <FeedDetails

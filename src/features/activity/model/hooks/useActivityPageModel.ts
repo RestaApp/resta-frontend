@@ -49,7 +49,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
   const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedData), [appliedData])
 
   const { deleteShift, isLoading: isDeleting } = useDeleteShift()
-  const { toast, showToast, hideToast } = useToast()
+  const { showToast } = useToast()
   const { successState, showSuccess, closeSuccess } = useSuccessOverlay()
   const profileCompleteness = useProfileCompleteness()
 
@@ -172,8 +172,6 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
     refreshList,
     isDeleting,
     showToast,
-    toast,
-    hideToast,
     successState,
     closeSuccess,
     isDrawerOpen,
