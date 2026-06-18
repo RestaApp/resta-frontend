@@ -12,6 +12,7 @@ import {
 import { OpenToWorkButton } from '@/shared/ui/OpenToWorkButton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { InlineAction } from '@/components/ui/inline-action'
 import { Card } from '@/components/ui/card'
 import { KpiRow } from '@/components/ui/kpi-row'
 import { FORMATTED_USER_TEXT_CLASS, PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
@@ -111,16 +112,9 @@ const ProfileTagSectionView = ({
   const experienceItem = section.items.find(item => item.id === 'experience')
 
   const addButton = onEdit ? (
-    <button
-      type="button"
-      onClick={onEdit}
-      data-haptic="selection"
-      className="inline-flex min-h-7 items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
-      aria-label={editAriaLabel}
-    >
-      <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+    <InlineAction icon={Plus} onClick={onEdit} data-haptic="selection" aria-label={editAriaLabel}>
       {t('common.add')}
-    </button>
+    </InlineAction>
   ) : null
 
   return (

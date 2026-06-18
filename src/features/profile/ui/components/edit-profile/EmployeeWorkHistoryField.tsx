@@ -6,6 +6,7 @@ import { FormField } from '@/components/ui/form-field'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { InlineAction } from '@/components/ui/inline-action'
 import { MonthYearPicker } from '@/components/ui/month-year-picker'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
@@ -47,17 +48,15 @@ const WorkHistoryEntryCard = memo(function WorkHistoryEntryCard({
           <Briefcase className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
           {t('profile.workHistory.entryTitle', { index: index + 1 })}
         </span>
-        <button
-          type="button"
+        <InlineAction
+          icon={Trash2}
+          tone="destructive"
           onClick={onRemove}
           disabled={disabled}
-          data-haptic="light"
-          className="inline-flex min-h-7 items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
           aria-label={t('profile.workHistory.removeEntry')}
         >
-          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
           {t('common.remove')}
-        </button>
+        </InlineAction>
       </div>
 
       <FormField

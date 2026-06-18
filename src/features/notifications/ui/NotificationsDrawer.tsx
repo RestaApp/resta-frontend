@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BellOff, CheckCheck } from 'lucide-react'
+import { InlineAction } from '@/components/ui/inline-action'
 import {
   Drawer,
   DrawerBody,
@@ -104,16 +105,9 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
             <DrawerTitle>{t('notifications.title')}</DrawerTitle>
             <div className="flex items-center gap-1">
               {hasUnread ? (
-                <button
-                  type="button"
-                  onClick={handleMarkAll}
-                  disabled={isMarkingAll}
-                  data-haptic="light"
-                  className="inline-flex min-h-7 items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80 disabled:opacity-50"
-                >
-                  <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                <InlineAction icon={CheckCheck} onClick={handleMarkAll} disabled={isMarkingAll}>
                   {t('notifications.markAllRead')}
-                </button>
+                </InlineAction>
               ) : null}
               <DrawerCloseButton onClick={() => setOpen(false)} ariaLabel={t('common.close')} />
             </div>
