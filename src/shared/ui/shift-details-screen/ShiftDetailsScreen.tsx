@@ -9,6 +9,7 @@ import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
+import { ShiftReviewSection } from '@/features/reviews/ui/ShiftReviewSection'
 import { DetailsTab } from './DetailsTab'
 import { ShiftApplicantsSection } from './ShiftApplicantsSection'
 import { useShiftDetailsScreenController } from './useShiftDetailsScreenController'
@@ -190,6 +191,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
               variant="owner"
             />
           ) : null}
+
+          <ShiftReviewSection vacancyData={vacancyData} />
         </div>
       </DetailsScreenFrame>
 

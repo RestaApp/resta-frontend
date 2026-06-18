@@ -66,6 +66,24 @@
     "emptyTitle": "No notifications yet",
     "emptyDescription": "Shift responses, statuses and other events will show up here"
   },
+  "reviews": {
+    "sectionTitle": "Shift review",
+    "title": "Leave a review",
+    "titleFor": "Review for {{name}}",
+    "prompt": "The shift is finished — share how it went.",
+    "leaveReview": "Leave a review",
+    "yourReview": "Your review",
+    "ratingLabel": "Rating",
+    "starAria": "{{count}} of 5",
+    "commentLabel": "Comment",
+    "commentHint": "Optional, up to 1000 characters",
+    "commentPlaceholder": "Tell us how the shift went",
+    "anonymous": "Anonymous",
+    "anonymousHint": "Your name will not be shown",
+    "submit": "Submit review",
+    "submitSuccess": "Thanks for your review!",
+    "submitError": "Failed to submit the review"
+  },
   "nav": {
     "bottomNav": "Bottom navigation",
     "fillProfileRequired": "Profile needs to be completed"

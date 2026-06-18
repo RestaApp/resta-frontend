@@ -66,6 +66,24 @@
     "emptyTitle": "Уведомлений пока нет",
     "emptyDescription": "Здесь появятся отклики, статусы смен и другие события"
   },
+  "reviews": {
+    "sectionTitle": "Отзыв о смене",
+    "title": "Оставить отзыв",
+    "titleFor": "Отзыв о {{name}}",
+    "prompt": "Смена завершена — поделитесь впечатлением о работе.",
+    "leaveReview": "Оставить отзыв",
+    "yourReview": "Ваш отзыв",
+    "ratingLabel": "Оценка",
+    "starAria": "{{count}} из 5",
+    "commentLabel": "Комментарий",
+    "commentHint": "Необязательно, до 1000 символов",
+    "commentPlaceholder": "Расскажите, как прошла смена",
+    "anonymous": "Анонимно",
+    "anonymousHint": "Ваше имя не будет показано",
+    "submit": "Отправить отзыв",
+    "submitSuccess": "Спасибо за отзыв!",
+    "submitError": "Не удалось отправить отзыв"
+  },
   "nav": {
     "bottomNav": "Нижняя навигация",
     "fillProfileRequired": "Требуется заполнить профиль"
