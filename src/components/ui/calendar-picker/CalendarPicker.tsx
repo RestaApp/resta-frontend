@@ -79,7 +79,7 @@ export function CalendarPicker({
       <div className="grid grid-cols-7 gap-y-0.5">
         {days.map((cell, i) => {
           if (!cell) {
-            return <span key={`e-${i}`} className="min-h-[34px]" aria-hidden />
+            return <span key={`e-${i}`} className="min-h-10" aria-hidden />
           }
 
           const isSelected = value === cell.iso
@@ -94,7 +94,7 @@ export function CalendarPicker({
                 onClose()
               }}
               className={cn(
-                'min-h-[34px] border-0 text-xs font-semibold transition-colors rounded-lg',
+                'min-h-10 border-0 text-xs font-semibold transition-colors rounded-lg',
                 isSelected
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-transparent text-foreground hover:bg-primary/15',
