@@ -3,7 +3,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react'
-import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
+import { useUserSpecializations } from '@/shared/lib/hooks/useUserSpecializations'
 import { logger } from '@/shared/utils/logger'
 import type { EmployeeRole } from '@/shared/types/roles.types'
 import { mapEmployeeSubRolesFromApi } from '@/shared/utils/roleMappers'

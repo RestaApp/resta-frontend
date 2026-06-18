@@ -15,7 +15,7 @@ import { sanitizeLocations } from '@/shared/utils/location'
 import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
 import { useAppSelector } from '@/store/hooks'
 import { mapServerErrorsToFields, translateServerError } from './addShiftValidation'
-import { selectUserData } from '@/features/navigation/model/userSlice'
+import { selectUserData } from '@/store/slices/userSlice'
 import type { AddShiftFormState } from './useAddShiftFormState'
 
 interface UseAddShiftFormSubmissionOptions {

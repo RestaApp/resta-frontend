@@ -9,7 +9,7 @@ import { getSupplierCategory, getSupplierProfile } from '@/shared/utils/supplier
 import { buildProfileViewModel, type ProfileViewModel } from './buildProfileViewModel'
 import type { ApiRole } from '@/shared/types/roles.types'
 import { useAppSelector } from '@/store/hooks'
-import { selectSelectedRole } from '@/features/navigation/model/userSlice'
+import { selectSelectedRole } from '@/store/slices/userSlice'
 
 interface UseExternalProfileViewModelOptions {
   userId: number | null | undefined

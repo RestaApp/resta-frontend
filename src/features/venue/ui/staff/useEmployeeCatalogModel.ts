@@ -8,13 +8,13 @@ import { useCities } from '@/shared/lib/hooks/useCities'
 import { computeHasMore, usePaginatedFilterState } from '@/shared/lib/hooks/usePaginatedFilterState'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserCity } from '@/features/navigation/model/userSlice'
+import { selectUserCity } from '@/store/slices/userSlice'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
 import { isInviteableOwnerListing } from '@/shared/shifts/ownerShiftDisplay'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
-import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
-import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
+import { useUserPositions } from '@/shared/lib/hooks/useUserPositions'
+import { useUserSpecializations } from '@/shared/lib/hooks/useUserSpecializations'
 import {
   DEFAULT_EMPLOYEE_CATALOG_FILTERS,
   EMPLOYEES_PER_PAGE,

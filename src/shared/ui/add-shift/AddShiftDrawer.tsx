@@ -11,8 +11,8 @@ import {
   DrawerDescription,
 } from '@/components/ui/drawer'
 import type { CreateShiftResponse, VacancyApiItem } from '@/services/api/shiftsApi'
-import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
-import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
+import { useUserPositions } from '@/shared/lib/hooks/useUserPositions'
+import { useUserSpecializations } from '@/shared/lib/hooks/useUserSpecializations'
 import { useLabels } from '@/shared/i18n/hooks'
 import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
 import { toLocationArray } from '@/shared/utils/location'

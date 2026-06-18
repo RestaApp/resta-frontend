@@ -4,9 +4,9 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/navigation/model/userSlice'
+import { selectUserData } from '@/store/slices/userSlice'
 import { useRoles } from './hooks/useRoles'
-import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
+import { useUserPositions } from '@/shared/lib/hooks/useUserPositions'
 import { useSupplierCategories } from './hooks/useSupplierCategories'
 import { useRestaurantFormats } from './hooks/useRestaurantFormats'
 import { mapRoleOptionsFromApi } from '@/shared/utils/roleMappers'

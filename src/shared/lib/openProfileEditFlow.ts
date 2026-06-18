@@ -2,7 +2,7 @@ import type { AppDispatch } from '@/store'
 import { setLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
-import { navigateToTab } from '@/features/navigation/model/navigationSlice'
+import { navigateToTab } from '@/store/slices/navigationSlice'
 
 /**
  * Переход на вкладку профиля и открытие формы редактирования.

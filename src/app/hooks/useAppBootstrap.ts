@@ -7,11 +7,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { useAuth } from '@/app/contexts/auth'
 import { ROUTES } from '@/shared/constants/routes'
-import {
-  selectSelectedRole,
-  selectUserData,
-  setSelectedRole,
-} from '@/features/navigation/model/userSlice'
+import { selectSelectedRole, selectUserData, setSelectedRole } from '@/store/slices/userSlice'
 import type { Screen } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'

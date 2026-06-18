@@ -4,7 +4,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserCity, selectUserPosition } from '@/features/navigation/model/userSlice'
+import { selectUserCity, selectUserPosition } from '@/store/slices/userSlice'
 import type { AdvancedFiltersData, FeedType } from '@/shared/shifts/types'
 import { hasActiveFilters, normalizeAdvancedFilters } from '@/shared/utils/filters'
 import { createInitialFilters } from '../utils/filterSync'

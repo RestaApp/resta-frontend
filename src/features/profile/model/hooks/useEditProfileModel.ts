@@ -17,8 +17,8 @@ import {
   getSupplierTypes,
 } from '@/shared/utils/supplierProfile'
 import { mapApiWorkHistoryToForm } from '@/shared/utils/workHistory'
-import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
-import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
+import { useUserSpecializations } from '@/shared/lib/hooks/useUserSpecializations'
+import { useUserPositions } from '@/shared/lib/hooks/useUserPositions'
 import { useEditProfileFormController, type EditProfileStep } from './useEditProfileFormController'
 
 export const useEditProfileModel = (

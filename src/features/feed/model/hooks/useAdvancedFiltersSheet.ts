@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useUserPositions } from '@/features/navigation/model/hooks/useUserPositions'
-import { useUserSpecializations } from '@/features/navigation/model/hooks/useUserSpecializations'
+import { useUserPositions } from '@/shared/lib/hooks/useUserPositions'
+import { useUserSpecializations } from '@/shared/lib/hooks/useUserSpecializations'
 import { useAdvancedFilters } from './useAdvancedFilters'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 

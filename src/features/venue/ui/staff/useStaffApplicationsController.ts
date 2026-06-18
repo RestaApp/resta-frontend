@@ -11,7 +11,7 @@ import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
 import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { useAppSelector } from '@/store/hooks'
-import { selectUserData } from '@/features/navigation/model/userSlice'
+import { selectUserData } from '@/store/slices/userSlice'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import {

@@ -15,11 +15,11 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { api } from './api'
-import userReducer from '@/features/navigation/model/userSlice'
-import telegramReducer from '@/features/navigation/model/telegramSlice'
-import navigationReducer from '@/features/navigation/model/navigationSlice'
+import userReducer from '@/store/slices/userSlice'
+import telegramReducer from '@/store/slices/telegramSlice'
+import navigationReducer from '@/store/slices/navigationSlice'
 import { authSessionExpired } from '@/shared/api/authEvents'
-import { clearUserData } from '@/features/navigation/model/userSlice'
+import { clearUserData } from '@/store/slices/userSlice'
 
 // Импортируем все API endpoints для их регистрации
 import '@/services/api'

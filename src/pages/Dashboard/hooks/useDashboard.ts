@@ -15,10 +15,7 @@ import {
 } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { isEmployeeRole } from '@/shared/utils/roles'
-import {
-  consumeCommand,
-  selectNavigationCommand,
-} from '@/features/navigation/model/navigationSlice'
+import { consumeCommand, selectNavigationCommand } from '@/store/slices/navigationSlice'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 interface UseDashboardProps {
