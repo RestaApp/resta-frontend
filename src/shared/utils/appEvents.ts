@@ -19,7 +19,7 @@ type AppEventDetailMap = {
   [APP_EVENTS.AUTH_UNAUTHORIZED]: undefined
   [APP_EVENTS.AUTH_LOGOUT]: undefined
   [APP_EVENTS.OPEN_PROFILE_EDIT]: undefined
-  [APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT]: undefined
+  [APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT]: { type?: 'vacancy' | 'replacement' } | undefined
   [APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT]: { shift?: unknown } | undefined
   [APP_EVENTS.OPEN_FEED_FILTERS]: undefined
   [APP_EVENTS.OPEN_SUPPLIERS_FILTERS]: undefined

@@ -121,14 +121,13 @@ export const VenueProfileOverview = memo(function VenueProfileOverview({
     [hasRating, hiresCount, openShiftsCount, rating, t]
   )
 
+  // Тип уходит одним событием вместе с открытием — без гонки set+open.
   const handleCreateVacancy = useCallback(() => {
-    emitAppEvent(APP_EVENTS.SET_VENUE_CREATE_TYPE, { type: 'vacancy' })
-    emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)
+    emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, { type: 'vacancy' })
   }, [])
 
   const handleCreateReplacement = useCallback(() => {
-    emitAppEvent(APP_EVENTS.SET_VENUE_CREATE_TYPE, { type: 'replacement' })
-    emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT)
+    emitAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, { type: 'replacement' })
   }, [])
 
   const handleViewApplications = useCallback(() => {

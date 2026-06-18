@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AddShiftDrawer } from '@/shared/ui/add-shift/AddShiftDrawer'
 import type { ShiftType } from '@/shared/shifts/types'
@@ -12,29 +12,35 @@ export function VenueAddShiftListener() {
   const profileCompleteness = useProfileCompleteness()
   const { showToast } = useToast()
   const [open, setOpen] = useState(false)
-  const [currentCreateType, setCurrentCreateType] = useState<ShiftType>('vacancy')
   const [initialShiftType, setInitialShiftType] = useState<ShiftType | null>(null)
   const [editingShift, setEditingShift] = useState<VacancyApiItem | null>(null)
+  // Ambient-тип для типонезависимого открытия (кнопка «+» в шапке следует за
+  // активной вкладкой). Ref, а не state — читается всегда свежим, без ре-рендера.
+  const currentCreateTypeRef = useRef<ShiftType>('vacancy')
 
-  const handleCreateIntent = useCallback(() => {
-    if (profileCompleteness?.isFilled) {
-      setEditingShift(null)
-      setInitialShiftType(currentCreateType)
-      setOpen(true)
-      return
-    }
+  const handleCreateIntent = useCallback(
+    (type: ShiftType) => {
+      if (profileCompleteness?.isFilled) {
+        setEditingShift(null)
+        setInitialShiftType(type)
+        setOpen(true)
+        return
+      }
 
-    showToast(
-      t('venueUi.profileRequiredToCreate', {
-        defaultValue: 'Чтобы создавать вакансии и смены, сначала заполните профиль.',
-      }),
-      'error'
-    )
-  }, [currentCreateType, profileCompleteness?.isFilled, showToast, t])
+      showToast(
+        t('venueUi.profileRequiredToCreate', {
+          defaultValue: 'Чтобы создавать вакансии и смены, сначала заполните профиль.',
+        }),
+        'error'
+      )
+    },
+    [profileCompleteness?.isFilled, showToast, t]
+  )
 
   useEffect(() => {
-    const offOpenAdd = onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => {
-      handleCreateIntent()
+    const offOpenAdd = onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, detail => {
+      // Тип из события (явный выбор) приоритетнее ambient-типа вкладки.
+      handleCreateIntent(detail?.type ?? currentCreateTypeRef.current)
     })
 
     const offOpenEdit = onAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT, detail => {
@@ -48,7 +54,7 @@ export function VenueAddShiftListener() {
     const offSetCreateType = onAppEvent(APP_EVENTS.SET_VENUE_CREATE_TYPE, detail => {
       const nextType = detail?.type
       if (nextType === 'vacancy' || nextType === 'replacement') {
-        setCurrentCreateType(nextType)
+        currentCreateTypeRef.current = nextType
       }
     })
 
