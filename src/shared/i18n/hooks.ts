@@ -150,14 +150,5 @@ export function useProfileFormLabels() {
     [t]
   )
 
-  const getWorkSummaryLabel = useCallback(
-    (apiRole: string | null) => {
-      return apiRole === 'employee'
-        ? t('profile.workSummaryResume')
-        : t('profile.workSummaryExperience')
-    },
-    [t]
-  )
-
-  return { getBioLabelSuffix, getWorkSummaryLabel }
+  return { getBioLabelSuffix }
 }

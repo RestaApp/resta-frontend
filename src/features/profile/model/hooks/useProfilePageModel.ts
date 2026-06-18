@@ -27,6 +27,7 @@ export const useProfilePageModel = () => {
   const {
     getEmployeePositionLabel,
     getRestaurantFormatLabel,
+    getCuisineTypeLabel,
     getSpecializationLabel,
     getSupplierTypeLabel,
   } = useLabels()
@@ -195,12 +196,16 @@ export const useProfilePageModel = () => {
       myShiftsCount: myShifts.length,
       getSpecializationLabel,
       getSupplierTypeLabel,
+      getRestaurantFormatLabel,
+      getCuisineTypeLabel,
     })
   }, [
     apiRole,
     employeeStats.completedShifts,
     getSpecializationLabel,
     getSupplierTypeLabel,
+    getRestaurantFormatLabel,
+    getCuisineTypeLabel,
     myShifts.length,
     profileCompleteness,
     roleLabel,

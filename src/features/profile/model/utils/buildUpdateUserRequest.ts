@@ -15,7 +15,6 @@ export interface ProfileFormData {
   location: string[]
   email: string
   phone: string
-  workExperienceSummary: string
   /** Заведение: сайт */
   website: string
   /** Заведение: время работы (многострочный текст → business_hours.schedule) */
@@ -28,9 +27,15 @@ export interface ProfileFormData {
   specializations: string[]
   /** История работы (только для employee) */
   workHistory: WorkHistoryFormEntry[]
+  // Для restaurant
+  restaurantFormat: string
+  cuisineTypes: string[]
   // Для supplier
   supplierCategory: string
   supplierTypes: string[]
+  deliveryAvailable: boolean
+  /** Ссылка на прайс-лист поставщика */
+  priceListUrl: string
 }
 
 type UserUpdatePayload = UpdateUserRequest['user']
@@ -105,8 +110,6 @@ export const buildUpdateUserRequest = (
   const initialEmail = normalizeStringOrNull(source.email)
   const currentPhone = toE164(formData.phone.trim()) || null
   const initialPhone = toE164(source.phone.trim()) || null
-  const currentWorkExperienceSummary = normalizeStringOrNull(formData.workExperienceSummary)
-  const initialWorkExperienceSummary = normalizeStringOrNull(source.workExperienceSummary)
   const currentSkills = formData.skills
     .split(',')
     .map(s => s.trim())
@@ -121,6 +124,12 @@ export const buildUpdateUserRequest = (
   const initialSupplierCategory = source.supplierCategory.trim()
   const currentSupplierTypes = uniqueStrings(formData.supplierTypes)
   const initialSupplierTypes = uniqueStrings(source.supplierTypes)
+  const currentPriceListUrl = normalizeStringOrNull(formData.priceListUrl)
+  const initialPriceListUrl = normalizeStringOrNull(source.priceListUrl)
+  const currentRestaurantFormat = formData.restaurantFormat.trim()
+  const initialRestaurantFormat = source.restaurantFormat.trim()
+  const currentCuisineTypes = uniqueStrings(formData.cuisineTypes)
+  const initialCuisineTypes = uniqueStrings(source.cuisineTypes)
 
   const user: UpdateUserRequest['user'] = {}
 
@@ -168,10 +177,6 @@ export const buildUpdateUserRequest = (
     user.phone = currentPhone
   }
 
-  if (currentWorkExperienceSummary !== initialWorkExperienceSummary) {
-    user.work_experience_summary = currentWorkExperienceSummary
-  }
-
   if (apiRole === 'employee') {
     const employeeProfileAttributes: NonNullable<
       UpdateUserRequest['user']['employee_profile_attributes']
@@ -216,6 +221,25 @@ export const buildUpdateUserRequest = (
     }
   }
 
+  if (apiRole === 'restaurant') {
+    const restaurantProfileAttributes: RestaurantProfileAttributes = {}
+
+    // restaurant_format отправляем только непустым (бэкенд игнорирует пустой формат).
+    if (currentRestaurantFormat && currentRestaurantFormat !== initialRestaurantFormat) {
+      user.restaurant_format = currentRestaurantFormat
+      restaurantProfileAttributes.restaurant_format = currentRestaurantFormat
+    }
+
+    if (hasDiff(currentCuisineTypes, initialCuisineTypes)) {
+      user.cuisine_types = currentCuisineTypes
+      restaurantProfileAttributes.cuisine_types = currentCuisineTypes
+    }
+
+    if (Object.keys(restaurantProfileAttributes).length > 0) {
+      mergeRestaurantProfileAttributes(user, restaurantProfileAttributes)
+    }
+  }
+
   if (apiRole === 'supplier') {
     const supplierProfileAttributes: SupplierProfileAttributes = {}
 
@@ -236,6 +260,17 @@ export const buildUpdateUserRequest = (
     ) {
       user.supplier_category = currentSupplierCategory
       supplierProfileAttributes.supplier_category = currentSupplierCategory
+    }
+
+    // delivery_available: false не «промоутится» из плоского формата — шлём nested.
+    if (formData.deliveryAvailable !== source.deliveryAvailable) {
+      user.delivery_available = formData.deliveryAvailable
+      supplierProfileAttributes.delivery_available = formData.deliveryAvailable
+    }
+
+    // price_list_url принимается бэкендом только в nested-формате.
+    if (currentPriceListUrl !== initialPriceListUrl) {
+      supplierProfileAttributes.price_list_url = currentPriceListUrl
     }
 
     if (Object.keys(supplierProfileAttributes).length > 0) {

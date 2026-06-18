@@ -64,7 +64,6 @@ export const useEditProfileModel = (
         location: [],
         email: '',
         phone: '',
-        workExperienceSummary: '',
         website: '',
         businessHours: '',
         position: '',
@@ -73,8 +72,12 @@ export const useEditProfileModel = (
         skills: '',
         specializations: [],
         workHistory: [],
+        restaurantFormat: '',
+        cuisineTypes: [],
         supplierCategory: '',
         supplierTypes: [],
+        deliveryAvailable: false,
+        priceListUrl: '',
       }
     }
 
@@ -91,7 +94,6 @@ export const useEditProfileModel = (
       location: toLocationArray(userProfile.location),
       email: userProfile.email || '',
       phone: formatPhoneInput(userProfile.phone || '') || userProfile.phone || '',
-      workExperienceSummary: userProfile.work_experience_summary || '',
       website: userProfile.website?.trim() || '',
       businessHours: businessHoursRecordToFormValue(userProfile.business_hours),
       position: apiRole === 'employee' ? (ep?.position ?? userProfile.position ?? '').trim() : '',
@@ -115,8 +117,15 @@ export const useEditProfileModel = (
             )
           : [],
       workHistory: apiRole === 'employee' ? mapApiWorkHistoryToForm(userProfile.work_history) : [],
+      restaurantFormat:
+        apiRole === 'restaurant' ? (userProfile.restaurant_profile?.restaurant_format ?? '') : '',
+      cuisineTypes:
+        apiRole === 'restaurant' ? (userProfile.restaurant_profile?.cuisine_types ?? []) : [],
       supplierCategory: supplierProfile?.supplier_category ?? '',
       supplierTypes: getSupplierTypes(supplierProfile),
+      deliveryAvailable:
+        apiRole === 'supplier' ? (supplierProfile?.delivery_available ?? false) : false,
+      priceListUrl: apiRole === 'supplier' ? (supplierProfile?.price_list_url ?? '') : '',
     }
   }, [apiRole, userProfile])
 

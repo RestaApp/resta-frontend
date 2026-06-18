@@ -34,6 +34,7 @@ export const useExternalProfileViewModel = ({
     getUiRoleLabel,
     getEmployeePositionLabel,
     getRestaurantFormatLabel,
+    getCuisineTypeLabel,
     getSpecializationLabel,
     getSupplierTypeLabel,
   } = useLabels()
@@ -101,12 +102,16 @@ export const useExternalProfileViewModel = ({
       myShiftsCount: 0,
       getSpecializationLabel,
       getSupplierTypeLabel,
+      getRestaurantFormatLabel,
+      getCuisineTypeLabel,
       hideMetrics: hideRestaurantMetrics,
     })
   }, [
     apiRole,
     getSpecializationLabel,
     getSupplierTypeLabel,
+    getRestaurantFormatLabel,
+    getCuisineTypeLabel,
     heroRoleOrPositionLabel,
     hideRestaurantMetrics,
     profileCompleteness,

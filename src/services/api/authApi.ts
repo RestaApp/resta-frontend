@@ -35,6 +35,7 @@ export interface WorkHistoryEntry {
 export interface RestaurantProfile {
   name?: string | null
   restaurant_format?: string | null
+  cuisine_types?: string[] | null
   city?: string | null
 }
 
@@ -43,6 +44,8 @@ export interface SupplierProfile {
   supplier_types?: string[] | null
   supplier_type?: string | null
   delivery_available?: boolean | null
+  /** Ссылка на прайс-лист (http/https) */
+  price_list_url?: string | null
   name?: string | null
 }
 
@@ -82,7 +85,6 @@ export interface UserData {
   website: string | null
   /** Расписание работы заведения (ключи — дни или служебные поля вроде schedule) */
   business_hours?: Record<string, string> | null
-  work_experience_summary: string | null
   work_preferences: Record<string, unknown>
   // Опциональные поля, которые могут отсутствовать в ответе
   available_for_work?: boolean

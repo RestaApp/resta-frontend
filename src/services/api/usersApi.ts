@@ -29,7 +29,6 @@ export interface UpdateUserRequest {
     phone?: string | null
     location?: string[] | null
     city?: string | null
-    work_experience_summary?: string | null
     /** История работы employee — передаётся целиком (бэкенд заменяет поле полностью) */
     work_history?: WorkHistoryEntry[]
     /** Плоский формат employee (ROLES_FRONTEND_SPEC / API.md) */
@@ -57,6 +56,8 @@ export interface UpdateUserRequest {
       supplier_category?: string
       supplier_types?: string[]
       delivery_available?: boolean
+      /** Ссылка на прайс-лист; на бэкенде принимается только nested */
+      price_list_url?: string | null
       /** Устаревшее имя поля; предпочтительны supplier_category + supplier_types */
       supplier_type?: string
       name?: string

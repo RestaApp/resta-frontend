@@ -46,7 +46,6 @@ function createMinimalUserData(signInData: SignInResponse['data']): UserData {
     username: '',
     website: null,
     business_hours: null,
-    work_experience_summary: null,
     work_preferences: {},
   }
 }

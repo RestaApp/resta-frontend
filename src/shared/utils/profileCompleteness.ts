@@ -8,7 +8,6 @@ export type UserProfileLike = {
   city?: string | null
   last_name?: string | null
   bio?: string | null
-  work_experience_summary?: string | null
   profile_photo_url?: string | null
   photo_url?: string | null
   email?: string | null
@@ -36,7 +35,7 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
   const isFilled = hasName && hasPhone && hasCity && hasLastName
 
   // Доп. «реальная» заполненность профиля по полезной информации
-  const hasBioOrSummary = !!(userProfile.bio?.trim() || userProfile.work_experience_summary?.trim())
+  const hasBio = !!userProfile.bio?.trim()
   const hasPhoto = !!(userProfile.profile_photo_url || userProfile.photo_url)
   const hasEmail = !!userProfile.email
   const experienceYears = userProfile.employee_profile?.experience_years
@@ -46,10 +45,10 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
 
   const infoFlags: boolean[] =
     apiRole === 'employee'
-      ? [hasBioOrSummary, hasPhoto, hasEmail, hasExperience]
+      ? [hasBio, hasPhoto, hasEmail, hasExperience]
       : apiRole === 'restaurant' || apiRole === 'supplier'
-        ? [hasBioOrSummary, hasPhoto, hasEmail, hasBusinessLocation]
-        : [hasBioOrSummary, hasPhoto, hasEmail]
+        ? [hasBio, hasPhoto, hasEmail, hasBusinessLocation]
+        : [hasBio, hasPhoto, hasEmail]
 
   const infoTotal = infoFlags.length
   const infoCount = infoFlags.filter(Boolean).length

@@ -89,6 +89,8 @@ interface ProfileStats {
 interface ProfileLabelHelpers {
   getSpecializationLabel: (value: string) => string
   getSupplierTypeLabel: (value: string) => string
+  getRestaurantFormatLabel: (value: string) => string
+  getCuisineTypeLabel: (value: string) => string
 }
 
 interface BuildProfileViewModelParams extends ProfileStats, ProfileLabelHelpers {
@@ -204,9 +206,15 @@ const buildTagSections = ({
   userProfile,
   getSpecializationLabel,
   getSupplierTypeLabel,
+  getCuisineTypeLabel,
 }: Pick<
   BuildProfileViewModelParams,
-  't' | 'apiRole' | 'userProfile' | 'getSpecializationLabel' | 'getSupplierTypeLabel'
+  | 't'
+  | 'apiRole'
+  | 'userProfile'
+  | 'getSpecializationLabel'
+  | 'getSupplierTypeLabel'
+  | 'getCuisineTypeLabel'
 >): ProfileTagSection[] => {
   const sections: ProfileTagSection[] = []
 
@@ -227,6 +235,17 @@ const buildTagSections = ({
       title: t('profile.specializationSection'),
       items: tags,
     })
+  }
+
+  if (apiRole === 'restaurant') {
+    const cuisineTypes = uniqueValues(userProfile.restaurant_profile?.cuisine_types ?? [])
+    if (cuisineTypes.length > 0) {
+      sections.push({
+        id: 'restaurant-cuisines',
+        title: t('profile.cuisineTypesLabel'),
+        items: toTagItems(cuisineTypes, getCuisineTypeLabel),
+      })
+    }
   }
 
   if (apiRole === 'supplier') {
@@ -310,7 +329,11 @@ const buildInfoSections = ({
   t,
   apiRole,
   userProfile,
-}: Pick<BuildProfileViewModelParams, 't' | 'apiRole' | 'userProfile'>) => {
+  getRestaurantFormatLabel,
+}: Pick<
+  BuildProfileViewModelParams,
+  't' | 'apiRole' | 'userProfile' | 'getRestaurantFormatLabel'
+>) => {
   const rows: ProfileInfoRow[] = []
   const isBusinessRole = apiRole === 'restaurant' || apiRole === 'supplier'
   const addresses = (userProfile.location ?? []).map(line => line.trim()).filter(Boolean)
@@ -330,6 +353,14 @@ const buildInfoSections = ({
   })
 
   if (apiRole === 'restaurant') {
+    const restaurantFormat = normalizeText(userProfile.restaurant_profile?.restaurant_format)
+    if (restaurantFormat) {
+      pushTextRow(rows, {
+        id: 'restaurant-format',
+        label: t('profile.venueType'),
+        value: getRestaurantFormatLabel(restaurantFormat),
+      })
+    }
     rows.push(
       ...buildBusinessProfileInfoRows({
         t,
@@ -404,6 +435,16 @@ const buildInfoSections = ({
           : t('venueUi.suppliers.deliveryNo', { defaultValue: 'Без доставки' }),
       })
     }
+
+    const priceListUrl = normalizeText(supplierProfile?.price_list_url)
+    if (priceListUrl) {
+      pushTextRow(rows, {
+        id: 'price-list',
+        label: t('profile.priceListUrl'),
+        value: priceListUrl,
+        href: normalizeExternalUrl(priceListUrl),
+      })
+    }
   }
 
   pushTextRow(rows, {
@@ -417,13 +458,6 @@ const buildInfoSections = ({
     label: t('profile.phone'),
     value: phoneDisplay,
     href: userProfile.phone ? `tel:${toE164(userProfile.phone)}` : undefined,
-  })
-  pushTextRow(rows, {
-    id: 'work-summary',
-    label:
-      apiRole === 'employee' ? t('profile.workSummaryResume') : t('profile.workSummaryExperience'),
-    value: userProfile.work_experience_summary,
-    multiline: true,
   })
 
   return rows.length > 0 ? [{ id: 'main', title: getInfoTitle(t, apiRole), rows }] : []
