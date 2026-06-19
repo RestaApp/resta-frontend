@@ -43,7 +43,8 @@ export const CatalogListShell = ({
   onRefresh,
   refreshDisabled = false,
   children,
-  className = 'ui-density-page ui-density-py',
+  // pb-24 — нижний отступ под плавающий BottomNav, чтобы последняя карточка не пряталась.
+  className = 'ui-density-page ui-density-py pb-24',
 }: CatalogListShellProps) => {
   const filters = (
     <SearchFilters

@@ -1022,7 +1022,12 @@
       "catering": "Catering",
       "gastromarket": "Gastromarket",
       "club": "Club",
-      "canteen": "Canteen"
+      "canteen": "Canteen",
+      "restaurant": "Restaurant",
+      "steakhouse": "Steakhouse",
+      "fine_dining": "Fine dining",
+      "pub": "Pub",
+      "buffet": "Buffet"
     },
     "cuisineType": {
       "international": "International",

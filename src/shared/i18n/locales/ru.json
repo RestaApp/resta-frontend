@@ -1030,7 +1030,12 @@
       "catering": "Кейтеринг",
       "gastromarket": "Гастромаркет",
       "club": "Клуб",
-      "canteen": "Столовая"
+      "canteen": "Столовая",
+      "restaurant": "Ресторан",
+      "steakhouse": "Стейк-хаус",
+      "fine_dining": "Высокая кухня",
+      "pub": "Паб",
+      "buffet": "Буфет"
     },
     "cuisineType": {
       "international": "Интернациональная",

@@ -6,7 +6,6 @@ import {
   APP_HEADER_ACTION_ICON_CLASS,
   SCREEN_HEADER_ROW_CLASS,
   SCREEN_HEADER_SHELL_CLASS,
-  SCREEN_HEADER_TABS_CLASS,
   SCREEN_TITLE_CLASS,
   TAB_ACTIVE_INDICATOR_CLASS,
   TAB_ACTIVE_TRIGGER_CLASS,
@@ -44,21 +43,10 @@ const ScreenTabsHeaderInner = <T extends string>({
   return (
     <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
       <div className="ui-app-frame">
-        <div className={cn(SCREEN_HEADER_ROW_CLASS, 'border-b border-border')}>
-          <h1 className={cn(SCREEN_TITLE_CLASS, 'shrink-0')}>{title}</h1>
-
-          {hasTabs ? (
-            <Tabs
-              options={tabOptions}
-              activeId={activeTabId}
-              onChange={onTabChange}
-              className={SCREEN_HEADER_TABS_CLASS}
-              activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
-              activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
-            />
-          ) : (
-            <div className={SCREEN_HEADER_TABS_CLASS} aria-hidden="true" />
-          )}
+        {/* Ряд заголовка: title слева, действия справа. Сегментированные табы
+            вынесены во второй ряд, чтобы длинный заголовок не наезжал на иконки. */}
+        <div className={cn(SCREEN_HEADER_ROW_CLASS, !hasTabs && 'border-b border-border')}>
+          <h1 className={cn(SCREEN_TITLE_CLASS, 'min-w-0 flex-1')}>{title}</h1>
 
           <div className="flex shrink-0 items-center gap-0.5">
             {leadingActionsSlot}
@@ -78,6 +66,19 @@ const ScreenTabsHeaderInner = <T extends string>({
             ) : null}
           </div>
         </div>
+
+        {hasTabs ? (
+          <div className="ui-density-page border-b border-border pb-3">
+            <Tabs
+              options={tabOptions}
+              activeId={activeTabId}
+              onChange={onTabChange}
+              className="w-full"
+              activeIndicatorClassName={TAB_ACTIVE_INDICATOR_CLASS}
+              activeTriggerClassName={TAB_ACTIVE_TRIGGER_CLASS}
+            />
+          </div>
+        ) : null}
 
         {footer}
       </div>
