@@ -708,7 +708,7 @@ npm run build          # tsc -b + vite build, 0 TS errors, bundle delta <10%
 | `useMemo(() => count > 0, [count])`                      | `const isActive = count > 0`                                           |
 | Subscription без cleanup                                 | `return () => removeEventListener(...)`                                |
 | `* { transition: all }`                                  | `body { transition: bg-color, color, border-color 0.2s }`              |
-| `console.log/error/warn`                                 | `@/utils/logger`                                                       |
+| `console.log/error/warn`                                 | `@/shared/utils/logger`                                                |
 | UI primitive импортирует из `features/*`                 | Вынести domain в `@/shared/<domain>/`                                  |
 | Барьер `index.ts` с ≤2 потребителями                     | Прямой импорт                                                          |
 | Deprecated alias без deadline                            | Удалить в той же PR                                                    |

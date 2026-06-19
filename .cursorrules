@@ -134,7 +134,7 @@ features/<X> ──→ shared/* ──→ components/ui/*
 - `any`, второй store / второй `createApi`, мутация Redux вне RTK.
 - Хардкод строк вместо i18n; игнор loading/error/empty в UI.
 - Косметический рефакторинг вне задачи.
-- `console.log/error/warn` — только через `@/utils/logger`.
+- `console.log/error/warn` — только через `@/shared/utils/logger`.
 - `font-mono` (Tailwind default) — в проекте только `font-mono-resta`.
 - Hand‑rolled аватары — использовать `<Avatar>` / `<AvatarImage>` / `<AvatarFallback>`.
 - Кастомный sticky/fixed bottom CTA — только через `BottomActionBar` / `DrawerFooter`.
