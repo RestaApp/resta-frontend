@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Drawer, DrawerBody, DrawerFooter, DrawerFrame } from '@/components/ui/drawer'
 import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
-import { ProfileOverview } from './components/ProfileOverview'
+import { ProfileOverview, type ProfileContactType } from './components/ProfileOverview'
+import { useTrackEventMutation } from '@/services/api/analyticsApi'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -41,10 +42,26 @@ export const UserProfileDrawer = memo(
     })
 
     const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false)
+    const [trackEvent] = useTrackEventMutation()
 
     const handleClose = () => {
       setRejectConfirmOpen(false)
       onClose()
+    }
+
+    // Аналитика: клик по контакту/прайсу чужого профиля (анонимно, fire-and-forget).
+    const handleContactClick = (type: ProfileContactType) => {
+      if (typeof userId !== 'number') return
+      void trackEvent(
+        type === 'price_list'
+          ? { event_type: 'price_list_requested', trackable_type: 'User', trackable_id: userId }
+          : {
+              event_type: 'contact_clicked',
+              trackable_type: 'User',
+              trackable_id: userId,
+              metadata: { contact_type: type },
+            }
+      )
     }
 
     const canReject =
@@ -71,7 +88,11 @@ export const UserProfileDrawer = memo(
               ) : isError ? (
                 <ErrorState title={t('errors.loadError')} className="min-h-0 py-10" />
               ) : profileViewModel ? (
-                <ProfileOverview profile={profileViewModel} variant="drawer" />
+                <ProfileOverview
+                  profile={profileViewModel}
+                  variant="drawer"
+                  onContactClick={handleContactClick}
+                />
               ) : null}
             </DrawerBody>
 

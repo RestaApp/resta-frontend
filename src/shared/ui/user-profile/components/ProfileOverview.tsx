@@ -30,6 +30,7 @@ import type {
   ProfileViewModel,
   ProfileWorkHistoryItem,
 } from '../buildProfileViewModel'
+import type { ContactType } from '@/services/api/analyticsApi'
 import { ProfileHero } from './ProfileHero'
 import {
   InfoRow,
@@ -39,6 +40,8 @@ import {
   VALUE_LINK_CLASS,
 } from './profile-info/InfoRow'
 
+export type ProfileContactType = ContactType | 'price_list'
+
 interface ProfileOverviewProps {
   profile: ProfileViewModel
   variant?: 'page' | 'drawer'
@@ -47,13 +50,26 @@ interface ProfileOverviewProps {
   onEditSupplierTypes?: () => void
   onOpenToWorkToggle?: (nextValue: boolean) => void
   isOpenToWorkUpdating?: boolean
+  /** Трек клика по контакту/прайсу (только для чужих профилей). */
+  onContactClick?: (type: ProfileContactType) => void
+}
+
+/** id строки профиля → тип контакта для аналитики. */
+const CONTACT_ROW_TYPE: Record<string, ProfileContactType> = {
+  phone: 'phone',
+  email: 'email',
+  website: 'website',
+  'price-list': 'price_list',
 }
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
   <div className={PROFILE_SECTION_LABEL_CLASS}>{children}</div>
 )
 
-const renderInfoValue = (row: ProfileInfoRow) => {
+const renderInfoValue = (
+  row: ProfileInfoRow,
+  onContactClick?: (type: ProfileContactType) => void
+) => {
   if (row.value.kind === 'tags') {
     return (
       <div className={cn(ROW_CLASS, 'items-start')}>
@@ -69,10 +85,13 @@ const renderInfoValue = (row: ProfileInfoRow) => {
     )
   }
 
+  const contactType = row.value.href ? CONTACT_ROW_TYPE[row.id] : undefined
+
   return (
     <InfoRow
       label={row.label}
       href={row.value.href}
+      onClick={contactType && onContactClick ? () => onContactClick(contactType) : undefined}
       valueClassName={cn(
         row.value.href ? VALUE_LINK_CLASS : VALUE_CLASS,
         row.value.multiline ? FORMATTED_USER_TEXT_CLASS : 'truncate'
@@ -308,16 +327,18 @@ const ProfileWorkHistoryView = ({
 const ProfileInfoSectionView = ({
   section,
   variant,
+  onContactClick,
 }: {
   section: ProfileInfoSection
   variant: 'page' | 'drawer'
+  onContactClick?: (type: ProfileContactType) => void
 }) => {
   if (section.rows.length === 0) return null
 
   return (
     <CollapsibleProfileSection title={section.title} variant={variant}>
       <div className="divide-y divide-border/50 text-sm">
-        {section.rows.map(row => renderInfoValue(row))}
+        {section.rows.map(row => renderInfoValue(row, onContactClick))}
       </div>
     </CollapsibleProfileSection>
   )
@@ -331,6 +352,7 @@ export const ProfileOverview = memo(function ProfileOverview({
   onEditSupplierTypes,
   onOpenToWorkToggle,
   isOpenToWorkUpdating = false,
+  onContactClick,
 }: ProfileOverviewProps) {
   const { t } = useTranslation()
   const showFillAction = !profile.isProfileFilled && Boolean(onFill)
@@ -408,7 +430,12 @@ export const ProfileOverview = memo(function ProfileOverview({
       <ProfileReviewSummary profile={profile} />
 
       {profile.infoSections.map(section => (
-        <ProfileInfoSectionView key={section.id} section={section} variant={variant} />
+        <ProfileInfoSectionView
+          key={section.id}
+          section={section}
+          variant={variant}
+          onContactClick={onContactClick}
+        />
       ))}
     </div>
   )

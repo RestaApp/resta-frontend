@@ -14,6 +14,7 @@ interface InfoRowProps {
   children: ReactNode
   href?: string
   valueClassName?: string
+  onClick?: () => void
 }
 
 /**
@@ -21,12 +22,13 @@ interface InfoRowProps {
  * Используется во всех секциях ProfileOverview.
  */
 export const InfoRow = memo(
-  ({ label, children, href, valueClassName = VALUE_CLASS }: InfoRowProps) => (
+  ({ label, children, href, valueClassName = VALUE_CLASS, onClick }: InfoRowProps) => (
     <div className={ROW_CLASS}>
       <span className={LABEL_CLASS}>{label}</span>
       {href ? (
         <a
           href={href}
+          onClick={onClick}
           className={cn(valueClassName, 'min-w-0 truncate')}
           title={typeof children === 'string' ? children : undefined}
         >
