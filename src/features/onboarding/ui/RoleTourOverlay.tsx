@@ -83,12 +83,10 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
       aria-label={t(step.titleKey)}
       style={{ zIndex: Z_INDEX.alertDialog }}
     >
-      {/* Затемнение — лёгкое, чтобы экран вкладки просматривался. Клик не закрывает. */}
-      <div className="absolute inset-0 bg-overlay-scrim" aria-hidden="true" />
-
-      {/* Подсветка активной вкладки */}
+      {/* Вырез-spotlight: box-shadow затемняет всё, КРОМЕ активной вкладки
+          (она остаётся в полной яркости); border + мягкое свечение — акцент. */}
       <motion.div
-        className="absolute rounded-2xl ring-2 ring-primary"
+        className="absolute rounded-2xl border-2 border-primary"
         initial={false}
         animate={{
           left: rect.left - pad,
@@ -97,7 +95,10 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
           height: rect.height + pad * 2,
         }}
         transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        style={{ boxShadow: '0 0 0 4px rgba(255,107,44,0.25)', pointerEvents: 'none' }}
+        style={{
+          boxShadow: '0 0 0 4px rgba(255,107,44,0.25), 0 0 0 9999px var(--overlay-scrim-strong)',
+          pointerEvents: 'none',
+        }}
         aria-hidden="true"
       />
 

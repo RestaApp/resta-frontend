@@ -10,8 +10,7 @@ const tourSeenKey = (role: UiRole) => `${STORAGE_KEYS.ROLE_TOUR_SEEN_PREFIX}${ro
 
 export const isRoleTourSeen = (role: UiRole): boolean =>
   getLocalStorageItem(tourSeenKey(role)) === '1'
-
-const markRoleTourSeen = (role: UiRole): void => setLocalStorageItem(tourSeenKey(role), '1')
+export const markRoleTourSeen = (role: UiRole): void => setLocalStorageItem(tourSeenKey(role), '1')
 
 interface UseRoleTourParams {
   role: UiRole
