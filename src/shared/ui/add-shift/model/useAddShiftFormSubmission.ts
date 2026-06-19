@@ -16,6 +16,9 @@ import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
 import { useAppSelector } from '@/store/hooks'
 import { mapServerErrorsToFields, translateServerError } from './addShiftValidation'
 import { selectUserData } from '@/store/slices/userSlice'
+import { usePurchaseFlow } from '@/features/monetization/purchaseFlowContext'
+import { parsePaymentRequired } from '@/shared/lib/monetization/paymentRequired'
+import { waitWithBackoff } from '@/shared/lib/monetization/waitWithBackoff'
 import type { AddShiftFormState } from './useAddShiftFormState'
 
 interface UseAddShiftFormSubmissionOptions {
@@ -96,6 +99,7 @@ export const useAddShiftFormSubmission = ({
   const [createShift, { isLoading: isCreating }] = useCreateShiftMutation()
   const [updateShiftMutation] = useUpdateShiftMutation()
   const { updateUser } = useUpdateUser()
+  const { requestPurchase } = usePurchaseFlow()
   const currentUser = useAppSelector(selectUserData)
 
   const applyServerErrors = useCallback(
@@ -188,18 +192,43 @@ export const useAddShiftFormSubmission = ({
           response = createResult
           triggerHapticFeedback('success')
         } catch (error: unknown) {
-          const { messages, single } = extractServerErrors(error)
-          const serverMessages = messages ?? (single ? [single] : [])
-          if (serverMessages.length > 0) {
-            const { message } = applyServerErrors(serverMessages)
-            if (message) showToast?.(message, 'error')
-            else triggerHapticFeedback('warning')
+          // 402 Payment Required → flow покупки слота, затем повтор создания.
+          const paymentInfo = parsePaymentRequired(error)
+          if (paymentInfo) {
+            const paid = await requestPurchase(paymentInfo)
+            if (!paid) return false
+            // Webhook Telegram может прийти с задержкой — ретраим с backoff,
+            // повторный 402 трактуем как «ещё не обработано».
+            const retried = await waitWithBackoff(async () => {
+              try {
+                return await createShift(payload).unwrap()
+              } catch (retryError: unknown) {
+                if (parsePaymentRequired(retryError)) return null
+                throw retryError
+              }
+            })
+            if (!retried || hasInlineErrors(retried)) {
+              const message = t('monetization.purchase.processing')
+              state.setSubmitError(message)
+              showToast?.(message, 'error')
+              return false
+            }
+            response = retried
+            triggerHapticFeedback('success')
+          } else {
+            const { messages, single } = extractServerErrors(error)
+            const serverMessages = messages ?? (single ? [single] : [])
+            if (serverMessages.length > 0) {
+              const { message } = applyServerErrors(serverMessages)
+              if (message) showToast?.(message, 'error')
+              else triggerHapticFeedback('warning')
+              return false
+            }
+            const errorMessage = translateServerError(t('shift.createError'), t)
+            state.setSubmitError(errorMessage)
+            showToast?.(errorMessage, 'error')
             return false
           }
-          const errorMessage = translateServerError(t('shift.createError'), t)
-          state.setSubmitError(errorMessage)
-          showToast?.(errorMessage, 'error')
-          return false
         }
       }
 
@@ -233,6 +262,7 @@ export const useAddShiftFormSubmission = ({
     userCity,
     currentUser,
     updateUser,
+    requestPurchase,
   ])
 
   return { handleSave, isCreating }

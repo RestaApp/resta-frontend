@@ -68,6 +68,51 @@
     "archive": "Archive",
     "loadMore": "Show more"
   },
+  "monetization": {
+    "stars": "{{count}} ⭐",
+    "pro": {
+      "currentPlanFree": "Free plan",
+      "currentPlanPro": "PRO",
+      "badge": "PRO",
+      "daysRemaining": "{{count}} days left",
+      "upgradeTitle": "Upgrade to PRO",
+      "upgradeSubtitle": "Advanced features for suppliers",
+      "drawerTitle": "Resta PRO",
+      "pricePerMonth": "{{count}} ⭐ / mo",
+      "payButton": "Pay",
+      "processing": "Payment is processing, refresh in a minute",
+      "success": "PRO subscription is active",
+      "cancelled": "Payment cancelled",
+      "lockedHint": "Available in PRO",
+      "features": {
+        "analytics": "Views and clicks analytics",
+        "badge": "PRO badge on profile",
+        "priority": "Priority placement",
+        "price_list": "Price list on profile",
+        "new_restaurant_notifications": "New restaurant notifications"
+      }
+    },
+    "purchase": {
+      "title": "Purchase required",
+      "vacancy_slot": "Extra vacancy",
+      "replacement_slot": "Extra replacement",
+      "urgent_boost": "Urgent boost",
+      "description": "Limit reached. Buy a slot with Telegram Stars to continue.",
+      "payButton": "Buy for {{count}} ⭐",
+      "processing": "Payment is processing, try again in a minute",
+      "cancelled": "Payment cancelled",
+      "error": "Could not complete the purchase"
+    },
+    "usage": {
+      "vacancies": "Vacancies: {{remaining}} of {{limit}}",
+      "replacements": "Replacements: {{remaining}} of {{limit}}",
+      "exhausted": "Limit reached"
+    },
+    "boost": {
+      "action": "Mark as urgent",
+      "success": "Shift marked as urgent"
+    }
+  },
   "reviews": {
     "sectionTitle": "Shift review",
     "title": "Leave a review",

@@ -1,12 +1,19 @@
 import { memo, useCallback, useMemo, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
+import { Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DrawerFooter } from '@/components/ui/drawer'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { useBoostShiftMutation } from '@/services/api/purchasesApi'
 import type { Shift } from '@/shared/shifts/types'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
+import { useToast } from '@/shared/lib/hooks/useToast'
+import { triggerHapticFeedback } from '@/shared/utils/haptics'
+import { usePurchaseFlow } from '@/features/monetization/purchaseFlowContext'
+import { parsePaymentRequired } from '@/shared/lib/monetization/paymentRequired'
+import { waitWithBackoff } from '@/shared/lib/monetization/waitWithBackoff'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UserProfileDrawer } from '@/shared/ui/user-profile/UserProfileDrawer'
 import { ShiftReviewSection } from '@/features/reviews/ui/ShiftReviewSection'
@@ -88,32 +95,86 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     setConfirmOpen(false)
   }, [ownerActions, shift])
 
+  const { showToast } = useToast()
+  const { requestPurchase } = usePurchaseFlow()
+  const [boostShift, { isLoading: isBoosting }] = useBoostShiftMutation()
+
+  // Срочное продвижение: PATCH /boost; при 402 → покупка urgent_boost → повтор.
+  const handleBoost = useCallback(async () => {
+    if (!shift) return
+    const boostOnce = () => boostShift(shift.id).unwrap()
+    try {
+      await boostOnce()
+    } catch (error: unknown) {
+      const info = parsePaymentRequired(error)
+      if (!info) return
+      const paid = await requestPurchase(info)
+      if (!paid) return
+      const ok = await waitWithBackoff(async () => {
+        try {
+          await boostOnce()
+          return true
+        } catch (retryError: unknown) {
+          if (parsePaymentRequired(retryError)) return null
+          throw retryError
+        }
+      })
+      if (!ok) {
+        showToast(t('monetization.purchase.processing'), 'error')
+        return
+      }
+    }
+    triggerHapticFeedback('success')
+    showToast(t('monetization.boost.success'), 'success')
+  }, [shift, boostShift, requestPurchase, showToast, t])
+
   if (!shift) return null
+
+  const canBoost =
+    controller.isOwner &&
+    shift.urgent !== true &&
+    shift.listingStatus !== 'filled' &&
+    shift.listingStatus !== 'closed'
 
   const ownerFooter =
     controller.isOwner && ownerActions ? (
       <DrawerFooter className="pb-3">
-        <div className="flex gap-4">
-          <Button
-            variant="destructive"
-            size="md"
-            onClick={handleDeleteRequest}
-            disabled={ownerActions.isDeleting}
-            className="flex-1"
-          >
-            {ownerActions.isDeleting
-              ? t('common.deleting', { defaultValue: 'Удаление...' })
-              : t('common.delete')}
-          </Button>
-          <Button
-            variant="gradient"
-            size="md"
-            onClick={handleEdit}
-            disabled={ownerActions.isDeleting}
-            className="flex-1"
-          >
-            {t('common.edit')}
-          </Button>
+        <div className="flex flex-col gap-2">
+          {canBoost ? (
+            <Button
+              variant="outline"
+              size="md"
+              onClick={handleBoost}
+              loading={isBoosting}
+              disabled={isBoosting || ownerActions.isDeleting}
+              className="w-full"
+            >
+              <Zap className="h-4 w-4" aria-hidden="true" />
+              {t('monetization.boost.action')}
+            </Button>
+          ) : null}
+          <div className="flex gap-4">
+            <Button
+              variant="destructive"
+              size="md"
+              onClick={handleDeleteRequest}
+              disabled={ownerActions.isDeleting || isBoosting}
+              className="flex-1"
+            >
+              {ownerActions.isDeleting
+                ? t('common.deleting', { defaultValue: 'Удаление...' })
+                : t('common.delete')}
+            </Button>
+            <Button
+              variant="gradient"
+              size="md"
+              onClick={handleEdit}
+              disabled={ownerActions.isDeleting || isBoosting}
+              className="flex-1"
+            >
+              {t('common.edit')}
+            </Button>
+          </div>
         </div>
       </DrawerFooter>
     ) : null

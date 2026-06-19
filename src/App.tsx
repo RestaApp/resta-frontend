@@ -5,6 +5,7 @@ import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { DetailOverlayProvider } from '@/shared/navigation/DetailOverlayContext'
 import { ToastProvider } from '@/shared/lib/toast/ToastProvider'
+import { PurchaseFlowProvider } from '@/features/monetization/ui/PurchaseFlowProvider'
 
 const Dashboard = lazy(() =>
   import('@/pages/Dashboard/Dashboard').then(m => ({ default: m.Dashboard }))
@@ -40,9 +41,11 @@ export const App = () => {
   return (
     <TelegramMiniAppShell>
       <ToastProvider>
-        <DetailOverlayProvider>
-          <AppBootstrapRoutes />
-        </DetailOverlayProvider>
+        <PurchaseFlowProvider>
+          <DetailOverlayProvider>
+            <AppBootstrapRoutes />
+          </DetailOverlayProvider>
+        </PurchaseFlowProvider>
       </ToastProvider>
     </TelegramMiniAppShell>
   )

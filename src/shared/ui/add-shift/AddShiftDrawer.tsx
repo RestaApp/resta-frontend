@@ -29,6 +29,7 @@ import {
   AddShiftDrawerStep2,
 } from './drawer/AddShiftDrawerSteps'
 import { ResultOverlay } from '@/components/ui/result-overlay'
+import { UsageIndicator } from '@/features/monetization/ui/UsageIndicator'
 import { useAddShiftDrawerController } from './drawer/useAddShiftDrawerController'
 import { getDrawerCopy, getLockedShiftType, INITIAL_SHIFT_TYPE, TOTAL_STEPS } from './drawer/config'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'
@@ -227,6 +228,9 @@ const AddShiftDrawerKeyed = ({
           </DrawerHeader>
 
           <DrawerBody className="ui-density-stack gap-3">
+            {controller.state.step === 0 && !initialValues?.id ? (
+              <UsageIndicator shiftType={form.shiftType} />
+            ) : null}
             <StepPanel stepKey={controller.state.step} className="gap-3">
               {controller.state.step === 0 ? (
                 <AddShiftDrawerStep0

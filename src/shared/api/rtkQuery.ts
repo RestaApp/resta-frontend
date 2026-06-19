@@ -17,6 +17,8 @@ export const tagTypes = [
   'NotificationPreferences',
   'User',
   'Catalog',
+  'Subscription',
+  'Purchase',
 ] as const
 
 export type TagType = (typeof tagTypes)[number]

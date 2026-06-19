@@ -88,7 +88,11 @@ interface TelegramWebApp {
     },
     callback?: (buttonId: string | null) => void
   ) => void
+  openInvoice?: (url: string, callback?: (status: TelegramInvoiceStatus) => void) => void
 }
+
+/** Статус оплаты Telegram Stars из callback `WebApp.openInvoice`. */
+export type TelegramInvoiceStatus = 'paid' | 'cancelled' | 'failed' | 'pending'
 
 interface TelegramWindow extends Window {
   Telegram?: {
@@ -106,6 +110,23 @@ export const getTelegramWebApp = (): TelegramWebApp | null => {
   if (!isTelegramWebApp()) return null
   const telegramWindow = window as TelegramWindow
   return telegramWindow.Telegram?.WebApp ?? null
+}
+
+/**
+ * Открывает Telegram Stars invoice и резолвит статус оплаты.
+ * Вне Telegram (dev/браузер) или без поддержки openInvoice → 'failed'.
+ */
+export const openTelegramInvoice = (url: string): Promise<TelegramInvoiceStatus> => {
+  const webApp = getTelegramWebApp()
+  if (!webApp?.openInvoice) return Promise.resolve('failed')
+  return new Promise(resolve => {
+    let settled = false
+    webApp.openInvoice!(url, status => {
+      if (settled) return
+      settled = true
+      resolve(status)
+    })
+  })
 }
 
 const getTelegramUser = () => {

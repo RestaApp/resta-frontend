@@ -68,6 +68,51 @@
     "archive": "В архив",
     "loadMore": "Показать ещё"
   },
+  "monetization": {
+    "stars": "{{count}} ⭐",
+    "pro": {
+      "currentPlanFree": "Бесплатный план",
+      "currentPlanPro": "PRO",
+      "badge": "PRO",
+      "daysRemaining": "Осталось {{count}} дн.",
+      "upgradeTitle": "Перейти на PRO",
+      "upgradeSubtitle": "Расширенные возможности для поставщиков",
+      "drawerTitle": "Resta PRO",
+      "pricePerMonth": "{{count}} ⭐ / мес",
+      "payButton": "Оплатить",
+      "processing": "Оплата обрабатывается, обновите через минуту",
+      "success": "Подписка PRO активна",
+      "cancelled": "Оплата отменена",
+      "lockedHint": "Доступно в PRO",
+      "features": {
+        "analytics": "Аналитика просмотров и кликов",
+        "badge": "Бейдж PRO в профиле",
+        "priority": "Приоритет в выдаче",
+        "price_list": "Прайс-лист в профиле",
+        "new_restaurant_notifications": "Уведомления о новых ресторанах"
+      }
+    },
+    "purchase": {
+      "title": "Требуется покупка",
+      "vacancy_slot": "Дополнительная вакансия",
+      "replacement_slot": "Дополнительная замена",
+      "urgent_boost": "Срочное продвижение",
+      "description": "Лимит исчерпан. Купите слот за Telegram Stars, чтобы продолжить.",
+      "payButton": "Купить за {{count}} ⭐",
+      "processing": "Оплата обрабатывается, попробуйте через минуту",
+      "cancelled": "Оплата отменена",
+      "error": "Не удалось оформить покупку"
+    },
+    "usage": {
+      "vacancies": "Вакансии: {{remaining}} из {{limit}}",
+      "replacements": "Замены: {{remaining}} из {{limit}}",
+      "exhausted": "Лимит исчерпан"
+    },
+    "boost": {
+      "action": "Сделать срочной",
+      "success": "Смена помечена срочной"
+    }
+  },
   "reviews": {
     "sectionTitle": "Отзыв о смене",
     "title": "Оставить отзыв",

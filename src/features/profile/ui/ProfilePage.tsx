@@ -5,6 +5,7 @@ import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
 import { ProfileOverview } from '@/shared/ui/user-profile/components/ProfileOverview'
 import { VenueProfileOverview } from './components/VenueProfileOverview'
 import { ProfileSettings } from './components/ProfileSettings'
+import { SubscriptionCard } from '@/features/monetization/ui/SubscriptionCard'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
@@ -97,6 +98,8 @@ export const ProfilePage = memo(() => {
           isOpenToWorkUpdating={isUpdatingUser}
         />
       )}
+
+      {apiRole === 'supplier' ? <SubscriptionCard /> : null}
 
       <ProfileSettings
         onLogout={handleLogout}

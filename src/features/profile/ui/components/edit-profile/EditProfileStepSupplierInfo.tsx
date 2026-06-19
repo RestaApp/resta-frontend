@@ -1,13 +1,18 @@
-import { memo, type RefObject } from 'react'
+import { memo, useState, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Lock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Switch } from '@/components/ui/switch'
+import { InlineAction } from '@/components/ui/inline-action'
 import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
 import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
+import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
+import { useSupplierSubscription } from '@/features/monetization/model/useSupplierSubscription'
+import { UpgradeProDrawer } from '@/features/monetization/ui/UpgradeProDrawer'
 import { BusinessAddressesField } from '../business-fields/BusinessAddressesField'
 import { BusinessHoursField } from '../business-fields/BusinessHoursField'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
@@ -35,6 +40,12 @@ export const EditProfileStepSupplierInfo = memo(function EditProfileStepSupplier
   updateField,
 }: EditProfileStepSupplierInfoProps) {
   const { t } = useTranslation()
+  const { plan } = useSupplierSubscription()
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
+
+  // Прайс-лист — PRO-фича. Гейтим только при включённой монетизации и загруженном плане,
+  // у которого фича выключена (бэк остаётся источником истины).
+  const priceListLocked = MONETIZATION_ENABLED && plan != null && plan.features.price_list !== true
 
   return (
     <>
@@ -80,16 +91,32 @@ export const EditProfileStepSupplierInfo = memo(function EditProfileStepSupplier
       </FormField>
 
       <FormField label={t('profile.priceListUrl')} hint={t('profile.priceListUrlHint')}>
-        <Input
-          type="url"
-          inputMode="url"
-          autoComplete="url"
-          value={formData.priceListUrl}
-          onChange={e => updateField('priceListUrl', e.target.value)}
-          placeholder={t('profile.form.websitePlaceholder')}
-          disabled={isLoading}
-        />
+        {priceListLocked ? (
+          <div className="flex items-center justify-between gap-2 rounded-lg border border-border/50 bg-secondary/40 px-3 py-2.5">
+            <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">{t('monetization.pro.lockedHint')}</span>
+            </span>
+            <InlineAction onClick={() => setUpgradeOpen(true)}>
+              {t('monetization.pro.upgradeTitle')}
+            </InlineAction>
+          </div>
+        ) : (
+          <Input
+            type="url"
+            inputMode="url"
+            autoComplete="url"
+            value={formData.priceListUrl}
+            onChange={e => updateField('priceListUrl', e.target.value)}
+            placeholder={t('profile.form.websitePlaceholder')}
+            disabled={isLoading}
+          />
+        )}
       </FormField>
+
+      {priceListLocked ? (
+        <UpgradeProDrawer open={upgradeOpen} onOpenChange={setUpgradeOpen} />
+      ) : null}
 
       <EditProfileStepAbout
         formData={formData}
