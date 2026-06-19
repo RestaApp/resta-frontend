@@ -83,6 +83,7 @@
       "processing": "Оплата обрабатывается, обновите через минуту",
       "success": "Подписка PRO активна",
       "cancelled": "Оплата отменена",
+      "disabled": "Подписки пока недоступны",
       "lockedHint": "Доступно в PRO",
       "features": {
         "analytics": "Аналитика просмотров и кликов",
@@ -106,6 +107,7 @@
     "usage": {
       "vacancies": "Вакансии: {{remaining}} из {{limit}}",
       "replacements": "Замены: {{remaining}} из {{limit}}",
+      "boosts": "Бесплатные бусты: {{remaining}} из {{limit}}",
       "exhausted": "Лимит исчерпан"
     },
     "boost": {

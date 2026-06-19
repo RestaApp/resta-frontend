@@ -48,8 +48,15 @@ export const useSubscriptionCheckout = () => {
         }
         showToast(t('monetization.pro.processing'), 'info')
         return false
-      } catch {
-        showToast(t('monetization.pro.processing'), 'error')
+      } catch (error: unknown) {
+        // 422 monetization_disabled — флаг поставщиков на бэке ещё выключен
+        // (страховка при рассинхроне фронт/бэк флагов). Не вводим в заблуждение
+        // сообщением об обработке оплаты — checkout заблокирован.
+        const status = (error as { status?: unknown })?.status
+        showToast(
+          t(status === 422 ? 'monetization.pro.disabled' : 'monetization.pro.processing'),
+          status === 422 ? 'info' : 'error'
+        )
         return false
       } finally {
         setIsProcessing(false)

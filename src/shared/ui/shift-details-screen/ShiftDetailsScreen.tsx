@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { DrawerFooter } from '@/components/ui/drawer'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useBoostShiftMutation } from '@/services/api/purchasesApi'
+import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
+import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
 import type { Shift } from '@/shared/shifts/types'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
@@ -99,6 +101,13 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const { requestPurchase } = usePurchaseFlow()
   const [boostShift, { isLoading: isBoosting }] = useBoostShiftMutation()
 
+  // Остаток бесплатных бустов (`monthly_boosts`, Flipper OFF). Виден только
+  // владельцу при включённом флаге фронта и непустом usage с бэка.
+  const { data: subscription } = useGetCurrentSubscriptionQuery(undefined, {
+    skip: !MONETIZATION_ENABLED || !controller.isOwner,
+  })
+  const freeBoosts = subscription?.data.usage?.monthly_boosts
+
   // Срочное продвижение: PATCH /boost; при 402 → покупка urgent_boost → повтор.
   const handleBoost = useCallback(async () => {
     if (!shift) return
@@ -141,17 +150,27 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       <DrawerFooter className="pb-3">
         <div className="flex flex-col gap-2">
           {canBoost ? (
-            <Button
-              variant="outline"
-              size="md"
-              onClick={handleBoost}
-              loading={isBoosting}
-              disabled={isBoosting || ownerActions.isDeleting}
-              className="w-full"
-            >
-              <Zap className="h-4 w-4" aria-hidden="true" />
-              {t('monetization.boost.action')}
-            </Button>
+            <>
+              {freeBoosts && freeBoosts.remaining > 0 ? (
+                <p className="text-center text-xs text-muted-foreground">
+                  {t('monetization.usage.boosts', {
+                    remaining: freeBoosts.remaining,
+                    limit: freeBoosts.limit,
+                  })}
+                </p>
+              ) : null}
+              <Button
+                variant="outline"
+                size="md"
+                onClick={handleBoost}
+                loading={isBoosting}
+                disabled={isBoosting || ownerActions.isDeleting}
+                className="w-full"
+              >
+                <Zap className="h-4 w-4" aria-hidden="true" />
+                {t('monetization.boost.action')}
+              </Button>
+            </>
           ) : null}
           <div className="flex gap-4">
             <Button

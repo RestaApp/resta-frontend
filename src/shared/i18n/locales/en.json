@@ -83,6 +83,7 @@
       "processing": "Payment is processing, refresh in a minute",
       "success": "PRO subscription is active",
       "cancelled": "Payment cancelled",
+      "disabled": "Subscriptions are not available yet",
       "lockedHint": "Available in PRO",
       "features": {
         "analytics": "Views and clicks analytics",
@@ -106,6 +107,7 @@
     "usage": {
       "vacancies": "Vacancies: {{remaining}} of {{limit}}",
       "replacements": "Replacements: {{remaining}} of {{limit}}",
+      "boosts": "Free boosts: {{remaining}} of {{limit}}",
       "exhausted": "Limit reached"
     },
     "boost": {

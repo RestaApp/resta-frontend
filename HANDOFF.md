@@ -110,26 +110,32 @@ GET /api/v1/me/stats
 
 ## 4. Urgent / Boost на смене
 
-**`urgent`** — пометка срочной смены (SOS-бейдж, приоритет в ленте). Задаётся при создании/редактировании смены, **не** через boost.
-
-**`boosted`** — продвижение в ленте (бейдж BOOST, позиция). Покупается отдельно.
+**`urgent`** — пометка срочной смены (SOS-бейдж, приоритет в ленте). По факту контракта (`resta_backend/API.md`) ставится через `PATCH /shifts/:id/boost`, выставляющий `urgent: true`. Доступно **владельцу открытой смены** — и ресторанам, и **сотрудникам** (employee urgent_boost, синхронизировано в коммите `dc20503`).
 
 Поля смены в API:
 
 | Поле                      | Назначение                              |
 | ------------------------- | --------------------------------------- |
 | `urgent: boolean`         | срочная смена, приоритет в ленте        |
-| `boosted: boolean`        | бейдж BOOST                             |
+| `boosted: boolean`        | бейдж BOOST (продвижение в ленте, R03)  |
 | `boost_position?: number` | `BOOSTED · #2` (R03)                    |
 
 ```
 PATCH /api/v1/shifts/:id/boost
-  effect:  boosted = true, boost_position назначается,
-           списание 100 Stars
-  returns: обновлённая смена (ShiftBlueprint)
+  effect:  urgent = true, boosted_at записывается
+  биллинг:  Flipper OFF — 1 бесплатный буст/мес (monthly_boosts),
+            при исчерпании → 402 { purchase_type: "urgent_boost", price: 100 }
+            Flipper ON — каждый буст требует покупку urgent_boost
+  returns: обновлённая смена; либо 402 (см. поток покупки слотов)
 ```
 
+**Бесплатный лимит бустов** (`monthly_boosts`, по умолчанию 1/мес) приходит в `usage` от `GET /subscriptions/current` наряду с `monthly_vacancies` / `monthly_replacements`. Фронт показывает остаток рядом с кнопкой буста (`monetization.usage.boosts`) и отрабатывает 402 общим потоком покупки слотов.
+
 Не использовать `is_sos` / `is_boosted` — фронт уже работает с `urgent` / `boosted`.
+
+### Монетизация поставщиков — страховка 422
+
+`POST /subscriptions/checkout` при выключенном бэкенд-флаге `monetization_suppliers_enabled` возвращает **422** `{ errors: ["Subscription purchases are not available yet."] }`. Кнопку оплаты гейтит фронт-флаг `VITE_MONETIZATION`, синхронный с бэком; 422 — лишь страховка от рассинхрона флагов (обрабатывается в `useSubscriptionCheckout`, сообщение `monetization.pro.disabled`).
 
 ---
 
