@@ -1,6 +1,7 @@
 import { createElement, memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
+import { ChevronLeft, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MODAL_TITLE_CLASS, BODY_MUTED_CLASS } from '@/components/ui/ui-patterns'
@@ -20,7 +21,9 @@ interface RoleTourOverlayProps {
   stepIndex: number
   total: number
   isLast: boolean
+  canGoBack: boolean
   onNext: () => void
+  onPrev: () => void
   onSkip: () => void
 }
 
@@ -33,7 +36,9 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
   stepIndex,
   total,
   isLast,
+  canGoBack,
   onNext,
+  onPrev,
   onSkip,
 }: RoleTourOverlayProps) {
   const { t } = useTranslation()
@@ -105,7 +110,16 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
       {/* Карточка-пояснение над навигацией */}
       <div className="absolute left-4 right-4" style={{ bottom: viewportH - rect.top + 14 }}>
         <Card className="relative flex flex-col gap-3 p-4 shadow-[var(--shadow-modal)]">
-          <div className="flex items-start gap-3">
+          <button
+            type="button"
+            onClick={onSkip}
+            aria-label={t('onboarding.tour.skip')}
+            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/70 transition-colors hover:bg-secondary/60 hover:text-foreground"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+
+          <div className="flex items-start gap-3 pr-8">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
               {createElement(step.icon, { className: 'h-5 w-5' })}
             </span>
@@ -116,6 +130,20 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
           </div>
 
           <div className="flex items-center justify-between gap-3">
+            {canGoBack ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onPrev}
+                aria-label={t('onboarding.tour.back')}
+              >
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                {t('onboarding.tour.back')}
+              </Button>
+            ) : (
+              <span />
+            )}
+
             <div className="flex items-center gap-1.5" aria-hidden="true">
               {Array.from({ length: total }).map((_, i) => (
                 <span
@@ -127,16 +155,10 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
                 />
               ))}
             </div>
-            <div className="flex items-center gap-2">
-              {!isLast ? (
-                <Button variant="ghost" size="sm" onClick={onSkip}>
-                  {t('onboarding.tour.skip')}
-                </Button>
-              ) : null}
-              <Button variant="gradient" size="sm" onClick={onNext} data-haptic="light">
-                {isLast ? t('onboarding.tour.done') : t('onboarding.tour.next')}
-              </Button>
-            </div>
+
+            <Button variant="gradient" size="sm" onClick={onNext} data-haptic="light">
+              {isLast ? t('onboarding.tour.done') : t('onboarding.tour.next')}
+            </Button>
           </div>
 
           {/* Стрелка вниз к активной вкладке */}

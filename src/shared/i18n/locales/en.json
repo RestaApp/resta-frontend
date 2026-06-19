@@ -760,6 +760,7 @@
     "stepOfNamed": "Step {{current}} of {{total}} · {{name}}",
     "tour": {
       "next": "Next",
+      "back": "Back",
       "skip": "Skip",
       "done": "Done",
       "replayCta": "How it works",

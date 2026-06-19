@@ -14,7 +14,10 @@ interface RoleTourProps {
  * повтор — через профиль (событие START_ROLE_TOUR). Монтируется в Dashboard.
  */
 export const RoleTour = memo(function RoleTour({ role, onTabChange }: RoleTourProps) {
-  const { activeStep, stepIndex, steps, isLast, next, finish } = useRoleTour({ role, onTabChange })
+  const { activeStep, stepIndex, steps, isLast, canGoBack, next, prev, finish } = useRoleTour({
+    role,
+    onTabChange,
+  })
 
   if (activeStep == null || stepIndex == null) return null
 
@@ -24,7 +27,9 @@ export const RoleTour = memo(function RoleTour({ role, onTabChange }: RoleTourPr
       stepIndex={stepIndex}
       total={steps.length}
       isLast={isLast}
+      canGoBack={canGoBack}
       onNext={next}
+      onPrev={prev}
       onSkip={finish}
     />
   )

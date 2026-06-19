@@ -69,6 +69,16 @@ export const useRoleTour = ({ role, onTabChange }: UseRoleTourParams) => {
     })
   }, [role, steps])
 
+  const prev = useCallback(() => {
+    setStepIndex(current => {
+      if (current === null || current <= 0) return current
+      const prevIndex = current - 1
+      const step = steps[prevIndex]
+      if (step) onTabChangeRef.current(step.tabId)
+      return prevIndex
+    })
+  }, [steps])
+
   // Авто-старт один раз на mount, если ещё не видели. Флаг ставим ВНУТРИ rAF —
   // иначе StrictMode (cleanup отменяет rAF на первом проходе) заблокирует старт.
   useEffect(() => {
@@ -92,7 +102,9 @@ export const useRoleTour = ({ role, onTabChange }: UseRoleTourParams) => {
     activeStep,
     isActive: stepIndex != null,
     isLast: stepIndex != null && stepIndex === steps.length - 1,
+    canGoBack: stepIndex != null && stepIndex > 0,
     next,
+    prev,
     finish,
   }
 }

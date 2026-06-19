@@ -768,6 +768,7 @@
     "stepOfNamed": "Шаг {{current}} из {{total}} · {{name}}",
     "tour": {
       "next": "Далее",
+      "back": "Назад",
       "skip": "Пропустить",
       "done": "Готово",
       "replayCta": "Как пользоваться",
