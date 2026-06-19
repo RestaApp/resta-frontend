@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import {
   ChevronDown,
+  Compass,
   FileText,
   HelpCircle,
   Languages,
@@ -24,6 +25,7 @@ import {
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { setAppLanguage, type Locale } from '@/shared/i18n/config'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'
 import { DeleteAccountDrawer } from '@/shared/ui/legal/DeleteAccountDrawer'
@@ -151,6 +153,24 @@ export const ProfileSettings = memo(function ProfileSettings({
                     <ChevronDown className="h-4 w-4 -rotate-90 text-muted-foreground" />
                   </motion.button>
                 ) : null}
+
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.98 }}
+                  className="flex w-full items-center justify-between gap-2 py-3 text-left transition-colors hover:text-primary"
+                  onClick={() => emitAppEvent(APP_EVENTS.START_ROLE_TOUR)}
+                  data-haptic="light"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className={SHIFT_CARD_SUB_LOGO_CLASS}>
+                      <Compass className="h-4 w-4" />
+                    </span>
+                    <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+                      {t('onboarding.tour.replayCta')}
+                    </span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 -rotate-90 text-muted-foreground" />
+                </motion.button>
               </div>
             </motion.div>
           ) : null}

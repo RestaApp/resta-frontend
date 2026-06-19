@@ -758,6 +758,28 @@
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
     "stepOfNamed": "Step {{current}} of {{total}} · {{name}}",
+    "tour": {
+      "next": "Next",
+      "skip": "Skip",
+      "done": "Done",
+      "replayCta": "How it works",
+      "employee": {
+        "feed": "Find shifts and vacancies in your city — filter and apply.",
+        "activity": "Track your application statuses: pending, accepted, rejected.",
+        "myshifts": "Your confirmed shifts and the replacements you created.",
+        "profile": "Fill in your profile and turn on \"Looking for work\" to get found."
+      },
+      "venue": {
+        "activity": "Create vacancies and urgent replacements, manage your posts.",
+        "staff": "Review applications, accept candidates, invite from the catalog.",
+        "suppliers": "Find suppliers of products, equipment and services.",
+        "profile": "Venue details and quick buttons to create a vacancy."
+      },
+      "supplier": {
+        "home": "Feed of venue clients: filter and open a profile to get in touch.",
+        "profile": "Catalog and price list; PRO adds analytics, badge and priority."
+      }
+    },
     "stepNames": {
       "role": "Role",
       "contacts": "Contacts",

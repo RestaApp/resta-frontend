@@ -80,6 +80,7 @@ export const BottomNav = ({
                 type="button"
                 aria-label={ariaLabel}
                 aria-current={isActive ? 'page' : undefined}
+                data-nav-tab={id}
                 data-haptic="light"
                 whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                 onClick={() => onTabChange(id)}

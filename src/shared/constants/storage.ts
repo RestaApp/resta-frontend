@@ -12,6 +12,8 @@ export const STORAGE_KEYS = {
   NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS: 'navigate_to_activity_my_applications',
   EDIT_SHIFT_ID: 'edit_shift_id',
   ACTIVITY_ADD_SHIFT_ONBOARDING_SHOWN: 'activity_add_shift_onboarding_shown',
+  /** Префикс флага «тур по ролям просмотрен»; ключ = prefix + role. */
+  ROLE_TOUR_SEEN_PREFIX: 'role_tour_seen_',
   LOCALE: 'resta_locale',
   /** Сохранённый шаблон фильтров ленты (смены) */
   FEED_FILTER_TEMPLATE_SHIFTS: 'resta_feed_filter_template_shifts',

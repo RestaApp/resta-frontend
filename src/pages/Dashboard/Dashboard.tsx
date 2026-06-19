@@ -5,6 +5,7 @@ import { BottomNav } from '@/components/BottomNav'
 import { DetailOverlayRenderer } from '@/components/DetailOverlayRenderer'
 import { VenueAddShiftListener } from '@/features/venue/ui/VenueAddShiftListener'
 import { NotificationsDrawer } from '@/features/notifications/ui/NotificationsDrawer'
+import { RoleTour } from '@/features/onboarding/ui/RoleTour'
 import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'
 import type { Tab, Screen } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
@@ -80,6 +81,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
 
       <DetailOverlayRenderer />
       <NotificationsDrawer />
+      <RoleTour role={role} onTabChange={handleTabChange} />
     </div>
   )
 }
