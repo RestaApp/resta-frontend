@@ -1,14 +1,7 @@
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-  DrawerCloseButton,
-  DrawerFrame,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFooter, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 import { ProfileOverview } from './components/ProfileOverview'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
@@ -70,12 +63,7 @@ export const UserProfileDrawer = memo(
       <>
         <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
           <DrawerFrame className="flex-1">
-            <DrawerHeader>
-              <div className="flex items-center justify-between gap-2">
-                <DrawerTitle>{drawerTitle}</DrawerTitle>
-                <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
-              </div>
-            </DrawerHeader>
+            <DrawerTitleBar title={drawerTitle} onClose={handleClose} />
 
             <DrawerBody className="ui-density-stack">
               {isLoading ? (

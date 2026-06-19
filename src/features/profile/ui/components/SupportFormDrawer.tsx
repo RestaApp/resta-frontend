@@ -1,14 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFrame, DrawerFooter } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import { useSupportTicketForm } from '@/features/profile/model/hooks/useSupportTicketForm'
@@ -28,13 +20,11 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerFrame className="flex-1">
-          <DrawerHeader>
-            <div className="flex items-center justify-between gap-2">
-              <DrawerTitle>{t('profile.supportForm.successTitle')}</DrawerTitle>
-              <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
-            </div>
-            <DrawerDescription>{t('profile.supportForm.successDescription')}</DrawerDescription>
-          </DrawerHeader>
+          <DrawerTitleBar
+            title={t('profile.supportForm.successTitle')}
+            description={t('profile.supportForm.successDescription')}
+            onClose={handleClose}
+          />
           <DrawerFooter>
             <Button variant="gradient" size="md" className="w-full" onClick={form.handleClose}>
               {t('common.understand')}
@@ -48,15 +38,11 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerFrame className="flex-1">
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <DrawerTitle>{t('profile.supportForm.title')}</DrawerTitle>
-              <DrawerDescription>{t('profile.supportForm.description')}</DrawerDescription>
-            </div>
-            <DrawerCloseButton onClick={handleClose} ariaLabel={t('common.close')} />
-          </div>
-        </DrawerHeader>
+        <DrawerTitleBar
+          title={t('profile.supportForm.title')}
+          description={t('profile.supportForm.description')}
+          onClose={handleClose}
+        />
 
         <DrawerBody className="ui-density-stack">
           <SupportTicketForm

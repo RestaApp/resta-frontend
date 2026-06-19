@@ -2,15 +2,8 @@ import { memo, useCallback, useMemo, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
 import { Bell, Briefcase, Flame } from 'lucide-react'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFrame, DrawerFooter } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { InlineAlert } from '@/components/ui/inline-alert'
@@ -164,12 +157,10 @@ export const NotificationPreferencesDrawer = memo(
     return (
       <Drawer open={open} onOpenChange={handleClose}>
         <DrawerFrame className="flex-1">
-          <DrawerHeader>
-            <div className="flex items-center justify-between gap-2">
-              <DrawerTitle>{t('profile.notificationSettings')}</DrawerTitle>
-              <DrawerCloseButton onClick={() => handleClose(false)} ariaLabel={t('common.close')} />
-            </div>
-          </DrawerHeader>
+          <DrawerTitleBar
+            title={t('profile.notificationSettings')}
+            onClose={() => handleClose(false)}
+          />
 
           <DrawerBody className="flex flex-col gap-3 pb-4 pt-2">
             {isLoading ? <SettingsRowsSkeleton rowCount={3} className="gap-3" /> : null}

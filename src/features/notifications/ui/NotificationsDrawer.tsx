@@ -2,14 +2,8 @@ import { memo, useCallback, useEffect, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BellOff, CheckCheck } from 'lucide-react'
 import { InlineAction } from '@/components/ui/inline-action'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { InlineAlert } from '@/components/ui/inline-alert'
 import { Loader } from '@/components/ui/loader'
 import { ICON_MD_CLASS } from '@/shared/constants/role-icons'
@@ -100,19 +94,17 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerFrame className="flex-1">
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>{t('notifications.title')}</DrawerTitle>
-            <div className="flex items-center gap-1">
-              {hasUnread ? (
-                <InlineAction icon={CheckCheck} onClick={handleMarkAll} disabled={isMarkingAll}>
-                  {t('notifications.markAllRead')}
-                </InlineAction>
-              ) : null}
-              <DrawerCloseButton onClick={() => setOpen(false)} ariaLabel={t('common.close')} />
-            </div>
-          </div>
-        </DrawerHeader>
+        <DrawerTitleBar
+          title={t('notifications.title')}
+          onClose={() => setOpen(false)}
+          actions={
+            hasUnread ? (
+              <InlineAction icon={CheckCheck} onClick={handleMarkAll} disabled={isMarkingAll}>
+                {t('notifications.markAllRead')}
+              </InlineAction>
+            ) : null
+          }
+        />
 
         <DrawerBody className="flex flex-col gap-2 pb-4 pt-2">
           {isLoading ? (

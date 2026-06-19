@@ -1,14 +1,7 @@
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFrame, DrawerFooter } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -67,12 +60,10 @@ export const DeleteAccountDrawer = memo(function DeleteAccountDrawer({
     <>
       <Drawer open={open} onOpenChange={handleClose}>
         <DrawerFrame className="flex-1">
-          <DrawerHeader>
-            <div className="flex items-center justify-between gap-2">
-              <DrawerTitle>{t('legal.deleteAccount.title')}</DrawerTitle>
-              <DrawerCloseButton onClick={() => handleClose(false)} ariaLabel={t('common.close')} />
-            </div>
-          </DrawerHeader>
+          <DrawerTitleBar
+            title={t('legal.deleteAccount.title')}
+            onClose={() => handleClose(false)}
+          />
 
           <DrawerBody className="flex flex-col gap-4 pt-2">
             <p className="text-sm text-muted-foreground">{t('legal.deleteAccount.description')}</p>

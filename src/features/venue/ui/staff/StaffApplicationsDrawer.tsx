@@ -1,12 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { VenueStaffList, type StaffItem } from './VenueStaffList'
 
 interface StaffApplicationsDrawerProps {
@@ -37,17 +31,10 @@ export const StaffApplicationsDrawer = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerFrame>
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>
-              {t('venueUi.staff.applications.title', { defaultValue: 'Отклики' })}
-            </DrawerTitle>
-            <DrawerCloseButton
-              onClick={() => onOpenChange(false)}
-              ariaLabel={t('common.close', { defaultValue: 'Закрыть' })}
-            />
-          </div>
-        </DrawerHeader>
+        <DrawerTitleBar
+          title={t('venueUi.staff.applications.title', { defaultValue: 'Отклики' })}
+          onClose={() => onOpenChange(false)}
+        />
 
         <DrawerBody className="p-0">
           <VenueStaffList

@@ -1,14 +1,7 @@
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFooter,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFooter, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
@@ -90,14 +83,10 @@ export const ReviewDrawer = memo(function ReviewDrawer({
   return (
     <Drawer open={open} onOpenChange={handleClose}>
       <DrawerFrame>
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>
-              {reviewedName ? t('reviews.titleFor', { name: reviewedName }) : t('reviews.title')}
-            </DrawerTitle>
-            <DrawerCloseButton onClick={() => handleClose(false)} ariaLabel={t('common.close')} />
-          </div>
-        </DrawerHeader>
+        <DrawerTitleBar
+          title={reviewedName ? t('reviews.titleFor', { name: reviewedName }) : t('reviews.title')}
+          onClose={() => handleClose(false)}
+        />
 
         <DrawerBody className="flex flex-col gap-4 pb-4 pt-2">
           <div className="flex flex-col items-center gap-2">

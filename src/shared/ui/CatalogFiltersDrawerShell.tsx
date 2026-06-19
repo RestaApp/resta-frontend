@@ -1,14 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFooter,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFooter, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 
 interface CatalogFiltersDrawerShellProps {
@@ -41,15 +34,7 @@ export const CatalogFiltersDrawerShell = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerFrame className={frameClassName}>
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerCloseButton
-              onClick={() => onOpenChange(false)}
-              ariaLabel={t('common.close', { defaultValue: 'Закрыть' })}
-            />
-          </div>
-        </DrawerHeader>
+        <DrawerTitleBar title={title} onClose={() => onOpenChange(false)} />
 
         <DrawerBody className={bodyClassName}>{children}</DrawerBody>
 

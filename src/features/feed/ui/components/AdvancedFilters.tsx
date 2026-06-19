@@ -1,13 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFooter,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFooter, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 import { DatePicker } from '@/components/ui/date-picker'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -67,22 +60,20 @@ const AdvancedFiltersSheet = ({
 
   return (
     <DrawerFrame className="flex-1">
-      <DrawerHeader>
-        <div className="flex items-center justify-between gap-2">
-          <DrawerTitle>{t('feed.filters')}</DrawerTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={c.handleReset}
-              disabled={!c.hasActiveFilters}
-            >
-              {t('feed.resetFiltersSheet')}
-            </Button>
-            <DrawerCloseButton onClick={onClose} ariaLabel={t('common.close')} />
-          </div>
-        </div>
-      </DrawerHeader>
+      <DrawerTitleBar
+        title={t('feed.filters')}
+        onClose={onClose}
+        actions={
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={c.handleReset}
+            disabled={!c.hasActiveFilters}
+          >
+            {t('feed.resetFiltersSheet')}
+          </Button>
+        }
+      />
 
       <DrawerBody className="flex flex-col gap-3">
         {c.positions.length > 0 ? (

@@ -2,14 +2,8 @@ import { useMemo } from 'react'
 import { Briefcase, Clock3 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerFrame,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
+import { Drawer, DrawerBody, DrawerFrame } from '@/components/ui/drawer'
+import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SectionHeader } from '@/components/ui/section-header'
 import { OwnerListingCardWithInvite } from '@/components/ui/shift-card/OwnerListingCard'
@@ -72,15 +66,7 @@ export const EmployeeInviteDrawer = ({
   return (
     <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()}>
       <DrawerFrame>
-        <DrawerHeader>
-          <div className="flex items-center justify-between gap-2">
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerCloseButton
-              onClick={onClose}
-              ariaLabel={t('common.close', { defaultValue: 'Закрыть' })}
-            />
-          </div>
-        </DrawerHeader>
+        <DrawerTitleBar title={title} onClose={onClose} />
 
         <DrawerBody className="ui-density-stack">
           {vacancies.length === 0 ? (
