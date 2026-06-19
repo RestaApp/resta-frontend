@@ -77,6 +77,22 @@ export const notificationsApi = api.injectEndpoints({
         method: 'GET',
         params: params ?? {},
       }),
+      // Все страницы накапливаем в одном кэш-кей ('getNotifications'), чтобы
+      // load-more дописывал, а оптимистичные апдейты (arg=undefined) попадали в ту же запись.
+      serializeQueryArgs: ({ endpointName }) => endpointName,
+      merge: (currentCache, newData, { arg }) => {
+        const page = (arg && typeof arg === 'object' ? arg.page : undefined) ?? 1
+        if (page <= 1) return newData // первая страница / refresh — заменяем целиком
+        currentCache.data.push(...newData.data)
+        currentCache.pagination = newData.pagination
+        if (newData.meta) currentCache.meta = newData.meta
+        return undefined
+      },
+      forceRefetch: ({ currentArg, previousArg }) => {
+        const cur = currentArg && typeof currentArg === 'object' ? currentArg.page : undefined
+        const prev = previousArg && typeof previousArg === 'object' ? previousArg.page : undefined
+        return cur !== prev
+      },
       providesTags: ['Notification'],
     }),
 

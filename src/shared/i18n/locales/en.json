@@ -64,7 +64,9 @@
     "markAllRead": "Mark all read",
     "loadError": "Failed to load notifications",
     "emptyTitle": "No notifications yet",
-    "emptyDescription": "Shift responses, statuses and other events will show up here"
+    "emptyDescription": "Shift responses, statuses and other events will show up here",
+    "archive": "Archive",
+    "loadMore": "Show more"
   },
   "reviews": {
     "sectionTitle": "Shift review",
