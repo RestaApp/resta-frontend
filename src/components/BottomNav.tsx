@@ -91,13 +91,7 @@ export const BottomNav = ({
               >
                 <span className="relative flex size-[1.375rem] items-center justify-center">
                   {id === 'myshifts' ? (
-                    <Avatar
-                      className={cn(
-                        AVATAR_SHAPE_CLASS,
-                        'size-6 border transition-colors',
-                        isActive ? 'border-primary' : 'border-border'
-                      )}
-                    >
+                    <Avatar className={cn(AVATAR_SHAPE_CLASS, 'size-6 transition-colors')}>
                       <AvatarImage src={currentUserPhotoUrl} alt="" />
                       <AvatarFallback className="bg-transparent">
                         <Icon

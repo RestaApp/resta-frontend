@@ -1,4 +1,5 @@
 import { createElement, memo, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { ChevronLeft, X } from 'lucide-react'
@@ -74,13 +75,12 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
   if (!rect) return null
 
   const pad = 6
-  const viewportH = typeof window === 'undefined' ? 0 : window.innerHeight
   const viewportW = typeof window === 'undefined' ? 0 : window.innerWidth
   // Положение стрелки внутри карточки (карточка: left-4 right-4 → отступ 16px).
   const tabCenter = rect.left + rect.width / 2
   const arrowLeft = Math.max(12, Math.min(tabCenter - 16 - 6, viewportW - 32 - 18))
 
-  return (
+  const content = (
     <div
       className="fixed inset-0"
       role="dialog"
@@ -107,9 +107,10 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
         aria-hidden="true"
       />
 
-      {/* Карточка-пояснение над навигацией */}
-      <div className="absolute left-4 right-4" style={{ bottom: viewportH - rect.top + 14 }}>
-        <Card className="relative flex flex-col gap-3 p-4 shadow-[var(--shadow-modal)]">
+      {/* Карточка-пояснение над навигацией. Якорим по rect.top (translateY),
+          не по window.innerHeight — иначе на Telegram iOS карточка уезжает. */}
+      <div className="absolute left-4 right-4 -translate-y-full" style={{ top: rect.top - 14 }}>
+        <Card className="relative flex flex-col gap-3 border-border bg-elevated p-4 shadow-[var(--shadow-modal)]">
           <button
             type="button"
             onClick={onSkip}
@@ -163,7 +164,7 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
 
           {/* Стрелка вниз к активной вкладке */}
           <span
-            className="absolute h-3 w-3 rotate-45 rounded-sm bg-card"
+            className="absolute h-3 w-3 rotate-45 rounded-sm bg-elevated"
             style={{ bottom: -6, left: arrowLeft }}
             aria-hidden="true"
           />
@@ -171,4 +172,7 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
       </div>
     </div>
   )
+
+  if (typeof document === 'undefined') return content
+  return createPortal(content, document.body)
 })
