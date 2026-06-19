@@ -14,6 +14,8 @@ import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 type UseAddShiftDrawerControllerParams = {
   onOpenChange: (open: boolean) => void
+  /** Режим редактирования существующей смены — гард несохранённых данных применяем только при создании. */
+  isEditing?: boolean
   t: (key: string, options?: Record<string, unknown>) => string
   form: {
     title: string
@@ -71,6 +73,7 @@ type UseAddShiftDrawerControllerParams = {
  */
 export const useAddShiftDrawerController = ({
   onOpenChange,
+  isEditing = false,
   t,
   form,
 }: UseAddShiftDrawerControllerParams) => {
@@ -91,6 +94,21 @@ export const useAddShiftDrawerController = ({
     false,
   ])
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false)
+  const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false)
+
+  // «Грязная» форма: при создании защищаем от случайного закрытия, если заполнены
+  // ручные поля (авто-подставляемые city/location/position/specializations исключены).
+  const isDirty =
+    !isEditing &&
+    Boolean(
+      form.title.trim() ||
+        form.description.trim() ||
+        form.requirements.trim() ||
+        form.pay.trim() ||
+        form.date ||
+        form.startTime ||
+        form.endTime
+    )
 
   const requiredFieldError = t('validation.requiredField')
   const drawerFormState = form as AddShiftDrawerFormState
@@ -179,6 +197,23 @@ export const useAddShiftDrawerController = ({
     scrollToFirstInvalidInStep,
   })
 
+  // Закрытие через гард: при грязной форме сначала подтверждение, иначе — обычное закрытие.
+  const requestClose = useCallback(
+    (next: boolean) => {
+      if (!next && isDirty && !isSuccessOpen) {
+        setConfirmDiscardOpen(true)
+        return
+      }
+      handleDrawerOpenChange(next)
+    },
+    [handleDrawerOpenChange, isDirty, isSuccessOpen]
+  )
+
+  const confirmDiscard = useCallback(() => {
+    setConfirmDiscardOpen(false)
+    handleDrawerOpenChange(false)
+  }, [handleDrawerOpenChange])
+
   const handleContinue = useCallback(() => {
     setAttemptedSteps(prev => {
       const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean]
@@ -197,12 +232,12 @@ export const useAddShiftDrawerController = ({
 
   const handleBackOrCancel = useCallback(() => {
     if (step === 0) {
-      close()
+      requestClose(false)
       return
     }
     clearAllErrorsAfterChange()
     setStep(prev => (prev > 0 ? ((prev - 1) as StepIndex) : prev))
-  }, [clearAllErrorsAfterChange, close, step])
+  }, [clearAllErrorsAfterChange, requestClose, step])
 
   const handleCreateAnother = useCallback(() => {
     setIsSuccessOpen(false)
@@ -228,6 +263,7 @@ export const useAddShiftDrawerController = ({
       isSuccessOpen,
       attemptedSteps,
       didAttemptSubmit,
+      confirmDiscardOpen,
     },
     derived: {
       showErrors: derivedState.showErrors,
@@ -244,6 +280,9 @@ export const useAddShiftDrawerController = ({
       setDidAttemptSubmit,
       clearAllErrorsAfterChange,
       handleDrawerOpenChange,
+      requestClose,
+      confirmDiscard,
+      setConfirmDiscardOpen,
       close,
       handleContinue,
       handleBackOrCancel,

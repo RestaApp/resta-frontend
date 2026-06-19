@@ -53,6 +53,8 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         employeeSubRoles={vm.employeeSubRoles}
         isLoading={vm.isLoadingPositions}
         isFetching={vm.isFetchingPositions}
+        isError={Boolean(vm.errorPositions)}
+        onRetry={vm.refetchPositions}
       />
     )
   }
@@ -75,6 +77,8 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         onBack={vm.handleBack}
         isLoading={vm.isLoadingSupplierCategories}
         isFetching={vm.isFetchingSupplierCategories}
+        isError={Boolean(vm.errorSupplierCategories)}
+        onRetry={vm.refetchSupplierCategories}
       />
     )
   }
@@ -87,6 +91,8 @@ export const RoleSelector = memo(function RoleSelector({ onSelectRole }: RoleSel
         restaurantFormats={vm.restaurantFormats}
         isLoading={vm.isLoadingRestaurantFormats}
         isFetching={vm.isFetchingRestaurantFormats}
+        isError={Boolean(vm.errorRestaurantFormats)}
+        onRetry={vm.refetchRestaurantFormats}
       />
     )
   }

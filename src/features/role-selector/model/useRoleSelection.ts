@@ -38,6 +38,8 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     positionsApi: employeeSubRoles,
     isLoading: isLoadingPositions,
     isFetching: isFetchingPositions,
+    error: errorPositions,
+    refetch: refetchPositions,
   } = useUserPositions({ enabled: shouldLoadPositions })
 
   const shouldLoadSupplierCategories = showSupplierCategory && isUnverified
@@ -46,6 +48,8 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     supplierCategories,
     isLoading: isLoadingSupplierCategories,
     isFetching: isFetchingSupplierCategories,
+    error: errorSupplierCategories,
+    refetch: refetchSupplierCategories,
   } = useSupplierCategories({ enabled: shouldLoadSupplierCategories })
 
   const shouldLoadRestaurantFormats = showRestaurantFormats && isUnverified
@@ -54,6 +58,8 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     restaurantFormats,
     isLoading: isLoadingRestaurantFormats,
     isFetching: isFetchingRestaurantFormats,
+    error: errorRestaurantFormats,
+    refetch: refetchRestaurantFormats,
   } = useRestaurantFormats({ enabled: shouldLoadRestaurantFormats })
 
   const mainRoles = useMemo(() => {
@@ -143,12 +149,18 @@ export const useRoleSelection = ({ onSelectRole }: UseRoleSelectionProps) => {
     employeeSubRoles,
     isLoadingPositions,
     isFetchingPositions,
+    errorPositions,
+    refetchPositions,
     supplierCategories,
     isLoadingSupplierCategories,
     isFetchingSupplierCategories,
+    errorSupplierCategories,
+    refetchSupplierCategories,
     restaurantFormats,
     isLoadingRestaurantFormats,
     isFetchingRestaurantFormats,
+    errorRestaurantFormats,
+    refetchRestaurantFormats,
     handleRoleSelect,
     handleRoleContinue,
     handleTelegramContinue,

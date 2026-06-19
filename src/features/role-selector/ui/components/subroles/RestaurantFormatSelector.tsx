@@ -1,6 +1,7 @@
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LoadingState } from './shared/LoadingState'
+import { ErrorState } from '@/components/ui/states'
 import { RoleDetailsStep } from './shared/RoleDetailsStep'
 import { useLabels } from '@/shared/i18n/hooks'
 import type { RestaurantOnboardingData } from '../../../model/useSubRoleSubmission'
@@ -11,6 +12,8 @@ interface RestaurantFormatSelectorProps {
   restaurantFormats?: string[]
   isLoading?: boolean
   isFetching?: boolean
+  isError?: boolean
+  onRetry?: () => void
 }
 
 export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
@@ -19,6 +22,8 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
   restaurantFormats,
   isLoading = false,
   isFetching = false,
+  isError = false,
+  onRetry,
 }: RestaurantFormatSelectorProps) {
   const { t } = useTranslation()
   const { getRestaurantFormatLabel } = useLabels()
@@ -33,8 +38,18 @@ export const RestaurantFormatSelector = memo(function RestaurantFormatSelector({
     return <LoadingState />
   }
 
-  if (!isLoading && !isFetching && (!restaurantFormats || restaurantFormats.length === 0)) {
-    return <LoadingState message={t('roles.restaurantFormatsError')} />
+  if (
+    !isLoading &&
+    !isFetching &&
+    (isError || !restaurantFormats || restaurantFormats.length === 0)
+  ) {
+    return (
+      <ErrorState
+        title={t('roles.restaurantFormatsError')}
+        onRetry={onRetry}
+        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+      />
+    )
   }
 
   return (

@@ -41,7 +41,7 @@ export const FormField = ({
           <div className="flex items-center justify-between gap-2">
             <label htmlFor={htmlFor} className={cn(PROFILE_SECTION_LABEL_CLASS, labelClassName)}>
               {label}
-              {required ? ' *' : ''}
+              {required ? <span className="ml-0.5 text-destructive">*</span> : null}
             </label>
             <span className="shrink-0 text-xs text-muted-foreground">{labelHintText}</span>
           </div>
@@ -51,7 +51,7 @@ export const FormField = ({
             className={cn('block', PROFILE_SECTION_LABEL_CLASS, labelClassName)}
           >
             {label}
-            {required ? ' *' : ''}
+            {required ? <span className="ml-0.5 text-destructive">*</span> : null}
           </label>
         )
       ) : null}

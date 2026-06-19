@@ -6,6 +6,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEmployeeSubRoleSelector } from '../../../model/useEmployeeSubRoleSelector'
 import { LoadingState } from './shared/LoadingState'
+import { ErrorState } from '@/components/ui/states'
 import { RoleDetailsStep } from './shared/RoleDetailsStep'
 import { useLabels } from '@/shared/i18n/hooks'
 import { getEmployeeRoleIcon } from '@/shared/constants/role-icons'
@@ -20,6 +21,8 @@ interface EmployeeSubRoleSelectorProps {
   employeeSubRoles?: string[]
   isLoading?: boolean
   isFetching?: boolean
+  isError?: boolean
+  onRetry?: () => void
 }
 
 export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
@@ -30,6 +33,8 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
   employeeSubRoles,
   isLoading = false,
   isFetching = false,
+  isError = false,
+  onRetry,
 }: EmployeeSubRoleSelectorProps) {
   const { t } = useTranslation()
   const { getSpecializationLabel } = useLabels()
@@ -50,8 +55,14 @@ export const EmployeeSubRoleSelector = memo(function EmployeeSubRoleSelector({
     return <LoadingState />
   }
 
-  if (!isLoading && !isFetching && subRoles.length === 0) {
-    return <LoadingState message={t('roles.positionsError')} />
+  if (!isLoading && !isFetching && (isError || subRoles.length === 0)) {
+    return (
+      <ErrorState
+        title={t('roles.positionsError')}
+        onRetry={onRetry}
+        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+      />
+    )
   }
 
   return (

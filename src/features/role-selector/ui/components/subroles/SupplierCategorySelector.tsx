@@ -5,6 +5,7 @@
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LoadingState } from './shared/LoadingState'
+import { ErrorState } from '@/components/ui/states'
 import { RoleDetailsStep } from './shared/RoleDetailsStep'
 import { useSupplierTypes } from '../../../model/hooks/useSupplierTypes'
 import { useLabels } from '@/shared/i18n/hooks'
@@ -16,6 +17,8 @@ interface SupplierCategorySelectorProps {
   onBack: () => void
   isLoading?: boolean
   isFetching?: boolean
+  isError?: boolean
+  onRetry?: () => void
 }
 
 export const SupplierCategorySelector = memo(function SupplierCategorySelector({
@@ -24,6 +27,8 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
   onBack,
   isLoading = false,
   isFetching = false,
+  isError = false,
+  onRetry,
 }: SupplierCategorySelectorProps) {
   const { t } = useTranslation()
   const { getSupplierTypeLabel } = useLabels()
@@ -69,8 +74,14 @@ export const SupplierCategorySelector = memo(function SupplierCategorySelector({
     return <LoadingState />
   }
 
-  if (!categories.length) {
-    return <LoadingState message={t('roles.categoriesError')} />
+  if (isError || !categories.length) {
+    return (
+      <ErrorState
+        title={t('roles.categoriesError')}
+        onRetry={onRetry}
+        retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+      />
+    )
   }
 
   const hasLoadedTypes = selected !== null && !isLoadingTypes && !isFetchingTypes

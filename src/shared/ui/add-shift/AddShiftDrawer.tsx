@@ -29,6 +29,7 @@ import {
   AddShiftDrawerStep2,
 } from './drawer/AddShiftDrawerSteps'
 import { ResultOverlay } from '@/components/ui/result-overlay'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UsageIndicator } from '@/features/monetization/ui/UsageIndicator'
 import { useAddShiftDrawerController } from './drawer/useAddShiftDrawerController'
 import { getDrawerCopy, getLockedShiftType, INITIAL_SHIFT_TYPE, TOTAL_STEPS } from './drawer/config'
@@ -122,6 +123,7 @@ const AddShiftDrawerKeyed = ({
   const { position, specializations, setPosition, setSpecializations } = form
   const controller = useAddShiftDrawerController({
     onOpenChange,
+    isEditing: Boolean(initialValues?.id),
     t,
     form,
   })
@@ -207,7 +209,7 @@ const AddShiftDrawerKeyed = ({
     <>
       <Drawer
         open={open && !controller.state.isSuccessOpen}
-        onOpenChange={controller.actions.handleDrawerOpenChange}
+        onOpenChange={controller.actions.requestClose}
         onTelegramBack={controller.actions.handleBackOrCancel}
       >
         <DrawerFrame className="flex-1">
@@ -219,7 +221,7 @@ const AddShiftDrawerKeyed = ({
                   <DrawerDescription>{drawerCopy.drawerDescription}</DrawerDescription>
                 </div>
                 <DrawerCloseButton
-                  onClick={() => controller.actions.handleDrawerOpenChange(false)}
+                  onClick={() => controller.actions.requestClose(false)}
                   ariaLabel={t('common.close')}
                 />
               </div>
@@ -339,6 +341,17 @@ const AddShiftDrawerKeyed = ({
                 variant: 'gradient',
               }
         }
+      />
+
+      <ConfirmDialog
+        open={controller.state.confirmDiscardOpen}
+        onOpenChange={controller.actions.setConfirmDiscardOpen}
+        title={t('shift.discardConfirmTitle')}
+        description={t('shift.discardConfirmDescription')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('shift.discardConfirm')}
+        confirmVariant="destructive"
+        onConfirm={controller.actions.confirmDiscard}
       />
     </>
   )

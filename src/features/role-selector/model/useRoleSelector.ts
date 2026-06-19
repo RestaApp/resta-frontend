@@ -61,14 +61,20 @@ export const useRoleSelector = ({ onSelectRole }: UseRoleSelectorProps) => {
     employeeSubRoles: roleSelection.employeeSubRoles,
     isLoadingPositions: roleSelection.isLoadingPositions,
     isFetchingPositions: roleSelection.isFetchingPositions,
+    errorPositions: roleSelection.errorPositions,
+    refetchPositions: roleSelection.refetchPositions,
 
     supplierCategories: roleSelection.supplierCategories,
     isLoadingSupplierCategories: roleSelection.isLoadingSupplierCategories,
     isFetchingSupplierCategories: roleSelection.isFetchingSupplierCategories,
+    errorSupplierCategories: roleSelection.errorSupplierCategories,
+    refetchSupplierCategories: roleSelection.refetchSupplierCategories,
 
     restaurantFormats: roleSelection.restaurantFormats,
     isLoadingRestaurantFormats: roleSelection.isLoadingRestaurantFormats,
     isFetchingRestaurantFormats: roleSelection.isFetchingRestaurantFormats,
+    errorRestaurantFormats: roleSelection.errorRestaurantFormats,
+    refetchRestaurantFormats: roleSelection.refetchRestaurantFormats,
 
     selectedSubRole: subRoleSubmission.selectedSubRole,
 
