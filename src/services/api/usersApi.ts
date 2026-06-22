@@ -5,6 +5,7 @@
  */
 
 import { api } from '@/shared/api/api'
+import type { PaginationMeta } from '@/shared/api/pagination'
 import type { UserData, WorkHistoryEntry } from './authApi'
 import { createCatalogQuery, provideListTags } from './helpers'
 
@@ -152,20 +153,11 @@ export interface GetUsersParams {
   per_page?: number
 }
 
-export interface UsersPaginationMeta {
-  current_page?: number
-  next_page?: number | null
-  prev_page?: number | null
-  per_page?: number
-  total_pages?: number
-  total_count?: number
-}
-
 export interface GetUsersResponse {
   success: boolean
   data: UserData[]
-  pagination?: UsersPaginationMeta
-  meta?: UsersPaginationMeta
+  pagination?: PaginationMeta
+  meta?: PaginationMeta
 }
 
 export const usersApi = api.injectEndpoints({

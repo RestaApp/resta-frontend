@@ -5,7 +5,7 @@ import type { FeedType } from '@/shared/shifts/types'
 import type { TabOption } from '@/components/ui/tabs'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import { ScreenTabsHeader } from '@/components/ui/screen-tabs-header'
-import { NotificationsBell } from '@/features/notifications/ui/NotificationsBell'
+import { NotificationsBell } from '@/shared/ui/NotificationsBell'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { SlidersHorizontal } from 'lucide-react'
 

@@ -11,7 +11,7 @@ import { useGetHasUnreadQuery } from '@/services/api/notificationsApi'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 /**
- * Колокол уведомлений для шапки: лёгкий polling `has_unread` (раз в 30с) +
+ * Колокол уведомлений для шапки: лёгкий polling `has_unread` (раз в 60с) +
  * красная точка. По клику открывает инбокс через app-event.
  */
 export const NotificationsBell = memo(function NotificationsBell() {

@@ -5,6 +5,7 @@
  */
 
 import { api } from '@/shared/api/api'
+import type { PaginationMeta } from '@/shared/api/pagination'
 
 export type NotificationType =
   | 'shift_created'
@@ -32,19 +33,10 @@ export interface NotificationItem {
   notifiable_id: number | null
 }
 
-export interface NotificationsPagination {
-  current_page?: number
-  next_page?: number | null
-  prev_page?: number | null
-  total_pages?: number
-  total_count?: number
-  per_page?: number
-}
-
 export interface NotificationsListResponse {
   success: boolean
   data: NotificationItem[]
-  pagination?: NotificationsPagination
+  pagination?: PaginationMeta
   meta?: { has_unread?: boolean }
 }
 

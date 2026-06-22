@@ -30,7 +30,7 @@ import {
 } from './drawer/AddShiftDrawerSteps'
 import { ResultOverlay } from '@/components/ui/result-overlay'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { UsageIndicator } from '@/features/monetization/ui/UsageIndicator'
+import { UsageIndicator } from '@/shared/ui/UsageIndicator'
 import { useAddShiftDrawerController } from './drawer/useAddShiftDrawerController'
 import { getDrawerCopy, getLockedShiftType, INITIAL_SHIFT_TYPE, TOTAL_STEPS } from './drawer/config'
 import { normalizeCatalogPosition } from '@/shared/utils/roles'

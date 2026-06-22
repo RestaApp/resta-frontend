@@ -1,5 +1,9 @@
 /** Типы API для смен и откликов */
 
+import type { PaginationMeta } from '@/shared/api/pagination'
+
+export type { PaginationMeta }
+
 export interface CreateShiftBody {
   title: string
   description?: string
@@ -265,18 +269,6 @@ export interface VacancyApiItem {
    */
   applicants?: ApplicantPreviewApi[]
   selected_applicant?: ApplicantPreviewApi | null
-}
-
-/**
- * Метаданные пагинации
- */
-export interface PaginationMeta {
-  current_page?: number
-  next_page?: number | null
-  prev_page?: number | null
-  per_page?: number
-  total_pages?: number
-  total_count?: number
 }
 
 /**

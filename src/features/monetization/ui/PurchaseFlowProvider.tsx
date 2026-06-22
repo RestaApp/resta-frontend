@@ -10,7 +10,10 @@ import { openTelegramInvoice } from '@/shared/utils/telegram'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { usePurchaseCheckoutMutation } from '@/services/api/purchasesApi'
 import type { PaymentRequiredInfo } from '@/shared/lib/monetization/paymentRequired'
-import { PurchaseFlowContext, type PurchaseFlowContextValue } from '../purchaseFlowContext'
+import {
+  PurchaseFlowContext,
+  type PurchaseFlowContextValue,
+} from '@/shared/lib/monetization/purchaseFlowContext'
 
 /**
  * Глобальный flow разовой покупки слота (Telegram Stars). Срабатывает по 402:
