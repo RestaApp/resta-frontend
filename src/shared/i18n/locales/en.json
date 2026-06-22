@@ -454,6 +454,44 @@
       }
     }
   },
+  "faq": {
+    "title": "Help & FAQ"
+  },
+  "help": {
+    "gotIt": "Got it",
+    "openAria": "Learn more: {{topic}}",
+    "urgent": {
+      "title": "Urgent shift",
+      "body": "An urgent shift jumps to the top of the feed with a bright SOS badge — candidates see it first and the shift fills much faster when you need someone right now.",
+      "highlight": "Top of the feed · up to +90% reach",
+      "paid": "First boost each month is free, then 100 ⭐ per shift.",
+      "previewTitle": "Evening cook",
+      "previewSubtitle": "Restaurant · Head chef"
+    },
+    "pro": {
+      "title": "PRO for suppliers",
+      "body": "PRO unlocks profile analytics, a verified supplier badge, priority placement, price list and alerts about new restaurants in your category.",
+      "highlight": "More leads, seen first",
+      "paid": "750 ⭐ per month."
+    },
+    "limits": {
+      "title": "Free limits",
+      "body": "Each month you get a few free vacancies, replacements and boosts — the remainder is shown here. When the limit runs out, you can buy an extra slot."
+    },
+    "accept": {
+      "title": "Accepting an application",
+      "body": "When you accept a candidate, the shift closes and contacts (Telegram, phone) open for both sides so you can get in touch right away. Other applications stay as backups."
+    },
+    "priceList": {
+      "title": "Price list",
+      "body": "A link to your price list (Google Sheet, PDF). Restaurants open it in one tap. Views are anonymous — you only see the total count."
+    },
+    "analytics": {
+      "title": "Profile analytics",
+      "body": "Profile views, unique visitors, contact clicks, price-list requests and CTR — compared to last month.",
+      "paid": "Available on PRO."
+    }
+  },
   "feed": {
     "headerTitle": "Feed",
     "applicationSentSuccess": "Application sent. You will be notified if approved.",

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AlertTriangle } from 'lucide-react'
 import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
+import { HelpHint } from '@/components/ui/help-hint'
 import { cn } from '@/shared/utils/cn'
 import type { ShiftType } from '@/shared/shifts/types'
 
@@ -41,6 +42,7 @@ export const UsageIndicator = memo(function UsageIndicator({
     >
       {exhausted ? <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" /> : null}
       <span>{exhausted ? t('monetization.usage.exhausted') : label}</span>
+      <HelpHint topic="limits" className="ml-auto" />
     </div>
   )
 })

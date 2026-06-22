@@ -13,6 +13,8 @@ interface FormFieldProps {
   className?: string
   labelClassName?: string
   messageClassName?: string
+  /** Доп. элемент справа от заголовка — например «?»-хинт. */
+  labelAdornment?: ReactNode
   children: ReactNode
 }
 
@@ -26,6 +28,7 @@ export const FormField = ({
   className,
   labelClassName,
   messageClassName,
+  labelAdornment,
   children,
 }: FormFieldProps) => {
   const errorText = error?.trim() ? error : undefined
@@ -37,23 +40,18 @@ export const FormField = ({
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {label ? (
-        hintPlacement === 'label' && labelHintText ? (
-          <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className="flex items-center gap-1.5">
             <label htmlFor={htmlFor} className={cn(PROFILE_SECTION_LABEL_CLASS, labelClassName)}>
               {label}
               {required ? <span className="ml-0.5 text-destructive">*</span> : null}
             </label>
+            {labelAdornment}
+          </span>
+          {labelHintText ? (
             <span className="shrink-0 text-xs text-muted-foreground">{labelHintText}</span>
-          </div>
-        ) : (
-          <label
-            htmlFor={htmlFor}
-            className={cn('block', PROFILE_SECTION_LABEL_CLASS, labelClassName)}
-          >
-            {label}
-            {required ? <span className="ml-0.5 text-destructive">*</span> : null}
-          </label>
-        )
+          ) : null}
+        </div>
       ) : null}
 
       {children}

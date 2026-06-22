@@ -12,6 +12,7 @@ import {
 import { cn } from '@/shared/utils/cn'
 import { ICON_MD_CLASS } from '@/shared/constants/role-icons'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
+import { HelpHint } from '@/components/ui/help-hint'
 import { useGetSupplierAnalyticsQuery, type ContactType } from '@/services/api/analyticsApi'
 import { UpgradeProDrawer } from './UpgradeProDrawer'
 
@@ -141,7 +142,10 @@ export const SupplierAnalyticsCard = memo(function SupplierAnalyticsCard({
 
   return (
     <section className="flex flex-col gap-2">
-      <div className={PROFILE_SECTION_LABEL_CLASS}>{t('profile.analytics.title')}</div>
+      <div className="flex items-center gap-1.5">
+        <span className={PROFILE_SECTION_LABEL_CLASS}>{t('profile.analytics.title')}</span>
+        <HelpHint topic="analytics" />
+      </div>
 
       <KpiRow
         items={kpis}

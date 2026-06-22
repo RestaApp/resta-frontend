@@ -2,6 +2,7 @@ import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import {
+  BookOpen,
   ChevronDown,
   Compass,
   FileText,
@@ -38,6 +39,7 @@ interface ProfileSettingsProps {
   showSupport?: boolean
   onPrivacyPress?: () => void
   onTermsPress?: () => void
+  onFaqPress?: () => void
   onDeleteAccount?: () => Promise<void>
 }
 
@@ -48,6 +50,7 @@ export const ProfileSettings = memo(function ProfileSettings({
   showSupport = true,
   onPrivacyPress,
   onTermsPress,
+  onFaqPress,
   onDeleteAccount,
 }: ProfileSettingsProps) {
   const { t, i18n } = useTranslation()
@@ -175,6 +178,25 @@ export const ProfileSettings = memo(function ProfileSettings({
             </motion.div>
           ) : null}
         </Card>
+
+        {onFaqPress ? (
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+              SHIFT_CARD_CLASS,
+              SHIFT_CARD_INTERACTIVE_CLASS,
+              'flex w-full items-center gap-2 text-left'
+            )}
+            onClick={onFaqPress}
+            data-haptic="light"
+          >
+            <span className={SHIFT_CARD_LOGO_CLASS}>
+              <BookOpen className="h-5 w-5" />
+            </span>
+            <span className={SHIFT_CARD_TITLE_CLASS}>{t('faq.title')}</span>
+          </motion.button>
+        ) : null}
 
         {showSupport ? (
           <>

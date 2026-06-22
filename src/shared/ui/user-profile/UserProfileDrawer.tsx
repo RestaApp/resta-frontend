@@ -9,6 +9,7 @@ import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Briefcase } from 'lucide-react'
+import { HelpHint } from '@/components/ui/help-hint'
 import { useExternalProfileViewModel } from './useExternalProfileViewModel'
 import { VenueListingsDrawer } from './VenueListingsDrawer'
 
@@ -132,18 +133,21 @@ export const UserProfileDrawer = memo(
                   </Button>
                 ) : null}
                 {canAccept ? (
-                  <Button
-                    variant="gradient"
-                    size="md"
-                    className="w-full"
-                    loading={moderatingAction === 'accept'}
-                    disabled={moderatingAction != null}
-                    onClick={onAccept}
-                  >
-                    {moderatingAction === 'accept'
-                      ? t('shift.acceptingApplication')
-                      : t('shift.acceptApplication')}
-                  </Button>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      variant="gradient"
+                      size="md"
+                      className="flex-1"
+                      loading={moderatingAction === 'accept'}
+                      disabled={moderatingAction != null}
+                      onClick={onAccept}
+                    >
+                      {moderatingAction === 'accept'
+                        ? t('shift.acceptingApplication')
+                        : t('shift.acceptApplication')}
+                    </Button>
+                    <HelpHint topic="accept" />
+                  </div>
                 ) : null}
               </DrawerFooter>
             ) : null}

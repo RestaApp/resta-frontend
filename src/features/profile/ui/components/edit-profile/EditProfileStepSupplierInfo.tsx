@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Lock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
+import { HelpHint } from '@/components/ui/help-hint'
 import { Switch } from '@/components/ui/switch'
 import { InlineAction } from '@/components/ui/inline-action'
 import { DRAWER_SETTING_ROW_CLASS } from '@/components/ui/ui-patterns'
@@ -90,7 +91,11 @@ export const EditProfileStepSupplierInfo = memo(function EditProfileStepSupplier
         />
       </FormField>
 
-      <FormField label={t('profile.priceListUrl')} hint={t('profile.priceListUrlHint')}>
+      <FormField
+        label={t('profile.priceListUrl')}
+        hint={t('profile.priceListUrlHint')}
+        labelAdornment={<HelpHint topic="priceList" />}
+      >
         {priceListLocked ? (
           <div className="flex items-center justify-between gap-2 rounded-lg border border-border/50 bg-secondary/40 px-3 py-2.5">
             <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">

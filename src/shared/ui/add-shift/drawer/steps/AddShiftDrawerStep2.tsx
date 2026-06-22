@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { HelpHint } from '@/components/ui/help-hint'
 import { CheckboxField, TextAreaField } from '../../fields'
 import type { AddShiftDrawerStep2Props } from './types'
 
@@ -54,6 +55,7 @@ export const AddShiftDrawerStep2 = ({
         label={urgentLabel}
         checked={urgent}
         onChange={onUrgentChange}
+        labelHint={<HelpHint topic="urgent" />}
       />
     </>
   )

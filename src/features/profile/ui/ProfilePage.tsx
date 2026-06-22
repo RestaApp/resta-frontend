@@ -11,10 +11,11 @@ import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
 import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
+import { FaqPage } from '@/shared/ui/help/FaqPage'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
 
-type LegalScreen = 'none' | 'privacy' | 'terms'
+type LegalScreen = 'none' | 'privacy' | 'terms' | 'faq'
 
 export const ProfilePage = memo(() => {
   const { t } = useTranslation()
@@ -61,6 +62,10 @@ export const ProfilePage = memo(() => {
 
   if (legalScreen === 'terms') {
     return <TermsOfServicePage onBack={handleLegalBack} />
+  }
+
+  if (legalScreen === 'faq') {
+    return <FaqPage onBack={handleLegalBack} />
   }
 
   if (isProfileLoading) {
@@ -111,6 +116,7 @@ export const ProfilePage = memo(() => {
         showSupport={profileViewModel.showSupport}
         onPrivacyPress={() => setLegalScreen('privacy')}
         onTermsPress={() => setLegalScreen('terms')}
+        onFaqPress={() => setLegalScreen('faq')}
         onDeleteAccount={handleDeleteAccount}
       />
 

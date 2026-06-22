@@ -76,9 +76,18 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
 
   const pad = 6
   const viewportW = typeof window === 'undefined' ? 0 : window.innerWidth
+  const viewportH = typeof window === 'undefined' ? 0 : window.innerHeight
   // Положение стрелки внутри карточки (карточка: left-4 right-4 → отступ 16px).
   const tabCenter = rect.left + rect.width / 2
   const arrowLeft = Math.max(12, Math.min(tabCenter - 16 - 6, viewportW - 32 - 18))
+
+  // Клемп рамки во вьюпорт: нижняя навигация у самого края экрана, иначе
+  // нижняя/боковая граница уезжает за край и обводка не замыкается вокруг кнопки.
+  const SCREEN_MARGIN = 4
+  const hlLeft = Math.max(SCREEN_MARGIN, rect.left - pad)
+  const hlTop = Math.max(SCREEN_MARGIN, rect.top - pad)
+  const hlRight = Math.min(viewportW - SCREEN_MARGIN, rect.left + rect.width + pad)
+  const hlBottom = Math.min(viewportH - SCREEN_MARGIN, rect.top + rect.height + pad)
 
   const content = (
     <div
@@ -94,10 +103,10 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
         className="absolute rounded-2xl border-2 border-primary"
         initial={false}
         animate={{
-          left: rect.left - pad,
-          top: rect.top - pad,
-          width: rect.width + pad * 2,
-          height: rect.height + pad * 2,
+          left: hlLeft,
+          top: hlTop,
+          width: hlRight - hlLeft,
+          height: hlBottom - hlTop,
         }}
         transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
         style={{

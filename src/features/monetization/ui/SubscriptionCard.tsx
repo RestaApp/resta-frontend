@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
+import { HelpHint } from '@/components/ui/help-hint'
 import { useSupplierSubscription } from '../model/useSupplierSubscription'
 import { UpgradeProDrawer } from './UpgradeProDrawer'
 
@@ -34,8 +35,11 @@ export const SubscriptionCard = memo(function SubscriptionCard() {
           <Sparkles className="h-5 w-5" />
         </span>
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
-            {t('monetization.pro.currentPlanPro')}
+          <span className="flex items-center gap-1.5">
+            <span className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+              {t('monetization.pro.currentPlanPro')}
+            </span>
+            <HelpHint topic="pro" />
           </span>
           {daysRemaining != null ? (
             <span className="text-xs text-muted-foreground">
