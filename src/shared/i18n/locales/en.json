@@ -281,6 +281,8 @@
       },
       "urgent": "SOS shifts",
       "newShifts": "New shifts in city",
+      "vacancies": "New vacancies",
+      "replacements": "New replacements",
       "applications": "Application acceptance",
       "saved": "Settings saved"
     },
@@ -419,7 +421,20 @@
     "kpi": {
       "shifts": "Shifts",
       "created": "Shifts",
-      "rating": "Rating"
+      "rating": "Rating",
+      "viewsThisMonth": "Views / mo",
+      "contactClicks": "Contacts / mo"
+    },
+    "analytics": {
+      "title": "Profile analytics",
+      "views": "Views",
+      "uniqueViewers": "Unique",
+      "ctr": "CTR",
+      "priceListRequests": "Price list requests",
+      "contactClicks": "Contact clicks",
+      "allTimeViews": "All-time views",
+      "lockedTitle": "Analytics on PRO",
+      "lockedSubtitle": "Upgrade to PRO to see views, clicks and CTR"
     },
     "venue": {
       "hiringOpen": "Hiring open",

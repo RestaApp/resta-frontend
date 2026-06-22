@@ -9,6 +9,58 @@ UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md
 
 ---
 
+## ⚡ Что нужно от бэкенда (TODO)
+
+> Проверено против кода `resta_backend` на ветке `main` (22.06.2026). Ниже — **только то, что реально надо доделать**. Остальные разделы файла — справка по уже работающим контрактам.
+
+### 🔴 Блокирует фичи (фронт готов, ждёт бэк)
+
+**1. Отдавать 2 поля в настройках уведомлений**
+
+Файл: `app/controllers/api/v1/notification_preferences_controller.rb`.
+Колонки `vacancy_notifications` и `replacement_notifications` уже есть в БД (`default true NOT NULL`), но контроллер их не принимает и не возвращает. Нужно:
+
+- в `notification_preference_params` (permit) добавить `:vacancy_notifications`, `:replacement_notifications`;
+- в `notification_preference_data` (тело ответа) добавить эти же два поля.
+
+После фикса `GET/PATCH /api/v1/notification_preferences` отдаёт 5 полей:
+
+```json
+{ "urgent_notifications": true, "new_shifts_notifications": true,
+  "vacancy_notifications": true, "replacement_notifications": true,
+  "application_notifications": true, "all_enabled": true, "all_disabled": false }
+```
+
+Фронт уже готов — два тумблера появятся сами, отдельной выкатки фронта не нужно.
+
+**2. Фильтр отзывов по пользователю**
+
+Файл: `app/controllers/api/v1/reviews_controller.rb`, экшен `index`.
+Сейчас `GET /api/v1/reviews` возвращает **все** отзывы (`Review.kept`) — без фильтра и без `policy_scope`. Нужно принять query-параметр `reviewed_id` и вернуть отзывы только этого пользователя + пагинация (Kaminari, как в других коллекциях):
+
+```
+GET /api/v1/reviews?reviewed_id=42&page=1&per_page=20
+→ только отзывы, где reviewed_id = 42
+```
+
+Поля ответа менять не надо — текущий `ReviewBlueprint` подходит. До фикса фронт грузит всю таблицу и фильтрует по `reviewed.id` на клиенте (временный костыль).
+
+### 🟡 Желательно (не блокирует — фронт деградирует штатно)
+
+| # | Что добавить | Сейчас | Зачем |
+| - | ------------ | ------ | ----- |
+| 3 | `completed_shifts` в `UserBlueprint` (`GET /users/:id`) | поля нет, фронт считает сам из `my_shifts` | KPI «Смен» станет точным (вся история, а не только активные смены) |
+| 4 | `earned_total_byn` (сумма оплат по `completed`) | поля нет | KPI «Заработок» сотрудника; сейчас `—` |
+| 5 | `ai_match_score` в заявках (R04) | фичи нет | бейдж `AI · NN%` в списке кандидатов; сейчас скрыт |
+| 6 | `PATCH /api/v1/me { theme }` | хранения нет | синхронизация темы между устройствами; сейчас только `localStorage` |
+
+### ✅ Уже готово — не трогать
+
+Контракты работают, фронт на них завязан:
+`/analytics/track`, `/analytics/my`, `/analytics/supplier`, `/subscriptions/{checkout,current}`, `/purchases` (+`/checkout`), `PATCH /shifts/:id/boost`, accept/reject заявок, `notification_preferences` (3 текущих поля).
+
+---
+
 ## Терминология
 
 | Контекст | Канон | Не использовать в контрактах |
@@ -40,18 +92,22 @@ RTK Query: новые endpoints — `src/services/api/*Api.ts` + импорт в
 
 Фронт **не создаёт invoice сам**. Бэк вызывает Bot API `createInvoiceLink` (валюта `XTR`), возвращает URL; фронт открывает `Telegram.WebApp.openInvoice(url, callback)`.
 
+**Фактический контракт (см. `resta_backend/API.md` и `Frontend/SUBSCRIPTIONS_API_SPEC.md`):**
+
 ```
-POST /api/v1/subscriptions/checkout
-  body:    { plan_id: 'supplier_pro' | 'restaurant_pro', role: 'restaurant' | 'supplier' }
-  returns: { invoice_url: string, payload: string, stars: number, fiat_hint: string }
+POST /api/v1/subscriptions/checkout            # только supplier
+  body:    { plan_name: 'supplier_pro' }
+  returns: { success, data: { invoice_url: string } }
 
 GET  /api/v1/subscriptions/current
-  returns: { active: boolean,
-             plan: 'supplier_free' | 'supplier_pro' | 'restaurant_free' | 'restaurant_pro' | null,
-             ends_at: ISOString|null, in_trial: boolean }
-
-POST /api/v1/subscriptions/cancel
+  returns: { success, data: {
+             subscription: { id, status, purchased_at, expires_at, days_remaining } | null,
+             plan: { id, name, role, subscription_price, duration_days, features, limits },
+             usage: { <resource>: { used, limit, remaining } } | null   # null при Flipper ON
+           } }
 ```
+
+> ⚠️ Старый контракт (`plan_id` + `role`, `current → { active, plan, ends_at, in_trial }`, `POST /subscriptions/cancel`) **устарел** — на бэкенде его нет. Фронт (`subscriptionsApi.ts`) уже использует актуальный. Отмены подписки через API нет (рефанд — внутренний webhook Telegram).
 
 **Тарифы (продуктовый канон):**
 
@@ -92,19 +148,15 @@ POST /api/v1/shift_applications/:id/reject
 
 ---
 
-## 3. KPI профиля сотрудника (E10)
+## 3. KPI профиля (E10) — ✅ реализовано
 
-```
-GET /api/v1/me/stats
-  returns: {
-    completed_shifts: number,        // частично есть на фронте
-    earned_total_byn: number|null,   // агрегат pay по completed
-    avg_rating: number|null,
-    reviews_count: number|null
-  }
-```
+Эндпоинта `/me/stats` на бэкенде **нет**. Фактические источники KPI:
 
-Без полей UI показывает `—` — падения нет.
+- `avg_rating`, `reviews_count` — агрегаты `average_rating`, `total_reviews` в `UserBlueprint` (`GET /api/v1/users/:id`). ✅ есть.
+- `completed_shifts` — поля в API **нет**; фронт считает сам из `my_shifts` (`useProfilePageModel`). Точный серверный счётчик — TODO #3.
+- Просмотры профиля и клики по контактам за месяц — `GET /api/v1/analytics/my` (`profile_views_count`, `profile_views_this_month`, `contact_clicks_this_month`). ✅ подключено в KPI **своего** профиля.
+
+`earned_total_byn` (суммарный заработок) — TODO #4; без поля UI показывает `—`.
 
 ---
 
@@ -139,26 +191,31 @@ PATCH /api/v1/shifts/:id/boost
 
 ---
 
-## 5. AI-match score (R04)
+## 5. AI-match score (R04) — ⛔ на бэкенде нет
 
-```
-GET /api/v1/shifts/:id/applications?sort=ai_match
-  каждое application: { ai_match_score: 0..100 }
-```
-
-UI: бейдж `AI · 94%`. Если поля нет — бейдж не рендерится.
+Контракта `?sort=ai_match` / `ai_match_score` в `API.md` нет, фичи на бэке пока нет. Бейдж `AI · 94%` на фронте скрыт (поле отсутствует) — рендерится только когда бэкенд начнёт отдавать `ai_match_score`. Не закладывать в типы как обязательное.
 
 ---
 
-## 6. Тема пользователя (опционально)
+## 6. Тема пользователя — ⛔ на бэкенде нет
 
-Сейчас тема только в `localStorage` ([`theme.ts`](src/utils/theme.ts)).
+`PATCH /api/v1/me { theme }` в `API.md` отсутствует. Тема остаётся только в `localStorage` ([`theme.ts`](src/utils/theme.ts)). Если появится серверное хранение — читать при старте сессии, `setTheme` единая точка записи.
 
-```
-PATCH /api/v1/me { theme: 'dark' | 'light' }
-```
+---
 
-Читать при старте сессии. `setTheme` — единая точка записи на фронте.
+## 7. Аналитика — ✅ реализовано
+
+- `POST /api/v1/analytics/track` — клики по контактам и запрос прайс-листа (`analyticsApi.trackEvent`, `UserProfileDrawer`).
+- `GET /api/v1/analytics/my` — KPI просмотров/кликов своего профиля (см. §3).
+- `GET /api/v1/analytics/supplier` — дашборд поставщика (`SupplierAnalyticsCard` на `ProfilePage`). Поля `plan` / `analytics_locked` (FREE/PRO-локап после мержа monetization) обработаны опционально.
+
+## 8. Настройки уведомлений
+
+`GET/PATCH /api/v1/notification_preferences`. Фронт готов к 5 тумблерам, но бэк сейчас отдаёт 3 (`urgent_notifications`, `new_shifts_notifications`, `application_notifications`). Два недостающих (`vacancy_notifications`, `replacement_notifications`) — **TODO #1** (колонки в БД уже есть). До фикса фронт показывает только те поля, что реально приходят в ответе.
+
+## 9. Отзывы
+
+Фронт реализовал ленту отзывов в профиле (`ProfileReviewsList`, `reviewsApi.getReviews`). Нужен фильтр `reviewed_id` в `GET /reviews` — **TODO #2**. До этого фронт дофильтровывает по `reviewed.id` на клиенте (грузит всю таблицу — неэффективно на объёме).
 
 ---
 

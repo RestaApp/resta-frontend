@@ -281,6 +281,8 @@
       },
       "urgent": "SOS-смены",
       "newShifts": "Новые смены в городе",
+      "vacancies": "Новые вакансии",
+      "replacements": "Новые замены",
       "applications": "Принятие заявок",
       "saved": "Настройки сохранены"
     },
@@ -419,7 +421,20 @@
     "kpi": {
       "shifts": "Смен",
       "created": "Смен",
-      "rating": "Рейтинг"
+      "rating": "Рейтинг",
+      "viewsThisMonth": "Просмотров / мес",
+      "contactClicks": "Контактов / мес"
+    },
+    "analytics": {
+      "title": "Аналитика профиля",
+      "views": "Просмотры",
+      "uniqueViewers": "Уникальные",
+      "ctr": "CTR",
+      "priceListRequests": "Запросы прайса",
+      "contactClicks": "Клики по контактам",
+      "allTimeViews": "Всего просмотров",
+      "lockedTitle": "Аналитика на PRO",
+      "lockedSubtitle": "Перейдите на PRO, чтобы видеть просмотры, клики и CTR"
     },
     "venue": {
       "hiringOpen": "Набор открыт",

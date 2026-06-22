@@ -10,6 +10,8 @@ export interface NotificationPreference {
   urgent_notifications: boolean
   new_shifts_notifications: boolean
   application_notifications: boolean
+  vacancy_notifications: boolean
+  replacement_notifications: boolean
   all_enabled: boolean
   all_disabled: boolean
 }
@@ -25,6 +27,8 @@ export interface UpdateNotificationPreferenceRequest {
     urgent_notifications: boolean
     new_shifts_notifications: boolean
     application_notifications: boolean
+    vacancy_notifications: boolean
+    replacement_notifications: boolean
   }>
 }
 

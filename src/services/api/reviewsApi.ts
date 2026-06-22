@@ -6,6 +6,46 @@
 
 import { api } from '@/shared/api/api'
 
+/** Пользователь в составе отзыва (ReviewBlueprint → association UserBlueprint). */
+export interface ReviewUser {
+  id: number
+  name?: string
+  full_name?: string
+  role?: string
+  profile_photo_url?: string | null
+}
+
+/** Элемент GET /api/v1/reviews (ReviewBlueprint, default view). */
+export interface ReviewItem {
+  id: number
+  rating: number
+  comment: string | null
+  status: string
+  anonymous?: boolean
+  created_at?: string
+  reviewer_name?: string
+  reviewed_name?: string
+  reviewer?: ReviewUser
+  reviewed?: ReviewUser
+}
+
+export interface ReviewsListResponse {
+  success: boolean
+  data: ReviewItem[]
+}
+
+export interface GetReviewsParams {
+  /**
+   * ID оцениваемого пользователя. ⚠️ Текущий бэкенд `GET /reviews` НЕ фильтрует
+   * по этому параметру (возвращает все отзывы) — фронт дофильтровывает по
+   * `reviewed.id`. Параметр заложен forward-compatible под доработку бэка.
+   * См. HANDOFF.md.
+   */
+  reviewed_id?: number
+  page?: number
+  per_page?: number
+}
+
 export interface CreateReviewArgs {
   /** Кого оцениваем (review_target.id смены) */
   reviewedId: number
@@ -29,6 +69,18 @@ export interface CreateReviewResponse {
 
 export const reviewsApi = api.injectEndpoints({
   endpoints: builder => ({
+    // Лента отзывов о пользователе. Кэш привязан к тегу User оцениваемого,
+    // поэтому createReview (invalidatesTags User) обновляет ленту.
+    getReviews: builder.query<ReviewsListResponse, GetReviewsParams>({
+      query: params => ({
+        url: '/api/v1/reviews',
+        method: 'GET',
+        params,
+      }),
+      providesTags: (_result, _error, { reviewed_id }) =>
+        reviewed_id != null ? [{ type: 'User', id: reviewed_id }] : [],
+    }),
+
     createReview: builder.mutation<CreateReviewResponse, CreateReviewArgs>({
       query: ({ reviewedId, shiftId, rating, comment, anonymous }) => ({
         url: '/api/v1/reviews',
@@ -53,4 +105,4 @@ export const reviewsApi = api.injectEndpoints({
   }),
 })
 
-export const { useCreateReviewMutation } = reviewsApi
+export const { useGetReviewsQuery, useCreateReviewMutation } = reviewsApi

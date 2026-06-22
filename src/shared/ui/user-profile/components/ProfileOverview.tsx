@@ -32,6 +32,7 @@ import type {
 } from '../buildProfileViewModel'
 import type { ContactType } from '@/services/api/analyticsApi'
 import { ProfileHero } from './ProfileHero'
+import { ProfileReviewsList } from './ProfileReviewsList'
 import {
   InfoRow,
   LABEL_CLASS,
@@ -207,6 +208,7 @@ const ProfileReviewSummary = ({ profile }: { profile: ProfileViewModel }) => {
           </div>
         </div>
       </Card>
+      <ProfileReviewsList userId={profile.userProfile.id} />
     </div>
   )
 }
@@ -399,6 +401,14 @@ export const ProfileOverview = memo(function ProfileOverview({
       {profile.kpis.length > 0 ? (
         <KpiRow
           items={profile.kpis}
+          className="gap-2"
+          itemClassName="rounded-lg border-border bg-card px-3 py-3"
+        />
+      ) : null}
+
+      {profile.analyticsKpis.length > 0 ? (
+        <KpiRow
+          items={profile.analyticsKpis}
           className="gap-2"
           itemClassName="rounded-lg border-border bg-card px-3 py-3"
         />

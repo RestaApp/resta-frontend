@@ -6,6 +6,7 @@ import { ProfileOverview } from '@/shared/ui/user-profile/components/ProfileOver
 import { VenueProfileOverview } from './components/VenueProfileOverview'
 import { ProfileSettings } from './components/ProfileSettings'
 import { SubscriptionCard } from '@/features/monetization/ui/SubscriptionCard'
+import { SupplierAnalyticsCard } from '@/features/monetization/ui/SupplierAnalyticsCard'
 import { EditProfileDrawer } from './components/EditProfileDrawer'
 import { NotificationPreferencesDrawer } from './components/NotificationPreferencesDrawer'
 import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
@@ -100,6 +101,8 @@ export const ProfilePage = memo(() => {
       )}
 
       {apiRole === 'supplier' ? <SubscriptionCard /> : null}
+
+      <SupplierAnalyticsCard isSupplier={apiRole === 'supplier'} />
 
       <ProfileSettings
         onLogout={handleLogout}

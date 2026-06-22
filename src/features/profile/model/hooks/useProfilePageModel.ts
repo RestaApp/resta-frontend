@@ -4,6 +4,7 @@ import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
 import { useUser } from '@/shared/lib/hooks/useUser'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useGetMyShiftsQuery, useGetReceivedShiftApplicationsQuery } from '@/services/api/shiftsApi'
+import { useGetMyAnalyticsQuery } from '@/services/api/analyticsApi'
 import { buildVenueProfileInfoRows } from '../utils/buildVenueProfileInfoRows'
 import { countAcceptedHires, countOpenVenueListings } from '../utils/venueProfileStats'
 import { mapRoleFromApi } from '@/shared/utils/roles'
@@ -69,6 +70,11 @@ export const useProfilePageModel = () => {
 
   const { data: receivedApplicationsData } = useGetReceivedShiftApplicationsQuery(undefined, {
     skip: !isAuthenticated || apiRole !== 'restaurant',
+  })
+
+  // KPI просмотров/кликов — только для своего профиля (GET /analytics/my).
+  const { data: myAnalyticsData } = useGetMyAnalyticsQuery(undefined, {
+    skip: !isAuthenticated,
   })
 
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
@@ -194,6 +200,8 @@ export const useProfilePageModel = () => {
       completeness: profileCompleteness,
       completedShifts: employeeStats.completedShifts,
       myShiftsCount: myShifts.length,
+      profileViewsThisMonth: myAnalyticsData?.data.profile_views_this_month ?? null,
+      contactClicksThisMonth: myAnalyticsData?.data.contact_clicks_this_month ?? null,
       getSpecializationLabel,
       getSupplierTypeLabel,
       getRestaurantFormatLabel,
@@ -207,6 +215,7 @@ export const useProfilePageModel = () => {
     getRestaurantFormatLabel,
     getCuisineTypeLabel,
     myShifts.length,
+    myAnalyticsData,
     profileCompleteness,
     roleLabel,
     t,

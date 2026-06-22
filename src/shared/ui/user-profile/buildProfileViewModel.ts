@@ -73,6 +73,8 @@ export interface ProfileViewModel {
   isProfileFilled: boolean
   fillRequiredText: string
   kpis: KpiItem[]
+  /** Доп. ряд KPI из GET /analytics/my (просмотры/клики за месяц). Только свой профиль. */
+  analyticsKpis: KpiItem[]
   tagSections: ProfileTagSection[]
   workHistory: ProfileWorkHistoryItem[]
   infoSections: ProfileInfoSection[]
@@ -102,6 +104,9 @@ interface BuildProfileViewModelParams extends ProfileStats, ProfileLabelHelpers 
   completeness: ProfileCompleteness | null
   /** Скрыть KPI и блок отзывов (например, поставщик смотрит карточку ресторана). */
   hideMetrics?: boolean
+  /** GET /analytics/my — только для своего профиля; на чужих не передаётся. */
+  profileViewsThisMonth?: number | null
+  contactClicksThisMonth?: number | null
 }
 
 const normalizeText = (value: string | null | undefined) => value?.trim() || ''
@@ -198,6 +203,36 @@ const buildKpis = ({
   )
 
   return items
+}
+
+const buildAnalyticsKpis = ({
+  t,
+  profileViewsThisMonth,
+  contactClicksThisMonth,
+}: Pick<
+  BuildProfileViewModelParams,
+  't' | 'profileViewsThisMonth' | 'contactClicksThisMonth'
+>): KpiItem[] => {
+  // null/undefined = данные analytics/my не загружены → ряд не строим.
+  // normalizeNumber(null) дал бы 0, поэтому отсекаем отсутствие явно.
+  const views = profileViewsThisMonth == null ? null : normalizeNumber(profileViewsThisMonth)
+  const clicks = contactClicksThisMonth == null ? null : normalizeNumber(contactClicksThisMonth)
+  if (views == null && clicks == null) return []
+
+  return [
+    {
+      id: 'profile-views',
+      value: views ?? '—',
+      label: t('profile.kpi.viewsThisMonth'),
+      tone: views != null && views > 0 ? 'primary' : 'muted',
+    },
+    {
+      id: 'contact-clicks',
+      value: clicks ?? '—',
+      label: t('profile.kpi.contactClicks'),
+      tone: clicks != null && clicks > 0 ? 'default' : 'muted',
+    },
+  ]
 }
 
 const buildTagSections = ({
@@ -474,6 +509,7 @@ export const buildProfileViewModel = (params: BuildProfileViewModelParams): Prof
     isProfileFilled: completeness?.isFilled ?? false,
     fillRequiredText: getFillRequiredText(t, apiRole),
     kpis: hideMetrics ? [] : buildKpis(params),
+    analyticsKpis: hideMetrics ? [] : buildAnalyticsKpis(params),
     tagSections: buildTagSections(params),
     workHistory: buildWorkHistory(params),
     infoSections: buildInfoSections(params),

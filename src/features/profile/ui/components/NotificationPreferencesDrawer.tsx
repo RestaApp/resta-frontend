@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
-import { Bell, Briefcase, Flame } from 'lucide-react'
+import { Bell, Briefcase, Flame, Repeat, Store } from 'lucide-react'
 import { Drawer, DrawerBody, DrawerFrame, DrawerFooter } from '@/components/ui/drawer'
 import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Switch } from '@/components/ui/switch'
@@ -31,7 +31,11 @@ import type {
 
 type PreferenceKey = keyof Pick<
   import('@/services/api/notificationPreferencesApi').NotificationPreference,
-  'urgent_notifications' | 'new_shifts_notifications' | 'application_notifications'
+  | 'urgent_notifications'
+  | 'new_shifts_notifications'
+  | 'application_notifications'
+  | 'vacancy_notifications'
+  | 'replacement_notifications'
 >
 
 const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: LucideIcon }> = {
@@ -47,6 +51,14 @@ const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: LucideIcon 
     label: 'profile.notifications.applications',
     icon: Bell,
   },
+  vacancy_notifications: {
+    label: 'profile.notifications.vacancies',
+    icon: Store,
+  },
+  replacement_notifications: {
+    label: 'profile.notifications.replacements',
+    icon: Repeat,
+  },
 }
 
 const EMPLOYEE_NOTIFICATION_SECTIONS: Array<{
@@ -57,7 +69,13 @@ const EMPLOYEE_NOTIFICATION_SECTIONS: Array<{
   {
     id: 'shifts',
     title: 'profile.notifications.sections.shifts',
-    keys: ['urgent_notifications', 'new_shifts_notifications', 'application_notifications'],
+    keys: [
+      'urgent_notifications',
+      'new_shifts_notifications',
+      'vacancy_notifications',
+      'replacement_notifications',
+      'application_notifications',
+    ],
   },
 ]
 
@@ -101,15 +119,26 @@ export const NotificationPreferencesDrawer = memo(
         urgent_notifications: prefs.urgent_notifications,
         new_shifts_notifications: prefs.new_shifts_notifications,
         application_notifications: prefs.application_notifications,
+        vacancy_notifications: prefs.vacancy_notifications,
+        replacement_notifications: prefs.replacement_notifications,
       }
     }, [prefs])
 
     const effectivePrefs = draftPrefs ?? prefsSnapshot
 
     const visibleSections = useMemo(() => {
-      if (apiRole === 'restaurant') return RESTAURANT_NOTIFICATION_SECTIONS
-      return EMPLOYEE_NOTIFICATION_SECTIONS
-    }, [apiRole])
+      const sections =
+        apiRole === 'restaurant' ? RESTAURANT_NOTIFICATION_SECTIONS : EMPLOYEE_NOTIFICATION_SECTIONS
+      if (!prefs) return sections
+      // Показываем только тумблеры, которые бэкенд реально отдаёт в ответе:
+      // vacancy/replacement появятся автоматически, когда их добавят в API.
+      return sections
+        .map(section => ({
+          ...section,
+          keys: section.keys.filter(key => typeof prefs[key] === 'boolean'),
+        }))
+        .filter(section => section.keys.length > 0)
+    }, [apiRole, prefs])
 
     const handleToggle = useCallback(
       (key: PreferenceKey, checked: boolean) => {
@@ -129,6 +158,8 @@ export const NotificationPreferencesDrawer = memo(
           urgent_notifications: effectivePrefs.urgent_notifications,
           new_shifts_notifications: effectivePrefs.new_shifts_notifications,
           application_notifications: effectivePrefs.application_notifications,
+          vacancy_notifications: effectivePrefs.vacancy_notifications,
+          replacement_notifications: effectivePrefs.replacement_notifications,
         },
       }
       try {
