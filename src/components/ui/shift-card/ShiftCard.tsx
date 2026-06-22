@@ -104,8 +104,6 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     return street
   }, [shift.location, shift.city])
 
-  const isVacancyCard = shift.shiftType === 'vacancy' || shift.payPeriod === 'month'
-
   const displayTitle = useMemo(
     () => (shift.title?.trim() || '').slice(0, 80) || null,
     [shift.title]
@@ -143,17 +141,15 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
       ? Math.max(0, Math.floor(shift.viewsCount))
       : null
 
-  const compactTitle = isApplicationCard
-    ? shift.restaurant || stripVacancyPrefix(displayTitle ?? positionText)
-    : stripVacancyPrefix(displayTitle ?? positionText)
+  // Позиция видна всегда и одинаково (до/после отклика). Есть название →
+  // заголовок=название, подзаголовок=позиция•специализация; нет названия →
+  // заголовок=позиция, подзаголовок=ресторан (чтобы не дублировать позицию).
+  const compactTitle = stripVacancyPrefix(displayTitle ?? positionText)
   const locationMeta = formatDistanceKm(shift.distanceKm) ?? locationText
   const compactSchedule = formatCompactSchedule(shift.date, shift.time)
   const urgentDateTag = getUrgentDateTag(shift.dateKey)
   const avatarFallback = positionInitial(shift.position)
-  const compactSubtitle = isApplicationCard
-    ? subcategoryText
-    : [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
-      positionText
+  const compactSubtitle = displayTitle ? positionText : shift.restaurant || ''
   const applicationStatus = isApplicationCard ? (shift.applicationStatus ?? 'pending') : null
   const applicationBadgeVariant = normalizeApplicationStatus(applicationStatus)
   const applicationBadgeLabel = applicationStatus

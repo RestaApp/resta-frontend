@@ -35,6 +35,8 @@ interface DetailsTabProps {
   shift: Shift
   vacancyTitle: string
   positionLabel: string
+  /** Показать строку позиции отдельно (когда заголовок — название вакансии, а не сама позиция). */
+  showPositionLine?: boolean
   ownerDisplayName?: string
   ownerRating?: number | null
   ownerReviews?: number | null
@@ -88,6 +90,7 @@ export const DetailsTab = memo(
     shift,
     vacancyTitle,
     positionLabel,
+    showPositionLine = false,
     ownerDisplayName = '',
     ownerRating,
     ownerReviews,
@@ -121,7 +124,9 @@ export const DetailsTab = memo(
     const payCurrency = isPayNegotiable ? '' : (currency ?? '')
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' • ')
     const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
-    const compactSubtitle = shift.restaurant || ownerDisplayName || positionLabel || ''
+    // Позиция показывается отдельной строкой, поэтому в подзаголовок (ресторан) её не дублируем.
+    const compactSubtitle = shift.restaurant || ownerDisplayName || ''
+    const positionLineText = showPositionLine ? positionLabel.trim() : ''
     const avatarFallback = positionInitial(positionLabel || shift.position)
     const statusTagLabel =
       shift.statusTag === 'expired'
@@ -173,6 +178,11 @@ export const DetailsTab = memo(
             <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 whitespace-normal leading-tight')}>
               {compactTitle}
             </h1>
+            {positionLineText ? (
+              <p className={cn(SHIFT_CARD_SUB_CLASS, 'text-sm font-medium text-foreground')}>
+                {positionLineText}
+              </p>
+            ) : null}
             {compactSubtitle ? (
               <p className={cn(SHIFT_CARD_SUB_CLASS, 'text-sm')}>{compactSubtitle}</p>
             ) : null}

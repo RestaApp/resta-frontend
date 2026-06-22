@@ -60,7 +60,10 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [ownerProfileOpen, setOwnerProfileOpen] = useState(false)
-  const { hourlyRate, vacancyTitle, positionLabel } = useShiftDetails(shift, vacancyData)
+  const { hourlyRate, vacancyTitle, positionLine, hasCustomTitle } = useShiftDetails(
+    shift,
+    vacancyData
+  )
   const ownerDisplayName = useMemo(
     () => formatUserDisplayName(vacancyData?.user),
     [vacancyData?.user]
@@ -244,7 +247,8 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           <DetailsTab
             shift={shift}
             vacancyTitle={vacancyTitle}
-            positionLabel={positionLabel ?? ''}
+            positionLabel={positionLine}
+            showPositionLine={hasCustomTitle}
             ownerDisplayName={ownerDisplayName}
             ownerRating={vacancyData?.user?.average_rating ?? null}
             ownerReviews={vacancyData?.user?.total_reviews ?? null}
