@@ -2,6 +2,7 @@ import { Suspense, lazy, type ReactNode } from 'react'
 import { LoadingPage } from '@/components/ui/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
+import { SwipeBackGesture } from '@/app/SwipeBackGesture'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { DetailOverlayProvider } from '@/shared/navigation/DetailOverlayContext'
 import { ToastProvider } from '@/shared/lib/toast/ToastProvider'
@@ -43,6 +44,7 @@ export const App = () => {
       <ToastProvider>
         <PurchaseFlowProvider>
           <DetailOverlayProvider>
+            <SwipeBackGesture />
             <AppBootstrapRoutes />
           </DetailOverlayProvider>
         </PurchaseFlowProvider>

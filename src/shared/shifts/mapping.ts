@@ -219,7 +219,9 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     ownerId: v.user?.id ?? null,
     photoUrl: getUserPhotoUrl(v),
     canApply: Boolean(v.can_apply),
-    applicationStatus: v.my_application?.status ?? v.status ?? null,
+    // Только статус заявки. НЕ подмешивать v.status (статус смены) —
+    // иначе бейдж заявки показывает «В обработке» по статусу смены (open).
+    applicationStatus: v.my_application?.status ?? null,
     applicationsCount: v.applications_count ?? 0,
     city: getCityFromUser(v) ?? null,
     distanceKm: getDistanceKm(v),

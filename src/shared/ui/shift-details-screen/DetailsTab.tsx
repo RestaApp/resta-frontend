@@ -170,7 +170,9 @@ export const DetailsTab = memo(
           ) : null}
 
           <div className="flex flex-col gap-1">
-            <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 leading-tight')}>{compactTitle}</h1>
+            <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 whitespace-normal leading-tight')}>
+              {compactTitle}
+            </h1>
             {compactSubtitle ? (
               <p className={cn(SHIFT_CARD_SUB_CLASS, 'text-sm')}>{compactSubtitle}</p>
             ) : null}
@@ -245,14 +247,7 @@ export const DetailsTab = memo(
           ) : null}
         </div>
 
-        {requirementLines.length > 0 ? (
-          <RequirementsSection label={t('common.requirements')} lines={requirementLines} />
-        ) : null}
-
-        {description ? (
-          <LabeledTextSection label={t('common.description')} text={description} />
-        ) : null}
-
+        {/* Карточка владельца — выше требований/описания, чтобы длинный текст не «топил» её вниз (#10). */}
         {canShowVenueCard ? (
           <DetailsVenueCard
             name={venueName}
@@ -262,6 +257,14 @@ export const DetailsTab = memo(
             onOpen={onOpenOwnerProfile}
             t={t}
           />
+        ) : null}
+
+        {requirementLines.length > 0 ? (
+          <RequirementsSection label={t('common.requirements')} lines={requirementLines} />
+        ) : null}
+
+        {description ? (
+          <LabeledTextSection label={t('common.description')} text={description} />
         ) : null}
       </div>
     )

@@ -79,6 +79,12 @@ export const getHeaderAction = (params: {
       return venueAddShiftAction()
     }
 
+    // Сотрудник на вкладке «Заявки» (activity) ничего не создаёт — кнопки «+» нет.
+    // Создание/редактирование смены-замены живёт на вкладке «Мои смены» (myshifts).
+    if (isEmployeeFlow && activeTab === 'activity') {
+      return null
+    }
+
     if (activeTab === 'myshifts' && isEmployeeFlow && !canEmployeeOfferShift) {
       return {
         ariaLabel: t('shift.editShiftAria', { defaultValue: 'Edit shift' }),

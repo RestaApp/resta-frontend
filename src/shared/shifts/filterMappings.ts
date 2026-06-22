@@ -1,12 +1,13 @@
 import { addDaysToISODate, getTodayDateISO } from '@/shared/utils/datetime'
 import type { AdvancedFiltersData } from './types'
 import type { DateFilterPreset, SalaryRangeId } from './filterConstants'
-import { SALARY_RANGE_OPTIONS } from './filterConstants'
+import { ALL_SALARY_RANGE_OPTIONS } from './filterConstants'
 
 export const resolveSalaryRangeParams = (
   rangeId: SalaryRangeId | string | null | undefined
 ): { min_payment?: number; max_payment?: number } => {
-  const range = SALARY_RANGE_OPTIONS.find(item => item.id === rangeId)
+  // Резолвим по объединённому списку: id уникальны для посменных и месячных диапазонов.
+  const range = ALL_SALARY_RANGE_OPTIONS.find(item => item.id === rangeId)
   if (!range) return {}
 
   const params: { min_payment?: number; max_payment?: number } = { min_payment: range.min }

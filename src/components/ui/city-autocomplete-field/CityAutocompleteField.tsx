@@ -85,6 +85,9 @@ export const CityAutocompleteField = memo(function CityAutocompleteField({
     portaled,
     containerRef,
     onDismiss: handleDropdownClose,
+    // Поле города открывает клавиатуру: автоскролл по scroll/resize сбрасывал бы
+    // фокус и список «моргал». Позиционируем список без реакции на скролл.
+    autoScrollIntoView: false,
   })
 
   const handleInputBlurWithGuard = (event: React.FocusEvent<HTMLInputElement>) => {

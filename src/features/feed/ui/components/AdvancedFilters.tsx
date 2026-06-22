@@ -8,7 +8,7 @@ import { ExpandableTagList } from '@/shared/ui/ExpandableTagList'
 import { SelectableTagButton } from '@/shared/ui/SelectableTagButton'
 import { CityAutocompleteField } from '@/components/ui/city-autocomplete-field'
 import { useAdvancedFiltersSheet } from '../../model/hooks/useAdvancedFiltersSheet'
-import { DATE_FILTER_PRESETS, SALARY_RANGE_OPTIONS } from '@/shared/shifts/filterConstants'
+import { DATE_FILTER_PRESETS, getSalaryRangeOptions } from '@/shared/shifts/filterConstants'
 import { getTodayDateISO } from '@/shared/utils/datetime'
 import type { AdvancedFiltersData } from '@/shared/shifts/types'
 import { PROFILE_SECTION_LABEL_CLASS } from '@/components/ui/ui-patterns'
@@ -127,7 +127,7 @@ const AdvancedFiltersSheet = ({
             {isVacancy ? t('feed.ratePerVacancy') : t('feed.ratePerShift')}
           </p>
           <div className="flex flex-wrap gap-2">
-            {SALARY_RANGE_OPTIONS.map(range => (
+            {getSalaryRangeOptions(Boolean(isVacancy)).map(range => (
               <SelectableTagButton
                 key={range.id}
                 value={range.id}

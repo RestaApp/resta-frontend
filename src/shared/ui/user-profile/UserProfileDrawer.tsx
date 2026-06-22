@@ -8,7 +8,9 @@ import { useTrackEventMutation } from '@/services/api/analyticsApi'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Briefcase } from 'lucide-react'
 import { useExternalProfileViewModel } from './useExternalProfileViewModel'
+import { VenueListingsDrawer } from './VenueListingsDrawer'
 
 interface UserProfileDrawerProps {
   userId: number | null
@@ -42,7 +44,10 @@ export const UserProfileDrawer = memo(
     })
 
     const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false)
+    const [listingsOpen, setListingsOpen] = useState(false)
     const [trackEvent] = useTrackEventMutation()
+
+    const isVenueProfile = profileViewModel?.apiRole === 'restaurant'
 
     const handleClose = () => {
       setRejectConfirmOpen(false)
@@ -96,6 +101,20 @@ export const UserProfileDrawer = memo(
               ) : null}
             </DrawerBody>
 
+            {isVenueProfile && typeof userId === 'number' && !showModerationActions ? (
+              <DrawerFooter>
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="w-full"
+                  onClick={() => setListingsOpen(true)}
+                >
+                  <Briefcase className="h-4 w-4" aria-hidden="true" />
+                  {t('profile.venueListings.button')}
+                </Button>
+              </DrawerFooter>
+            ) : null}
+
             {showModerationActions ? (
               <DrawerFooter contentClassName="grid grid-cols-2 gap-3">
                 {canReject ? (
@@ -130,6 +149,15 @@ export const UserProfileDrawer = memo(
             ) : null}
           </DrawerFrame>
         </Drawer>
+
+        {isVenueProfile && typeof userId === 'number' ? (
+          <VenueListingsDrawer
+            userId={userId}
+            venueName={profileViewModel?.userName}
+            open={listingsOpen}
+            onClose={() => setListingsOpen(false)}
+          />
+        ) : null}
 
         {canReject && onReject ? (
           <ConfirmDialog

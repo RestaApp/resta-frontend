@@ -12,10 +12,11 @@ export const PREVIEW_CARD_TAGS_CLASS = 'mt-2 flex flex-wrap gap-1'
 
 export const PREVIEW_CARD_BELOW_TAGS_CLASS = 'flex flex-wrap gap-1'
 
-const PREVIEW_CARD_ACTIONS_CLASS =
-  'flex w-[4.75rem] shrink-0 flex-col justify-center gap-2 self-stretch'
+const PREVIEW_CARD_ACTIONS_CLASS = 'flex w-24 shrink-0 flex-col justify-start gap-2'
 
-export const PREVIEW_CARD_ACTION_BUTTON_CLASS = 'h-9 w-full px-2 text-xs'
+// min-w-0 перебивает базовый Button.min-w-fit — иначе кнопка с более длинным
+// текстом («Пригласить») шире, чем с коротким («Профиль»). С w-full обе = ширине колонки.
+export const PREVIEW_CARD_ACTION_BUTTON_CLASS = 'h-9 w-full min-w-0 px-2 text-xs'
 
 interface PreviewCardLayoutProps {
   avatar: ReactNode

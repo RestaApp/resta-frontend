@@ -236,6 +236,9 @@ export const ApplicantPreviewCard = memo(
 
       return (
         <PreviewCardLayout
+          interactive={Boolean(userId)}
+          onActivate={handleSelect}
+          ariaLabel={t('applicants.openProfileAria', { name, defaultValue: name })}
           className={cn(variant === 'moderation' && isAccepted && ACCEPTED_CARD_CLASS)}
           avatar={applicantAvatar(photoUrl, name)}
           actions={

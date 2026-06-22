@@ -108,7 +108,7 @@ export const TimeInput = memo(function TimeInput({
         }}
         className={cn(
           'py-0 leading-none transition-[border-color,box-shadow] [appearance:none] [-webkit-appearance:none]',
-          isCompact ? 'h-10 min-h-10 pl-9 text-sm' : 'pl-11 text-base',
+          isCompact ? 'h-10 min-h-10 pl-9 text-sm' : 'h-11 min-h-11 pl-11 text-base',
           inputClassName
         )}
       />

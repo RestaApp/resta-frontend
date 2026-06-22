@@ -283,7 +283,7 @@
       "newShifts": "New shifts in city",
       "vacancies": "New vacancies",
       "replacements": "New replacements",
-      "applications": "Application acceptance",
+      "applications": "Shift applications",
       "saved": "Settings saved"
     },
     "support": "Resta support",
@@ -436,6 +436,11 @@
       "lockedTitle": "Analytics on PRO",
       "lockedSubtitle": "Upgrade to PRO to see views, clicks and CTR"
     },
+    "venueListings": {
+      "button": "All vacancies & shifts",
+      "title": "Venue vacancies",
+      "empty": "No open vacancies yet"
+    },
     "venue": {
       "hiringOpen": "Hiring open",
       "createVacancy": "Create vacancy",
@@ -494,7 +499,11 @@
       "0-80": "0 – 80",
       "80-120": "80 – 120",
       "120-160": "120 – 160",
-      "160+": "160+"
+      "160+": "160+",
+      "0-1000": "Up to 1000",
+      "1000-1500": "1000 – 1500",
+      "1500-2500": "1500 – 2500",
+      "2500+": "2500+"
     },
     "filterSalaryRangeAria": "Select rate range {{label}}",
     "filterDatePresetAria": "Select period {{label}}",

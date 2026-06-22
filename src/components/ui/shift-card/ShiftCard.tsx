@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react'
 import type { KeyboardEvent } from 'react'
-import { AlertTriangle, Clock, Flame, MapPin, User } from 'lucide-react'
+import { AlertTriangle, Clock, Eye, Flame, MapPin, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import type { Shift } from '@/shared/shifts/types'
@@ -27,7 +27,6 @@ import { formatDistanceKm, stripVacancyPrefix, positionInitial } from './shift-c
 import { OwnerShiftStatusBadge } from './OwnerShiftStatusBadge'
 import { ShiftCardPriceBlock } from './ShiftCardPriceBlock'
 import { ShiftCardMetaLine } from './ShiftCardMetaLine'
-import { formatViewsCount } from '@/shared/utils/viewsCount'
 
 const formatCompactDate = (date?: string | null): string => {
   if (!date) return ''
@@ -141,19 +140,15 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     [handleOpen]
   )
 
-  const ownerStatsLine = useMemo(() => {
-    if (!isOwner) return null
-    const parts: string[] = []
-    const applicantsCount = shift.applicationsCount
-    if (typeof applicantsCount === 'number' && applicantsCount >= 0) {
-      parts.push(t('shift.applicantsLabel', { count: applicantsCount }))
-    }
-    const viewsCount = shift.viewsCount
-    if (typeof viewsCount === 'number' && Number.isFinite(viewsCount)) {
-      parts.push(formatViewsCount(viewsCount))
-    }
-    return parts.length > 0 ? parts.join(' • ') : null
-  }, [isOwner, shift.applicationsCount, shift.viewsCount, t])
+  // Владельцу — отклики и просмотры единообразно: иконка + число, без текста.
+  const ownerApplicants =
+    isOwner && typeof shift.applicationsCount === 'number' && shift.applicationsCount >= 0
+      ? shift.applicationsCount
+      : null
+  const ownerViews =
+    isOwner && typeof shift.viewsCount === 'number' && Number.isFinite(shift.viewsCount)
+      ? Math.max(0, Math.floor(shift.viewsCount))
+      : null
 
   const compactTitle = isApplicationCard
     ? shift.restaurant || stripVacancyPrefix(displayTitle ?? positionText)
@@ -187,7 +182,10 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
       ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
       : null
   const hasBottomRightMeta =
-    Boolean(statusTagLabel) || Boolean(compactApplications) || Boolean(ownerStatsLine)
+    Boolean(statusTagLabel) ||
+    Boolean(compactApplications) ||
+    ownerApplicants != null ||
+    ownerViews != null
 
   return (
     <div
@@ -247,11 +245,23 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           </span>
         ) : null}
         {hasBottomRightMeta ? (
-          <span className="ml-auto inline-flex shrink-0 items-center gap-1.5">
-            {ownerStatsLine ? (
-              <span className="inline-flex items-center gap-1 text-muted-foreground">
+          <span className="ml-auto inline-flex shrink-0 items-center gap-2.5">
+            {ownerApplicants != null ? (
+              <span
+                className="inline-flex items-center gap-1 text-muted-foreground"
+                aria-label={t('shift.applicantsLabel', { count: ownerApplicants })}
+              >
                 <User className={ICON_SM_CLASS} aria-hidden />
-                {ownerStatsLine}
+                {ownerApplicants}
+              </span>
+            ) : null}
+            {ownerViews != null ? (
+              <span
+                className="inline-flex items-center gap-1 text-muted-foreground"
+                aria-label={t('shift.viewsCount', { count: ownerViews })}
+              >
+                <Eye className={ICON_SM_CLASS} aria-hidden />
+                {ownerViews}
               </span>
             ) : null}
             {compactApplications ? (

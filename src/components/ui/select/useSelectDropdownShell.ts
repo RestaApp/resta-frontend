@@ -13,6 +13,12 @@ interface UseSelectDropdownShellOptions {
   onDismiss: () => void
   containerRef?: RefObject<HTMLDivElement | null>
   dropdownRef?: RefObject<HTMLDivElement | null>
+  /**
+   * Подскролл контейнера, чтобы освободить место под список (реагирует на scroll/resize).
+   * Отключить для полей с экранной клавиатурой: её появление триггерит scroll/resize,
+   * scrollBy сбрасывает фокус с инпута, и список «моргает» (открылся → blur → закрылся).
+   */
+  autoScrollIntoView?: boolean
 }
 
 /** Общая оболочка inline/portal dropdown: dismiss, scroll-lock, auto-scroll. */
@@ -24,6 +30,7 @@ export const useSelectDropdownShell = ({
   onDismiss,
   containerRef: externalContainerRef,
   dropdownRef: externalDropdownRef,
+  autoScrollIntoView = true,
 }: UseSelectDropdownShellOptions) => {
   const internalContainerRef = useRef<HTMLDivElement>(null)
   const internalDropdownRef = useRef<HTMLDivElement>(null)
@@ -40,7 +47,7 @@ export const useSelectDropdownShell = ({
     containerRef,
     bottomOffsetPx,
     portaled: effectivePortaled,
-    enabled: !effectivePortaled,
+    enabled: !effectivePortaled && autoScrollIntoView,
   })
 
   useEffect(() => {
