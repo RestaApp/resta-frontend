@@ -94,7 +94,10 @@ export function provideListTags<T extends { id: number | string }>(
   result?: { data?: T[] } | T[]
 ) {
   const items = Array.isArray(result) ? result : result?.data
+  // id приводим к строке: getShiftById/мутации тегируют через String(id),
+  // иначе числовой тег списка и строковый тег детали/мутации не совпадают
+  // и точечная инвалидация молча не срабатывает (лента обновлялась лишь через LIST).
   return items?.length
-    ? [{ type, id: 'LIST' as const }, ...items.map(i => ({ type, id: i.id }))]
+    ? [{ type, id: 'LIST' as const }, ...items.map(i => ({ type, id: String(i.id) }))]
     : [{ type, id: 'LIST' as const }]
 }

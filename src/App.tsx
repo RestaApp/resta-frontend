@@ -3,6 +3,7 @@ import { LoadingPage } from '@/components/ui/LoadingPage'
 import { useAppBootstrap } from '@/app/hooks/useAppBootstrap'
 import { TelegramMiniAppShell } from '@/components/ui/TelegramMiniAppShell'
 import { SwipeBackGesture } from '@/app/SwipeBackGesture'
+import { ErrorBoundary } from '@/app/ErrorBoundary'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { DetailOverlayProvider } from '@/shared/navigation/DetailOverlayContext'
 import { ToastProvider } from '@/shared/lib/toast/ToastProvider'
@@ -41,14 +42,16 @@ const AppBootstrapRoutes = () => {
 export const App = () => {
   return (
     <TelegramMiniAppShell>
-      <ToastProvider>
-        <PurchaseFlowProvider>
-          <DetailOverlayProvider>
-            <SwipeBackGesture />
-            <AppBootstrapRoutes />
-          </DetailOverlayProvider>
-        </PurchaseFlowProvider>
-      </ToastProvider>
+      <ErrorBoundary>
+        <ToastProvider>
+          <PurchaseFlowProvider>
+            <DetailOverlayProvider>
+              <SwipeBackGesture />
+              <AppBootstrapRoutes />
+            </DetailOverlayProvider>
+          </PurchaseFlowProvider>
+        </ToastProvider>
+      </ErrorBoundary>
     </TelegramMiniAppShell>
   )
 }

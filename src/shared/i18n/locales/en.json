@@ -941,7 +941,11 @@
     "applyError": "Failed to send application. Please try again.",
     "userNotFound": "Error: user not found",
     "profileUpdateSuccess": "Profile updated successfully",
-    "profileUpdateError": "Failed to update profile"
+    "profileUpdateError": "Failed to update profile",
+    "loadError": "Failed to load",
+    "boundaryTitle": "Something went wrong",
+    "boundaryDescription": "An unexpected error occurred. Try reloading the app.",
+    "boundaryReload": "Reload"
   },
   "profileFields": {
     "phone": "Phone",

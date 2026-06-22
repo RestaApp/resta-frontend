@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/shift-card/shift-card-styles'
 import type { ApplicationPreviewApiItem } from '@/services/api/shiftsApi'
 import { resolveApplicantSpecializations } from '@/shared/shifts/resolveApplicantSpecializations'
+import { getApplicationId, getApplicationStatus } from '@/shared/shifts/applicationStatus'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 
 interface ApplicantPreviewCardProps {
@@ -201,8 +202,8 @@ export const ApplicantPreviewCard = memo(
       .map(item => getSpecializationLabel(item))
       .filter(Boolean)
 
-    const appId = app.shift_application_id ?? app.id ?? null
-    const appStatus = app.shift_application_status ?? app.status ?? 'pending'
+    const appId = getApplicationId(app)
+    const appStatus = getApplicationStatus(app)
     const isAccepted = appStatus === 'accepted'
     const isRejected = appStatus === 'rejected'
     const userId = app.user_id || user?.id

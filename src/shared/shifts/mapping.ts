@@ -12,13 +12,7 @@ import { toLocalISODateKey } from '@/shared/utils/datetime'
 import i18n from '@/shared/i18n/config'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { getOwnerShiftListingStatus, shouldShowStaleApplicationsAlert } from './ownerShiftDisplay'
-
-const toNumber = (v?: string | number | null): number => {
-  if (v === null || v === undefined) return 0
-  if (typeof v === 'number') return Number.isFinite(v) ? v : 0
-  const n = Number(v)
-  return Number.isFinite(n) ? n : 0
-}
+import { toFiniteNumber as toNumber } from '@/shared/utils/number'
 
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {
   return item.city ?? item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
@@ -107,7 +101,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     id: item.id,
     title: item.title?.trim() || null,
     restaurant: formatUserDisplayName(item.user) || item.title?.trim() || '—',
-    rating: toNumber(item.user?.average_rating as unknown as string | number | undefined),
+    rating: toNumber(item.user?.average_rating),
 
     position: item.position ?? 'chef',
     specialization: resolveVacancySpecialization(item),

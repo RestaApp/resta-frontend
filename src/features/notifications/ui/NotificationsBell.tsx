@@ -16,9 +16,10 @@ import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
  */
 export const NotificationsBell = memo(function NotificationsBell() {
   const { t } = useTranslation()
+  // Лёгкий индикатор: поллинг раз в 60с. refetchOnFocus НЕ включаем — в Telegram
+  // WebView фокус дёргается постоянно и поверх поллинга давал шторм запросов.
   const { data } = useGetHasUnreadQuery(undefined, {
-    pollingInterval: 30000,
-    refetchOnFocus: true,
+    pollingInterval: 60000,
   })
   const hasUnread = data?.data.has_unread ?? false
 

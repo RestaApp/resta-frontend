@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CatalogListShell } from '@/shared/ui/CatalogListShell'
 import { ApplicantPreviewCard } from '@/shared/ui/shift-details-screen/ApplicantPreviewCard'
@@ -40,6 +41,20 @@ export const EmployeeCatalogList = ({
 }: EmployeeCatalogListProps) => {
   const { t } = useTranslation()
 
+  // Маппим один раз на изменение списка, а не на каждый рендер.
+  const cards = useMemo(
+    () =>
+      employees.map(employee => ({
+        employee,
+        applicant: mapEmployeeCatalogItemToApplicationPreview(employee),
+      })),
+    [employees]
+  )
+  const resolvePositionLabel = useCallback(
+    (value?: string | null) => getEmployeePositionLabel(value ?? ''),
+    [getEmployeePositionLabel]
+  )
+
   return (
     <CatalogListShell
       activeFilters={activeFilters}
@@ -63,13 +78,13 @@ export const EmployeeCatalogList = ({
       refreshDisabled={refreshDisabled}
     >
       <div className="ui-density-stack">
-        {employees.map(employee => (
+        {cards.map(({ employee, applicant }) => (
           <ApplicantPreviewCard
             key={employee.id}
-            applicant={mapEmployeeCatalogItemToApplicationPreview(employee)}
-            getEmployeePositionLabel={value => getEmployeePositionLabel(value ?? '')}
+            applicant={applicant}
+            getEmployeePositionLabel={resolvePositionLabel}
             getSpecializationLabel={getSpecializationLabel}
-            onSelect={userId => onOpenProfile(userId)}
+            onSelect={onOpenProfile}
             t={t}
             variant="catalog"
             onInvite={() => onInvite(employee)}

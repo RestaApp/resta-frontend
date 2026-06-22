@@ -14,6 +14,7 @@ import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/store/slices/userSlice'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
+import { normalizeApplicationStatus } from '@/shared/shifts/applicationStatus'
 import {
   countPendingStaffApplications,
   findStaffItem,
@@ -24,14 +25,6 @@ interface SelectedApplicantState {
   applicationId: number | null
   shiftId: number
   userId: number
-}
-
-const resolveModerationStatus = (
-  status: string | undefined
-): 'pending' | 'accepted' | 'rejected' => {
-  if (status === 'accepted') return 'accepted'
-  if (status === 'rejected') return 'rejected'
-  return 'pending'
 }
 
 export const useStaffApplicationsController = () => {
@@ -76,7 +69,7 @@ export const useStaffApplicationsController = () => {
     selectedItem?.person.user_id ?? selectedItem?.person.user?.id ?? null
   const selectedApplicantApplicationId = selectedItem?.applicationId ?? null
   const isApplicantProfileOpen = selectedItem != null
-  const selectedApplicantStatus = resolveModerationStatus(selectedItem?.applicationStatus)
+  const selectedApplicantStatus = normalizeApplicationStatus(selectedItem?.applicationStatus)
 
   const handleAccept = useCallback(
     async (applicationId: number, shiftId: number) => {

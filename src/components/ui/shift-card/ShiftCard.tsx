@@ -23,6 +23,7 @@ import {
   SHIFT_CARD_SUB_CLASS,
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
+import { normalizeApplicationStatus } from '@/shared/shifts/applicationStatus'
 import { formatDistanceKm, stripVacancyPrefix, positionInitial } from './shift-card-utils'
 import { OwnerShiftStatusBadge } from './OwnerShiftStatusBadge'
 import { ShiftCardPriceBlock } from './ShiftCardPriceBlock'
@@ -63,14 +64,6 @@ const getUrgentDateTag = (dateKey?: string | null): string => {
   const tomorrowKey = addDaysToISODate(todayKey, 1)
   if (dateKey === tomorrowKey) return 'ЗАВТРА'
   return ''
-}
-
-const getApplicationBadgeVariant = (
-  status?: string | null
-): 'pending' | 'accepted' | 'rejected' => {
-  if (status === 'accepted') return 'accepted'
-  if (status === 'rejected') return 'rejected'
-  return 'pending'
 }
 
 export interface ShiftCardProps {
@@ -162,7 +155,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
     : [shift.restaurant, !isVacancyCard ? positionText : null].filter(Boolean).join(' · ') ||
       positionText
   const applicationStatus = isApplicationCard ? (shift.applicationStatus ?? 'pending') : null
-  const applicationBadgeVariant = getApplicationBadgeVariant(applicationStatus)
+  const applicationBadgeVariant = normalizeApplicationStatus(applicationStatus)
   const applicationBadgeLabel = applicationStatus
     ? applicationStatus === 'accepted'
       ? t('activity.statusAcceptedPill')

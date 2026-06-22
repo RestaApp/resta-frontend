@@ -1,8 +1,8 @@
+import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AdvancedFilters } from '@/features/feed/ui/components/AdvancedFilters'
 import { FeedList } from '@/features/feed/ui/components/FeedList'
 import { FeedListArea } from '@/features/feed/ui/components/FeedEmpty'
-import { FeedDetails } from '@/features/feed/ui/components/FeedDetails'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ApplyCoverLetterModal } from '@/features/feed/ui/components/ApplyCoverLetterModal'
 import { ApplicationSuccessOverlay } from '@/features/feed/ui/components/ApplicationSuccessOverlay'
@@ -10,6 +10,12 @@ import { SuccessOverlay } from '@/components/ui/success-overlay'
 import { PullToRefresh } from '@/components/ui/PullToRefresh'
 import type { ReactNode } from 'react'
 import type { FeedBodyVm } from '@/features/feed/model/FeedBodyVm.types'
+
+// Детали смены открываются по тапу — выносим тяжёлый ShiftDetailsScreen из
+// инициального чанка ленты (загрузится при первом открытии).
+const FeedDetails = lazy(() =>
+  import('@/features/feed/ui/components/FeedDetails').then(m => ({ default: m.FeedDetails }))
+)
 
 interface FeedBodyProps {
   vm: FeedBodyVm
@@ -55,21 +61,23 @@ export function FeedBody({ vm, header }: FeedBodyProps) {
       </PullToRefresh>
 
       {vm.selectedShiftId ? (
-        <FeedDetails
-          selectedShift={vm.selectedShift}
-          selectedVacancy={vm.selectedVacancy}
-          applicationId={vm.getApplicationId(vm.selectedShiftId) ?? null}
-          isApplied={vm.isApplied(vm.selectedShiftId)}
-          isLoading={vm.isShiftLoading(vm.selectedShiftId)}
-          onClose={vm.closeShiftDetails}
-          onApply={vm.handleApplyWithModal}
-          onCancel={vm.handleCancel}
-          ownerActions={{
-            onEdit: vm.handleEdit,
-            onDelete: vm.handleDelete,
-            isDeleting: vm.isDeleting,
-          }}
-        />
+        <Suspense fallback={null}>
+          <FeedDetails
+            selectedShift={vm.selectedShift}
+            selectedVacancy={vm.selectedVacancy}
+            applicationId={vm.getApplicationId(vm.selectedShiftId) ?? null}
+            isApplied={vm.isApplied(vm.selectedShiftId)}
+            isLoading={vm.isShiftLoading(vm.selectedShiftId)}
+            onClose={vm.closeShiftDetails}
+            onApply={vm.handleApplyWithModal}
+            onCancel={vm.handleCancel}
+            ownerActions={{
+              onEdit: vm.handleEdit,
+              onDelete: vm.handleDelete,
+              isDeleting: vm.isDeleting,
+            }}
+          />
+        </Suspense>
       ) : null}
 
       <ApplyCoverLetterModal

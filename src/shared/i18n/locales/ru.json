@@ -949,7 +949,11 @@
     "applyError": "Не удалось отправить заявку. Попробуйте позже.",
     "userNotFound": "Ошибка: пользователь не найден",
     "profileUpdateSuccess": "Профиль успешно обновлен",
-    "profileUpdateError": "Не удалось обновить профиль"
+    "profileUpdateError": "Не удалось обновить профиль",
+    "loadError": "Не удалось загрузить",
+    "boundaryTitle": "Что-то пошло не так",
+    "boundaryDescription": "Произошла непредвиденная ошибка. Попробуйте перезагрузить приложение.",
+    "boundaryReload": "Перезагрузить"
   },
   "profileFields": {
     "phone": "Телефон",

@@ -101,16 +101,12 @@ export const findDuplicatePosition = (
     if (shift.position !== position) return false
     if (!shift.start_time) return false
 
-    try {
-      if (shift.end_time) {
-        const shiftEndDate = new Date(shift.end_time)
-        return shiftEndDate >= now
-      }
-      const shiftStartDate = new Date(shift.start_time)
-      return shiftStartDate >= now
-    } catch {
-      return true
-    }
+    // Активна, если конец (или начало, если конца нет) в будущем.
+    // new Date(невалид) не бросает — даёт Invalid Date, поэтому проверяем NaN явно
+    // и считаем нераспознанную дату активной (консервативно — не пропустить дубль).
+    const ref = new Date(shift.end_time ?? shift.start_time)
+    if (Number.isNaN(ref.getTime())) return true
+    return ref >= now
   })
 }
 

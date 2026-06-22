@@ -2,6 +2,7 @@ import type {
   ApplicationPreviewApiItem,
   ReceivedShiftApplicationApiItem,
 } from '@/services/api/shiftsApi'
+import { getApplicationId } from '@/shared/shifts/applicationStatus'
 import type { StaffItem } from './VenueStaffList'
 
 const isPendingStaffApplication = (application: ApplicationPreviewApiItem): boolean => {
@@ -20,7 +21,7 @@ export const mapStaffApplicationsToItems = (
   const list: StaffItem[] = []
 
   for (const application of applications) {
-    const applicationId = application.shift_application_id ?? application.id
+    const applicationId = getApplicationId(application)
     if (!applicationId) continue
 
     list.push({

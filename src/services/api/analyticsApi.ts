@@ -77,6 +77,7 @@ export const analyticsApi = api.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['Analytics'],
+      keepUnusedDataFor: 3600, // аналитику смотрят редко — держим час
     }),
 
     // GET /analytics/supplier — дашборд поставщика (доступ только supplier, иначе 403).
@@ -86,6 +87,7 @@ export const analyticsApi = api.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['Analytics'],
+      keepUnusedDataFor: 3600,
     }),
   }),
 })

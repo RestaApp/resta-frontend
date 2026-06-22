@@ -4,6 +4,7 @@ import type { UserData } from '@/services/api/authApi'
 import type { ApiRole } from '@/shared/types/roles.types'
 import { formatPhoneDisplay, toE164 } from '@/shared/utils/phone'
 import { formatExperienceText } from '@/shared/utils/experience'
+import { toFiniteNumberOrNull } from '@/shared/utils/number'
 import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
 import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
@@ -119,10 +120,7 @@ const toTagItems = (values: string[], getLabel: (value: string) => string): Prof
   return values.map(value => ({ id: value, label: getLabel(value) }))
 }
 
-const normalizeNumber = (value: unknown): number | null => {
-  const numberValue = Number(value)
-  return Number.isFinite(numberValue) ? numberValue : null
-}
+const normalizeNumber = toFiniteNumberOrNull
 
 const formatRating = (value: unknown) => {
   const rating = normalizeNumber(value)

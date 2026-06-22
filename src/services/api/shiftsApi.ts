@@ -93,9 +93,11 @@ const shiftsApi = api.injectEndpoints({
         method: 'POST',
         body: Object.assign({ shift_id: id }, data || {}),
       }),
-      invalidatesTags: [
+      // Отклик меняет только конкретную смену (can_apply/my_application) — точечно,
+      // без рефетча всей ленты. Лента обновится, т.к. провайдит тег этой смены.
+      invalidatesTags: (_r, _e, { id }) => [
         { type: 'AppliedShift', id: 'LIST' },
-        { type: 'Shift', id: 'LIST' },
+        { type: 'Shift', id: String(id) },
       ],
     }),
 
@@ -106,9 +108,9 @@ const shiftsApi = api.injectEndpoints({
         method: 'POST',
         body: { shift_id: shiftId, user_id: userId },
       }),
-      invalidatesTags: [
+      invalidatesTags: (_r, _e, { shiftId }) => [
         { type: 'AppliedShift', id: 'LIST' },
-        { type: 'Shift', id: 'LIST' },
+        { type: 'Shift', id: String(shiftId) },
       ],
     }),
 
@@ -133,11 +135,18 @@ const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shift_applications/${applicationId}/accept`,
         method: 'POST',
       }),
-      invalidatesTags: (_result, _error, { shiftId }) => [
-        { type: 'AppliedShift', id: 'LIST' },
-        { type: 'Shift', id: 'LIST' },
-        ...(typeof shiftId === 'number' ? [{ type: 'Shift' as const, id: String(shiftId) }] : []),
-      ],
+      // Известен shiftId → точечно (тег нормализован к строке, лента обновится);
+      // иначе fallback на LIST, чтобы списки владельца не остались устаревшими.
+      invalidatesTags: (_result, _error, { shiftId }) =>
+        typeof shiftId === 'number'
+          ? [
+              { type: 'AppliedShift', id: 'LIST' },
+              { type: 'Shift', id: String(shiftId) },
+            ]
+          : [
+              { type: 'AppliedShift', id: 'LIST' },
+              { type: 'Shift', id: 'LIST' },
+            ],
     }),
 
     // Отклонить заявку (только для владельца смены / ресторана). shiftId — для инвалидации кэша смены без перезагрузки.
@@ -149,11 +158,16 @@ const shiftsApi = api.injectEndpoints({
         url: `/api/v1/shift_applications/${applicationId}/reject`,
         method: 'POST',
       }),
-      invalidatesTags: (_result, _error, { shiftId }) => [
-        { type: 'AppliedShift', id: 'LIST' },
-        { type: 'Shift', id: 'LIST' },
-        ...(typeof shiftId === 'number' ? [{ type: 'Shift' as const, id: String(shiftId) }] : []),
-      ],
+      invalidatesTags: (_result, _error, { shiftId }) =>
+        typeof shiftId === 'number'
+          ? [
+              { type: 'AppliedShift', id: 'LIST' },
+              { type: 'Shift', id: String(shiftId) },
+            ]
+          : [
+              { type: 'AppliedShift', id: 'LIST' },
+              { type: 'Shift', id: 'LIST' },
+            ],
     }),
 
     // Получить смены, на которые поданы заявки
