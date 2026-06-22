@@ -15,23 +15,6 @@ export const SUPPORT_TICKET_CATEGORIES = [
 
 export type SupportTicketCategory = (typeof SUPPORT_TICKET_CATEGORIES)[number]
 
-export type SupportTicketStatus =
-  | 'new'
-  | 'in_progress'
-  | 'waiting_for_user'
-  | 'resolved'
-  | 'reopened'
-
-export interface SupportTicket {
-  id: number
-  subject: string
-  category: SupportTicketCategory
-  category_label: string
-  status: SupportTicketStatus
-  status_label: string
-  created_at: string
-}
-
 export interface CreateSupportTicketRequest {
   support_ticket: {
     subject: string
@@ -48,12 +31,6 @@ export interface CreateSupportTicketResponse {
   data: {
     id: number
   }
-}
-
-export interface ApiErrorResponse {
-  success: false
-  errors: string[]
-  code?: string
 }
 
 const supportTicketsApi = api.injectEndpoints({

@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
 import { useUser } from '@/shared/lib/hooks/useUser'
 import { useToast } from '@/shared/lib/hooks/useToast'
-import { useGetMyShiftsQuery, useGetReceivedShiftApplicationsQuery } from '@/services/api/shiftsApi'
+import {
+  useGetMyShiftsQuery,
+  useGetReceivedShiftApplicationsQuery,
+  FULL_LIST_PER_PAGE,
+} from '@/services/api/shiftsApi'
 import { useGetMyAnalyticsQuery } from '@/services/api/analyticsApi'
 import { buildVenueProfileInfoRows } from '../utils/buildVenueProfileInfoRows'
 import { countAcceptedHires, countOpenVenueListings } from '../utils/venueProfileStats'
@@ -68,9 +72,12 @@ export const useProfilePageModel = () => {
     skip: !isAuthenticated,
   })
 
-  const { data: receivedApplicationsData } = useGetReceivedShiftApplicationsQuery(undefined, {
-    skip: !isAuthenticated || apiRole !== 'restaurant',
-  })
+  const { data: receivedApplicationsData } = useGetReceivedShiftApplicationsQuery(
+    { per_page: FULL_LIST_PER_PAGE },
+    {
+      skip: !isAuthenticated || apiRole !== 'restaurant',
+    }
+  )
 
   // KPI просмотров/кликов — только для своего профиля (GET /analytics/my).
   const { data: myAnalyticsData } = useGetMyAnalyticsQuery(undefined, {

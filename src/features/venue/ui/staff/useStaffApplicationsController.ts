@@ -5,6 +5,7 @@ import {
   useGetReceivedShiftApplicationsQuery,
   useGetShiftByIdQuery,
   useRejectApplicationMutation,
+  FULL_LIST_PER_PAGE,
 } from '@/services/api/shiftsApi'
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
@@ -37,7 +38,7 @@ export const useStaffApplicationsController = () => {
     data: applicationsData,
     isLoading: isApplicationsLoading,
     refetch: refetchApplications,
-  } = useGetReceivedShiftApplicationsQuery()
+  } = useGetReceivedShiftApplicationsQuery({ per_page: FULL_LIST_PER_PAGE })
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
   const [rejectApplication, { isLoading: isRejecting }] = useRejectApplicationMutation()
   const [isApplicationsOpen, setIsApplicationsOpen] = useState(false)

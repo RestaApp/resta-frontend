@@ -6,6 +6,7 @@ import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Button } from '@/components/ui/button'
 import { ICON_MD_CLASS } from '@/shared/constants/role-icons'
 import { SUPPLIER_PRO_PLAN } from '@/shared/config/monetization'
+import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
 import { useSubscriptionCheckout } from '../model/useSubscriptionCheckout'
 
 interface UpgradeProDrawerProps {
@@ -27,6 +28,10 @@ export const UpgradeProDrawer = memo(function UpgradeProDrawer({
 }: UpgradeProDrawerProps) {
   const { t } = useTranslation()
   const { upgrade, isProcessing } = useSubscriptionCheckout()
+  // Цена — источник истины БД (plan.subscription_price); запрашиваем только при открытом drawer.
+  // Константа priceStars остаётся фолбэком, пока ответ не пришёл / недоступен.
+  const { data: subscription } = useGetCurrentSubscriptionQuery(undefined, { skip: !open })
+  const priceStars = subscription?.data.plan.subscription_price ?? SUPPLIER_PRO_PLAN.priceStars
 
   const handlePay = async () => {
     const ok = await upgrade(SUPPLIER_PRO_PLAN.planName)
@@ -81,7 +86,7 @@ export const UpgradeProDrawer = memo(function UpgradeProDrawer({
             disabled={isProcessing}
           >
             {`${t('monetization.pro.payButton')} · ${t('monetization.pro.pricePerMonth', {
-              count: SUPPLIER_PRO_PLAN.priceStars,
+              count: priceStars,
             })}`}
           </Button>
         </DrawerFooter>

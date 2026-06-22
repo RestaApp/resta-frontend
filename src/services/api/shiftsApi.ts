@@ -14,11 +14,19 @@ import {
   type DeleteShiftResponse,
   type GetVacanciesParams,
   type MutateShiftResponse,
+  type PaginatedListParams,
   type ReceivedShiftApplicationsResponse,
   type UpdateShiftArgs,
   type VacanciesResponse,
   type VacancyApiItem,
 } from './shiftsApi.types'
+
+/**
+ * per_page для списков, которым нужен полный набор (множество откликнутых смен,
+ * счётчик и модерация полученных заявок). Совпадает с максимумом бэка (100).
+ * Край: при >100 записях у одного субъекта набор усечётся — тогда нужна курсорная пагинация.
+ */
+export const FULL_LIST_PER_PAGE = 100
 
 const shiftsApi = api.injectEndpoints({
   endpoints: builder => ({
@@ -170,22 +178,33 @@ const shiftsApi = api.injectEndpoints({
             ],
     }),
 
-    // Получить смены, на которые поданы заявки
-    getAppliedShifts: builder.query<VacanciesResponse, void>({
-      query: () => ({
-        url: '/api/v1/shifts/applied_shifts',
-        method: 'GET',
-      }),
+    // Получить смены, на которые поданы заявки.
+    // Множество нужно целиком (красит карточки во всей ленте) — потребители шлют per_page=100.
+    getAppliedShifts: builder.query<VacanciesResponse, PaginatedListParams | void>({
+      query: params => {
+        const queryString = buildQueryParams(params ?? {})
+        return {
+          url: `/api/v1/shifts/applied_shifts${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
       providesTags: result => provideListTags('AppliedShift', result),
       keepUnusedDataFor: 60,
     }),
 
-    // Получить отклики на смены/вакансии текущего заведения
-    getReceivedShiftApplications: builder.query<ReceivedShiftApplicationsResponse, void>({
-      query: () => ({
-        url: '/api/v1/shift_applications/received',
-        method: 'GET',
-      }),
+    // Получить отклики на смены/вакансии текущего заведения.
+    // Нужен полный набор: точный счётчик pending + модерация всех заявок — per_page=100.
+    getReceivedShiftApplications: builder.query<
+      ReceivedShiftApplicationsResponse,
+      PaginatedListParams | void
+    >({
+      query: params => {
+        const queryString = buildQueryParams(params ?? {})
+        return {
+          url: `/api/v1/shift_applications/received${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
       providesTags: result => provideListTags('AppliedShift', result),
       keepUnusedDataFor: 120,
     }),

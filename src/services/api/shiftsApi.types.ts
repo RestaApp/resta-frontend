@@ -209,6 +209,15 @@ export interface ReceivedShiftApplicationsResponse {
 }
 
 /**
+ * Параметры пагинации для списков, которым нужен ПОЛНЫЙ набор
+ * (applied_shifts, shift_applications/received). Бэк режет per_page на 100.
+ */
+export interface PaginatedListParams {
+  page?: number
+  per_page?: number
+}
+
+/**
  * Вложенная заявка: ShiftApplicationBlueprint view :basic даёт в основном id/status/даты;
  * остальное опционально при расширении API.
  */

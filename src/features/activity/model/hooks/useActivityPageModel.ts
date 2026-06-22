@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
-import { useGetMyShiftsQuery, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
+import {
+  useGetMyShiftsQuery,
+  useGetAppliedShiftsQuery,
+  FULL_LIST_PER_PAGE,
+} from '@/services/api/shiftsApi'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useDeleteShift } from '@/shared/lib/hooks/useDeleteShift'
 import { useToast } from '@/shared/lib/hooks/useToast'
@@ -40,10 +44,13 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
     data: appliedData,
     isLoading: isAppliedLoading,
     refetch: refetchAppliedShifts,
-  } = useGetAppliedShiftsQuery(undefined, {
-    skip: isVenue || isSupplier || !isAuthenticated,
-    refetchOnFocus: false,
-  })
+  } = useGetAppliedShiftsQuery(
+    { per_page: FULL_LIST_PER_PAGE },
+    {
+      skip: isVenue || isSupplier || !isAuthenticated,
+      refetchOnFocus: false,
+    }
+  )
 
   const shifts = useMemo(() => normalizeVacanciesResponse(data), [data])
   const appliedShifts = useMemo(() => normalizeVacanciesResponse(appliedData), [appliedData])
