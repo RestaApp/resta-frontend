@@ -28,6 +28,13 @@ export const DEFAULT_EMPLOYEE_CATALOG_FILTERS: EmployeeCatalogFilters = {
 
 export const EMPLOYEES_PER_PAGE = 20
 
+/**
+ * Гейт UI приглашения сотрудника из каталога (кнопка «Пригласить» + дровер).
+ * Сейчас скрыто: бэкенд не поддерживает инвайт (shift_applications#create
+ * игнорирует user_id). Вся проводка сохранена — включается одним флагом.
+ */
+export const STAFF_INVITE_ENABLED: boolean = false
+
 export type EmployeeApiUser = UserData
 
 export const resolveEmployeeUserType = (position: string | null): UsersListType =>

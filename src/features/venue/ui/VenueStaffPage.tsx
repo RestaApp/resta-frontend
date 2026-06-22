@@ -12,6 +12,7 @@ import { StaffApplicationsDrawer } from './staff/StaffApplicationsDrawer'
 import { StaffPageHeader } from './staff/StaffPageHeader'
 import { useEmployeeCatalogModel } from './staff/useEmployeeCatalogModel'
 import { useStaffApplicationsController } from './staff/useStaffApplicationsController'
+import { STAFF_INVITE_ENABLED } from './staff/employeeCatalogTypes'
 
 export function VenueStaffPage() {
   const { t } = useTranslation()
@@ -115,16 +116,18 @@ export function VenueStaffPage() {
         onReset={catalog.handleResetDraftFilters}
       />
 
-      <EmployeeInviteDrawer
-        open={catalog.isInviteOpen}
-        employee={catalog.inviteEmployee}
-        vacancies={catalog.inviteableVacancies}
-        invitingShiftId={catalog.invitingShiftId}
-        onClose={catalog.handleCloseInvite}
-        onInvite={catalog.handleInvite}
-        getEmployeePositionLabel={catalog.getEmployeePositionLabel}
-        getSpecializationLabel={catalog.getSpecializationLabel}
-      />
+      {STAFF_INVITE_ENABLED ? (
+        <EmployeeInviteDrawer
+          open={catalog.isInviteOpen}
+          employee={catalog.inviteEmployee}
+          vacancies={catalog.inviteableVacancies}
+          invitingShiftId={catalog.invitingShiftId}
+          onClose={catalog.handleCloseInvite}
+          onInvite={catalog.handleInvite}
+          getEmployeePositionLabel={catalog.getEmployeePositionLabel}
+          getSpecializationLabel={catalog.getSpecializationLabel}
+        />
+      ) : null}
 
       {staff.isShiftDetailOpen && (staff.isShiftDetailLoading || !staff.mappedShift) ? (
         <DetailsScreenFrame

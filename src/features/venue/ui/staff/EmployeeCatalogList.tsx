@@ -4,7 +4,7 @@ import { CatalogListShell } from '@/shared/ui/CatalogListShell'
 import { ApplicantPreviewCard } from '@/shared/ui/shift-details-screen/ApplicantPreviewCard'
 import type { ActiveFilterItem } from '@/shared/types/active-filters'
 import { mapEmployeeCatalogItemToApplicationPreview } from './employeeCatalogMappers'
-import type { EmployeeCatalogItem } from './employeeCatalogTypes'
+import { STAFF_INVITE_ENABLED, type EmployeeCatalogItem } from './employeeCatalogTypes'
 
 interface EmployeeCatalogListProps {
   activeFilters: ActiveFilterItem[]
@@ -87,7 +87,7 @@ export const EmployeeCatalogList = ({
             onSelect={onOpenProfile}
             t={t}
             variant="catalog"
-            onInvite={() => onInvite(employee)}
+            onInvite={STAFF_INVITE_ENABLED ? () => onInvite(employee) : undefined}
           />
         ))}
       </div>
