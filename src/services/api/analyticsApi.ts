@@ -39,18 +39,20 @@ export interface SupplierAnalyticsMonth {
 }
 
 /**
- * GET /analytics/supplier — дашборд поставщика.
- * Поля `plan` / `analytics_locked` появятся после мержа monetization (ANALYTICS_MERGE_NOTES):
- * на FREE-плане дашборд блокируется, на PRO — открыт.
+ * GET /analytics/supplier — дашборд поставщика. Две формы ответа:
+ *  - FREE (тизер):  `{ plan: 'supplier_free', total_views, analytics_locked: true }`
+ *  - PRO  (полный): `{ plan: 'supplier_pro', total_views, current_month, previous_month, analytics_locked: false }`
  */
 export interface SupplierAnalyticsData {
-  current_month: SupplierAnalyticsMonth
-  previous_month: SupplierAnalyticsMonth
-  all_time_views: number
-  /** Имя плана поставщика (supplier_free / supplier_pro), если бэк его отдаёт. */
-  plan?: string
-  /** true → аналитика доступна только на PRO; показывать локап. */
-  analytics_locked?: boolean
+  /** Имя плана поставщика (совпадает с `Plan#name` на бэке). */
+  plan: 'supplier_free' | 'supplier_pro'
+  /** Всего просмотров профиля за всё время — тизер на FREE и верхнеуровневое поле на PRO. */
+  total_views: number
+  /** true → полная аналитика доступна только на PRO; показывать локап. */
+  analytics_locked: boolean
+  /** Помесячная разбивка приходит только на PRO. */
+  current_month?: SupplierAnalyticsMonth
+  previous_month?: SupplierAnalyticsMonth
 }
 
 export interface SupplierAnalyticsResponse {

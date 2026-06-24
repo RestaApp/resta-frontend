@@ -1,9 +1,25 @@
 import type { TFunction } from 'i18next'
 
+/**
+ * Тело ошибки API. Единая форма: `{ success: false, errors: string[], code? }`.
+ * `code` — стабильный доменный код причины (проставляется, только когда причина
+ * реально известна): `profile_incomplete` | `purchase_required` | `validation` |
+ * `duplicate_vacancy`. Спецслучаи: `profile_incomplete` отдаёт `missing_fields`
+ * вместо `errors`; монетизация — одиночный `error` + доп. поля.
+ */
 export type ApiErrorData = {
-  message?: string
+  code?: string
+  errors?: string[]
   missing_fields?: string[]
+  /** Спецслучай монетизации отдаёт одиночный текст в `error` (не массив). */
+  error?: string
+  /** Legacy-фолбэк: бэк больше не кладёт текст в `message`, читаем только на всякий случай. */
+  message?: string
 }
+
+/** Первый человекочитаемый текст из тела ошибки (errors[0] → error → message). */
+const firstErrorText = (data: ApiErrorData): string | undefined =>
+  data.errors?.[0] ?? data.error ?? data.message ?? undefined
 
 export type ProfileIncompleteError = {
   kind: 'profile_incomplete'
@@ -32,7 +48,7 @@ export const normalizeApiError = (
   if (isObject(error) && 'data' in error && isObject(error.data)) {
     const data = error.data as ApiErrorData
 
-    if (data.message === 'profile_incomplete') {
+    if (data.code === 'profile_incomplete') {
       const missingFields = Array.isArray(data.missing_fields) ? data.missing_fields : []
       const missingFieldsLabels = mapMissingFieldsToLabels(missingFields, t)
       const fieldsText = missingFieldsLabels.length
@@ -47,7 +63,7 @@ export const normalizeApiError = (
       }
     }
 
-    return { kind: 'generic', message: data.message || fallbackMessage }
+    return { kind: 'generic', message: firstErrorText(data) || fallbackMessage }
   }
 
   if (error instanceof Error) {

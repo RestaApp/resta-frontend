@@ -75,15 +75,14 @@ export const SupplierAnalyticsCard = memo(function SupplierAnalyticsCard({
   const {
     current_month: current,
     previous_month: previous,
-    all_time_views,
+    total_views: allTimeViews,
     analytics_locked,
   } = data.data
 
   // FREE-план отдаёт только total_views без помесячной разбивки (analytics_locked: true).
   // Без current/previous дашборд не построить — показываем локап (при включённой
   // монетизации) либо ничего (монетизация в спящем режиме).
-  const locked = analytics_locked === true || !current || !previous
-  if (locked) {
+  if (analytics_locked || !current || !previous) {
     if (!MONETIZATION_ENABLED) return null
     return (
       <>
@@ -183,7 +182,7 @@ export const SupplierAnalyticsCard = memo(function SupplierAnalyticsCard({
 
         <div className="flex items-center justify-between border-t border-border/50 pt-3 text-xs text-muted-foreground">
           <span>{t('profile.analytics.allTimeViews')}</span>
-          <span className="font-semibold text-foreground">{all_time_views}</span>
+          <span className="font-semibold text-foreground">{allTimeViews}</span>
         </div>
       </Card>
     </section>
