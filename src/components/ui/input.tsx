@@ -49,16 +49,41 @@ interface InputProps extends React.ComponentProps<'input'> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', variant = 'default', ...props }, ref) => (
-    <input
-      ref={ref}
-      type={type}
-      data-slot="input"
-      data-variant={variant}
-      aria-invalid={variant === 'error' ? true : props['aria-invalid']}
-      className={cn(INPUT_VARIANT[variant], className)}
-      {...props}
-    />
-  )
+  (
+    {
+      className,
+      type = 'text',
+      variant = 'default',
+      // По умолчанию у return‑клавиши показываем «готово» (галочка/Done на iOS).
+      // Любое поле может переопределить (`search`, `next`, `go` и т.д.).
+      enterKeyHint = 'done',
+      onKeyDown,
+      ...props
+    },
+    ref
+  ) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      onKeyDown?.(event)
+      // Enter на однострочном поле прячет клавиатуру, если потребитель не
+      // перехватил событие (например, для submit формы или выбора подсказки).
+      if (event.key === 'Enter' && !event.defaultPrevented) {
+        event.currentTarget.blur()
+      }
+    }
+
+    return (
+      <input
+        ref={ref}
+        type={type}
+        data-slot="input"
+        data-variant={variant}
+        enterKeyHint={enterKeyHint}
+        aria-invalid={variant === 'error' ? true : props['aria-invalid']}
+        className={cn(INPUT_VARIANT[variant], className)}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    )
+  }
 )
 Input.displayName = 'Input'

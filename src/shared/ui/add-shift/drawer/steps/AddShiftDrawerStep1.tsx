@@ -62,6 +62,7 @@ export const AddShiftDrawerStep1 = ({
               value={employeeAddress}
               onChange={e => handleEmployeeAddressChange(e.target.value)}
               placeholder={t('shift.locationPlaceholder')}
+              autoComplete="street-address"
               aria-invalid={!!locationError}
             />
           </Field>

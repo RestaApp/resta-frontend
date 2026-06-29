@@ -93,6 +93,8 @@ export const ShiftLocationField = memo(function ShiftLocationField({
             value={manualInput}
             onChange={e => setManualInput(e.target.value)}
             placeholder={placeholder ?? t('shift.locationPlaceholder')}
+            autoComplete="street-address"
+            enterKeyHint="enter"
             onKeyDown={e => {
               if (e.key === 'Enter') {
                 e.preventDefault()
