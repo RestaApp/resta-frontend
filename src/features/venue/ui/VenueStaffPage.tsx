@@ -93,6 +93,8 @@ export function VenueStaffPage() {
         open={staff.isApplicationsOpen}
         onOpenChange={staff.setIsApplicationsOpen}
         isLoading={staff.isApplicationsLoading}
+        isError={staff.isApplicationsError}
+        onRetry={() => void staff.refetchApplications()}
         items={staff.staffItems}
         isAccepting={staff.isAccepting}
         acceptingApplicationId={staff.acceptingApplicationId}

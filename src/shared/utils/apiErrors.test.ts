@@ -29,7 +29,11 @@ describe('normalizeApiError · контракт ошибок (code-based)', () =
   })
 
   it('generic-ошибка берёт текст из errors[0]', () => {
-    const result = normalizeApiError({ data: { errors: ['Position is invalid', 'x'] } }, fallback, t)
+    const result = normalizeApiError(
+      { data: { errors: ['Position is invalid', 'x'] } },
+      fallback,
+      t
+    )
     expect(result).toEqual({ kind: 'generic', message: 'Position is invalid' })
   })
 
@@ -39,7 +43,10 @@ describe('normalizeApiError · контракт ошибок (code-based)', () =
   })
 
   it('пустое тело → fallback', () => {
-    expect(normalizeApiError({ data: {} }, fallback, t)).toEqual({ kind: 'generic', message: fallback })
+    expect(normalizeApiError({ data: {} }, fallback, t)).toEqual({
+      kind: 'generic',
+      message: fallback,
+    })
   })
 
   it('уже нормализованная ошибка возвращается как есть', () => {

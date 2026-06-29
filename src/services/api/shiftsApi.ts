@@ -209,12 +209,17 @@ const shiftsApi = api.injectEndpoints({
       keepUnusedDataFor: 120,
     }),
 
-    // Получить мои смены (список смен текущего пользователя)
-    getMyShifts: builder.query<VacanciesResponse, void>({
-      query: () => ({
-        url: '/api/v1/shifts/my_shifts',
-        method: 'GET',
-      }),
+    // Получить мои смены (список смен текущего пользователя).
+    // Нужен полный набор: из него считаются completed_shifts и строится список «мои смены».
+    // Без per_page бэк режет до 20 (Kaminari default) → недосчёт. Шлём per_page=100.
+    getMyShifts: builder.query<VacanciesResponse, PaginatedListParams | void>({
+      query: params => {
+        const queryString = buildQueryParams({ per_page: FULL_LIST_PER_PAGE, ...(params ?? {}) })
+        return {
+          url: `/api/v1/shifts/my_shifts${queryString ? `?${queryString}` : ''}`,
+          method: 'GET',
+        }
+      },
       providesTags: result => provideListTags('Shift', result),
       keepUnusedDataFor: 60,
     }),

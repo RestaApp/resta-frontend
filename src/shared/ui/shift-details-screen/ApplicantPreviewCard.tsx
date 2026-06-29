@@ -86,7 +86,7 @@ const ratingSummary = (
     </span>
   ) : (
     <span className="inline-flex items-center gap-1">
-      <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
+      <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" aria-hidden />
       {t('shift.applicantNoReviews')}
     </span>
   )
@@ -110,7 +110,7 @@ const ratingStars = (hasRating: boolean, normalizedRating: number, t: TFunction)
       ))
     ) : (
       <>
-        <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden />
+        <Star className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" aria-hidden />
         <span>{t('shift.applicantNoReviews')}</span>
       </>
     )}

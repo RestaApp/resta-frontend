@@ -126,7 +126,8 @@ const authApi = api.injectEndpoints({
       query: body => ({
         url: '/api/v1/auth/sign_in',
         method: 'POST',
-        // API.md: `init_data`; часть деплоев Rails принимает `initData` (как в Telegram WebApp) — шлём оба.
+        // Бэкенд требует `initData` (params.require(:initData), как в Telegram WebApp).
+        // `init_data` шлём дополнительно для совместимости со старыми деплоями — безвредно.
         body: { init_data: body.initData, initData: body.initData },
       }),
       // Не инвалидируем теги 'User' при sign_in, чтобы избежать лишнего refetch

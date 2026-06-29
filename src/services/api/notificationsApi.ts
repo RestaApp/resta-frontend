@@ -50,6 +50,16 @@ export interface MarkAllReadResponse {
   data: { updated: number }
 }
 
+/**
+ * Ответ PATCH /api/v1/notifications/:id (read/archive).
+ * Бэк возвращает полный ресурс (render_resource(NotificationBlueprint)); UI опирается
+ * только на `success` + оптимистичные апдейты, но тип отражает реальную форму ответа.
+ */
+export interface NotificationMutationResponse {
+  success: boolean
+  data?: NotificationItem
+}
+
 export interface GetNotificationsParams {
   status?: NotificationStatus
   type?: NotificationType | string
@@ -96,7 +106,7 @@ export const notificationsApi = api.injectEndpoints({
       providesTags: ['Notification'],
     }),
 
-    markNotificationRead: builder.mutation<{ success: boolean }, number>({
+    markNotificationRead: builder.mutation<NotificationMutationResponse, number>({
       query: id => ({
         url: `/api/v1/notifications/${id}`,
         method: 'PATCH',
@@ -128,7 +138,7 @@ export const notificationsApi = api.injectEndpoints({
       },
     }),
 
-    archiveNotification: builder.mutation<{ success: boolean }, number>({
+    archiveNotification: builder.mutation<NotificationMutationResponse, number>({
       query: id => ({
         url: `/api/v1/notifications/${id}`,
         method: 'PATCH',

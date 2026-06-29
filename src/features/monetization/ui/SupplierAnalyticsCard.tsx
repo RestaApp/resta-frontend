@@ -114,8 +114,8 @@ export const SupplierAnalyticsCard = memo(function SupplierAnalyticsCard({
       id: 'views',
       value: (
         <span className="inline-flex items-baseline">
-          {current.total_views}
-          <DeltaBadge current={current.total_views} previous={previous.total_views} />
+          {current.views}
+          <DeltaBadge current={current.views} previous={previous.views} />
         </span>
       ),
       label: t('profile.analytics.views'),

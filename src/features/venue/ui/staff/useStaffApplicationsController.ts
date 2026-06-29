@@ -37,6 +37,7 @@ export const useStaffApplicationsController = () => {
   const {
     data: applicationsData,
     isLoading: isApplicationsLoading,
+    isError: isApplicationsError,
     refetch: refetchApplications,
   } = useGetReceivedShiftApplicationsQuery({ per_page: FULL_LIST_PER_PAGE })
   const [acceptApplication, { isLoading: isAccepting }] = useAcceptApplicationMutation()
@@ -238,6 +239,7 @@ export const useStaffApplicationsController = () => {
     isApplicationsOpen,
     setIsApplicationsOpen,
     isApplicationsLoading,
+    isApplicationsError,
     pendingApplicationsCount,
     staffItems,
     isAccepting,

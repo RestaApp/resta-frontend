@@ -36,12 +36,11 @@ export interface ReviewsListResponse {
 
 export interface GetReviewsParams {
   /**
-   * ID оцениваемого пользователя. ⚠️ Текущий бэкенд `GET /reviews` НЕ фильтрует
-   * по этому параметру (возвращает все отзывы) — фронт дофильтровывает по
-   * `reviewed.id`. Параметр заложен forward-compatible под доработку бэка.
-   * См. HANDOFF.md.
+   * ID оцениваемого пользователя. Обязателен: бэкенд `GET /reviews` делает
+   * `params.require(:reviewed_id)` и фильтрует по нему (`.where(reviewed_id:).approved`),
+   * без него вернётся 422.
    */
-  reviewed_id?: number
+  reviewed_id: number
   page?: number
   per_page?: number
 }
