@@ -72,7 +72,8 @@ const refreshToken = async (): Promise<boolean> => {
   }
 }
 
-const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = async (
+// Экспортируется для юнит-тестов (single-flight refresh / logout-on-failure).
+export const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = async (
   args,
   apiCtx,
   extraOptions
@@ -101,7 +102,11 @@ const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError> = asy
 const MAX_RETRIES = 2
 
 /** Не ретраить при profile_incomplete; ретраить только 408, 429, 5xx и не более MAX_RETRIES раз */
-function shouldRetry(error: unknown, _args: Args, { attempt }: { attempt: number }): boolean {
+export function shouldRetry(
+  error: unknown,
+  _args: Args,
+  { attempt }: { attempt: number }
+): boolean {
   if (attempt > MAX_RETRIES) return false
   const err = error as FetchBaseQueryError | undefined
   const data = err?.data as { code?: string } | undefined
