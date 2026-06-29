@@ -73,4 +73,8 @@ Thumbs.db
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Отдельный Rails-проект бэкенда лежит в корне как вложенный репозиторий
+# (своя git-история) — он не должен попадать во фронт-репо.
 resta_backend-main
+resta_backend/
