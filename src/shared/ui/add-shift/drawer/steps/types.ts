@@ -73,7 +73,5 @@ export interface AddShiftDrawerStep2Props {
   requirements: string
   onRequirementsChange: (value: string) => void
   requirementsError?: string
-  urgent: boolean
-  onUrgentChange: (value: boolean) => void
   isVacancyType?: boolean
 }

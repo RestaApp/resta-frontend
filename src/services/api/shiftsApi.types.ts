@@ -14,7 +14,6 @@ export interface CreateShiftBody {
   city?: string
   requirements?: string
   shift_type: 'vacancy' | 'replacement'
-  urgent?: boolean
   position: string
   /** Несколько специализаций для смены */
   specializations?: string[]

@@ -55,7 +55,6 @@ export const useAddShiftFormState = ({
     if (v === 'vacancy' || v === 'replacement') return v
     return initialShiftType ?? 'vacancy'
   })
-  const [urgent, setUrgent] = useState(() => !!initialValues?.urgent)
   const [position, setPosition] = useState(() =>
     normalizeCatalogPosition(initialValues?.position || '')
   )
@@ -81,7 +80,6 @@ export const useAddShiftFormState = ({
     setCity(initialCity ?? '')
     setRequirements('')
     setShiftType(initialShiftType ?? 'vacancy')
-    setUrgent(false)
     setPosition('')
     setSpecializations([])
     setSubmitError(null)
@@ -109,8 +107,6 @@ export const useAddShiftFormState = ({
     setRequirements,
     shiftType,
     setShiftType,
-    urgent,
-    setUrgent,
     position,
     setPosition,
     specializations,

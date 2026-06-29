@@ -304,8 +304,6 @@ const AddShiftDrawerKeyed = ({
                   requirements={form.requirements}
                   onRequirementsChange={controller.actions.handleRequirementsChange}
                   requirementsError={controller.derived.errors.requirementsFieldError}
-                  urgent={form.urgent}
-                  onUrgentChange={controller.actions.handleUrgentChange}
                   isVacancyType={isVacancyType}
                 />
               ) : null}
