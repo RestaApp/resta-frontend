@@ -58,8 +58,8 @@ const ReviewRow = memo(function ReviewRow({ review }: { review: ReviewItem }) {
 
 /**
  * Лента отзывов о пользователе (GET /api/v1/reviews).
- * ⚠️ Текущий бэкенд не фильтрует по reviewed_id — дофильтровываем по `reviewed.id`
- * на клиенте (см. HANDOFF.md). При пустом списке ничего не рендерим.
+ * Бэкенд уже фильтрует по reviewed_id и отдаёт только approved — оставляем лишь
+ * непустые отзывы. При пустом списке ничего не рендерим.
  */
 export const ProfileReviewsList = memo(function ProfileReviewsList({ userId }: { userId: number }) {
   const { data } = useGetReviewsQuery({ reviewed_id: userId })
@@ -67,11 +67,11 @@ export const ProfileReviewsList = memo(function ProfileReviewsList({ userId }: {
   const reviews = useMemo(() => {
     const items = data?.data ?? []
     return items
-      .filter(review => review.reviewed?.id === userId && (review.comment || review.rating > 0))
+      .filter(review => review.comment || review.rating > 0)
       .slice()
       .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''))
       .slice(0, MAX_VISIBLE)
-  }, [data, userId])
+  }, [data])
 
   if (reviews.length === 0) return null
 

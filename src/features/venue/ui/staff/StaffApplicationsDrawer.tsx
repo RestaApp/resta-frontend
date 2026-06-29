@@ -1,12 +1,15 @@
 import { useTranslation } from 'react-i18next'
 import { Drawer, DrawerBody, DrawerFrame } from '@/components/ui/drawer'
 import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
+import { ErrorState } from '@/components/ui/states'
 import { VenueStaffList, type StaffItem } from './VenueStaffList'
 
 interface StaffApplicationsDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   isLoading: boolean
+  isError: boolean
+  onRetry: () => void
   items: StaffItem[]
   isAccepting: boolean
   acceptingApplicationId: number | null
@@ -19,6 +22,8 @@ export const StaffApplicationsDrawer = ({
   open,
   onOpenChange,
   isLoading,
+  isError,
+  onRetry,
   items,
   isAccepting,
   acceptingApplicationId,
@@ -37,15 +42,25 @@ export const StaffApplicationsDrawer = ({
         />
 
         <DrawerBody className="p-0">
-          <VenueStaffList
-            isLoading={isLoading}
-            items={items}
-            isAccepting={isAccepting}
-            acceptingApplicationId={acceptingApplicationId}
-            onAccept={onAccept}
-            onSelectApplicant={onSelectApplicant}
-            onOpenShiftDetails={onOpenShiftDetails}
-          />
+          {isError ? (
+            <ErrorState
+              title={t('venueUi.staff.applications.loadError', {
+                defaultValue: 'Не удалось загрузить отклики',
+              })}
+              onRetry={onRetry}
+              retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
+            />
+          ) : (
+            <VenueStaffList
+              isLoading={isLoading}
+              items={items}
+              isAccepting={isAccepting}
+              acceptingApplicationId={acceptingApplicationId}
+              onAccept={onAccept}
+              onSelectApplicant={onSelectApplicant}
+              onOpenShiftDetails={onOpenShiftDetails}
+            />
+          )}
         </DrawerBody>
       </DrawerFrame>
     </Drawer>

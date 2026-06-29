@@ -103,20 +103,20 @@ export const useVenueSuppliersPageModel = () => {
 
   const { supplierUsers, restaurantUsers } = useMemo(() => {
     const apiData = data?.data
-    if (!Array.isArray(apiData)) {
-      return {
-        supplierUsers: [] as SupplierApiUser[],
-        restaurantUsers: [] as RestaurantApiUser[],
-      }
-    }
+    // Форма записей определяется нашим же `user_type` в queryParams (restaurant ↔ supplier),
+    // поэтому ветвление по роли безопасно по построению. Дополнительно отсеиваем
+    // некорректные записи (без числового id), чтобы не передавать мусор в мапперы.
+    const valid = Array.isArray(apiData)
+      ? apiData.filter(item => !!item && typeof item === 'object' && typeof item.id === 'number')
+      : []
     if (isSupplierRole) {
       return {
         supplierUsers: [] as SupplierApiUser[],
-        restaurantUsers: apiData as RestaurantApiUser[],
+        restaurantUsers: valid as RestaurantApiUser[],
       }
     }
     return {
-      supplierUsers: apiData as SupplierApiUser[],
+      supplierUsers: valid as SupplierApiUser[],
       restaurantUsers: [] as RestaurantApiUser[],
     }
   }, [data?.data, isSupplierRole])

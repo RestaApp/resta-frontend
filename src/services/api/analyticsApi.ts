@@ -31,7 +31,12 @@ export interface MyAnalyticsResponse {
 
 /** Помесячный срез аналитики поставщика. `contact_clicks` содержит только типы с кликами. */
 export interface SupplierAnalyticsMonth {
-  total_views: number
+  /**
+   * Просмотры за месяц. Бэкенд (`month_breakdown`) и API.md отдают ключ `views`
+   * внутри `current_month`/`previous_month` — НЕ `total_views`
+   * (`total_views` существует только на верхнем уровне `SupplierAnalyticsData`).
+   */
+  views: number
   unique_viewers: number
   contact_clicks: Partial<Record<ContactType, number>>
   price_list_requests: number

@@ -41,18 +41,18 @@ export const useProfilePageModel = () => {
   const { showToast } = useToast()
   const { updateUser, isLoading: isUpdatingUser } = useUpdateUser()
 
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(() => {
-    const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
-    return shouldOpenEdit === 'true'
-  })
+  // legacy: открыть дровер редактирования по одноразовому localStorage-флагу.
+  // Чтение — в lazy-инициализаторе (один раз), очистка — в commit-фазе ниже:
+  // нельзя трогать localStorage во время рендера (render purity / StrictMode
+  // дважды вызывает инициализатор и съел бы флаг до открытия дровера).
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(
+    () => getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT) === 'true'
+  )
   const [isNotificationPrefsDrawerOpen, setIsNotificationPrefsDrawerOpen] = useState(false)
 
-  // legacy: open drawer by localStorage flag
+  // Гасим одноразовый флаг после монтирования (идемпотентно — remove отсутствующего ключа безопасен).
   useEffect(() => {
-    const shouldOpenEdit = getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
-    if (shouldOpenEdit === 'true') {
-      removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
-    }
+    removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
   }, [])
 
   // legacy: open drawer by window event

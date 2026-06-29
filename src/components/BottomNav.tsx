@@ -52,7 +52,7 @@ export const BottomNav = ({
           style={{ scale: barScale, transformOrigin: '50% 100%' }}
           className={cn(
             'pointer-events-auto relative mx-auto flex h-13 w-full max-w-lg items-center overflow-hidden rounded-full border border-border/60 p-0.5',
-            reduceVisualEffects ? 'bg-background/95' : 'bg-background/65 backdrop-blur-xl',
+            reduceVisualEffects ? 'bg-background/92' : 'bg-background/65 backdrop-blur-xl',
             tabs.length === 4 ? 'grid grid-cols-4' : 'grid grid-cols-2'
           )}
         >

@@ -169,7 +169,7 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
             <InlineAlert message={t('notifications.loadError')} className="my-4" />
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-12 text-center">
-              <BellOff className="h-8 w-8 text-muted-foreground/40" aria-hidden="true" />
+              <BellOff className="h-8 w-8 text-muted-foreground/30" aria-hidden="true" />
               <p className="text-sm font-medium text-foreground">{t('notifications.emptyTitle')}</p>
               <p className="text-xs text-muted-foreground">{t('notifications.emptyDescription')}</p>
             </div>

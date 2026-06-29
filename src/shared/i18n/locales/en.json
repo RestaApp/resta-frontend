@@ -161,7 +161,8 @@
       "applications": {
         "title": "Applications",
         "openAria": "Applications",
-        "openAriaWithCount": "Applications, {{count}} new"
+        "openAriaWithCount": "Applications, {{count}} new",
+        "loadError": "Failed to load applications"
       },
       "catalog": {
         "title": "Employee catalog",

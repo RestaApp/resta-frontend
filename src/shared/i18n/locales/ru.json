@@ -161,7 +161,8 @@
       "applications": {
         "title": "Отклики",
         "openAria": "Отклики",
-        "openAriaWithCount": "Отклики, {{count}} новых"
+        "openAriaWithCount": "Отклики, {{count}} новых",
+        "loadError": "Не удалось загрузить отклики"
       },
       "catalog": {
         "title": "Каталог сотрудников",
