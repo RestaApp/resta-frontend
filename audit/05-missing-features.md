@@ -15,10 +15,6 @@
 | Match-score badge («AI») | 🟡 | ❌ | — | Скрыто до появления поля. Отложено намеренно |
 | Серверная синхронизация темы | 🟡 | ❌ | — | localStorage-only; нет `PATCH /me {theme}`. Приемлемо |
 
-## Полностью реализовано (✅)
-
-Фид/фильтры/срочные, apply (cover letter), activity (my shifts / applications / received), reviews create+list, рейтинги, notification preferences (5 тумблеров), supplier PRO subscription + checkout, slot-purchases с реактивным 402-flow, supplier-аналитика, analytics track/my, онбординг + role-tour, профили (employee/restaurant/supplier), support-тикеты, Telegram-бот (команды/webhook/тикеты).
-
 ## Легенда
 
 - ✅ полностью · 🟡 частично · ❌ заглушка/нет

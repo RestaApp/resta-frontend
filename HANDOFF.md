@@ -11,7 +11,7 @@ UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md
 
 ## ⚡ Что нужно от бэкенда (TODO)
 
-> Проверено против кода `resta_backend` на ветке `main` (перепроверено 29.06.2026; закрытые пункты удалены). Ниже — **только то, что реально надо доделать**. Остальные разделы файла — справка по уже работающим контрактам.
+> Проверено против кода `resta_backend` на ветке `main` (перепроверено 29.06.2026; полностью готовые на фронте и бэке контракты удалены). В файле — **только невыполненное**: блокеры (🔴), желательные доработки (🟡) и нереализованные на бэке фичи (§1–§3).
 
 ### 🔴 Блокирует фичи (фронт готов, ждёт бэк)
 
@@ -42,11 +42,6 @@ GET /api/v1/shifts?user_id=42&shift_type=vacancy
 | 6 | `PATCH /api/v1/me { theme }` | хранения нет | синхронизация темы между устройствами; сейчас только `localStorage` |
 | 7 | In-app `Notification`-записи (`GET /notifications`, `/has_unread`) | колокол/список пустые | фронт **корректно** полит `has_unread` (30с) и грузит список — если уведомлений нет, бэк не создаёт in-app записи (шлёт только в Telegram-бот). По контракту «In-App создаются всегда» — проверить, что записи реально пишутся |
 
-### ✅ Уже готово — не трогать
-
-Контракты работают, фронт на них завязан:
-`/analytics/track`, `/analytics/my`, `/analytics/supplier`, `/subscriptions/{checkout,current}`, `/purchases` (+`/checkout`), `PATCH /shifts/:id/boost`, accept/reject заявок (смена статуса; ⚠️ контакты при accept ещё НЕ отдаются — см. §2), `notification_preferences` (5 полей).
-
 ---
 
 ## Терминология
@@ -66,54 +61,15 @@ GET /api/v1/shifts?user_id=42&shift_type=vacancy
 
 | Фича                    | Компонент / место                                                                                                      | Без бэка                         |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| PRO подписка (Stars)    | paywall / Stars CTA ([`button.tsx`](src/components/ui/button.tsx) variant `stars`)                                     | UI-only; оплата — заглушка       |
-| KPI профиля             | [`ProfileOverview`](src/shared/ui/user-profile/components/ProfileOverview.tsx), [`KpiRow`](src/components/ui/kpi-row.tsx) | `—` в рейтинге/заработке         |
-| Accept / Reject заявок  | [`shiftsApi.ts`](src/services/api/shiftsApi.ts) — `acceptApplication` / `rejectApplication`                            | эндпоинты уже вызываются         |
-| Urgent / Boost на смене | [`ShiftCard`](src/components/ui/shift-card/ShiftCard.tsx), лента                                                       | только `urgent`; boost — заглушка |
+| KPI профиля             | [`ProfileOverview`](src/shared/ui/user-profile/components/ProfileOverview.tsx), [`KpiRow`](src/components/ui/kpi-row.tsx) | `—` в заработке (нет `earned_total_byn`) |
+| Accept / Reject заявок  | [`shiftsApi.ts`](src/services/api/shiftsApi.ts) — `acceptApplication` / `rejectApplication`                            | статус меняется; контакты не отдаются (§1) |
 | AI-match                | список кандидатов R04                                                                                                  | бейдж скрыт                      |
 
 RTK Query: новые endpoints — `src/services/api/*Api.ts` + импорт в [`services/api/index.ts`](src/services/api/index.ts).
 
 ---
 
-## 1. Telegram Stars — подписки PRO
-
-Фронт **не создаёт invoice сам**. Бэк вызывает Bot API `createInvoiceLink` (валюта `XTR`), возвращает URL; фронт открывает `Telegram.WebApp.openInvoice(url, callback)`.
-
-**Фактический контракт (см. `resta_backend/API.md` и `Frontend/SUBSCRIPTIONS_API_SPEC.md`):**
-
-```
-POST /api/v1/subscriptions/checkout            # только supplier
-  body:    { plan_name: 'supplier_pro' }
-  returns: { success, data: { invoice_url: string } }
-
-GET  /api/v1/subscriptions/current
-  returns: { success, data: {
-             subscription: { id, status, purchased_at, expires_at, days_remaining } | null,
-             plan: { id, name, role, subscription_price, duration_days, features, limits },
-             usage: { <resource>: { used, limit, remaining } } | null   # null при Flipper ON
-           } }
-```
-
-> ⚠️ Старый контракт (`plan_id` + `role`, `current → { active, plan, ends_at, in_trial }`, `POST /subscriptions/cancel`) **устарел** — на бэкенде его нет. Фронт (`subscriptionsApi.ts`) уже использует актуальный. Отмены подписки через API нет (рефанд — внутренний webhook Telegram).
-
-**Тарифы (продуктовый канон):**
-
-| plan_id         | Роль        | Цена              |
-| --------------- | ----------- | ----------------- |
-| `supplier_free` | `supplier`  | бесплатно         |
-| `supplier_pro`  | `supplier`  | 750 Stars / месяц |
-| `restaurant_pro`| `restaurant`| TBD               |
-
-Годовой тариф (`pro_yearly`) **не в продукте** — не добавлять в контракт, пока не утверждён.
-
-Webhook оплаты (`telegram_payment_charge_id`) — **внутренний бэкенд**, фронт не вызывает.
-
-**Интеграция на фронте:** создать `subscriptionsApi.ts`, добавить тег `'Subscription'` в `tagTypes`, подключить paywall (`onPay` → POST checkout → openInvoice).
-
----
-
-## 2. Accept / Reject заявок — открытие контактов (R06)
+## 1. Accept / Reject заявок — открытие контактов (R06)
 
 Статусы заявки: `pending` · `accepted` · `rejected`.
 Статусы смены: `open` · `filled` · `completed` · `cancelled`.
@@ -130,82 +86,21 @@ POST /api/v1/shift_applications/:id/reject
   effect:  application.status = 'rejected'
 ```
 
-**Интеграция:** мутации `acceptApplication` / `rejectApplication` уже в [`shiftsApi.ts`](src/services/api/shiftsApi.ts). Убедиться, что `telegram_username` отдаётся владельцу смены в карточке кандидата.
+**Статус:** мутации `acceptApplication` / `rejectApplication` уже в [`shiftsApi.ts`](src/services/api/shiftsApi.ts), смена статуса работает. ⚠️ **Осталось на бэке:** `accept` сейчас возвращает только `{ message }` — поле `contact` (`telegram_username` / `phone`) **не отдаётся**. Без него ключевой цикл «принят → обменялись контактами» не закрывается.
 
 Не использовать статус `hired` и endpoint `/applications/:id/hire`.
 
 ---
 
-## 3. KPI профиля (E10) — ✅ реализовано
-
-Эндпоинта `/me/stats` на бэкенде **нет**. Фактические источники KPI:
-
-- `avg_rating`, `reviews_count` — агрегаты `average_rating`, `total_reviews` в `UserBlueprint` (`GET /api/v1/users/:id`). ✅ есть.
-- `completed_shifts` — поля в API **нет**; фронт считает сам из `my_shifts` (`useProfilePageModel`). Точный серверный счётчик — TODO #3.
-- Просмотры профиля и клики по контактам за месяц — `GET /api/v1/analytics/my` (`profile_views_count`, `profile_views_this_month`, `contact_clicks_this_month`). ✅ подключено в KPI **своего** профиля.
-
-`earned_total_byn` (суммарный заработок) — TODO #4; без поля UI показывает `—`.
-
----
-
-## 4. Urgent / Boost на смене
-
-**`urgent`** — пометка срочной смены (SOS-бейдж, приоритет в ленте). По факту контракта (`resta_backend/API.md`) ставится через `PATCH /shifts/:id/boost`, выставляющий `urgent: true`. Доступно **владельцу открытой смены** — и ресторанам, и **сотрудникам** (employee urgent_boost, синхронизировано в коммите `dc20503`).
-
-Поля смены в API:
-
-| Поле                      | Назначение                              |
-| ------------------------- | --------------------------------------- |
-| `urgent: boolean`         | срочная смена, приоритет в ленте        |
-| `boosted: boolean`        | бейдж BOOST (продвижение в ленте, R03)  |
-| `boost_position?: number` | `BOOSTED · #2` (R03)                    |
-
-```
-PATCH /api/v1/shifts/:id/boost
-  effect:  urgent = true, boosted_at записывается
-  биллинг:  Flipper OFF — 1 бесплатный буст/мес (monthly_boosts),
-            при исчерпании → 402 { purchase_type: "urgent_boost", price: 100 }
-            Flipper ON — каждый буст требует покупку urgent_boost
-  returns: обновлённая смена; либо 402 (см. поток покупки слотов)
-```
-
-**Бесплатный лимит бустов** (`monthly_boosts`, по умолчанию 1/мес) приходит в `usage` от `GET /subscriptions/current` наряду с `monthly_vacancies` / `monthly_replacements`. Фронт показывает остаток рядом с кнопкой буста (`monetization.usage.boosts`) и отрабатывает 402 общим потоком покупки слотов.
-
-Не использовать `is_sos` / `is_boosted` — фронт уже работает с `urgent` / `boosted`.
-
-### Монетизация поставщиков — страховка 422
-
-`POST /subscriptions/checkout` при выключенном бэкенд-флаге `monetization_suppliers_enabled` возвращает **422** `{ errors: ["Subscription purchases are not available yet."] }`. Кнопку оплаты гейтит фронт-флаг `VITE_MONETIZATION`, синхронный с бэком; 422 — лишь страховка от рассинхрона флагов (обрабатывается в `useSubscriptionCheckout`, сообщение `monetization.pro.disabled`).
-
----
-
-## 5. AI-match score (R04) — ⛔ на бэкенде нет
+## 2. AI-match score (R04) — ⛔ на бэкенде нет
 
 Контракта `?sort=ai_match` / `ai_match_score` в `API.md` нет, фичи на бэке пока нет. Бейдж `AI · 94%` на фронте скрыт (поле отсутствует) — рендерится только когда бэкенд начнёт отдавать `ai_match_score`. Не закладывать в типы как обязательное.
 
 ---
 
-## 6. Тема пользователя — ⛔ на бэкенде нет
+## 3. Тема пользователя — ⛔ на бэкенде нет
 
 `PATCH /api/v1/me { theme }` в `API.md` отсутствует. Тема остаётся только в `localStorage` ([`theme.ts`](src/utils/theme.ts)). Если появится серверное хранение — читать при старте сессии, `setTheme` единая точка записи.
-
----
-
-## 7. Аналитика — ✅ реализовано
-
-- `POST /api/v1/analytics/track` — клики по контактам и запрос прайс-листа (`analyticsApi.trackEvent`, `UserProfileDrawer`).
-- `GET /api/v1/analytics/my` — KPI просмотров/кликов своего профиля (см. §3).
-- `GET /api/v1/analytics/supplier` — дашборд поставщика (`SupplierAnalyticsCard` на `ProfilePage`). Поля `plan` / `analytics_locked` (FREE/PRO-локап после мержа monetization) обработаны опционально.
-
-## 8. Настройки уведомлений
-
-`GET/PATCH /api/v1/notification_preferences` отдаёт 5 полей (`urgent_notifications`, `new_shifts_notifications`, `vacancy_notifications`, `replacement_notifications`, `application_notifications`) + `all_enabled`/`all_disabled`. Фронт завязан на все 5.
-
-## 9. Отзывы
-
-Фронт реализовал ленту отзывов в профиле (`ProfileReviewsList`, `reviewsApi.getReviews`). `GET /reviews?reviewed_id=` фильтрует на бэке (пагинация Kaminari).
-
-**Авто-закрытие напоминания об отзыве** (реализовано, ждёт мёрджа — ветки `feat/auto-archive-review-reminder` + `feat/invalidate-notifications-on-review`). При `POST /reviews` бэк архивирует связанное напоминание `review_reminder` → `status: archived`; фронт инвалидирует тег `Notification`. См. `resta_backend/API.md` → «Создание отзыва».
 
 ---
 
