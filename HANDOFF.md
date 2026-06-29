@@ -85,7 +85,7 @@ POST /api/v1/shift_applications/:id/reject
   effect:  application.status = 'rejected'
 ```
 
-**Статус:** мутации `acceptApplication` / `rejectApplication` уже в [`shiftsApi.ts`](src/services/api/shiftsApi.ts), смена статуса работает. ⚠️ **Осталось на бэке:** `accept` сейчас возвращает только `{ message }` — поле `contact` (`telegram_username` / `phone`) **не отдаётся**. Без него ключевой цикл «принят → обменялись контактами» не закрывается.
+**Статус:** ✅ закрыто. `accept` возвращает `data.contact = { telegram_username, phone }` принятого соискателя (бэкенд `ShiftApplicationsController#accept`, тип на фронте — `AcceptedApplicantContact` в [`shiftsApi.types.ts`](src/services/api/shiftsApi.types.ts)). Симметрично соискатель видит контакт заведения через `GET /users/:id`: контактный PII вынесен в `UserBlueprint(:contact)` и отдаётся только при принятой заявке между сторонами (или для своего профиля) — см. бэкенд `UserPolicy#show_contacts?`.
 
 Не использовать статус `hired` и endpoint `/applications/:id/hire`.
 

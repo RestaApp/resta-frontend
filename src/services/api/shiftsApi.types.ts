@@ -301,8 +301,19 @@ export interface ApplyToShiftRequest {
 }
 
 /**
+ * Контакт принятого соискателя, возвращаемый в ответе accept (HANDOFF §2).
+ * Поля могут быть `null`, если не заполнены.
+ */
+export interface AcceptedApplicantContact {
+  telegram_username: string | null
+  phone: string | null
+}
+
+/**
  * Ответ на отклик: POST shift_applications (201) с телом заявки;
  * accept/reject — чаще `{ success, data: { message } }`.
+ * При accept бэкенд добавляет `data.contact` — контакт принятого соискателя
+ * (для связи со стороны заведения); см. API.md → «Принятие заявки».
  */
 export interface ApplyToShiftResponse {
   success?: boolean
@@ -317,6 +328,8 @@ export interface ApplyToShiftResponse {
     responded_at?: string | null
     priority?: number
     application_id?: number
+    /** Только в ответе accept: контакт принятого соискателя. */
+    contact?: AcceptedApplicantContact
   }
 }
 
