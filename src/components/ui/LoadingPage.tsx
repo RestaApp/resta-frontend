@@ -32,11 +32,7 @@ export const LoadingPage = memo(function LoadingPage() {
 
       <div className="relative mb-8 size-22">
         <motion.div
-          className="absolute inset-0 grid place-items-center rounded-2xl text-5xl font-extrabold text-white"
-          style={{
-            boxShadow: `0 24px 48px color-mix(in srgb, ${roleColorVar} 40%, transparent)`,
-            background: `linear-gradient(135deg, ${roleColorVar}, color-mix(in srgb, ${roleColorVar} 75%, white))`,
-          }}
+          className="absolute inset-0 grid place-items-center rounded-2xl bg-[image:var(--gradient-primary)] text-5xl font-extrabold text-white shadow-[var(--shadow-primary-cta)]"
           initial={reduceMotion ? false : { scale: 0.98 }}
           animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
           transition={
