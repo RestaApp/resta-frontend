@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
 import { MODAL_TITLE_CLASS } from '@/components/ui/ui-patterns'
+import { useTelegramFullscreenOffset } from '@/app/contexts/telegram/useTelegramFullscreenOffset'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { cn } from '@/shared/utils/cn'
@@ -69,6 +70,10 @@ type DrawerContentProps = {
 const FLICK_VELOCITY = 400
 // Резиновое сопротивление при свайпе вниз, когда закрытие запрещено
 const RUBBER_MAX_PX = 24
+// Базовый верхний зазор полноэкранного состояния (как `- 20px` в maxHeight свёрнутого)
+const FULLSCREEN_TOP_GAP_PX = 20
+// Высота top-controls Telegram в iOS fullscreen (== `top-20` в useTelegramFullscreenOffset)
+const TELEGRAM_TOP_CONTROLS_PX = 80
 
 const DrawerContent = memo(function DrawerContent({
   className,
@@ -80,6 +85,9 @@ const DrawerContent = memo(function DrawerContent({
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
+  const { shouldApply: fullscreenOffset, viewportHeight } = useTelegramFullscreenOffset()
+  // Отступ сверху для полного экрана: базовый зазор + top-controls Telegram (iOS fullscreen)
+  const topInsetPx = FULLSCREEN_TOP_GAP_PX + (fullscreenOffset ? TELEGRAM_TOP_CONTROLS_PX : 0)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const isClosingBySwipeRef = useRef(false)
   const y = useMotionValue(0)
@@ -110,7 +118,7 @@ const DrawerContent = memo(function DrawerContent({
     if (!el) return
 
     const measure = () => {
-      expandedHeightRef.current = Math.max(0, window.innerHeight - bottomOffsetPx)
+      expandedHeightRef.current = Math.max(0, window.innerHeight - bottomOffsetPx - topInsetPx)
       if (!draggingRef.current && !expanded) {
         collapsedHeightRef.current = el.offsetHeight
       }
@@ -132,7 +140,7 @@ const DrawerContent = memo(function DrawerContent({
     }
 
     return () => cleanup.forEach(fn => fn())
-  }, [bottomOffsetPx, expanded, minH])
+  }, [bottomOffsetPx, expanded, minH, topInsetPx])
 
   const finishClose = useCallback(() => {
     isClosingBySwipeRef.current = true
@@ -256,7 +264,7 @@ const DrawerContent = memo(function DrawerContent({
           y,
           minHeight: minHeightStyle,
           bottom: bottomOffsetPx,
-          maxHeight: `min(90vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
+          maxHeight: `min(90vh, calc(${viewportHeight} - ${bottomOffsetPx}px - ${topInsetPx}px))`,
         }}
         role="dialog"
         aria-modal="true"
