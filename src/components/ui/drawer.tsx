@@ -1,5 +1,12 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { animate, motion, AnimatePresence, useMotionValue, useReducedMotion } from 'motion/react'
+import {
+  animate,
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from 'motion/react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
@@ -78,6 +85,7 @@ const DrawerContent = memo(function DrawerContent({
   const y = useMotionValue(0)
   // min-height панели: 0 — высота по контенту (свёрнуто); растёт вверх до полного экрана
   const minH = useMotionValue(0)
+  const minHeightStyle = useTransform(minH, v => `${v}px`)
   const [expanded, setExpanded] = useState(false)
 
   // Измеренная высота свёрнутого состояния (по контенту) и доступная высота под полный экран
@@ -246,7 +254,7 @@ const DrawerContent = memo(function DrawerContent({
         )}
         style={{
           y,
-          minHeight: minH,
+          minHeight: minHeightStyle,
           bottom: bottomOffsetPx,
           maxHeight: `min(90vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
         }}
