@@ -86,7 +86,7 @@ export const BottomNav = ({
                 onClick={() => onTabChange(id)}
                 className={cn(
                   'relative z-10 flex h-full min-h-11 flex-col items-center justify-center gap-0.5 rounded-full px-1 py-0.5',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary'
+                  'outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary'
                 )}
               >
                 <span className="relative flex size-[1.375rem] items-center justify-center">
