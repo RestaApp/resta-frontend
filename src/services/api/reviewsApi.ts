@@ -96,9 +96,13 @@ export const reviewsApi = api.injectEndpoints({
         },
       }),
       // Обновляем смену (my_review / can_leave_review) и рейтинг оценённого юзера.
+      // 'Notification' — бэк при POST /reviews авто-архивирует связанное напоминание
+      // review_reminder (см. API.md «Создание отзыва»); инвалидация обновляет инбокс
+      // и колокол сразу, а не на следующем поллинге has_unread.
       invalidatesTags: (_result, _error, { shiftId, reviewedId }) => [
         { type: 'Shift', id: String(shiftId) },
         { type: 'User', id: reviewedId },
+        'Notification',
       ],
     }),
   }),
