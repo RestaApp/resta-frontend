@@ -15,15 +15,15 @@ UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md
 
 ### 🔴 Блокирует фичи (фронт готов, ждёт бэк)
 
-**1. Отдавать 2 поля в настройках уведомлений**
+**~~1. Отдавать 2 поля в настройках уведомлений~~** — ✅ **СДЕЛАНО** (реализовано на бэке)
 
-Файл: `app/controllers/api/v1/notification_preferences_controller.rb`.
-Колонки `vacancy_notifications` и `replacement_notifications` уже есть в БД (`default true NOT NULL`), но контроллер их не принимает и не возвращает. Нужно:
+~~Файл: `app/controllers/api/v1/notification_preferences_controller.rb`.~~
+~~Колонки `vacancy_notifications` и `replacement_notifications` уже есть в БД (`default true NOT NULL`), но контроллер их не принимает и не возвращает. Нужно:~~
 
-- в `notification_preference_params` (permit) добавить `:vacancy_notifications`, `:replacement_notifications`;
-- в `notification_preference_data` (тело ответа) добавить эти же два поля.
+- ~~в `notification_preference_params` (permit) добавить `:vacancy_notifications`, `:replacement_notifications`;~~
+- ~~в `notification_preference_data` (тело ответа) добавить эти же два поля.~~
 
-После фикса `GET/PATCH /api/v1/notification_preferences` отдаёт 5 полей:
+`GET/PATCH /api/v1/notification_preferences` отдаёт 5 полей:
 
 ```json
 { "urgent_notifications": true, "new_shifts_notifications": true,
@@ -31,19 +31,21 @@ UI/engineering — [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md
   "application_notifications": true, "all_enabled": true, "all_disabled": false }
 ```
 
-Фронт уже готов — два тумблера появятся сами, отдельной выкатки фронта не нужно.
+~~Фронт уже готов — два тумблера появятся сами, отдельной выкатки фронта не нужно.~~
 
-**2. Фильтр отзывов по пользователю**
+**~~2. Фильтр отзывов по пользователю~~** — ✅ **СДЕЛАНО** (реализовано на бэке)
 
-Файл: `app/controllers/api/v1/reviews_controller.rb`, экшен `index`.
-Сейчас `GET /api/v1/reviews` возвращает **все** отзывы (`Review.kept`) — без фильтра и без `policy_scope`. Нужно принять query-параметр `reviewed_id` и вернуть отзывы только этого пользователя + пагинация (Kaminari, как в других коллекциях):
+~~Файл: `app/controllers/api/v1/reviews_controller.rb`, экшен `index`.~~
+~~Сейчас `GET /api/v1/reviews` возвращает **все** отзывы (`Review.kept`) — без фильтра и без `policy_scope`. Нужно принять query-параметр `reviewed_id` и вернуть отзывы только этого пользователя + пагинация (Kaminari, как в других коллекциях):~~
+
+`index` делает `params.require(:reviewed_id)`, фильтрует `.where(reviewed_id:).approved` (`kept`) и пагинирует Kaminari:
 
 ```
 GET /api/v1/reviews?reviewed_id=42&page=1&per_page=20
 → только отзывы, где reviewed_id = 42
 ```
 
-Поля ответа менять не надо — текущий `ReviewBlueprint` подходит. До фикса фронт грузит всю таблицу и фильтрует по `reviewed.id` на клиенте (временный костыль).
+~~Поля ответа менять не надо — текущий `ReviewBlueprint` подходит. До фикса фронт грузит всю таблицу и фильтрует по `reviewed.id` на клиенте (временный костыль).~~
 
 **3. Фильтр смен по заведению (для экрана «Все вакансии заведения»)**
 
@@ -75,7 +77,7 @@ GET /api/v1/shifts?user_id=42&shift_type=vacancy
 ### ✅ Уже готово — не трогать
 
 Контракты работают, фронт на них завязан:
-`/analytics/track`, `/analytics/my`, `/analytics/supplier`, `/subscriptions/{checkout,current}`, `/purchases` (+`/checkout`), `PATCH /shifts/:id/boost`, accept/reject заявок, `notification_preferences` (3 текущих поля).
+`/analytics/track`, `/analytics/my`, `/analytics/supplier`, `/subscriptions/{checkout,current}`, `/purchases` (+`/checkout`), `PATCH /shifts/:id/boost`, accept/reject заявок (смена статуса; ⚠️ контакты при accept ещё НЕ отдаются — см. §2), `notification_preferences` (~~3~~ 5 полей).
 
 ---
 
@@ -229,11 +231,13 @@ PATCH /api/v1/shifts/:id/boost
 
 ## 8. Настройки уведомлений
 
-`GET/PATCH /api/v1/notification_preferences`. Фронт готов к 5 тумблерам, но бэк сейчас отдаёт 3 (`urgent_notifications`, `new_shifts_notifications`, `application_notifications`). Два недостающих (`vacancy_notifications`, `replacement_notifications`) — **TODO #1** (колонки в БД уже есть). До фикса фронт показывает только те поля, что реально приходят в ответе.
+`GET/PATCH /api/v1/notification_preferences`. ~~Фронт готов к 5 тумблерам, но бэк сейчас отдаёт 3 (`urgent_notifications`, `new_shifts_notifications`, `application_notifications`). Два недостающих (`vacancy_notifications`, `replacement_notifications`) — **TODO #1** (колонки в БД уже есть). До фикса фронт показывает только те поля, что реально приходят в ответе.~~ ✅ **Сделано** — бэк отдаёт все 5 полей + `all_enabled`/`all_disabled`.
 
 ## 9. Отзывы
 
-Фронт реализовал ленту отзывов в профиле (`ProfileReviewsList`, `reviewsApi.getReviews`). Нужен фильтр `reviewed_id` в `GET /reviews` — **TODO #2**. До этого фронт дофильтровывает по `reviewed.id` на клиенте (грузит всю таблицу — неэффективно на объёме).
+Фронт реализовал ленту отзывов в профиле (`ProfileReviewsList`, `reviewsApi.getReviews`). ~~Нужен фильтр `reviewed_id` в `GET /reviews` — **TODO #2**. До этого фронт дофильтровывает по `reviewed.id` на клиенте (грузит всю таблицу — неэффективно на объёме).~~ ✅ **Сделано** — `GET /reviews?reviewed_id=` фильтрует на бэке.
+
+**Авто-закрытие напоминания об отзыве.** При успешном `POST /reviews` бэкенд сам архивирует связанное in-app напоминание `review_reminder` (того же автора по той же смене) → `status: archived`. Это server-side источник истины (закрывается у всех клиентов, не зависит от того, дошёл ли фронт до архивации). ~~От фронта нужна одна правка: добавить тег `'Notification'` в `invalidatesTags` мутации `createReview` (`services/api/reviewsApi.ts`), чтобы инбокс/колокол обновились сразу после оставленного отзыва, а не на следующем поллинге `has_unread`.~~ ✅ **Реализовано** (бэк — ветка `feat/auto-archive-review-reminder`; фронт — тег `'Notification'` в `invalidatesTags createReview`, ветка `feat/invalidate-notifications-on-review`); **ждёт мёрджа в `main`**. См. `resta_backend/API.md` → «Создание отзыва».
 
 ---
 
