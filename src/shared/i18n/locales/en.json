@@ -1241,9 +1241,9 @@
     },
     "privacy": {
       "generalTitle": "1. General provisions",
-      "generalText": "This Privacy Policy defines the procedure for processing and protecting personal data of users of the Resta application (hereinafter — the Application) in accordance with the Law of the Republic of Belarus No. 99-Z dated 07.05.2021 \"On Personal Data Protection\".",
+      "generalText": "This Privacy Policy describes how personal data of users of the Resta application (the Application) is processed and protected, taking into account applicable data protection laws, including the laws applicable at the operator's place of establishment and in the markets where the service is offered.",
       "operatorTitle": "2. Data controller",
-      "operatorText": "The data controller is the owner of the Resta Application. Contact details of the controller are available in the \"Support\" section of the Application.",
+      "operatorText": "The data controller is the company operating the Resta Application and providing the service to users. For questions related to personal data processing and for submitting privacy requests, users may contact the operator through the \"Support\" section of the Application.",
       "dataTitle": "3. Data collected",
       "dataList": [
         "First and last name",
@@ -1269,9 +1269,9 @@
         "Improving the quality of the Application"
       ],
       "basisTitle": "5. Legal basis for processing",
-      "basisText": "Personal data is processed based on the consent of the data subject (Article 5 of Law No. 99-Z). Consent is provided upon registration in the Application by accepting this Privacy Policy and the Terms of Service.",
+      "basisText": "Personal data is processed on the legal grounds provided by applicable law, including user consent where such consent is required. Consent to personal data processing is provided upon registration in the Application by accepting this Privacy Policy and the Terms of Service.",
       "storageTitle": "6. Data storage and deletion",
-      "storageText": "Personal data is stored no longer than required by the processing purposes and the legislation of the Republic of Belarus. The user may submit a request to delete the account and related personal data through the \"Support\" section of the Application.",
+      "storageText": "Personal data is stored no longer than required by the processing purposes and applicable law. The user may submit a request to delete the account and related personal data through the \"Support\" section of the Application.",
       "rightsTitle": "7. Data subject rights",
       "rightsList": [
         "Obtain information about the processing of their personal data",
@@ -1281,7 +1281,7 @@
         "Appeal the controller's actions to the authorized personal data protection body"
       ],
       "thirdPartyTitle": "8. Data sharing with third parties",
-      "thirdPartyText": "Personal data is not shared with third parties, except as required by the legislation of the Republic of Belarus. Contact details (phone, Telegram) are shared with another platform user only after mutual consent (acceptance of a shift application). An open geocoding service is used to determine the city by coordinates — coordinates are transmitted anonymously.",
+      "thirdPartyText": "Personal data is not shared with third parties except where required by applicable law or where such sharing is necessary for the operation of the service. Contact details (phone, Telegram) are shared with another platform user only after actions in the interface that enable contact. An external geocoding service may be used to determine the city by coordinates.",
       "geolocationTitle": "9. Geolocation",
       "geolocationText": "The Application may request access to device geolocation to determine the user's city and find nearby shifts. Geolocation is requested only with explicit user consent and is not collected in the background. The user may deny access — in that case, the city is selected manually.",
       "contactTitle": "10. Contact",
@@ -1290,17 +1290,17 @@
     },
     "terms": {
       "generalTitle": "1. General provisions",
-      "generalText": "These Terms of Service (hereinafter — the Agreement) govern the use of the Resta application (hereinafter — the Application) and constitute a public offer in accordance with Article 407 of the Civil Code of the Republic of Belarus. By using the Application, you fully and unconditionally accept this Agreement.",
+      "generalText": "These Terms of Service (the Agreement) govern the use of the Resta application (the Application). By using the Application, the user confirms that they have reviewed and accepted these Terms to the extent permitted by applicable law.",
       "subjectTitle": "2. Subject of the agreement",
       "subjectText": "The Application provides an information platform for interaction between HoReCa workers, dining establishments, and suppliers. The Application enables the posting and searching of shifts, vacancies, and the exchange of contact information between participants.",
       "platformTitle": "3. Platform status",
-      "platformText": "Resta is exclusively an information platform and is not a party to labor, civil, or other relationships between users. Resta is not an employer, recruitment agency, job exchange, or employment intermediary. All relationships between a worker and a venue (including payment, working conditions, insurance) are established and governed directly between them in accordance with the legislation of the Republic of Belarus.",
+      "platformText": "Resta is an information platform and is not a party to labor, civil, or other relationships between users unless expressly stated otherwise. Resta is not an employer. All arrangements between a worker and a venue, including payment, working conditions, and other terms, are established directly between those users in compliance with applicable law.",
       "userTitle": "4. User obligations",
       "userList": [
         "Provide accurate information during registration and in their profile",
         "Not use the Application to post knowingly false information",
         "Independently settle labor and civil law relationships with other users",
-        "Comply with the legislation of the Republic of Belarus when formalizing labor relationships",
+        "Comply with applicable law when formalizing labor or civil-law relationships",
         "Not transfer account access to third parties",
         "Confirm that the user is at least 16 years old"
       ],
@@ -1313,9 +1313,9 @@
       "liabilityTitle": "8. Limitation of liability",
       "liabilityText": "Resta is not responsible for: actions or inactions of users; quality of work performed; users' compliance with labor legislation; accuracy of information posted by users; losses resulting from user interactions. Resta makes reasonable efforts to ensure uninterrupted operation of the Application but does not guarantee 24/7 availability.",
       "terminationTitle": "9. Account deletion",
-      "terminationText": "The user may submit an account deletion request at any time through the \"Support\" section. Such requests are processed in accordance with the Privacy Policy and the legislation of the Republic of Belarus. The administration may restrict access to or delete an account for violations of this Agreement or the legislation of the Republic of Belarus.",
+      "terminationText": "The user may submit an account deletion request at any time through the \"Support\" section. Such requests are processed in accordance with the Privacy Policy and applicable law. The administration may restrict access to or delete an account for violations of this Agreement, third-party rights, or applicable law.",
       "lawTitle": "10. Governing law",
-      "lawText": "This Agreement is governed by the legislation of the Republic of Belarus. All disputes shall be resolved through negotiations, and if no agreement is reached — in court at the location of the controller in accordance with the legislation of the Republic of Belarus.",
+      "lawText": "This Agreement is governed by the law determined under mandatory applicable rules and the operator's business setup. Disputes should, where possible, be resolved through negotiations; if no agreement is reached, they will be handled in the manner provided by applicable law.",
       "lastUpdated": "Last updated: May 30, 2026"
     },
     "deleteAccount": {
