@@ -164,8 +164,10 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
       ? shift.applicationsCount
       : null
   const isOwnerUrgent = isOwner && shift.listingStatus === 'urgent'
-  const showSosBadge = !isOwner && shift.urgent
-  const showOwnerStatusBadge = isOwner && Boolean(shift.listingStatus)
+  // Срочность показываем единым SOS-бейджем и зрителю (shift.urgent), и владельцу
+  // (listingStatus==='urgent') — вместо отдельной янтарной пилюли статуса.
+  const showSosBadge = isOwnerUrgent || (!isOwner && shift.urgent)
+  const showOwnerStatusBadge = isOwner && Boolean(shift.listingStatus) && !isOwnerUrgent
   const statusTagLabel =
     shift.statusTag === 'expired'
       ? t('activity.statusExpired', { defaultValue: 'Просрочена' })
@@ -206,7 +208,7 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
                   {applicationBadgeLabel}
                 </Badge>
               ) : null}
-              {showOwnerStatusBadge && shift.listingStatus ? (
+              {showOwnerStatusBadge && shift.listingStatus && shift.listingStatus !== 'urgent' ? (
                 <OwnerShiftStatusBadge status={shift.listingStatus} />
               ) : null}
             </div>
