@@ -57,7 +57,12 @@ export interface UserData {
   certifications?: string[]
   /** Есть в полном профиле; в кратких Blueprinter-ответах может отсутствовать */
   created_at?: string
-  email: string | null
+  /**
+   * Контактный PII. Бэкенд отдаёт его только при авторизованном доступе
+   * (свой профиль или контрагент по принятой заявке — view :contact).
+   * В списках/ленте/заявках/отзывах поля ОТСУТСТВУЮТ. См. API.md → GET /users/:id.
+   */
+  email?: string | null
   employee_profile: EmployeeProfile | null
   /** Название заведения и формат — см. PATCH restaurant_profile_attributes */
   restaurant_profile?: RestaurantProfile | null
@@ -72,13 +77,15 @@ export interface UserData {
   location: string[] | null
   city?: string | null
   name: string
-  phone: string | null
+  /** Контактный PII — см. комментарий к `email`. Отсутствует вне view :contact. */
+  phone?: string | null
   photo_url: string | null
   /** Не входит в UserBlueprint для списков */
   profile_complete?: boolean
   profile_photo_url: string | null
   role: string
-  telegram_id: number
+  /** Контактный PII — см. комментарий к `email`. Отсутствует вне view :contact. */
+  telegram_id?: number
   total_reviews: number
   updated_at?: string
   username: string
