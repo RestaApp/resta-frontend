@@ -38,8 +38,6 @@ type UseAddShiftDrawerControllerParams = {
     setRequirements: (value: string) => void
     shiftType: ShiftType
     setShiftType: (value: ShiftType) => void
-    urgent: boolean
-    setUrgent: (value: boolean) => void
     position: string
     setPosition: (value: string) => void
     specializations: string[]

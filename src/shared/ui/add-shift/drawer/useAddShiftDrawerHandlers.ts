@@ -11,7 +11,6 @@ interface FormSetters {
   setCity: (value: string) => void
   setRequirements: (value: string) => void
   setShiftType: (value: ShiftType) => void
-  setUrgent: (value: boolean) => void
   setPosition: (value: string) => void
   setSpecializations: (value: string[]) => void
   setDescription: (value: string) => void
@@ -36,14 +35,6 @@ export const useAddShiftDrawerHandlers = ({
 }: UseAddShiftDrawerHandlersOptions) => {
   const wrapStringSetter = useCallback(
     (setValue: (value: string) => void) => (next: string) => {
-      clearAllErrorsAfterChange()
-      setValue(next)
-    },
-    [clearAllErrorsAfterChange]
-  )
-
-  const wrapBooleanSetter = useCallback(
-    (setValue: (value: boolean) => void) => (next: boolean) => {
       clearAllErrorsAfterChange()
       setValue(next)
     },
@@ -90,10 +81,6 @@ export const useAddShiftDrawerHandlers = ({
     () => wrapStringSetter(form.setRequirements),
     [form.setRequirements, wrapStringSetter]
   )
-  const handleUrgentChange = useMemo(
-    () => wrapBooleanSetter(form.setUrgent),
-    [form.setUrgent, wrapBooleanSetter]
-  )
   const handleSpecializationsChange = useMemo(
     () => wrapArraySetter(form.setSpecializations),
     [form.setSpecializations, wrapArraySetter]
@@ -139,6 +126,5 @@ export const useAddShiftDrawerHandlers = ({
     handleSpecializationsChange,
     handleDescriptionChange,
     handleRequirementsChange,
-    handleUrgentChange,
   }
 }

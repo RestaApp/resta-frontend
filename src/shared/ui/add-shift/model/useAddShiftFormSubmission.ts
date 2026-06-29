@@ -148,7 +148,6 @@ export const useAddShiftFormSubmission = ({
         city: state.city.trim() || undefined,
         requirements: state.requirements,
         shift_type: state.shiftType,
-        urgent: state.urgent,
         position: normalizeCatalogPosition(state.position),
         specializations: state.specializations.length > 0 ? state.specializations : undefined,
       },

@@ -122,8 +122,6 @@ export const useAddShiftForm = ({
     setRequirements: state.setRequirements,
     shiftType: state.shiftType,
     setShiftType: state.setShiftType,
-    urgent: state.urgent,
-    setUrgent: state.setUrgent,
     position: state.position,
     setPosition: state.setPosition,
     specializations: state.specializations,

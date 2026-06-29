@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { HelpHint } from '@/components/ui/help-hint'
-import { CheckboxField, TextAreaField } from '../../fields'
+import { TextAreaField } from '../../fields'
 import type { AddShiftDrawerStep2Props } from './types'
 
 export const AddShiftDrawerStep2 = ({
@@ -12,14 +11,9 @@ export const AddShiftDrawerStep2 = ({
   requirements,
   onRequirementsChange,
   requirementsError,
-  urgent,
-  onUrgentChange,
   isVacancyType,
 }: AddShiftDrawerStep2Props) => {
   const { t } = useTranslation()
-  const urgentLabel = isVacancyType
-    ? t('shift.urgentVacancy', { defaultValue: 'Срочная вакансия' })
-    : t('shift.urgent')
   const descriptionPlaceholder = isVacancyType
     ? t('shift.descriptionPlaceholderVacancy', {
         defaultValue: 'Коротко опишите вакансию и обязанности',
@@ -49,14 +43,6 @@ export const AddShiftDrawerStep2 = ({
           error={requirementsError}
         />
       </div>
-
-      <CheckboxField
-        id="urgent-shift"
-        label={urgentLabel}
-        checked={urgent}
-        onChange={onUrgentChange}
-        labelHint={<HelpHint topic="urgent" />}
-      />
     </>
   )
 }
