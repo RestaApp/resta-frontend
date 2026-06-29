@@ -11,7 +11,7 @@
 | B7 | P2 | `shared/ui/add-shift/fields/index.ts` | Barrel с 0 потребителей | Удалить |
 | B8 | P2 | `useProfilePageModel.ts:44-56` | Двойное чтение `localStorage` (lazy init + useEffect) | Свернуть в lazy-initializer |
 | B9 | P2 | `useAddShiftDrawerController.ts:225,239`, `useEditProfileFormController.ts:231,236` | Каст арифметики к literal-union step (`as StepIndex`) — доверие к расчёту | `clamp`+lookup-хелпер, возвращающий union |
-| B10 | P2 | `services/api/reviewsApi.ts:83-102` | `createReview` инвалидирует только `Shift`/`User`; после оставленного отзыва напоминание `review_reminder` остаётся в инбоксе до следующего поллинга `getNotifications`/`has_unread` (бэк-фикс — C14) | Добавить `'Notification'` в `invalidatesTags` `createReview` → список обновится сразу после того, как бэк заархивирует напоминание (убирает визуальный лаг) |
+| ~~B10~~ ✅ | ~~P2~~ | ~~`services/api/reviewsApi.ts:83-102`~~ | ~~`createReview` инвалидирует только `Shift`/`User`; после оставленного отзыва напоминание `review_reminder` остаётся в инбоксе до следующего поллинга~~ **СДЕЛАНО** (ветка `feat/invalidate-notifications-on-review`) | ~~Добавить `'Notification'` в `invalidatesTags` `createReview`~~ Тег `'Notification'` добавлен + тест на рефетч |
 
 ## Положительное
 
