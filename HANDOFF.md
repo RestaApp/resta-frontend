@@ -38,7 +38,6 @@ GET /api/v1/shifts?user_id=42&shift_type=vacancy
 | - | ------------ | ------ | ----- |
 | 3 | `completed_shifts` в `UserBlueprint` (`GET /users/:id`) | поля нет, фронт считает сам из `my_shifts` | KPI «Смен» станет точным (вся история, а не только активные смены) |
 | 4 | `earned_total_byn` (сумма оплат по `completed`) | поля нет | KPI «Заработок» сотрудника; сейчас `—` |
-| 5 | `ai_match_score` в заявках (R04) | фичи нет | бейдж `AI · NN%` в списке кандидатов; сейчас скрыт |
 | 6 | `PATCH /api/v1/me { theme }` | хранения нет | синхронизация темы между устройствами; сейчас только `localStorage` |
 | 7 | In-app `Notification`-записи (`GET /notifications`, `/has_unread`) | колокол/список пустые | фронт **корректно** полит `has_unread` (30с) и грузит список — если уведомлений нет, бэк не создаёт in-app записи (шлёт только в Telegram-бот). По контракту «In-App создаются всегда» — проверить, что записи реально пишутся |
 
@@ -89,12 +88,6 @@ POST /api/v1/shift_applications/:id/reject
 **Статус:** мутации `acceptApplication` / `rejectApplication` уже в [`shiftsApi.ts`](src/services/api/shiftsApi.ts), смена статуса работает. ⚠️ **Осталось на бэке:** `accept` сейчас возвращает только `{ message }` — поле `contact` (`telegram_username` / `phone`) **не отдаётся**. Без него ключевой цикл «принят → обменялись контактами» не закрывается.
 
 Не использовать статус `hired` и endpoint `/applications/:id/hire`.
-
----
-
-## 2. AI-match score (R04) — ⛔ на бэкенде нет
-
-Контракта `?sort=ai_match` / `ai_match_score` в `API.md` нет, фичи на бэке пока нет. Бейдж `AI · 94%` на фронте скрыт (поле отсутствует) — рендерится только когда бэкенд начнёт отдавать `ai_match_score`. Не закладывать в типы как обязательное.
 
 ---
 
