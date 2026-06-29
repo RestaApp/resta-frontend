@@ -93,11 +93,15 @@ export const ToastViewport = memo(function ToastViewport({
 
   return (
     <div
-      className={cn(
-        'pointer-events-none fixed left-1/2 flex -translate-x-1/2 flex-col items-center gap-2',
-        shouldApplyFullscreenOffset ? 'top-20' : 'top-4'
-      )}
-      style={{ zIndex: Z_INDEX.toast }}
+      className="pointer-events-none fixed left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
+      style={{
+        zIndex: Z_INDEX.toast,
+        // В обычном режиме опускаем тосты под плавающие top-controls Telegram
+        // (Close/▾), используя content-safe-area; в iOS fullscreen — прежний отступ.
+        top: shouldApplyFullscreenOffset
+          ? '5rem'
+          : 'calc(var(--tg-content-safe-area-inset-top, env(safe-area-inset-top, 0px)) + 1rem)',
+      }}
     >
       <AnimatePresence initial={false}>
         {toasts.map(item => (
