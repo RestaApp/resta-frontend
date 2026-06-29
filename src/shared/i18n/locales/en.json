@@ -290,7 +290,7 @@
     "support": "Resta support",
     "supportForm": {
       "title": "Contact support",
-      "description": "Describe your issue — we'll get back to you as soon as we can.",
+      "description": "Describe your issue — your request will be delivered to Resta support.",
       "subject": "Subject",
       "subjectPlaceholder": "Brief summary of your request",
       "categoryLabel": "Category",
@@ -307,7 +307,7 @@
       "contactInfoPlaceholder": "Optional",
       "submit": "Send",
       "successTitle": "Ticket created",
-      "successDescription": "We'll get back to you as soon as we can."
+      "successDescription": "Your request has been sent to Resta support."
     },
     "logout": "Log out",
     "editProfileDescription": "Fields marked with (*) are required to apply for vacancies and shifts.",
@@ -317,7 +317,7 @@
     "nameOrTitle": " / Name",
     "surnameRequired": "Surname",
     "experienceYearsLabel": "Experience (years)",
-    "openToWorkDescription": "When enabled, your profile is visible to employers.",
+    "openToWorkDescription": "When enabled, your profile is visible to venues in the catalog.",
     "skillsExample": "e.g. knife skills, HACCP knowledge",
     "phoneRequired": "Phone",
     "phoneHint": "International format. Start with +375 or 8",
@@ -414,8 +414,8 @@
     "loadError": "Failed to load profile",
     "openToWorkShort": "Open to work",
     "openToWorkOff": "Not open to work",
-    "openToWorkCatalogHint": "Visible to employers",
-    "openToWorkHiddenHint": "Hidden from employers",
+    "openToWorkCatalogHint": "Visible to venues",
+    "openToWorkHiddenHint": "Hidden from venues",
     "latestReviews": "Latest reviews",
     "reviewSummaryTitle": "Review rating",
     "theme": "Theme",
@@ -495,7 +495,7 @@
   },
   "feed": {
     "headerTitle": "Feed",
-    "applicationSentSuccess": "Application sent. You will be notified if approved.",
+    "applicationSentSuccess": "Application sent. If accepted, you will receive a notification and access to contacts.",
     "applicationSuccessTitle": "Application sent!",
     "applicationSuccessDescription": "We will notify you in Telegram when the venue replies.",
     "openMyApplications": "Open my applications",
@@ -871,7 +871,7 @@
         "cta": "Go to activity",
         "features": {
           "publish": "Post shifts and find staff for your venue",
-          "candidates": "Review applications and hire the best candidates",
+          "candidates": "Review applications and choose suitable candidates",
           "chat": "Contact candidates through Telegram after contacts are unlocked"
         }
       },
@@ -879,7 +879,7 @@
         "subtitle": "Welcome to Resta. Connect with venues in your city.",
         "cta": "Go to home",
         "features": {
-          "venues": "Reach 230+ venues looking for suppliers",
+          "venues": "Find venues looking for suppliers",
           "catalog": "Showcase your products in your supplier profile",
           "chat": "Contact venue managers through Telegram after contacts are unlocked"
         }
@@ -919,10 +919,10 @@
           "shieldText": "No verification. No deposit. Publish in 60 seconds."
         },
         "supplier": {
-          "subtitle": "Venues can contact your sales manager",
+          "subtitle": "Venues can contact your representative after viewing the profile",
           "phoneHint": "This number will be shown in your supplier profile.",
-          "shieldTitle": "30-day PRO trial.",
-          "shieldText": "Access to 230+ venues in Belarus."
+          "shieldTitle": "Trial PRO access.",
+          "shieldText": "Unlock more ways to work with venues."
         }
       },
       "next": "Next"
@@ -1320,20 +1320,19 @@
     },
     "deleteAccount": {
       "title": "Delete account",
-      "description": "Deleting your account will permanently remove all your data. This action cannot be undone.",
+      "description": "Account deletion is available by request through Resta support. After the request is confirmed, data will be deleted in accordance with the Privacy Policy.",
       "consequencesList": [
-        "All personal data will be deleted",
-        "Shift and application history will be deleted",
-        "Reviews and ratings will be deleted",
-        "Active PRO subscription will be cancelled without refund"
+        "The request will be delivered to Resta support",
+        "Data deletion is performed after the request is reviewed and confirmed",
+        "Effects on subscriptions and usage history depend on the actual account state"
       ],
-      "deleteButton": "Delete account",
-      "confirmTitle": "Are you sure?",
-      "confirmDescription": "All data will be permanently deleted. This action cannot be undone.",
-      "confirmDelete": "Delete permanently",
-      "deleting": "Deleting...",
-      "error": "Failed to delete account. Please try again later.",
-      "success": "Account deleted"
+      "deleteButton": "Request account deletion",
+      "confirmTitle": "Send request?",
+      "confirmDescription": "The account deletion request will be sent to Resta support.",
+      "confirmDelete": "Send request",
+      "deleting": "Sending...",
+      "error": "Failed to send the request. Please try again later.",
+      "success": "Request sent"
     }
   }
 }
