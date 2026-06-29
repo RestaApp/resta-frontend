@@ -34,7 +34,6 @@ export const ProfilePage = memo(() => {
     isUpdatingUser,
     handleOpenToWorkToggle,
     handleLogout,
-    handleDeleteAccount,
   } = useProfilePageModel()
   const [legalScreen, setLegalScreen] = useState<LegalScreen>('none')
   const [editProfileSection, setEditProfileSection] = useState<
@@ -117,7 +116,6 @@ export const ProfilePage = memo(() => {
         onPrivacyPress={() => setLegalScreen('privacy')}
         onTermsPress={() => setLegalScreen('terms')}
         onFaqPress={() => setLegalScreen('faq')}
-        onDeleteAccount={handleDeleteAccount}
       />
 
       <EditProfileDrawer

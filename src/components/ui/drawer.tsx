@@ -1,13 +1,5 @@
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import {
-  animate,
-  motion,
-  AnimatePresence,
-  useDragControls,
-  useMotionValue,
-  useReducedMotion,
-  type PanInfo,
-} from 'motion/react'
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { animate, motion, AnimatePresence, useMotionValue, useReducedMotion } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
@@ -66,6 +58,11 @@ type DrawerContentProps = {
   bottomOffsetPx: number
 }
 
+// Порог скорости флика (px/s) для закрытия / разворота жестом
+const FLICK_VELOCITY = 400
+// Резиновое сопротивление при свайпе вниз, когда закрытие запрещено
+const RUBBER_MAX_PX = 24
+
 const DrawerContent = memo(function DrawerContent({
   className,
   overlayClassName,
@@ -76,11 +73,19 @@ const DrawerContent = memo(function DrawerContent({
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
-  const dragControls = useDragControls()
   const contentRef = useRef<HTMLDivElement | null>(null)
   const isClosingBySwipeRef = useRef(false)
   const y = useMotionValue(0)
-  const [contentHeightPx, setContentHeightPx] = useState(600)
+  // min-height панели: 0 — высота по контенту (свёрнуто); растёт вверх до полного экрана
+  const minH = useMotionValue(0)
+  const [expanded, setExpanded] = useState(false)
+
+  // Измеренная высота свёрнутого состояния (по контенту) и доступная высота под полный экран
+  const collapsedHeightRef = useRef(0)
+  const expandedHeightRef = useRef(0)
+  const draggingRef = useRef(false)
+  const dragStartRef = useRef({ clientY: 0, startHeight: 0 })
+  const velocityRef = useRef({ clientY: 0, t: 0, v: 0 })
 
   useBodyScrollLock(true)
 
@@ -96,11 +101,19 @@ const DrawerContent = memo(function DrawerContent({
     const el = contentRef.current
     if (!el) return
 
-    const measure = () => setContentHeightPx(el.getBoundingClientRect().height)
+    const measure = () => {
+      expandedHeightRef.current = Math.max(0, window.innerHeight - bottomOffsetPx)
+      if (!draggingRef.current && !expanded) {
+        collapsedHeightRef.current = el.offsetHeight
+      }
+      if (!draggingRef.current && expanded) {
+        // держим панель на всю доступную высоту при изменении вьюпорта
+        minH.set(expandedHeightRef.current)
+      }
+    }
     measure()
 
     const cleanup: Array<() => void> = []
-
     window.addEventListener('resize', measure)
     cleanup.push(() => window.removeEventListener('resize', measure))
 
@@ -111,30 +124,102 @@ const DrawerContent = memo(function DrawerContent({
     }
 
     return () => cleanup.forEach(fn => fn())
-  }, [bottomOffsetPx])
+  }, [bottomOffsetPx, expanded, minH])
 
-  const closeThresholdPx = Math.min(
-    72,
-    Math.max(32, contentHeightPx > 0 ? contentHeightPx * 0.1 : 48)
+  const finishClose = useCallback(() => {
+    isClosingBySwipeRef.current = true
+    const offscreen =
+      (contentRef.current?.offsetHeight ?? expandedHeightRef.current) + bottomOffsetPx + 40
+    animate(y, offscreen, {
+      duration: reduceMotion ? 0 : 0.22,
+      ease: 'easeOut',
+      onComplete: () => onOpenChange(false),
+    })
+  }, [bottomOffsetPx, onOpenChange, reduceMotion, y])
+
+  const snapAnim = useMemo(
+    () =>
+      reduceMotion ? { duration: 0 } : ({ type: 'spring', damping: 30, stiffness: 300 } as const),
+    [reduceMotion]
   )
-  const dragBottomPx = Math.max(0, contentHeightPx + bottomOffsetPx + 40)
 
-  const handleDragEnd = useCallback(
-    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-      if (preventClose) return
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
       if (isClosingBySwipeRef.current) return
-
-      const shouldClose = info.offset.y >= closeThresholdPx || info.velocity.y > 300
-      if (!shouldClose) return
-
-      isClosingBySwipeRef.current = true
-      animate(y, dragBottomPx, {
-        duration: reduceMotion ? 0 : 0.22,
-        ease: 'easeOut',
-        onComplete: () => onOpenChange(false),
-      })
+      draggingRef.current = true
+      e.currentTarget.setPointerCapture?.(e.pointerId)
+      dragStartRef.current = {
+        clientY: e.clientY,
+        startHeight: expanded ? expandedHeightRef.current : collapsedHeightRef.current,
+      }
+      velocityRef.current = { clientY: e.clientY, t: performance.now(), v: 0 }
     },
-    [closeThresholdPx, dragBottomPx, onOpenChange, preventClose, reduceMotion, y]
+    [expanded]
+  )
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggingRef.current) return
+      const { clientY, startHeight } = dragStartRef.current
+      const collapsed = collapsedHeightRef.current
+      const expandedH = expandedHeightRef.current
+
+      // скорость (px/s), положительная — вниз
+      const now = performance.now()
+      const dt = now - velocityRef.current.t
+      if (dt > 0) {
+        velocityRef.current.v = ((e.clientY - velocityRef.current.clientY) / dt) * 1000
+        velocityRef.current.clientY = e.clientY
+        velocityRef.current.t = now
+      }
+
+      const target = startHeight + (clientY - e.clientY) // тянем вверх → выше
+      if (target >= collapsed) {
+        // растём вверх — низ запинён, увеличиваем min-height
+        y.set(0)
+        minH.set(Math.min(target, expandedH))
+      } else {
+        // ниже свёрнутого — это жест закрытия (сдвиг вниз)
+        minH.set(0)
+        const down = collapsed - target
+        y.set(preventClose ? Math.min(down, RUBBER_MAX_PX) : down)
+      }
+    },
+    [minH, preventClose, y]
+  )
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggingRef.current) return
+      draggingRef.current = false
+      e.currentTarget.releasePointerCapture?.(e.pointerId)
+
+      const collapsed = collapsedHeightRef.current
+      const expandedH = expandedHeightRef.current
+      const v = velocityRef.current.v
+
+      if (y.get() > 0) {
+        // зона закрытия
+        const closeThreshold = Math.min(72, Math.max(32, collapsed * 0.1))
+        if (!preventClose && (y.get() >= closeThreshold || v > FLICK_VELOCITY)) {
+          finishClose()
+          return
+        }
+        setExpanded(false)
+        animate(y, 0, snapAnim)
+        animate(minH, 0, snapAnim)
+        return
+      }
+
+      // зона роста — решаем: развернуть на весь экран или вернуть к контенту
+      const currentH = contentRef.current?.offsetHeight ?? collapsed
+      const midpoint = (collapsed + expandedH) / 2
+      const wantExpand = currentH > midpoint || v < -FLICK_VELOCITY
+      setExpanded(wantExpand)
+      animate(y, 0, snapAnim)
+      animate(minH, wantExpand ? expandedH : 0, snapAnim)
+    },
+    [finishClose, minH, preventClose, snapAnim, y]
   )
 
   return (
@@ -153,13 +238,6 @@ const DrawerContent = memo(function DrawerContent({
             ? { duration: reduceMotion ? 0 : 0.22, ease: 'easeOut' }
             : { type: 'spring', damping: 25, stiffness: 200 }
         }
-        drag={preventClose ? false : 'y'}
-        dragControls={dragControls}
-        dragListener={false}
-        dragConstraints={{ top: 0, bottom: dragBottomPx }}
-        dragElastic={0.1}
-        dragMomentum={false}
-        onDragEnd={handleDragEnd}
         className={cn(
           'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col min-h-0 overflow-hidden overscroll-y-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-[var(--shadow-modal)] dark:shadow-none',
@@ -168,6 +246,7 @@ const DrawerContent = memo(function DrawerContent({
         )}
         style={{
           y,
+          minHeight: minH,
           bottom: bottomOffsetPx,
           maxHeight: `min(90vh, calc(100vh - ${bottomOffsetPx}px - 20px))`,
         }}
@@ -176,14 +255,11 @@ const DrawerContent = memo(function DrawerContent({
         ref={contentRef}
       >
         <div
-          className={cn(
-            'flex shrink-0 justify-center bg-inherit pt-3 pb-2 touch-none select-none',
-            preventClose ? undefined : 'cursor-grab active:cursor-grabbing'
-          )}
-          onPointerDown={e => {
-            if (preventClose) return
-            dragControls.start(e)
-          }}
+          className="flex shrink-0 cursor-grab touch-none select-none justify-center bg-inherit pt-3 pb-2 active:cursor-grabbing"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
         >
           <div className="h-1.5 w-14 shrink-0 rounded-full bg-border" />
         </div>
