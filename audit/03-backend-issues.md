@@ -35,11 +35,6 @@
 
 → `ActiveSupport::SecurityUtils.secure_compare` (как уже корректно сделано в webhook-контроллере); обязательный `auth_date`, отклонять при отсутствии; рассмотреть сужение 24h-окна.
 
-### ~~C14 (P1) — `review_reminder` не закрывается после оставленного отзыва~~ — ✅ СДЕЛАНО (ветка `feat/auto-archive-review-reminder`, ждёт мёрджа)
-~~Напоминание «Оставьте отзыв» создаётся `ReviewReminderNotificationService` (`notifiable: shift`, recipient = будущий автор отзыва) со статусом `unread`. После того как юзер отправил отзыв, **связи между `Review.create` и этой записью нет**: `reviews_controller#create` уведомление не трогает, `Review` (`app/models/review.rb`) тоже. Уведомление остаётся `unread`/`read` (после тапа), приглашает оставить уже оставленный отзыв и висит до удаления `CleanupOldNotificationsJob` (30 дней). Это server state (факт «отзыв по смене есть»), поэтому закрывать должен бэк — иначе на втором клиенте/при обрыве сети между `createReview` и архивацией напоминание остаётся.~~
-~~→ **Вариант A:** при создании отзыва в той же транзакции находить и архивировать связанное напоминание — `Notification.where(user: reviewer, notifiable_type: 'Shift', notifiable_id: review.reviewable_id, notification_type: :review_reminder).find_each(&:mark_as_archived!)` (идемпотентно, не упадёт если записи нет). Зафиксировать сайд-эффект в `API.md` (`POST /reviews`) и `HANDOFF.md`. FE-часть — см. B10.~~
-**Решено:** `ReviewReminderArchiveService` вызывается из `ReviewsController#create` (идемпотентно, best-effort). Контракт зафиксирован в `API.md` / `HANDOFF.md`, покрыт спеками. FE — см. B10.
-
 ## База данных
 
 | # | Sev | Проблема | Файл | Фикс |
