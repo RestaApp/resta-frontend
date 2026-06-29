@@ -863,7 +863,7 @@
         "features": {
           "search": "Find shifts and part-time jobs in your city",
           "notifications": "Get notified about urgent shifts and new vacancies",
-          "chat": "Chat with venues directly in Telegram"
+          "chat": "Contact venues through Telegram after contacts are unlocked"
         }
       },
       "restaurant": {
@@ -872,7 +872,7 @@
         "features": {
           "publish": "Post shifts and find staff for your venue",
           "candidates": "Review applications and hire the best candidates",
-          "chat": "Chat with candidates directly in Telegram"
+          "chat": "Contact candidates through Telegram after contacts are unlocked"
         }
       },
       "supplier": {
@@ -881,7 +881,7 @@
         "features": {
           "venues": "Reach 230+ venues looking for suppliers",
           "catalog": "Showcase your products in your supplier profile",
-          "chat": "Chat with venue managers directly in Telegram"
+          "chat": "Contact venue managers through Telegram after contacts are unlocked"
         }
       }
     },
@@ -1271,7 +1271,7 @@
       "basisTitle": "5. Legal basis for processing",
       "basisText": "Personal data is processed based on the consent of the data subject (Article 5 of Law No. 99-Z). Consent is provided upon registration in the Application by accepting this Privacy Policy and the Terms of Service.",
       "storageTitle": "6. Data storage and deletion",
-      "storageText": "Personal data is stored for the entire period of Application use and 30 days after account deletion. After this period, data is permanently deleted. The user may request account and data deletion at any time through the \"Settings\" section of their profile.",
+      "storageText": "Personal data is stored no longer than required by the processing purposes and the legislation of the Republic of Belarus. The user may submit a request to delete the account and related personal data through the \"Support\" section of the Application.",
       "rightsTitle": "7. Data subject rights",
       "rightsList": [
         "Obtain information about the processing of their personal data",
@@ -1307,13 +1307,13 @@
       "paymentTitle": "5. Shift payments",
       "paymentText": "Payment for completed shifts is made directly between the worker and the venue. Resta does not participate in payments, does not withhold commissions from wages, and is not responsible for the timeliness or completeness of payments. The parties independently determine the form and procedure of payment in accordance with the law.",
       "subscriptionTitle": "6. PRO subscription",
-      "subscriptionText": "The Application offers paid PRO subscriptions with extended functionality. Payment is made via Telegram Stars. The subscription is valid for the paid period and does not auto-renew. Refunds for unused subscription periods are handled in accordance with Telegram's policies. The user may cancel the subscription at any time — access is maintained until the end of the paid period.",
+      "subscriptionText": "The Application offers paid PRO subscriptions with extended functionality. Payment is made via Telegram Stars. The subscription remains active for the paid period. Refunds and other payment matters are handled under Telegram rules and applicable law.",
       "reviewsTitle": "7. Reviews and ratings",
       "reviewsText": "Users may leave reviews about their work experience. Reviews reflect the subjective opinion of the author and do not constitute an official employment reference. The administration reserves the right to moderate reviews containing insults, knowingly false information, or violations of law. Users may dispute a review through the \"Support\" section.",
       "liabilityTitle": "8. Limitation of liability",
       "liabilityText": "Resta is not responsible for: actions or inactions of users; quality of work performed; users' compliance with labor legislation; accuracy of information posted by users; losses resulting from user interactions. Resta makes reasonable efforts to ensure uninterrupted operation of the Application but does not guarantee 24/7 availability.",
       "terminationTitle": "9. Account deletion",
-      "terminationText": "The user may delete their account at any time through the \"Settings\" section of their profile. Upon account deletion, all personal data is deleted in accordance with the Privacy Policy. The administration reserves the right to block or delete a user's account for violations of this Agreement or the legislation of the Republic of Belarus.",
+      "terminationText": "The user may submit an account deletion request at any time through the \"Support\" section. Such requests are processed in accordance with the Privacy Policy and the legislation of the Republic of Belarus. The administration may restrict access to or delete an account for violations of this Agreement or the legislation of the Republic of Belarus.",
       "lawTitle": "10. Governing law",
       "lawText": "This Agreement is governed by the legislation of the Republic of Belarus. All disputes shall be resolved through negotiations, and if no agreement is reached — in court at the location of the controller in accordance with the legislation of the Republic of Belarus.",
       "lastUpdated": "Last updated: May 30, 2026"
