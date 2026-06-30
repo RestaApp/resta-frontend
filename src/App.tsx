@@ -7,7 +7,7 @@ import { ErrorBoundary } from '@/app/ErrorBoundary'
 import { RoleSelector } from '@/features/role-selector/ui/RoleSelector'
 import { DetailOverlayProvider } from '@/shared/navigation/DetailOverlayContext'
 import { ToastProvider } from '@/shared/lib/toast/ToastProvider'
-import { PurchaseFlowProvider } from '@/features/monetization/ui/PurchaseFlowProvider'
+import { PurchaseFlowProvider } from '@/features/monetization'
 
 const Dashboard = lazy(() =>
   import('@/pages/Dashboard/Dashboard').then(m => ({ default: m.Dashboard }))

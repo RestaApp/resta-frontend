@@ -12,8 +12,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
-import { useSupplierSubscription } from '@/features/monetization/model/useSupplierSubscription'
-import { UpgradeProDrawer } from '@/features/monetization/ui/UpgradeProDrawer'
+import { useSupplierSubscription, UpgradeProDrawer } from '@/features/monetization'
 import { BusinessAddressesField } from '../business-fields/BusinessAddressesField'
 import { BusinessHoursField } from '../business-fields/BusinessHoursField'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'

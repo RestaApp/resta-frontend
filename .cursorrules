@@ -71,7 +71,8 @@ features/<X> ──→ shared/* ──→ components/ui/*
 ```
 
 - `src/components/ui/*` — **feature‑agnostic**: не импортирует из `src/features/`.
-- Cross‑feature импорты допустимы только из `navigation`. Иные пары `features/A → features/B` — сигнал переноса общего кода в `src/shared/`.
+- Cross‑feature импорты допустимы только из **публичных фич**: `navigation` и `monetization`. Иные пары `features/A → features/B` — сигнал переноса общего кода в `src/shared/`.
+  - **Публичная фича** экспортирует поверхность через единственный барелл `features/<X>/index.ts`; другие фичи импортируют ТОЛЬКО из него (`@/features/monetization`), глубокие импорты `features/<X>/**` извне запрещены. Доменный UI монетизации (`SubscriptionCard`, `UpgradeProDrawer`, …) остаётся в фиче и НЕ переносится в `shared/` (там только feature‑agnostic код).
 - Общие shift‑утилиты, типы, форматтеры, mapping → **`@/shared/shifts/`** (не `@/features/feed/`).
 
 Подробнее — см. §14 в [`AI_DEVELOPMENT_GUIDELINES.md`](AI_DEVELOPMENT_GUIDELINES.md).
