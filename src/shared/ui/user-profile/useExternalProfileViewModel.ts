@@ -98,7 +98,9 @@ export const useExternalProfileViewModel = ({
       userName,
       roleLabel: heroRoleOrPositionLabel,
       completeness: profileCompleteness,
-      completedShifts: 0,
+      // Бэкенд отдаёт completed_shifts в GET /users/:id (только для сотрудника).
+      // Раньше тут был хардкод 0 — чужой профиль всегда показывал «Смен: 0».
+      completedShifts: userProfile.completed_shifts ?? 0,
       myShiftsCount: 0,
       getSpecializationLabel,
       getSupplierTypeLabel,
