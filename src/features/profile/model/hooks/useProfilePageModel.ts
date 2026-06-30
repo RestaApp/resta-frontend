@@ -1,254 +1,41 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useUserProfile } from '@/shared/lib/hooks/useUserProfile'
-import { useUser } from '@/shared/lib/hooks/useUser'
-import { useToast } from '@/shared/lib/hooks/useToast'
-import {
-  useGetMyShiftsQuery,
-  useGetReceivedShiftApplicationsQuery,
-  FULL_LIST_PER_PAGE,
-} from '@/services/api/shiftsApi'
-import { useGetMyAnalyticsQuery } from '@/services/api/analyticsApi'
-import { buildVenueProfileInfoRows } from '../utils/buildVenueProfileInfoRows'
-import { countAcceptedHires, countOpenVenueListings } from '../utils/venueProfileStats'
-import { mapRoleFromApi } from '@/shared/utils/roles'
-import type { ApiRole } from '@/shared/types/roles.types'
-import { authService } from '@/services/auth'
-import { getLocalStorageItem, removeLocalStorageItem } from '@/shared/utils/localStorage'
-import { STORAGE_KEYS } from '@/shared/constants/storage'
-import { useLabels } from '@/shared/i18n/hooks'
-import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
-import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
-import { formatProfileDisplayName } from '@/shared/utils/userDisplayName'
-import { useAuth } from '@/app/contexts/auth'
-import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
-import { buildProfileViewModel } from '@/shared/ui/user-profile/buildProfileViewModel'
-import { useUpdateUser } from '@/shared/lib/hooks/useUsers'
-import { getSupplierCategory, getSupplierProfile } from '@/shared/utils/supplierProfile'
+import { useProfileViewModelData } from './useProfileViewModelData'
+import { useProfileDrawersState } from './useProfileDrawersState'
+import { useProfileAccountActions } from './useProfileAccountActions'
 
+/**
+ * Модель страницы профиля. Тонкий оркестратор над sub-hooks:
+ *  • `useProfileViewModelData`   — data + сборка `profileViewModel` и venue-метрик;
+ *  • `useProfileDrawersState`    — UI-state дроверов;
+ *  • `useProfileAccountActions`  — выход / удаление / open_to_work.
+ * Public API (форма возврата) сохранён 1:1 — потребитель `ProfilePage` не меняется.
+ */
 export const useProfilePageModel = () => {
-  const { t } = useTranslation()
-  const { isAuthenticated } = useAuth()
-  const {
-    getEmployeePositionLabel,
-    getRestaurantFormatLabel,
-    getCuisineTypeLabel,
-    getSpecializationLabel,
-    getSupplierTypeLabel,
-  } = useLabels()
-  const { userProfile, isLoading: isProfileLoading } = useUserProfile()
-  const { clearUserData } = useUser()
-  const { showToast } = useToast()
-  const { updateUser, isLoading: isUpdatingUser } = useUpdateUser()
-
-  // legacy: открыть дровер редактирования по одноразовому localStorage-флагу.
-  // Чтение — в lazy-инициализаторе (один раз), очистка — в commit-фазе ниже:
-  // нельзя трогать localStorage во время рендера (render purity / StrictMode
-  // дважды вызывает инициализатор и съел бы флаг до открытия дровера).
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(
-    () => getLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT) === 'true'
-  )
-  const [isNotificationPrefsDrawerOpen, setIsNotificationPrefsDrawerOpen] = useState(false)
-
-  // Гасим одноразовый флаг после монтирования (идемпотентно — remove отсутствующего ключа безопасен).
-  useEffect(() => {
-    removeLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_PROFILE_EDIT)
-  }, [])
-
-  // legacy: open drawer by window event
-  useEffect(() => {
-    return onAppEvent(APP_EVENTS.OPEN_PROFILE_EDIT, () => {
-      setIsEditDrawerOpen(true)
-    })
-  }, [])
-
-  const apiRole = useMemo<ApiRole | null>(() => {
-    const roleValue = userProfile?.role
-    if (!roleValue) return null
-    return mapRoleFromApi(roleValue)
-  }, [userProfile?.role])
-
-  const { data: myShiftsData } = useGetMyShiftsQuery(undefined, {
-    skip: !isAuthenticated,
+  const data = useProfileViewModelData()
+  const drawers = useProfileDrawersState()
+  const actions = useProfileAccountActions({
+    userProfile: data.userProfile,
+    apiRole: data.apiRole,
   })
-
-  const { data: receivedApplicationsData } = useGetReceivedShiftApplicationsQuery(
-    { per_page: FULL_LIST_PER_PAGE },
-    {
-      skip: !isAuthenticated || apiRole !== 'restaurant',
-    }
-  )
-
-  // KPI просмотров/кликов — только для своего профиля (GET /analytics/my).
-  const { data: myAnalyticsData } = useGetMyAnalyticsQuery(undefined, {
-    skip: !isAuthenticated,
-  })
-
-  const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
-
-  const venueOpenShiftsCount = useMemo(() => countOpenVenueListings(myShifts), [myShifts])
-
-  const venueHiresCount = useMemo(() => {
-    const applications =
-      receivedApplicationsData?.data && Array.isArray(receivedApplicationsData.data)
-        ? receivedApplicationsData.data
-        : []
-    return countAcceptedHires(applications)
-  }, [receivedApplicationsData])
-
-  const userName = useMemo(
-    () => formatProfileDisplayName(userProfile, apiRole, t('common.user')),
-    [userProfile, apiRole, t]
-  )
-
-  const roleLabel = useMemo(() => {
-    if (!userProfile) return t('common.user')
-    if (apiRole === 'employee') {
-      const position = userProfile.position || userProfile.employee_profile?.position
-      return position ? getEmployeePositionLabel(position) : t('profile.subtitle.employee')
-    }
-    if (apiRole === 'restaurant') {
-      const format = userProfile.restaurant_profile?.restaurant_format?.trim()
-      return format ? getRestaurantFormatLabel(format) : t('profile.subtitle.venue')
-    }
-    if (apiRole === 'supplier') {
-      const category = getSupplierCategory(getSupplierProfile(userProfile))
-      return category ? getSupplierTypeLabel(category) : t('profile.subtitle.supplier')
-    }
-    return t('common.user')
-  }, [
-    apiRole,
-    userProfile,
-    getEmployeePositionLabel,
-    getRestaurantFormatLabel,
-    getSupplierTypeLabel,
-    t,
-  ])
-
-  const venueInfoRows = useMemo(() => {
-    if (!userProfile || apiRole !== 'restaurant') return []
-
-    return buildVenueProfileInfoRows({
-      t,
-      userProfile,
-      venueTypeLabel: roleLabel,
-    })
-  }, [apiRole, roleLabel, t, userProfile])
-
-  const employeeStats = useMemo(() => {
-    const completedShifts = myShifts.reduce((acc, s) => {
-      return s.status === 'completed' ? acc + 1 : acc
-    }, 0)
-
-    return { completedShifts }
-  }, [myShifts])
-
-  const profileCompleteness = useMemo(() => {
-    if (!userProfile) return null
-    return getProfileCompleteness(userProfile, apiRole)
-  }, [userProfile, apiRole])
-
-  const handleLogout = useCallback(() => {
-    authService.logout()
-    clearUserData()
-    emitAppEvent(APP_EVENTS.AUTH_LOGOUT)
-    showToast(t('auth.loggedOut'), 'success')
-    window.location.reload()
-  }, [clearUserData, showToast, t])
-
-  const handleDeleteAccount = useCallback(async () => {
-    if (!userProfile?.id) throw new Error('No user')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/users/${userProfile.id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${authService.getToken()}`,
-        'Content-Type': 'application/json',
-      },
-    })
-    if (!response.ok) throw new Error('Delete failed')
-    authService.logout()
-    clearUserData()
-    emitAppEvent(APP_EVENTS.AUTH_LOGOUT)
-    showToast(t('legal.deleteAccount.success'), 'success')
-    window.location.reload()
-  }, [clearUserData, showToast, t, userProfile])
-
-  const handleOpenToWorkToggle = useCallback(
-    async (nextValue: boolean) => {
-      if (!userProfile?.id || apiRole !== 'employee') return
-
-      const result = await updateUser(userProfile.id, {
-        user: {
-          open_to_work: nextValue,
-          employee_profile_attributes: {
-            open_to_work: nextValue,
-          },
-        },
-      })
-
-      if (result.success) {
-        return
-      }
-
-      showToast(result.errors?.[0] ?? t('errors.saveErrorDescription'), 'error')
-    },
-    [apiRole, showToast, t, updateUser, userProfile]
-  )
-
-  const profileViewModel = useMemo(() => {
-    if (!userProfile) return null
-
-    return buildProfileViewModel({
-      t,
-      userProfile,
-      apiRole,
-      userName,
-      roleLabel,
-      completeness: profileCompleteness,
-      completedShifts: employeeStats.completedShifts,
-      myShiftsCount: myShifts.length,
-      profileViewsThisMonth: myAnalyticsData?.data.profile_views_this_month ?? null,
-      contactClicksThisMonth: myAnalyticsData?.data.contact_clicks_this_month ?? null,
-      getSpecializationLabel,
-      getSupplierTypeLabel,
-      getRestaurantFormatLabel,
-      getCuisineTypeLabel,
-    })
-  }, [
-    apiRole,
-    employeeStats.completedShifts,
-    getSpecializationLabel,
-    getSupplierTypeLabel,
-    getRestaurantFormatLabel,
-    getCuisineTypeLabel,
-    myShifts.length,
-    myAnalyticsData,
-    profileCompleteness,
-    roleLabel,
-    t,
-    userName,
-    userProfile,
-  ])
 
   return {
-    userProfile,
-    isProfileLoading,
+    userProfile: data.userProfile,
+    isProfileLoading: data.isProfileLoading,
 
-    apiRole,
-    profileViewModel,
-    venueInfoRows,
-    venueOpenShiftsCount,
-    venueHiresCount,
+    apiRole: data.apiRole,
+    profileViewModel: data.profileViewModel,
+    venueInfoRows: data.venueInfoRows,
+    venueOpenShiftsCount: data.venueOpenShiftsCount,
+    venueHiresCount: data.venueHiresCount,
 
-    isEditDrawerOpen,
-    setIsEditDrawerOpen,
+    isEditDrawerOpen: drawers.isEditDrawerOpen,
+    setIsEditDrawerOpen: drawers.setIsEditDrawerOpen,
 
-    isNotificationPrefsDrawerOpen,
-    setIsNotificationPrefsDrawerOpen,
+    isNotificationPrefsDrawerOpen: drawers.isNotificationPrefsDrawerOpen,
+    setIsNotificationPrefsDrawerOpen: drawers.setIsNotificationPrefsDrawerOpen,
 
-    isUpdatingUser,
-    handleOpenToWorkToggle,
-    handleLogout,
-    handleDeleteAccount,
+    isUpdatingUser: actions.isUpdatingUser,
+    handleOpenToWorkToggle: actions.handleOpenToWorkToggle,
+    handleLogout: actions.handleLogout,
+    handleDeleteAccount: actions.handleDeleteAccount,
   } as const
 }
