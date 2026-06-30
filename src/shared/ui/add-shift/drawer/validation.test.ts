@@ -4,8 +4,24 @@ import {
   isStepValid,
   findFirstInvalidStep,
   buildDrawerErrorState,
+  nextStep,
+  prevStep,
   type AddShiftDrawerFormState,
 } from './validation'
+
+describe('nextStep / prevStep', () => {
+  it('nextStep двигает вперёд и клампит на 2', () => {
+    expect(nextStep(0)).toBe(1)
+    expect(nextStep(1)).toBe(2)
+    expect(nextStep(2)).toBe(2)
+  })
+
+  it('prevStep двигает назад и клампит на 0', () => {
+    expect(prevStep(2)).toBe(1)
+    expect(prevStep(1)).toBe(0)
+    expect(prevStep(0)).toBe(0)
+  })
+})
 
 /** Полностью валидная смена-replacement (со всеми обязательными полями всех шагов). */
 const validForm = (over: Partial<AddShiftDrawerFormState> = {}): AddShiftDrawerFormState => ({
