@@ -100,6 +100,8 @@ export interface UserData {
   service_categories?: unknown[]
   service_categories_list?: string | null
   specialization?: string | null
+  /** KPI «Смен»: отработанные завершённые смены. Только в GET /users/:id для сотрудника. */
+  completed_shifts?: number
 }
 
 export interface SignInResponse {
