@@ -2,6 +2,10 @@ import type { AddShiftFieldErrors } from '../model/addShiftValidation'
 
 export type StepIndex = 0 | 1 | 2
 
+/** Переход к следующему/предыдущему шагу с клампом в [0, 2] — без приведения типов (`as`). */
+export const nextStep = (s: StepIndex): StepIndex => (s === 0 ? 1 : 2)
+export const prevStep = (s: StepIndex): StepIndex => (s === 2 ? 1 : 0)
+
 export type DrawerFieldErrors = AddShiftFieldErrors
 
 export interface AddShiftDrawerFormState {

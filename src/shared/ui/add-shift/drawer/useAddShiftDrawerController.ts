@@ -5,6 +5,8 @@ import {
   findFirstInvalidStep,
   hasLocation,
   isStepValid,
+  nextStep,
+  prevStep,
   type AddShiftDrawerFormState,
   type StepIndex,
 } from './validation'
@@ -220,7 +222,7 @@ export const useAddShiftDrawerController = ({
     })
 
     if (isCurrentStepValid(step)) {
-      setStep(prev => (prev < 2 ? ((prev + 1) as StepIndex) : prev))
+      setStep(nextStep)
       return
     }
 
@@ -234,7 +236,7 @@ export const useAddShiftDrawerController = ({
       return
     }
     clearAllErrorsAfterChange()
-    setStep(prev => (prev > 0 ? ((prev - 1) as StepIndex) : prev))
+    setStep(prevStep)
   }, [clearAllErrorsAfterChange, requestClose, step])
 
   const handleCreateAnother = useCallback(() => {
