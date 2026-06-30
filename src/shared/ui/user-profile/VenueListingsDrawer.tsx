@@ -20,9 +20,10 @@ interface VenueListingsDrawerProps {
 }
 
 /**
- * Открытые вакансии заведения (#12). Forward-compatible: запрос идёт с `user_id`,
- * но текущий бэкенд этот фильтр игнорирует — поэтому дофильтровываем по `ownerId`
- * на клиенте (см. HANDOFF). Когда бэк добавит фильтр, клиентская фильтрация станет no-op.
+ * Открытые вакансии заведения (#12). Бэкенд фильтрует по `user_id` на сервере
+ * (`GET /shifts?user_id=`, см. API.md / HANDOFF §1). Клиентская фильтрация по
+ * `ownerId` оставлена как защитный no-op (deploy-safe независимо от порядка
+ * выката фронта/бэка); её можно убрать после деплоя бэка с фильтром.
  */
 export const VenueListingsDrawer = memo(function VenueListingsDrawer({
   userId,
