@@ -19,6 +19,7 @@ import { selectUserData } from '@/store/slices/userSlice'
 import { usePurchaseFlow } from '@/shared/lib/monetization/purchaseFlowContext'
 import { parsePaymentRequired } from '@/shared/lib/monetization/paymentRequired'
 import { waitWithBackoff } from '@/shared/lib/monetization/waitWithBackoff'
+import { extractServerErrors, hasInlineErrors, inlineErrorMessages } from './addShiftServerErrors'
 import type { AddShiftFormState } from './useAddShiftFormState'
 
 interface UseAddShiftFormSubmissionOptions {
@@ -29,52 +30,6 @@ interface UseAddShiftFormSubmissionOptions {
   canSubmit: () => boolean
   /** Текущий city пользователя — если форменный отличается, заранее обновляем user.city. */
   userCity?: string | null
-}
-
-interface ServerErrorBag {
-  errors?: unknown
-  message?: unknown
-  error?: unknown
-  feature?: unknown
-}
-
-const vacancyUniquenessToken = 'vacancy_uniqueness'
-
-const toServerErrorMessages = (bag: ServerErrorBag): string[] => {
-  if (bag.feature === vacancyUniquenessToken) {
-    return [typeof bag.error === 'string' ? bag.error : vacancyUniquenessToken]
-  }
-  if (Array.isArray(bag.errors)) {
-    return bag.errors.map(e => String(e))
-  }
-  if (typeof bag.message === 'string') return [bag.message]
-  if (typeof bag.error === 'string') return [bag.error]
-  return []
-}
-
-const extractServerErrors = (error: unknown): { messages?: string[]; single?: string } => {
-  if (error && typeof error === 'object' && 'data' in error) {
-    const data = (error as { data?: unknown }).data
-    if (data && typeof data === 'object') {
-      const messages = toServerErrorMessages(data as ServerErrorBag)
-      if (messages.length > 0) return { messages }
-    }
-  }
-  if (error instanceof Error) return { single: error.message }
-  return {}
-}
-
-const hasInlineErrors = (
-  result: unknown
-): result is { errors?: unknown; message?: unknown; success?: false } => {
-  if (!result || typeof result !== 'object') return false
-  const r = result as Record<string, unknown>
-  return r.success === false || (Array.isArray(r.errors) && r.errors.length > 0) || !!r.errors
-}
-
-const inlineErrorMessages = (result: unknown): string[] => {
-  if (!result || typeof result !== 'object') return []
-  return toServerErrorMessages(result as ServerErrorBag)
 }
 
 /**
