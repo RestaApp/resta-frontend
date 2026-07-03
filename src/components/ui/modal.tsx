@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/shared/utils/cn'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
+import { useFocusTrap } from '@/shared/lib/hooks/useFocusTrap'
 import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { ModalA11yContext } from './modal-a11y'
@@ -41,18 +42,6 @@ interface ModalProps {
   initialFocusSelector?: string
 }
 
-const getFocusable = (root: HTMLElement) =>
-  Array.from(
-    root.querySelectorAll<HTMLElement>(
-      'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
-    )
-  ).filter(
-    el =>
-      !el.hasAttribute('disabled') &&
-      el.getAttribute('aria-hidden') !== 'true' &&
-      el.offsetParent != null
-  )
-
 export const Modal = memo(function Modal({
   isOpen,
   onClose,
@@ -79,67 +68,12 @@ export const Modal = memo(function Modal({
     return setupTelegramBackButton(stableClose)
   }, [closeOnEsc, isOpen, stableClose])
 
-  useEffect(() => {
-    if (!isOpen || typeof document === 'undefined') return
-
-    const prevActive = document.activeElement as HTMLElement | null
-
-    queueMicrotask(() => {
-      const root = dialogRef.current
-      if (!root) return
-
-      const target = initialFocusSelector
-        ? (root.querySelector(initialFocusSelector) as HTMLElement | null)
-        : null
-
-      if (target) {
-        target.focus()
-        return
-      }
-
-      const focusables = getFocusable(root)
-      if (focusables[0]) focusables[0].focus()
-      else root.focus()
-    })
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && closeOnEsc) {
-        e.preventDefault()
-        onClose()
-        return
-      }
-
-      if (e.key === 'Tab') {
-        const root = dialogRef.current
-        if (!root) return
-
-        const focusables = getFocusable(root)
-        if (focusables.length === 0) {
-          e.preventDefault()
-          return
-        }
-
-        const first = focusables[0]
-        const last = focusables[focusables.length - 1]
-        if (!first || !last) return
-        const active = document.activeElement
-
-        if (e.shiftKey && active === first) {
-          e.preventDefault()
-          last.focus()
-        } else if (!e.shiftKey && active === last) {
-          e.preventDefault()
-          first.focus()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      prevActive?.focus?.()
-    }
-  }, [isOpen, onClose, closeOnEsc, initialFocusSelector])
+  useFocusTrap({
+    active: isOpen,
+    containerRef: dialogRef,
+    initialFocusSelector,
+    onEscape: closeOnEsc ? stableClose : undefined,
+  })
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!closeOnBackdrop) return

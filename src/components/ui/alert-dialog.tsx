@@ -7,6 +7,7 @@ import {
   useLayoutEffect,
   useRef,
   memo,
+  type RefObject,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/shared/utils/cn'
@@ -15,6 +16,7 @@ import { Button, type ButtonProps } from './button'
 import { MODAL_TITLE_CLASS, OVERLAY_SCRIM_CLASS, SHADOW_MODAL_CLASS } from './ui-patterns'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
+import { useFocusTrap } from '@/shared/lib/hooks/useFocusTrap'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
 
@@ -29,7 +31,7 @@ interface AlertDialogProps {
 const AlertDialogA11yContext = createContext<{ titleId: string; descriptionId: string } | null>(
   null
 )
-const AlertDialogRefContext = createContext<React.RefObject<HTMLDivElement | null> | null>(null)
+const AlertDialogRefContext = createContext<RefObject<HTMLDivElement | null> | null>(null)
 
 function useAlertDialogA11y() {
   return useContext(AlertDialogA11yContext)
@@ -63,52 +65,11 @@ export const AlertDialog = memo(function AlertDialog({
     return setupTelegramBackButton(stableClose)
   }, [stableClose, open, preventClose])
 
-  useEffect(() => {
-    if (!open || typeof document === 'undefined') return
-
-    const prevActive = document.activeElement as HTMLElement | null
-    queueMicrotask(() => contentRef.current?.focus())
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !preventCloseRef.current) onOpenChangeRef.current(false)
-
-      if (e.key === 'Tab' && contentRef.current) {
-        const focusables = contentRef.current.querySelectorAll<HTMLElement>(
-          'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
-        )
-        const list = Array.from(focusables).filter(
-          el =>
-            !el.hasAttribute('disabled') &&
-            el.getAttribute('aria-hidden') !== 'true' &&
-            el.offsetParent != null
-        )
-
-        if (list.length === 0) {
-          e.preventDefault()
-          return
-        }
-
-        const first = list[0]
-        const last = list[list.length - 1]
-        if (!first || !last) return
-        const active = document.activeElement
-
-        if (e.shiftKey && active === first) {
-          e.preventDefault()
-          last.focus()
-        } else if (!e.shiftKey && active === last) {
-          e.preventDefault()
-          first.focus()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      prevActive?.focus?.()
-    }
-  }, [open])
+  useFocusTrap({
+    active: open,
+    containerRef: contentRef,
+    onEscape: preventClose ? undefined : stableClose,
+  })
 
   if (!open) return null
 

@@ -1,4 +1,13 @@
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   animate,
   motion,
@@ -16,8 +25,10 @@ import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffe
 import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
+import { useFocusTrap } from '@/shared/lib/hooks/useFocusTrap'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
+import { DrawerA11yContext, useDrawerA11y } from './drawer-a11y'
 
 export type DrawerProps = {
   open: boolean
@@ -26,6 +37,7 @@ export type DrawerProps = {
   preventClose?: boolean
   overlayClassName?: string
   onTelegramBack?: () => void
+  initialFocusSelector?: string
 
   /**
    * Новый API: явный отступ снизу (например высота BottomNav)
@@ -64,6 +76,9 @@ type DrawerContentProps = {
   onOpenChange: (open: boolean) => void
   preventClose?: boolean
   bottomOffsetPx: number
+  titleId: string
+  descriptionId: string
+  initialFocusSelector?: string
 }
 
 // Порог скорости флика (px/s) для закрытия / разворота жестом
@@ -82,6 +97,9 @@ const DrawerContent = memo(function DrawerContent({
   onOpenChange,
   preventClose,
   bottomOffsetPx,
+  titleId,
+  descriptionId,
+  initialFocusSelector,
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
@@ -104,6 +122,12 @@ const DrawerContent = memo(function DrawerContent({
   const velocityRef = useRef({ clientY: 0, t: 0, v: 0 })
 
   useBodyScrollLock(true)
+  useFocusTrap({
+    active: true,
+    containerRef: contentRef,
+    initialFocusSelector,
+    onEscape: preventClose ? undefined : () => onOpenChange(false),
+  })
 
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -268,6 +292,9 @@ const DrawerContent = memo(function DrawerContent({
         }}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+        tabIndex={-1}
         ref={contentRef}
       >
         <div
@@ -293,11 +320,14 @@ export const Drawer = ({
   bottomOffsetPx,
   overlayClassName,
   onTelegramBack,
+  initialFocusSelector,
 }: DrawerProps) => {
   const resolvedBottomOffset = typeof bottomOffsetPx === 'number' ? bottomOffsetPx : 0
   const telegramBackRef = useRef(onTelegramBack)
   const onOpenChangeRef = useRef(onOpenChange)
   const preventCloseRef = useRef(preventClose)
+  const titleId = useId()
+  const descriptionId = useId()
   useLayoutEffect(() => {
     telegramBackRef.current = onTelegramBack
     onOpenChangeRef.current = onOpenChange
@@ -314,30 +344,28 @@ export const Drawer = ({
 
   useEffect(() => {
     if (!open) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !preventCloseRef.current) onOpenChangeRef.current(false)
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open])
-
-  useEffect(() => {
-    if (!open) return
     if (preventClose && !telegramBackRef.current) return
     return setupTelegramBackButton(stableTelegramBack)
   }, [stableTelegramBack, open, preventClose])
 
+  const a11yValue = useMemo(() => ({ titleId, descriptionId }), [descriptionId, titleId])
+
   const node = (
     <AnimatePresence>
       {open && (
-        <DrawerContent
-          onOpenChange={onOpenChange}
-          preventClose={preventClose}
-          bottomOffsetPx={resolvedBottomOffset}
-          overlayClassName={overlayClassName}
-        >
-          {children}
-        </DrawerContent>
+        <DrawerA11yContext.Provider value={a11yValue}>
+          <DrawerContent
+            onOpenChange={onOpenChange}
+            preventClose={preventClose}
+            bottomOffsetPx={resolvedBottomOffset}
+            overlayClassName={overlayClassName}
+            titleId={titleId}
+            descriptionId={descriptionId}
+            initialFocusSelector={initialFocusSelector}
+          >
+            {children}
+          </DrawerContent>
+        </DrawerA11yContext.Provider>
       )}
     </AnimatePresence>
   )
@@ -396,14 +424,24 @@ export const DrawerFooter = ({ className, contentClassName, ...props }: DrawerFo
 }
 
 export const DrawerTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
-  return <h2 className={cn(MODAL_TITLE_CLASS, className)} {...props} />
+  const a11y = useDrawerA11y()
+  const fallbackId = useId()
+  const titleId = props.id ?? a11y?.titleId ?? fallbackId
+
+  return <h2 id={titleId} className={cn(MODAL_TITLE_CLASS, className)} {...props} />
 }
 
 export const DrawerDescription = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) => {
-  return <p className={cn('text-sm text-muted-foreground', className)} {...props} />
+  const a11y = useDrawerA11y()
+  const fallbackId = useId()
+  const descriptionId = props.id ?? a11y?.descriptionId ?? fallbackId
+
+  return (
+    <p id={descriptionId} className={cn('text-sm text-muted-foreground', className)} {...props} />
+  )
 }
 
 type DrawerCloseButtonProps = {
