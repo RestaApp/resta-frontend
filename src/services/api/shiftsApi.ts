@@ -28,6 +28,37 @@ import {
  */
 export const FULL_LIST_PER_PAGE = 100
 
+export const serializeVacanciesQueryArgs = ({ queryArgs }: { queryArgs: GetVacanciesParams }) => {
+  const cacheKey = { ...queryArgs }
+  delete cacheKey.page
+  return cacheKey
+}
+
+export const mergeVacanciesPages = (
+  currentCache: VacanciesResponse,
+  newData: VacanciesResponse,
+  page: number
+) => {
+  if (page <= 1) {
+    return newData
+  }
+
+  const indexById = new Map(currentCache.data.map((item, index) => [item.id, index]))
+  for (const item of newData.data) {
+    const existingIndex = indexById.get(item.id)
+    if (existingIndex === undefined) {
+      indexById.set(item.id, currentCache.data.push(item) - 1)
+      continue
+    }
+    currentCache.data[existingIndex] = item
+  }
+
+  currentCache.success = newData.success
+  currentCache.pagination = newData.pagination
+  currentCache.meta = newData.meta
+  return undefined
+}
+
 const shiftsApi = api.injectEndpoints({
   endpoints: builder => ({
     // Получить вакансии (смены с shift_type=vacancy)
@@ -38,6 +69,16 @@ const shiftsApi = api.injectEndpoints({
           url: `/api/v1/shifts${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
         }
+      },
+      serializeQueryArgs: serializeVacanciesQueryArgs,
+      merge: (currentCache, newData, { arg }) => {
+        const page = arg.page ?? 1
+        return mergeVacanciesPages(currentCache, newData, page)
+      },
+      forceRefetch: ({ currentArg, previousArg }) => {
+        const currentPage = currentArg?.page ?? 1
+        const previousPage = previousArg?.page ?? 1
+        return currentPage !== previousPage
       },
       providesTags: result => provideListTags('Shift', result),
       keepUnusedDataFor: 300,

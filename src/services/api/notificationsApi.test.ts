@@ -133,3 +133,39 @@ describe('markAllNotificationsRead (optimistic)', () => {
     expect(selectHasUnread(store)).toBe(true)
   })
 })
+
+describe('archiveNotification (optimistic)', () => {
+  it('успех: удаляет уведомление из списка и гасит has_unread, если это был последний unread', async () => {
+    ok()
+    const store = makeStore()
+    await seed(store, [item(1, 'unread'), item(2, 'read')], true)
+
+    await store.dispatch(notificationsApi.endpoints.archiveNotification.initiate(1))
+
+    expect(selectList(store)?.map(n => n.id)).toEqual([2])
+    expect(selectHasUnread(store)).toBe(false)
+  })
+
+  it('успех: оставляет has_unread=true, если unread ещё есть', async () => {
+    ok()
+    const store = makeStore()
+    await seed(store, [item(1, 'unread'), item(2, 'unread')], true)
+
+    await store.dispatch(notificationsApi.endpoints.archiveNotification.initiate(1))
+
+    expect(selectList(store)?.map(n => n.id)).toEqual([2])
+    expect(selectList(store)?.find(n => n.id === 2)?.status).toBe('unread')
+    expect(selectHasUnread(store)).toBe(true)
+  })
+
+  it('ошибка: удаление из списка откатывается', async () => {
+    fail()
+    const store = makeStore()
+    await seed(store, [item(1, 'unread'), item(2, 'read')], true)
+
+    await store.dispatch(notificationsApi.endpoints.archiveNotification.initiate(1))
+
+    expect(selectList(store)?.map(n => n.id)).toEqual([1, 2])
+    expect(selectHasUnread(store)).toBe(true)
+  })
+})

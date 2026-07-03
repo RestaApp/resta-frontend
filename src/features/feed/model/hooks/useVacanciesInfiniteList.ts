@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback, useEffect } from 'react'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
+import type { PaginationMeta } from '@/shared/api/pagination'
 import type { Shift } from '@/shared/shifts/types'
 import type { ShiftType } from '../utils/queryParams'
 import { vacancyToShift } from '@/shared/shifts/mapping'
@@ -24,27 +25,52 @@ export interface UseVacanciesInfiniteListReturn {
   refresh: () => Promise<void>
 }
 
+export const resolveVacanciesHasMore = (pagination?: PaginationMeta): boolean => {
+  if (!pagination) return false
+  if (pagination.next_page !== undefined) {
+    return pagination.next_page !== null
+  }
+  if (typeof pagination.current_page === 'number' && typeof pagination.total_pages === 'number') {
+    return pagination.current_page < pagination.total_pages
+  }
+  return false
+}
+
 export const useVacanciesInfiniteList = (
   options: UseVacanciesInfiniteListOptions
 ): UseVacanciesInfiniteListReturn => {
   const { shiftType, baseQuery, enabled, perPage = 5 } = options
 
-  const [visibleCount, setVisibleCount] = useState(perPage)
+  const queryIdentity = useMemo(
+    () =>
+      JSON.stringify({
+        ...baseQuery,
+        shift_type: shiftType,
+        per_page: perPage,
+      }),
+    [baseQuery, perPage, shiftType]
+  )
+  const [paginationState, setPaginationState] = useState(() => ({
+    queryIdentity,
+    page: 1,
+  }))
   const [lastStableData, setLastStableData] = useState<{
+    queryIdentity: string
     items: Shift[]
     vacanciesMap: Map<number, VacancyApiItem>
     totalCount: number
     hasMore: boolean
   } | null>(null)
+  const page = paginationState.queryIdentity === queryIdentity ? paginationState.page : 1
 
   const queryParams = useMemo<GetVacanciesParams>(() => {
     return {
       ...baseQuery,
       shift_type: shiftType,
-      page: 1,
-      per_page: visibleCount,
+      page,
+      per_page: perPage,
     }
-  }, [baseQuery, shiftType, visibleCount])
+  }, [baseQuery, page, perPage, shiftType])
 
   const {
     data: response,
@@ -75,14 +101,7 @@ export const useVacanciesInfiniteList = (
 
     let hasMore = false
     if (pagination) {
-      if (typeof pagination.total_count === 'number') {
-        hasMore = items.length < pagination.total_count
-      } else if (pagination.next_page !== undefined && pagination.next_page !== null) {
-        hasMore = true
-      } else {
-        const { current_page, total_pages } = pagination
-        if (current_page && total_pages) hasMore = current_page < total_pages
-      }
+      hasMore = resolveVacanciesHasMore(pagination)
     }
 
     return { items, vacanciesMap: map, totalCount, hasMore, pagination, apiItems }
@@ -91,13 +110,14 @@ export const useVacanciesInfiniteList = (
   const shouldUseLastStableData = useMemo(() => {
     if (!enabled || !lastStableData || !response) return false
     if (isError) return false
+    if (lastStableData.queryIdentity !== queryIdentity) return false
 
     const hasNoItems = dataSnapshot.items.length === 0
     const hasNoPagination = !dataSnapshot.pagination
     const hasUnknownTotal = dataSnapshot.totalCount === -1
 
     return hasNoItems && hasNoPagination && hasUnknownTotal
-  }, [enabled, isError, lastStableData, response, dataSnapshot])
+  }, [enabled, isError, lastStableData, queryIdentity, response, dataSnapshot])
 
   useEffect(() => {
     if (!enabled) return
@@ -121,6 +141,7 @@ export const useVacanciesInfiniteList = (
           }
 
           return {
+            queryIdentity,
             items: dataSnapshot.items,
             vacanciesMap: dataSnapshot.vacanciesMap,
             totalCount: dataSnapshot.totalCount,
@@ -129,7 +150,7 @@ export const useVacanciesInfiniteList = (
         })
       })
     }
-  }, [enabled, isError, response, dataSnapshot])
+  }, [dataSnapshot, enabled, isError, queryIdentity, response])
 
   const items = shouldUseLastStableData ? (lastStableData?.items ?? []) : dataSnapshot.items
   const vacanciesMap = shouldUseLastStableData
@@ -146,13 +167,21 @@ export const useVacanciesInfiniteList = (
     if (!enabled) return
     if (isLoading || isFetching) return
     if (!hasMore) return
-    setVisibleCount(c => c + perPage)
-  }, [enabled, hasMore, isLoading, isFetching, perPage])
+    setPaginationState(prev => ({
+      queryIdentity,
+      page: prev.queryIdentity === queryIdentity ? prev.page + 1 : 2,
+    }))
+  }, [enabled, hasMore, isFetching, isLoading, queryIdentity])
 
   const refresh = useCallback(async () => {
     if (!enabled) return
+    setLastStableData(null)
+    if (page !== 1) {
+      setPaginationState({ queryIdentity, page: 1 })
+      return
+    }
     await refetch()
-  }, [enabled, refetch])
+  }, [enabled, page, queryIdentity, refetch])
 
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false

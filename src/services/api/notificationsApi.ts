@@ -71,6 +71,17 @@ export interface GetNotificationsParams {
 const recomputeHasUnread = (items: NotificationItem[]): boolean =>
   items.some(item => item.status === 'unread')
 
+const removeNotificationFromList = (
+  items: NotificationItem[],
+  id: number
+): { removedUnread: boolean } => {
+  const index = items.findIndex(item => item.id === id)
+  if (index === -1) return { removedUnread: false }
+
+  const [removed] = items.splice(index, 1)
+  return { removedUnread: removed?.status === 'unread' }
+}
+
 export const notificationsApi = api.injectEndpoints({
   endpoints: builder => ({
     getNotifications: builder.query<NotificationsListResponse, GetNotificationsParams | void>({
@@ -144,7 +155,27 @@ export const notificationsApi = api.injectEndpoints({
         method: 'PATCH',
         body: { status: 'archived' },
       }),
-      invalidatesTags: ['Notification'],
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        let stillUnread = true
+        const listPatch = dispatch(
+          notificationsApi.util.updateQueryData('getNotifications', undefined, draft => {
+            removeNotificationFromList(draft.data, id)
+            stillUnread = recomputeHasUnread(draft.data)
+            if (draft.meta) draft.meta.has_unread = stillUnread
+          })
+        )
+        const unreadPatch = dispatch(
+          notificationsApi.util.updateQueryData('getHasUnread', undefined, draft => {
+            if (!stillUnread) draft.data.has_unread = false
+          })
+        )
+        try {
+          await queryFulfilled
+        } catch {
+          listPatch.undo()
+          unreadPatch.undo()
+        }
+      },
     }),
 
     markAllNotificationsRead: builder.mutation<MarkAllReadResponse, void>({
