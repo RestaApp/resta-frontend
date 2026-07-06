@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useGetAppliedShiftsQuery, FULL_LIST_PER_PAGE } from '@/services/api/shiftsApi'
 import { selectUserData } from '@/store/slices/userSlice'
 import { useAppSelector } from '@/store/hooks'
@@ -9,11 +9,13 @@ export interface UseAppliedShiftsReturn {
   appliedShifts: number[]
   appliedShiftsSet: Set<number>
   appliedApplicationsMap: Record<number, number | undefined>
-  markApplied: (shiftId: number, applicationId?: number) => void
-  unmarkApplied: (shiftId: number) => void
   getApplicationId: (shiftId: number) => number | undefined
 }
 
+// Источник истины по откликам — серверный ответ getAppliedShifts. Статус заявки
+// приходит в my_application и живёт прямо на смене (см. vacancyToShift), поэтому
+// здесь только id откликнутых смен и id заявок. После apply/cancel список
+// обновляется инвалидацией тега AppliedShift — оптимистичных оверрайдов нет.
 export const useAppliedShifts = (): UseAppliedShiftsReturn => {
   const userData = useAppSelector(selectUserData)
   const apiRole = mapRoleFromApi(userData?.role)
@@ -31,74 +33,17 @@ export const useAppliedShifts = (): UseAppliedShiftsReturn => {
     return resp?.data ?? []
   }, [data])
 
-  const serverAppliedIds = useMemo(() => serverItems.map(v => v.id), [serverItems])
+  const appliedShifts = useMemo(() => serverItems.map(vacancy => vacancy.id), [serverItems])
 
-  const serverApplicationsMap = useMemo(() => {
+  const appliedShiftsSet = useMemo(() => new Set(appliedShifts), [appliedShifts])
+
+  const appliedApplicationsMap = useMemo(() => {
     const map: Record<number, number | undefined> = {}
-    for (const v of serverItems) {
-      map[v.id] = v.my_application?.id
+    for (const vacancy of serverItems) {
+      map[vacancy.id] = vacancy.my_application?.id
     }
     return map
   }, [serverItems])
-
-  const [locallyApplied, setLocallyApplied] = useState<Record<number, true>>({})
-  const [locallyUnapplied, setLocallyUnapplied] = useState<Record<number, true>>({})
-  const [applicationIdOverrides, setApplicationIdOverrides] = useState<
-    Record<number, number | undefined>
-  >({})
-
-  const appliedShiftsSet = useMemo(() => {
-    const set = new Set<number>()
-    for (const id of serverAppliedIds) {
-      if (!locallyUnapplied[id]) set.add(id)
-    }
-    for (const idStr of Object.keys(locallyApplied)) {
-      set.add(Number(idStr))
-    }
-    return set
-  }, [serverAppliedIds, locallyApplied, locallyUnapplied])
-
-  const appliedShifts = useMemo(() => Array.from(appliedShiftsSet), [appliedShiftsSet])
-
-  const appliedApplicationsMap = useMemo(() => {
-    const next: Record<number, number | undefined> = { ...serverApplicationsMap }
-    for (const idStr of Object.keys(locallyUnapplied)) {
-      delete next[Number(idStr)]
-    }
-    for (const [idStr, appId] of Object.entries(applicationIdOverrides)) {
-      next[Number(idStr)] = appId
-    }
-    return next
-  }, [applicationIdOverrides, locallyUnapplied, serverApplicationsMap])
-
-  const markApplied = useCallback((shiftId: number, applicationId?: number) => {
-    setLocallyApplied(prev => ({ ...prev, [shiftId]: true }))
-    setLocallyUnapplied(prev => {
-      if (!prev[shiftId]) return prev
-      const next = { ...prev }
-      delete next[shiftId]
-      return next
-    })
-    if (applicationId !== undefined) {
-      setApplicationIdOverrides(prev => ({ ...prev, [shiftId]: applicationId }))
-    }
-  }, [])
-
-  const unmarkApplied = useCallback((shiftId: number) => {
-    setLocallyUnapplied(prev => ({ ...prev, [shiftId]: true }))
-    setLocallyApplied(prev => {
-      if (!prev[shiftId]) return prev
-      const next = { ...prev }
-      delete next[shiftId]
-      return next
-    })
-    setApplicationIdOverrides(prev => {
-      if (!(shiftId in prev)) return prev
-      const next = { ...prev }
-      delete next[shiftId]
-      return next
-    })
-  }, [])
 
   const getApplicationId = useCallback(
     (shiftId: number) => appliedApplicationsMap[shiftId],
@@ -109,8 +54,6 @@ export const useAppliedShifts = (): UseAppliedShiftsReturn => {
     appliedShifts,
     appliedShiftsSet,
     appliedApplicationsMap,
-    markApplied,
-    unmarkApplied,
     getApplicationId,
   }
 }

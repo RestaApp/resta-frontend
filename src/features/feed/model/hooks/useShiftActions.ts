@@ -12,8 +12,7 @@ interface UseShiftActionsReturn {
 }
 
 export const useShiftActions = (): UseShiftActionsReturn => {
-  const { appliedShiftsSet, appliedApplicationsMap, markApplied, unmarkApplied, getApplicationId } =
-    useAppliedShifts()
+  const { appliedShiftsSet, appliedApplicationsMap, getApplicationId } = useAppliedShifts()
 
   const { apply, cancel } = useShiftApplication()
 
@@ -28,18 +27,18 @@ export const useShiftActions = (): UseShiftActionsReturn => {
     })
   }, [])
 
+  // После успешного apply/cancel список откликов и смена обновятся сами через
+  // инвалидацию тегов RTK Query (AppliedShift/Shift) — статус берём из ответа.
   const handleApply = useCallback(
     async (shiftId: number, message?: string) => {
       setLoading(shiftId, true)
       try {
-        const res = await apply(shiftId, message)
-        const appId = res?.data?.application_id ?? res?.data?.id
-        markApplied(shiftId, appId)
+        await apply(shiftId, message)
       } finally {
         setLoading(shiftId, false)
       }
     },
-    [apply, markApplied, setLoading]
+    [apply, setLoading]
   )
 
   const handleCancel = useCallback(
@@ -47,12 +46,11 @@ export const useShiftActions = (): UseShiftActionsReturn => {
       setLoading(shiftId, true)
       try {
         await cancel(applicationId)
-        unmarkApplied(shiftId)
       } finally {
         setLoading(shiftId, false)
       }
     },
-    [cancel, unmarkApplied, setLoading]
+    [cancel, setLoading]
   )
 
   const isShiftLoading = useCallback((shiftId: number) => loadingIds.has(shiftId), [loadingIds])

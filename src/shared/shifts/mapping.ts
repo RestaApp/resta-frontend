@@ -119,6 +119,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     urgent: Boolean(item.urgent),
 
     applicationId: item.my_application?.id ?? null,
+    applicationStatus: item.my_application?.status ?? null,
     ownerId: item.user?.id ?? null,
     photoUrl: getUserPhotoUrl(item),
 
