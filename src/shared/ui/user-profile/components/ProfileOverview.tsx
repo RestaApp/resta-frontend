@@ -58,25 +58,25 @@ export const ProfileOverview = memo(function ProfileOverview({
         onToggle={onOpenToWorkToggle}
       />
 
-      {!profile.isProfileFilled ? (
+      {/* Плашка «заполните профиль» — только на своём профиле (есть onFill).
+          На чужом (карточка ресторана/автор смены) её быть не должно. */}
+      {showFillAction ? (
         <div className="flex flex-col gap-3 rounded-lg border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-3 text-center">
           <p className="text-sm leading-relaxed text-foreground/80">{profile.fillRequiredText}</p>
-          {showFillAction ? (
-            <div className="flex justify-center">
-              <motion.div whileTap={{ scale: 0.98 }}>
-                <Button
-                  onClick={onFill}
-                  variant="gradient"
-                  size="md"
-                  className="min-w-39"
-                  type="button"
-                >
-                  {t('common.fill')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            </div>
-          ) : null}
+          <div className="flex justify-center">
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={onFill}
+                variant="gradient"
+                size="md"
+                className="min-w-39"
+                type="button"
+              >
+                {t('common.fill')}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          </div>
         </div>
       ) : null}
 
