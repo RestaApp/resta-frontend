@@ -127,16 +127,20 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
   const hasUnread = items.some(item => item.status === 'unread')
   const hasNextPage = Boolean(data?.pagination?.next_page)
 
-  // Тап: помечаем прочитанным и, если уведомление о смене, открываем её детальный оверлей.
+  // Тап: помечаем прочитанным и открываем связанную смену. Для уведомлений об
+  // откликах (notifiable = ShiftApplication) бэк отдаёт shift_id — открываем
+  // вакансию, где владельцу автоматически видна секция откликов, а сотруднику —
+  // смена, на которую он откликался. Fallback на notifiable_id, когда
+  // уведомление напрямую про Shift.
   const handleSelect = useCallback(
     (notification: NotificationItem) => {
       if (notification.status === 'unread') void markRead(notification.id)
-      if (
-        notification.notifiable_type === 'Shift' &&
-        typeof notification.notifiable_id === 'number'
-      ) {
+      const shiftId =
+        notification.shift_id ??
+        (notification.notifiable_type === 'Shift' ? notification.notifiable_id : null)
+      if (typeof shiftId === 'number') {
         setOpen(false)
-        openShiftDetail(notification.notifiable_id)
+        openShiftDetail(shiftId)
       }
     },
     [markRead, openShiftDetail]
