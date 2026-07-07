@@ -9,13 +9,18 @@ export interface UseAppliedShiftsReturn {
   appliedShifts: number[]
   appliedShiftsSet: Set<number>
   appliedApplicationsMap: Record<number, number | undefined>
+  appliedStatusMap: Record<number, string | undefined>
   getApplicationId: (shiftId: number) => number | undefined
+  getApplicationStatus: (shiftId: number) => string | undefined
 }
 
 // Источник истины по откликам — серверный ответ getAppliedShifts. Статус заявки
-// приходит в my_application и живёт прямо на смене (см. vacancyToShift), поэтому
-// здесь только id откликнутых смен и id заявок. После apply/cancel список
-// обновляется инвалидацией тега AppliedShift — оптимистичных оверрайдов нет.
+// приходит в my_application и живёт прямо на смене (см. vacancyToShift). После
+// apply/cancel/accept/reject этот список целиком инвалидируется тегом AppliedShift
+// (page 1, per_page=100 — без накопительного merge), поэтому id, application id и
+// статус здесь всегда актуальны сразу после ответа. Лента getVacancies —
+// накопительная (infinite merge), её ранние страницы инвалидация освежает не
+// всегда, так что статус заявки лучше брать отсюда. Оптимистичных оверрайдов нет.
 export const useAppliedShifts = (): UseAppliedShiftsReturn => {
   const userData = useAppSelector(selectUserData)
   const apiRole = mapRoleFromApi(userData?.role)
@@ -45,15 +50,30 @@ export const useAppliedShifts = (): UseAppliedShiftsReturn => {
     return map
   }, [serverItems])
 
+  const appliedStatusMap = useMemo(() => {
+    const map: Record<number, string | undefined> = {}
+    for (const vacancy of serverItems) {
+      map[vacancy.id] = vacancy.my_application?.status
+    }
+    return map
+  }, [serverItems])
+
   const getApplicationId = useCallback(
     (shiftId: number) => appliedApplicationsMap[shiftId],
     [appliedApplicationsMap]
+  )
+
+  const getApplicationStatus = useCallback(
+    (shiftId: number) => appliedStatusMap[shiftId],
+    [appliedStatusMap]
   )
 
   return {
     appliedShifts,
     appliedShiftsSet,
     appliedApplicationsMap,
+    appliedStatusMap,
     getApplicationId,
+    getApplicationStatus,
   }
 }

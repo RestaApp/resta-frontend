@@ -5,6 +5,7 @@ import { useAppliedShifts } from './useAppliedShifts'
 interface UseShiftActionsReturn {
   appliedShiftsSet: Set<number>
   appliedApplicationsMap: Record<number, number | undefined>
+  appliedStatusMap: Record<number, string | undefined>
   getApplicationId: (id: number) => number | undefined
   handleApply: (shiftId: number, message?: string) => Promise<void>
   handleCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
@@ -12,7 +13,8 @@ interface UseShiftActionsReturn {
 }
 
 export const useShiftActions = (): UseShiftActionsReturn => {
-  const { appliedShiftsSet, appliedApplicationsMap, getApplicationId } = useAppliedShifts()
+  const { appliedShiftsSet, appliedApplicationsMap, appliedStatusMap, getApplicationId } =
+    useAppliedShifts()
 
   const { apply, cancel } = useShiftApplication()
 
@@ -45,7 +47,7 @@ export const useShiftActions = (): UseShiftActionsReturn => {
     async (applicationId: number | null | undefined, shiftId: number) => {
       setLoading(shiftId, true)
       try {
-        await cancel(applicationId)
+        await cancel(applicationId, shiftId)
       } finally {
         setLoading(shiftId, false)
       }
@@ -58,6 +60,7 @@ export const useShiftActions = (): UseShiftActionsReturn => {
   return {
     appliedShiftsSet,
     appliedApplicationsMap,
+    appliedStatusMap,
     getApplicationId,
     handleApply,
     handleCancel,

@@ -1,46 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import { InfiniteScrollTrigger } from '@/shared/ui/InfiniteScrollTrigger'
 import { getAppScrollRoot } from '@/shared/ui/appScroll'
 import type { Shift } from '@/shared/shifts/types'
 import type { UseVacanciesInfiniteListReturn } from '@/features/feed/model/hooks/useVacanciesInfiniteList'
-import type { ShiftStatus } from '@/shared/shifts/types'
 
 interface FeedListProps {
   shifts: Shift[]
   activeList: UseVacanciesInfiniteListReturn
-  getApplicationStatus: (id: number) => ShiftStatus | null
   onOpenDetails: (id: number) => void
 }
 
 /** Примерная высота карточки до измерения (px). */
 const ESTIMATED_CARD_HEIGHT = 152
 
-export function FeedList({
-  shifts,
-  activeList,
-  getApplicationStatus,
-  onOpenDetails,
-}: FeedListProps) {
-  const sortedShifts = useMemo(() => {
-    if (!shifts.length) return shifts
-
-    return shifts
-      .map((shift, index) => ({
-        shift,
-        index,
-        isRejected: getApplicationStatus(shift.id) === 'rejected',
-      }))
-      .sort((a, b) => {
-        if (a.isRejected === b.isRejected) {
-          return a.index - b.index
-        }
-        return a.isRejected ? 1 : -1
-      })
-      .map(item => item.shift)
-  }, [shifts, getApplicationStatus])
-
+// Порядок карточек — как приходит с бэка (created_at DESC после фильтров).
+// Клиентской пересортировки нет.
+export function FeedList({ shifts, activeList, onOpenDetails }: FeedListProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   // Лента живёт в общем scroll-root приложения, выше неё — sticky-шапка и бар
   // активных фильтров (его высота меняется). scrollMargin = смещение списка от
@@ -78,12 +55,12 @@ export function FeedList({
   }, [])
 
   const virtualizer = useVirtualizer({
-    count: sortedShifts.length,
+    count: shifts.length,
     getScrollElement: () => getAppScrollRoot(),
     estimateSize: () => ESTIMATED_CARD_HEIGHT,
     overscan: 6,
     scrollMargin,
-    getItemKey: index => sortedShifts[index]?.id ?? index,
+    getItemKey: index => shifts[index]?.id ?? index,
   })
 
   const virtualItems = virtualizer.getVirtualItems()
@@ -93,13 +70,13 @@ export function FeedList({
       <div
         ref={containerRef}
         style={{
-          height: sortedShifts.length ? virtualizer.getTotalSize() : 0,
+          height: shifts.length ? virtualizer.getTotalSize() : 0,
           position: 'relative',
           width: '100%',
         }}
       >
         {virtualItems.map(item => {
-          const shift = sortedShifts[item.index]
+          const shift = shifts[item.index]
           if (!shift) return null
           return (
             <div

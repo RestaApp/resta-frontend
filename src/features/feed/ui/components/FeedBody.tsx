@@ -53,7 +53,6 @@ export function FeedBody({ vm, header }: FeedBodyProps) {
             <FeedList
               shifts={vm.filteredShifts}
               activeList={vm.activeList}
-              getApplicationStatus={vm.getApplicationStatus}
               onOpenDetails={vm.openShiftDetails}
             />
           </FeedListArea>

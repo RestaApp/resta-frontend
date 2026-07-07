@@ -163,16 +163,29 @@ const shiftsApi = api.injectEndpoints({
       ],
     }),
 
-    // Отменить заявку на смену (id — application id)
-    cancelApplication: builder.mutation<CancelApplicationResponse, number>({
-      query: id => ({
-        url: `/api/v1/shift_applications/${id}`,
+    // Отменить заявку на смену (applicationId — id заявки). shiftId — для точечной
+    // инвалидации кэша конкретной смены (my_application/can_apply), чтобы статус в
+    // ленте и деталях обновился сразу после ответа, а не оставался устаревшим.
+    cancelApplication: builder.mutation<
+      CancelApplicationResponse,
+      { applicationId: number; shiftId?: number }
+    >({
+      query: ({ applicationId }) => ({
+        url: `/api/v1/shift_applications/${applicationId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [
-        { type: 'AppliedShift', id: 'LIST' },
-        { type: 'Shift', id: 'LIST' },
-      ],
+      // Известен shiftId → точечно (тег нормализован к строке, лента обновится);
+      // иначе fallback на LIST, чтобы списки не остались устаревшими.
+      invalidatesTags: (_result, _error, { shiftId }) =>
+        typeof shiftId === 'number'
+          ? [
+              { type: 'AppliedShift', id: 'LIST' },
+              { type: 'Shift', id: String(shiftId) },
+            ]
+          : [
+              { type: 'AppliedShift', id: 'LIST' },
+              { type: 'Shift', id: 'LIST' },
+            ],
     }),
 
     // Принять заявку (только для владельца смены / ресторана). shiftId — для инвалидации кэша смены без перезагрузки.

@@ -30,14 +30,14 @@ export const useShiftApplication = () => {
   )
 
   const cancel = useCallback(
-    async (applicationId: number | null | undefined) => {
+    async (applicationId: number | null | undefined, shiftId?: number) => {
       if (!applicationId) {
         showToast(t('shift.cancelApplicationError'), 'error')
         throw { kind: 'generic' as const, message: t('shift.cancelApplicationError') }
       }
 
       try {
-        const result = await cancelApplication(applicationId).unwrap()
+        const result = await cancelApplication({ applicationId, shiftId }).unwrap()
         showToast(result.message ?? t('shift.applicationCancelled'), 'warning')
         return result
       } catch (e) {

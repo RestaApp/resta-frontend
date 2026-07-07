@@ -19,9 +19,9 @@ export const AppliedShiftCard = ({ shift }: AppliedShiftCardProps) => {
 
   const handleCancel = useCallback(
     async (appId?: number | null) => {
-      await cancel(appId ?? applicationId)
+      await cancel(appId ?? applicationId, shift.id)
     },
-    [applicationId, cancel]
+    [applicationId, cancel, shift.id]
   )
 
   return (

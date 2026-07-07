@@ -12,6 +12,7 @@ interface UseFeedSelectionControllerParams {
   applicationSuccessShiftId: number | null
   appliedShiftsSet: Set<number>
   appliedApplicationsMap: Record<number, number | undefined>
+  appliedStatusMap: Record<number, string | undefined>
   getApplicationId: (id: number) => number | undefined
 }
 
@@ -23,6 +24,7 @@ export const useFeedSelectionController = ({
   applicationSuccessShiftId,
   appliedShiftsSet,
   appliedApplicationsMap,
+  appliedStatusMap,
   getApplicationId,
 }: UseFeedSelectionControllerParams) => {
   const hotVacanciesById = useMemo(() => {
@@ -87,12 +89,16 @@ export const useFeedSelectionController = ({
     [appliedApplicationsMap, getApplicationId]
   )
 
+  // appliedStatusMap (из getAppliedShifts) — приоритетный источник: он целиком
+  // рефетчится после apply/cancel/accept/reject, тогда как my_application в ленте
+  // getVacancies на ранних (накопленных) страницах может остаться устаревшим.
   const getApplicationStatus = useCallback(
     (id: number) =>
+      appliedStatusMap[id] ??
       activeList.vacanciesMap.get(id)?.my_application?.status ??
       hotVacanciesById.get(id)?.my_application?.status ??
       null,
-    [activeList.vacanciesMap, hotVacanciesById]
+    [appliedStatusMap, activeList.vacanciesMap, hotVacanciesById]
   )
 
   return {

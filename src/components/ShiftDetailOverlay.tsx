@@ -47,13 +47,13 @@ export function ShiftDetailOverlay({ id, onClose }: ShiftDetailOverlayProps) {
     async (appId: number | null | undefined) => {
       setIsActionLoading(true)
       try {
-        await cancel(appId)
+        await cancel(appId, id)
         setIsApplied(false)
       } finally {
         setIsActionLoading(false)
       }
     },
-    [cancel]
+    [cancel, id]
   )
 
   if (isVacancyLoading) {

@@ -47,7 +47,11 @@ const makeActiveList = (shift: Shift, vacancy: VacancyApiItem): UseVacanciesInfi
   refresh: vi.fn(async () => undefined),
 })
 
-const renderController = (shift: Shift, vacancy: VacancyApiItem) =>
+const renderController = (
+  shift: Shift,
+  vacancy: VacancyApiItem,
+  appliedStatusMap: Record<number, string | undefined> = {}
+) =>
   renderHook(() =>
     useFeedSelectionController({
       activeList: makeActiveList(shift, vacancy),
@@ -57,6 +61,7 @@ const renderController = (shift: Shift, vacancy: VacancyApiItem) =>
       applicationSuccessShiftId: null,
       appliedShiftsSet: new Set([42]),
       appliedApplicationsMap: { 42: 7 },
+      appliedStatusMap,
       getApplicationId: () => 7,
     })
   )
@@ -72,5 +77,15 @@ describe('useFeedSelectionController', () => {
     const { result } = renderController(makeShift('rejected'), makeVacancy('rejected'))
 
     expect(result.current.selectedShift?.applicationStatus).toBe('rejected')
+  })
+
+  it('getApplicationStatus предпочитает appliedStatusMap (свежий getAppliedShifts) устаревшей ленте', () => {
+    // Лента (накопительная) отдаёт устаревший 'pending', но getAppliedShifts уже
+    // знает про 'accepted' — приоритет за свежим источником.
+    const { result } = renderController(makeShift('pending'), makeVacancy('pending'), {
+      42: 'accepted',
+    })
+
+    expect(result.current.getApplicationStatus(42)).toBe('accepted')
   })
 })

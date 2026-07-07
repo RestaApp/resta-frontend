@@ -52,6 +52,7 @@ export const useFeedPageModel = () => {
   const {
     appliedShiftsSet,
     appliedApplicationsMap,
+    appliedStatusMap,
     getApplicationId,
     handleApply,
     handleCancel,
@@ -149,6 +150,7 @@ export const useFeedPageModel = () => {
     applicationSuccessShiftId: applicationSuccess.shiftId,
     appliedShiftsSet,
     appliedApplicationsMap,
+    appliedStatusMap,
     getApplicationId,
   })
 
