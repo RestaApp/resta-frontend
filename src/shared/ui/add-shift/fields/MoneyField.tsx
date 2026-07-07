@@ -15,14 +15,23 @@ type MoneyFieldProps = {
 export const MoneyField = ({ value, onChange, error, label, placeholder }: MoneyFieldProps) => {
   const { t } = useTranslation()
 
+  // Во время ввода НЕ форматируем: живой formatMoney вставлял разделители тысяч
+  // (каретка прыгала на суммах ≥1000) и applied toFixed(2), из-за чего нельзя было
+  // набрать дробную часть (точка стиралась на каждой клавише). Здесь только
+  // отсекаем заведомо неверные символы, сохраняя цифры/разделители. Красивый вид
+  // наводим на blur; submit и валидация всё равно повторно парсят через
+  // parseMoneyInput, поэтому «сырой» промежуточный формат безопасен.
   const handleChange = (rawValue: string) => {
-    if (!rawValue.trim()) {
+    onChange(rawValue.replace(/[^\d.,\s]/g, ''))
+  }
+
+  const handleBlur = () => {
+    if (!value.trim()) {
       onChange('')
       return
     }
-    const parsed = parseMoneyInput(rawValue)
-    if (parsed === null) return
-    onChange(formatMoney(parsed))
+    const parsed = parseMoneyInput(value)
+    onChange(parsed === null ? '' : formatMoney(parsed))
   }
 
   return (
@@ -36,6 +45,7 @@ export const MoneyField = ({ value, onChange, error, label, placeholder }: Money
           inputMode="decimal"
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
+          onBlur={handleBlur}
           placeholder={placeholder ?? t('shift.payPlaceholder')}
           className="pl-8"
           aria-invalid={!!error}

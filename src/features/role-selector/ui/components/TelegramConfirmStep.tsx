@@ -110,7 +110,7 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         {isEditingName ? (
           <Input
             autoFocus
-            value={editedName || displayName}
+            value={editedName}
             onChange={e => setEditedName(e.target.value)}
             onBlur={() => setIsEditingName(false)}
             onKeyDown={e => {
@@ -122,7 +122,12 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         ) : (
           <button
             type="button"
-            onClick={() => setIsEditingName(true)}
+            onClick={() => {
+              // Засеиваем поле текущим именем, чтобы редактировать/очищать его
+              // свободно (без этого value={editedName} стартовал бы пустым).
+              setEditedName(prev => prev || displayName)
+              setIsEditingName(true)
+            }}
             className={cn(BLOCK_TITLE_CLASS, 'mx-auto inline-flex items-center gap-1')}
             aria-label={t('onboarding.telegram.editName', { defaultValue: 'Имя' })}
           >
@@ -138,11 +143,17 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
         <div className="flex h-11 items-center gap-2 rounded-md border border-border bg-input-background px-3 text-sm">
           <Input
             variant="inline"
+            type="tel"
+            inputMode="tel"
             value={manualPhone}
             onChange={e => {
-              setManualPhone(formatPhoneInput(e.target.value))
+              // Не форматируем на каждый символ — живой formatPhoneInput вставлял
+              // «+375»/дефисы и дёргал каретку (ощущение «ввод по одному символу»).
+              // Красивый вид наводим на blur; validate/toE164 работают по сырым цифрам.
+              setManualPhone(e.target.value)
               setPhoneError(null)
             }}
+            onBlur={() => setManualPhone(formatPhoneInput(manualPhone))}
             placeholder={t('phone.placeholderExample')}
           />
           {isPhoneShared ? (
