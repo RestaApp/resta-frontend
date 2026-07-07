@@ -31,6 +31,13 @@ export interface NotificationItem {
   read_at: string | null
   notifiable_type: string | null
   notifiable_id: number | null
+  /**
+   * Смена, к которой относится уведомление. Бэк отдаёт её для уведомлений об
+   * откликах (notifiable = ShiftApplication → shift_id) и о самой смене. Нужна,
+   * чтобы по тапу открыть вакансию с откликами. Опционально: старые/прочие типы
+   * уведомлений могут не содержать поля.
+   */
+  shift_id?: number | null
 }
 
 export interface NotificationsListResponse {
