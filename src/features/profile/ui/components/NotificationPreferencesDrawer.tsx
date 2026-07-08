@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useState, createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
-import { Bell, Briefcase, Flame, Repeat, Store } from 'lucide-react'
+import { Bell, Flame, Repeat, Store } from 'lucide-react'
 import { Drawer, DrawerBody, DrawerFrame, DrawerFooter } from '@/components/ui/drawer'
 import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
 import { Switch } from '@/components/ui/switch'
@@ -32,7 +32,6 @@ import type {
 type PreferenceKey = keyof Pick<
   import('@/services/api/notificationPreferencesApi').NotificationPreference,
   | 'urgent_notifications'
-  | 'new_shifts_notifications'
   | 'application_notifications'
   | 'vacancy_notifications'
   | 'replacement_notifications'
@@ -42,10 +41,6 @@ const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: LucideIcon 
   urgent_notifications: {
     label: 'profile.notifications.urgent',
     icon: Flame,
-  },
-  new_shifts_notifications: {
-    label: 'profile.notifications.newShifts',
-    icon: Briefcase,
   },
   application_notifications: {
     label: 'profile.notifications.applications',
@@ -71,7 +66,6 @@ const EMPLOYEE_NOTIFICATION_SECTIONS: Array<{
     title: 'profile.notifications.sections.shifts',
     keys: [
       'urgent_notifications',
-      'new_shifts_notifications',
       'vacancy_notifications',
       'replacement_notifications',
       'application_notifications',
@@ -117,7 +111,6 @@ export const NotificationPreferencesDrawer = memo(
       if (!prefs) return null
       return {
         urgent_notifications: prefs.urgent_notifications,
-        new_shifts_notifications: prefs.new_shifts_notifications,
         application_notifications: prefs.application_notifications,
         vacancy_notifications: prefs.vacancy_notifications,
         replacement_notifications: prefs.replacement_notifications,
@@ -156,7 +149,6 @@ export const NotificationPreferencesDrawer = memo(
       const payload: UpdateNotificationPreferenceRequest = {
         notification_preference: {
           urgent_notifications: effectivePrefs.urgent_notifications,
-          new_shifts_notifications: effectivePrefs.new_shifts_notifications,
           application_notifications: effectivePrefs.application_notifications,
           vacancy_notifications: effectivePrefs.vacancy_notifications,
           replacement_notifications: effectivePrefs.replacement_notifications,

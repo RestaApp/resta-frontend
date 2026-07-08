@@ -8,7 +8,6 @@ import { api } from '@/shared/api/api'
 export interface NotificationPreference {
   id: number
   urgent_notifications: boolean
-  new_shifts_notifications: boolean
   application_notifications: boolean
   vacancy_notifications: boolean
   replacement_notifications: boolean
@@ -25,7 +24,6 @@ export interface NotificationPreferencesResponse {
 export interface UpdateNotificationPreferenceRequest {
   notification_preference: Partial<{
     urgent_notifications: boolean
-    new_shifts_notifications: boolean
     application_notifications: boolean
     vacancy_notifications: boolean
     replacement_notifications: boolean
