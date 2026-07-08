@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 
 type UseFocusTrapOptions = {
   active: boolean
@@ -25,18 +25,32 @@ export function useFocusTrap({
   initialFocusSelector,
   onEscape,
 }: UseFocusTrapOptions) {
+  const onEscapeRef = useRef(onEscape)
+  const initialFocusSelectorRef = useRef(initialFocusSelector)
+  const previousActiveRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    onEscapeRef.current = onEscape
+  }, [onEscape])
+
+  useEffect(() => {
+    initialFocusSelectorRef.current = initialFocusSelector
+  }, [initialFocusSelector])
+
   useEffect(() => {
     if (!active || typeof document === 'undefined') return
 
-    const prevActive = document.activeElement as HTMLElement | null
+    previousActiveRef.current = document.activeElement as HTMLElement | null
 
     queueMicrotask(() => {
       const root = containerRef.current
       if (!root) return
+      if (document.activeElement instanceof HTMLElement && root.contains(document.activeElement)) {
+        return
+      }
 
-      const target = initialFocusSelector
-        ? (root.querySelector(initialFocusSelector) as HTMLElement | null)
-        : null
+      const selector = initialFocusSelectorRef.current
+      const target = selector ? (root.querySelector(selector) as HTMLElement | null) : null
 
       if (target) {
         target.focus()
@@ -53,9 +67,9 @@ export function useFocusTrap({
     })
 
     const onKeyDownInternal = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && onEscape) {
+      if (e.key === 'Escape' && onEscapeRef.current) {
         e.preventDefault()
-        onEscape()
+        onEscapeRef.current()
         return
       }
 
@@ -90,7 +104,8 @@ export function useFocusTrap({
     window.addEventListener('keydown', onKeyDownInternal)
     return () => {
       window.removeEventListener('keydown', onKeyDownInternal)
-      prevActive?.focus?.()
+      previousActiveRef.current?.focus?.()
+      previousActiveRef.current = null
     }
-  }, [active, containerRef, initialFocusSelector, onEscape])
+  }, [active, containerRef])
 }

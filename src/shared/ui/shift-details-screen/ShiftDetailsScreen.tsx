@@ -9,6 +9,7 @@ import { useBoostShiftMutation } from '@/services/api/purchasesApi'
 import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
 import type { Shift } from '@/shared/shifts/types'
+import { isExpiredOwnerListing } from '@/shared/shifts/mapping'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { useToast } from '@/shared/lib/hooks/useToast'
@@ -79,9 +80,13 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     t,
   })
 
+  // Просроченную смену редактировать нельзя — кнопка «Изменить» скрыта.
+  const isExpired =
+    shift?.statusTag === 'expired' || (vacancyData ? isExpiredOwnerListing(vacancyData) : false)
+
   const handleEdit = useCallback(() => {
-    if (shift) ownerActions?.onEdit(shift.id)
-  }, [ownerActions, shift])
+    if (shift && !isExpired) ownerActions?.onEdit(shift.id)
+  }, [ownerActions, shift, isExpired])
 
   const handleDeleteRequest = useCallback(() => {
     setConfirmOpen(true)
@@ -187,15 +192,17 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 ? t('common.deleting', { defaultValue: 'Удаление...' })
                 : t('common.delete')}
             </Button>
-            <Button
-              variant="gradient"
-              size="md"
-              onClick={handleEdit}
-              disabled={ownerActions.isDeleting || isBoosting}
-              className="flex-1"
-            >
-              {t('common.edit')}
-            </Button>
+            {!isExpired ? (
+              <Button
+                variant="gradient"
+                size="md"
+                onClick={handleEdit}
+                disabled={ownerActions.isDeleting || isBoosting}
+                className="flex-1"
+              >
+                {t('common.edit')}
+              </Button>
+            ) : null}
           </div>
         </div>
       </DrawerFooter>
