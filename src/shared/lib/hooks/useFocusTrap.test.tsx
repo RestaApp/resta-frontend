@@ -19,7 +19,7 @@ afterAll(() => {
     Object.defineProperty(HTMLElement.prototype, 'offsetParent', originalOffsetParent)
     return
   }
-  delete (HTMLElement.prototype as HTMLElement & { offsetParent?: Element | null }).offsetParent
+  Reflect.deleteProperty(HTMLElement.prototype, 'offsetParent')
 })
 
 const FocusTrapHarness = () => {
