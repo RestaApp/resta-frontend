@@ -14,6 +14,10 @@ export interface PlanFeatures {
   priority?: boolean
   price_list?: boolean
   new_restaurant_notifications?: boolean
+  // Доступ поставщика к контактам заведений (матрица доступа к контактам на бэке):
+  // PRO + Flipper. Бэк остаётся источником истины — контакты приходят/не приходят
+  // в UserBlueprint(:contact); фронт может использовать флаг для проактивного UI.
+  restaurant_contacts?: boolean
 }
 
 export interface Plan {
