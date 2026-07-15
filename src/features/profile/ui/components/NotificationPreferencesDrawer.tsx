@@ -37,13 +37,17 @@ type PreferenceKey = keyof Pick<
   | 'replacement_notifications'
 >
 
-const PREFERENCE_I18N: Record<PreferenceKey, { label: string; icon?: LucideIcon }> = {
+const PREFERENCE_I18N: Record<
+  PreferenceKey,
+  { label: string; description?: string; icon?: LucideIcon }
+> = {
   urgent_notifications: {
     label: 'profile.notifications.urgent',
     icon: Flame,
   },
   application_notifications: {
     label: 'profile.notifications.applications',
+    description: 'profile.notifications.applicationsHint',
     icon: Bell,
   },
   vacancy_notifications: {
@@ -198,6 +202,9 @@ export const NotificationPreferencesDrawer = memo(
                       <div className="flex flex-col divide-y divide-border/50 px-3">
                         {section.keys.map(key => {
                           const label = t(PREFERENCE_I18N[key].label)
+                          const description = PREFERENCE_I18N[key].description
+                            ? t(PREFERENCE_I18N[key].description)
+                            : null
                           const preferenceIcon = PREFERENCE_I18N[key].icon
                           return (
                             <div key={key} className="flex items-center justify-between gap-2 py-3">
@@ -210,8 +217,13 @@ export const NotificationPreferencesDrawer = memo(
                                       })
                                     : label.slice(0, 1)}
                                 </span>
-                                <div className={cn(SHIFT_CARD_TITLE_CLASS, 'min-w-0 truncate')}>
-                                  {label}
+                                <div className="flex min-w-0 flex-col gap-0.5">
+                                  <div className={cn(SHIFT_CARD_TITLE_CLASS, 'truncate')}>
+                                    {label}
+                                  </div>
+                                  {description ? (
+                                    <p className="text-xs text-muted-foreground">{description}</p>
+                                  ) : null}
                                 </div>
                               </div>
                               <Switch

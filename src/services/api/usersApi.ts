@@ -112,6 +112,26 @@ export interface CitiesResponse {
 export interface GetUserResponse {
   success: boolean
   data: UserData
+  meta?: {
+    contact_access?: ContactAccessMeta
+  }
+}
+
+export interface ContactAccessMeta {
+  revealed: boolean
+  reveals_remaining: number
+  expires_at: string | null
+}
+
+export interface ContactRevealMeta {
+  reveals_remaining: number
+  expires_at: string | null
+}
+
+export interface RevealContactResponse {
+  success: boolean
+  data: UserData
+  meta: ContactRevealMeta
 }
 
 /**
@@ -170,6 +190,33 @@ export const usersApi = api.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [{ type: 'User', id }],
       keepUnusedDataFor: 300, // Кэшировать данные 5 минут
+    }),
+
+    revealContact: builder.mutation<RevealContactResponse, number>({
+      query: id => ({
+        url: `/api/v1/users/${id}/contacts/reveal`,
+        method: 'POST',
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        try {
+          const { data: response } = await queryFulfilled
+          dispatch(
+            usersApi.util.updateQueryData('getUser', id, draft => {
+              draft.data = response.data
+              draft.meta = {
+                contact_access: {
+                  revealed: true,
+                  reveals_remaining: response.meta.reveals_remaining,
+                  expires_at: response.meta.expires_at,
+                },
+              }
+            })
+          )
+        } catch {
+          // Ошибка обрабатывается вызывающим UI; кэш остаётся без изменений.
+        }
+      },
+      invalidatesTags: (_result, _error, id) => [{ type: 'User', id }, 'Subscription'],
     }),
 
     // Получение списка пользователей по типу
@@ -241,6 +288,7 @@ export const usersApi = api.injectEndpoints({
 export const {
   useGetUserQuery,
   useGetUsersQuery,
+  useRevealContactMutation,
   useUpdateUserMutation,
   useGetUserPositionsQuery,
   useGetUserSpecializationsQuery,

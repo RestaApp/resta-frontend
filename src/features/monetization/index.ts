@@ -10,6 +10,7 @@
  * API держим узким.
  */
 export { PurchaseFlowProvider } from './ui/PurchaseFlowProvider'
+export { ContactRevealPackagesDrawer } from './ui/ContactRevealPackagesDrawer'
 export { SubscriptionCard } from './ui/SubscriptionCard'
 export { SupplierAnalyticsCard } from './ui/SupplierAnalyticsCard'
 export { UpgradeProDrawer } from './ui/UpgradeProDrawer'

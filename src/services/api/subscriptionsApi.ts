@@ -14,6 +14,7 @@ export interface PlanFeatures {
   priority?: boolean
   price_list?: boolean
   new_restaurant_notifications?: boolean
+  restaurant_contacts?: boolean
 }
 
 export interface Plan {
@@ -46,6 +47,12 @@ export interface CurrentSubscriptionData {
   subscription: SubscriptionRecord | null
   plan: Plan
   usage: Usage | null
+  contact_reveals?: ContactRevealSummary
+}
+
+export interface ContactRevealSummary {
+  reveals_remaining: number
+  expires_at: string | null
 }
 
 export interface CurrentSubscriptionResponse {

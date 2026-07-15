@@ -3,7 +3,16 @@
  * Бэк возвращает: { error, feature, upgrade_available, purchase_type, price }.
  */
 
-export type PurchaseType = 'vacancy_slot' | 'replacement_slot' | 'urgent_boost'
+export type ContactRevealPurchaseType =
+  | 'contact_reveal_pack_10'
+  | 'contact_reveal_pack_30'
+  | 'contact_reveal_pack_50'
+
+export type PurchaseType =
+  | 'vacancy_slot'
+  | 'replacement_slot'
+  | 'urgent_boost'
+  | ContactRevealPurchaseType
 
 export interface PaymentRequiredInfo {
   purchaseType: PurchaseType
@@ -13,7 +22,14 @@ export interface PaymentRequiredInfo {
   upgradeAvailable: boolean
 }
 
-const PURCHASE_TYPES: readonly PurchaseType[] = ['vacancy_slot', 'replacement_slot', 'urgent_boost']
+const PURCHASE_TYPES: readonly PurchaseType[] = [
+  'vacancy_slot',
+  'replacement_slot',
+  'urgent_boost',
+  'contact_reveal_pack_10',
+  'contact_reveal_pack_30',
+  'contact_reveal_pack_50',
+]
 
 const isPurchaseType = (value: unknown): value is PurchaseType =>
   typeof value === 'string' && (PURCHASE_TYPES as readonly string[]).includes(value)
@@ -42,4 +58,12 @@ export const parsePaymentRequired = (error: unknown): PaymentRequiredInfo | null
     ...(typeof body.feature === 'string' ? { feature: body.feature } : {}),
     upgradeAvailable: body.upgrade_available === true,
   }
+}
+
+/** Reveal endpoint возвращает 402 только с машинным code, без конкретного SKU и цены. */
+export const isContactRevealPaymentRequired = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false
+  const { status, data } = error as { status?: unknown; data?: unknown }
+  if (status !== 402 || !data || typeof data !== 'object') return false
+  return (data as { code?: unknown }).code === 'purchase_required'
 }

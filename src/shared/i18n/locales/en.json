@@ -104,6 +104,16 @@
       "cancelled": "Payment cancelled",
       "error": "Could not complete the purchase"
     },
+    "contactReveal": {
+      "title": "Reveal contacts",
+      "action": "Show contact · {{count}} left",
+      "success": "Contact revealed",
+      "error": "Could not reveal contact",
+      "packageDescription": "Choose a reveal package. One reveal unlocks one employee's contact details.",
+      "package": "{{count}} reveals",
+      "invoicePriceHint": "The current price will be shown in the Telegram invoice",
+      "proAction": "Unlock contacts with PRO"
+    },
     "usage": {
       "vacancies": "Vacancies: {{remaining}} of {{limit}}",
       "replacements": "Replacements: {{remaining}} of {{limit}}",
@@ -284,6 +294,7 @@
       "vacancies": "New vacancies",
       "replacements": "New replacements",
       "applications": "Shift applications",
+      "applicationsHint": "This switch controls Telegram. In-app notifications always remain on.",
       "saved": "Settings saved"
     },
     "support": "Resta support",

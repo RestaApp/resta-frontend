@@ -8,10 +8,14 @@ import { useTrackEventMutation } from '@/services/api/analyticsApi'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { Briefcase } from 'lucide-react'
+import { Briefcase, ContactRound, LockKeyhole } from 'lucide-react'
 import { HelpHint } from '@/components/ui/help-hint'
 import { useExternalProfileViewModel } from './useExternalProfileViewModel'
 import { VenueListingsDrawer } from './VenueListingsDrawer'
+import { useContactAccessController } from './useContactAccessController'
+import { useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/store/slices/userSlice'
+import { ContactRevealPackagesDrawer, UpgradeProDrawer } from '@/features/monetization'
 
 interface UserProfileDrawerProps {
   userId: number | null
@@ -39,16 +43,23 @@ export const UserProfileDrawer = memo(
     onReject,
   }: UserProfileDrawerProps) => {
     const { t } = useTranslation()
-    const { profileViewModel, isLoading, isError, drawerTitle } = useExternalProfileViewModel({
-      userId,
-      skip: !open,
-    })
+    const { profileViewModel, isLoading, isError, drawerTitle, contactAccess, hasContactDetails } =
+      useExternalProfileViewModel({ userId, skip: !open })
+    const viewerRole = useAppSelector(selectSelectedRole)
+    const contactController = useContactAccessController({ userId, contactAccess })
 
     const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false)
     const [listingsOpen, setListingsOpen] = useState(false)
+    const [upgradeOpen, setUpgradeOpen] = useState(false)
     const [trackEvent] = useTrackEventMutation()
 
     const isVenueProfile = profileViewModel?.apiRole === 'restaurant'
+    const canRevealEmployeeContact =
+      viewerRole === 'venue' &&
+      profileViewModel?.apiRole === 'employee' &&
+      contactAccess != null &&
+      !contactAccess.revealed
+    const needsSupplierPro = viewerRole === 'supplier' && isVenueProfile && !hasContactDetails
 
     const handleClose = () => {
       setRejectConfirmOpen(false)
@@ -102,17 +113,46 @@ export const UserProfileDrawer = memo(
               ) : null}
             </DrawerBody>
 
-            {isVenueProfile && typeof userId === 'number' && !showModerationActions ? (
-              <DrawerFooter>
-                <Button
-                  variant="outline"
-                  size="md"
-                  className="w-full"
-                  onClick={() => setListingsOpen(true)}
-                >
-                  <Briefcase className="h-4 w-4" aria-hidden="true" />
-                  {t('profile.venueListings.button')}
-                </Button>
+            {!showModerationActions &&
+            (canRevealEmployeeContact || needsSupplierPro || isVenueProfile) ? (
+              <DrawerFooter contentClassName="flex flex-col gap-2">
+                {canRevealEmployeeContact ? (
+                  <Button
+                    variant="gradient"
+                    size="md"
+                    className="w-full"
+                    loading={contactController.isRevealing}
+                    disabled={contactController.isRevealing}
+                    onClick={() => void contactController.reveal()}
+                  >
+                    <ContactRound className="h-4 w-4" aria-hidden="true" />
+                    {t('monetization.contactReveal.action', {
+                      count: contactAccess.reveals_remaining,
+                    })}
+                  </Button>
+                ) : null}
+                {needsSupplierPro ? (
+                  <Button
+                    variant="gradient"
+                    size="md"
+                    className="w-full"
+                    onClick={() => setUpgradeOpen(true)}
+                  >
+                    <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+                    {t('monetization.contactReveal.proAction')}
+                  </Button>
+                ) : null}
+                {isVenueProfile && typeof userId === 'number' ? (
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="w-full"
+                    onClick={() => setListingsOpen(true)}
+                  >
+                    <Briefcase className="h-4 w-4" aria-hidden="true" />
+                    {t('profile.venueListings.button')}
+                  </Button>
+                ) : null}
               </DrawerFooter>
             ) : null}
 
@@ -162,6 +202,16 @@ export const UserProfileDrawer = memo(
             onClose={() => setListingsOpen(false)}
           />
         ) : null}
+
+        <ContactRevealPackagesDrawer
+          open={contactController.packagesOpen}
+          onOpenChange={contactController.setPackagesOpen}
+          onPurchased={async () => {
+            await contactController.reveal()
+          }}
+        />
+
+        <UpgradeProDrawer open={upgradeOpen} onOpenChange={setUpgradeOpen} />
 
         {canReject && onReject ? (
           <ConfirmDialog

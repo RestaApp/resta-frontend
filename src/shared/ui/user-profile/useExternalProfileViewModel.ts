@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetUserQuery } from '@/services/api/usersApi'
+import type { ContactAccessMeta } from '@/services/api/usersApi'
 import { mapRoleFromApi } from '@/shared/utils/roles'
 import { useLabels } from '@/shared/i18n/hooks'
 import { getProfileCompleteness } from '@/shared/utils/profileCompleteness'
@@ -22,6 +23,8 @@ interface UseExternalProfileViewModelResult {
   isLoading: boolean
   isError: boolean
   drawerTitle: string
+  contactAccess?: ContactAccessMeta
+  hasContactDetails: boolean
 }
 
 export const useExternalProfileViewModel = ({
@@ -50,6 +53,9 @@ export const useExternalProfileViewModel = ({
   })
 
   const userProfile = userResponse?.data
+  const hasContactDetails = Boolean(
+    userProfile?.phone || userProfile?.email || userProfile?.telegram_id
+  )
 
   const apiRole = useMemo(
     () => (userProfile ? mapRoleFromApi(userProfile.role) : null),
@@ -133,5 +139,7 @@ export const useExternalProfileViewModel = ({
     isLoading,
     isError,
     drawerTitle,
+    contactAccess: userResponse?.meta?.contact_access,
+    hasContactDetails,
   }
 }
