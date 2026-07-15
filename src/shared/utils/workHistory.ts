@@ -48,21 +48,86 @@ export const createEmptyWorkHistoryEntry = (): WorkHistoryFormEntry => ({
   description: '',
 })
 
+/** Сортирует места работы от более ранней даты начала к более поздней. */
+export const sortWorkHistoryByStartDate = <T extends { startedAt: string }>(entries: T[]): T[] =>
+  entries
+    .map((entry, index) => ({ entry, index }))
+    .sort((left, right) => {
+      const leftDate = left.entry.startedAt.trim()
+      const rightDate = right.entry.startedAt.trim()
+      if (!leftDate) return rightDate ? 1 : left.index - right.index
+      if (!rightDate) return -1
+      return leftDate.localeCompare(rightDate) || left.index - right.index
+    })
+    .map(({ entry }) => entry)
+
 /** Преобразует ответ API в записи формы. */
 export const mapApiWorkHistoryToForm = (
   entries: WorkHistoryEntry[] | undefined | null
 ): WorkHistoryFormEntry[] => {
   if (!Array.isArray(entries)) return []
-  return entries.map(entry => ({
-    id: nextWorkHistoryId(),
-    company: entry.company ?? '',
-    position: entry.position ?? '',
-    startedAt: entry.started_at ?? '',
-    endedAt: entry.ended_at ?? '',
-    isCurrent: !entry.ended_at,
-    city: entry.city ?? '',
-    description: entry.description ?? '',
-  }))
+  return sortWorkHistoryByStartDate(
+    entries.map(entry => ({
+      id: nextWorkHistoryId(),
+      company: entry.company ?? '',
+      position: entry.position ?? '',
+      startedAt: entry.started_at ?? '',
+      endedAt: entry.ended_at ?? '',
+      isCurrent: !entry.ended_at,
+      city: entry.city ?? '',
+      description: entry.description ?? '',
+    }))
+  )
+}
+
+const parseYearMonth = (value: string): number | null => {
+  const match = /^(\d{4})-(\d{2})$/.exec(value.trim())
+  if (!match) return null
+  const month = Number(match[2])
+  if (month < 1 || month > 12) return null
+  return Number(match[1]) * 12 + month - 1
+}
+
+/**
+ * Считает полный стаж по непересекающимся месяцам из истории работы.
+ * Возвращает null, пока ни у одной записи нет корректной даты начала.
+ */
+export const calculateExperienceYears = (
+  entries: WorkHistoryFormEntry[],
+  now: Date = new Date()
+): number | null => {
+  const currentMonth = now.getFullYear() * 12 + now.getMonth()
+  const intervals = entries
+    .map(entry => {
+      const start = parseYearMonth(entry.startedAt)
+      if (start === null) return null
+      const parsedEnd = entry.isCurrent ? currentMonth : parseYearMonth(entry.endedAt)
+      const end = parsedEnd ?? currentMonth
+      if (end < start) return null
+      return { start, end }
+    })
+    .filter((interval): interval is { start: number; end: number } => interval !== null)
+    .sort((left, right) => left.start - right.start)
+
+  const firstInterval = intervals[0]
+  if (!firstInterval) return null
+
+  let totalMonths = 0
+  let rangeStart = firstInterval.start
+  let rangeEnd = firstInterval.end
+
+  for (const interval of intervals.slice(1)) {
+    if (interval.start <= rangeEnd) {
+      rangeEnd = Math.max(rangeEnd, interval.end)
+      continue
+    }
+    totalMonths += rangeEnd - rangeStart
+    rangeStart = interval.start
+    rangeEnd = interval.end
+  }
+
+  totalMonths += rangeEnd - rangeStart
+  return Math.min(5, Math.floor(totalMonths / 12))
 }
 
 /** Полностью пустая запись (например, только что добавленная и не заполненная). */
@@ -82,7 +147,7 @@ export const isWorkHistoryEntryEmpty = (entry: WorkHistoryFormEntry): boolean =>
  * - опускает пустые опциональные поля.
  */
 export const sanitizeWorkHistory = (entries: WorkHistoryFormEntry[]): WorkHistoryEntry[] =>
-  entries
+  sortWorkHistoryByStartDate(entries)
     .filter(entry => !isWorkHistoryEntryEmpty(entry))
     .map(entry => {
       const result: WorkHistoryEntry = {

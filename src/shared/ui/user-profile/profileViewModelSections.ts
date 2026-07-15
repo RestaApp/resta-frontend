@@ -104,7 +104,15 @@ export const buildWorkHistory = ({
   if (!Array.isArray(entries)) return []
 
   return entries
-    .map((entry, index) => {
+    .map((entry, index) => ({ entry, index }))
+    .sort((left, right) => {
+      const leftDate = normalizeText(left.entry.started_at)
+      const rightDate = normalizeText(right.entry.started_at)
+      if (!leftDate) return rightDate ? 1 : left.index - right.index
+      if (!rightDate) return -1
+      return leftDate.localeCompare(rightDate) || left.index - right.index
+    })
+    .map(({ entry, index }) => {
       const company = normalizeText(entry.company)
       const position = normalizeText(entry.position)
       const startedAt = normalizeText(entry.started_at)

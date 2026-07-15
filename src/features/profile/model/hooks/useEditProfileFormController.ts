@@ -2,7 +2,11 @@ import { useCallback, useState } from 'react'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 import { formatPhoneInput, validatePhone } from '@/shared/utils/phone'
 import { getErrorMessage } from '@/shared/utils/getErrorMessage'
-import { hasInvalidWorkHistory } from '@/shared/utils/workHistory'
+import {
+  calculateExperienceYears,
+  hasInvalidWorkHistory,
+  sortWorkHistoryByStartDate,
+} from '@/shared/utils/workHistory'
 import { buildUpdateUserRequest, type ProfileFormData } from '../utils/buildUpdateUserRequest'
 import type { ApiRole } from '@/shared/types/roles.types'
 
@@ -247,6 +251,11 @@ export const useEditProfileFormController = ({
         }
         if (field === 'position' && value !== base.position) {
           next.specializations = []
+        }
+        if (field === 'workHistory' && Array.isArray(value)) {
+          next.workHistory = sortWorkHistoryByStartDate(value)
+          const calculatedExperience = calculateExperienceYears(next.workHistory)
+          if (calculatedExperience !== null) next.experienceYears = calculatedExperience
         }
         nextFormData = next
         return next

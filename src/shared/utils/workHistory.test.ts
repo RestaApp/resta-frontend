@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
   createEmptyWorkHistoryEntry,
+  calculateExperienceYears,
   getMonthNames,
   getWorkHistoryEntryErrors,
   hasInvalidWorkHistory,
   isWorkHistoryEntryEmpty,
   mapApiWorkHistoryToForm,
   sanitizeWorkHistory,
+  sortWorkHistoryByStartDate,
   formatYearMonth,
   type WorkHistoryFormEntry,
 } from './workHistory'
@@ -56,6 +58,35 @@ describe('workHistory · sanitizeWorkHistory', () => {
   })
 })
 
+describe('workHistory · порядок и общий стаж', () => {
+  it('ставит более ранние места работы в начало, а пустые — в конец', () => {
+    const latest = entry({ startedAt: '2020-05' })
+    const empty = entry()
+    const earliest = entry({ startedAt: '2012-05' })
+
+    expect(sortWorkHistoryByStartDate([latest, empty, earliest])).toEqual([earliest, latest, empty])
+  })
+
+  it('считает стаж по периодам и не удваивает пересекающиеся месяцы', () => {
+    const workHistory = [
+      entry({ startedAt: '2012-01', endedAt: '2016-01' }),
+      entry({ startedAt: '2014-01', endedAt: '2020-01' }),
+    ]
+
+    expect(calculateExperienceYears(workHistory, new Date(2024, 0, 1))).toBe(5)
+  })
+
+  it('учитывает текущую работу и возвращает null без даты начала', () => {
+    expect(
+      calculateExperienceYears(
+        [entry({ startedAt: '2021-01', isCurrent: true })],
+        new Date(2024, 6, 1)
+      )
+    ).toBe(3)
+    expect(calculateExperienceYears([entry()], new Date(2024, 6, 1))).toBeNull()
+  })
+})
+
 describe('workHistory · валидация', () => {
   it('пустая запись валидна (её отбросят)', () => {
     expect(getWorkHistoryEntryErrors(entry())).toEqual({})
@@ -94,7 +125,9 @@ describe('workHistory · mapApiWorkHistoryToForm', () => {
       { company: 'B', position: 'Q', started_at: '2020-01', ended_at: '2021-01' },
     ])
     expect(entries).toHaveLength(2)
-    const [current, past] = entries
+    const [past, current] = entries
+    expect(past?.startedAt).toBe('2020-01')
+    expect(current?.startedAt).toBe('2022-01')
     expect(current?.isCurrent).toBe(true)
     expect(past?.isCurrent).toBe(false)
     expect(current?.id).toBeTruthy()
