@@ -617,7 +617,7 @@
     "apply": "Откликнуться",
     "urgentBadge": "СРОЧНО",
     "statusOpen": "ОТКРЫТА",
-    "statusFilled": "ЗАПОЛНЕНА",
+    "statusFilled": "КАНДИДАТ ВЫБРАН",
     "statusClosed": "ЗАКРЫТА",
     "noApplicationsStale": "Нет откликов – более 3 часов",
     "ownerReviewsSummary": "{{rating}} ({{count}} отзывов)",

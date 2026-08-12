@@ -617,7 +617,7 @@
     "apply": "Apply",
     "urgentBadge": "URGENT",
     "statusOpen": "OPEN",
-    "statusFilled": "FILLED",
+    "statusFilled": "CANDIDATE SELECTED",
     "statusClosed": "CLOSED",
     "noApplicationsStale": "No applications – for more than 3 hours",
     "ownerReviewsSummary": "{{rating}} ({{count}} reviews)",
