@@ -491,7 +491,7 @@
     },
     "accept": {
       "title": "Accepting an application",
-      "body": "When you accept a candidate, the shift closes and contacts (Telegram, phone) open for both sides so you can get in touch right away. Other applications stay as backups."
+      "body": "When you accept a candidate, the listing closes and the employee's contacts become available to the venue. Venue contacts are always available to employees. Other applications stay as backups."
     },
     "priceList": {
       "title": "Price list",
@@ -505,7 +505,7 @@
   },
   "feed": {
     "headerTitle": "Feed",
-    "applicationSentSuccess": "Application sent. If accepted, you will receive a notification and access to contacts.",
+    "applicationSentSuccess": "Application sent. If accepted, you will receive a notification.",
     "applicationSuccessTitle": "Application sent!",
     "applicationSuccessDescription": "We will notify you in Telegram when the venue replies.",
     "openMyApplications": "Open my applications",
@@ -644,7 +644,7 @@
     "coverMessagePresetCustom": "Custom message",
     "coverMessagePlaceholderShort": "Ready to start by 15:45, grill experience — yes.",
     "applyPrivacyTitle": "The manager will see the message",
-    "applyPrivacyDescription": "Contacts open after the application is accepted.",
+    "applyPrivacyDescription": "Venue contacts are available in its profile.",
     "sendApplication": "Send application",
     "sending": "Sending...",
     "workTime": "Work time",
@@ -873,7 +873,7 @@
         "features": {
           "search": "Find shifts and part-time jobs in your city",
           "notifications": "Get notified about urgent shifts and new vacancies",
-          "chat": "Contact venues through Telegram after contacts are unlocked"
+          "chat": "Venue contacts are available immediately in their profiles"
         }
       },
       "restaurant": {
@@ -1291,7 +1291,7 @@
         "Appeal the controller's actions to the authorized personal data protection body"
       ],
       "thirdPartyTitle": "8. Data sharing with third parties",
-      "thirdPartyText": "Personal data is not shared with third parties except where required by applicable law or where such sharing is necessary for the operation of the service. Contact details (phone, Telegram) are shared with another platform user only after actions in the interface that enable contact. An external geocoding service may be used to determine the city by coordinates.",
+      "thirdPartyText": "Personal data is not shared with third parties except where required by applicable law or where such sharing is necessary for the operation of the service. Venue contacts are available to employees. Employee contacts become available to a venue after an application is accepted or the contact is separately revealed. An external geocoding service may be used to determine the city by coordinates.",
       "geolocationTitle": "9. Geolocation",
       "geolocationText": "The Application may request access to device geolocation to determine the user's city and find nearby shifts. Geolocation is requested only with explicit user consent and is not collected in the background. The user may deny access — in that case, the city is selected manually.",
       "contactTitle": "10. Contact",
