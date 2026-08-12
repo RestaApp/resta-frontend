@@ -11,13 +11,25 @@ export type UserProfileLike = {
   profile_photo_url?: string | null
   photo_url?: string | null
   email?: string | null
+  website?: string | null
+  business_hours?: Record<string, string> | null
+  work_history?: unknown[] | null
   restaurant_profile?: {
     name?: string | null
+    restaurant_format?: string | null
+    cuisine_types?: string[] | null
+  } | null
+  supplier_profile?: {
+    supplier_category?: string | null
+    supplier_types?: string[] | null
+    price_list_url?: string | null
   } | null
   employee_profile?: {
     experience_years?: number | null
     open_to_work?: boolean | null
     skills?: string[]
+    position?: string | null
+    specializations?: string[] | null
   } | null
 }
 
@@ -32,40 +44,78 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
     Array.isArray(userProfile.location) && userProfile.location.some(line => line.trim().length > 0)
   const hasCity = hasAnyLocation || !!userProfile.city
   const hasLastName = apiRole === 'employee' ? !!userProfile.last_name : true
-  const isFilled = hasName && hasPhone && hasCity && hasLastName
+  // Контракт POST /shift_applications: для отклика обязательны только phone + city.
+  // Остальные поля влияют на качество профиля, но не должны блокировать действие.
+  const isActionReady = hasPhone && hasCity
 
   // Доп. «реальная» заполненность профиля по полезной информации
   const hasBio = !!userProfile.bio?.trim()
   const hasPhoto = !!(userProfile.profile_photo_url || userProfile.photo_url)
   const hasEmail = !!userProfile.email
-  const experienceYears = userProfile.employee_profile?.experience_years
-  const hasExperience = typeof experienceYears === 'number' && Number.isFinite(experienceYears)
-  /** Для заведений/поставщиков стаж не применим — учитываем адрес (location), как в форме профиля */
-  const hasBusinessLocation = hasAnyLocation
+  const hasValues = (values: string[] | null | undefined) =>
+    Array.isArray(values) && values.some(value => value.trim().length > 0)
+  const hasBusinessHours = Boolean(
+    userProfile.business_hours &&
+      Object.values(userProfile.business_hours).some(value => value.trim())
+  )
 
-  const infoFlags: boolean[] =
+  const completionFlags: boolean[] =
     apiRole === 'employee'
-      ? [hasBio, hasPhoto, hasEmail, hasExperience]
-      : apiRole === 'restaurant' || apiRole === 'supplier'
-        ? [hasBio, hasPhoto, hasEmail, hasBusinessLocation]
-        : [hasBio, hasPhoto, hasEmail]
+      ? [
+          hasName,
+          hasLastName,
+          hasPhone,
+          hasCity,
+          hasPhoto,
+          hasBio,
+          hasEmail,
+          Boolean(userProfile.employee_profile?.position?.trim()),
+          hasValues(userProfile.employee_profile?.specializations),
+          hasValues(userProfile.employee_profile?.skills),
+          Boolean(userProfile.work_history?.length),
+        ]
+      : apiRole === 'restaurant'
+        ? [
+            hasName,
+            hasPhone,
+            hasCity,
+            hasAnyLocation,
+            hasPhoto,
+            hasBio,
+            hasEmail,
+            Boolean(userProfile.website?.trim()),
+            hasBusinessHours,
+            Boolean(userProfile.restaurant_profile?.restaurant_format?.trim()),
+            hasValues(userProfile.restaurant_profile?.cuisine_types),
+          ]
+        : apiRole === 'supplier'
+          ? [
+              hasName,
+              hasPhone,
+              hasCity,
+              hasAnyLocation,
+              hasPhoto,
+              hasBio,
+              hasEmail,
+              Boolean(userProfile.website?.trim()),
+              hasBusinessHours,
+              Boolean(userProfile.supplier_profile?.supplier_category?.trim()),
+              hasValues(userProfile.supplier_profile?.supplier_types),
+              Boolean(userProfile.supplier_profile?.price_list_url?.trim()),
+            ]
+          : [hasName, hasPhone, hasCity, hasPhoto, hasBio, hasEmail]
 
-  const infoTotal = infoFlags.length
-  const infoCount = infoFlags.filter(Boolean).length
-  const infoPercent = infoTotal > 0 ? Math.round((infoCount / infoTotal) * 100) : 0
+  const completionPercent = Math.round(
+    (completionFlags.filter(Boolean).length / completionFlags.length) * 100
+  )
 
   return {
     hasName,
     hasPhone,
     hasCity,
     hasLastName,
-    isFilled,
-    infoPercent,
-    missing: [
-      !hasName ? 'name' : null,
-      !hasPhone ? 'phone' : null,
-      !hasCity ? 'city' : null,
-      apiRole === 'employee' && !hasLastName ? 'last_name' : null,
-    ].filter(Boolean) as string[],
+    isActionReady,
+    completionPercent,
+    missing: [!hasPhone ? 'phone' : null, !hasCity ? 'city' : null].filter(Boolean) as string[],
   }
 }

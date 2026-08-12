@@ -88,6 +88,15 @@ describe('useEditProfileFormController — навигация по шагам', 
     expect(result.current.fieldErrors).toEqual({})
   })
 
+  it('пустая фамилия не блокирует переход на следующий шаг', () => {
+    const { result } = setup({ baseFormData: baseEmployee({ lastName: '' }) })
+
+    act(() => result.current.handleNext())
+
+    expect(result.current.step).toBe(1)
+    expect(result.current.fieldErrors.lastName).toBeUndefined()
+  })
+
   it('handleBack уменьшает шаг и сбрасывает ошибки', () => {
     const { result } = setup({ initialStep: 1 })
 

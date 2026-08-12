@@ -52,13 +52,12 @@ export const EditProfileStepBasic = memo(function EditProfileStepBasic({
       </FormField>
 
       {apiRole === 'employee' ? (
-        <FormField label={t('profile.surnameRequired')} required error={fieldErrors.lastName}>
+        <FormField label={t('profile.surname')}>
           <Input
             value={formData.lastName}
             onChange={e => updateField('lastName', e.target.value)}
             placeholder={t('profile.form.surnamePlaceholder')}
             disabled={isLoading}
-            aria-invalid={fieldErrors.lastName ? true : undefined}
           />
         </FormField>
       ) : null}

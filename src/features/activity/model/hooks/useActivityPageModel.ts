@@ -124,7 +124,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
       )
       return
     }
-    if (!profileCompleteness.isFilled) {
+    if (!profileCompleteness.isActionReady) {
       showToast(
         t('venueUi.profileRequiredToCreate', {
           defaultValue: 'Чтобы создавать вакансии и смены, сначала заполните профиль.',
@@ -134,7 +134,7 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
       return
     }
     openDrawer()
-  }, [isSupplier, isVenue, openDrawer, profileCompleteness.isFilled, shifts, showToast, t])
+  }, [isSupplier, isVenue, openDrawer, profileCompleteness.isActionReady, shifts, showToast, t])
 
   useEffect(() => {
     return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_ADD_SHIFT, () => handleOpenAddShiftFromEvent())

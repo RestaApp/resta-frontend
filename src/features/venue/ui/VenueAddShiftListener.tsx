@@ -20,7 +20,7 @@ export function VenueAddShiftListener() {
 
   const handleCreateIntent = useCallback(
     (type: ShiftType) => {
-      if (profileCompleteness?.isFilled) {
+      if (profileCompleteness?.isActionReady) {
         setEditingShift(null)
         setInitialShiftType(type)
         setOpen(true)
@@ -34,7 +34,7 @@ export function VenueAddShiftListener() {
         'error'
       )
     },
-    [profileCompleteness?.isFilled, showToast, t]
+    [profileCompleteness?.isActionReady, showToast, t]
   )
 
   useEffect(() => {

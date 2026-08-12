@@ -83,10 +83,6 @@ export const useEditProfileFormController = ({
         nextErrors.name = t('validation.requiredField')
       }
 
-      if (apiRole === 'employee' && !data.lastName.trim()) {
-        nextErrors.lastName = t('validation.requiredField')
-      }
-
       const phoneRaw = data.phone.trim()
       if (!phoneRaw) {
         nextErrors.phone = t('phone.required')

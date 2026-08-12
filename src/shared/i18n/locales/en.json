@@ -325,7 +325,7 @@
     "editProfileDescriptionSupplier": "Fields marked with (*) are required to complete a supplier profile.",
     "nameLabel": "First name",
     "nameOrTitle": " / Name",
-    "surnameRequired": "Surname",
+    "completion": "Profile completion",
     "experienceYearsLabel": "Experience (years)",
     "openToWorkDescription": "When enabled, your profile is visible to venues in the catalog.",
     "skillsExample": "e.g. knife skills, HACCP knowledge",

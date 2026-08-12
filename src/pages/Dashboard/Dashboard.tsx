@@ -29,7 +29,7 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
   const { activeTab, handleTabChange } = useDashboard({ role, onNavigate, currentScreen })
   const { overlay, replaceOverlayWithPath } = useDetailOverlay()
   const profileCompleteness = useProfileCompleteness()
-  const hasIncompleteFields = !profileCompleteness?.isFilled
+  const hasIncompleteFields = !profileCompleteness?.isActionReady
 
   /** При переходе на профиль с незаполненными обязательными полями сразу открываем форму редактирования. */
   const onTabChange = useCallback(

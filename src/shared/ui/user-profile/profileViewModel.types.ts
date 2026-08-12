@@ -62,7 +62,8 @@ export interface ProfileViewModel {
   apiRole: ApiRole | null
   userName: string
   roleLabel: string
-  isProfileFilled: boolean
+  isActionReady: boolean
+  completionPercent: number
   fillRequiredText: string
   kpis: KpiItem[]
   /** Доп. ряд KPI из GET /analytics/my (просмотры/клики за месяц). Только свой профиль. */

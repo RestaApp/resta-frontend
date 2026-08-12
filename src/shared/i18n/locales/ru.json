@@ -325,7 +325,7 @@
     "editProfileDescriptionSupplier": "Поля со звёздочкой (*) обязательны для заполнения профиля поставщика.",
     "nameLabel": "Имя",
     "nameOrTitle": "/ Название",
-    "surnameRequired": "Фамилия",
+    "completion": "Заполненность профиля",
     "experienceYearsLabel": "Опыт работы (лет)",
     "openToWorkDescription": "При включении ваш профиль будет виден заведениям в каталоге.",
     "skillsExample": "Например: работа с ножом, знание HACCP",

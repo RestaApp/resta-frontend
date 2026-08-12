@@ -13,7 +13,8 @@ export const useProfileCompleteness = () => {
         hasPhone: false,
         hasCity: false,
         hasLastName: false,
-        isFilled: false,
+        isActionReady: false,
+        completionPercent: 0,
         missing: [] as string[],
       }
     }

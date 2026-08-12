@@ -24,6 +24,7 @@ import {
   VALUE_LINK_CLASS,
 } from '@/shared/ui/user-profile/components/profile-info/InfoRow'
 import { VenueProfileHero } from './VenueProfileHero'
+import { ProfileCompletionCard } from '@/shared/ui/user-profile/components/ProfileCompletionCard'
 
 interface VenueProfileOverviewProps {
   profile: ProfileViewModel
@@ -93,7 +94,7 @@ export const VenueProfileOverview = memo(function VenueProfileOverview({
   const dispatch = useAppDispatch()
   const [isInfoOpen, setIsInfoOpen] = useState(false)
 
-  const showFillAction = !profile.isProfileFilled && Boolean(onFill)
+  const showFillAction = !profile.isActionReady && Boolean(onFill)
   const bio = profile.userProfile.bio?.trim() ?? ''
   const rating = profile.reviewSummary?.rating ?? '—'
   const ratingNum = Number(profile.userProfile.average_rating)
@@ -183,6 +184,8 @@ export const VenueProfileOverview = memo(function VenueProfileOverview({
         isHiringOpen={openShiftsCount > 0}
         hiringOpenLabel={t('profile.venue.hiringOpen')}
       />
+
+      {onFill ? <ProfileCompletionCard percent={profile.completionPercent} /> : null}
 
       {/* Плашка «заполните профиль» — только на своём профиле (есть onFill).
           На чужом (карточка ресторана/автор смены) её быть не должно. */}
