@@ -48,6 +48,7 @@ const renderInfoValue = (
       label={row.label}
       href={row.value.href}
       onClick={contactType && onContactClick ? () => onContactClick(contactType) : undefined}
+      multiline={row.value.multiline}
       valueClassName={cn(
         row.value.href ? VALUE_LINK_CLASS : VALUE_CLASS,
         row.value.multiline ? FORMATTED_USER_TEXT_CLASS : 'truncate'

@@ -15,6 +15,7 @@ interface InfoRowProps {
   href?: string
   valueClassName?: string
   onClick?: () => void
+  multiline?: boolean
 }
 
 /**
@@ -22,27 +23,36 @@ interface InfoRowProps {
  * Используется во всех секциях ProfileOverview.
  */
 export const InfoRow = memo(
-  ({ label, children, href, valueClassName = VALUE_CLASS, onClick }: InfoRowProps) => (
-    <div className={ROW_CLASS}>
-      <span className={LABEL_CLASS}>{label}</span>
-      {href ? (
-        <a
-          href={href}
-          onClick={onClick}
-          className={cn(valueClassName, 'min-w-0 truncate')}
-          title={typeof children === 'string' ? children : undefined}
-        >
-          {children}
-        </a>
-      ) : (
-        <span
-          className={cn(valueClassName, 'min-w-0 truncate')}
-          title={typeof children === 'string' ? children : undefined}
-        >
-          {children}
+  ({
+    label,
+    children,
+    href,
+    valueClassName = VALUE_CLASS,
+    onClick,
+    multiline = false,
+  }: InfoRowProps) => {
+    const valueClasses = cn(
+      valueClassName,
+      multiline ? 'block min-w-0 whitespace-pre-wrap break-words text-justify' : 'min-w-0 truncate'
+    )
+    const valueTitle = !multiline && typeof children === 'string' ? children : undefined
+
+    return (
+      <div className={multiline ? 'flow-root py-2' : ROW_CLASS}>
+        <span className={cn(LABEL_CLASS, multiline && 'relative top-1 float-left mr-2')}>
+          {label}
         </span>
-      )}
-    </div>
-  )
+        {href ? (
+          <a href={href} onClick={onClick} className={valueClasses} title={valueTitle}>
+            {children}
+          </a>
+        ) : (
+          <span className={valueClasses} title={valueTitle}>
+            {children}
+          </span>
+        )}
+      </div>
+    )
+  }
 )
 InfoRow.displayName = 'InfoRow'

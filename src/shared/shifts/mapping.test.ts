@@ -36,3 +36,26 @@ describe('mapping · vacancyToShift время', () => {
     expect(shift.time).toBe('')
   })
 })
+
+describe('mapping · название заведения', () => {
+  it('берёт название из профиля заведения', () => {
+    const shift = vacancyToShift(
+      item({
+        title: 'Нужен повар',
+        user: {
+          id: 2,
+          name: 'Иван',
+          restaurant_profile: { name: 'Ресторан Элит' },
+        },
+      })
+    )
+
+    expect(shift.restaurant).toBe('Ресторан Элит')
+  })
+
+  it('использует имя владельца как запасное название', () => {
+    const shift = vacancyToShift(item({ user: { id: 2, name: 'Кафе «Весна»' } }))
+
+    expect(shift.restaurant).toBe('Кафе «Весна»')
+  })
+})

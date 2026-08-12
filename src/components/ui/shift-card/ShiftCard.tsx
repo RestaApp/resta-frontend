@@ -141,15 +141,16 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
       ? Math.max(0, Math.floor(shift.viewsCount))
       : null
 
-  // Позиция видна всегда и одинаково (до/после отклика). Есть название →
-  // заголовок=название, подзаголовок=позиция•специализация; нет названия →
-  // заголовок=позиция, подзаголовок=ресторан (чтобы не дублировать позицию).
+  // Название заведения видно всегда. Если у публикации есть свой
+  // заголовок, позицию добавляем после заведения в подзаголовке.
   const compactTitle = stripVacancyPrefix(displayTitle ?? positionText)
   const locationMeta = formatDistanceKm(shift.distanceKm) ?? locationText
   const compactSchedule = formatCompactSchedule(shift.date, shift.time)
   const urgentDateTag = getUrgentDateTag(shift.dateKey)
   const avatarFallback = positionInitial(shift.position)
-  const compactSubtitle = displayTitle ? positionText : shift.restaurant || ''
+  const compactSubtitle = displayTitle
+    ? [shift.restaurant, positionText].filter(Boolean).join(' · ')
+    : shift.restaurant || ''
   const applicationStatus = isApplicationCard ? (shift.applicationStatus ?? 'pending') : null
   const applicationBadgeVariant = normalizeApplicationStatus(applicationStatus)
   const applicationBadgeLabel = applicationStatus

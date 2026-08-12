@@ -33,6 +33,9 @@ const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
   return item.user?.photo_url ?? item.user?.profile_photo_url ?? null
 }
 
+const getVenueName = (item: VacancyApiItem, fallback = ''): string =>
+  item.user?.restaurant_profile?.name?.trim() || formatUserDisplayName(item.user) || fallback
+
 const resolveVacancySpecialization = (item: VacancyApiItem): string | null => {
   const direct = item.specialization?.trim()
   if (direct) return direct
@@ -100,7 +103,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
   return {
     id: item.id,
     title: item.title?.trim() || null,
-    restaurant: formatUserDisplayName(item.user) || item.title?.trim() || '—',
+    restaurant: getVenueName(item, item.title?.trim() || '—'),
     rating: toNumber(item.user?.average_rating),
 
     position: item.position ?? 'chef',
@@ -186,8 +189,7 @@ export const partitionListingsByShiftType = <T extends { shift_type?: string | n
 
 export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
   const { date, dateKey, time } = getVacancyScheduleFields(v)
-  const restaurant =
-    formatUserDisplayName(v.user) || v.title?.trim() || i18n.t('feedFallback.venue')
+  const restaurant = getVenueName(v, v.title?.trim() || i18n.t('feedFallback.venue'))
   const applicationId = v.my_application?.id ?? null
 
   return {

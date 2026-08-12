@@ -1,11 +1,10 @@
 import { memo } from 'react'
 import type { TFunction } from 'i18next'
-import { Clock, Flame, MapPin, Star, Users } from 'lucide-react'
+import { Building2, Clock, Flame, MapPin, Star, Users } from 'lucide-react'
 import type { Shift } from '@/shared/shifts/types'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { formatMoney } from '@/shared/shifts/formatting'
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 import { cn } from '@/shared/utils/cn'
 import {
   BODY_MUTED_CLASS,
@@ -21,7 +20,6 @@ import {
   positionInitial,
 } from '@/components/ui/shift-card/shift-card-utils'
 import { DetailsVenueCard } from './DetailsVenueCard'
-import { DETAIL_CARD_CLASS } from './constants'
 import {
   extractDurationHours,
   formatOwnerRating,
@@ -124,8 +122,7 @@ export const DetailsTab = memo(
     const payCurrency = isPayNegotiable ? '' : (currency ?? '')
     const schedule = [shiftDate, shiftTime].filter(Boolean).join(' • ')
     const compactTitle = stripVacancyPrefix(vacancyTitle || positionLabel || shift.position)
-    // Позиция показывается отдельной строкой, поэтому в подзаголовок (ресторан) её не дублируем.
-    const compactSubtitle = shift.restaurant || ownerDisplayName || ''
+    const venueName = (shift.restaurant || ownerDisplayName || '').trim()
     const positionLineText = showPositionLine ? positionLabel.trim() : ''
     const avatarFallback = positionInitial(positionLabel || shift.position)
     const statusTagLabel =
@@ -155,37 +152,72 @@ export const DetailsTab = memo(
         ? t('shift.applicantsLabel', { count: resolvedApplicationsCount })
         : null
 
-    const venueName = compactSubtitle.trim()
     const canShowVenueCard = showVenueCard && venueName && onOpenOwnerProfile
 
     return (
-      <div className="relative flex flex-col gap-5">
-        {statusTagLabel ? (
-          <Badge variant="rej" className="absolute right-0 top-0 px-3 py-1">
-            {statusTagLabel}
-          </Badge>
-        ) : null}
-
+      <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3">
-          {shift.urgent ? (
-            <span className="inline-flex w-fit items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 font-mono-resta text-xs font-bold uppercase tracking-wider text-primary">
-              <Flame className={ICON_SM_CLASS} aria-hidden />
-              {t('shift.urgentBadge', { defaultValue: 'URGENT' })}
-            </span>
+          {shift.urgent || statusTagLabel ? (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {shift.urgent ? (
+                <span className="inline-flex w-fit items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 font-mono-resta text-xs font-bold uppercase tracking-wider text-primary">
+                  <Flame className={ICON_SM_CLASS} aria-hidden />
+                  {t('shift.urgentBadge', { defaultValue: 'URGENT' })}
+                </span>
+              ) : null}
+              {statusTagLabel ? (
+                <Badge variant="rej" className={cn('px-3 py-1', !shift.urgent && 'ml-auto')}>
+                  {statusTagLabel}
+                </Badge>
+              ) : null}
+            </div>
           ) : null}
 
-          <div className="flex flex-col gap-1">
-            <h1 className={cn(SCREEN_TITLE_CLASS, 'line-clamp-2 whitespace-normal leading-tight')}>
-              {compactTitle}
-            </h1>
-            {positionLineText ? (
-              <p className={cn(SHIFT_CARD_SUB_CLASS, 'text-sm font-medium text-foreground')}>
-                {positionLineText}
-              </p>
-            ) : null}
-            {compactSubtitle ? (
-              <p className={cn(SHIFT_CARD_SUB_CLASS, 'text-sm')}>{compactSubtitle}</p>
-            ) : null}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+            <div className="flex min-w-0 flex-col gap-1">
+              <h1 className={cn(SCREEN_TITLE_CLASS, 'whitespace-normal leading-tight')}>
+                {compactTitle}
+              </h1>
+              {positionLineText ? (
+                <p
+                  className={cn(
+                    SHIFT_CARD_SUB_CLASS,
+                    'overflow-visible whitespace-normal text-clip text-sm font-medium text-foreground'
+                  )}
+                >
+                  {positionLineText}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="flex max-w-36 flex-col items-end gap-1 text-right">
+              <div
+                className={cn(
+                  isPayNegotiable
+                    ? 'max-w-28 text-sm font-semibold leading-snug text-foreground'
+                    : 'whitespace-nowrap',
+                  !isPayNegotiable && cn(DISPLAY_PRICE_CLASS, 'price-xl')
+                )}
+              >
+                {payValue}
+                {payCurrency ? (
+                  <span className="ml-1 font-mono-resta text-base font-semibold text-muted-foreground">
+                    {payCurrency}
+                  </span>
+                ) : null}
+              </div>
+              {durationLabel ? (
+                <p className="text-xs leading-snug text-muted-foreground">{durationLabel}</p>
+              ) : null}
+              {hourlyRate ? (
+                <p className="text-xs leading-snug text-primary">
+                  {t('shift.hourlyRateApprox', {
+                    rate: hourlyRate,
+                    currency: currency ?? 'BYN',
+                  })}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           {ownerReviewsLabel ? (
@@ -198,37 +230,19 @@ export const DetailsTab = memo(
           ) : null}
         </div>
 
-        <Card padding="md" className={DETAIL_CARD_CLASS}>
-          <div className="flex items-center justify-between gap-4">
-            <div
-              className={cn(
-                isPayNegotiable
-                  ? 'text-base font-semibold leading-snug text-foreground'
-                  : cn(DISPLAY_PRICE_CLASS, 'price-xl')
-              )}
-            >
-              {payValue}
-              {payCurrency ? (
-                <span className="ml-1 text-base font-semibold text-muted-foreground">
-                  {payCurrency}
-                </span>
-              ) : null}
-            </div>
-            <div className="text-right text-sm text-muted-foreground">
-              {durationLabel ? <p>{durationLabel}</p> : null}
-              {hourlyRate ? (
-                <p className="text-primary">
-                  {t('shift.hourlyRateApprox', {
-                    rate: hourlyRate,
-                    currency: currency ?? 'BYN',
-                  })}
-                </p>
-              ) : null}
-            </div>
-          </div>
-        </Card>
-
         <div className="flex flex-col gap-3">
+          {venueName ? (
+            <div className="flex min-w-0 items-start gap-3">
+              <Building2
+                className={cn(ICON_SM_CLASS, 'mt-0.5 shrink-0 text-muted-foreground')}
+                aria-hidden
+              />
+              <span className="line-clamp-2 min-w-0 text-sm font-semibold text-foreground">
+                {venueName}
+              </span>
+            </div>
+          ) : null}
+
           {schedule ? (
             <div className="flex items-start gap-3">
               <Clock className={cn(ICON_SM_CLASS, 'mt-0.5 text-muted-foreground')} aria-hidden />
