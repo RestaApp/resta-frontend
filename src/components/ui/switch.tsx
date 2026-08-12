@@ -44,7 +44,7 @@ export const Switch = memo(function Switch({
       onClick={toggle}
       onKeyDown={onKeyDown}
       className={cn(
-        'relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300',
+        'relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         checked ? 'focus-visible:ring-primary' : 'focus-visible:ring-muted-foreground/50',

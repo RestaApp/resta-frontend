@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDashboard } from '@/pages/Dashboard/hooks/useDashboard'
 import { TabContent } from '@/components/TabContent'
 import { BottomNav } from '@/components/BottomNav'
@@ -12,7 +12,7 @@ import type { UiRole } from '@/shared/types/roles.types'
 import { AppHeader } from '@/components/AppHeader'
 import { setLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
-import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
+import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { resetAppScroll } from '@/shared/ui/appScroll'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
@@ -30,6 +30,15 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
   const { overlay, replaceOverlayWithPath } = useDetailOverlay()
   const profileCompleteness = useProfileCompleteness()
   const hasIncompleteFields = !profileCompleteness?.isActionReady
+  const [isProfileHeaderHidden, setIsProfileHeaderHidden] = useState(false)
+
+  useEffect(
+    () =>
+      onAppEvent(APP_EVENTS.SET_PROFILE_HEADER_HIDDEN, detail => {
+        setIsProfileHeaderHidden(detail.hidden)
+      }),
+    []
+  )
 
   /** При переходе на профиль с незаполненными обязательными полями сразу открываем форму редактирования. */
   const onTabChange = useCallback(
@@ -64,7 +73,8 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
       {activeTab === 'feed' ||
       activeTab === 'activity' ||
       activeTab === 'myshifts' ||
-      activeTab === 'staff' ? null : (
+      activeTab === 'staff' ||
+      (activeTab === 'profile' && isProfileHeaderHidden) ? null : (
         <AppHeader activeTab={activeTab} role={role} />
       )}
       {role === 'venue' ? <VenueAddShiftListener /> : null}

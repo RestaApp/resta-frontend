@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { resetAppScroll } from '@/shared/ui/appScroll'
 import { useProfilePageModel } from '../model/hooks/useProfilePageModel'
@@ -13,6 +13,7 @@ import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
 import { FaqPage } from '@/shared/ui/help/FaqPage'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
+import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 type LegalScreen = 'none' | 'privacy' | 'terms' | 'faq'
 
@@ -38,6 +39,19 @@ export const ProfilePage = memo(() => {
   const [editProfileSection, setEditProfileSection] = useState<
     'specializations' | 'supplierTypes' | null
   >(null)
+
+  const isLegalDocumentOpen = legalScreen === 'privacy' || legalScreen === 'terms'
+
+  useEffect(() => {
+    emitAppEvent(APP_EVENTS.SET_PROFILE_HEADER_HIDDEN, { hidden: isLegalDocumentOpen })
+  }, [isLegalDocumentOpen])
+
+  useEffect(
+    () => () => {
+      emitAppEvent(APP_EVENTS.SET_PROFILE_HEADER_HIDDEN, { hidden: false })
+    },
+    []
+  )
 
   const handleLegalBack = useCallback(() => {
     setLegalScreen('none')

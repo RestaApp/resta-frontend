@@ -324,6 +324,17 @@ textarea:focus-visible {
   -webkit-text-fill-color: transparent;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+  }
+}
+
 input[type='range'] {
   @apply h-2 bg-secondary rounded-lg appearance-none cursor-pointer;
 }

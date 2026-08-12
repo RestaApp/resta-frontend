@@ -2,6 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react'
 import { BOTTOM_NAV_HEIGHT_PX } from '@/shared/ui/layout'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 
 interface BottomActionBarProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
@@ -30,6 +31,7 @@ export const BottomActionBar = ({
   ...props
 }: BottomActionBarProps) => {
   const isFixed = mode === 'fixed'
+  const reduceVisualEffects = useReducedVisualEffects()
 
   return (
     <div
@@ -37,7 +39,8 @@ export const BottomActionBar = ({
         isFixed ? 'fixed left-0 right-0' : 'shrink-0',
         isFixed && !aboveBottomNav && 'bottom-0',
         'px-2.5 pt-3 pb-safe-nav',
-        !transparent && 'bg-background/92 backdrop-blur-xl',
+        !transparent && 'bg-background/92',
+        !transparent && !reduceVisualEffects && 'backdrop-blur-xl',
         withBorder && 'border-t border-border/50',
         className
       )}

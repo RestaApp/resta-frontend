@@ -40,7 +40,7 @@ export const RoleCard = memo(function RoleCard({ role, isSelected, onSelect }: R
       aria-pressed={isSelected}
       data-haptic="selection"
       className={cn(
-        'relative flex w-full gap-3 rounded-lg border p-4 text-left transition-all duration-150',
+        'relative flex w-full gap-3 rounded-lg border p-4 text-left transition-colors duration-150',
         isSelected ? 'border-primary bg-card' : 'border-border bg-card hover:border-foreground/20'
       )}
     >

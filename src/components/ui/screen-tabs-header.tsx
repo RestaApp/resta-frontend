@@ -13,6 +13,7 @@ import {
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
 import type { HeaderAction } from '@/components/appHeaderConfig'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 
 type ScreenTabsHeaderProps<T extends string> = {
   title: string
@@ -39,9 +40,16 @@ const ScreenTabsHeaderInner = <T extends string>({
   footer,
 }: ScreenTabsHeaderProps<T>) => {
   const hasTabs = tabOptions != null && activeTabId != null && onTabChange != null
+  const reduceVisualEffects = useReducedVisualEffects()
 
   return (
-    <header className={cn(SCREEN_HEADER_SHELL_CLASS)} style={{ zIndex: Z_INDEX.stickyHeader }}>
+    <header
+      className={cn(
+        SCREEN_HEADER_SHELL_CLASS,
+        reduceVisualEffects ? undefined : 'backdrop-blur-sm'
+      )}
+      style={{ zIndex: Z_INDEX.stickyHeader }}
+    >
       <div className="ui-app-frame">
         {/* Ряд заголовка: title слева, действия справа. Сегментированные табы
             вынесены во второй ряд, чтобы длинный заголовок не наезжал на иконки. */}

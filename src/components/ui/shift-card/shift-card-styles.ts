@@ -5,7 +5,7 @@ import { CARD_PRICE_CLASS } from '@/components/ui/ui-patterns'
 export const SHIFT_CARD_CLASS = 'rounded-lg border border-border bg-card p-3'
 
 export const SHIFT_CARD_INTERACTIVE_CLASS =
-  'group cursor-pointer outline-none transition-all duration-200 active:scale-[0.99] hover:border-border/80 focus-visible:ring-2 focus-visible:ring-ring'
+  'group cursor-pointer outline-none transition-[transform,border-color,box-shadow] duration-200 active:scale-[0.99] hover:border-border/80 focus-visible:ring-2 focus-visible:ring-ring'
 
 export const SHIFT_CARD_SOS_CLASS = 'border-primary/40 bg-gradient-to-br from-primary/15 to-card'
 

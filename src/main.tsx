@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { MotionConfig } from 'motion/react'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import '@/shared/i18n/config'
@@ -16,14 +17,16 @@ initTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={<LoadingPage />} persistor={persistor}>
-        <TelegramProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </TelegramProvider>
-      </PersistGate>
-    </Provider>
+    <MotionConfig reducedMotion="user">
+      <Provider store={store}>
+        <PersistGate loading={<LoadingPage />} persistor={persistor}>
+          <TelegramProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </TelegramProvider>
+        </PersistGate>
+      </Provider>
+    </MotionConfig>
   </StrictMode>
 )

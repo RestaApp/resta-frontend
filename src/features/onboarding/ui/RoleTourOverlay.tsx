@@ -159,7 +159,7 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
                 <span
                   key={i}
                   className={cn(
-                    'h-1.5 rounded-full transition-all',
+                    'h-1.5 rounded-full transition-[width,background-color]',
                     i === stepIndex ? 'w-4 bg-primary' : 'w-1.5 bg-muted-foreground/30'
                   )}
                 />

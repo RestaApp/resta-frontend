@@ -24,7 +24,10 @@ export const LoadingPage = memo(function LoadingPage() {
         transition={
           reduceMotion ? { duration: 0 } : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
         }
-        className={cn('absolute inset-0 -z-10', reduceVisualEffects ? 'opacity-70' : 'blur-3xl')}
+        className={cn(
+          'absolute inset-0 -z-10 will-change-transform',
+          reduceVisualEffects ? 'opacity-70' : 'blur-3xl'
+        )}
         style={{
           backgroundImage: 'var(--gradient-primary-glow)',
         }}
@@ -44,7 +47,7 @@ export const LoadingPage = memo(function LoadingPage() {
         </motion.div>
 
         <motion.div
-          className="absolute -inset-2 rounded-[2rem] border-2"
+          className="absolute -inset-2 rounded-[2rem] border-2 will-change-transform"
           style={{
             borderColor: roleColorVar,
             borderTopColor: 'transparent',
@@ -74,10 +77,7 @@ export const LoadingPage = memo(function LoadingPage() {
           transition={
             reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className={cn(
-            'absolute -left-1/2 -top-1/2 h-full w-full',
-            reduceVisualEffects ? undefined : 'blur-3xl'
-          )}
+          className="absolute -left-1/2 -top-1/2 h-full w-full will-change-transform"
           style={{ backgroundImage: 'var(--gradient-primary-glow)' }}
           aria-hidden="true"
           data-slot="loading-primary-ambient"
@@ -91,10 +91,7 @@ export const LoadingPage = memo(function LoadingPage() {
           transition={
             reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className={cn(
-            'absolute -bottom-1/2 -right-1/2 h-full w-full',
-            reduceVisualEffects ? undefined : 'blur-3xl'
-          )}
+          className="absolute -bottom-1/2 -right-1/2 h-full w-full will-change-transform"
           style={{ backgroundImage: 'var(--gradient-warm-glow)' }}
           aria-hidden="true"
           data-slot="loading-warm-ambient"

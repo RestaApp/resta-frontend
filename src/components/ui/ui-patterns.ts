@@ -78,8 +78,7 @@ export const BODY_MUTED_CLASS = 'text-sm text-muted-foreground'
 export const FORMATTED_USER_TEXT_CLASS =
   'whitespace-pre-wrap break-words leading-relaxed [overflow-wrap:anywhere]'
 
-export const SCREEN_HEADER_SHELL_CLASS =
-  'top-0 border-border/50 bg-background/92 backdrop-blur-sm transition-all'
+export const SCREEN_HEADER_SHELL_CLASS = 'top-0 border-border/50 bg-background/92 transition-colors'
 
 export const SCREEN_HEADER_ROW_CLASS =
   'flex min-h-16 items-center gap-3 ui-density-page ui-density-py-sm'

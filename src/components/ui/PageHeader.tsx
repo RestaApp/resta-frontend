@@ -3,6 +3,7 @@ import { ArrowLeft, X } from 'lucide-react'
 import { SCREEN_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { Z_INDEX } from '@/shared/ui/zIndex'
+import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 
 type LeadingActionKind = 'back' | 'close'
 
@@ -65,11 +66,13 @@ export const PageHeader = ({
   className,
 }: PageHeaderProps) => {
   const LeadingIcon = leadingAction ? LEADING_ICON[leadingAction] : null
+  const reduceVisualEffects = useReducedVisualEffects()
 
   return (
     <header
       className={cn(
-        'border-b border-border bg-background/92 ui-density-page pt-3 pb-3 backdrop-blur-xl',
+        'border-b border-border bg-background/92 ui-density-page pt-3 pb-3',
+        reduceVisualEffects ? undefined : 'backdrop-blur-xl',
         sticky && 'sticky top-0',
         className
       )}

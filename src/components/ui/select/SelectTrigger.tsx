@@ -44,7 +44,7 @@ export const SelectTrigger = ({
         INPUT_FIELD_INTERACTIVE_CLASS,
         INPUT_FIELD_INVALID_CLASS,
         INPUT_FIELD_DISABLED_CLASS,
-        'flex h-11 items-center justify-between px-4 py-3 text-base transition-all',
+        'flex h-11 items-center justify-between px-4 py-3 text-base transition-[background-color,border-color,box-shadow]',
         'border-border/50',
         isOpen && 'border-primary',
         !value && 'text-muted-foreground'

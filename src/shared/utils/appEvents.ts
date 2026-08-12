@@ -11,6 +11,7 @@ export const APP_EVENTS = {
   SHOW_ACTIVITY_ADD_SHIFT_ONBOARDING: 'showActivityAddShiftOnboarding',
   SET_VENUE_CREATE_TYPE: 'setVenueCreateType',
   START_ROLE_TOUR: 'startRoleTour',
+  SET_PROFILE_HEADER_HIDDEN: 'setProfileHeaderHidden',
 } as const
 
 export type AppEventName = (typeof APP_EVENTS)[keyof typeof APP_EVENTS]
@@ -28,6 +29,7 @@ type AppEventDetailMap = {
   [APP_EVENTS.SHOW_ACTIVITY_ADD_SHIFT_ONBOARDING]: undefined
   [APP_EVENTS.SET_VENUE_CREATE_TYPE]: { type?: 'vacancy' | 'replacement' } | undefined
   [APP_EVENTS.START_ROLE_TOUR]: undefined
+  [APP_EVENTS.SET_PROFILE_HEADER_HIDDEN]: { hidden: boolean }
 }
 
 export const emitAppEvent = <K extends AppEventName>(
