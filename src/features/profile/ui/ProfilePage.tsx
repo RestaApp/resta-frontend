@@ -40,11 +40,11 @@ export const ProfilePage = memo(() => {
     'specializations' | 'supplierTypes' | null
   >(null)
 
-  const isLegalDocumentOpen = legalScreen === 'privacy' || legalScreen === 'terms'
+  const isProfileSubpageOpen = legalScreen !== 'none'
 
   useEffect(() => {
-    emitAppEvent(APP_EVENTS.SET_PROFILE_HEADER_HIDDEN, { hidden: isLegalDocumentOpen })
-  }, [isLegalDocumentOpen])
+    emitAppEvent(APP_EVENTS.SET_PROFILE_HEADER_HIDDEN, { hidden: isProfileSubpageOpen })
+  }, [isProfileSubpageOpen])
 
   useEffect(
     () => () => {
