@@ -4,6 +4,8 @@
 
 import i18n from '@/shared/i18n/config'
 
+export const EXPERIENCE_SCALE_MAX_YEARS = 5
+
 /**
  * Возвращает правильное склонение слова "год" в зависимости от числа
  */
@@ -22,5 +24,8 @@ const getYearsLabel = (years: number): string => {
  */
 export const formatExperienceText = (value: number): string => {
   if (value === 0) return i18n.t('experience.noExperience')
+  if (value > EXPERIENCE_SCALE_MAX_YEARS) {
+    return `${EXPERIENCE_SCALE_MAX_YEARS}+ ${i18n.t('experience.years5')}`
+  }
   return `${value} ${getYearsLabel(value)}`
 }

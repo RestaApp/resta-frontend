@@ -12,7 +12,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
-import { formatExperienceText } from '@/shared/utils/experience'
+import { EXPERIENCE_SCALE_MAX_YEARS, formatExperienceText } from '@/shared/utils/experience'
 import type { EmployeeSubRole } from '@/shared/types/roles.types'
 import type { ProfileFormData } from '../../../model/utils/buildUpdateUserRequest'
 import { EmployeeSpecializationsField } from './EmployeeSpecializationsField'
@@ -108,13 +108,13 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
         </div>
         <RangeSlider
           min={0}
-          max={Math.max(50, experienceYearsValue)}
+          max={EXPERIENCE_SCALE_MAX_YEARS}
           step={1}
-          value={experienceYearsValue}
+          value={Math.min(experienceYearsValue, EXPERIENCE_SCALE_MAX_YEARS)}
           onChange={value => updateField('experienceYears', value)}
           disabled={disabled || isExperienceCalculated}
           showTicks={true}
-          tickCount={10}
+          tickCount={EXPERIENCE_SCALE_MAX_YEARS}
         />
       </FormField>
 
