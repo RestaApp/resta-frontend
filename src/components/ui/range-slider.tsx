@@ -21,6 +21,7 @@ interface RangeSliderProps {
   className?: string
   showTicks?: boolean
   tickCount?: number
+  disabled?: boolean
   /** Цвет активной части трека и бегунка (по умолчанию primary). */
   fillClassName?: string
 }
@@ -36,6 +37,7 @@ export const RangeSlider = memo(function RangeSlider({
   className,
   showTicks = false,
   tickCount,
+  disabled = false,
   fillClassName = 'bg-primary',
 }: RangeSliderProps) {
   const isRangeMode = range !== undefined && onRangeChange !== undefined
@@ -122,7 +124,10 @@ export const RangeSlider = memo(function RangeSlider({
 
   if (isRangeMode) {
     return (
-      <div className={cn('relative', className)} style={{ height: '6px' }}>
+      <div
+        className={cn('relative', disabled && 'opacity-50', className)}
+        style={{ height: '6px' }}
+      >
         <div className={cn('w-full h-1.5 rounded-full relative overflow-visible', trackBg)}>
           <motion.div
             className={cn('absolute top-0 h-full rounded-full', fillClassName)}
@@ -139,6 +144,7 @@ export const RangeSlider = memo(function RangeSlider({
           max={max}
           step={step}
           value={rangeMin}
+          disabled={disabled}
           onChange={handleMinChange}
           className="range-slider-input absolute top-1/2 -translate-y-1/2 h-10 opacity-0 cursor-pointer z-20"
           style={{ touchAction: 'none', left: '-8px', width: 'calc(100% + 16px)' }}
@@ -149,6 +155,7 @@ export const RangeSlider = memo(function RangeSlider({
           max={max}
           step={step}
           value={rangeMax}
+          disabled={disabled}
           onChange={handleMaxChange}
           className="range-slider-input absolute top-1/2 -translate-y-1/2 h-10 opacity-0 cursor-pointer z-20"
           style={{ touchAction: 'none', left: '-8px', width: 'calc(100% + 16px)' }}
@@ -175,7 +182,7 @@ export const RangeSlider = memo(function RangeSlider({
   }
 
   return (
-    <div className={cn('relative', className)} style={{ height: '6px' }}>
+    <div className={cn('relative', disabled && 'opacity-50', className)} style={{ height: '6px' }}>
       <div className={cn('w-full h-1.5 rounded-full relative overflow-visible', trackBg)}>
         <motion.div
           className={cn('absolute top-0 left-0 h-full rounded-full', fillClassName)}
@@ -191,6 +198,7 @@ export const RangeSlider = memo(function RangeSlider({
         max={max}
         step={step}
         value={singleValue}
+        disabled={disabled}
         onChange={handleSingleChange}
         onTouchStart={e => e.stopPropagation()}
         onTouchMove={e => e.stopPropagation()}

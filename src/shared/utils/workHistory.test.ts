@@ -73,7 +73,7 @@ describe('workHistory · порядок и общий стаж', () => {
       entry({ startedAt: '2014-01', endedAt: '2020-01' }),
     ]
 
-    expect(calculateExperienceYears(workHistory, new Date(2024, 0, 1))).toBe(5)
+    expect(calculateExperienceYears(workHistory, new Date(2024, 0, 1))).toBe(8)
   })
 
   it('учитывает текущую работу и возвращает null без даты начала', () => {

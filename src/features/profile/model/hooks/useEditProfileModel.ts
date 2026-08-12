@@ -16,7 +16,7 @@ import {
   getSupplierProfile,
   getSupplierTypes,
 } from '@/shared/utils/supplierProfile'
-import { mapApiWorkHistoryToForm } from '@/shared/utils/workHistory'
+import { calculateExperienceYears, mapApiWorkHistoryToForm } from '@/shared/utils/workHistory'
 import { useUserSpecializations } from '@/shared/lib/hooks/useUserSpecializations'
 import { useUserPositions } from '@/shared/lib/hooks/useUserPositions'
 import { useEditProfileFormController, type EditProfileStep } from './useEditProfileFormController'
@@ -166,8 +166,10 @@ export const useEditProfileModel = (
       position: activePosition,
       enabled: open && apiRole === 'employee' && Boolean(activePosition),
     })
+  const calculatedExperienceYears = calculateExperienceYears(formData.workHistory)
   const experienceYearsForSlider =
-    typeof formData.experienceYears === 'number' ? formData.experienceYears : 0
+    calculatedExperienceYears ??
+    (typeof formData.experienceYears === 'number' ? formData.experienceYears : 0)
 
   return {
     userProfile,
@@ -184,6 +186,7 @@ export const useEditProfileModel = (
     isSupplierTypesLoading: isSupplierTypesLoading || isSupplierTypesFetching,
     supplierCategory,
     experienceYearsForSlider,
+    isExperienceCalculated: calculatedExperienceYears !== null,
     step,
     totalSteps,
     handleNext,

@@ -22,6 +22,7 @@ interface EditProfileStepProfessionalProps {
   formData: ProfileFormData
   fieldErrors: Partial<Record<keyof ProfileFormData, string>>
   experienceYearsValue: number
+  isExperienceCalculated: boolean
   positions: EmployeeSubRole[]
   isPositionsLoading: boolean
   specializationOptions: string[]
@@ -35,6 +36,7 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
   formData,
   fieldErrors,
   experienceYearsValue,
+  isExperienceCalculated,
   positions,
   isPositionsLoading,
   specializationOptions,
@@ -94,7 +96,11 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
         onChange={next => updateField('specializations', next)}
       />
 
-      <FormField label={t('profile.experienceYearsLabel')} required>
+      <FormField
+        label={t('profile.experienceYearsLabel')}
+        hint={isExperienceCalculated ? t('profile.experienceCalculatedHint') : undefined}
+        required
+      >
         <div className="mb-3">
           <span className={cn(BLOCK_TITLE_CLASS, 'text-gradient')}>
             {formatExperienceText(experienceYearsValue)}
@@ -102,12 +108,13 @@ export const EditProfileStepProfessional = memo(function EditProfileStepProfessi
         </div>
         <RangeSlider
           min={0}
-          max={5}
+          max={Math.max(50, experienceYearsValue)}
           step={1}
           value={experienceYearsValue}
           onChange={value => updateField('experienceYears', value)}
+          disabled={disabled || isExperienceCalculated}
           showTicks={true}
-          tickCount={5}
+          tickCount={10}
         />
       </FormField>
 

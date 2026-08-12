@@ -327,6 +327,7 @@
     "nameOrTitle": " / Name",
     "completion": "Profile completion",
     "experienceYearsLabel": "Experience (years)",
+    "experienceCalculatedHint": "Calculated from the specified employment history",
     "openToWorkDescription": "When enabled, your profile is visible to venues in the catalog.",
     "skillsExample": "e.g. knife skills, HACCP knowledge",
     "phoneRequired": "Phone",
@@ -991,7 +992,6 @@
   },
   "experience": {
     "noExperience": "No experience",
-    "years5Plus": "5+ years",
     "year": "year",
     "years2": "years",
     "years5": "years"

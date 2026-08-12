@@ -178,4 +178,30 @@ describe('useEditProfileFormController — updateField', () => {
     expect(result.current.formData.position).toBe('waiter')
     expect(result.current.formData.specializations).toEqual([])
   })
+
+  it('сортирует места от ранних к поздним и пересчитывает стаж', () => {
+    const { result } = setup()
+    const later = {
+      id: 'later',
+      company: 'Б',
+      position: 'Повар',
+      startedAt: '2020-01',
+      endedAt: '2024-01',
+      isCurrent: false,
+      city: '',
+      description: '',
+    }
+    const earlier = {
+      ...later,
+      id: 'earlier',
+      company: 'А',
+      startedAt: '2016-01',
+      endedAt: '2020-01',
+    }
+
+    act(() => result.current.updateField('workHistory', [later, earlier]))
+
+    expect(result.current.formData.workHistory.map(item => item.id)).toEqual(['earlier', 'later'])
+    expect(result.current.formData.experienceYears).toBe(8)
+  })
 })

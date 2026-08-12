@@ -3,7 +3,11 @@ import type { UpdateUserRequest } from '@/services/api/usersApi'
 import { toE164 } from '@/shared/utils/phone'
 import { sanitizeLocations } from '@/shared/utils/location'
 import { isBusinessApiRole } from '@/shared/utils/roles'
-import { sanitizeWorkHistory, type WorkHistoryFormEntry } from '@/shared/utils/workHistory'
+import {
+  calculateExperienceYears,
+  sanitizeWorkHistory,
+  type WorkHistoryFormEntry,
+} from '@/shared/utils/workHistory'
 
 import { formValueToBusinessHoursRecord } from '@/features/profile/model/utils/businessHoursForm'
 
@@ -190,9 +194,11 @@ export const buildUpdateUserRequest = (
       employeeProfileAttributes.position = currentPosition
     }
 
-    if (formData.experienceYears !== source.experienceYears && formData.experienceYears !== '') {
-      user.experience_years = formData.experienceYears
-      employeeProfileAttributes.experience_years = formData.experienceYears
+    const calculatedExperienceYears = calculateExperienceYears(formData.workHistory)
+    const currentExperienceYears = calculatedExperienceYears ?? formData.experienceYears
+    if (currentExperienceYears !== source.experienceYears && currentExperienceYears !== '') {
+      user.experience_years = currentExperienceYears
+      employeeProfileAttributes.experience_years = currentExperienceYears
     }
 
     if (formData.openToWork !== source.openToWork) {

@@ -327,6 +327,7 @@
     "nameOrTitle": "/ Название",
     "completion": "Заполненность профиля",
     "experienceYearsLabel": "Опыт работы (лет)",
+    "experienceCalculatedHint": "Рассчитано по указанным местам работы",
     "openToWorkDescription": "При включении ваш профиль будет виден заведениям в каталоге.",
     "skillsExample": "Например: работа с ножом, знание HACCP",
     "phoneRequired": "Телефон",
@@ -999,7 +1000,6 @@
   },
   "experience": {
     "noExperience": "Без опыта",
-    "years5Plus": "5+ лет",
     "year": "год",
     "years2": "года",
     "years5": "лет"

@@ -57,6 +57,7 @@ export const EditProfileDrawer = memo(
       supplierTypeOptions,
       isSupplierTypesLoading,
       experienceYearsForSlider,
+      isExperienceCalculated,
       step,
       totalSteps,
       handleNext,
@@ -130,6 +131,7 @@ export const EditProfileDrawer = memo(
                 photoUrl={photoUrl}
                 bioSuffix={bioSuffix}
                 experienceYearsForSlider={experienceYearsForSlider}
+                isExperienceCalculated={isExperienceCalculated}
                 positions={positions}
                 isPositionsLoading={isPositionsLoading}
                 specializationOptions={specializationOptions}

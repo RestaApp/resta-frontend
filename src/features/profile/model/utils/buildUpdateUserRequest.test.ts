@@ -68,6 +68,30 @@ describe('buildUpdateUserRequest', () => {
     ])
   })
 
+  it('employee: стаж рассчитывается из истории работы и заменяет устаревшее значение', () => {
+    const base = baseForm({ experienceYears: 3 })
+    const changed = baseForm({
+      experienceYears: 3,
+      workHistory: [
+        {
+          id: 'wh-1',
+          company: 'Ресторан',
+          position: 'Повар',
+          startedAt: '2016-01',
+          endedAt: '2024-01',
+          isCurrent: false,
+          city: '',
+          description: '',
+        },
+      ],
+    })
+
+    const req = buildUpdateUserRequest(changed, 'employee', base).user
+
+    expect(req.experience_years).toBe(8)
+    expect(req.employee_profile_attributes?.experience_years).toBe(8)
+  })
+
   it('restaurant: cuisine_types шлётся, пустой restaurant_format — нет', () => {
     const base = baseForm({ restaurantFormat: '', cuisineTypes: [] })
     const req = buildUpdateUserRequest(

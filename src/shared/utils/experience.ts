@@ -22,6 +22,5 @@ const getYearsLabel = (years: number): string => {
  */
 export const formatExperienceText = (value: number): string => {
   if (value === 0) return i18n.t('experience.noExperience')
-  if (value === 5) return i18n.t('experience.years5Plus')
   return `${value} ${getYearsLabel(value)}`
 }

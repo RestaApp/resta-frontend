@@ -127,7 +127,7 @@ export const calculateExperienceYears = (
   }
 
   totalMonths += rangeEnd - rangeStart
-  return Math.min(5, Math.floor(totalMonths / 12))
+  return Math.floor(totalMonths / 12)
 }
 
 /** Полностью пустая запись (например, только что добавленная и не заполненная). */

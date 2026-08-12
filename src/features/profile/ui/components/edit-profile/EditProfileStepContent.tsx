@@ -21,6 +21,7 @@ export interface EditProfileStepContentProps {
   photoUrl: string | null
   bioSuffix: string
   experienceYearsForSlider: number
+  isExperienceCalculated: boolean
   positions: EmployeeSubRole[]
   isPositionsLoading: boolean
   specializationOptions: string[]
@@ -43,6 +44,7 @@ export const EditProfileStepContent = memo(function EditProfileStepContent({
   photoUrl,
   bioSuffix,
   experienceYearsForSlider,
+  isExperienceCalculated,
   positions,
   isPositionsLoading,
   specializationOptions,
@@ -75,6 +77,7 @@ export const EditProfileStepContent = memo(function EditProfileStepContent({
           formData={formData}
           fieldErrors={fieldErrors}
           experienceYearsValue={experienceYearsForSlider}
+          isExperienceCalculated={isExperienceCalculated}
           positions={positions}
           isPositionsLoading={isPositionsLoading}
           specializationOptions={specializationOptions}
