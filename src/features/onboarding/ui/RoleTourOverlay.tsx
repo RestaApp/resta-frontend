@@ -1,7 +1,6 @@
 import { createElement, memo, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'motion/react'
 import { ChevronLeft, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -16,6 +15,9 @@ interface Rect {
   width: number
   height: number
 }
+
+const rectsAreEqual = (a: Rect | null, b: Rect): boolean =>
+  a != null && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height
 
 interface RoleTourOverlayProps {
   step: RoleTourStep
@@ -46,20 +48,25 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
   const [rect, setRect] = useState<Rect | null>(null)
 
   useEffect(() => {
-    const update = () => {
+    let raf = 0
+
+    const trackTarget = () => {
       const el = document.querySelector(`[data-nav-tab="${step.tabId}"]`)
-      if (!(el instanceof HTMLElement)) return
-      const r = el.getBoundingClientRect()
-      setRect({ top: r.top, left: r.left, width: r.width, height: r.height })
+      if (el instanceof HTMLElement) {
+        const { top, left, width, height } = el.getBoundingClientRect()
+        const nextRect = { top, left, width, height }
+        setRect(current => (rectsAreEqual(current, nextRect) ? current : nextRect))
+      }
+
+      // BottomNav меняет scale через spring-анимацию после скролла. resize/scroll
+      // не сообщают о промежуточных transform-координатах, поэтому рамка должна
+      // следить за фактическим rect цели, пока открыт coach-mark.
+      raf = requestAnimationFrame(trackTarget)
     }
-    // Двойной rAF — дождаться переключения вкладки и перерисовки навигации.
-    const raf = requestAnimationFrame(() => requestAnimationFrame(update))
-    window.addEventListener('resize', update)
-    window.addEventListener('scroll', update, true)
+
+    trackTarget()
     return () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', update)
-      window.removeEventListener('scroll', update, true)
     }
   }, [step.tabId])
 
@@ -99,17 +106,13 @@ export const RoleTourOverlay = memo(function RoleTourOverlay({
     >
       {/* Вырез-spotlight: box-shadow затемняет всё, КРОМЕ активной вкладки
           (она остаётся в полной яркости); border + мягкое свечение — акцент. */}
-      <motion.div
+      <div
         className="absolute rounded-2xl border-2 border-primary"
-        initial={false}
-        animate={{
+        style={{
           left: hlLeft,
           top: hlTop,
           width: hlRight - hlLeft,
           height: hlBottom - hlTop,
-        }}
-        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        style={{
           boxShadow: '0 0 0 4px rgba(255,107,44,0.25), 0 0 0 9999px var(--overlay-scrim-strong)',
           pointerEvents: 'none',
         }}

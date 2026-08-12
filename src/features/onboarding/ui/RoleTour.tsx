@@ -23,6 +23,7 @@ export const RoleTour = memo(function RoleTour({ role, onTabChange }: RoleTourPr
 
   return (
     <RoleTourOverlay
+      key={activeStep.tabId}
       step={activeStep}
       stepIndex={stepIndex}
       total={steps.length}

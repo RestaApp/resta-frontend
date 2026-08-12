@@ -7,7 +7,6 @@ import { KpiRow } from '@/components/ui/kpi-row'
 import type { ProfileViewModel } from '../buildProfileViewModel'
 import { ProfileHero } from './ProfileHero'
 import { ProfileOpenToWorkCard } from './profileOverviewPrimitives'
-import { ProfileCompletionCard } from './ProfileCompletionCard'
 import {
   ProfileReviewSummary,
   ProfileTagSectionView,
@@ -58,8 +57,6 @@ export const ProfileOverview = memo(function ProfileOverview({
         disabled={isOpenToWorkUpdating}
         onToggle={onOpenToWorkToggle}
       />
-
-      {onFill ? <ProfileCompletionCard percent={profile.completionPercent} /> : null}
 
       {/* Плашка «заполните профиль» — только на своём профиле (есть onFill).
           На чужом (карточка ресторана/автор смены) её быть не должно. */}
