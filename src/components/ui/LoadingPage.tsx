@@ -14,7 +14,7 @@ export const LoadingPage = memo(function LoadingPage() {
   const roleColorVar = 'var(--primary)'
 
   const logoIcon = (
-    <div className="relative">
+    <div className="relative isolate">
       <motion.div
         animate={
           reduceMotion
@@ -24,10 +24,11 @@ export const LoadingPage = memo(function LoadingPage() {
         transition={
           reduceMotion ? { duration: 0 } : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
         }
-        className={cn('absolute inset-0 -z-10', reduceVisualEffects ? 'opacity-40' : 'blur-3xl')}
+        className={cn('absolute inset-0 -z-10', reduceVisualEffects ? 'opacity-70' : 'blur-3xl')}
         style={{
-          background: `color-mix(in srgb, ${roleColorVar} 55%, transparent)`,
+          backgroundImage: 'var(--gradient-primary-glow)',
         }}
+        data-slot="loading-logo-glow"
       />
 
       <div className="relative mb-8 size-22">
@@ -66,35 +67,37 @@ export const LoadingPage = memo(function LoadingPage() {
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={
-            reduceVisualEffects
+            reduceMotion
               ? { scale: 1, opacity: 0.12, rotate: 0 }
               : { scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, 180, 360] }
           }
           transition={
-            reduceVisualEffects
-              ? { duration: 0 }
-              : { duration: 8, repeat: Infinity, ease: 'linear' }
+            reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className="absolute -left-1/2 -top-1/2 h-full w-full blur-3xl"
-          style={{ background: 'var(--gradient-primary)' }}
+          className={cn(
+            'absolute -left-1/2 -top-1/2 h-full w-full',
+            reduceVisualEffects ? undefined : 'blur-3xl'
+          )}
+          style={{ backgroundImage: 'var(--gradient-primary-glow)' }}
           aria-hidden="true"
+          data-slot="loading-primary-ambient"
         />
         <motion.div
           animate={
-            reduceVisualEffects
+            reduceMotion
               ? { scale: 1, opacity: 0.12, rotate: 0 }
               : { scale: [1.2, 1, 1.2], opacity: [0.1, 0.2, 0.1], rotate: [360, 180, 0] }
           }
           transition={
-            reduceVisualEffects
-              ? { duration: 0 }
-              : { duration: 8, repeat: Infinity, ease: 'linear' }
+            reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl"
-          style={{
-            background: 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
-          }}
+          className={cn(
+            'absolute -bottom-1/2 -right-1/2 h-full w-full',
+            reduceVisualEffects ? undefined : 'blur-3xl'
+          )}
+          style={{ backgroundImage: 'var(--gradient-warm-glow)' }}
           aria-hidden="true"
+          data-slot="loading-warm-ambient"
         />
       </div>
 
@@ -104,10 +107,7 @@ export const LoadingPage = memo(function LoadingPage() {
           title="Resta"
           subtitle={t('loadingPage.subtitle')}
           iconClassName="mb-0"
-          titleClassName={cn(
-            HERO_TITLE_CLASS,
-            'bg-[image:var(--gradient-primary)] bg-clip-text text-transparent'
-          )}
+          titleClassName={cn(HERO_TITLE_CLASS, 'text-gradient-primary')}
         />
       </div>
       <div className="absolute bottom-0 left-0 right-0 z-10 ui-density-page pb-7 text-center">

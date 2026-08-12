@@ -70,6 +70,12 @@ const applicantTitleRow = (name: string, isAccepted: boolean, t: TFunction) => (
   </div>
 )
 
+const applicantSelectedBadge = (t: TFunction) => (
+  <Badge variant="accepted" className="shrink-0">
+    {t('shift.applicantSelected')}
+  </Badge>
+)
+
 const ratingSummary = (
   hasRating: boolean,
   normalizedRating: number,
@@ -241,6 +247,7 @@ export const ApplicantPreviewCard = memo(
           onActivate={handleSelect}
           ariaLabel={t('applicants.openProfileAria', { name, defaultValue: name })}
           className={cn(variant === 'moderation' && isAccepted && ACCEPTED_CARD_CLASS)}
+          topRight={variant === 'moderation' && isAccepted ? applicantSelectedBadge(t) : undefined}
           avatar={applicantAvatar(photoUrl, name)}
           actions={
             <>
@@ -268,19 +275,23 @@ export const ApplicantPreviewCard = memo(
                   {t('venueUi.staff.catalog.invite', { defaultValue: 'Пригласить' })}
                 </Button>
               ) : null}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
-                onClick={handleOpenProfile}
-              >
-                {t('tabs.employee.profileShort')}
-              </Button>
+              {!isAccepted ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
+                  onClick={handleOpenProfile}
+                >
+                  {t('tabs.employee.profileShort')}
+                </Button>
+              ) : null}
             </>
           }
         >
-          {applicantTitleRow(name, variant === 'moderation' && isAccepted, t)}
+          <div className={cn(variant === 'moderation' && isAccepted && 'pr-20')}>
+            {applicantTitleRow(name, false, t)}
+          </div>
           <p className={cn(SHIFT_CARD_SUB_CLASS, 'truncate')}>{position}</p>
 
           <div className={PREVIEW_CARD_STATS_CLASS} aria-label={t('common.rating')}>

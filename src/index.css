@@ -63,6 +63,18 @@
   --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-muted));
   --gradient-stars: linear-gradient(135deg, var(--warning), #ff8a2c);
   --gradient-pro: linear-gradient(135deg, #b38cff, #8a66d4);
+  --gradient-primary-glow: radial-gradient(
+    circle,
+    rgba(255, 107, 44, 0.55) 0%,
+    rgba(255, 107, 44, 0.22) 42%,
+    rgba(255, 107, 44, 0) 72%
+  );
+  --gradient-warm-glow: radial-gradient(
+    circle,
+    rgba(245, 177, 66, 0.34) 0%,
+    rgba(255, 107, 44, 0.16) 45%,
+    rgba(255, 107, 44, 0) 74%
+  );
   --shadow-primary-cta: 0 12px 32px rgba(255, 107, 44, 0.28);
   --shadow-success-cta: 0 12px 32px rgba(62, 201, 126, 0.25);
   --shadow-stars-cta: 0 12px 32px rgba(245, 177, 66, 0.28);
@@ -302,6 +314,14 @@ textarea:focus-visible {
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+.text-gradient-primary {
+  color: var(--primary);
+  background-image: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 input[type='range'] {
