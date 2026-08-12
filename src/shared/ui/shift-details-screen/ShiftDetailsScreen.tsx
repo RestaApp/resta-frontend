@@ -10,6 +10,7 @@ import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
 import type { Shift } from '@/shared/shifts/types'
 import { isExpiredOwnerListing } from '@/shared/shifts/mapping'
+import { isEditableOwnerListing } from '@/shared/shifts/ownerShiftDisplay'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { useToast } from '@/shared/lib/hooks/useToast'
@@ -83,13 +84,18 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     t,
   })
 
-  // Просроченную смену редактировать нельзя — кнопка «Изменить» скрыта.
+  // После выбора кандидата, закрытия или истечения срока редактирование недоступно.
   const isExpired =
     shift?.statusTag === 'expired' || (vacancyData ? isExpiredOwnerListing(vacancyData) : false)
+  const canEdit =
+    !isExpired &&
+    shift?.listingStatus !== 'filled' &&
+    shift?.listingStatus !== 'closed' &&
+    (!vacancyData || isEditableOwnerListing(vacancyData))
 
   const handleEdit = useCallback(() => {
-    if (shift && !isExpired) ownerActions?.onEdit(shift.id)
-  }, [ownerActions, shift, isExpired])
+    if (shift && canEdit) ownerActions?.onEdit(shift.id)
+  }, [canEdit, ownerActions, shift])
 
   const handleDeleteRequest = useCallback(() => {
     setConfirmOpen(true)
@@ -195,7 +201,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                 ? t('common.deleting', { defaultValue: 'Удаление...' })
                 : t('common.delete')}
             </Button>
-            {!isExpired ? (
+            {canEdit ? (
               <Button
                 variant="gradient"
                 size="md"

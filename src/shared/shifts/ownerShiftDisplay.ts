@@ -64,6 +64,12 @@ export const isInviteableOwnerListing = (vacancy: VacancyApiItem): boolean => {
   return status === 'open' || status === 'urgent'
 }
 
+/** Редактировать можно только активную публикацию, пока кандидат ещё не выбран. */
+export const isEditableOwnerListing = (vacancy: VacancyApiItem): boolean => {
+  const status = getOwnerShiftListingStatus(vacancy)
+  return (status === 'open' || status === 'urgent') && !vacancy.selected_applicant
+}
+
 export const isOpenForVenueKpi = (vacancy: VacancyApiItem): boolean => {
   const status = getOwnerShiftListingStatus(vacancy)
   return status === 'open' || status === 'urgent'
