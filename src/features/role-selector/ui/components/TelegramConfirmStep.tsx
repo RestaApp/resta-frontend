@@ -20,7 +20,7 @@ import { OnboardingBottomCta, ONBOARDING_BOTTOM_CTA_SPACE } from './OnboardingBo
 import { LegalConsentCheckbox } from '@/shared/ui/legal/LegalConsentCheckbox'
 import { PrivacyPolicyPage } from '@/shared/ui/legal/PrivacyPolicyPage'
 import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
-import { Z_INDEX } from '@/shared/ui/zIndex'
+import { LegalRegistrationOverlay } from '@/shared/ui/legal/LegalRegistrationOverlay'
 import { triggerHapticFeedback } from '@/shared/utils/haptics'
 
 interface TelegramConfirmStepProps {
@@ -266,14 +266,14 @@ export const TelegramConfirmStep = memo(function TelegramConfirmStep({
       </OnboardingBottomCta>
 
       {legalOverlay === 'privacy' ? (
-        <div className="fixed inset-0 bg-background" style={{ zIndex: Z_INDEX.boot }}>
+        <LegalRegistrationOverlay>
           <PrivacyPolicyPage onBack={() => setLegalOverlay('none')} />
-        </div>
+        </LegalRegistrationOverlay>
       ) : null}
       {legalOverlay === 'terms' ? (
-        <div className="fixed inset-0 bg-background" style={{ zIndex: Z_INDEX.boot }}>
+        <LegalRegistrationOverlay>
           <TermsOfServicePage onBack={() => setLegalOverlay('none')} />
-        </div>
+        </LegalRegistrationOverlay>
       ) : null}
     </OnboardingStepLayout>
   )

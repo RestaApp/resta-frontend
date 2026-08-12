@@ -40,4 +40,16 @@ describe('DetailOverlayProvider', () => {
     expect(pushState).toHaveBeenCalledTimes(2)
     expect(window.location.pathname).toBe('/vacancy/43')
   })
+
+  it('помечает глобальные детали как доступные для общего renderer', () => {
+    const { result } = renderHook(() => useDetailOverlay(), { wrapper })
+
+    act(() => {
+      result.current.openGlobalShiftDetail(42)
+    })
+
+    expect(result.current.overlay).toEqual({ type: 'shift', id: 42 })
+    expect(result.current.isDeepLinked).toBe(true)
+    expect(window.location.pathname).toBe('/shift/42')
+  })
 })

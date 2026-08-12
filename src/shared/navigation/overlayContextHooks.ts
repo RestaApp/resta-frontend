@@ -6,6 +6,8 @@ export interface DetailOverlayContextValue {
   /** True when overlay was opened by deep link, not by a feature page. */
   isDeepLinked: boolean
   openShiftDetail: (id: number) => void
+  /** Открывает детали из глобального UI, где нет локального renderer страницы. */
+  openGlobalShiftDetail: (id: number) => void
   openVacancyDetail: (id: number) => void
   openUserProfile: (id: number) => void
   closeOverlay: () => void
@@ -22,6 +24,7 @@ export function useDetailOverlay(): Omit<DetailOverlayContextValue, 'setOverlay'
     overlay: ctx.overlay,
     isDeepLinked: ctx.isDeepLinked,
     openShiftDetail: ctx.openShiftDetail,
+    openGlobalShiftDetail: ctx.openGlobalShiftDetail,
     openVacancyDetail: ctx.openVacancyDetail,
     openUserProfile: ctx.openUserProfile,
     closeOverlay: ctx.closeOverlay,

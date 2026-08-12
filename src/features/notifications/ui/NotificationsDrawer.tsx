@@ -11,6 +11,13 @@ import { ICON_MD_CLASS, ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import { cn } from '@/shared/utils/cn'
 import { APP_EVENTS, onAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { selectSelectedRole } from '@/store/slices/userSlice'
+import { navigateToTab } from '@/store/slices/navigationSlice'
+import { isEmployeeRole } from '@/shared/utils/roles'
+import { setLocalStorageItem } from '@/shared/utils/localStorage'
+import { STORAGE_KEYS } from '@/shared/constants/storage'
+import { FULL_LIST_PER_PAGE, useGetAppliedShiftsQuery } from '@/services/api/shiftsApi'
 import {
   useArchiveNotificationMutation,
   useGetNotificationsQuery,
@@ -19,6 +26,7 @@ import {
   type NotificationItem,
 } from '@/services/api/notificationsApi'
 import { formatRelativeTime, getNotificationIcon } from '../lib/notificationMeta'
+import { getNotificationNavigationTarget } from '../lib/notificationNavigation'
 
 const NotificationRow = memo(function NotificationRow({
   notification,
@@ -98,9 +106,12 @@ const NotificationRow = memo(function NotificationRow({
  */
 export const NotificationsDrawer = memo(function NotificationsDrawer() {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
+  const selectedRole = useAppSelector(selectSelectedRole)
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState(1)
-  const { openShiftDetail } = useDetailOverlay()
+  const { openGlobalShiftDetail } = useDetailOverlay()
+  const isEmployee = selectedRole ? isEmployeeRole(selectedRole) : false
 
   // При каждом открытии начинаем с первой страницы (кэш накапливается в merge).
   useEffect(
@@ -119,6 +130,10 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
       refetchOnMountOrArgChange: true,
     }
   )
+  const { data: appliedShiftsData } = useGetAppliedShiftsQuery(
+    { per_page: FULL_LIST_PER_PAGE },
+    { skip: !open || !isEmployee }
+  )
   const [markRead] = useMarkNotificationReadMutation()
   const [markAllRead, { isLoading: isMarkingAll }] = useMarkAllNotificationsReadMutation()
   const [archive] = useArchiveNotificationMutation()
@@ -127,23 +142,25 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
   const hasUnread = items.some(item => item.status === 'unread')
   const hasNextPage = Boolean(data?.pagination?.next_page)
 
-  // Тап: помечаем прочитанным и открываем связанную смену. Для уведомлений об
-  // откликах (notifiable = ShiftApplication) бэк отдаёт shift_id — открываем
-  // вакансию, где владельцу автоматически видна секция откликов, а сотруднику —
-  // смена, на которую он откликался. Fallback на notifiable_id, когда
-  // уведомление напрямую про Shift.
+  // Тап открывает глобальные детали: обычный feature-overlay здесь не рендерится,
+  // потому что drawer уведомлений живёт вне страницы ленты. Для старых записей без
+  // shift_id восстанавливаем его по application id; последний fallback — «Мои отклики».
   const handleSelect = useCallback(
     (notification: NotificationItem) => {
       if (notification.status === 'unread') void markRead(notification.id)
-      const shiftId =
-        notification.shift_id ??
-        (notification.notifiable_type === 'Shift' ? notification.notifiable_id : null)
-      if (typeof shiftId === 'number') {
+      const target = getNotificationNavigationTarget(notification, appliedShiftsData?.data ?? [])
+      if (target?.type === 'shift') {
         setOpen(false)
-        openShiftDetail(shiftId)
+        openGlobalShiftDetail(target.shiftId)
+        return
+      }
+      if (target?.type === 'applications' && isEmployee) {
+        setOpen(false)
+        setLocalStorageItem(STORAGE_KEYS.NAVIGATE_TO_ACTIVITY_MY_APPLICATIONS, 'true')
+        dispatch(navigateToTab('activity'))
       }
     },
-    [markRead, openShiftDetail]
+    [appliedShiftsData?.data, dispatch, isEmployee, markRead, openGlobalShiftDetail]
   )
   const handleArchive = useCallback((id: number) => void archive(id), [archive])
   const handleMarkAll = useCallback(() => void markAllRead(), [markAllRead])

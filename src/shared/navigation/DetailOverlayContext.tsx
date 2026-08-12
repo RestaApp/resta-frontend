@@ -8,12 +8,18 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
   const deepLinkedRef = useRef(false)
   const [isDeepLinked, setIsDeepLinked] = useState(false)
 
-  const pushOverlay = useCallback((next: DetailOverlay) => {
+  const pushOverlay = useCallback((next: DetailOverlay, renderGlobally = false) => {
     const current = overlayRef.current
-    if (current?.type === next.type && current.id === next.id) return
+    if (current?.type === next.type && current.id === next.id) {
+      if (renderGlobally) {
+        deepLinkedRef.current = true
+        setIsDeepLinked(true)
+      }
+      return
+    }
 
-    deepLinkedRef.current = false
-    setIsDeepLinked(false)
+    deepLinkedRef.current = renderGlobally
+    setIsDeepLinked(renderGlobally)
     overlayRef.current = next
     setOverlayState(next)
     window.history.pushState({ detail: true }, '', buildDetailPath(next))
@@ -33,6 +39,10 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
 
   const openShiftDetail = useCallback(
     (id: number) => pushOverlay({ type: 'shift', id }),
+    [pushOverlay]
+  )
+  const openGlobalShiftDetail = useCallback(
+    (id: number) => pushOverlay({ type: 'shift', id }, true),
     [pushOverlay]
   )
   const openVacancyDetail = useCallback(
@@ -63,6 +73,7 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
         overlay,
         isDeepLinked,
         openShiftDetail,
+        openGlobalShiftDetail,
         openVacancyDetail,
         openUserProfile,
         closeOverlay,
