@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Drawer, DrawerBody, DrawerFrame } from '@/components/ui/drawer'
 import { DrawerTitleBar } from '@/components/ui/drawer-title-bar'
@@ -8,7 +8,7 @@ import { FeedCard } from '@/components/ui/shift-card/ShiftCard'
 import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
 import { mapVacancyToCardShift } from '@/shared/shifts/mapping'
-import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
+import { ShiftDetailOverlay } from '@/shared/ui/shift-details-screen/ShiftDetailOverlay'
 
 interface VenueListingsDrawerProps {
   /** ID заведения, чьи вакансии показываем. */
@@ -31,7 +31,7 @@ export const VenueListingsDrawer = memo(function VenueListingsDrawer({
   onClose,
 }: VenueListingsDrawerProps) {
   const { t } = useTranslation()
-  const { openVacancyDetail } = useDetailOverlay()
+  const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(null)
 
   const { data, isLoading, isError } = useGetVacanciesQuery(
     { shift_type: 'vacancy', user_id: userId, per_page: 100 },
@@ -44,29 +44,47 @@ export const VenueListingsDrawer = memo(function VenueListingsDrawer({
       .map(mapVacancyToCardShift)
   }, [data, userId])
 
-  return (
-    <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()}>
-      <DrawerFrame className="flex-1">
-        <DrawerTitleBar title={venueName || t('profile.venueListings.title')} onClose={onClose} />
+  const handleClose = () => {
+    setSelectedVacancyId(null)
+    onClose()
+  }
 
-        <DrawerBody className="ui-density-stack">
-          {isLoading ? (
-            <FeedCardSkeletonList />
-          ) : isError ? (
-            <ErrorState title={t('errors.loadError')} className="min-h-0 py-10" />
-          ) : cards.length === 0 ? (
-            <p className="py-10 text-center text-sm text-muted-foreground">
-              {t('profile.venueListings.empty')}
-            </p>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {cards.map(shift => (
-                <FeedCard key={shift.id} shift={shift} onOpenDetails={openVacancyDetail} />
-              ))}
-            </div>
-          )}
-        </DrawerBody>
-      </DrawerFrame>
-    </Drawer>
+  return (
+    <>
+      <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
+        <DrawerFrame className="flex-1">
+          <DrawerTitleBar
+            title={venueName || t('profile.venueListings.title')}
+            onClose={handleClose}
+          />
+
+          <DrawerBody className="ui-density-stack">
+            {isLoading ? (
+              <FeedCardSkeletonList />
+            ) : isError ? (
+              <ErrorState title={t('errors.loadError')} className="min-h-0 py-10" />
+            ) : cards.length === 0 ? (
+              <p className="py-10 text-center text-sm text-muted-foreground">
+                {t('profile.venueListings.empty')}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {cards.map(shift => (
+                  <FeedCard key={shift.id} shift={shift} onOpenDetails={setSelectedVacancyId} />
+                ))}
+              </div>
+            )}
+          </DrawerBody>
+        </DrawerFrame>
+      </Drawer>
+
+      {selectedVacancyId !== null ? (
+        <ShiftDetailOverlay
+          id={selectedVacancyId}
+          origin="venue-listings"
+          onClose={() => setSelectedVacancyId(null)}
+        />
+      ) : null}
+    </>
   )
 })

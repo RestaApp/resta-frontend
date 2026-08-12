@@ -42,6 +42,8 @@ interface ShiftDetailsScreenProps {
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
   isLoading?: boolean
   ownerActions?: ShiftDetailsOwnerActions
+  /** Запрещает повторный вход в профиль владельца из вакансии, открытой из его списка. */
+  allowOwnerProfileNavigation?: boolean
 }
 
 export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
@@ -56,6 +58,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     onCancel,
     isLoading = false,
     ownerActions,
+    allowOwnerProfileNavigation = true,
   } = props
 
   const { t } = useTranslation()
@@ -260,7 +263,9 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             ownerRating={vacancyData?.user?.average_rating ?? null}
             ownerReviews={vacancyData?.user?.total_reviews ?? null}
             applicationsCount={vacancyData?.applications_count ?? shift.applicationsCount ?? null}
-            showVenueCard={!controller.isOwner && Boolean(shift.ownerId)}
+            showVenueCard={
+              allowOwnerProfileNavigation && !controller.isOwner && Boolean(shift.ownerId)
+            }
             onOpenOwnerProfile={handleOpenOwnerProfile}
             shiftDate={shift.date}
             shiftTime={shift.time}

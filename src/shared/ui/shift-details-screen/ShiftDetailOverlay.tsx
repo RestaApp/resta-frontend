@@ -1,19 +1,20 @@
-import { useMemo, useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetShiftByIdQuery } from '@/services/api/shiftsApi'
-import { ShiftDetailsScreen } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
-import { DetailsScreenFrame } from '@/shared/ui/shift-details-screen/DetailsScreenFrame'
 import { ShiftDetailsSkeleton } from '@/components/ui/shift-details-skeleton'
 import { ErrorState } from '@/components/ui/states'
 import { vacancyToShift } from '@/shared/shifts/mapping'
 import { useShiftApplication } from '@/shared/shifts/useShiftApplication'
+import { ShiftDetailsScreen } from './ShiftDetailsScreen'
+import { DetailsScreenFrame } from './DetailsScreenFrame'
 
 interface ShiftDetailOverlayProps {
   id: number
   onClose: () => void
+  origin?: 'direct' | 'venue-listings'
 }
 
-export function ShiftDetailOverlay({ id, onClose }: ShiftDetailOverlayProps) {
+export function ShiftDetailOverlay({ id, onClose, origin = 'direct' }: ShiftDetailOverlayProps) {
   const { t } = useTranslation()
   const {
     data: vacancy,
@@ -71,8 +72,6 @@ export function ShiftDetailOverlay({ id, onClose }: ShiftDetailOverlayProps) {
     )
   }
 
-  // Ошибка/удалённая/просроченная смена (частый случай для deep-link) — раньше
-  // здесь был бесконечный скелетон (isError не обрабатывался).
   if (isError || !shift) {
     return (
       <DetailsScreenFrame
@@ -104,6 +103,7 @@ export function ShiftDetailOverlay({ id, onClose }: ShiftDetailOverlayProps) {
       onCancel={handleCancel}
       isApplied={isApplied || hasExistingApplication}
       isLoading={isActionLoading}
+      allowOwnerProfileNavigation={origin !== 'venue-listings'}
     />
   )
 }

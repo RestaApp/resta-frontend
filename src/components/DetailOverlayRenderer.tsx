@@ -3,7 +3,9 @@ import { PageSuspense } from '@/components/ui/PageSuspense'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 
 const ShiftDetailOverlay = lazy(() =>
-  import('./ShiftDetailOverlay').then(m => ({ default: m.ShiftDetailOverlay }))
+  import('@/shared/ui/shift-details-screen/ShiftDetailOverlay').then(m => ({
+    default: m.ShiftDetailOverlay,
+  }))
 )
 const UserProfileOverlay = lazy(() =>
   import('@/shared/ui/user-profile/UserProfileOverlay').then(m => ({

@@ -4,12 +4,17 @@ import { DetailOverlayContext } from './overlayContextHooks'
 
 export function DetailOverlayProvider({ children }: { children: ReactNode }) {
   const [overlay, setOverlayState] = useState<DetailOverlay | null>(null)
+  const overlayRef = useRef<DetailOverlay | null>(null)
   const deepLinkedRef = useRef(false)
   const [isDeepLinked, setIsDeepLinked] = useState(false)
 
   const pushOverlay = useCallback((next: DetailOverlay) => {
+    const current = overlayRef.current
+    if (current?.type === next.type && current.id === next.id) return
+
     deepLinkedRef.current = false
     setIsDeepLinked(false)
+    overlayRef.current = next
     setOverlayState(next)
     window.history.pushState({ detail: true }, '', buildDetailPath(next))
   }, [])
@@ -22,6 +27,7 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
       deepLinkedRef.current = false
       setIsDeepLinked(false)
     }
+    overlayRef.current = next
     setOverlayState(next)
   }, [])
 
@@ -46,6 +52,7 @@ export function DetailOverlayProvider({ children }: { children: ReactNode }) {
   const replaceOverlayWithPath = useCallback((path: string) => {
     deepLinkedRef.current = false
     setIsDeepLinked(false)
+    overlayRef.current = null
     setOverlayState(null)
     window.history.replaceState(null, '', path)
   }, [])
