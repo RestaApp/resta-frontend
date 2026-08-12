@@ -4,7 +4,14 @@ import { useApplyToShiftMutation, useCancelApplicationMutation } from '@/service
 import { useToast } from '@/shared/lib/hooks/useToast'
 import { normalizeApiError } from '@/shared/utils/apiErrors'
 
-export const useShiftApplication = () => {
+interface UseShiftApplicationOptions {
+  /** Отключается в flow, где успешный отклик уже подтверждается отдельным экраном. */
+  showApplySuccessToast?: boolean
+}
+
+export const useShiftApplication = ({
+  showApplySuccessToast = true,
+}: UseShiftApplicationOptions = {}) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const [applyToShift, { isLoading: isApplying }] = useApplyToShiftMutation()
@@ -18,7 +25,9 @@ export const useShiftApplication = () => {
           data: message ? { message } : undefined,
         }).unwrap()
 
-        showToast(result.message ?? t('feed.applicationSentSuccess'), 'success')
+        if (showApplySuccessToast) {
+          showToast(result.message ?? t('feed.applicationSentSuccess'), 'success')
+        }
         return result
       } catch (e) {
         const err = normalizeApiError(e, t('errors.applyError'), t)
@@ -26,7 +35,7 @@ export const useShiftApplication = () => {
         throw err
       }
     },
-    [applyToShift, showToast, t]
+    [applyToShift, showApplySuccessToast, showToast, t]
   )
 
   const cancel = useCallback(

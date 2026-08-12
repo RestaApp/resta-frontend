@@ -34,7 +34,7 @@ export const useStaffApplicationActions = () => {
         if (isShiftClosedError) {
           showToast(
             t('venueUi.staff.acceptClosedError', {
-              defaultValue: 'Смена уже закрыта для принятия откликов',
+              defaultValue: 'Предложение уже закрыто для принятия откликов',
             }),
             'warning'
           )

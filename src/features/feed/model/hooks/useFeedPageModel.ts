@@ -123,7 +123,7 @@ export const useFeedPageModel = () => {
         showSuccess({
           title: t('shift.deleted'),
           description: t('shift.deletedDescription', {
-            defaultValue: 'Смена удалена и больше не показывается соискателям.',
+            defaultValue: 'Объявление удалено и больше не показывается соискателям.',
           }),
           icon: Trash2,
         })

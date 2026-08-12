@@ -235,7 +235,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
             >
               {isLoading
                 ? t('shift.sending')
-                : t('shift.applyForThisShift', { defaultValue: 'Откликнуться на смену' })}
+                : t('shift.applyForThisShift', { defaultValue: 'Откликнуться' })}
             </Button>
           )}
         </div>

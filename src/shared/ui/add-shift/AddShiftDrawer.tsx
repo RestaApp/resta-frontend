@@ -196,10 +196,10 @@ const AddShiftDrawerKeyed = ({
   const successCopy = useMemo(
     () => ({
       title: initialValues?.id
-        ? t('shift.updated', { defaultValue: 'Смена обновлена' })
-        : t('shift.created', { defaultValue: 'Смена создана' }),
+        ? t('shift.updated', { defaultValue: 'Объявление обновлено' })
+        : t('shift.created', { defaultValue: 'Объявление создано' }),
       description: t('shift.createdConfirmation', {
-        defaultValue: 'Теперь она появится в «Мои смены».',
+        defaultValue: 'Оно появилось в разделе «Активность».',
       }),
     }),
     [initialValues?.id, t]

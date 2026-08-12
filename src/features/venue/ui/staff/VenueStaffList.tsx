@@ -89,7 +89,7 @@ export const VenueStaffList = ({
                     )}
                     aria-label={t('venueUi.staff.openShiftDetailsAria', {
                       title: group.shiftTitle,
-                      defaultValue: `Открыть детали смены «${group.shiftTitle}»`,
+                      defaultValue: `Открыть детали предложения «${group.shiftTitle}»`,
                     })}
                   >
                     {group.shiftTitle}

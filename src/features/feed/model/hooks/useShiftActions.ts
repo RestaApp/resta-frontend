@@ -16,7 +16,7 @@ export const useShiftActions = (): UseShiftActionsReturn => {
   const { appliedShiftsSet, appliedApplicationsMap, appliedStatusMap, getApplicationId } =
     useAppliedShifts()
 
-  const { apply, cancel } = useShiftApplication()
+  const { apply, cancel } = useShiftApplication({ showApplySuccessToast: false })
 
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set())
 

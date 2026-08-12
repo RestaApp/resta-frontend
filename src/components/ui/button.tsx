@@ -30,7 +30,7 @@ const VARIANT_CLASSES = {
     'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
   /** Alias to `destructive` for spec naming alignment. */
   danger: 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20',
-  /** Success — зелёный solid CTA (например, «Нанять на смену»). */
+  /** Success — зелёный solid CTA (например, «Принять»). */
   success:
     'bg-success text-success-foreground hover:bg-success/90 active:bg-success/80 shadow-[var(--shadow-success-cta)]',
   /** Telegram Stars — золотой gradient (для платных шагов и paywall CTA). */
