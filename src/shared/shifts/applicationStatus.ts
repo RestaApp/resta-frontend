@@ -7,6 +7,10 @@ export type ApplicationStatus = 'pending' | 'accepted' | 'rejected'
 export const normalizeApplicationStatus = (status: string | null | undefined): ApplicationStatus =>
   status === 'accepted' ? 'accepted' : status === 'rejected' ? 'rejected' : 'pending'
 
+/** Только pending/accepted блокируют повторный отклик; rejected можно подать заново. */
+export const isActiveApplicationStatus = (status: string | null | undefined): boolean =>
+  normalizeApplicationStatus(status) !== 'rejected'
+
 type StatusFields = Pick<ApplicationPreviewApiItem, 'shift_application_status' | 'status'>
 type IdFields = Pick<ApplicationPreviewApiItem, 'shift_application_id' | 'id'>
 

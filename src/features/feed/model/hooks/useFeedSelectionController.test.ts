@@ -79,13 +79,23 @@ describe('useFeedSelectionController', () => {
     expect(result.current.selectedShift?.applicationStatus).toBe('rejected')
   })
 
-  it('getApplicationStatus предпочитает appliedStatusMap (свежий getAppliedShifts) устаревшей ленте', () => {
+  it('подставляет свежий rejected в детали, сохраняя название и заведение', () => {
     // Лента (накопительная) отдаёт устаревший 'pending', но getAppliedShifts уже
-    // знает про 'accepted' — приоритет за свежим источником.
+    // знает про 'rejected' — приоритет за свежим источником.
     const { result } = renderController(makeShift('pending'), makeVacancy('pending'), {
-      42: 'accepted',
+      42: 'rejected',
     })
 
-    expect(result.current.getApplicationStatus(42)).toBe('accepted')
+    expect(result.current.getApplicationStatus(42)).toBe('rejected')
+    expect(result.current.selectedShift).toMatchObject({
+      applicationStatus: 'rejected',
+      title: 'Повар тестовый',
+      restaurant: 'Тест',
+    })
+    expect(result.current.selectedVacancy).toMatchObject({
+      title: 'Повар тестовый',
+      user: { name: 'Тест' },
+      my_application: { id: 7, status: 'rejected' },
+    })
   })
 })

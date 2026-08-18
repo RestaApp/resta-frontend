@@ -4,6 +4,7 @@ import { selectUserData } from '@/store/slices/userSlice'
 import { useAppSelector } from '@/store/hooks'
 import { mapRoleFromApi } from '@/shared/utils/roles'
 import type { VacanciesResponse } from '@/services/api/shiftsApi'
+import { isActiveApplicationStatus } from '@/shared/shifts/applicationStatus'
 
 export interface UseAppliedShiftsReturn {
   appliedShifts: number[]
@@ -38,7 +39,13 @@ export const useAppliedShifts = (): UseAppliedShiftsReturn => {
     return resp?.data ?? []
   }, [data])
 
-  const appliedShifts = useMemo(() => serverItems.map(vacancy => vacancy.id), [serverItems])
+  const appliedShifts = useMemo(
+    () =>
+      serverItems
+        .filter(vacancy => isActiveApplicationStatus(vacancy.my_application?.status))
+        .map(vacancy => vacancy.id),
+    [serverItems]
+  )
 
   const appliedShiftsSet = useMemo(() => new Set(appliedShifts), [appliedShifts])
 
