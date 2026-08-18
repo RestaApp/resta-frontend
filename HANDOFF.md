@@ -77,6 +77,10 @@ POST /api/v1/shift_applications/:id/accept
 
 POST /api/v1/shift_applications/:id/reject
   effect:  application.status = 'rejected'
+
+POST /api/v1/shift_applications после rejected
+  effect:  существующая application возвращается в 'pending',
+           сохраняет id, обновляет message/applied_at, очищает responded_at
 ```
 
 **Статус:** мутации `acceptApplication` / `rejectApplication` уже в [`shiftsApi.ts`](src/services/api/shiftsApi.ts), смена статуса работает. После `accepted` политика `UserPolicy#show_contacts?` уже разрешает повторно получить профиль сотрудника с контактами. 🟡 **Желательное улучшение:** `accept` сейчас возвращает только `{ message }`; поле `contact` позволит показать контакты сразу, без дополнительного запроса профиля.

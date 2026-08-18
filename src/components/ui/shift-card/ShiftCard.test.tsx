@@ -33,4 +33,17 @@ describe('FeedCard', () => {
 
     expect(screen.getByText(/Ресторан Элит/)).toBeInTheDocument()
   })
+
+  it('сохраняет название вакансии и заведения после отклонения', () => {
+    render(
+      <FeedCard
+        shift={{ ...shift, applicationId: 17, applicationStatus: 'rejected' }}
+        onOpenDetails={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText('Нужен повар')).toBeInTheDocument()
+    expect(screen.getByText(/Ресторан Элит/)).toBeInTheDocument()
+    expect(screen.getByText(/Отклонена/i)).toBeInTheDocument()
+  })
 })

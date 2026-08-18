@@ -218,7 +218,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     ) : null
 
   const applicantFooter =
-    !controller.isOwner && !controller.isAccepted && !controller.isRejected ? (
+    !controller.isOwner && !controller.isAccepted ? (
       <DrawerFooter className="pb-3">
         <div className="flex gap-4">
           {isApplied ? (
