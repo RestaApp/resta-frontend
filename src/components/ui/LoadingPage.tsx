@@ -26,10 +26,10 @@ export const LoadingPage = memo(function LoadingPage() {
         }
         className={cn(
           'absolute inset-0 -z-10 will-change-transform',
-          reduceVisualEffects ? 'opacity-70' : 'blur-3xl'
+          reduceVisualEffects ? 'opacity-40' : 'blur-3xl'
         )}
         style={{
-          backgroundImage: 'var(--gradient-primary-glow)',
+          background: `color-mix(in srgb, ${roleColorVar} 55%, transparent)`,
         }}
         data-slot="loading-logo-glow"
       />
@@ -77,8 +77,8 @@ export const LoadingPage = memo(function LoadingPage() {
           transition={
             reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className="absolute -left-1/2 -top-1/2 h-full w-full will-change-transform"
-          style={{ backgroundImage: 'var(--gradient-primary-glow)' }}
+          className="absolute -left-1/2 -top-1/2 h-full w-full blur-3xl will-change-transform"
+          style={{ background: 'var(--gradient-primary)' }}
           aria-hidden="true"
           data-slot="loading-primary-ambient"
         />
@@ -91,8 +91,10 @@ export const LoadingPage = memo(function LoadingPage() {
           transition={
             reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
           }
-          className="absolute -bottom-1/2 -right-1/2 h-full w-full will-change-transform"
-          style={{ backgroundImage: 'var(--gradient-warm-glow)' }}
+          className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl will-change-transform"
+          style={{
+            background: 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
+          }}
           aria-hidden="true"
           data-slot="loading-warm-ambient"
         />
