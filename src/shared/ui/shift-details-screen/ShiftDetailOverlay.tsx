@@ -7,6 +7,7 @@ import { vacancyToShift } from '@/shared/shifts/mapping'
 import { useShiftApplication } from '@/shared/shifts/useShiftApplication'
 import { ShiftDetailsScreen } from './ShiftDetailsScreen'
 import { DetailsScreenFrame } from './DetailsScreenFrame'
+import { isActiveApplicationStatus } from '@/shared/shifts/applicationStatus'
 
 interface ShiftDetailOverlayProps {
   id: number
@@ -29,7 +30,9 @@ export function ShiftDetailOverlay({ id, onClose, origin = 'direct' }: ShiftDeta
   const shift = useMemo(() => (vacancy ? vacancyToShift(vacancy) : null), [vacancy])
 
   const applicationId = vacancy?.my_application?.id ?? null
-  const hasExistingApplication = Boolean(vacancy?.my_application)
+  const hasActiveApplication = Boolean(
+    vacancy?.my_application && isActiveApplicationStatus(vacancy.my_application.status)
+  )
 
   const handleApply = useCallback(
     async (shiftId: number, message?: string) => {
@@ -101,7 +104,7 @@ export function ShiftDetailOverlay({ id, onClose, origin = 'direct' }: ShiftDeta
       onClose={onClose}
       onApply={handleApply}
       onCancel={handleCancel}
-      isApplied={isApplied || hasExistingApplication}
+      isApplied={isApplied || hasActiveApplication}
       isLoading={isActionLoading}
       allowOwnerProfileNavigation={origin !== 'venue-listings'}
     />

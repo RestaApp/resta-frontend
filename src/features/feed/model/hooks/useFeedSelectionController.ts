@@ -46,20 +46,38 @@ export const useFeedSelectionController = ({
   const resolveVacancy = useCallback(
     (id: number | null) => {
       if (!id) return null
-      return activeList.vacanciesMap.get(id) || hotVacanciesById.get(id) || null
+      const vacancy = activeList.vacanciesMap.get(id) || hotVacanciesById.get(id) || null
+      const applicationStatus = appliedStatusMap[id]
+      const applicationId = appliedApplicationsMap[id]
+      if (!vacancy || !applicationStatus || !applicationId) return vacancy
+
+      return {
+        ...vacancy,
+        my_application: {
+          ...vacancy.my_application,
+          id: applicationId,
+          status: applicationStatus,
+        },
+      }
     },
-    [activeList.vacanciesMap, hotVacanciesById]
+    [activeList.vacanciesMap, appliedApplicationsMap, appliedStatusMap, hotVacanciesById]
   )
 
   const resolveShift = useCallback(
     (id: number | null) => {
       if (!id) return null
       const fromItems = shiftsById.get(id)
-      if (fromItems) return fromItems
+      if (fromItems) {
+        return {
+          ...fromItems,
+          applicationId: appliedApplicationsMap[id] ?? fromItems.applicationId,
+          applicationStatus: appliedStatusMap[id] ?? fromItems.applicationStatus,
+        }
+      }
       const vacancy = resolveVacancy(id)
       return vacancy ? vacancyToShift(vacancy) : null
     },
-    [resolveVacancy, shiftsById]
+    [appliedApplicationsMap, appliedStatusMap, resolveVacancy, shiftsById]
   )
 
   const selectedVacancy = useMemo(

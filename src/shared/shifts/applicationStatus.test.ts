@@ -3,6 +3,7 @@ import {
   normalizeApplicationStatus,
   getApplicationStatus,
   getApplicationId,
+  isActiveApplicationStatus,
 } from './applicationStatus'
 
 describe('normalizeApplicationStatus', () => {
@@ -15,6 +16,14 @@ describe('normalizeApplicationStatus', () => {
     expect(normalizeApplicationStatus('processing')).toBe('pending')
     expect(normalizeApplicationStatus(null)).toBe('pending')
     expect(normalizeApplicationStatus(undefined)).toBe('pending')
+  })
+})
+
+describe('isActiveApplicationStatus', () => {
+  it('разрешает повторный отклик только после rejected', () => {
+    expect(isActiveApplicationStatus('pending')).toBe(true)
+    expect(isActiveApplicationStatus('accepted')).toBe(true)
+    expect(isActiveApplicationStatus('rejected')).toBe(false)
   })
 })
 

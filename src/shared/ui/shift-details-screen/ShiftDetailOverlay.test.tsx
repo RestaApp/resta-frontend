@@ -4,7 +4,7 @@ import { ShiftDetailOverlay } from './ShiftDetailOverlay'
 
 vi.mock('@/services/api/shiftsApi', () => ({
   useGetShiftByIdQuery: () => ({
-    data: { my_application: null },
+    data: { my_application: { id: 7, status: 'rejected' } },
     isLoading: false,
     isError: false,
     refetch: vi.fn(),
@@ -22,12 +22,17 @@ vi.mock('@/shared/shifts/useShiftApplication', () => ({
 vi.mock('./ShiftDetailsScreen', () => ({
   ShiftDetailsScreen: ({
     allowOwnerProfileNavigation,
+    isApplied,
   }: {
     allowOwnerProfileNavigation?: boolean
+    isApplied: boolean
   }) => (
-    <div data-testid="owner-profile-navigation">
-      {allowOwnerProfileNavigation ? 'enabled' : 'disabled'}
-    </div>
+    <>
+      <div data-testid="owner-profile-navigation">
+        {allowOwnerProfileNavigation ? 'enabled' : 'disabled'}
+      </div>
+      <div data-testid="is-applied">{isApplied ? 'active' : 'inactive'}</div>
+    </>
   ),
 }))
 
@@ -42,5 +47,11 @@ describe('ShiftDetailOverlay', () => {
     render(<ShiftDetailOverlay id={42} onClose={vi.fn()} />)
 
     expect(screen.getByTestId('owner-profile-navigation')).toHaveTextContent('enabled')
+  })
+
+  it('не считает rejected активным откликом', () => {
+    render(<ShiftDetailOverlay id={42} onClose={vi.fn()} />)
+
+    expect(screen.getByTestId('is-applied')).toHaveTextContent('inactive')
   })
 })
