@@ -22,7 +22,7 @@ export default defineConfig({
 
   // dev‑server поднимается перед запуском (если не запущен снаружи).
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -- --port 5173 --strictPort',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

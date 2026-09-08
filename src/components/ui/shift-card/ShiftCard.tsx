@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react'
 import type { KeyboardEvent } from 'react'
-import { AlertTriangle, Clock, Eye, Flame, MapPin, User } from 'lucide-react'
+import { Clock, Eye, Flame, MapPin, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ICON_SM_CLASS } from '@/shared/constants/role-icons'
 import type { Shift } from '@/shared/shifts/types'
@@ -27,7 +27,6 @@ import { normalizeApplicationStatus } from '@/shared/shifts/applicationStatus'
 import { formatDistanceKm, stripVacancyPrefix, positionInitial } from './shift-card-utils'
 import { OwnerShiftStatusBadge } from './OwnerShiftStatusBadge'
 import { ShiftCardPriceBlock } from './ShiftCardPriceBlock'
-import { ShiftCardMetaLine } from './ShiftCardMetaLine'
 
 const formatCompactDate = (date?: string | null): string => {
   if (!date) return ''
@@ -275,11 +274,6 @@ const ShiftCardComponent = ({ shift, onOpenDetails }: ShiftCardProps) => {
           <MapPin className={ICON_SM_CLASS} aria-hidden />
           {locationMeta}
         </span>
-      ) : null}
-      {isOwner && shift.showStaleAlert ? (
-        <ShiftCardMetaLine icon={AlertTriangle} className="text-destructive">
-          {t('shift.noApplicationsStale')}
-        </ShiftCardMetaLine>
       ) : null}
     </div>
   )

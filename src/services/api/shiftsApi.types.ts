@@ -166,6 +166,7 @@ export interface ApplicantUserApi {
   average_rating?: string | number
   total_reviews?: number
   completed_shifts?: number
+  completed_shifts_count?: number
   employee_profile?: EmployeeProfilePreviewApi | null
 }
 

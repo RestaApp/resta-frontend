@@ -7,6 +7,7 @@ import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { useDetailOverlay } from '@/shared/navigation/overlayContextHooks'
 import { normalizeApplicationStatus } from '@/shared/shifts/applicationStatus'
+import { canModerateListingStatus } from '@/shared/shifts/applicationModeration'
 import { findStaffItem } from './staffApplicationUtils'
 import type { StaffItem } from './VenueStaffList'
 
@@ -77,7 +78,7 @@ export const useStaffApplicantOverlays = ({
   }, [clearSelectedApplicant, closeOverlay])
 
   const handleDrawerAccept = useCallback(async () => {
-    if (!selectedItem) return
+    if (!selectedItem || selectedItem.shiftStatus !== 'open') return
 
     try {
       setModeratingAction('accept')
@@ -89,7 +90,7 @@ export const useStaffApplicantOverlays = ({
   }, [handleAccept, handleCloseApplicantDetails, selectedItem])
 
   const handleDrawerReject = useCallback(async () => {
-    if (!selectedItem) return
+    if (!selectedItem || !canModerateListingStatus(selectedItem.shiftStatus)) return
 
     try {
       setModeratingAction('reject')
@@ -164,7 +165,10 @@ export const useStaffApplicantOverlays = ({
     selectedApplicantApplicationId,
     isApplicantProfileOpen,
     selectedApplicantStatus,
-    canModerateSelectedApplicant: selectedItem?.applicationStatus !== 'rejected',
+    canModerateSelectedApplicant:
+      canModerateListingStatus(selectedItem?.shiftStatus) &&
+      ((selectedApplicantStatus === 'pending' && selectedItem?.shiftStatus === 'open') ||
+        selectedApplicantStatus === 'accepted'),
     moderatingAction,
     handleCloseApplicantDetails,
     handleDrawerAccept,

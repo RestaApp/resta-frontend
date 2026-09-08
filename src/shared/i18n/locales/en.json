@@ -619,7 +619,7 @@
     "statusOpen": "OPEN",
     "statusFilled": "CANDIDATE SELECTED",
     "statusClosed": "CLOSED",
-    "noApplicationsStale": "No applications – for more than 3 hours",
+    "autoCloseHint": "After the scheduled end time, the replacement shift will close automatically. A shift with an accepted candidate is marked completed; a shift without one is cancelled. Status updates may take some time.",
     "ownerReviewsSummary": "{{rating}} ({{count}} reviews)",
     "venueCompletedShifts_one": "{{count}} completed shift",
     "venueCompletedShifts_other": "{{count}} completed shifts",
@@ -926,8 +926,8 @@
         "venue": {
           "subtitle": "Candidates can contact your manager",
           "phoneHint": "This number will be visible to candidates after you hire them.",
-          "shieldTitle": "First shift is free.",
-          "shieldText": "No verification. No deposit. Publish in 60 seconds."
+          "shieldTitle": "Find staff for your venue.",
+          "shieldText": "Complete your profile, publish a vacancy or replacement shift, and review applications."
         },
         "supplier": {
           "subtitle": "Venues can contact your representative after viewing the profile",

@@ -12,6 +12,7 @@ export interface ReviewUser {
   name?: string
   full_name?: string
   role?: string
+  photo_url?: string | null
   profile_photo_url?: string | null
 }
 

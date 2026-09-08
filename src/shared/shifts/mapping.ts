@@ -11,7 +11,7 @@ import { toLocationArray } from '@/shared/utils/location'
 import { toLocalISODateKey } from '@/shared/utils/datetime'
 import i18n from '@/shared/i18n/config'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
-import { getOwnerShiftListingStatus, shouldShowStaleApplicationsAlert } from './ownerShiftDisplay'
+import { getOwnerShiftListingStatus } from './ownerShiftDisplay'
 import { toFiniteNumber as toNumber } from '@/shared/utils/number'
 
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {
@@ -165,7 +165,6 @@ const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     city: getCityFromUser(item) ?? null,
     listingStatus: getOwnerShiftListingStatus(item),
     viewsCount: item.views_count,
-    showStaleAlert: shouldShowStaleApplicationsAlert(item),
   }
 }
 

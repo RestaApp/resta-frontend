@@ -39,25 +39,6 @@ export function VenueStaffPage() {
     [catalog, staff]
   )
 
-  if (catalog.isError) {
-    return (
-      <>
-        <StaffPageHeader
-          pendingApplicationsCount={staff.pendingApplicationsCount}
-          onOpenFilters={catalog.handleOpenFilters}
-          onOpenApplications={() => staff.setIsApplicationsOpen(true)}
-        />
-        <ErrorState
-          title={t('venueUi.staff.catalog.loadError', {
-            defaultValue: 'Не удалось загрузить сотрудников',
-          })}
-          onRetry={() => void catalog.refetch()}
-          retryLabel={t('common.retry', { defaultValue: 'Повторить' })}
-        />
-      </>
-    )
-  }
-
   return (
     <>
       <StaffPageHeader
@@ -66,28 +47,36 @@ export function VenueStaffPage() {
         onOpenApplications={() => staff.setIsApplicationsOpen(true)}
       />
 
-      <EmployeeCatalogList
-        activeFilters={catalog.activeFilters}
-        onResetFilters={catalog.handleResetFilters}
-        onRemoveFilter={catalog.handleRemoveFilter}
-        isLoading={catalog.isLoading}
-        isFetching={catalog.isFetching}
-        employees={catalog.employees}
-        hasMore={catalog.hasMore}
-        onLoadMore={catalog.handleLoadMore}
-        getEmployeePositionLabel={catalog.getEmployeePositionLabel}
-        getSpecializationLabel={catalog.getSpecializationLabel}
-        onOpenProfile={handleOpenCatalogProfile}
-        onInvite={catalog.handleOpenInvite}
-        onRefresh={handleRefresh}
-        refreshDisabled={
-          catalog.isLoading ||
-          staff.isApplicationsLoading ||
-          staff.isAccepting ||
-          staff.isRejecting ||
-          staff.moderatingAction != null
-        }
-      />
+      {catalog.isError ? (
+        <ErrorState
+          title={t('venueUi.staff.catalog.loadError')}
+          onRetry={() => void catalog.refetch()}
+          retryLabel={t('common.retry')}
+        />
+      ) : (
+        <EmployeeCatalogList
+          activeFilters={catalog.activeFilters}
+          onResetFilters={catalog.handleResetFilters}
+          onRemoveFilter={catalog.handleRemoveFilter}
+          isLoading={catalog.isLoading}
+          isFetching={catalog.isFetching}
+          employees={catalog.employees}
+          hasMore={catalog.hasMore}
+          onLoadMore={catalog.handleLoadMore}
+          getEmployeePositionLabel={catalog.getEmployeePositionLabel}
+          getSpecializationLabel={catalog.getSpecializationLabel}
+          onOpenProfile={handleOpenCatalogProfile}
+          onInvite={catalog.handleOpenInvite}
+          onRefresh={handleRefresh}
+          refreshDisabled={
+            catalog.isLoading ||
+            staff.isApplicationsLoading ||
+            staff.isAccepting ||
+            staff.isRejecting ||
+            staff.moderatingAction != null
+          }
+        />
+      )}
 
       <StaffApplicationsDrawer
         open={staff.isApplicationsOpen}

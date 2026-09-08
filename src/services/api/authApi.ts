@@ -82,11 +82,14 @@ export interface UserData {
   photo_url: string | null
   /** Не входит в UserBlueprint для списков */
   profile_complete?: boolean
-  profile_photo_url: string | null
+  /** Legacy response alias; current UserBlueprint uses photo_url. */
+  profile_photo_url?: string | null
   role: string
   /** Контактный PII — см. комментарий к `email`. Отсутствует вне view :contact. */
   telegram_id?: number
   total_reviews: number
+  /** Server total across completed replacement shifts, not just the loaded page. */
+  completed_shifts_count?: number
   updated_at?: string
   username: string
   website: string | null

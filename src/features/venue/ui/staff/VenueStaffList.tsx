@@ -7,16 +7,19 @@ import { SUBSECTION_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { ApplicantsTab } from '@/shared/ui/shift-details-screen/ApplicantsTab'
 import { useLabels } from '@/shared/i18n/hooks'
 import { cn } from '@/shared/utils/cn'
+import { canModerateListingStatus } from '@/shared/shifts/applicationModeration'
 
 export interface StaffItem {
   shiftId: number
   shiftTitle: string
   applicationId: number
   applicationStatus: string
+  shiftStatus?: string
   person: ApplicationPreviewApiItem
 }
 
 interface ShiftApplicantsGroup {
+  shiftStatus?: string
   shiftId: number
   shiftTitle: string
   applications: ApplicationPreviewApiItem[]
@@ -57,6 +60,7 @@ export const VenueStaffList = ({
       map.set(item.shiftId, {
         shiftId: item.shiftId,
         shiftTitle: item.shiftTitle,
+        shiftStatus: item.shiftStatus,
         applications: [item.person],
       })
     }
@@ -108,7 +112,11 @@ export const VenueStaffList = ({
                 }
                 t={t}
                 variant="moderation"
-                onAcceptApplicant={applicationId => onAccept(applicationId, group.shiftId)}
+                onAcceptApplicant={
+                  canModerateListingStatus(group.shiftStatus) && group.shiftStatus === 'open'
+                    ? applicationId => onAccept(applicationId, group.shiftId)
+                    : undefined
+                }
                 isAccepting={isAccepting}
                 acceptingApplicationId={acceptingApplicationId}
               />

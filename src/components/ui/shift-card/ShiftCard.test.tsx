@@ -22,6 +22,16 @@ const shift: Shift = {
 }
 
 describe('FeedCard', () => {
+  it('не показывает предупреждение об отсутствии откликов даже со старым флагом в данных', () => {
+    const legacyShift = { ...shift, isMine: true, applicationsCount: 0, showStaleAlert: true }
+    render(<FeedCard shift={legacyShift} onOpenDetails={vi.fn()} />)
+
+    expect(
+      screen.queryByText(/нет откликов|no applications|noApplicationsStale/i)
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Нужен повар')).toBeInTheDocument()
+  })
+
   it('показывает заведение, когда у смены есть свой заголовок', () => {
     render(<FeedCard shift={shift} onOpenDetails={vi.fn()} />)
 

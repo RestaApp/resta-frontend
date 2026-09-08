@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { ArrowRight, ChevronDown, Plus, UserRound } from 'lucide-react'
 import { useAppDispatch } from '@/store/hooks'
-import { navigateToTab } from '@/store/slices/navigationSlice'
+import { navigateToTab, setStaffApplicationsOpen } from '@/store/slices/navigationSlice'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { KpiRow, type KpiItem } from '@/components/ui/kpi-row'
@@ -40,9 +40,11 @@ const renderInfoValue = (row: ProfileInfoRow) => {
 
   return (
     <InfoRow
+      key={row.id}
       label={row.label}
       href={row.value.href}
       multiline={row.value.multiline}
+      multilineColumns={row.id === 'address' || row.id === 'business-hours'}
       valueClassName={cn(
         row.value.href ? VALUE_LINK_CLASS : VALUE_CLASS,
         row.value.multiline ? FORMATTED_USER_TEXT_CLASS : 'truncate'
@@ -132,6 +134,7 @@ export const VenueProfileOverview = memo(function VenueProfileOverview({
   }, [])
 
   const handleViewApplications = useCallback(() => {
+    dispatch(setStaffApplicationsOpen(true))
     dispatch(navigateToTab('staff'))
   }, [dispatch])
 

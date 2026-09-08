@@ -188,7 +188,8 @@ export const ApplicantPreviewCard = memo(
         ? Math.max(0, Math.floor(Number(rawReviews)))
         : null
 
-    const completedShiftsRaw = app.completed_shifts ?? user?.completed_shifts
+    const completedShiftsRaw =
+      user?.completed_shifts_count ?? app.completed_shifts ?? user?.completed_shifts
     const completedShifts =
       completedShiftsRaw !== undefined &&
       completedShiftsRaw !== null &&

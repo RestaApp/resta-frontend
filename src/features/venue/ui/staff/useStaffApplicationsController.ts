@@ -1,5 +1,9 @@
-import { useState } from 'react'
-import { useAppSelector } from '@/store/hooks'
+import { useCallback } from 'react'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import {
+  selectStaffApplicationsOpen,
+  setStaffApplicationsOpen,
+} from '@/store/slices/navigationSlice'
 import { selectUserData } from '@/store/slices/userSlice'
 import { useStaffApplicationsData } from './useStaffApplicationsData'
 import { useStaffApplicationActions } from './useStaffApplicationActions'
@@ -15,7 +19,14 @@ import { useStaffApplicantOverlays } from './useStaffApplicantOverlays'
 export const useStaffApplicationsController = () => {
   const userData = useAppSelector(selectUserData)
   const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
-  const [isApplicationsOpen, setIsApplicationsOpen] = useState(false)
+  const dispatch = useAppDispatch()
+  const isApplicationsOpen = useAppSelector(selectStaffApplicationsOpen)
+  const setIsApplicationsOpen = useCallback(
+    (open: boolean) => {
+      dispatch(setStaffApplicationsOpen(open))
+    },
+    [dispatch]
+  )
 
   const {
     isApplicationsLoading,

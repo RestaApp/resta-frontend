@@ -57,5 +57,4 @@ export interface Shift {
   /** Статус публикации владельца (activity venue / мои смены). */
   listingStatus?: OwnerShiftListingStatus
   viewsCount?: number
-  showStaleAlert?: boolean
 }

@@ -27,6 +27,7 @@ export const mapStaffApplicationsToItems = (
     list.push({
       shiftId: application.shift_id ?? 0,
       shiftTitle: application.shift_title ?? '',
+      shiftStatus: application.shift_status,
       applicationId,
       applicationStatus: application.shift_application_status ?? application.status ?? 'pending',
       person: application,

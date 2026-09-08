@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCities } from '@/shared/lib/hooks/useCities'
 
@@ -34,6 +34,12 @@ export const useCityAutocomplete = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const clearBlurTimer = useCallback(() => {
+    if (blurTimer.current !== null) clearTimeout(blurTimer.current)
+    blurTimer.current = null
+  }, [])
+  useEffect(() => clearBlurTimer, [clearBlurTimer])
 
   const usesExternalOptions = options != null
   const { cities: fetchedCities, isLoading: isFetchingCities } = useCities({
@@ -115,14 +121,17 @@ export const useCityAutocomplete = ({
 
   const handleInputFocus = useCallback(() => {
     if (disabled) return
+    clearBlurTimer()
     setIsFocused(true)
     setShowSuggestions(true)
     setIsValid(true)
     setErrorMessage(null)
-  }, [disabled])
+  }, [clearBlurTimer, disabled])
 
   const handleInputBlur = useCallback(() => {
-    setTimeout(() => {
+    clearBlurTimer()
+    blurTimer.current = setTimeout(() => {
+      blurTimer.current = null
       setShowSuggestions(false)
       setIsFocused(false)
 
@@ -141,7 +150,7 @@ export const useCityAutocomplete = ({
         setErrorMessage(null)
       }
     }, 200)
-  }, [validateCity, validateOnBlur, value])
+  }, [clearBlurTimer, validateCity, validateOnBlur, value])
 
   const handleCitySelect = useCallback(
     (city: string) => {
@@ -152,8 +161,10 @@ export const useCityAutocomplete = ({
       setIsValid(true)
       setErrorMessage(null)
       inputRef.current?.blur()
+      // A selection is already validated; discard a blur scheduled with the old input.
+      clearBlurTimer()
     },
-    [disabled, onChange]
+    [clearBlurTimer, disabled, onChange]
   )
 
   const handleDropdownClose = useCallback(() => {

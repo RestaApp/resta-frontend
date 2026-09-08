@@ -68,7 +68,7 @@ export const ShiftApplicantsSection = ({
         t={t}
         variant={applicantsVariant}
         onAcceptApplicant={
-          isOwnerLayout
+          isOwnerLayout && moderation.canAccept
             ? applicationId => void moderation.handleAcceptApplication(applicationId)
             : undefined
         }

@@ -29,6 +29,9 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       globals: false,
+      // Fetch mocks still construct Request objects: Node needs an absolute URL.
+      // Keep tests independent of developers' private .env / production endpoints.
+      env: { VITE_API_URL: 'http://localhost:3000' },
       environment: 'jsdom',
       setupFiles: ['./src/test/setup.ts'],
       include: ['src/**/*.{test,spec}.{ts,tsx}'],

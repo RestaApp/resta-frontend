@@ -8,6 +8,7 @@ import {
   SHIFT_CARD_TITLE_CLASS,
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
+import { getUserPhotoUrl } from '@/shared/utils/userFieldNormalizers'
 import { useGetReviewsQuery, type ReviewItem } from '@/services/api/reviewsApi'
 
 const MAX_VISIBLE = 5
@@ -32,7 +33,7 @@ const ReadOnlyStars = memo(function ReadOnlyStars({ rating }: { rating: number }
 const ReviewRow = memo(function ReviewRow({ review }: { review: ReviewItem }) {
   const name = review.reviewer_name || review.reviewer?.full_name || review.reviewer?.name || ''
   const date = review.created_at ? new Date(review.created_at).toLocaleDateString() : ''
-  const photo = review.anonymous ? null : review.reviewer?.profile_photo_url
+  const photo = review.anonymous || !review.reviewer ? null : getUserPhotoUrl(review.reviewer)
 
   return (
     <Card className={cn(SHIFT_CARD_CLASS, 'flex flex-col gap-1.5')}>

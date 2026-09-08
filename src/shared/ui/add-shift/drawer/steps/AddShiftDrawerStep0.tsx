@@ -91,6 +91,7 @@ export const AddShiftDrawerStep0 = ({
               />
             </div>
           </div>
+          <p className="text-sm text-muted-foreground">{t('shift.autoCloseHint')}</p>
         </>
       ) : null}
 

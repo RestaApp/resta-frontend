@@ -16,6 +16,7 @@ interface InfoRowProps {
   valueClassName?: string
   onClick?: () => void
   multiline?: boolean
+  multilineColumns?: boolean
 }
 
 /**
@@ -30,16 +31,32 @@ export const InfoRow = memo(
     valueClassName = VALUE_CLASS,
     onClick,
     multiline = false,
+    multilineColumns = false,
   }: InfoRowProps) => {
     const valueClasses = cn(
       valueClassName,
-      multiline ? 'block min-w-0 whitespace-pre-wrap break-words text-justify' : 'min-w-0 truncate'
+      multiline
+        ? multilineColumns
+          ? 'min-w-0 flex-1 whitespace-pre-wrap break-words text-right'
+          : 'block min-w-0 whitespace-pre-wrap break-words text-justify'
+        : 'min-w-0 truncate'
     )
     const valueTitle = !multiline && typeof children === 'string' ? children : undefined
 
     return (
-      <div className={multiline ? 'flow-root py-2' : ROW_CLASS}>
-        <span className={cn(LABEL_CLASS, multiline && 'relative top-1 float-left mr-2')}>
+      <div
+        className={
+          multiline && !multilineColumns
+            ? 'flow-root py-2'
+            : cn(ROW_CLASS, multiline && 'items-start')
+        }
+      >
+        <span
+          className={cn(
+            LABEL_CLASS,
+            multiline && !multilineColumns && 'relative top-1 float-left mr-2'
+          )}
+        >
           {label}
         </span>
         {href ? (

@@ -9,6 +9,7 @@ import { useToast } from '@/shared/lib/hooks/useToast'
 import type { KnownShiftStatus } from '@/shared/shifts/types'
 import { normalizeApiError } from '@/shared/utils/apiErrors'
 import { getApplicationsPreview } from '@/shared/shifts/applicationsPreview'
+import { canModerateListing } from '@/shared/shifts/applicationModeration'
 
 interface UseShiftApplicantsModerationParams {
   shiftId?: number
@@ -62,12 +63,16 @@ export const useShiftApplicantsModeration = ({
   )
   const selectedAppStatus =
     selectedApp?.shift_application_status ?? selectedApp?.status ?? 'pending'
+  const canModerate = canModerateListing(vacancyData)
+  const canAccept = canModerate && vacancyData?.status === 'open'
   const canModerateSelected =
+    canModerate &&
     typeof selectedApplicantApplicationId === 'number' &&
-    (selectedAppStatus === 'pending' || selectedAppStatus === 'accepted')
+    ((selectedAppStatus === 'pending' && canAccept) || selectedAppStatus === 'accepted')
 
   const handleAcceptApplication = useCallback(
     async (id: number) => {
+      if (!canAccept) return
       try {
         setModerating({ id, action: 'accept' })
         const result = await acceptApplication({
@@ -84,11 +89,12 @@ export const useShiftApplicantsModeration = ({
         setModerating(null)
       }
     },
-    [acceptApplication, shiftId, showToast, t]
+    [acceptApplication, canAccept, shiftId, showToast, t]
   )
 
   const handleRejectApplication = useCallback(
     async (id: number) => {
+      if (!canModerate) return
       try {
         setModerating({ id, action: 'reject' })
         const result = await rejectApplication({
@@ -105,7 +111,7 @@ export const useShiftApplicantsModeration = ({
         setModerating(null)
       }
     },
-    [rejectApplication, shiftId, showToast, t]
+    [rejectApplication, canModerate, shiftId, showToast, t]
   )
 
   const closeApplicantProfile = useCallback(() => {
@@ -121,6 +127,7 @@ export const useShiftApplicantsModeration = ({
     selectedApplicantApplicationId,
     selectedAppStatus,
     canModerateSelected,
+    canAccept,
     setSelectedApplicantId,
     setSelectedApplicantApplicationId,
     handleAcceptApplication,

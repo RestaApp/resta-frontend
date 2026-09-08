@@ -4,8 +4,6 @@ import { parseApiDateTime, stripVacancyPrefix } from '@/shared/shifts/formatting
 import { isExpiredOwnerListing } from '@/shared/shifts/mapping'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
-const STALE_APPLICATIONS_HOURS = 3
-
 const OWNER_CLOSED_STATUSES = new Set(['completed', 'cancelled', 'canceled', 'closed'])
 
 export type OwnerShiftListingStatus = 'open' | 'filled' | 'urgent' | 'closed'
@@ -73,18 +71,4 @@ export const isEditableOwnerListing = (vacancy: VacancyApiItem): boolean => {
 export const isOpenForVenueKpi = (vacancy: VacancyApiItem): boolean => {
   const status = getOwnerShiftListingStatus(vacancy)
   return status === 'open' || status === 'urgent'
-}
-
-export const shouldShowStaleApplicationsAlert = (vacancy: VacancyApiItem): boolean => {
-  const listingStatus = getOwnerShiftListingStatus(vacancy)
-  if (listingStatus === 'closed' || listingStatus === 'filled') return false
-
-  const count = vacancy.applications_count ?? 0
-  if (count > 0) return false
-
-  const createdAt = parseApiDateTime(vacancy.created_at)
-  if (!createdAt) return false
-
-  const hoursSinceCreated = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60)
-  return hoursSinceCreated >= STALE_APPLICATIONS_HOURS
 }

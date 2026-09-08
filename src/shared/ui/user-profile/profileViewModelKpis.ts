@@ -43,7 +43,7 @@ export const buildKpis = ({
   if (apiRole === 'employee') {
     items.push({
       id: 'shifts',
-      value: completedShifts,
+      value: userProfile.completed_shifts_count ?? completedShifts,
       label: t('profile.kpi.shifts'),
     })
   }

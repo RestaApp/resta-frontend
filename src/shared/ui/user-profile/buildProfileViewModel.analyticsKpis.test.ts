@@ -29,6 +29,17 @@ const baseParams = {
 }
 
 describe('buildProfileViewModel — analyticsKpis', () => {
+  it.each([0, 12])(
+    'prefers the server completed shift total (%s) to a partial local list',
+    count => {
+      const vm = buildProfileViewModel({
+        ...baseParams,
+        userProfile: { ...userProfile, completed_shifts_count: count },
+        completedShifts: 3,
+      })
+      expect(vm.kpis.find(kpi => kpi.id === 'shifts')?.value).toBe(count)
+    }
+  )
   it('пусто, когда метрики analytics/my не переданы', () => {
     const vm = buildProfileViewModel(baseParams)
     expect(vm.analyticsKpis).toEqual([])

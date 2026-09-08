@@ -34,7 +34,7 @@ export const LoadingPage = memo(function LoadingPage() {
         data-slot="loading-logo-glow"
       />
 
-      <div className="relative mb-8 size-22">
+      <div className="relative size-22">
         <motion.div
           className="absolute inset-0 grid place-items-center rounded-2xl bg-[image:var(--gradient-primary)] text-5xl font-extrabold text-white shadow-[var(--shadow-primary-cta)]"
           initial={reduceMotion ? false : { scale: 0.98 }}
@@ -47,14 +47,14 @@ export const LoadingPage = memo(function LoadingPage() {
         </motion.div>
 
         <motion.div
-          className="absolute -inset-2 rounded-[2rem] border-2 will-change-transform"
+          className="absolute -inset-2 rounded-full border-2 will-change-transform"
           style={{
             borderColor: roleColorVar,
             borderTopColor: 'transparent',
           }}
           animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
           transition={
-            reduceMotion ? { duration: 0 } : { duration: 1, repeat: Infinity, ease: 'linear' }
+            reduceMotion ? { duration: 0 } : { duration: 3, repeat: Infinity, ease: 'linear' }
           }
           aria-hidden="true"
         />
