@@ -159,4 +159,15 @@ describe('shouldRetry', () => {
     expect(run(500, 2)).toBe(true)
     expect(run(500, 3)).toBe(false)
   })
+
+  it('не ретраит мутации (POST/PATCH/DELETE) даже на 5xx — риск дублей', () => {
+    const post = { url: '/api/v1/shifts', method: 'POST' }
+    expect(shouldRetry({ status: 500 }, post, { attempt: 1 })).toBe(false)
+    expect(shouldRetry({ status: 503 }, { url: '/x', method: 'patch' }, { attempt: 1 })).toBe(false)
+    expect(shouldRetry({ status: 429 }, { url: '/x', method: 'DELETE' }, { attempt: 1 })).toBe(
+      false
+    )
+    // GET в объектной форме (без method) ретраится как раньше
+    expect(shouldRetry({ status: 500 }, { url: '/x' }, { attempt: 1 })).toBe(true)
+  })
 })

@@ -101,13 +101,17 @@ export const baseQueryWithReauth: BaseQueryFn<Args, unknown, FetchBaseQueryError
 
 const MAX_RETRIES = 2
 
-/** Не ретраить при profile_incomplete; ретраить только 408, 429, 5xx и не более MAX_RETRIES раз */
-export function shouldRetry(
-  error: unknown,
-  _args: Args,
-  { attempt }: { attempt: number }
-): boolean {
+const requestMethod = (args: Args): string =>
+  (typeof args === 'string' ? 'GET' : (args.method ?? 'GET')).toUpperCase()
+
+/**
+ * Ретраить только GET при 408, 429, 5xx и не более MAX_RETRIES раз; не ретраить
+ * при profile_incomplete. Мутации (POST/PATCH/DELETE) не повторяем: при 5xx сервер
+ * мог уже применить изменение — повтор создаст дубль (смены, отклика, покупки).
+ */
+export function shouldRetry(error: unknown, args: Args, { attempt }: { attempt: number }): boolean {
   if (attempt > MAX_RETRIES) return false
+  if (requestMethod(args) !== 'GET') return false
   const err = error as FetchBaseQueryError | undefined
   const data = err?.data as { code?: string } | undefined
   if (data?.code === 'profile_incomplete') return false
