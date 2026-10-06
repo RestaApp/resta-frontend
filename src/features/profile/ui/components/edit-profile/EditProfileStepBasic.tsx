@@ -75,10 +75,11 @@ export const EditProfileStepBasic = memo(function EditProfileStepBasic({
         />
       </FormField>
 
+      {/* Телефон не обязателен для сохранения профиля — нужен для отклика/публикации
+          (см. useEditProfileFormController и баннер готовности профиля). */}
       <FormField
         label={t('profile.phoneRequired')}
         hint={t('profile.phoneHint')}
-        required
         error={fieldErrors.phone}
       >
         <Input
