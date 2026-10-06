@@ -65,6 +65,7 @@ export function FeedBody({ vm, header }: FeedBodyProps) {
             selectedShift={vm.selectedShift}
             selectedVacancy={vm.selectedVacancy}
             applicationId={vm.getApplicationId(vm.selectedShiftId) ?? null}
+            applicationStatus={vm.getApplicationStatus(vm.selectedShiftId)}
             isApplied={vm.isApplied(vm.selectedShiftId)}
             isLoading={vm.isShiftLoading(vm.selectedShiftId)}
             onClose={vm.closeShiftDetails}

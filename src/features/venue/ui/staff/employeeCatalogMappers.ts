@@ -57,7 +57,6 @@ export const mapEmployeeCatalogItemToApplicationPreview = (
     id: employee.id,
     full_name: employee.name,
     photo_url: employee.photoUrl,
-    profile_photo_url: employee.photoUrl,
     city: employee.city || undefined,
     position: employee.positionKey ?? undefined,
     average_rating: employee.averageRating,

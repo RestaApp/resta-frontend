@@ -32,7 +32,7 @@ describe('getProfileCompleteness', () => {
         last_name: 'Петров',
         phone: '+375291234567',
         city: 'Минск',
-        profile_photo_url: 'https://example.com/photo.jpg',
+        photo_url: 'https://example.com/photo.jpg',
         bio: 'О себе',
         email: 'ivan@example.com',
         employee_profile: {

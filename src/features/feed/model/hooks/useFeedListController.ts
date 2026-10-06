@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useVacanciesInfiniteList } from '../hooks/useVacanciesInfiniteList'
 import { buildVacanciesBaseParams } from '../utils/queryParams'
-import { useHotOffers } from '../hooks/useHotOffers'
 import type { FeedType, AdvancedFiltersData } from '@/shared/shifts/types'
 
 interface UseFeedListControllerParams {
@@ -54,11 +53,6 @@ export const useFeedListController = ({
 
   const activeList = feedType === 'shifts' ? shiftsList : jobsList
 
-  const { hotVacancies, refresh: refreshHotOffers } = useHotOffers({
-    feedType,
-    advancedFilters: feedType === 'shifts' ? shiftsAdvancedFilters : jobsAdvancedFilters,
-  })
-
   const filteredShifts = activeList.items
 
   const emptyMessage = useMemo(
@@ -82,13 +76,12 @@ export const useFeedListController = ({
   )
 
   const onRefresh = useCallback(async () => {
-    await Promise.all([activeList.refresh(), refreshHotOffers()])
-  }, [activeList, refreshHotOffers])
+    await activeList.refresh()
+  }, [activeList])
 
   return {
     activeList,
     filteredShifts,
-    hotVacancies,
     emptyMessage,
     emptyDescription,
     onRefresh,

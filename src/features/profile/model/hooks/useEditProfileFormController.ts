@@ -83,10 +83,11 @@ export const useEditProfileFormController = ({
         nextErrors.name = t('validation.requiredField')
       }
 
+      // Телефон не обязателен для сохранения профиля (бэкенд допускает пустой):
+      // он нужен только для отклика/публикации — там его запрашивает баннер
+      // готовности профиля / ошибка profile_incomplete. Проверяем лишь формат.
       const phoneRaw = data.phone.trim()
-      if (!phoneRaw) {
-        nextErrors.phone = t('phone.required')
-      } else {
+      if (phoneRaw) {
         const phoneValidation = validatePhone(phoneRaw)
         if (!phoneValidation.valid) {
           nextErrors.phone = phoneValidation.message ?? t('phone.invalidFormat')

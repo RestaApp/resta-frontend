@@ -120,6 +120,17 @@ describe('useEditProfileFormController — валидация и сохране�
     expect(updateUser).not.toHaveBeenCalled()
   })
 
+  it('handleSave не требует телефон: пустой phone не даёт ошибки валидации', async () => {
+    const { result } = setup({ baseFormData: baseEmployee({ phone: '' }) })
+
+    await act(async () => {
+      await result.current.handleSave()
+    })
+
+    expect(result.current.fieldErrors.phone).toBeUndefined()
+    expect(showToast).not.toHaveBeenCalledWith('validation.fillRequired', 'warning')
+  })
+
   it('handleSave при пустом только city показывает city-warning, не сохраняет', async () => {
     const { result } = setup({ baseFormData: baseEmployee({ city: '' }) })
 

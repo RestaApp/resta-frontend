@@ -55,7 +55,6 @@ const renderController = (
   renderHook(() =>
     useFeedSelectionController({
       activeList: makeActiveList(shift, vacancy),
-      hotVacancies: [],
       selectedShiftId: 42,
       applyCoverTargetShiftId: null,
       applicationSuccessShiftId: null,

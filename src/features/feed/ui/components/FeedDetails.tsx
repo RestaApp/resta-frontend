@@ -2,13 +2,15 @@ import {
   ShiftDetailsScreen,
   type ShiftDetailsOwnerActions,
 } from '@/shared/ui/shift-details-screen/ShiftDetailsScreen'
-import type { Shift } from '@/shared/shifts/types'
+import type { Shift, ShiftStatus } from '@/shared/shifts/types'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 
 interface FeedDetailsProps {
   selectedShift: Shift | null
   selectedVacancy: VacancyApiItem | null
   applicationId: number | null
+  /** Свежий статус отклика из getAppliedShifts (кэш ленты может отставать после accept/reject). */
+  applicationStatus: ShiftStatus
   isApplied: boolean
   isLoading: boolean
   onClose: () => void
@@ -21,6 +23,7 @@ export function FeedDetails({
   selectedShift,
   selectedVacancy,
   applicationId,
+  applicationStatus,
   isApplied,
   isLoading,
   onClose,
@@ -33,6 +36,7 @@ export function FeedDetails({
       shift={selectedShift}
       vacancyData={selectedVacancy}
       applicationId={applicationId}
+      applicationStatus={applicationStatus}
       isOpen
       onClose={onClose}
       onApply={onApply}

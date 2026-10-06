@@ -44,7 +44,7 @@ export type RestaurantApiUser = UserData & {
   restaurant_profile_attributes?: RestaurantProfile | null
 }
 
-export type SupplierCategory = 'products' | 'equipment' | 'services' | 'logistics' | 'consumables'
+export type SupplierCategory = 'products' | 'equipment' | 'consumables' | 'services' | 'logistics'
 
 export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   city: '',
@@ -56,50 +56,77 @@ export const DEFAULT_SUPPLIER_FILTERS: SupplierFilters = {
   cuisineTypes: [],
 }
 
-export const DEFAULT_SERVICE_CATEGORY_OPTIONS = [
-  'produce_supplier',
-  'meat_supplier',
-  'seafood_supplier',
-  'dairy_supplier',
-  'bakery_supplier',
-  'beverage_supplier',
-  'alcohol_supplier',
-  'kitchen_equipment_supplier',
-  'furniture_supplier',
-  'cleaning_service',
-  'maintenance_service',
-]
-
-export const DEFAULT_SUPPLIER_TYPES = ['products', 'equipment', 'services', 'logistics']
-
+/**
+ * Категории поставщика → допустимые `supplier_types`.
+ * Зеркало бэкенда: `resta_backend/app/lib/role_catalog.rb` → `SUPPLIER_CATEGORIES`
+ * (те же ключи, коды и порядок). Бэкенд валидирует `supplier_types` по этому списку,
+ * поэтому фронт обязан совпадать с ним один в один.
+ */
 export const SUPPLIER_TYPES_BY_CATEGORY: Record<SupplierCategory, string[]> = {
   products: [
-    'produce_supplier',
-    'meat_supplier',
-    'seafood_supplier',
-    'dairy_supplier',
-    'bakery_supplier',
-    'beverage_supplier',
-    'alcohol_supplier',
-    'coffee_supplier',
+    'vegetables',
+    'fruits',
+    'berries',
+    'greens',
+    'microgreens',
+    'meat',
+    'poultry',
+    'seafood',
+    'dairy',
+    'bakery',
+    'grocery',
+    'frozen_food',
+    'beverages',
+    'coffee',
+    'tea',
+    'alcohol',
+    'bar_ingredients',
+    'confectionery_ingredients',
   ],
-  equipment: ['kitchen_equipment_supplier', 'furniture_supplier', 'tableware_supplier'],
-  // Legacy category, поддерживаем только для корректной фильтрации старых профилей.
-  consumables: ['tableware_supplier', 'cleaning_service'],
+  equipment: [
+    'kitchen_equipment',
+    'refrigeration',
+    'coffee_equipment',
+    'bar_equipment',
+    'bakery_equipment',
+    'furniture',
+    'tableware',
+    'kitchen_inventory',
+  ],
+  consumables: [
+    'food_packaging',
+    'disposable_tableware',
+    'hygiene_products',
+    'professional_chemicals',
+    'cleaning_inventory',
+    'paper_products',
+    'kitchen_consumables',
+  ],
   services: [
-    'cleaning_service',
-    'maintenance_service',
-    'laundry_service',
+    'cleaning',
+    'maintenance',
+    'equipment_repair',
+    'laundry',
     'waste_management',
     'pest_control',
-    'accounting_service',
-    'marketing_service',
+    'accounting',
+    'marketing',
     'staff_training',
+    'uniform_tailoring',
     'consulting',
-    'staffing_service',
+    'automation',
+    'design_and_projecting',
   ],
-  logistics: ['delivery_service', 'logistics_provider'],
+  logistics: ['delivery', 'cold_chain_delivery', 'logistics_provider', 'warehousing'],
 }
+
+/** Категории для фильтра «Тип поставщика» — в порядке бэкенда. */
+export const DEFAULT_SUPPLIER_TYPES: string[] = Object.keys(SUPPLIER_TYPES_BY_CATEGORY)
+
+/** Все типы поставщика (пока категория не выбрана — показываем полный список). */
+export const DEFAULT_SERVICE_CATEGORY_OPTIONS: string[] = Object.values(
+  SUPPLIER_TYPES_BY_CATEGORY
+).flat()
 
 export const isSupplierCategory = (value: string): value is SupplierCategory =>
   value in SUPPLIER_TYPES_BY_CATEGORY

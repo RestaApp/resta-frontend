@@ -46,3 +46,40 @@ describe('ApplicantPreviewCard · выбранный кандидат', () => {
     expect(onSelect).toHaveBeenCalledWith(20, 10)
   })
 })
+
+const renderPendingApplicant = (onAccept?: (applicationId: number) => void) => {
+  render(
+    <ApplicantPreviewCard
+      applicant={{
+        id: 11,
+        user_id: 21,
+        shift_application_status: 'pending',
+        full_name: 'Пётр Сидоров',
+        position: 'chef',
+      }}
+      getEmployeePositionLabel={() => 'Повар'}
+      getSpecializationLabel={value => value}
+      onSelect={vi.fn()}
+      t={i18n.t}
+      variant="moderation"
+      onAccept={onAccept}
+    />
+  )
+}
+
+describe('ApplicantPreviewCard · кнопка «Принять»', () => {
+  it('не рендерит кнопку найма без onAccept (публикация закрыта или заполнена)', () => {
+    renderPendingApplicant()
+
+    expect(screen.queryByRole('button', { name: i18n.t('shift.hireShort') })).toBeNull()
+  })
+
+  it('рендерит кнопку найма при переданном onAccept и вызывает его с id заявки', () => {
+    const onAccept = vi.fn()
+    renderPendingApplicant(onAccept)
+
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('shift.hireShort') }))
+
+    expect(onAccept).toHaveBeenCalledWith(11)
+  })
+})

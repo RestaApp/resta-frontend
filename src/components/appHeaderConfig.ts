@@ -47,9 +47,20 @@ export const getHeaderAction = (params: {
   onAddShift?: () => void
   role?: UiRole | null
   isEmployeeFlow: boolean
+  /** Нет активной смены — сотрудник может предложить новую («+»). */
   canEmployeeOfferShift?: boolean
+  /** Активную смену ещё можно редактировать (те же правила, что на экране деталей). */
+  canEmployeeEditShift?: boolean
 }): HeaderAction | null => {
-  const { activeTab, t, onAddShift, role, isEmployeeFlow, canEmployeeOfferShift = true } = params
+  const {
+    activeTab,
+    t,
+    onAddShift,
+    role,
+    isEmployeeFlow,
+    canEmployeeOfferShift = true,
+    canEmployeeEditShift = false,
+  } = params
 
   const venueAddShiftAction = (): HeaderAction => ({
     ariaLabel: t('feed.venueEmptyCta', {
@@ -86,6 +97,9 @@ export const getHeaderAction = (params: {
     }
 
     if (activeTab === 'myshifts' && isEmployeeFlow && !canEmployeeOfferShift) {
+      // Активная смена есть — «+» недоступен. «Редактировать» показываем только пока
+      // публикацию ещё можно менять, иначе иконка расходится с экраном деталей.
+      if (!canEmployeeEditShift) return null
       return {
         ariaLabel: t('shift.editShiftAria', { defaultValue: 'Edit shift' }),
         Icon: Edit2,

@@ -20,9 +20,11 @@ interface VenueListingsDrawerProps {
 }
 
 /**
- * Открытые вакансии заведения (#12). Forward-compatible: запрос идёт с `user_id`,
- * но текущий бэкенд этот фильтр игнорирует — поэтому дофильтровываем по `ownerId`
- * на клиенте (см. HANDOFF). Когда бэк добавит фильтр, клиентская фильтрация станет no-op.
+ * Открытые вакансии и смены заведения (#12) — без фильтра по `shift_type`, иначе
+ * кнопка «Все вакансии и смены» показывала только вакансии. Forward-compatible:
+ * запрос идёт с `user_id`, но текущий бэкенд этот фильтр игнорирует — поэтому
+ * дофильтровываем по `ownerId` на клиенте (см. HANDOFF). Когда бэк добавит фильтр,
+ * клиентская фильтрация станет no-op.
  */
 export const VenueListingsDrawer = memo(function VenueListingsDrawer({
   userId,
@@ -34,7 +36,7 @@ export const VenueListingsDrawer = memo(function VenueListingsDrawer({
   const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(null)
 
   const { data, isLoading, isError } = useGetVacanciesQuery(
-    { shift_type: 'vacancy', user_id: userId, per_page: 100 },
+    { user_id: userId, per_page: 100 },
     { skip: !open }
   )
 

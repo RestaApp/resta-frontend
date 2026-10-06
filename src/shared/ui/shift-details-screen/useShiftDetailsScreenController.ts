@@ -10,6 +10,11 @@ interface UseShiftDetailsScreenControllerParams {
   shift: Shift | null
   vacancyData?: VacancyApiItem | null
   applicationId?: number | null
+  /**
+   * Актуальный статус отклика (из getAppliedShifts). Приоритетнее `my_application`
+   * в `vacancyData`: накопленные страницы ленты после accept/reject могут быть устаревшими.
+   */
+  applicationStatus?: ShiftStatus
   onClose: () => void
   onApply: (id: number, message?: string) => Promise<void>
   onCancel: (applicationId: number | null | undefined, shiftId: number) => Promise<void>
@@ -20,6 +25,7 @@ export const useShiftDetailsScreenController = ({
   shift,
   vacancyData,
   applicationId = null,
+  applicationStatus,
   onClose,
   onApply,
   onCancel,
@@ -34,7 +40,7 @@ export const useShiftDetailsScreenController = ({
   const locationPoints = sanitizeLocations(shift?.location ?? [])
 
   const appStatus: ShiftStatus =
-    vacancyData?.my_application?.status ?? shift?.applicationStatus ?? null
+    applicationStatus ?? vacancyData?.my_application?.status ?? shift?.applicationStatus ?? null
   const isAccepted = appStatus === 'accepted'
   const isRejected = appStatus === 'rejected'
 
