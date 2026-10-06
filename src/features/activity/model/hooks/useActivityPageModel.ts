@@ -18,7 +18,7 @@ import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsRespo
 import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompleteness'
 import { useAuth } from '@/app/contexts/auth'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
-import { hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
+import { findEditableEmployeeShift, hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
 import type { ActivityTab } from '@/shared/types/activity.types'
 
 export type { ActivityTab } from '@/shared/types/activity.types'
@@ -144,7 +144,9 @@ export const useActivityPageModel = (defaultTab: ActivityTab = 'applications') =
     if (isVenue) return
     return onAppEvent(APP_EVENTS.OPEN_ACTIVITY_EDIT_SHIFT, detail => {
       const fromEvent = detail?.shift as VacancyApiItem | undefined
-      const found = fromEvent ?? shifts[0] ?? null
+      // Без явной смены в событии (иконка в шапке) открываем только активную
+      // публикацию, которую ещё можно редактировать — как на экране деталей.
+      const found = fromEvent ?? findEditableEmployeeShift(shifts)
       if (!found) return
       setEditingShift(found)
       setIsDrawerOpen(true)

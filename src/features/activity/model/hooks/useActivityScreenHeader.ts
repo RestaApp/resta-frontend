@@ -8,7 +8,7 @@ import {
   resolveIsEmployeeFlow,
 } from '@/components/appHeaderConfig'
 import { normalizeVacanciesResponse } from '@/shared/shifts/normalizeShiftsResponse'
-import { hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
+import { findEditableEmployeeShift, hasActiveEmployeeShift } from '@/shared/shifts/activeShift'
 import type { Tab } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 
@@ -21,6 +21,7 @@ export const useActivityScreenHeader = (screenTab: Tab, role: UiRole | null) => 
   })
   const myShifts = useMemo(() => normalizeVacanciesResponse(myShiftsData), [myShiftsData])
   const canEmployeeOfferShift = !hasActiveEmployeeShift(myShifts)
+  const canEmployeeEditShift = findEditableEmployeeShift(myShifts) !== null
 
   const title = useMemo(() => getHeaderTitle(screenTab, t, role), [role, screenTab, t])
   const action = useMemo(
@@ -31,8 +32,9 @@ export const useActivityScreenHeader = (screenTab: Tab, role: UiRole | null) => 
         role,
         isEmployeeFlow,
         canEmployeeOfferShift,
+        canEmployeeEditShift,
       }),
-    [canEmployeeOfferShift, isEmployeeFlow, role, screenTab, t]
+    [canEmployeeEditShift, canEmployeeOfferShift, isEmployeeFlow, role, screenTab, t]
   )
 
   return {

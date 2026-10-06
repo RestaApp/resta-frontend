@@ -55,29 +55,23 @@ export const useRoleTour = ({ role, onTabChange }: UseRoleTourParams) => {
     markRoleTourSeen(role)
   }, [role])
 
+  // Переключение вкладки — вне функционального апдейтера setStepIndex: апдейтер
+  // React выполняет во время рендера, и setState родителя (Dashboard) оттуда даёт
+  // «Cannot update a component while rendering a different component».
   const next = useCallback(() => {
-    setStepIndex(prev => {
-      if (prev === null) return null
-      const nextIndex = prev + 1
-      if (nextIndex >= steps.length) {
-        markRoleTourSeen(role)
-        return null
-      }
-      const step = steps[nextIndex]
-      if (step) onTabChangeRef.current(step.tabId)
-      return nextIndex
-    })
-  }, [role, steps])
+    if (stepIndex === null) return
+    const nextIndex = stepIndex + 1
+    if (nextIndex >= steps.length) {
+      finish()
+      return
+    }
+    goToStep(nextIndex)
+  }, [stepIndex, steps.length, finish, goToStep])
 
   const prev = useCallback(() => {
-    setStepIndex(current => {
-      if (current === null || current <= 0) return current
-      const prevIndex = current - 1
-      const step = steps[prevIndex]
-      if (step) onTabChangeRef.current(step.tabId)
-      return prevIndex
-    })
-  }, [steps])
+    if (stepIndex === null || stepIndex <= 0) return
+    goToStep(stepIndex - 1)
+  }, [stepIndex, goToStep])
 
   // Авто-старт один раз на mount, если ещё не видели. Флаг ставим ВНУТРИ rAF —
   // иначе StrictMode (cleanup отменяет rAF на первом проходе) заблокирует старт.

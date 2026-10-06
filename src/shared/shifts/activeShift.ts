@@ -1,4 +1,5 @@
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
+import { isEditableOwnerListing } from '@/shared/shifts/ownerShiftDisplay'
 
 const INACTIVE_STATUSES = new Set(['completed', 'cancelled', 'canceled'])
 
@@ -22,3 +23,10 @@ const isActiveShift = (shift: VacancyApiItem, now = new Date()): boolean => {
 /** Сотрудник может создать только одну активную смену. */
 export const hasActiveEmployeeShift = (shifts: VacancyApiItem[]): boolean =>
   shifts.some(shift => isActiveShift(shift))
+
+/**
+ * Активная смена, которую ещё можно редактировать — по тем же правилам, что и на
+ * экране деталей (`isEditableOwnerListing`): не filled/closed, срок не истёк, кандидат не выбран.
+ */
+export const findEditableEmployeeShift = (shifts: VacancyApiItem[]): VacancyApiItem | null =>
+  shifts.find(shift => isActiveShift(shift) && isEditableOwnerListing(shift)) ?? null
