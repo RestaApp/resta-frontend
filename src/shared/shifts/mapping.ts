@@ -13,6 +13,7 @@ import i18n from '@/shared/i18n/config'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
 import { getOwnerShiftListingStatus } from './ownerShiftDisplay'
 import { toFiniteNumber as toNumber } from '@/shared/utils/number'
+import { getUserPhotoUrl } from '@/shared/utils/userFieldNormalizers'
 
 const getCityFromUser = (item: VacancyApiItem): string | undefined => {
   return item.city ?? item.user?.city ?? item.user?.restaurant_profile?.city ?? undefined
@@ -29,9 +30,8 @@ const getDistanceKm = (item: VacancyApiItem): number | null => {
   return null
 }
 
-const getUserPhotoUrl = (item: VacancyApiItem): string | null => {
-  return item.user?.photo_url ?? item.user?.profile_photo_url ?? null
-}
+const getVacancyUserPhotoUrl = (item: VacancyApiItem): string | null =>
+  getUserPhotoUrl(item.user ?? {})
 
 const getVenueName = (item: VacancyApiItem, fallback = ''): string =>
   item.user?.restaurant_profile?.name?.trim() || formatUserDisplayName(item.user) || fallback
@@ -124,7 +124,7 @@ export const vacancyToShift = (item: VacancyApiItem): Shift => {
     applicationId: item.my_application?.id ?? null,
     applicationStatus: item.my_application?.status ?? null,
     ownerId: item.user?.id ?? null,
-    photoUrl: getUserPhotoUrl(item),
+    photoUrl: getVacancyUserPhotoUrl(item),
 
     canApply: item.can_apply,
     applicationsCount: item.applications_count,
@@ -157,7 +157,7 @@ const mapOwnerVacancyToCardShift = (item: VacancyApiItem): Shift => {
     urgent: Boolean(item.urgent),
     applicationId: null,
     ownerId: item.user?.id ?? null,
-    photoUrl: getUserPhotoUrl(item),
+    photoUrl: getVacancyUserPhotoUrl(item),
     canApply: false,
     applicationsCount: item.applications_count ?? 0,
     isMine: true,
@@ -213,7 +213,7 @@ export const mapVacancyToCardShift = (v: VacancyApiItem): Shift => {
     urgent: Boolean(v.urgent),
     applicationId,
     ownerId: v.user?.id ?? null,
-    photoUrl: getUserPhotoUrl(v),
+    photoUrl: getVacancyUserPhotoUrl(v),
     canApply: Boolean(v.can_apply),
     // Только статус заявки. НЕ подмешивать v.status (статус смены) —
     // иначе бейдж заявки показывает «В обработке» по статусу смены (open).

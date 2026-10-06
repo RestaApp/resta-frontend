@@ -9,10 +9,9 @@ import {
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { getAvatarInitials } from '@/shared/utils/avatarInitials'
-import { normalizeRating } from '@/shared/utils/userFieldNormalizers'
+import { getUserPhotoUrl, normalizeRating } from '@/shared/utils/userFieldNormalizers'
 
 type ProfileHeroUser = {
-  profile_photo_url?: string | null
   photo_url?: string | null
   city?: string | null
   location?: string[] | null
@@ -32,7 +31,7 @@ const getDisplayRating = (value: number | string | null | undefined) => {
 }
 
 export const ProfileHero = memo(({ userProfile, userName, roleLabel }: ProfileHeroProps) => {
-  const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
+  const photoUrl = getUserPhotoUrl(userProfile)
   const firstLocation = userProfile.location?.find(line => line.trim().length > 0)
   const cityOrLocation = userProfile.city || firstLocation
   const username = userProfile.username?.trim()

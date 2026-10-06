@@ -39,7 +39,6 @@ function createMinimalUserData(signInData: SignInResponse['data']): UserData {
     phone: null,
     photo_url: null,
     profile_complete: false,
-    profile_photo_url: null,
     telegram_id: 0,
     total_reviews: 0,
     updated_at: '',

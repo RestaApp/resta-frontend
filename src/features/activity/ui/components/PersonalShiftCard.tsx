@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { mapOwnerVacancyToCardShiftWithPhoto } from '@/shared/shifts/mapping'
+import { getUserPhotoUrl } from '@/shared/utils/userFieldNormalizers'
 import { useAppSelector } from '@/store/hooks'
 import { selectUserData } from '@/store/slices/userSlice'
 import { VacancyCardWithDetails } from './VacancyCardWithDetails'
@@ -19,7 +20,7 @@ export const PersonalShiftCard = ({
   isDeleting,
 }: PersonalShiftCardProps) => {
   const userData = useAppSelector(selectUserData)
-  const ownerPhotoUrl = userData?.photo_url ?? userData?.profile_photo_url ?? null
+  const ownerPhotoUrl = getUserPhotoUrl(userData ?? {})
 
   const mapToShift = useCallback(
     (vacancy: VacancyApiItem) => mapOwnerVacancyToCardShiftWithPhoto(vacancy, ownerPhotoUrl),

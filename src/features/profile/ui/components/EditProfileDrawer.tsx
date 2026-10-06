@@ -23,6 +23,7 @@ import {
 import { useEditProfileModel } from '../../model/hooks/useEditProfileModel'
 import { useProfileFormLabels } from '@/shared/i18n/hooks'
 import { useScrollToRefWhen } from '@/shared/lib/hooks/useScrollToRefWhen'
+import { getUserPhotoUrl } from '@/shared/utils/userFieldNormalizers'
 import { StepPanel } from '@/components/ui/step-panel'
 import { StepProgress } from '@/components/ui/step-progress'
 import { getEditProfileStepNameKey } from './edit-profile/editProfileStepNames'
@@ -99,7 +100,7 @@ export const EditProfileDrawer = memo(
 
     const bioSuffix = getBioLabelSuffix(apiRole)
     const isLastStep = step === totalSteps - 1
-    const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
+    const photoUrl = getUserPhotoUrl(userProfile)
 
     const stepNameKey = getEditProfileStepNameKey(apiRole, step)
 

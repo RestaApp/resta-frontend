@@ -8,7 +8,6 @@ export type UserProfileLike = {
   city?: string | null
   last_name?: string | null
   bio?: string | null
-  profile_photo_url?: string | null
   photo_url?: string | null
   email?: string | null
   website?: string | null
@@ -50,7 +49,7 @@ export const getProfileCompleteness = (userProfile: UserProfileLike, apiRole: Ap
 
   // Доп. «реальная» заполненность профиля по полезной информации
   const hasBio = !!userProfile.bio?.trim()
-  const hasPhoto = !!(userProfile.profile_photo_url || userProfile.photo_url)
+  const hasPhoto = !!userProfile.photo_url
   const hasEmail = !!userProfile.email
   const hasValues = (values: string[] | null | undefined) =>
     Array.isArray(values) && values.some(value => value.trim().length > 0)

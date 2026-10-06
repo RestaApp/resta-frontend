@@ -13,7 +13,6 @@ export interface ReviewUser {
   full_name?: string
   role?: string
   photo_url?: string | null
-  profile_photo_url?: string | null
 }
 
 /** Элемент GET /api/v1/reviews (ReviewBlueprint, default view). */

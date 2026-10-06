@@ -65,7 +65,7 @@ export function parseShiftDetailFromResponse(response: unknown): VacancyApiItem 
  * Только параметры, указанные в API документации
  */
 export interface GetVacanciesParams {
-  shift_type: 'vacancy' | 'replacement'
+  shift_type?: 'vacancy' | 'replacement' // Без параметра бэк отдаёт оба типа (вакансии и смены заведения)
   user_id?: number // Фильтр по владельцу (ресторану)
   position?: string // chef, waiter, bartender, barista, manager, support, delivery, cashier, office
   specialization?: string // Специализация для фильтрации (опционально)
@@ -98,7 +98,7 @@ export interface UserBasicApi {
   city?: string
   average_rating?: number
   total_reviews?: number
-  profile_photo_url?: string | null
+  photo_url?: string | null
   full_name?: string
 }
 
@@ -139,7 +139,6 @@ export interface UserApi {
   phone?: string
   email?: string
   photo_url?: string | null
-  profile_photo_url?: string | null
   restaurant_profile?: RestaurantProfileApi
   role?: string
   average_rating?: number
@@ -160,7 +159,6 @@ export interface ApplicantUserApi {
   full_name?: string
   city?: string
   photo_url?: string | null
-  profile_photo_url?: string | null
   position?: string
   specialization?: string
   average_rating?: string | number

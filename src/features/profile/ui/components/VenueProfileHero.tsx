@@ -6,9 +6,9 @@ import { HERO_TITLE_CLASS, SCREEN_TITLE_CLASS } from '@/components/ui/ui-pattern
 import { SHIFT_CARD_META_CLASS } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { getAvatarInitials } from '@/shared/utils/avatarInitials'
+import { getUserPhotoUrl } from '@/shared/utils/userFieldNormalizers'
 
 type VenueProfileHeroUser = {
-  profile_photo_url?: string | null
   photo_url?: string | null
   city?: string | null
   username?: string | null
@@ -29,7 +29,7 @@ export const VenueProfileHero = memo(function VenueProfileHero({
   isHiringOpen,
   hiringOpenLabel,
 }: VenueProfileHeroProps) {
-  const photoUrl = userProfile.photo_url || userProfile.profile_photo_url || null
+  const photoUrl = getUserPhotoUrl(userProfile)
   const city = userProfile.city?.trim()
   const username = userProfile.username?.trim()
   const locationLine = [city, roleLabel].filter(Boolean).join(' • ')

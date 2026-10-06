@@ -1,9 +1,7 @@
 import type { UserData } from '@/services/api/usersApi'
 
-export const getUserPhotoUrl = (
-  item: Partial<Pick<UserData, 'photo_url' | 'profile_photo_url'>>
-): string | null => {
-  const raw = item.photo_url ?? item.profile_photo_url
+export const getUserPhotoUrl = (item: Partial<Pick<UserData, 'photo_url'>>): string | null => {
+  const raw = item.photo_url
   if (typeof raw !== 'string') return null
   const normalized = raw.trim()
   return normalized.length > 0 ? normalized : null
