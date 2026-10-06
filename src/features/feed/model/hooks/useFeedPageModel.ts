@@ -108,13 +108,42 @@ export const useFeedPageModel = () => {
     setIsFiltersOpen,
   })
 
-  const { activeList, filteredShifts, hotVacancies, emptyMessage, emptyDescription, onRefresh } =
-    useFeedListController({
-      feedType,
-      shiftsAdvancedFilters,
-      jobsAdvancedFilters,
-      hasActiveFilters: hasActiveFiltersFlag,
-    })
+  const {
+    activeList,
+    filteredShifts: listShifts,
+    emptyMessage,
+    emptyDescription,
+    onRefresh,
+  } = useFeedListController({
+    feedType,
+    shiftsAdvancedFilters,
+    jobsAdvancedFilters,
+    hasActiveFilters: hasActiveFiltersFlag,
+  })
+
+  // Статус/ID отклика на карточках — из getAppliedShifts (см. useAppliedShifts):
+  // накопленные страницы getVacancies после accept/reject могут хранить устаревший
+  // my_application, и карточка показывала бы «в обработке» у отклонённой заявки.
+  const filteredShifts = useMemo(
+    () =>
+      listShifts.map(shift => {
+        const freshStatus = appliedStatusMap[shift.id]
+        const freshApplicationId = appliedApplicationsMap[shift.id]
+        if (freshStatus === undefined && freshApplicationId === undefined) return shift
+        if (
+          (freshStatus === undefined || freshStatus === shift.applicationStatus) &&
+          (freshApplicationId === undefined || freshApplicationId === shift.applicationId)
+        ) {
+          return shift
+        }
+        return {
+          ...shift,
+          applicationStatus: freshStatus ?? shift.applicationStatus,
+          applicationId: freshApplicationId ?? shift.applicationId,
+        }
+      }),
+    [listShifts, appliedStatusMap, appliedApplicationsMap]
+  )
 
   const handleDelete = useCallback(
     async (id: number) => {
@@ -144,7 +173,6 @@ export const useFeedPageModel = () => {
     getApplicationStatus: getApplicationStatusStable,
   } = useFeedSelectionController({
     activeList,
-    hotVacancies,
     selectedShiftId,
     applyCoverTargetShiftId,
     applicationSuccessShiftId: applicationSuccess.shiftId,

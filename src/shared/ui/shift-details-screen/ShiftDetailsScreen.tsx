@@ -2,13 +2,15 @@ import { memo, useCallback, useMemo, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { Zap } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DrawerFooter } from '@/components/ui/drawer'
+import { HelpHint } from '@/components/ui/help-hint'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useBoostShiftMutation } from '@/services/api/purchasesApi'
 import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
-import type { Shift } from '@/shared/shifts/types'
+import type { Shift, ShiftStatus } from '@/shared/shifts/types'
 import { isExpiredOwnerListing } from '@/shared/shifts/mapping'
 import { isEditableOwnerListing } from '@/shared/shifts/ownerShiftDisplay'
 import { useShiftDetails } from '@/shared/shifts/useShiftDetails'
@@ -36,6 +38,8 @@ interface ShiftDetailsScreenProps {
   shift: Shift | null
   vacancyData?: VacancyApiItem | null
   applicationId?: number | null
+  /** Актуальный статус отклика (getAppliedShifts) — приоритетнее my_application из кэша ленты. */
+  applicationStatus?: ShiftStatus
   isOpen: boolean
   onClose: () => void
   onApply: (id: number, message?: string) => Promise<void>
@@ -52,6 +56,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     shift,
     vacancyData,
     applicationId = null,
+    applicationStatus,
     isOpen,
     onClose,
     onApply,
@@ -78,6 +83,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     shift,
     vacancyData,
     applicationId,
+    applicationStatus,
     onClose,
     onApply,
     onCancel,
@@ -176,17 +182,20 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
                   })}
                 </p>
               ) : null}
-              <Button
-                variant="outline"
-                size="md"
-                onClick={handleBoost}
-                loading={isBoosting}
-                disabled={isBoosting || ownerActions.isDeleting}
-                className="w-full"
-              >
-                <Zap className="h-4 w-4" aria-hidden="true" />
-                {t('monetization.boost.action')}
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={handleBoost}
+                  loading={isBoosting}
+                  disabled={isBoosting || ownerActions.isDeleting}
+                  className="flex-1"
+                >
+                  <Zap className="h-4 w-4" aria-hidden="true" />
+                  {t('monetization.boost.action')}
+                </Button>
+                <HelpHint topic="urgent" />
+              </div>
             </>
           ) : null}
           <div className="flex gap-4">
@@ -248,6 +257,22 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       </DrawerFooter>
     ) : null
 
+  // Принятому/отклонённому соискателю действий нет, но статус заявки должен быть
+  // виден и в деталях (иначе из уведомления «Заявка принята» открывается экран без
+  // единого признака принятия).
+  const applicantStatusFooter =
+    !controller.isOwner && (controller.isAccepted || controller.isRejected) ? (
+      <DrawerFooter className="pb-3">
+        <div className="flex justify-center rounded-xl border border-border/60 px-4 py-3">
+          <Badge variant={controller.isAccepted ? 'accepted' : 'rejected'}>
+            {controller.isAccepted
+              ? t('shift.applicationAccepted')
+              : t('shift.applicationRejected')}
+          </Badge>
+        </div>
+      </DrawerFooter>
+    ) : null
+
   return (
     <>
       <DetailsScreenFrame
@@ -257,7 +282,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
           if (!open) controller.handleClose()
         }}
         onClose={controller.handleClose}
-        footer={ownerFooter ?? applicantFooter}
+        footer={ownerFooter ?? applicantFooter ?? applicantStatusFooter}
       >
         <div className="ui-density-stack">
           <DetailsTab

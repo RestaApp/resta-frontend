@@ -1,12 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import { vacancyToShift } from '@/shared/shifts/mapping'
-import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import type { Shift } from '@/shared/shifts/types'
 import type { UseVacanciesInfiniteListReturn } from '../hooks/useVacanciesInfiniteList'
 
 interface UseFeedSelectionControllerParams {
   activeList: UseVacanciesInfiniteListReturn
-  hotVacancies: VacancyApiItem[]
   selectedShiftId: number | null
   applyCoverTargetShiftId: number | null
   applicationSuccessShiftId: number | null
@@ -18,7 +16,6 @@ interface UseFeedSelectionControllerParams {
 
 export const useFeedSelectionController = ({
   activeList,
-  hotVacancies,
   selectedShiftId,
   applyCoverTargetShiftId,
   applicationSuccessShiftId,
@@ -27,14 +24,6 @@ export const useFeedSelectionController = ({
   appliedStatusMap,
   getApplicationId,
 }: UseFeedSelectionControllerParams) => {
-  const hotVacanciesById = useMemo(() => {
-    const map = new Map<number, VacancyApiItem>()
-    for (const vacancy of hotVacancies) {
-      map.set(vacancy.id, vacancy)
-    }
-    return map
-  }, [hotVacancies])
-
   const shiftsById = useMemo(() => {
     const map = new Map<number, Shift>()
     for (const shift of activeList.items) {
@@ -46,9 +35,9 @@ export const useFeedSelectionController = ({
   const resolveVacancy = useCallback(
     (id: number | null) => {
       if (!id) return null
-      return activeList.vacanciesMap.get(id) || hotVacanciesById.get(id) || null
+      return activeList.vacanciesMap.get(id) || null
     },
-    [activeList.vacanciesMap, hotVacanciesById]
+    [activeList.vacanciesMap]
   )
 
   const resolveShift = useCallback(
@@ -94,11 +83,8 @@ export const useFeedSelectionController = ({
   // getVacancies на ранних (накопленных) страницах может остаться устаревшим.
   const getApplicationStatus = useCallback(
     (id: number) =>
-      appliedStatusMap[id] ??
-      activeList.vacanciesMap.get(id)?.my_application?.status ??
-      hotVacanciesById.get(id)?.my_application?.status ??
-      null,
-    [appliedStatusMap, activeList.vacanciesMap, hotVacanciesById]
+      appliedStatusMap[id] ?? activeList.vacanciesMap.get(id)?.my_application?.status ?? null,
+    [appliedStatusMap, activeList.vacanciesMap]
   )
 
   return {
