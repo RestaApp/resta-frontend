@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/utils/cn'
 import { formatExperienceText } from '@/shared/utils/experience'
 import { formatUserDisplayName } from '@/shared/utils/userDisplayName'
+import { getUserPhotoUrl } from '@/shared/utils/userFieldNormalizers'
 import {
   PREVIEW_CARD_BELOW_TAGS_CLASS,
   PREVIEW_CARD_ACTION_BUTTON_CLASS,
@@ -167,7 +168,7 @@ export const ApplicantPreviewCard = memo(
   }: ApplicantPreviewCardProps) => {
     const user = app.user
     const name = getApplicantName(app, t)
-    const photoUrl = user?.photo_url ?? user?.profile_photo_url ?? null
+    const photoUrl = getUserPhotoUrl(user ?? {})
 
     const rawPosition = (
       app.position ??
@@ -239,8 +240,19 @@ export const ApplicantPreviewCard = memo(
     }
 
     if (variant === 'moderation' || variant === 'catalog') {
+      // «Принять» показываем только когда родитель разрешил найм (передал onAccept):
+      // на закрытых / заполненных / истёкших публикациях колбэк не передаётся.
       const showHireAction =
-        variant === 'moderation' && !isAccepted && !isRejected && typeof appId === 'number'
+        variant === 'moderation' &&
+        onAccept !== undefined &&
+        !isAccepted &&
+        !isRejected &&
+        typeof appId === 'number'
+      const showInviteAction = variant === 'catalog' && Boolean(onInvite)
+      const showProfileAction = !isAccepted
+      // Без кнопок колонку действий не рендерим: иначе пустая колонка (w-24) вместе
+      // с отступом под бейдж «Выбран» обрезала даже короткое имя кандидата.
+      const hasActions = showHireAction || showInviteAction || showProfileAction
 
       return (
         <PreviewCardLayout
@@ -251,43 +263,45 @@ export const ApplicantPreviewCard = memo(
           topRight={variant === 'moderation' && isAccepted ? applicantSelectedBadge(t) : undefined}
           avatar={applicantAvatar(photoUrl, name)}
           actions={
-            <>
-              {showHireAction ? (
-                <Button
-                  type="button"
-                  variant="gradient"
-                  size="sm"
-                  className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
-                  disabled={isAccepting}
-                  loading={isThisAccepting}
-                  onClick={handleAccept}
-                >
-                  {t('shift.hireShort')}
-                </Button>
-              ) : null}
-              {variant === 'catalog' && onInvite ? (
-                <Button
-                  type="button"
-                  variant="gradient"
-                  size="sm"
-                  className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
-                  onClick={handleInvite}
-                >
-                  {t('venueUi.staff.catalog.invite', { defaultValue: 'Пригласить' })}
-                </Button>
-              ) : null}
-              {!isAccepted ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
-                  onClick={handleOpenProfile}
-                >
-                  {t('tabs.employee.profileShort')}
-                </Button>
-              ) : null}
-            </>
+            hasActions ? (
+              <>
+                {showHireAction ? (
+                  <Button
+                    type="button"
+                    variant="gradient"
+                    size="sm"
+                    className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
+                    disabled={isAccepting}
+                    loading={isThisAccepting}
+                    onClick={handleAccept}
+                  >
+                    {t('shift.hireShort')}
+                  </Button>
+                ) : null}
+                {showInviteAction ? (
+                  <Button
+                    type="button"
+                    variant="gradient"
+                    size="sm"
+                    className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
+                    onClick={handleInvite}
+                  >
+                    {t('venueUi.staff.catalog.invite', { defaultValue: 'Пригласить' })}
+                  </Button>
+                ) : null}
+                {showProfileAction ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className={PREVIEW_CARD_ACTION_BUTTON_CLASS}
+                    onClick={handleOpenProfile}
+                  >
+                    {t('tabs.employee.profileShort')}
+                  </Button>
+                ) : null}
+              </>
+            ) : undefined
           }
         >
           <div className={cn(variant === 'moderation' && isAccepted && 'pr-20')}>

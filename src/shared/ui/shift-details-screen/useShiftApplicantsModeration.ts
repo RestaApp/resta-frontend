@@ -17,11 +17,6 @@ interface UseShiftApplicantsModerationParams {
   t: TFunction
 }
 
-const extractModerationMessage = (result: unknown): string | undefined => {
-  const r = result as { message?: string; data?: { message?: string } } | null
-  return r?.message ?? r?.data?.message
-}
-
 export const useShiftApplicantsModeration = ({
   shiftId,
   vacancyData,
@@ -75,12 +70,13 @@ export const useShiftApplicantsModeration = ({
       if (!canAccept) return
       try {
         setModerating({ id, action: 'accept' })
-        const result = await acceptApplication({
+        await acceptApplication({
           applicationId: id,
           shiftId,
         }).unwrap()
         setStatusOverrides(prev => ({ ...prev, [id]: 'accepted' }))
-        showToast(extractModerationMessage(result) ?? t('shift.applicationAccepted'), 'success')
+        // Тост — всегда из i18n: `message` бэкенда приходит на английском независимо от языка UI.
+        showToast(t('shift.applicationAccepted'), 'success')
       } catch (e) {
         const err = normalizeApiError(e, t('shift.acceptApplicationError'), t)
         showToast(err.message, 'error')
@@ -97,12 +93,12 @@ export const useShiftApplicantsModeration = ({
       if (!canModerate) return
       try {
         setModerating({ id, action: 'reject' })
-        const result = await rejectApplication({
+        await rejectApplication({
           applicationId: id,
           shiftId,
         }).unwrap()
         setStatusOverrides(prev => ({ ...prev, [id]: 'rejected' }))
-        showToast(extractModerationMessage(result) ?? t('shift.applicationRejected'), 'warning')
+        showToast(t('shift.applicationRejected'), 'warning')
       } catch (e) {
         const err = normalizeApiError(e, t('shift.rejectApplicationError'), t)
         showToast(err.message, 'error')
