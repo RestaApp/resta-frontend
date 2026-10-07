@@ -2,92 +2,111 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'motion/react'
 import { LogoWithText } from '@/components/ui/logo-with-text'
-import { HERO_TITLE_CLASS } from '@/components/ui/ui-patterns'
 import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffects'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
 
-// Свечение и фон — радиальными градиентами, а не `filter: blur`: блюр на слабом
-// железе и в части WebView отключается/не рендерится и оставляет резкий квадрат,
-// а градиент выглядит одинаково везде и не грузит GPU.
-const LOGO_GLOW_BACKGROUND =
-  'radial-gradient(circle, color-mix(in srgb, var(--primary) 45%, transparent) 0%, transparent 70%)'
+// Исходный дизайн экрана (весна 2026): размытое свечение за плиткой, рамка-«орбита»
+// по форме плитки, крупный display-заголовок и медленно плывущие размытые пятна фона.
+//
+// Два правила, чтобы он выглядел так везде:
+// 1. Никакого `will-change: transform` на элементах с `filter: blur` — iOS WebKit
+//    обрезает блюр по границе слоя, и вместо свечения получается квадрат.
+// 2. Там, где блюр отключён (`useReducedVisualEffects`), вместо непрозрачного
+//    квадрата — радиальный градиент: тот же мягкий ореол без фильтра.
 
-const orbBackground = (color: string, alpha: number) =>
-  `radial-gradient(circle, color-mix(in srgb, ${color} ${alpha}%, transparent) 0%, transparent 65%)`
+const ROLE_COLOR = 'var(--primary)'
 
-/**
- * Плавающие пятна фона. Круглые радиальные градиенты (у них нет углов, которые
- * выдавали прежние квадратные блоки при вращении) медленно дрейфуют и дышат;
- * траектории замкнуты (первый кадр = последний), поэтому цикл без рывка.
- */
-const AMBIENT_ORBS = [
-  {
-    className: 'left-[-30%] top-[-18%] size-[85vw]',
-    background: orbBackground('var(--primary)', 34),
-    duration: 16,
-    path: { x: [0, 70, -30, 0], y: [0, 50, 90, 0], scale: [1, 1.15, 0.95, 1] },
-  },
-  {
-    className: 'right-[-35%] bottom-[-22%] size-[95vw]',
-    background: orbBackground('var(--primary)', 26),
-    duration: 21,
-    path: { x: [0, -80, 30, 0], y: [0, -60, -100, 0], scale: [1.05, 0.95, 1.15, 1.05] },
-  },
-  {
-    className: 'left-[15%] top-[42%] size-[65vw]',
-    background: orbBackground('var(--primary)', 16),
-    duration: 25,
-    path: { x: [0, -50, 60, 0], y: [0, 70, -40, 0], scale: [0.95, 1.1, 1, 0.95] },
-  },
-]
+const GLOW_FALLBACK_BACKGROUND = `radial-gradient(circle, color-mix(in srgb, ${ROLE_COLOR} 55%, transparent) 0%, transparent 70%)`
+
+const AMBIENT_FALLBACK_BACKGROUND = [
+  `radial-gradient(60% 45% at 18% 12%, color-mix(in srgb, ${ROLE_COLOR} 18%, transparent) 0%, transparent 70%)`,
+  'radial-gradient(70% 50% at 85% 95%, color-mix(in srgb, var(--warning) 12%, transparent) 0%, transparent 70%)',
+].join(', ')
+
+const AMBIENT_TRANSITION = { duration: 8, repeat: Infinity, ease: 'linear' } as const
 
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
-  const breathe = !reduceMotion && !reduceVisualEffects
 
   const logoIcon = (
-    <div className="relative size-22">
+    <div className="relative">
       <motion.div
-        className="absolute -inset-8 rounded-full"
-        style={{ background: LOGO_GLOW_BACKGROUND }}
-        animate={breathe ? { opacity: [0.55, 0.9, 0.55], scale: [1, 1.12, 1] } : { opacity: 0.7 }}
-        transition={
-          breathe ? { duration: 2.6, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }
+        animate={
+          reduceMotion
+            ? { opacity: 0.5, scale: 1 }
+            : { opacity: [0.4, 0.7, 0.4], scale: [1, 1.3, 1] }
         }
+        transition={
+          reduceMotion ? { duration: 0 } : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+        }
+        className={cn('absolute inset-0 -z-10', reduceVisualEffects ? 'rounded-full' : 'blur-3xl')}
+        style={{
+          background: reduceVisualEffects
+            ? GLOW_FALLBACK_BACKGROUND
+            : `color-mix(in srgb, ${ROLE_COLOR} 55%, transparent)`,
+        }}
         aria-hidden="true"
         data-slot="loading-logo-glow"
       />
 
-      {/* Орбита: радиус (44 + 20) больше полудиагонали плитки 88px (~62),
-          чтобы дуга не проходила по её углам. */}
-      <motion.div
-        className="absolute -inset-5 rounded-full border-2 will-change-transform"
-        style={{
-          borderColor: 'color-mix(in srgb, var(--primary) 18%, transparent)',
-          borderTopColor: 'var(--primary)',
-        }}
-        animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
-        transition={
-          reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'linear' }
-        }
-        aria-hidden="true"
-        data-slot="loading-logo-ring"
-      />
+      <div className="relative mb-8 size-22">
+        <motion.div
+          className="absolute inset-0 grid place-items-center rounded-2xl bg-[image:var(--gradient-primary)] text-5xl font-extrabold text-white shadow-[var(--shadow-primary-cta)]"
+          initial={reduceMotion ? false : { scale: 0.98 }}
+          animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
+          transition={
+            reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
+          }
+        >
+          R
+        </motion.div>
 
-      <motion.div
-        className="absolute inset-0 grid place-items-center rounded-2xl bg-[image:var(--gradient-primary)] text-5xl font-extrabold text-white shadow-[var(--shadow-primary-cta)]"
-        initial={reduceMotion ? false : { scale: 0.98 }}
-        animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
-        transition={
-          reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
-        }
-      >
-        R
-      </motion.div>
+        {/* Рамка повторяет форму плитки (скруглённый квадрат), а не круг —
+            круг проходил по её углам. */}
+        <motion.div
+          className="absolute -inset-2 rounded-[2rem] border-2"
+          style={{ borderColor: ROLE_COLOR, borderTopColor: 'transparent' }}
+          animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
+          transition={
+            reduceMotion ? { duration: 0 } : { duration: 1.2, repeat: Infinity, ease: 'linear' }
+          }
+          aria-hidden="true"
+          data-slot="loading-logo-ring"
+        />
+      </div>
     </div>
+  )
+
+  const ambient = reduceVisualEffects ? (
+    <div className="absolute inset-0" style={{ background: AMBIENT_FALLBACK_BACKGROUND }} />
+  ) : (
+    <>
+      <motion.div
+        animate={
+          reduceMotion
+            ? { scale: 1, opacity: 0.12, rotate: 0 }
+            : { scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, 180, 360] }
+        }
+        transition={reduceMotion ? { duration: 0 } : AMBIENT_TRANSITION}
+        className="absolute -left-1/2 -top-1/2 h-full w-full blur-3xl"
+        style={{ background: 'var(--gradient-primary)' }}
+        data-slot="loading-primary-ambient"
+      />
+      <motion.div
+        animate={
+          reduceMotion
+            ? { scale: 1, opacity: 0.12, rotate: 0 }
+            : { scale: [1.2, 1, 1.2], opacity: [0.1, 0.2, 0.1], rotate: [360, 180, 0] }
+        }
+        transition={reduceMotion ? { duration: 0 } : AMBIENT_TRANSITION}
+        className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl"
+        style={{ background: `linear-gradient(135deg, var(--warning) 0%, ${ROLE_COLOR} 100%)` }}
+        data-slot="loading-warm-ambient"
+      />
+    </>
   )
 
   return (
@@ -96,20 +115,7 @@ export const LoadingPage = memo(function LoadingPage() {
       style={{ zIndex: Z_INDEX.boot }}
     >
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        {AMBIENT_ORBS.map((orb, index) => (
-          <motion.div
-            key={index}
-            className={cn('absolute rounded-full will-change-transform', orb.className)}
-            style={{ background: orb.background }}
-            animate={breathe ? orb.path : { x: 0, y: 0, scale: 1 }}
-            transition={
-              breathe
-                ? { duration: orb.duration, repeat: Infinity, ease: 'easeInOut' }
-                : { duration: 0 }
-            }
-            data-slot="loading-ambient-orb"
-          />
-        ))}
+        {ambient}
       </div>
 
       <div className="relative z-10 flex flex-col items-center gap-8 ui-density-page">
@@ -117,8 +123,8 @@ export const LoadingPage = memo(function LoadingPage() {
           icon={logoIcon}
           title="Resta"
           subtitle={t('loadingPage.subtitle')}
-          iconClassName="mb-3"
-          titleClassName={cn(HERO_TITLE_CLASS, 'text-gradient-primary')}
+          iconClassName="mb-0"
+          titleClassName="font-display text-5xl tracking-tight text-gradient-primary"
         />
       </div>
       <div className="absolute bottom-0 left-0 right-0 z-10 ui-density-page pb-7 text-center">
