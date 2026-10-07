@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { Zap } from 'lucide-react'
@@ -8,6 +8,7 @@ import { DrawerFooter } from '@/components/ui/drawer'
 import { HelpHint } from '@/components/ui/help-hint'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useBoostShiftMutation } from '@/services/api/purchasesApi'
+import { usersApi } from '@/services/api/usersApi'
 import { useGetCurrentSubscriptionQuery } from '@/services/api/subscriptionsApi'
 import { MONETIZATION_ENABLED } from '@/shared/config/monetization'
 import type { Shift, ShiftStatus } from '@/shared/shifts/types'
@@ -106,6 +107,14 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
   const handleDeleteRequest = useCallback(() => {
     setConfirmOpen(true)
   }, [])
+
+  // Профиль владельца подгружаем заранее: иначе запрос стартует вместе с анимацией
+  // шторки, и скелет сменяется контентом посреди движения — заметный рывок.
+  const prefetchUser = usersApi.usePrefetch('getUser')
+  const ownerId = shift?.ownerId ?? null
+  useEffect(() => {
+    if (ownerId && !controller.isOwner && allowOwnerProfileNavigation) prefetchUser(ownerId)
+  }, [allowOwnerProfileNavigation, controller.isOwner, ownerId, prefetchUser])
 
   const handleOpenOwnerProfile = useCallback(() => {
     if (shift?.ownerId) setOwnerProfileOpen(true)

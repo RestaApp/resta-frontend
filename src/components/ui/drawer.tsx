@@ -47,22 +47,18 @@ export type DrawerProps = {
 
 type OverlayProps = {
   className?: string
-  reduceVisualEffects?: boolean
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-const DrawerOverlay = memo(({ className, reduceVisualEffects, onClick }: OverlayProps) => (
+const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1, pointerEvents: 'auto' }}
     exit={{ opacity: 0, pointerEvents: 'none' }}
     transition={{ duration: 0.18 }}
-    className={cn(
-      'fixed inset-0',
-      OVERLAY_SCRIM_CLASS,
-      reduceVisualEffects ? 'backdrop-blur-none' : undefined,
-      className
-    )}
+    // Без backdrop-blur: размытие всего экрана под шторкой во время spring-анимации —
+    // главная причина рывков на первом открытии (iOS WebView). Scrim только затемняет.
+    className={cn('fixed inset-0 backdrop-blur-none', OVERLAY_SCRIM_CLASS, className)}
     onClick={onClick}
     aria-hidden="true"
   />
@@ -264,11 +260,7 @@ const DrawerContent = memo(function DrawerContent({
 
   return (
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
-      <DrawerOverlay
-        className={overlayClassName}
-        reduceVisualEffects={reduceVisualEffects}
-        onClick={handleOverlayClick}
-      />
+      <DrawerOverlay className={overlayClassName} onClick={handleOverlayClick} />
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0, pointerEvents: 'auto' }}
