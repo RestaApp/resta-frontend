@@ -32,7 +32,9 @@ export const TelegramMiniAppShell = ({ children, className }: TelegramMiniAppShe
         height: fullscreenOffset.viewportHeight,
       }}
     >
-      <div data-app-scroll-root className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+      {/* overscroll-y-none: без «резинки» iOS на верхней границе — иначе при pull-to-refresh
+          вниз уезжает весь scroll-root вместе с шапкой, а не только список. */}
+      <div data-app-scroll-root className="min-h-0 flex-1 overflow-y-auto overscroll-y-none">
         {children}
       </div>
     </div>

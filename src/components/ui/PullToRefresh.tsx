@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { TouchEvent, ReactNode } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { cn } from '@/shared/utils/cn'
@@ -58,15 +58,15 @@ export function PullToRefresh({
     [canStartPull, isTouchInsideContainer]
   )
 
-  const handleTouchMove = useCallback(
-    (event: TouchEvent<HTMLDivElement>) => {
-      if (!isTouchInsideContainer(event)) {
-        startYRef.current = null
-        isDraggingRef.current = false
-        setIsDragging(false)
-        setPullDistance(0)
-        return
-      }
+  // touchmove — нативным non-passive слушателем: React вешает touchmove как passive,
+  // и `preventDefault` в React-обработчике не работает. Без него iOS на верхней
+  // границе включает нативный overscroll и сдвигает весь scroll-root вместе с шапкой,
+  // а не только список.
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const handleTouchMove = (event: globalThis.TouchEvent) => {
       if (!isDraggingRef.current || startYRef.current === null) return
 
       const currentY = event.touches[0]?.clientY
@@ -78,12 +78,13 @@ export function PullToRefresh({
         return
       }
 
-      const nextDistance = Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE)
-      setPullDistance(nextDistance)
-      event.preventDefault()
-    },
-    [isTouchInsideContainer]
-  )
+      if (event.cancelable) event.preventDefault()
+      setPullDistance(Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE))
+    }
+
+    container.addEventListener('touchmove', handleTouchMove, { passive: false })
+    return () => container.removeEventListener('touchmove', handleTouchMove)
+  }, [])
 
   const finishPull = useCallback(async () => {
     const shouldRefresh = pullDistance >= threshold
@@ -128,7 +129,6 @@ export function PullToRefresh({
       ref={containerRef}
       className={cn('relative overscroll-y-contain', className)}
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
     >
