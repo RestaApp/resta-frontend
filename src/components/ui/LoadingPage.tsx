@@ -13,10 +13,34 @@ import { cn } from '@/shared/utils/cn'
 const LOGO_GLOW_BACKGROUND =
   'radial-gradient(circle, color-mix(in srgb, var(--primary) 45%, transparent) 0%, transparent 70%)'
 
-const AMBIENT_BACKGROUND = [
-  'radial-gradient(60% 45% at 50% 38%, color-mix(in srgb, var(--primary) 22%, transparent) 0%, transparent 70%)',
-  'radial-gradient(80% 50% at 50% 115%, color-mix(in srgb, var(--warning) 10%, transparent) 0%, transparent 70%)',
-].join(', ')
+const orbBackground = (color: string, alpha: number) =>
+  `radial-gradient(circle, color-mix(in srgb, ${color} ${alpha}%, transparent) 0%, transparent 65%)`
+
+/**
+ * Плавающие пятна фона. Круглые радиальные градиенты (у них нет углов, которые
+ * выдавали прежние квадратные блоки при вращении) медленно дрейфуют и дышат;
+ * траектории замкнуты (первый кадр = последний), поэтому цикл без рывка.
+ */
+const AMBIENT_ORBS = [
+  {
+    className: 'left-[-30%] top-[-18%] size-[85vw]',
+    background: orbBackground('var(--primary)', 34),
+    duration: 16,
+    path: { x: [0, 70, -30, 0], y: [0, 50, 90, 0], scale: [1, 1.15, 0.95, 1] },
+  },
+  {
+    className: 'right-[-35%] bottom-[-22%] size-[95vw]',
+    background: orbBackground('var(--primary)', 26),
+    duration: 21,
+    path: { x: [0, -80, 30, 0], y: [0, -60, -100, 0], scale: [1.05, 0.95, 1.15, 1.05] },
+  },
+  {
+    className: 'left-[15%] top-[42%] size-[65vw]',
+    background: orbBackground('var(--primary)', 16),
+    duration: 25,
+    path: { x: [0, -50, 60, 0], y: [0, 70, -40, 0], scale: [0.95, 1.1, 1, 0.95] },
+  },
+]
 
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
@@ -71,16 +95,22 @@ export const LoadingPage = memo(function LoadingPage() {
       className="fixed inset-0 flex flex-col items-center justify-center bg-background"
       style={{ zIndex: Z_INDEX.boot }}
     >
-      <motion.div
-        className="absolute inset-0"
-        style={{ background: AMBIENT_BACKGROUND }}
-        animate={breathe ? { opacity: [0.8, 1, 0.8] } : { opacity: 1 }}
-        transition={
-          breathe ? { duration: 5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }
-        }
-        aria-hidden="true"
-        data-slot="loading-ambient"
-      />
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        {AMBIENT_ORBS.map((orb, index) => (
+          <motion.div
+            key={index}
+            className={cn('absolute rounded-full will-change-transform', orb.className)}
+            style={{ background: orb.background }}
+            animate={breathe ? orb.path : { x: 0, y: 0, scale: 1 }}
+            transition={
+              breathe
+                ? { duration: orb.duration, repeat: Infinity, ease: 'easeInOut' }
+                : { duration: 0 }
+            }
+            data-slot="loading-ambient-orb"
+          />
+        ))}
+      </div>
 
       <div className="relative z-10 flex flex-col items-center gap-8 ui-density-page">
         <LogoWithText
