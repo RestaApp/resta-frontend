@@ -7,58 +7,62 @@ import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffe
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { cn } from '@/shared/utils/cn'
 
+// Свечение и фон — радиальными градиентами, а не `filter: blur`: блюр на слабом
+// железе и в части WebView отключается/не рендерится и оставляет резкий квадрат,
+// а градиент выглядит одинаково везде и не грузит GPU.
+const LOGO_GLOW_BACKGROUND =
+  'radial-gradient(circle, color-mix(in srgb, var(--primary) 45%, transparent) 0%, transparent 70%)'
+
+const AMBIENT_BACKGROUND = [
+  'radial-gradient(60% 45% at 50% 38%, color-mix(in srgb, var(--primary) 22%, transparent) 0%, transparent 70%)',
+  'radial-gradient(80% 50% at 50% 115%, color-mix(in srgb, var(--warning) 10%, transparent) 0%, transparent 70%)',
+].join(', ')
+
 export const LoadingPage = memo(function LoadingPage() {
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
-  const roleColorVar = 'var(--primary)'
+  const breathe = !reduceMotion && !reduceVisualEffects
 
   const logoIcon = (
-    <div className="relative isolate">
+    <div className="relative size-22">
       <motion.div
-        animate={
-          reduceMotion
-            ? { opacity: 0.5, scale: 1 }
-            : { opacity: [0.4, 0.7, 0.4], scale: [1, 1.3, 1] }
-        }
+        className="absolute -inset-8 rounded-full"
+        style={{ background: LOGO_GLOW_BACKGROUND }}
+        animate={breathe ? { opacity: [0.55, 0.9, 0.55], scale: [1, 1.12, 1] } : { opacity: 0.7 }}
         transition={
-          reduceMotion ? { duration: 0 } : { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+          breathe ? { duration: 2.6, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }
         }
-        className={cn(
-          'absolute inset-0 -z-10 will-change-transform',
-          reduceVisualEffects ? 'opacity-40' : 'blur-3xl'
-        )}
-        style={{
-          background: `color-mix(in srgb, ${roleColorVar} 55%, transparent)`,
-        }}
+        aria-hidden="true"
         data-slot="loading-logo-glow"
       />
 
-      <div className="relative size-22">
-        <motion.div
-          className="absolute inset-0 grid place-items-center rounded-2xl bg-[image:var(--gradient-primary)] text-5xl font-extrabold text-white shadow-[var(--shadow-primary-cta)]"
-          initial={reduceMotion ? false : { scale: 0.98 }}
-          animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
-          transition={
-            reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
-          }
-        >
-          R
-        </motion.div>
+      {/* Орбита: радиус (44 + 20) больше полудиагонали плитки 88px (~62),
+          чтобы дуга не проходила по её углам. */}
+      <motion.div
+        className="absolute -inset-5 rounded-full border-2 will-change-transform"
+        style={{
+          borderColor: 'color-mix(in srgb, var(--primary) 18%, transparent)',
+          borderTopColor: 'var(--primary)',
+        }}
+        animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
+        transition={
+          reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'linear' }
+        }
+        aria-hidden="true"
+        data-slot="loading-logo-ring"
+      />
 
-        <motion.div
-          className="absolute -inset-2 rounded-full border-2 will-change-transform"
-          style={{
-            borderColor: roleColorVar,
-            borderTopColor: 'transparent',
-          }}
-          animate={reduceMotion ? { rotate: 0 } : { rotate: 360 }}
-          transition={
-            reduceMotion ? { duration: 0 } : { duration: 3, repeat: Infinity, ease: 'linear' }
-          }
-          aria-hidden="true"
-        />
-      </div>
+      <motion.div
+        className="absolute inset-0 grid place-items-center rounded-2xl bg-[image:var(--gradient-primary)] text-5xl font-extrabold text-white shadow-[var(--shadow-primary-cta)]"
+        initial={reduceMotion ? false : { scale: 0.98 }}
+        animate={reduceMotion ? { scale: 1 } : { scale: [0.985, 1, 0.985] }}
+        transition={
+          reduceMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
+        }
+      >
+        R
+      </motion.div>
     </div>
   )
 
@@ -67,45 +71,23 @@ export const LoadingPage = memo(function LoadingPage() {
       className="fixed inset-0 flex flex-col items-center justify-center bg-background"
       style={{ zIndex: Z_INDEX.boot }}
     >
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={
-            reduceMotion
-              ? { scale: 1, opacity: 0.12, rotate: 0 }
-              : { scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, 180, 360] }
-          }
-          transition={
-            reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
-          }
-          className="absolute -left-1/2 -top-1/2 h-full w-full blur-3xl will-change-transform"
-          style={{ background: 'var(--gradient-primary)' }}
-          aria-hidden="true"
-          data-slot="loading-primary-ambient"
-        />
-        <motion.div
-          animate={
-            reduceMotion
-              ? { scale: 1, opacity: 0.12, rotate: 0 }
-              : { scale: [1.2, 1, 1.2], opacity: [0.1, 0.2, 0.1], rotate: [360, 180, 0] }
-          }
-          transition={
-            reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: 'linear' }
-          }
-          className="absolute -bottom-1/2 -right-1/2 h-full w-full blur-3xl will-change-transform"
-          style={{
-            background: 'linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%)',
-          }}
-          aria-hidden="true"
-          data-slot="loading-warm-ambient"
-        />
-      </div>
+      <motion.div
+        className="absolute inset-0"
+        style={{ background: AMBIENT_BACKGROUND }}
+        animate={breathe ? { opacity: [0.8, 1, 0.8] } : { opacity: 1 }}
+        transition={
+          breathe ? { duration: 5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }
+        }
+        aria-hidden="true"
+        data-slot="loading-ambient"
+      />
 
       <div className="relative z-10 flex flex-col items-center gap-8 ui-density-page">
         <LogoWithText
           icon={logoIcon}
           title="Resta"
           subtitle={t('loadingPage.subtitle')}
-          iconClassName="mb-0"
+          iconClassName="mb-3"
           titleClassName={cn(HERO_TITLE_CLASS, 'text-gradient-primary')}
         />
       </div>
