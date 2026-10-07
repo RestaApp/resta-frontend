@@ -233,8 +233,9 @@ textarea:focus-visible {
 }
 
 @layer utilities {
+  /* Зазор над safe-area (home-индикатор): 4px, в связке с BOTTOM_NAV_HEIGHT_CSS. */
   .pb-safe-nav {
-    padding-bottom: calc(var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)) + 12px);
+    padding-bottom: calc(var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom)) + 4px);
   }
 
   .font-display {
