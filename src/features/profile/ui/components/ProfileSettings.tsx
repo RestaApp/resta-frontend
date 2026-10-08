@@ -26,6 +26,8 @@ import {
 } from '@/components/ui/shift-card/shift-card-styles'
 import { cn } from '@/shared/utils/cn'
 import { setAppLanguage, type Locale } from '@/shared/i18n/config'
+import { useUpdateUserMutation } from '@/services/api/usersApi'
+import { useCurrentUserId } from '@/shared/shifts/useCurrentUserId'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 import { SupportFormDrawer } from './SupportFormDrawer'
 import { LanguageToggle } from './LanguageToggle'
@@ -59,9 +61,22 @@ export const ProfileSettings = memo(function ProfileSettings({
   const [isLegalOpen, setIsLegalOpen] = useState(false)
   const [isDeleteDrawerOpen, setIsDeleteDrawerOpen] = useState(false)
 
-  const handleLanguageChange = useCallback((locale: Locale) => {
-    void setAppLanguage(locale)
-  }, [])
+  const currentUserId = useCurrentUserId()
+  const [updateUser] = useUpdateUserMutation()
+
+  // Язык уведомлений (in-app и Telegram) хранится на бэке в users.language —
+  // синхронизируем вместе с языком интерфейса; сбой не мешает переключению UI.
+  const handleLanguageChange = useCallback(
+    (locale: Locale) => {
+      void setAppLanguage(locale)
+      if (currentUserId) {
+        void updateUser({ id: currentUserId, data: { user: { language: locale } } })
+          .unwrap()
+          .catch(() => undefined)
+      }
+    },
+    [currentUserId, updateUser]
+  )
 
   return (
     <div className="ui-density-stack">
