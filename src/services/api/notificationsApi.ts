@@ -97,6 +97,12 @@ export const notificationsApi = api.injectEndpoints({
         method: 'GET',
         params: params ?? {},
       }),
+      // Бэкенд до 1.108.2 отдавал и архивные без фильтра status — удалённое в
+      // приложении уведомление возвращалось при следующем открытии списка.
+      transformResponse: (response: NotificationsListResponse) => ({
+        ...response,
+        data: response.data.filter(item => item.status !== 'archived'),
+      }),
       // Все страницы накапливаем в одном кэш-кей ('getNotifications'), чтобы
       // load-more дописывал, а оптимистичные апдейты (arg=undefined) попадали в ту же запись.
       serializeQueryArgs: ({ endpointName }) => endpointName,
