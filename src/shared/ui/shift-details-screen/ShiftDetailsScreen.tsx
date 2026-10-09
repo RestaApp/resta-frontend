@@ -70,6 +70,7 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
 
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [withdrawConfirmOpen, setWithdrawConfirmOpen] = useState(false)
   const [ownerProfileOpen, setOwnerProfileOpen] = useState(false)
   const { hourlyRate, vacancyTitle, positionLine, hasCustomTitle } = useShiftDetails(
     shift,
@@ -266,18 +267,32 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
       </DrawerFooter>
     ) : null
 
-  // Принятому/отклонённому соискателю действий нет, но статус заявки должен быть
-  // виден и в деталях (иначе из уведомления «Заявка принята» открывается экран без
-  // единого признака принятия).
+  // Принятому/отклонённому соискателю статус заявки должен быть виден и в деталях
+  // (иначе из уведомления «Заявка принята» открывается экран без единого признака
+  // принятия). Принятый может отказаться от смены — бэк пустит, пока до начала
+  // больше 8 часов, иначе вернёт 422 `too_late_accepted` (текст — в useShiftApplication).
   const applicantStatusFooter =
     !controller.isOwner && (controller.isAccepted || controller.isRejected) ? (
       <DrawerFooter className="pb-3">
-        <div className="flex justify-center rounded-xl border border-border/60 px-4 py-3">
-          <Badge variant={controller.isAccepted ? 'accepted' : 'rejected'}>
-            {controller.isAccepted
-              ? t('shift.applicationAccepted')
-              : t('shift.applicationRejected')}
-          </Badge>
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-center rounded-xl border border-border/60 px-4 py-3">
+            <Badge variant={controller.isAccepted ? 'accepted' : 'rejected'}>
+              {controller.isAccepted
+                ? t('shift.applicationAccepted')
+                : t('shift.applicationRejected')}
+            </Badge>
+          </div>
+          {controller.isAccepted ? (
+            <Button
+              onClick={() => setWithdrawConfirmOpen(true)}
+              disabled={isLoading}
+              variant="outline"
+              size="md"
+              className="w-full"
+            >
+              {isLoading ? t('shift.cancelling') : t('shift.withdrawAcceptedApplication')}
+            </Button>
+          ) : null}
         </div>
       </DrawerFooter>
     ) : null
@@ -347,6 +362,20 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
         confirmLabel={t('common.delete')}
         confirmVariant="destructive"
         onConfirm={confirmDelete}
+      />
+
+      <ConfirmDialog
+        open={withdrawConfirmOpen}
+        onOpenChange={setWithdrawConfirmOpen}
+        title={t('shift.withdrawConfirmTitle')}
+        description={t('shift.withdrawConfirmDesc')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('shift.withdrawAcceptedApplication')}
+        confirmVariant="destructive"
+        onConfirm={() => {
+          setWithdrawConfirmOpen(false)
+          void controller.handleCancel()
+        }}
       />
     </>
   )

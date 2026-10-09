@@ -706,7 +706,11 @@
     "payPlaceholder": "How much per shift?",
     "payMonthLabel": "Monthly salary",
     "payMonthPlaceholder": "How much per month?",
-    "addShiftAria": "Add shift"
+    "addShiftAria": "Add shift",
+    "withdrawAcceptedApplication": "Withdraw from shift",
+    "withdrawConfirmTitle": "Withdraw from this shift?",
+    "withdrawConfirmDesc": "The venue will be notified and the shift will reopen. You can withdraw no later than 8 hours before it starts.",
+    "cancelTooLateAccepted": "The shift starts in less than 8 hours — withdrawing is no longer possible. Please contact the venue directly."
   },
   "activity": {
     "addShiftOnboardingText": "Tap “+” to create a free shift for replacement.",
