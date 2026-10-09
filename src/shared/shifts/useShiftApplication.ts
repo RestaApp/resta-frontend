@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApplyToShiftMutation, useCancelApplicationMutation } from '@/services/api/shiftsApi'
 import { useToast } from '@/shared/lib/hooks/useToast'
-import { normalizeApiError } from '@/shared/utils/apiErrors'
+import { getApiErrorCode, normalizeApiError } from '@/shared/utils/apiErrors'
 
 interface UseShiftApplicationOptions {
   /** Отключается в flow, где успешный отклик уже подтверждается отдельным экраном. */
@@ -51,6 +51,10 @@ export const useShiftApplication = ({
         return result
       } catch (e) {
         const err = normalizeApiError(e, t('shift.cancelApplicationError'), t)
+        // Бэк отдаёт английский текст; доменный код переводим сами.
+        if (getApiErrorCode(e) === 'too_late_accepted') {
+          err.message = t('shift.cancelTooLateAccepted')
+        }
         showToast(err.message, 'error')
         throw err
       }

@@ -35,6 +35,13 @@ const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'obj
 const mapMissingFieldsToLabels = (fields: string[], t: TFunction): string[] =>
   fields.map(f => t(`profileFields.${f}`) || f)
 
+/** Доменный `code` из тела ошибки RTK Query (undefined, если его нет). */
+export const getApiErrorCode = (error: unknown): string | undefined => {
+  if (!isObject(error) || !('data' in error) || !isObject(error.data)) return undefined
+  const code = (error.data as ApiErrorData).code
+  return typeof code === 'string' ? code : undefined
+}
+
 const isNormalizedApiError = (v: unknown): v is NormalizedApiError =>
   isObject(v) && 'kind' in v && typeof v.kind === 'string'
 

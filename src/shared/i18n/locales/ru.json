@@ -714,7 +714,11 @@
     "payPlaceholder": "Сколько платят за смену?",
     "payMonthLabel": "Оплата в месяц",
     "payMonthPlaceholder": "Сколько платят в месяц?",
-    "addShiftAria": "Добавить смену"
+    "addShiftAria": "Добавить смену",
+    "withdrawAcceptedApplication": "Отказаться от смены",
+    "withdrawConfirmTitle": "Отказаться от смены?",
+    "withdrawConfirmDesc": "Заведение получит уведомление, а смена снова станет открытой. Отказаться можно не позже чем за 8 часов до начала.",
+    "cancelTooLateAccepted": "До начала смены меньше 8 часов — отказаться уже нельзя. Свяжитесь с заведением напрямую."
   },
   "activity": {
     "addShiftOnboardingText": "Нажмите «+», чтобы создать свободную смену для замены.",
