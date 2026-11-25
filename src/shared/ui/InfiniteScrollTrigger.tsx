@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { RefreshCw, CheckCircle2 } from 'lucide-react'
 import { Loader } from '@/components/ui/loader'
 import { Button } from '@/components/ui/button'
+import { getAppScrollRoot } from '@/shared/ui/appScroll'
+
+/** Следующая страница запрашивается, когда до конца списка остаётся около экрана. */
+const PRELOAD_MARGIN = '800px 0px'
 
 interface InfiniteScrollProps {
   onLoadMore: () => void
@@ -41,7 +45,9 @@ export const InfiniteScrollTrigger = ({
           onLoadMore()
         }
       },
-      { threshold: 0, rootMargin: '320px 0px' }
+      // root — сам scroll-root: без него rootMargin считается от окна браузера и
+      // обрезается границей контейнера, то есть заранее не срабатывает.
+      { threshold: 0, root: getAppScrollRoot(), rootMargin: PRELOAD_MARGIN }
     )
 
     const currentTarget = observerTarget.current

@@ -10,6 +10,7 @@ import { useProfileCompleteness } from '@/shared/lib/hooks/useProfileCompletenes
 import type { Tab, Screen } from '@/shared/types/navigation.types'
 import type { UiRole } from '@/shared/types/roles.types'
 import { AppHeader } from '@/components/AppHeader'
+import { PageOverscroll } from '@/components/ui/PageOverscroll'
 import { setLocalStorageItem } from '@/shared/utils/localStorage'
 import { STORAGE_KEYS } from '@/shared/constants/storage'
 import { APP_EVENTS, emitAppEvent, onAppEvent } from '@/shared/utils/appEvents'
@@ -70,17 +71,21 @@ export const Dashboard = ({ role, onNavigate, currentScreen }: DashboardProps) =
 
   return (
     <div className="bg-background" style={{ paddingBottom: BOTTOM_NAV_HEIGHT_PX }}>
-      {activeTab === 'feed' ||
-      activeTab === 'activity' ||
-      activeTab === 'myshifts' ||
-      activeTab === 'staff' ||
-      (activeTab === 'profile' && isProfileHeaderHidden) ? null : (
-        <AppHeader activeTab={activeTab} role={role} />
-      )}
+      {/* Шапка и содержимое вкладки пружинят вместе; fixed-слои (навигация,
+          оверлеи) остаются снаружи — сдвиг страницы их не трогает. */}
+      <PageOverscroll>
+        {activeTab === 'feed' ||
+        activeTab === 'activity' ||
+        activeTab === 'myshifts' ||
+        activeTab === 'staff' ||
+        (activeTab === 'profile' && isProfileHeaderHidden) ? null : (
+          <AppHeader activeTab={activeTab} role={role} />
+        )}
+        <main className="ui-app-frame">
+          <TabContent activeTab={activeTab} />
+        </main>
+      </PageOverscroll>
       {role === 'venue' ? <VenueAddShiftListener /> : null}
-      <main className="ui-app-frame">
-        <TabContent activeTab={activeTab} />
-      </main>
 
       <BottomNav
         activeTab={activeTab}

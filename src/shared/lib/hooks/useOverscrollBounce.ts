@@ -1,28 +1,36 @@
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import type { MotionValue } from 'motion/react'
 import { getAppScrollRoot } from '@/shared/ui/appScroll'
 import { isBodyScrollLocked } from '@/shared/lib/hooks/useBodyScrollLock'
 
-/** Предел смещения: к нему кривая сопротивления стремится, но не достигает. */
-export const MAX_OVERSCROLL_DISTANCE = 140
+// ── Параметры ощущения. Подбираются на реальном устройстве. ──────────────────
+/** Предел смещения под пальцем: к нему кривая сопротивления стремится, но не достигает. */
+const MAX_DRAG_DISTANCE = 140
 /** Мёртвая зона: до неё жест не считается тягой (тап, дрожание пальца, выбор оси). */
 const ACTIVATION_SLOP = 8
-/** Допуск на дробный scrollTop у нижнего края. */
-const EDGE_EPSILON = 1
-/** Пружина возврата: критическое затухание — возвращается без колебаний. */
-const SETTLE_SPRING = { type: 'spring', stiffness: 300, damping: 35 } as const
+/**
+ * Пружина возврата и отскока. Критическое затухание (damping ≈ 2·√stiffness) —
+ * без колебаний; чем меньше stiffness, тем мягче и дольше дуга.
+ */
+const SPRING = { type: 'spring', stiffness: 170, damping: 26 } as const
 /** Бросок медленнее этого (px/с) в край не отскакивает. */
 const FLING_MIN_VELOCITY = 300
-/** Потолок скорости броска (px/с): ограничивает вылет за край (~50px). */
-const FLING_MAX_VELOCITY = 2500
+/** Потолок скорости броска (px/с): ограничивает вылет за край (~110px). */
+const FLING_MAX_VELOCITY = 4000
+/**
+ * Отскок стартует, когда до края осталось меньше этого времени полёта (с).
+ * Событие скролла приходит на кадр-два позже самой прокрутки: если ждать удара
+ * в край, содержимое успевает замереть, прежде чем пружина тронется.
+ */
+const FLING_LOOKAHEAD_S = 0.035
 /** Замер скорости старше этого (мс) — уже не бросок, а остановка или прыжок скролла. */
 const FLING_SAMPLE_MAX_AGE_MS = 80
+/** Допуск на дробный scrollTop у нижнего края. */
+const EDGE_EPSILON = 1
 
 type Edge = 'top' | 'bottom'
-/** Куда сдвинуто содержимое: 1 — вниз (верхний край), -1 — вверх (нижний), 0 — на месте. */
-export type OverscrollDirection = -1 | 0 | 1
 
 interface DragGesture {
   anchorX: number
@@ -32,12 +40,10 @@ interface DragGesture {
 }
 
 interface UseOverscrollBounceOptions {
-  /** Тяга и отскок выключены (например, пока содержимое удерживается обновлением). */
+  /** Имитация выключена: слушатели не вешаются (нативная резинка, идёт обновление). */
   disabled?: boolean
-  /** Смещение покоя: туда пружина возвращает содержимое, когда палец отпущен. */
+  /** Смещение покоя: туда пружина возвращает содержимое, когда его ничто не тянет. */
   restOffset?: number
-  /** Палец отпущен после тяги; `offset` — смещение в момент отпускания. */
-  onRelease?: (offset: number) => void
 }
 
 interface OverscrollBounce<T extends HTMLElement> {
@@ -45,58 +51,56 @@ interface OverscrollBounce<T extends HTMLElement> {
   containerRef: RefObject<T | null>
   /** Смещение содержимого по Y: >0 — оттянуто вниз, <0 — вверх. */
   offset: MotionValue<number>
-  direction: OverscrollDirection
+  /** Содержимое сейчас сдвинуто (жест, отскок или удержание на `restOffset`). */
+  isShifted: boolean
 }
 
 /**
  * «Резинка»: у начала содержимое идёт за пальцем 1:1, дальше плавно замедляется
- * и асимптотически упирается в MAX_OVERSCROLL_DISTANCE — без жёсткой остановки.
+ * и асимптотически упирается в MAX_DRAG_DISTANCE — без жёсткой остановки.
  */
 const applyResistance = (distance: number): number =>
-  (distance * MAX_OVERSCROLL_DISTANCE) / (MAX_OVERSCROLL_DISTANCE + distance)
+  (distance * MAX_DRAG_DISTANCE) / (MAX_DRAG_DISTANCE + distance)
 
-const getEdges = (root: HTMLElement) => ({
-  atTop: root.scrollTop <= 0,
-  atBottom: root.scrollTop >= root.scrollHeight - root.clientHeight - EDGE_EPSILON,
+/** Сколько осталось прокрутить до каждого края. */
+const getEdgeDistances = (root: HTMLElement) => ({
+  toTop: root.scrollTop,
+  toBottom: root.scrollHeight - root.clientHeight - root.scrollTop,
 })
 
 /** Край, за который уводит вертикальное движение пальца; null — это обычный скролл. */
 const resolvePulledEdge = (root: HTMLElement, deltaY: number): Edge | null => {
-  const { atTop, atBottom } = getEdges(root)
-  if (deltaY > 0 && atTop) return 'top'
-  if (deltaY < 0 && atBottom) return 'bottom'
+  const { toTop, toBottom } = getEdgeDistances(root)
+  if (deltaY > 0 && toTop <= 0) return 'top'
+  if (deltaY < 0 && toBottom <= EDGE_EPSILON) return 'bottom'
   return null
 }
 
 /**
- * Резинка на краях единого scroll-root приложения, как в нативных списках:
- * содержимое тянется за пальцем за край и пружинит обратно, а бросок в край
- * отскакивает. Нативный overscroll у scroll-root выключен (он сдвигал бы всю
- * страницу вместе с шапкой), поэтому эффект воспроизводится здесь — сдвигом
- * только самого содержимого.
+ * Имитация резинки на краях единого scroll-root — для платформ без нативной
+ * (на iOS её даёт система, см. `PageOverscroll`). Содержимое тянется за пальцем
+ * за край и пружинит обратно, а бросок в край отскакивает.
  *
  * Хук отдаёт `offset` (motion value) — потребитель вешает его на `y` содержимого.
+ * Удержание на `restOffset` работает и при `disabled`.
  */
 export const useOverscrollBounce = <T extends HTMLElement = HTMLDivElement>({
   disabled = false,
   restOffset = 0,
-  onRelease,
 }: UseOverscrollBounceOptions = {}): OverscrollBounce<T> => {
   const reduceMotion = useReducedMotion()
   const containerRef = useRef<T>(null)
   // Смещение — motion value: меняется на каждом touchmove мимо рендера React.
   const offset = useMotionValue(0)
-  const [direction, setDirection] = useState<OverscrollDirection>(0)
+  const [isShifted, setIsShifted] = useState(false)
   const stopAnimationRef = useRef<(() => void) | null>(null)
 
-  useMotionValueEvent(offset, 'change', value => {
-    setDirection(value > 0 ? 1 : value < 0 ? -1 : 0)
-  })
+  useMotionValueEvent(offset, 'change', value => setIsShifted(value !== 0))
 
   const settle = useCallback(
     (target: number) => {
       stopAnimationRef.current?.()
-      const controls = animate(offset, target, reduceMotion ? { duration: 0 } : SETTLE_SPRING)
+      const controls = animate(offset, target, reduceMotion ? { duration: 0 } : SPRING)
       stopAnimationRef.current = () => controls.stop()
     },
     [offset, reduceMotion]
@@ -107,28 +111,23 @@ export const useOverscrollBounce = <T extends HTMLElement = HTMLDivElement>({
     settle(restOffset)
   }, [restOffset, settle])
 
-  const canStart = useEffectEvent(() => !disabled && !isBodyScrollLocked())
-  const release = useEffectEvent(() => {
-    onRelease?.(offset.get())
-    settle(restOffset)
-  })
+  useEffect(() => () => stopAnimationRef.current?.(), [])
 
   useEffect(() => {
     const container = containerRef.current
     const root = getAppScrollRoot()
-    if (!container || !root) return
+    if (disabled || !container || !root) return
 
     let gesture: DragGesture | null = null
     let isTouching = false
+    let isBouncing = false
     let lastScrollTop = root.scrollTop
     let lastScrollTime = 0
-    /** Скорость скролла, px/с; знак как у scrollTop (>0 — к нижнему краю). */
-    let scrollVelocity = 0
 
     const handleTouchStart = (event: TouchEvent) => {
       const touch = event.touches[0]
       gesture =
-        touch && event.touches.length === 1 && canStart()
+        touch && event.touches.length === 1 && !isBodyScrollLocked()
           ? { anchorX: touch.clientX, anchorY: touch.clientY, edge: null }
           : null
     }
@@ -164,6 +163,7 @@ export const useOverscrollBounce = <T extends HTMLElement = HTMLDivElement>({
         // Отсчёт от границы мёртвой зоны: содержимое трогается с нуля, без скачка.
         gesture.anchorY += edge === 'top' ? ACTIVATION_SLOP : -ACTIVATION_SLOP
         stopAnimationRef.current?.()
+        isBouncing = false
       }
 
       const sign = gesture.edge === 'top' ? 1 : -1
@@ -180,7 +180,7 @@ export const useOverscrollBounce = <T extends HTMLElement = HTMLDivElement>({
     const handleTouchEnd = () => {
       const wasPulling = gesture?.edge != null
       gesture = null
-      if (wasPulling) release()
+      if (wasPulling) settle(restOffset)
     }
 
     const handleRootTouch = (event: TouchEvent) => {
@@ -189,36 +189,36 @@ export const useOverscrollBounce = <T extends HTMLElement = HTMLDivElement>({
 
     // Бросок в край: браузер останавливает скролл у границы, и мы продолжаем
     // движение пружиной с той же скоростью — содержимое вылетает за край и
-    // возвращается. Скорость берём из замеров до удара: сам удар уже обрезан.
+    // возвращается.
     const handleScroll = (event: Event) => {
       const elapsed = event.timeStamp - lastScrollTime
-      const isFresh = elapsed > 0 && elapsed <= FLING_SAMPLE_MAX_AGE_MS
-      const { atTop, atBottom } = getEdges(root)
-      const hitEdge = (atTop && scrollVelocity < 0) || (atBottom && scrollVelocity > 0)
-
-      if (
-        hitEdge &&
-        isFresh &&
-        Math.abs(scrollVelocity) >= FLING_MIN_VELOCITY &&
-        !isTouching &&
-        !reduceMotion &&
-        offset.get() === 0 &&
-        canStart()
-      ) {
-        const speed = Math.min(Math.abs(scrollVelocity), FLING_MAX_VELOCITY)
-        stopAnimationRef.current?.()
-        // Пружина из нуля в ноль с начальной скоростью: вылет и возврат.
-        const controls = animate(offset, 0, {
-          ...SETTLE_SPRING,
-          velocity: -Math.sign(scrollVelocity) * speed,
-        })
-        stopAnimationRef.current = () => controls.stop()
-      }
-
-      scrollVelocity =
-        isFresh && !atTop && !atBottom ? ((root.scrollTop - lastScrollTop) / elapsed) * 1000 : 0
+      // Старый замер — не бросок: скролл стоял либо это программный прыжок.
+      const velocity =
+        elapsed > 0 && elapsed <= FLING_SAMPLE_MAX_AGE_MS
+          ? ((root.scrollTop - lastScrollTop) / elapsed) * 1000
+          : 0
       lastScrollTop = root.scrollTop
       lastScrollTime = event.timeStamp
+
+      const speed = Math.abs(velocity)
+      if (speed < FLING_MIN_VELOCITY || isTouching || isBouncing || reduceMotion) return
+      if (offset.get() !== restOffset || isBodyScrollLocked()) return
+
+      const { toTop, toBottom } = getEdgeDistances(root)
+      const distanceToEdge = velocity < 0 ? toTop : toBottom
+      if (distanceToEdge > speed * FLING_LOOKAHEAD_S) return
+
+      isBouncing = true
+      stopAnimationRef.current?.()
+      // Пружина из покоя в покой с начальной скоростью: вылет и возврат.
+      const controls = animate(offset, restOffset, {
+        ...SPRING,
+        velocity: -Math.sign(velocity) * Math.min(speed, FLING_MAX_VELOCITY),
+        onComplete: () => {
+          isBouncing = false
+        },
+      })
+      stopAnimationRef.current = () => controls.stop()
     }
 
     container.addEventListener('touchstart', handleTouchStart, { passive: true })
@@ -239,9 +239,8 @@ export const useOverscrollBounce = <T extends HTMLElement = HTMLDivElement>({
       root.removeEventListener('touchend', handleRootTouch)
       root.removeEventListener('touchcancel', handleRootTouch)
       root.removeEventListener('scroll', handleScroll)
-      stopAnimationRef.current?.()
     }
-  }, [offset, reduceMotion])
+  }, [disabled, offset, reduceMotion, restOffset, settle])
 
-  return { containerRef, offset, direction }
+  return { containerRef, offset, isShifted }
 }

@@ -76,7 +76,8 @@ export const CatalogListShell = ({
   return (
     <>
       {onRefresh ? (
-        <PullToRefresh onRefresh={onRefresh} disabled={refreshDisabled} staticContent={filters}>
+        <PullToRefresh onRefresh={onRefresh} disabled={refreshDisabled}>
+          {filters}
           {listBody}
         </PullToRefresh>
       ) : (
