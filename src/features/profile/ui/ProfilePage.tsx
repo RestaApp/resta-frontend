@@ -13,6 +13,7 @@ import { TermsOfServicePage } from '@/shared/ui/legal/TermsOfServicePage'
 import { FaqPage } from '@/shared/ui/help/FaqPage'
 import { ProfileSkeleton } from '@/components/ui/profile-skeleton'
 import { ErrorState } from '@/components/ui/states'
+import { OverscrollArea } from '@/components/ui/OverscrollArea'
 import { APP_EVENTS, emitAppEvent } from '@/shared/utils/appEvents'
 
 type LegalScreen = 'none' | 'privacy' | 'terms' | 'faq'
@@ -97,7 +98,7 @@ export const ProfilePage = memo(() => {
   }
 
   return (
-    <div className="pb-4 pt-2 ui-density-page ui-density-stack">
+    <OverscrollArea className="pb-4 pt-2 ui-density-page ui-density-stack">
       {apiRole === 'restaurant' ? (
         <VenueProfileOverview
           profile={profileViewModel}
@@ -151,7 +152,7 @@ export const ProfilePage = memo(() => {
           apiRole={apiRole}
         />
       ) : null}
-    </div>
+    </OverscrollArea>
   )
 })
 ProfilePage.displayName = 'ProfilePage'
