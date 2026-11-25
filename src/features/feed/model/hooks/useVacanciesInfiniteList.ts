@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback, useEffect } from 'react'
-import { useGetVacanciesQuery } from '@/services/api/shiftsApi'
+import { useGetVacanciesQuery, useLazyGetVacanciesQuery } from '@/services/api/shiftsApi'
 import type { VacancyApiItem, GetVacanciesParams } from '@/services/api/shiftsApi'
 import type { PaginationMeta } from '@/shared/api/pagination'
 import type { Shift } from '@/shared/shifts/types'
@@ -78,11 +78,11 @@ export const useVacanciesInfiniteList = (
     isFetching,
     isError,
     error,
-    refetch,
   } = useGetVacanciesQuery(queryParams, {
     refetchOnMountOrArgChange: false,
     skip: !enabled,
   })
+  const [fetchVacancies] = useLazyGetVacanciesQuery()
 
   const dataSnapshot = useMemo(() => {
     const apiItems = response?.data
@@ -176,12 +176,14 @@ export const useVacanciesInfiniteList = (
   const refresh = useCallback(async () => {
     if (!enabled) return
     setLastStableData(null)
-    if (page !== 1) {
-      setPaginationState({ queryIdentity, page: 1 })
-      return
-    }
-    await refetch()
-  }, [enabled, page, queryIdentity, refetch])
+    // Первая страница запрашивается явно, и refresh ждёт именно её: спиннер
+    // pull-to-refresh держится до ответа при любой глубине догрузки. Запрос
+    // стартует до смены страницы, поэтому useGetVacanciesQuery с тем же ключом
+    // кэша подхватывает его, а не шлёт второй.
+    const firstPageRequest = fetchVacancies({ ...queryParams, page: 1 })
+    setPaginationState({ queryIdentity, page: 1 })
+    await firstPageRequest
+  }, [enabled, fetchVacancies, queryIdentity, queryParams])
 
   const isInitialLoading = useMemo(() => {
     if (!enabled) return false

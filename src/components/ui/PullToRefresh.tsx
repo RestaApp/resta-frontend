@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { TouchEvent, ReactNode } from 'react'
+import type { ReactNode, TouchEvent as ReactTouchEvent } from 'react'
+import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
 import { Loader } from '@/components/ui/loader'
 import { cn } from '@/shared/utils/cn'
 import { getAppScrollTop } from '@/shared/ui/appScroll'
@@ -14,8 +15,27 @@ interface PullToRefreshProps {
   threshold?: number
 }
 
-const MAX_PULL_DISTANCE = 120
-const RESISTANCE = 0.45
+/** Предел сдвига списка: к нему кривая сопротивления стремится, но не достигает. */
+const MAX_PULL_DISTANCE = 140
+/** Мёртвая зона: до неё жест не считается тягой (тап, дрожание пальца, выбор оси). */
+const ACTIVATION_SLOP = 8
+/** Высота слота спиннера, который выезжает из-под верхней границы списка. */
+const INDICATOR_HEIGHT = 32
+const SETTLE_TRANSITION = { duration: 0.2, ease: 'easeOut' } as const
+
+/**
+ * «Резинка»: у начала список идёт за пальцем 1:1, дальше плавно замедляется
+ * и асимптотически упирается в MAX_PULL_DISTANCE — без жёсткой остановки.
+ */
+const applyResistance = (delta: number): number =>
+  (delta * MAX_PULL_DISTANCE) / (MAX_PULL_DISTANCE + delta)
+
+interface PullGesture {
+  anchorX: number
+  anchorY: number
+  /** Жест распознан как тяга вниз от верхней границы. */
+  engaged: boolean
+}
 
 export function PullToRefresh({
   children,
@@ -25,38 +45,37 @@ export function PullToRefresh({
   disabled = false,
   threshold = 72,
 }: PullToRefreshProps) {
-  const [pullDistance, setPullDistance] = useState(0)
+  const reduceMotion = useReducedMotion()
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
+  // Жест или возврат списка ещё идут: спиннер смонтирован, слой списка промотирован.
+  const [isActive, setIsActive] = useState(false)
+
+  // Сдвиг списка — motion value: меняется на каждом touchmove мимо рендера React.
+  const pull = useMotionValue(0)
+  const indicatorY = useTransform(pull, value => value - INDICATOR_HEIGHT)
+  const indicatorOpacity = useTransform(pull, [0, threshold], [0, 1])
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const startYRef = useRef<number | null>(null)
-  const isDraggingRef = useRef(false)
+  const gestureRef = useRef<PullGesture | null>(null)
+  const stopSettleRef = useRef<(() => void) | null>(null)
 
-  const isTouchInsideContainer = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    const target = event.target
-    if (!(target instanceof Node)) return false
-    return containerRef.current?.contains(target) ?? false
-  }, [])
-
-  const canStartPull = useCallback(() => {
-    return !disabled && !isRefreshing && !isBodyScrollLocked() && getAppScrollTop() <= 0
-  }, [disabled, isRefreshing])
-
-  const handleTouchStart = useCallback(
-    (event: TouchEvent<HTMLDivElement>) => {
-      if (!isTouchInsideContainer(event)) return
-      if (!canStartPull()) return
-      if (event.touches.length !== 1) return
-      const touch = event.touches[0]
-      if (!touch) return
-
-      startYRef.current = touch.clientY
-      isDraggingRef.current = true
-      setIsDragging(true)
+  const settle = useCallback(
+    (target: number, onSettled?: () => void) => {
+      stopSettleRef.current?.()
+      const controls = animate(pull, target, {
+        ...(reduceMotion ? { duration: 0 } : SETTLE_TRANSITION),
+        onComplete: onSettled,
+      })
+      stopSettleRef.current = () => controls.stop()
     },
-    [canStartPull, isTouchInsideContainer]
+    [pull, reduceMotion]
   )
+
+  const release = useCallback(() => {
+    settle(0, () => setIsActive(false))
+  }, [settle])
+
+  useEffect(() => () => stopSettleRef.current?.(), [])
 
   // touchmove — нативным non-passive слушателем: React вешает touchmove как passive,
   // и `preventDefault` в React-обработчике не работает. Без него iOS на верхней
@@ -66,63 +85,92 @@ export function PullToRefresh({
     const container = containerRef.current
     if (!container) return
 
-    const handleTouchMove = (event: globalThis.TouchEvent) => {
-      if (!isDraggingRef.current || startYRef.current === null) return
+    const handleTouchMove = (event: TouchEvent) => {
+      const gesture = gestureRef.current
+      const touch = event.touches[0]
+      if (!gesture || !touch) return
 
-      const currentY = event.touches[0]?.clientY
-      if (typeof currentY !== 'number') return
+      if (!gesture.engaged) {
+        const deltaX = touch.clientX - gesture.anchorX
+        const deltaY = touch.clientY - gesture.anchorY
 
-      const delta = currentY - startYRef.current
+        // Пока список не на верхней границе или палец идёт вверх — это обычный скролл.
+        // Якорь едет за пальцем, чтобы тяга подхватилась тем же касанием, как только
+        // скролл дойдёт до верха, без повторного касания.
+        if (getAppScrollTop() > 0 || deltaY < 0) {
+          gesture.anchorX = touch.clientX
+          gesture.anchorY = touch.clientY
+          return
+        }
+
+        if (Math.max(Math.abs(deltaX), deltaY) < ACTIVATION_SLOP) return
+
+        // Горизонтальный жест (лента чипов фильтров) — не наш.
+        if (Math.abs(deltaX) > deltaY) {
+          gestureRef.current = null
+          return
+        }
+
+        gesture.engaged = true
+        // Отсчёт от границы мёртвой зоны: список трогается с нуля, без скачка.
+        gesture.anchorY += ACTIVATION_SLOP
+        stopSettleRef.current?.()
+        setIsActive(true)
+      }
+
+      const delta = touch.clientY - gesture.anchorY
       if (delta <= 0) {
-        setPullDistance(0)
+        pull.set(0)
         return
       }
 
       if (event.cancelable) event.preventDefault()
-      setPullDistance(Math.min(MAX_PULL_DISTANCE, delta * RESISTANCE))
+      pull.set(applyResistance(delta))
     }
 
     container.addEventListener('touchmove', handleTouchMove, { passive: false })
     return () => container.removeEventListener('touchmove', handleTouchMove)
-  }, [])
+  }, [pull])
 
-  const finishPull = useCallback(async () => {
-    const shouldRefresh = pullDistance >= threshold
-
-    startYRef.current = null
-    isDraggingRef.current = false
-    setIsDragging(false)
-
-    if (!shouldRefresh) {
-      setPullDistance(0)
+  const handleTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0]
+    if (disabled || isRefreshing || isBodyScrollLocked() || event.touches.length !== 1 || !touch) {
+      gestureRef.current = null
       return
     }
 
+    gestureRef.current = { anchorX: touch.clientX, anchorY: touch.clientY, engaged: false }
+  }
+
+  const refresh = async () => {
     setIsRefreshing(true)
-    setPullDistance(threshold)
+    settle(threshold)
 
     try {
       await onRefresh()
     } finally {
       setIsRefreshing(false)
-      setPullDistance(0)
+      release()
     }
-  }, [onRefresh, pullDistance, threshold])
+  }
 
-  const handleTouchEnd = useCallback(() => {
-    void finishPull()
-  }, [finishPull])
+  const handleTouchEnd = () => {
+    const gesture = gestureRef.current
+    gestureRef.current = null
+    if (!gesture?.engaged) return
 
-  const handleTouchCancel = useCallback(() => {
-    startYRef.current = null
-    isDraggingRef.current = false
-    setIsDragging(false)
-    setPullDistance(0)
-  }, [])
+    if (pull.get() >= threshold) {
+      void refresh()
+      return
+    }
+    release()
+  }
 
-  const isReady = pullDistance >= threshold
-  const indicatorHeight = isRefreshing ? threshold : pullDistance
-  const contentOffset = isRefreshing ? threshold : pullDistance
+  const handleTouchCancel = () => {
+    const gesture = gestureRef.current
+    gestureRef.current = null
+    if (gesture?.engaged) release()
+  }
 
   return (
     <div
@@ -135,29 +183,25 @@ export function PullToRefresh({
       {staticContent}
 
       <div className="relative">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-end justify-center overflow-hidden transition-[height,opacity] duration-200"
-          style={{
-            height: indicatorHeight,
-            opacity: indicatorHeight > 0 ? 1 : 0,
-          }}
-          aria-hidden="true"
-        >
-          <div className="pb-2">
-            <Loader size="sm" className={cn(!isRefreshing && !isReady && 'opacity-50')} />
+        {isActive ? (
+          // Окно фиксированной высоты обрезает спиннер по верхней границе списка;
+          // сам спиннер двигается только через transform/opacity — без layout.
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 overflow-hidden"
+            style={{ height: MAX_PULL_DISTANCE }}
+            aria-hidden="true"
+          >
+            <motion.div
+              className="flex items-end justify-center pb-2"
+              style={{ height: INDICATOR_HEIGHT, y: indicatorY, opacity: indicatorOpacity }}
+            >
+              <Loader size="sm" />
+            </motion.div>
           </div>
-        </div>
-        <div
-          className={cn(
-            'will-change-transform',
-            !isDragging && 'transition-transform duration-200 ease-out'
-          )}
-          style={{
-            transform: contentOffset > 0 ? `translate3d(0, ${contentOffset}px, 0)` : undefined,
-          }}
-        >
+        ) : null}
+        <motion.div style={{ y: pull, willChange: isActive ? 'transform' : undefined }}>
           {children}
-        </div>
+        </motion.div>
       </div>
     </div>
   )
