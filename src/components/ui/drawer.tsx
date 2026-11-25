@@ -115,7 +115,11 @@ const DrawerContent = memo(function DrawerContent({
   const y = useMotionValue(0)
   // min-height панели: 0 — высота по контенту (свёрнуто); растёт вверх до полного экрана
   const minH = useMotionValue(0)
-  const minHeightStyle = useTransform(minH, v => `${v}px`)
+  const minHeightPx = useTransform(minH, v => `${v}px`)
+  // fullHeight: высоту задаёт вёрстка от высоты окна, а не измерение в коде. Когда
+  // клавиатура сжимает окно, низ шторки поднимается сразу; высота, посчитанная в
+  // коде, отставала бы на кадр-два, и шторка на это время уезжала бы вверх.
+  const minHeightStyle = fullHeight ? `calc(100% - ${bottomOffsetPx + topInsetPx}px)` : minHeightPx
   const [expanded, setExpanded] = useState(fullHeight)
 
   // Измеренная высота свёрнутого состояния (по контенту) и доступная высота под полный экран

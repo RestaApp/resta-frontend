@@ -1,13 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import { useAnchoredDropdownRect } from './useAnchoredDropdownRect'
 
-/** Якорь высотой 48px с верхней границей на `top`. */
-const anchorAt = (top: number) => {
+/** Якорь высотой 48px с верхней границей на `top`; `moveTo` сдвигает его. */
+const anchorAt = (initialTop: number) => {
+  let top = initialTop
   const el = document.createElement('div')
   el.getBoundingClientRect = () =>
     ({ top, bottom: top + 48, left: 16, width: 300, right: 316, height: 48 }) as DOMRect
-  return { current: el }
+  return {
+    current: el,
+    moveTo: (nextTop: number) => {
+      top = nextTop
+    },
+  }
 }
 
 /** Видимая часть окна: клавиатура сужает её, не меняя window.innerHeight. */
@@ -58,6 +64,31 @@ describe('useAnchoredDropdownRect', () => {
 
     // Под якорем 92px, над ним 20px: вниз, с высотой по доступному месту.
     expect(result.current).toMatchObject({ placement: 'below', maxHeight: 92 })
+  })
+
+  it('следует за полем, даже если оно сдвинулось без scroll и resize', async () => {
+    setVisibleHeight(800)
+    const anchor = anchorAt(100)
+    const { result } = renderHook(() => useAnchoredDropdownRect(true, anchor))
+
+    // Экран подстроился под клавиатуру: поле уехало, событий не было.
+    anchor.moveTo(140)
+
+    await waitFor(() => expect(result.current?.top).toBe(192))
+  })
+
+  it('открыв список вверх, не перекладывает его обратно вниз', async () => {
+    setVisibleHeight(500)
+    const anchor = anchorAt(400)
+    const { result } = renderHook(() => useAnchoredDropdownRect(true, anchor))
+    expect(result.current?.placement).toBe('above')
+
+    // Клавиатура на мгновение «исчезла» — места снизу снова хватает.
+    setVisibleHeight(900)
+    anchor.moveTo(380)
+
+    await waitFor(() => expect(result.current?.top).toBe(376))
+    expect(result.current?.placement).toBe('above')
   })
 
   it('подтягивает поле в видимую часть формы, когда клавиатура её сжала', () => {
