@@ -283,6 +283,7 @@ const shiftsApi = api.injectEndpoints({
 // Экспорт хуков для использования в компонентах
 export const {
   useGetVacanciesQuery,
+  useLazyGetVacanciesQuery,
   useGetShiftByIdQuery,
   useCreateShiftMutation,
   useUpdateShiftMutation,
