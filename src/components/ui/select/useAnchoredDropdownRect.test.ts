@@ -60,6 +60,34 @@ describe('useAnchoredDropdownRect', () => {
     expect(result.current).toMatchObject({ placement: 'below', maxHeight: 92 })
   })
 
+  it('подтягивает поле в видимую часть формы, когда клавиатура её сжала', () => {
+    // Форма видна на 100–300px, поле стоит ниже — на 400–448px.
+    setVisibleHeight(800)
+    const anchor = anchorAt(400)
+    const form = document.createElement('div')
+    form.dataset.scrollContainer = 'true'
+    form.getBoundingClientRect = () => ({ top: 100, bottom: 300 }) as DOMRect
+    form.append(anchor.current)
+
+    renderHook(() => useAnchoredDropdownRect(true, anchor))
+
+    // Низ поля (448) + зазор 8px должны встать на нижнюю границу формы (300).
+    expect(form.scrollTop).toBe(156)
+  })
+
+  it('не трогает прокрутку формы, если поле и так видно', () => {
+    setVisibleHeight(800)
+    const anchor = anchorAt(150)
+    const form = document.createElement('div')
+    form.dataset.scrollContainer = 'true'
+    form.getBoundingClientRect = () => ({ top: 100, bottom: 300 }) as DOMRect
+    form.append(anchor.current)
+
+    renderHook(() => useAnchoredDropdownRect(true, anchor))
+
+    expect(form.scrollTop).toBe(0)
+  })
+
   it('ничего не возвращает, пока список закрыт', () => {
     const anchor = anchorAt(100)
     const { result } = renderHook(() => useAnchoredDropdownRect(false, anchor))
