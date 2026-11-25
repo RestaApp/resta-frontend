@@ -8,11 +8,9 @@ interface CatalogFiltersDrawerShellProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   title: string
-  applyLabel: string
   onApply: () => void
   onReset: () => void
   children: ReactNode
-  frameClassName?: string
   bodyClassName?: string
   applyVariant?: 'primary' | 'gradient'
 }
@@ -21,19 +19,18 @@ export const CatalogFiltersDrawerShell = ({
   open,
   onOpenChange,
   title,
-  applyLabel,
   onApply,
   onReset,
   children,
-  frameClassName,
   bodyClassName = 'ui-density-stack',
   applyVariant = 'gradient',
 }: CatalogFiltersDrawerShellProps) => {
   const { t } = useTranslation()
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerFrame className={frameClassName}>
+    <Drawer open={open} onOpenChange={onOpenChange} fullHeight>
+      {/* flex-1: рамка занимает всю высоту шторки, футер прижат к низу. */}
+      <DrawerFrame className="flex-1">
         <DrawerTitleBar title={title} onClose={() => onOpenChange(false)} />
 
         <DrawerBody className={bodyClassName}>{children}</DrawerBody>
@@ -50,7 +47,7 @@ export const CatalogFiltersDrawerShell = ({
               className="flex-1"
               onClick={onApply}
             >
-              {applyLabel}
+              {t('common.show')}
             </Button>
           </div>
         </DrawerFooter>

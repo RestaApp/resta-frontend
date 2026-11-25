@@ -17,6 +17,7 @@
     "back": "Назад",
     "close": "Закрыть",
     "reset": "Сбросить",
+    "show": "Показать",
     "loading": "Загрузка",
     "openProfile": "Открыть профиль",
     "understand": "Понятно",
@@ -195,8 +196,7 @@
           "position": "Должность",
           "specialization": "Специализация",
           "allPositions": "Все должности",
-          "allSpecializations": "Все специализации",
-          "apply": "Показать сотрудников"
+          "allSpecializations": "Все специализации"
         }
       }
     },
@@ -215,8 +215,7 @@
         "categories": "Категории услуг",
         "delivery": "Доставка",
         "deliveryYes": "С доставкой",
-        "deliveryNo": "Без доставки",
-        "apply": "Показать поставщиков"
+        "deliveryNo": "Без доставки"
       }
     }
   },
@@ -230,8 +229,7 @@
       "filters": {
         "title": "Фильтры заведений",
         "format": "Формат заведения",
-        "cuisines": "Кухни",
-        "apply": "Показать заведения"
+        "cuisines": "Кухни"
       }
     }
   },
@@ -540,7 +538,6 @@
     "radiusCurrent": "{{km}} км",
     "saveFilterTemplate": "Сохранить шаблон",
     "showShiftsCountDetailed": "Показать {{count}} смен",
-    "showVacanciesCta": "Показать вакансии",
     "filterRadiusSummary": "Радиус {{km}} км",
     "whenPreset": {
       "today": "Сегодня",
@@ -563,7 +560,6 @@
     "customDateFrom": "С",
     "customDateTo": "По",
     "period": "Период",
-    "showShiftsCount": "Показать результаты",
     "showVacanciesCount": "Показать результаты",
     "ratePerShift": "Ставка за смену",
     "ratePerVacancy": "Ставка за вакансию",

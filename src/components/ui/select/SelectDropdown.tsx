@@ -81,7 +81,11 @@ export const SelectDropdown = ({
       }}
     >
       <div
-        className="overflow-hidden rounded-lg border border-border bg-background shadow-lg"
+        className={cn(
+          'overflow-hidden rounded-lg border border-border bg-background shadow-lg',
+          // Вверх: панель растёт от линии якоря к началу экрана.
+          anchoredRect?.placement === 'above' && 'absolute inset-x-0 bottom-0'
+        )}
         onPointerDown={searchable ? undefined : e => e.preventDefault()}
       >
         {searchable ? (

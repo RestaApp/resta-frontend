@@ -15,8 +15,8 @@ interface BottomActionBarProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Единая нижняя CTA-зона: та же логика размещения, что у BottomNav.
- * Контейнер не отвечает за отступ контента: его задают layout страницы / DrawerBody.
+ * Единая нижняя CTA-зона: прижата к низу и учитывает safe-area, как BottomNav.
+ * Контейнер не отвечает за нижний отступ контента: его задают layout страницы / DrawerBody.
  */
 export const BottomActionBar = ({
   children,
@@ -38,7 +38,9 @@ export const BottomActionBar = ({
       className={cn(
         isFixed ? 'fixed left-0 right-0' : 'shrink-0',
         isFixed && !aboveBottomNav && 'bottom-0',
-        'px-2.5 pt-3 pb-safe-nav',
+        // Горизонтальные поля — как у содержимого страницы и DrawerBody: кнопки
+        // стоят по тем же краям, что и текст над ними.
+        'ui-density-page pt-3 pb-safe-nav',
         !transparent && 'bg-background/92',
         !transparent && !reduceVisualEffects && 'backdrop-blur-xl',
         withBorder && 'border-t border-border/50',

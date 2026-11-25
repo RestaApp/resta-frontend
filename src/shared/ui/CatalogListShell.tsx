@@ -60,7 +60,9 @@ export const CatalogListShell = ({
       ) : isEmpty ? (
         <EmptyState image={emptyImage} message={emptyMessage} description={emptyDescription} />
       ) : (
-        <>
+        // Стек, а не фрагмент: индикатор догрузки/конца списка отделён от последней
+        // карточки тем же шагом, что и карточки между собой (как в ленте).
+        <div className="ui-density-stack">
           {children}
           <InfiniteScrollTrigger
             onLoadMore={onLoadMore}
@@ -68,7 +70,7 @@ export const CatalogListShell = ({
             isLoading={isFetching}
             isError={false}
           />
-        </>
+        </div>
       )}
     </div>
   )

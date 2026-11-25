@@ -17,6 +17,7 @@
     "back": "Back",
     "close": "Close",
     "reset": "Reset",
+    "show": "Show",
     "loading": "Loading",
     "openProfile": "Open profile",
     "understand": "Got it",
@@ -195,8 +196,7 @@
           "position": "Position",
           "specialization": "Specialization",
           "allPositions": "All positions",
-          "allSpecializations": "All specializations",
-          "apply": "Show employees"
+          "allSpecializations": "All specializations"
         }
       }
     },
@@ -215,8 +215,7 @@
         "categories": "Service categories",
         "delivery": "Delivery",
         "deliveryYes": "With delivery",
-        "deliveryNo": "No delivery",
-        "apply": "Show suppliers"
+        "deliveryNo": "No delivery"
       }
     }
   },
@@ -230,8 +229,7 @@
       "filters": {
         "title": "Venue filters",
         "format": "Venue format",
-        "cuisines": "Cuisines",
-        "apply": "Show venues"
+        "cuisines": "Cuisines"
       }
     }
   },
@@ -537,7 +535,6 @@
     "radiusCurrent": "{{km}} km",
     "saveFilterTemplate": "Save template",
     "showShiftsCountDetailed": "Show {{count}} shifts",
-    "showVacanciesCta": "Show vacancies",
     "filterRadiusSummary": "{{km}} km radius",
     "whenPreset": {
       "today": "Today",
@@ -560,7 +557,6 @@
     "customDateFrom": "From",
     "customDateTo": "To",
     "period": "Period",
-    "showShiftsCount": "Show results",
     "showVacanciesCount": "Show results",
     "ratePerShift": "Rate per shift",
     "ratePerVacancy": "Rate per vacancy",

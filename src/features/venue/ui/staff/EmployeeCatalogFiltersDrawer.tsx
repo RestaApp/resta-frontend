@@ -69,9 +69,6 @@ export const EmployeeCatalogFiltersDrawer = ({
       open={open}
       onOpenChange={onOpenChange}
       title={t('venueUi.staff.catalog.filters.title', { defaultValue: 'Фильтры сотрудников' })}
-      applyLabel={t('venueUi.staff.catalog.filters.apply', {
-        defaultValue: 'Показать сотрудников',
-      })}
       onApply={onApply}
       onReset={onReset}
     >

@@ -93,14 +93,8 @@ export const VenueSuppliersFiltersDrawer = ({
           ? t('supplierUi.restaurants.filters.title', { defaultValue: 'Фильтры заведений' })
           : t('venueUi.suppliers.filters.title', { defaultValue: 'Фильтры поставщиков' })
       }
-      applyLabel={
-        isRestaurantsMode
-          ? t('supplierUi.restaurants.filters.apply', { defaultValue: 'Показать заведения' })
-          : t('venueUi.suppliers.filters.apply', { defaultValue: 'Показать поставщиков' })
-      }
       onApply={onApply}
       onReset={onReset}
-      frameClassName="flex-1"
       applyVariant="gradient"
     >
       {!isRestaurantsMode && (

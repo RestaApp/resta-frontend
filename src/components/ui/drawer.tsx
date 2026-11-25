@@ -43,6 +43,12 @@ export type DrawerProps = {
    * Новый API: явный отступ снизу (например высота BottomNav)
    */
   bottomOffsetPx?: number
+
+  /**
+   * Шторка всегда на всю доступную высоту, а не по содержимому: для форм с
+   * выпадающими списками и клавиатурой, которым нужно место под полями.
+   */
+  fullHeight?: boolean
 }
 
 type OverlayProps = {
@@ -72,6 +78,7 @@ type DrawerContentProps = {
   onOpenChange: (open: boolean) => void
   preventClose?: boolean
   bottomOffsetPx: number
+  fullHeight: boolean
   titleId: string
   descriptionId: string
   initialFocusSelector?: string
@@ -93,6 +100,7 @@ const DrawerContent = memo(function DrawerContent({
   onOpenChange,
   preventClose,
   bottomOffsetPx,
+  fullHeight,
   titleId,
   descriptionId,
   initialFocusSelector,
@@ -108,7 +116,7 @@ const DrawerContent = memo(function DrawerContent({
   // min-height панели: 0 — высота по контенту (свёрнуто); растёт вверх до полного экрана
   const minH = useMotionValue(0)
   const minHeightStyle = useTransform(minH, v => `${v}px`)
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(fullHeight)
 
   // Измеренная высота свёрнутого состояния (по контенту) и доступная высота под полный экран
   const collapsedHeightRef = useRef(0)
@@ -139,7 +147,10 @@ const DrawerContent = memo(function DrawerContent({
 
     const measure = () => {
       expandedHeightRef.current = Math.max(0, window.innerHeight - bottomOffsetPx - topInsetPx)
-      if (!draggingRef.current && !expanded) {
+      if (fullHeight) {
+        // Свёрнутого состояния нет: тяга вниз от полной высоты — сразу жест закрытия.
+        collapsedHeightRef.current = expandedHeightRef.current
+      } else if (!draggingRef.current && !expanded) {
         collapsedHeightRef.current = el.offsetHeight
       }
       if (!draggingRef.current && expanded) {
@@ -160,7 +171,7 @@ const DrawerContent = memo(function DrawerContent({
     }
 
     return () => cleanup.forEach(fn => fn())
-  }, [bottomOffsetPx, expanded, minH, topInsetPx])
+  }, [bottomOffsetPx, expanded, fullHeight, minH, topInsetPx])
 
   const finishClose = useCallback(() => {
     isClosingBySwipeRef.current = true
@@ -216,12 +227,12 @@ const DrawerContent = memo(function DrawerContent({
         minH.set(Math.min(target, expandedH))
       } else {
         // ниже свёрнутого — это жест закрытия (сдвиг вниз)
-        minH.set(0)
+        minH.set(fullHeight ? expandedH : 0)
         const down = collapsed - target
         y.set(preventClose ? Math.min(down, RUBBER_MAX_PX) : down)
       }
     },
-    [minH, preventClose, y]
+    [fullHeight, minH, preventClose, y]
   )
 
   const handlePointerUp = useCallback(
@@ -241,21 +252,21 @@ const DrawerContent = memo(function DrawerContent({
           finishClose()
           return
         }
-        setExpanded(false)
+        setExpanded(fullHeight)
         animate(y, 0, snapAnim)
-        animate(minH, 0, snapAnim)
+        animate(minH, fullHeight ? expandedH : 0, snapAnim)
         return
       }
 
       // зона роста — решаем: развернуть на весь экран или вернуть к контенту
       const currentH = contentRef.current?.offsetHeight ?? collapsed
       const midpoint = (collapsed + expandedH) / 2
-      const wantExpand = currentH > midpoint || v < -FLICK_VELOCITY
+      const wantExpand = fullHeight || currentH > midpoint || v < -FLICK_VELOCITY
       setExpanded(wantExpand)
       animate(y, 0, snapAnim)
       animate(minH, wantExpand ? expandedH : 0, snapAnim)
     },
-    [finishClose, minH, preventClose, snapAnim, y]
+    [finishClose, fullHeight, minH, preventClose, snapAnim, y]
   )
 
   return (
@@ -310,6 +321,7 @@ export const Drawer = ({
   children,
   preventClose,
   bottomOffsetPx,
+  fullHeight = false,
   overlayClassName,
   onTelegramBack,
   initialFocusSelector,
@@ -350,6 +362,7 @@ export const Drawer = ({
             onOpenChange={onOpenChange}
             preventClose={preventClose}
             bottomOffsetPx={resolvedBottomOffset}
+            fullHeight={fullHeight}
             overlayClassName={overlayClassName}
             titleId={titleId}
             descriptionId={descriptionId}

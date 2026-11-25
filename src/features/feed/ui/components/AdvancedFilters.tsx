@@ -28,7 +28,7 @@ export const AdvancedFilters = ({
   initialFilters,
   isVacancy = false,
 }: AdvancedFiltersProps) => (
-  <Drawer open={isOpen} onOpenChange={open => !open && onClose()}>
+  <Drawer open={isOpen} onOpenChange={open => !open && onClose()} fullHeight>
     <AdvancedFiltersSheet
       key={isOpen ? JSON.stringify(initialFilters ?? null) : 'closed'}
       onClose={onClose}
@@ -198,7 +198,7 @@ const AdvancedFiltersSheet = ({
 
       <DrawerFooter>
         <Button variant="gradient" size="md" className="w-full" onClick={handleShowResults}>
-          {isVacancy ? t('feed.showVacanciesCta') : t('feed.showShiftsCount')}
+          {t('common.show')}
         </Button>
       </DrawerFooter>
     </DrawerFrame>
