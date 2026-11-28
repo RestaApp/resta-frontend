@@ -116,10 +116,11 @@ const DrawerContent = memo(function DrawerContent({
   // min-height панели: 0 — высота по контенту (свёрнуто); растёт вверх до полного экрана
   const minH = useMotionValue(0)
   const minHeightPx = useTransform(minH, v => `${v}px`)
-  // fullHeight: высоту задаёт вёрстка от высоты окна, а не измерение в коде. Когда
-  // клавиатура сжимает окно, низ шторки поднимается сразу; высота, посчитанная в
-  // коде, отставала бы на кадр-два, и шторка на это время уезжала бы вверх.
-  const minHeightStyle = fullHeight ? `calc(100% - ${bottomOffsetPx + topInsetPx}px)` : minHeightPx
+  // Место, которое панель не занимает: отступ снизу и зазор сверху.
+  const reservedPx = bottomOffsetPx + topInsetPx
+  // fullHeight: высоту задаёт вёрстка от рамки шторки, а не измерение в коде —
+  // она меняется вместе с рамкой, без отставания на кадр.
+  const minHeightStyle = fullHeight ? `calc(100% - ${reservedPx}px)` : minHeightPx
   const [expanded, setExpanded] = useState(fullHeight)
 
   // Измеренная высота свёрнутого состояния (по контенту) и доступная высота под полный экран
@@ -274,6 +275,11 @@ const DrawerContent = memo(function DrawerContent({
   )
 
   return (
+    // Рамка шторки. Панель позиционируется и получает размеры ТОЛЬКО от неё
+    // (absolute + проценты), а не от окна напрямую (fixed, vh, innerHeight).
+    // Когда клавиатура сжимает WebView, iOS обновляет размер окна на кадр раньше,
+    // чем положение fixed-элементов: при смешении источников панель на этот кадр
+    // рисовалась ниже своего места — экран «мигал».
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
       <DrawerOverlay className={overlayClassName} onClick={handleOverlayClick} />
       <motion.div
@@ -286,7 +292,7 @@ const DrawerContent = memo(function DrawerContent({
             : { type: 'spring', damping: 25, stiffness: 200 }
         }
         className={cn(
-          'fixed bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col min-h-0 overflow-hidden overscroll-y-contain',
+          'absolute bottom-0 left-1/2 z-10 flex w-full max-w-2xl -translate-x-1/2 flex-col min-h-0 overflow-hidden overscroll-y-contain',
           'rounded-t-2xl border-t border-border bg-background shadow-[var(--shadow-modal)] dark:shadow-none',
           'dark:bg-card border-t-border',
           className
@@ -295,7 +301,9 @@ const DrawerContent = memo(function DrawerContent({
           y,
           minHeight: minHeightStyle,
           bottom: bottomOffsetPx,
-          maxHeight: `min(90vh, calc(${viewportHeight} - ${bottomOffsetPx}px - ${topInsetPx}px))`,
+          // Третье ограничение — высота окна по данным Telegram: она меньше рамки,
+          // только пока Mini App не развёрнут на весь экран.
+          maxHeight: `min(90%, calc(100% - ${reservedPx}px), calc(${viewportHeight} - ${reservedPx}px))`,
         }}
         role="dialog"
         aria-modal="true"
