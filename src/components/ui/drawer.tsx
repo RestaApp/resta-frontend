@@ -27,7 +27,38 @@ export type DrawerProps = {
    * Новый API: явный отступ снизу (например высота BottomNav)
    */
   bottomOffsetPx?: number
+
+  /**
+   * Закрыть без анимации ухода. Нужно, когда шторку сменяет другой экран
+   * (переход из уведомления в детали): иначе она ещё полсекунды уезжает вниз
+   * уже под новым экраном и видна в полосе нижней навигации.
+   */
+  instantClose?: boolean
 }
+
+/**
+ * Варианты ухода получают `instantClose` через `custom` у AnimatePresence —
+ * единственный способ передать свежее значение уже удаляемому элементу.
+ */
+const OVERLAY_VARIANTS = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, pointerEvents: 'auto' },
+  exit: (instant: boolean) => ({
+    opacity: 0,
+    pointerEvents: 'none',
+    ...(instant ? { transition: { duration: 0 } } : undefined),
+  }),
+} as const
+
+const PANEL_VARIANTS = {
+  hidden: { y: '100%' },
+  visible: { y: 0, pointerEvents: 'auto' },
+  exit: (instant: boolean) => ({
+    y: '100%',
+    pointerEvents: 'none',
+    ...(instant ? { transition: { duration: 0 } } : undefined),
+  }),
+} as const
 
 type OverlayProps = {
   className?: string
@@ -36,9 +67,10 @@ type OverlayProps = {
 
 const DrawerOverlay = memo(({ className, onClick }: OverlayProps) => (
   <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1, pointerEvents: 'auto' }}
-    exit={{ opacity: 0, pointerEvents: 'none' }}
+    variants={OVERLAY_VARIANTS}
+    initial="hidden"
+    animate="visible"
+    exit="exit"
     transition={{ duration: 0.18 }}
     // Без backdrop-blur: размытие всего экрана под шторкой во время spring-анимации —
     // главная причина рывков на первом открытии (iOS WebView). Scrim только затемняет.
@@ -183,9 +215,10 @@ const DrawerContent = memo(function DrawerContent({
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
       <DrawerOverlay className={overlayClassName} onClick={handleOverlayClick} />
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0, pointerEvents: 'auto' }}
-        exit={{ y: '100%', pointerEvents: 'none' }}
+        variants={PANEL_VARIANTS}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         transition={
           reduceVisualEffects
             ? { duration: reduceMotion ? 0 : 0.22, ease: 'easeOut' }
@@ -230,6 +263,7 @@ export const Drawer = ({
   children,
   preventClose,
   bottomOffsetPx,
+  instantClose = false,
   overlayClassName,
   onTelegramBack,
   initialFocusSelector,
@@ -263,7 +297,7 @@ export const Drawer = ({
   const a11yValue = useMemo(() => ({ titleId, descriptionId }), [descriptionId, titleId])
 
   const node = (
-    <AnimatePresence>
+    <AnimatePresence custom={instantClose}>
       {open && (
         <DrawerA11yContext.Provider value={a11yValue}>
           <DrawerContent

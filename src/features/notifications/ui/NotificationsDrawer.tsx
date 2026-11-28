@@ -109,6 +109,8 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
   const dispatch = useAppDispatch()
   const selectedRole = useAppSelector(selectSelectedRole)
   const [open, setOpen] = useState(false)
+  // Шторку сменяет экран деталей — закрываем её без анимации ухода.
+  const [isReplacedByDetails, setIsReplacedByDetails] = useState(false)
   const [page, setPage] = useState(1)
   const { openGlobalShiftDetail } = useDetailOverlay()
   const isEmployee = selectedRole ? isEmployeeRole(selectedRole) : false
@@ -118,6 +120,7 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
     () =>
       onAppEvent(APP_EVENTS.OPEN_NOTIFICATIONS, () => {
         setPage(1)
+        setIsReplacedByDetails(false)
         setOpen(true)
       }),
     []
@@ -150,6 +153,7 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
       if (notification.status === 'unread') void markRead(notification.id)
       const target = getNotificationNavigationTarget(notification, appliedShiftsData?.data ?? [])
       if (target?.type === 'shift') {
+        setIsReplacedByDetails(true)
         setOpen(false)
         openGlobalShiftDetail(target.shiftId)
         return
@@ -167,7 +171,7 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
   const handleLoadMore = useCallback(() => setPage(prev => prev + 1), [])
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} instantClose={isReplacedByDetails}>
       <DrawerFrame>
         <DrawerTitleBar
           title={t('notifications.title')}
