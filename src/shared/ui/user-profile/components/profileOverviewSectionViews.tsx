@@ -18,6 +18,7 @@ import type {
 } from '../buildProfileViewModel'
 import { ProfileReviewsList } from './ProfileReviewsList'
 import { CollapsibleProfileSection, SectionLabel } from './profileOverviewPrimitives'
+import { LABEL_TEXT_CLASS } from './profile-info/InfoRow'
 
 const ProfileTagBadge = ({ item }: { item: ProfileTagSection['items'][number] }) => (
   <Badge
@@ -56,7 +57,8 @@ export const ProfileTagSectionView = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
-        <SectionLabel>{section.title}</SectionLabel>
+        {/* Подпись поля, как у строк ниже («Описание», «Город»), а не заголовок раздела. */}
+        <span className={LABEL_TEXT_CLASS}>{section.title}</span>
         {addButton}
       </div>
       {hasItems ? (

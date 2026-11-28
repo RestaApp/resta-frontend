@@ -3,8 +3,9 @@ import { cn } from '@/shared/utils/cn'
 
 /** Общие стили строки для секций ProfileOverview. */
 export const ROW_CLASS = 'flex justify-between items-baseline gap-2 py-2'
-export const LABEL_CLASS =
-  'font-mono-resta text-xs tracking-wide text-muted-foreground shrink-0 min-w-28'
+/** Типографика подписи поля — общая для строк и для подписей над тегами. */
+export const LABEL_TEXT_CLASS = 'font-mono-resta text-xs tracking-wide text-muted-foreground'
+export const LABEL_CLASS = `${LABEL_TEXT_CLASS} shrink-0 min-w-28`
 export const VALUE_CLASS = 'text-sm font-semibold leading-snug text-foreground text-right min-w-0'
 export const VALUE_LINK_CLASS =
   'text-sm font-semibold leading-snug text-primary text-right truncate hover:underline min-w-0'
