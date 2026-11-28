@@ -25,7 +25,6 @@ import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffe
 import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
-import { useKeyboardSafeFocus } from '@/shared/lib/hooks/useKeyboardSafeFocus'
 import { useFocusTrap } from '@/shared/lib/hooks/useFocusTrap'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
@@ -108,7 +107,7 @@ const DrawerContent = memo(function DrawerContent({
 }: DrawerContentProps) {
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
-  const { shouldApply: fullscreenOffset, viewportHeight } = useTelegramFullscreenOffset()
+  const { shouldApply: fullscreenOffset } = useTelegramFullscreenOffset()
   // Отступ сверху для полного экрана: базовый зазор + top-controls Telegram (iOS fullscreen)
   const topInsetPx = FULLSCREEN_TOP_GAP_PX + (fullscreenOffset ? TELEGRAM_TOP_CONTROLS_PX : 0)
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -277,10 +276,12 @@ const DrawerContent = memo(function DrawerContent({
 
   return (
     // Рамка шторки. Панель позиционируется и получает размеры ТОЛЬКО от неё
-    // (absolute + проценты), а не от окна напрямую (fixed, vh, innerHeight).
-    // Когда клавиатура сжимает WebView, iOS обновляет размер окна на кадр раньше,
-    // чем положение fixed-элементов: при смешении источников панель на этот кадр
-    // рисовалась ниже своего места — экран «мигал».
+    // (absolute + проценты) — не от окна напрямую (fixed, vh, innerHeight) и не от
+    // `--tg-viewport-stable-height`. При появлении клавиатуры эти источники
+    // обновляются в разное время: Telegram сообщает новую высоту раньше, чем
+    // сжимается сам WebView. При смешении панель успевала стать короче, пока её
+    // низ ещё стоял у старого низа экрана, — шторка «падала» до середины и
+    // возвращалась.
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: Z_INDEX.drawer }}>
       <DrawerOverlay className={overlayClassName} onClick={handleOverlayClick} />
       <motion.div
@@ -302,9 +303,7 @@ const DrawerContent = memo(function DrawerContent({
           y,
           minHeight: minHeightStyle,
           bottom: bottomOffsetPx,
-          // Третье ограничение — высота окна по данным Telegram: она меньше рамки,
-          // только пока Mini App не развёрнут на весь экран.
-          maxHeight: `min(90%, calc(100% - ${reservedPx}px), calc(${viewportHeight} - ${reservedPx}px))`,
+          maxHeight: `min(90%, calc(100% - ${reservedPx}px))`,
         }}
         role="dialog"
         aria-modal="true"
@@ -400,12 +399,8 @@ export const DrawerFrame = ({ className, ...props }: React.HTMLAttributes<HTMLDi
 }
 
 export const DrawerBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  const bodyRef = useRef<HTMLDivElement>(null)
-  useKeyboardSafeFocus(bodyRef)
-
   return (
     <div
-      ref={bodyRef}
       data-scroll-container="true"
       className={cn(
         'flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y ui-density-page ui-density-py',
