@@ -10,26 +10,25 @@ describe('InfoRow', () => {
       </InfoRow>
     )
     expect(screen.getByText('Адрес').parentElement).toHaveClass('flex', 'items-start')
-    expect(screen.getByText('Адрес')).not.toHaveClass('float-left')
+    expect(screen.getByText('Адрес').parentElement).not.toHaveClass('flex-col')
     expect(screen.getByText('Длинный адрес')).toHaveClass('text-right', 'whitespace-pre-wrap')
   })
-  it('оставляет подпись слева от первой строки и даёт тексту всю ширину ниже', () => {
+  it('ставит длинный текст под подписью, на всю ширину', () => {
     render(
       <InfoRow label="Описание" multiline>
         Длинный многострочный текст о заведении
       </InfoRow>
     )
 
-    expect(screen.getByText('Описание').parentElement).toHaveClass('flow-root')
-    expect(screen.getByText('Описание')).toHaveClass('float-left', 'top-1')
-    expect(screen.getByText(/Длинный/)).toHaveClass('block', 'whitespace-pre-wrap', 'text-justify')
-    expect(screen.getByText(/Длинный/)).not.toHaveClass('truncate')
+    expect(screen.getByText('Описание').parentElement).toHaveClass('flex', 'flex-col')
+    expect(screen.getByText(/Длинный/)).toHaveClass('whitespace-pre-wrap', 'text-left')
+    expect(screen.getByText(/Длинный/)).not.toHaveClass('truncate', 'text-right')
   })
 
   it('сохраняет обычную строку для короткого значения', () => {
     render(<InfoRow label="Город">Минск</InfoRow>)
 
-    expect(screen.getByText('Город')).not.toHaveClass('float-left')
+    expect(screen.getByText('Город').parentElement).not.toHaveClass('flex-col')
     expect(screen.getByText('Минск')).toHaveClass('truncate')
   })
 })

@@ -15,7 +15,9 @@ interface InfoRowProps {
   href?: string
   valueClassName?: string
   onClick?: () => void
+  /** Значение — длинный текст с переносами. По умолчанию он идёт под подписью, на всю ширину. */
   multiline?: boolean
+  /** Многострочное значение остаётся в правой колонке, рядом с подписью (адрес, часы работы). */
   multilineColumns?: boolean
 }
 
@@ -38,27 +40,19 @@ export const InfoRow = memo(
       multiline
         ? multilineColumns
           ? 'min-w-0 flex-1 whitespace-pre-wrap break-words text-right'
-          : 'block min-w-0 whitespace-pre-wrap break-words text-justify'
+          : 'min-w-0 whitespace-pre-wrap break-words text-left'
         : 'min-w-0 truncate'
     )
     const valueTitle = !multiline && typeof children === 'string' ? children : undefined
+    const isStacked = multiline && !multilineColumns
 
     return (
       <div
         className={
-          multiline && !multilineColumns
-            ? 'flow-root py-2'
-            : cn(ROW_CLASS, multiline && 'items-start')
+          isStacked ? 'flex flex-col gap-1 py-2' : cn(ROW_CLASS, multiline && 'items-start')
         }
       >
-        <span
-          className={cn(
-            LABEL_CLASS,
-            multiline && !multilineColumns && 'relative top-1 float-left mr-2'
-          )}
-        >
-          {label}
-        </span>
+        <span className={LABEL_CLASS}>{label}</span>
         {href ? (
           <a href={href} onClick={onClick} className={valueClasses} title={valueTitle}>
             {children}
