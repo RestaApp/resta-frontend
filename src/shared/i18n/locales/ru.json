@@ -57,7 +57,16 @@
     "retry": "Повторить",
     "error": "Не удалось загрузить",
     "deleting": "Удаление...",
-    "clear": "Очистить"
+    "clear": "Очистить",
+    "weekdaysShort": {
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб",
+      "sun": "Вс"
+    }
   },
   "notifications": {
     "title": "Уведомления",
@@ -367,8 +376,6 @@
     "addAddress": "Добавить адрес",
     "set247": "24/7",
     "weekdays": "Будни",
-    "saturdayShort": "Сб",
-    "sundayShort": "Вс",
     "showDetailedDays": "Настроить по дням",
     "hideDetailedDays": "Скрыть точные дни",
     "cityNotSet": "Город не указан",

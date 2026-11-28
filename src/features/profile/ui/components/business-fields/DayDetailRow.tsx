@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import type { DayKey } from '@/features/profile/model/utils/businessFields'
+import type { DayKey } from '@/shared/utils/businessHoursSchedule'
 import { CompactTimeRow } from './CompactTimeRow'
 
 interface DayDetailRowProps {

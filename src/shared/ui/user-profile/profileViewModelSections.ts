@@ -3,7 +3,7 @@ import type { ApiRole } from '@/shared/types/roles.types'
 import { formatPhoneDisplay, toE164 } from '@/shared/utils/phone'
 import { formatExperienceText } from '@/shared/utils/experience'
 import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
-import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
+import { formatBusinessHours, getDayLabels } from '@/shared/utils/businessHours'
 import { splitSkillByDots } from '@/shared/utils/profileSkills'
 import { getSupplierProfile, getSupplierTypes } from '@/shared/utils/supplierProfile'
 import { formatWorkPeriod } from '@/shared/utils/workHistory'
@@ -182,7 +182,7 @@ export const buildInfoSections = ({
   const addressValue = isBusinessRole && addresses.length > 0 ? addresses.join('\n') : null
   const phoneDisplay = formatPhoneDisplay(userProfile.phone)
   const businessHours = isBusinessRole
-    ? businessHoursRecordToFormValue(userProfile.business_hours)
+    ? formatBusinessHours(userProfile.business_hours, getDayLabels(t))
     : ''
   const supplierProfile = getSupplierProfile(userProfile)
 

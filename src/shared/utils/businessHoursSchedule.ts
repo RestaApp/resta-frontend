@@ -1,5 +1,15 @@
+/**
+ * Расписание по дням недели.
+ *
+ * Запись API (`business_hours`): `{ mon: '09:00-22:00', …, notes: '…' }` — время
+ * по ключам дней, выходной день отсутствует (или `closed`), `notes` — особые условия.
+ *
+ * Текст расписания («Пн-Пт 09:00-22:00») — внутреннее представление формы
+ * профиля; в API он не уходит.
+ */
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 export type DayKey = (typeof DAY_KEYS)[number]
+export type DayLabels = Record<DayKey, string>
 
 export interface DaySchedule {
   day: DayKey
@@ -8,10 +18,15 @@ export interface DaySchedule {
   to: string
 }
 
-interface ParsedBusinessHours {
+export interface ParsedBusinessHours {
   schedule: DaySchedule[]
   notes: string
 }
+
+/** Ключ записи API с особыми условиями графика. */
+const NOTES_KEY = 'notes'
+/** Предел длины особых условий — тот же, что проверяет бэк (`BusinessHoursValidator`). */
+export const BUSINESS_HOURS_NOTES_MAX_LENGTH = 500
 
 const DEFAULT_FROM = '09:00'
 const DEFAULT_TO = '18:00'
@@ -40,7 +55,11 @@ const dayLabelToKey: Record<string, DayKey> = {
   sun: 'sun',
 }
 
-const dayKeyToRuLabel: Record<DayKey, string> = {
+/**
+ * Подписи дней в тексте расписания формы. Канонические: именно их читает
+ * `parseBusinessHours`; на язык приложения они не влияют — пользователь их не видит.
+ */
+const CANONICAL_DAY_LABELS: DayLabels = {
   mon: 'Пн',
   tue: 'Вт',
   wed: 'Ср',
@@ -147,17 +166,22 @@ const areSameTime = (a: DaySchedule, b: DaySchedule) => {
   return a.enabled && b.enabled && a.from === b.from && a.to === b.to
 }
 
-const labelForDayIndex = (index: number): string => {
-  const key = DAY_KEYS[index]
-  return key ? dayKeyToRuLabel[key] : ''
+const toDayLabel = (fromIndex: number, toIndex: number, dayLabels: DayLabels): string => {
+  const from = DAY_KEYS[fromIndex]
+  const to = DAY_KEYS[toIndex]
+  if (!from || !to) return ''
+  return from === to ? dayLabels[from] : `${dayLabels[from]}-${dayLabels[to]}`
 }
 
-const toDayLabel = (fromIndex: number, toIndex: number): string => {
-  if (fromIndex === toIndex) return labelForDayIndex(fromIndex)
-  return `${labelForDayIndex(fromIndex)}-${labelForDayIndex(toIndex)}`
-}
-
-export const serializeBusinessHours = (schedule: DaySchedule[], notes: string): string => {
+/**
+ * Собирает текст расписания: подряд идущие дни с одинаковым временем — одной строкой.
+ * `dayLabels` задаются только для показа; для сохранения остаются канонические.
+ */
+export const serializeBusinessHours = (
+  schedule: DaySchedule[],
+  notes: string,
+  dayLabels: DayLabels = CANONICAL_DAY_LABELS
+): string => {
   const lines: string[] = []
   let index = 0
   while (index < schedule.length) {
@@ -172,7 +196,7 @@ export const serializeBusinessHours = (schedule: DaySchedule[], notes: string): 
       if (!next || !areSameTime(current, next)) break
       endIndex += 1
     }
-    lines.push(`${toDayLabel(index, endIndex)} ${current.from}-${current.to}`)
+    lines.push(`${toDayLabel(index, endIndex, dayLabels)} ${current.from}-${current.to}`)
     index = endIndex + 1
   }
 
@@ -180,4 +204,48 @@ export const serializeBusinessHours = (schedule: DaySchedule[], notes: string): 
   if (!notes) return schedulePart
   if (!schedulePart) return notes
   return `${schedulePart}\n${notes}`
+}
+
+const TIME_RANGE_PATTERN = /^(\d{1,2}:\d{2})\s*[-–—]\s*(\d{1,2}:\d{2})$/
+const CLOSED_PATTERN = /^closed$/i
+
+/**
+ * Читает запись API. День без значения или со значением `closed` — выходной.
+ * Всё остальное, что не удалось прочитать как интервал времени, и поля вне
+ * контракта уходят в примечания как есть: данные показываются, а не теряются молча.
+ */
+export const parseHoursRecord = (record: Record<string, unknown>): ParsedBusinessHours => {
+  const notes: string[] = []
+  const schedule = DAY_KEYS.map((day): DaySchedule => {
+    const value = typeof record[day] === 'string' ? record[day].trim() : ''
+    const match = value.match(TIME_RANGE_PATTERN)
+    const from = normalizeTime(match?.[1] ?? '')
+    const to = normalizeTime(match?.[2] ?? '')
+    if (from && to) return { day, enabled: true, from, to }
+
+    if (value && !CLOSED_PATTERN.test(value)) notes.push(`${CANONICAL_DAY_LABELS[day]}: ${value}`)
+    return { day, enabled: false, from: DEFAULT_FROM, to: DEFAULT_TO }
+  })
+
+  const dayKeys: readonly string[] = DAY_KEYS
+  for (const [key, value] of Object.entries(record)) {
+    if (dayKeys.includes(key) || typeof value !== 'string' || !value.trim()) continue
+    notes.push(key === NOTES_KEY ? value.trim() : `${key}: ${value.trim()}`)
+  }
+
+  return { schedule, notes: notes.join('\n') }
+}
+
+/** Собирает запись API; undefined — когда сохранять нечего. */
+export const toHoursRecord = ({
+  schedule,
+  notes,
+}: ParsedBusinessHours): Record<string, string> | undefined => {
+  const record: Record<string, string> = {}
+  for (const { day, enabled, from, to } of schedule) {
+    if (enabled) record[day] = `${from}-${to}`
+  }
+  if (notes.trim()) record[NOTES_KEY] = notes.trim()
+
+  return Object.keys(record).length > 0 ? record : undefined
 }

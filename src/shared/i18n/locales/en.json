@@ -57,7 +57,16 @@
     "retry": "Retry",
     "error": "Failed to load",
     "deleting": "Deleting...",
-    "clear": "Clear"
+    "clear": "Clear",
+    "weekdaysShort": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -367,8 +376,6 @@
     "addAddress": "Add address",
     "set247": "24/7",
     "weekdays": "Weekdays",
-    "saturdayShort": "Sat",
-    "sundayShort": "Sun",
     "showDetailedDays": "Configure by day",
     "hideDetailedDays": "Hide detailed days",
     "cityNotSet": "City not set",

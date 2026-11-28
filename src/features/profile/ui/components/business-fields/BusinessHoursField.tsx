@@ -6,13 +6,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { META_MONO_CLASS } from '@/components/ui/ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import {
+  BUSINESS_HOURS_NOTES_MAX_LENGTH,
   parseBusinessHours,
   serializeBusinessHours,
   type DayKey,
-} from '@/features/profile/model/utils/businessFields'
+} from '@/shared/utils/businessHoursSchedule'
 import { CompactTimeRow } from './CompactTimeRow'
 import { DayDetailRow } from './DayDetailRow'
-import { DAY_LABELS, DAY_ORDER, WEEKDAY_KEYS } from './constants'
+import { getDayLabels } from '@/shared/utils/businessHours'
+import { DAY_ORDER, WEEKDAY_KEYS } from './constants'
 
 type BusinessHoursFieldVariant = 'full' | 'schedule' | 'notes'
 
@@ -36,6 +38,7 @@ export const BusinessHoursField = ({
   variant = 'full',
 }: BusinessHoursFieldProps) => {
   const { t } = useTranslation()
+  const dayLabels = getDayLabels(t)
   const parsed = useMemo(() => parseBusinessHours(value), [value])
   const [showDetailedDays, setShowDetailedDays] = useState(false)
 
@@ -105,6 +108,7 @@ export const BusinessHoursField = ({
         value={parsed.notes}
         onChange={e => setNotes(e.target.value)}
         placeholder={t('profile.form.businessHoursNotesPlaceholder')}
+        maxLength={BUSINESS_HOURS_NOTES_MAX_LENGTH}
         disabled={disabled}
         rows={variant === 'notes' ? 4 : 2}
         className={cn('resize-y', variant === 'notes' ? 'min-h-24' : 'min-h-14')}
@@ -134,7 +138,7 @@ export const BusinessHoursField = ({
         />
 
         <CompactTimeRow
-          label={t('profile.saturdayShort')}
+          label={dayLabels.sat}
           enabled={Boolean(saturday?.enabled)}
           from={saturday?.from ?? '09:00'}
           to={saturday?.to ?? '18:00'}
@@ -145,7 +149,7 @@ export const BusinessHoursField = ({
         />
 
         <CompactTimeRow
-          label={t('profile.sundayShort')}
+          label={dayLabels.sun}
           enabled={Boolean(sunday?.enabled)}
           from={sunday?.from ?? '09:00'}
           to={sunday?.to ?? '18:00'}
@@ -164,7 +168,7 @@ export const BusinessHoursField = ({
                 <DayDetailRow
                   key={day}
                   day={day}
-                  label={DAY_LABELS[day]}
+                  label={dayLabels[day]}
                   enabled={row.enabled}
                   from={row.from}
                   to={row.to}

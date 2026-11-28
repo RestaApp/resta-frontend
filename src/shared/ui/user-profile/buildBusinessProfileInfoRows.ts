@@ -3,7 +3,7 @@ import type { UserData } from '@/services/api/authApi'
 import type { ProfileInfoRow } from '@/shared/ui/user-profile/buildProfileViewModel'
 import { formatPhoneDisplay, toE164 } from '@/shared/utils/phone'
 import { normalizeExternalUrl } from '@/shared/utils/externalUrl'
-import { businessHoursRecordToFormValue } from '@/shared/utils/businessHours'
+import { formatBusinessHours, getDayLabels } from '@/shared/utils/businessHours'
 
 const normalizeText = (value: string | null | undefined) => value?.trim() || ''
 
@@ -48,7 +48,7 @@ export const buildBusinessProfileInfoRows = ({
   const rows: ProfileInfoRow[] = []
   const addresses = (userProfile.location ?? []).map(line => line.trim()).filter(Boolean)
   const phoneDisplay = formatPhoneDisplay(userProfile.phone)
-  const businessHours = businessHoursRecordToFormValue(userProfile.business_hours)
+  const businessHours = formatBusinessHours(userProfile.business_hours, getDayLabels(t))
 
   if (includeCity) {
     pushProfileTextRow(rows, {

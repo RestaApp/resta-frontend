@@ -104,6 +104,34 @@ describe('buildUpdateUserRequest', () => {
     expect(req.restaurant_profile_attributes?.cuisine_types).toEqual(['italian'])
   })
 
+  it('restaurant: часы работы уходят по дням недели, особые условия — в notes', () => {
+    const base = baseForm({ businessHours: '' })
+    const req = buildUpdateUserRequest(
+      baseForm({ businessHours: 'Пн-Пт 09:00-22:00\nСб 10:00-23:00\nОбед 13:00–14:00' }),
+      'restaurant',
+      base
+    ).user
+
+    expect(req.business_hours).toEqual({
+      mon: '09:00-22:00',
+      tue: '09:00-22:00',
+      wed: '09:00-22:00',
+      thu: '09:00-22:00',
+      fri: '09:00-22:00',
+      sat: '10:00-23:00',
+      notes: 'Обед 13:00–14:00',
+    })
+  })
+
+  it('restaurant: очищенные часы работы уходят как null', () => {
+    const base = baseForm({ businessHours: 'Пн-Пт 09:00-22:00' })
+
+    expect(
+      buildUpdateUserRequest(baseForm({ businessHours: '' }), 'restaurant', base).user
+        .business_hours
+    ).toBeNull()
+  })
+
   it('supplier: delivery_available и price_list_url уходят nested', () => {
     const base = baseForm({ deliveryAvailable: false, priceListUrl: '' })
     const req = buildUpdateUserRequest(

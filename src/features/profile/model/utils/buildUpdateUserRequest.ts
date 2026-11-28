@@ -22,7 +22,7 @@ export interface ProfileFormData {
   phone: string
   /** Заведение: сайт */
   website: string
-  /** Заведение: время работы (многострочный текст → business_hours.schedule) */
+  /** Заведение: время работы (текст расписания формы → business_hours по дням недели) */
   businessHours: string
   // Для employee
   position: string

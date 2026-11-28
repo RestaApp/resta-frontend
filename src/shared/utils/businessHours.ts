@@ -1,29 +1,56 @@
-/**
- * API хранит business_hours как Record<string, string>.
- * В форме используем одно текстовое поле; при сохранении кладём в ключ schedule.
- */
+import type { TFunction } from 'i18next'
+import {
+  parseBusinessHours,
+  parseHoursRecord,
+  serializeBusinessHours,
+  toHoursRecord,
+  type DayLabels,
+  type ParsedBusinessHours,
+} from './businessHoursSchedule'
 
-export function businessHoursRecordToFormValue(
-  record: Record<string, string> | null | undefined
-): string {
-  if (!record || typeof record !== 'object') return ''
-  const single =
-    typeof record.schedule === 'string'
-      ? record.schedule
-      : typeof record.text === 'string'
-        ? record.text
-        : typeof record.display === 'string'
-          ? record.display
-          : ''
-  if (single.trim()) return single
-  return Object.entries(record)
-    .filter(([, v]) => typeof v === 'string' && v.trim())
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n')
+type BusinessHoursRecord = Record<string, string> | null | undefined
+
+/**
+ * Ключи, под которыми часы работы раньше сохранялись одним текстом. Новые записи
+ * так не пишутся, но старые в базе остаются — их нужно уметь читать.
+ */
+const LEGACY_TEXT_KEYS = ['schedule', 'text', 'display'] as const
+
+/** Читает часы работы из записи API любого вида: по дням недели или старым текстом. */
+const readBusinessHours = (record: BusinessHoursRecord): ParsedBusinessHours | null => {
+  if (!record || typeof record !== 'object') return null
+
+  const legacyKey = LEGACY_TEXT_KEYS.find(key => record[key]?.trim())
+  return legacyKey ? parseBusinessHours(record[legacyKey] ?? '') : parseHoursRecord(record)
 }
 
+/** Запись API → текст расписания, с которым работает форма профиля. */
+export function businessHoursRecordToFormValue(record: BusinessHoursRecord): string {
+  const hours = readBusinessHours(record)
+  return hours ? serializeBusinessHours(hours.schedule, hours.notes) : ''
+}
+
+/** Текст расписания из формы → запись API по дням недели. */
 export function formValueToBusinessHoursRecord(text: string): Record<string, string> | undefined {
-  const t = text.trim()
-  if (!t) return undefined
-  return { schedule: t }
+  return toHoursRecord(parseBusinessHours(text))
+}
+
+/** Короткие названия дней недели на языке приложения. */
+export const getDayLabels = (t: TFunction): DayLabels => ({
+  mon: t('common.weekdaysShort.mon'),
+  tue: t('common.weekdaysShort.tue'),
+  wed: t('common.weekdaysShort.wed'),
+  thu: t('common.weekdaysShort.thu'),
+  fri: t('common.weekdaysShort.fri'),
+  sat: t('common.weekdaysShort.sat'),
+  sun: t('common.weekdaysShort.sun'),
+})
+
+/**
+ * Часы работы для показа: дни недели — на языке приложения, одинаковые дни
+ * сгруппированы, особые условия графика — после расписания.
+ */
+export function formatBusinessHours(record: BusinessHoursRecord, dayLabels: DayLabels): string {
+  const hours = readBusinessHours(record)
+  return hours ? serializeBusinessHours(hours.schedule, hours.notes, dayLabels) : ''
 }
