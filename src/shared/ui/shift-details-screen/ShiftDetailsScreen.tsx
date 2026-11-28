@@ -2,10 +2,10 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { Zap } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DrawerFooter } from '@/components/ui/drawer'
 import { HelpHint } from '@/components/ui/help-hint'
+import { InlineAlert } from '@/components/ui/inline-alert'
 import type { VacancyApiItem } from '@/services/api/shiftsApi'
 import { useBoostShiftMutation } from '@/services/api/purchasesApi'
 import { usersApi } from '@/services/api/usersApi'
@@ -275,13 +275,16 @@ export const ShiftDetailsScreen = memo((props: ShiftDetailsScreenProps) => {
     !controller.isOwner && (controller.isAccepted || controller.isRejected) ? (
       <DrawerFooter className="pb-3">
         <div className="flex flex-col gap-3">
-          <div className="flex justify-center rounded-xl border border-border/60 px-4 py-3">
-            <Badge variant={controller.isAccepted ? 'accepted' : 'rejected'}>
-              {controller.isAccepted
+          {/* Плашка-сообщение, а не значок в рамке: на месте кнопки действия рамка
+              читалась как пустая неактивная кнопка. */}
+          <InlineAlert
+            tone={controller.isAccepted ? 'success' : 'error'}
+            message={
+              controller.isAccepted
                 ? t('shift.applicationAccepted')
-                : t('shift.applicationRejected')}
-            </Badge>
-          </div>
+                : t('shift.applicationRejected')
+            }
+          />
           {controller.isAccepted ? (
             <Button
               onClick={() => setWithdrawConfirmOpen(true)}
