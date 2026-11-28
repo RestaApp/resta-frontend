@@ -104,7 +104,7 @@ export function ApplyCoverLetterModal({
 
   return (
     <Drawer open onOpenChange={openState => !openState && onClose()}>
-      <DrawerFrame className="flex-1">
+      <DrawerFrame>
         <DrawerHeader>
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 flex-col gap-1">

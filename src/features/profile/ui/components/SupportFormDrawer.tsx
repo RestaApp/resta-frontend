@@ -19,7 +19,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
   if (form.isSuccess) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerFrame className="flex-1">
+        <DrawerFrame>
           <DrawerTitleBar
             title={t('profile.supportForm.successTitle')}
             description={t('profile.supportForm.successDescription')}
@@ -37,7 +37,7 @@ export function SupportFormDrawer({ open, onOpenChange }: SupportFormDrawerProps
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerFrame className="flex-1">
+      <DrawerFrame>
         <DrawerTitleBar
           title={t('profile.supportForm.title')}
           description={t('profile.supportForm.description')}

@@ -1,21 +1,5 @@
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {
-  animate,
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useReducedMotion,
-  useTransform,
-} from 'motion/react'
+import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef } from 'react'
+import { animate, motion, AnimatePresence, useMotionValue, useReducedMotion } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { BottomActionBar } from '@/components/ui/bottom-action-bar'
@@ -43,12 +27,6 @@ export type DrawerProps = {
    * Новый API: явный отступ снизу (например высота BottomNav)
    */
   bottomOffsetPx?: number
-
-  /**
-   * Шторка всегда на всю доступную высоту, а не по содержимому: для форм с
-   * выпадающими списками и клавиатурой, которым нужно место под полями.
-   */
-  fullHeight?: boolean
 }
 
 type OverlayProps = {
@@ -78,18 +56,19 @@ type DrawerContentProps = {
   onOpenChange: (open: boolean) => void
   preventClose?: boolean
   bottomOffsetPx: number
-  fullHeight: boolean
   titleId: string
   descriptionId: string
   initialFocusSelector?: string
 }
 
-// Порог скорости флика (px/s) для закрытия / разворота жестом
+// Порог скорости флика вниз (px/s), после которого отпускание закрывает шторку
 const FLICK_VELOCITY = 400
+// На сколько нужно стянуть шторку вниз, чтобы отпускание её закрыло
+const CLOSE_THRESHOLD_PX = 72
 // Резиновое сопротивление при свайпе вниз, когда закрытие запрещено
 const RUBBER_MAX_PX = 24
-// Базовый верхний зазор полноэкранного состояния (как `- 20px` в maxHeight свёрнутого)
-const FULLSCREEN_TOP_GAP_PX = 20
+// Зазор между верхом шторки и верхом экрана
+const TOP_GAP_PX = 20
 // Высота top-controls Telegram в iOS fullscreen (== `top-20` в useTelegramFullscreenOffset)
 const TELEGRAM_TOP_CONTROLS_PX = 80
 
@@ -100,7 +79,6 @@ const DrawerContent = memo(function DrawerContent({
   onOpenChange,
   preventClose,
   bottomOffsetPx,
-  fullHeight,
   titleId,
   descriptionId,
   initialFocusSelector,
@@ -108,26 +86,14 @@ const DrawerContent = memo(function DrawerContent({
   const reduceMotion = useReducedMotion()
   const reduceVisualEffects = useReducedVisualEffects()
   const { shouldApply: fullscreenOffset } = useTelegramFullscreenOffset()
-  // Отступ сверху для полного экрана: базовый зазор + top-controls Telegram (iOS fullscreen)
-  const topInsetPx = FULLSCREEN_TOP_GAP_PX + (fullscreenOffset ? TELEGRAM_TOP_CONTROLS_PX : 0)
+  // Место, которое панель не занимает: отступ снизу, зазор сверху и top-controls Telegram.
+  const reservedPx = bottomOffsetPx + TOP_GAP_PX + (fullscreenOffset ? TELEGRAM_TOP_CONTROLS_PX : 0)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const isClosingBySwipeRef = useRef(false)
+  // Сдвиг панели вниз под пальцем — жест закрытия.
   const y = useMotionValue(0)
-  // min-height панели: 0 — высота по контенту (свёрнуто); растёт вверх до полного экрана
-  const minH = useMotionValue(0)
-  const minHeightPx = useTransform(minH, v => `${v}px`)
-  // Место, которое панель не занимает: отступ снизу и зазор сверху.
-  const reservedPx = bottomOffsetPx + topInsetPx
-  // fullHeight: высоту задаёт вёрстка от рамки шторки, а не измерение в коде —
-  // она меняется вместе с рамкой, без отставания на кадр.
-  const minHeightStyle = fullHeight ? `calc(100% - ${reservedPx}px)` : minHeightPx
-  const [expanded, setExpanded] = useState(fullHeight)
-
-  // Измеренная высота свёрнутого состояния (по контенту) и доступная высота под полный экран
-  const collapsedHeightRef = useRef(0)
-  const expandedHeightRef = useRef(0)
   const draggingRef = useRef(false)
-  const dragStartRef = useRef({ clientY: 0, startHeight: 0 })
+  const dragStartYRef = useRef(0)
   const velocityRef = useRef({ clientY: 0, t: 0, v: 0 })
 
   useBodyScrollLock(true)
@@ -146,42 +112,9 @@ const DrawerContent = memo(function DrawerContent({
     [preventClose, onOpenChange]
   )
 
-  useEffect(() => {
-    const el = contentRef.current
-    if (!el) return
-
-    const measure = () => {
-      expandedHeightRef.current = Math.max(0, window.innerHeight - bottomOffsetPx - topInsetPx)
-      if (fullHeight) {
-        // Свёрнутого состояния нет: тяга вниз от полной высоты — сразу жест закрытия.
-        collapsedHeightRef.current = expandedHeightRef.current
-      } else if (!draggingRef.current && !expanded) {
-        collapsedHeightRef.current = el.offsetHeight
-      }
-      if (!draggingRef.current && expanded) {
-        // держим панель на всю доступную высоту при изменении вьюпорта
-        minH.set(expandedHeightRef.current)
-      }
-    }
-    measure()
-
-    const cleanup: Array<() => void> = []
-    window.addEventListener('resize', measure)
-    cleanup.push(() => window.removeEventListener('resize', measure))
-
-    if (typeof ResizeObserver !== 'undefined') {
-      const ro = new ResizeObserver(measure)
-      ro.observe(el)
-      cleanup.push(() => ro.disconnect())
-    }
-
-    return () => cleanup.forEach(fn => fn())
-  }, [bottomOffsetPx, expanded, fullHeight, minH, topInsetPx])
-
   const finishClose = useCallback(() => {
     isClosingBySwipeRef.current = true
-    const offscreen =
-      (contentRef.current?.offsetHeight ?? expandedHeightRef.current) + bottomOffsetPx + 40
+    const offscreen = (contentRef.current?.offsetHeight ?? window.innerHeight) + bottomOffsetPx + 40
     animate(y, offscreen, {
       duration: reduceMotion ? 0 : 0.22,
       ease: 'easeOut',
@@ -195,26 +128,17 @@ const DrawerContent = memo(function DrawerContent({
     [reduceMotion]
   )
 
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (isClosingBySwipeRef.current) return
-      draggingRef.current = true
-      e.currentTarget.setPointerCapture?.(e.pointerId)
-      dragStartRef.current = {
-        clientY: e.clientY,
-        startHeight: expanded ? expandedHeightRef.current : collapsedHeightRef.current,
-      }
-      velocityRef.current = { clientY: e.clientY, t: performance.now(), v: 0 }
-    },
-    [expanded]
-  )
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (isClosingBySwipeRef.current) return
+    draggingRef.current = true
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+    dragStartYRef.current = e.clientY
+    velocityRef.current = { clientY: e.clientY, t: performance.now(), v: 0 }
+  }, [])
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (!draggingRef.current) return
-      const { clientY, startHeight } = dragStartRef.current
-      const collapsed = collapsedHeightRef.current
-      const expandedH = expandedHeightRef.current
 
       // скорость (px/s), положительная — вниз
       const now = performance.now()
@@ -225,19 +149,10 @@ const DrawerContent = memo(function DrawerContent({
         velocityRef.current.t = now
       }
 
-      const target = startHeight + (clientY - e.clientY) // тянем вверх → выше
-      if (target >= collapsed) {
-        // растём вверх — низ запинён, увеличиваем min-height
-        y.set(0)
-        minH.set(Math.min(target, expandedH))
-      } else {
-        // ниже свёрнутого — это жест закрытия (сдвиг вниз)
-        minH.set(fullHeight ? expandedH : 0)
-        const down = collapsed - target
-        y.set(preventClose ? Math.min(down, RUBBER_MAX_PX) : down)
-      }
+      const down = Math.max(0, e.clientY - dragStartYRef.current)
+      y.set(preventClose ? Math.min(down, RUBBER_MAX_PX) : down)
     },
-    [fullHeight, minH, preventClose, y]
+    [preventClose, y]
   )
 
   const handlePointerUp = useCallback(
@@ -246,37 +161,20 @@ const DrawerContent = memo(function DrawerContent({
       draggingRef.current = false
       e.currentTarget.releasePointerCapture?.(e.pointerId)
 
-      const collapsed = collapsedHeightRef.current
-      const expandedH = expandedHeightRef.current
-      const v = velocityRef.current.v
-
-      if (y.get() > 0) {
-        // зона закрытия
-        const closeThreshold = Math.min(72, Math.max(32, collapsed * 0.1))
-        if (!preventClose && (y.get() >= closeThreshold || v > FLICK_VELOCITY)) {
-          finishClose()
-          return
-        }
-        setExpanded(fullHeight)
-        animate(y, 0, snapAnim)
-        animate(minH, fullHeight ? expandedH : 0, snapAnim)
+      const shouldClose = y.get() >= CLOSE_THRESHOLD_PX || velocityRef.current.v > FLICK_VELOCITY
+      if (!preventClose && shouldClose) {
+        finishClose()
         return
       }
-
-      // зона роста — решаем: развернуть на весь экран или вернуть к контенту
-      const currentH = contentRef.current?.offsetHeight ?? collapsed
-      const midpoint = (collapsed + expandedH) / 2
-      const wantExpand = fullHeight || currentH > midpoint || v < -FLICK_VELOCITY
-      setExpanded(wantExpand)
       animate(y, 0, snapAnim)
-      animate(minH, wantExpand ? expandedH : 0, snapAnim)
     },
-    [finishClose, fullHeight, minH, preventClose, snapAnim, y]
+    [finishClose, preventClose, snapAnim, y]
   )
 
   return (
-    // Рамка шторки. Панель позиционируется и получает размеры ТОЛЬКО от неё
-    // (absolute + проценты) — не от окна напрямую (fixed, vh, innerHeight) и не от
+    // Рамка шторки. Панель всегда на всю её высоту (за вычетом зазоров), а
+    // позиционируется и получает размеры ТОЛЬКО от неё (absolute + проценты) —
+    // не от окна напрямую (fixed, vh, innerHeight) и не от
     // `--tg-viewport-stable-height`. При появлении клавиатуры эти источники
     // обновляются в разное время: Telegram сообщает новую высоту раньше, чем
     // сжимается сам WebView. При смешении панель успевала стать короче, пока её
@@ -301,9 +199,8 @@ const DrawerContent = memo(function DrawerContent({
         )}
         style={{
           y,
-          minHeight: minHeightStyle,
           bottom: bottomOffsetPx,
-          maxHeight: `min(90%, calc(100% - ${reservedPx}px))`,
+          height: `calc(100% - ${reservedPx}px)`,
         }}
         role="dialog"
         aria-modal="true"
@@ -333,7 +230,6 @@ export const Drawer = ({
   children,
   preventClose,
   bottomOffsetPx,
-  fullHeight = false,
   overlayClassName,
   onTelegramBack,
   initialFocusSelector,
@@ -374,7 +270,6 @@ export const Drawer = ({
             onOpenChange={onOpenChange}
             preventClose={preventClose}
             bottomOffsetPx={resolvedBottomOffset}
-            fullHeight={fullHeight}
             overlayClassName={overlayClassName}
             titleId={titleId}
             descriptionId={descriptionId}
@@ -394,7 +289,10 @@ export const Drawer = ({
 
 export const DrawerFrame = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div className={cn('flex min-h-0 flex-col bg-background dark:bg-card', className)} {...props} />
+    <div
+      className={cn('flex min-h-0 flex-1 flex-col bg-background dark:bg-card', className)}
+      {...props}
+    />
   )
 }
 

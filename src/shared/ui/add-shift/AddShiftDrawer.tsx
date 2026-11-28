@@ -212,7 +212,7 @@ const AddShiftDrawerKeyed = ({
         onOpenChange={controller.actions.requestClose}
         onTelegramBack={controller.actions.handleBackOrCancel}
       >
-        <DrawerFrame className="flex-1">
+        <DrawerFrame>
           <DrawerHeader>
             <div className="flex w-full flex-col gap-3">
               <div className="flex items-center justify-between gap-2">

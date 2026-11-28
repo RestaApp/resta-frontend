@@ -28,9 +28,8 @@ export const CatalogFiltersDrawerShell = ({
   const { t } = useTranslation()
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} fullHeight>
-      {/* flex-1: рамка занимает всю высоту шторки, футер прижат к низу. */}
-      <DrawerFrame className="flex-1">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerFrame>
         <DrawerTitleBar title={title} onClose={() => onOpenChange(false)} />
 
         <DrawerBody className={bodyClassName}>{children}</DrawerBody>

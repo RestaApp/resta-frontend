@@ -96,7 +96,7 @@ export const UserProfileDrawer = memo(
     return (
       <>
         <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
-          <DrawerFrame className="flex-1">
+          <DrawerFrame>
             <DrawerTitleBar title={drawerTitle} onClose={handleClose} />
 
             <DrawerBody className="ui-density-stack">

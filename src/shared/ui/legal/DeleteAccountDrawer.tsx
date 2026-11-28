@@ -59,7 +59,7 @@ export const DeleteAccountDrawer = memo(function DeleteAccountDrawer({
   return (
     <>
       <Drawer open={open} onOpenChange={handleClose}>
-        <DrawerFrame className="flex-1">
+        <DrawerFrame>
           <DrawerTitleBar
             title={t('legal.deleteAccount.title')}
             onClose={() => handleClose(false)}

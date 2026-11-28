@@ -28,7 +28,7 @@ export const AdvancedFilters = ({
   initialFilters,
   isVacancy = false,
 }: AdvancedFiltersProps) => (
-  <Drawer open={isOpen} onOpenChange={open => !open && onClose()} fullHeight>
+  <Drawer open={isOpen} onOpenChange={open => !open && onClose()}>
     <AdvancedFiltersSheet
       key={isOpen ? JSON.stringify(initialFilters ?? null) : 'closed'}
       onClose={onClose}
@@ -59,7 +59,7 @@ const AdvancedFiltersSheet = ({
   }
 
   return (
-    <DrawerFrame className="flex-1">
+    <DrawerFrame>
       <DrawerTitleBar
         title={t('feed.filters')}
         onClose={onClose}

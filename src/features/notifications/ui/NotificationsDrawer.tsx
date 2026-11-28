@@ -168,7 +168,7 @@ export const NotificationsDrawer = memo(function NotificationsDrawer() {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerFrame className="flex-1">
+      <DrawerFrame>
         <DrawerTitleBar
           title={t('notifications.title')}
           onClose={() => setOpen(false)}

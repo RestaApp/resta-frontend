@@ -54,7 +54,7 @@ export const VenueListingsDrawer = memo(function VenueListingsDrawer({
   return (
     <>
       <Drawer open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
-        <DrawerFrame className="flex-1">
+        <DrawerFrame>
           <DrawerTitleBar
             title={venueName || t('profile.venueListings.title')}
             onClose={handleClose}

@@ -183,7 +183,7 @@ export const NotificationPreferencesDrawer = memo(
 
     return (
       <Drawer open={open} onOpenChange={handleClose}>
-        <DrawerFrame className="flex-1">
+        <DrawerFrame>
           <DrawerTitleBar
             title={t('profile.notificationSettings')}
             onClose={() => handleClose(false)}

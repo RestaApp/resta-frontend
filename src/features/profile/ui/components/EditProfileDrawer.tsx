@@ -106,7 +106,7 @@ export const EditProfileDrawer = memo(
 
     return (
       <Drawer open={open} onOpenChange={handleDrawerOpenChange}>
-        <DrawerFrame className="flex-1">
+        <DrawerFrame>
           <DrawerHeader>
             <div className="flex w-full flex-col gap-3">
               <div className="flex items-start justify-between gap-2">
