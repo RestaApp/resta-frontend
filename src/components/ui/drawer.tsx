@@ -25,6 +25,7 @@ import { useReducedVisualEffects } from '@/shared/lib/hooks/useReducedVisualEffe
 import { OVERLAY_SCRIM_CLASS } from './ui-patterns'
 import { cn } from '@/shared/utils/cn'
 import { useBodyScrollLock } from '@/shared/lib/hooks/useBodyScrollLock'
+import { useKeyboardSafeFocus } from '@/shared/lib/hooks/useKeyboardSafeFocus'
 import { useFocusTrap } from '@/shared/lib/hooks/useFocusTrap'
 import { Z_INDEX } from '@/shared/ui/zIndex'
 import { setupTelegramBackButton } from '@/shared/utils/telegram'
@@ -399,8 +400,12 @@ export const DrawerFrame = ({ className, ...props }: React.HTMLAttributes<HTMLDi
 }
 
 export const DrawerBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  const bodyRef = useRef<HTMLDivElement>(null)
+  useKeyboardSafeFocus(bodyRef)
+
   return (
     <div
+      ref={bodyRef}
       data-scroll-container="true"
       className={cn(
         'flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y ui-density-page ui-density-py',
